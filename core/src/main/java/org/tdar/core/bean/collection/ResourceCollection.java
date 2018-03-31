@@ -140,10 +140,9 @@ public class ResourceCollection extends AbstractPersistable
         OaiDcProvider, HasName, Slugable, Addressable, Indexable, Viewable, Editable, Hideable, Comparable<ResourceCollection> {
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
-    
+
     @Transient
     private transient boolean editable = false;
-
 
     public ResourceCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation,
             TdarUser creator) {

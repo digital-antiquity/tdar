@@ -23,7 +23,6 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     private static final long serialVersionUID = -6026630423934668323L;
 
-
     @Override
     public Class<Audio> getPersistableClass() {
         return Audio.class;

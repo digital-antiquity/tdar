@@ -13,22 +13,22 @@ public class AmazonEmailServiceTestCase {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-//    @Autowired 
-//    protected AwsEmailSender awsEmailService;
-    
+    // @Autowired
+    // protected AwsEmailSender awsEmailService;
+
     @Test
-    public void testAwsCredentials(){
-    	String accessKey = TdarConfiguration.getInstance().getAwsAccessKey();
-    	String secretKey = TdarConfiguration.getInstance().getAwsSecretKey(); 
-    	
-    	logger.debug("Key: {} Pass:{}",accessKey,secretKey);
-    	
-    	assertNotNull(accessKey);
-    	assertNotNull(secretKey);
+    public void testAwsCredentials() {
+        String accessKey = TdarConfiguration.getInstance().getAwsAccessKey();
+        String secretKey = TdarConfiguration.getInstance().getAwsSecretKey();
+
+        logger.debug("Key: {} Pass:{}", accessKey, secretKey);
+
+        assertNotNull(accessKey);
+        assertNotNull(secretKey);
     }
-    
+
     @Test
-    public void testTestAwsEmail(){
-    	assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "no-reply@tdar.org");
+    public void testTestAwsEmail() {
+        assertEquals(EmailType.TEST_EMAIL.getFromAddress(), "no-reply@tdar.org");
     }
 }

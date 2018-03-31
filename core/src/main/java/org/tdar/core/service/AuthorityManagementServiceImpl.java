@@ -338,13 +338,13 @@ public class AuthorityManagementServiceImpl implements AuthorityManagementServic
         }
 
         // now send a summary email
-        Email email = emailService.createMessage(EmailType.ADMIN_NOTIFICATION,TdarConfiguration.getInstance().getSystemAdminEmail());
+        Email email = emailService.createMessage(EmailType.ADMIN_NOTIFICATION, TdarConfiguration.getInstance().getSystemAdminEmail());
         email.setUserGenerated(false);
         email.addData("log", logData);
         email.addData("className", className);
         email.addData("numUpdated", numUpdated);
         email.addData("referrers", logData.getUpdatedReferrers().entrySet());
-        
+
         try {
             emailService.renderAndQueueMessage(email);
         } catch (Exception e) {

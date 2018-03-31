@@ -102,6 +102,5 @@ public class RightsResolverTestCase {
         assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, Permissions.ADD_TO_COLLECTION, date)));
         assertTrue(rr.hasPermissionsEscalation(new AuthorizedUser(basic, basic, Permissions.ADD_TO_COLLECTION)));
 
-
     }
 }

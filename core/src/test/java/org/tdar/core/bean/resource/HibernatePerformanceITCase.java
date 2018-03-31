@@ -33,31 +33,31 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     private transient SessionFactory sessionFactory;
 
     /**
-     * FIXME: Disabled for new log4j 
+     * FIXME: Disabled for new log4j
      */
-//    List<Level> oldLevels = new LinkedList<>();
+    // List<Level> oldLevels = new LinkedList<>();
     List<Logger> loggers = new LinkedList<>();
 
     // turn off *all* loggers. revert state with tron(). Careful: if you don't call tron() or if an unhandled
     // exception occurs the loggers will remain off for the remainder of your unit tests.
     void disableLogging() {
         getVerifyTransactionCallback();
-//        loggers.clear();
-//        oldLevels.clear();
-//        loggers.addAll(Collections.<Logger> list(LogManager.getCurrentLoggers()));
-//        loggers.add(LogManager.getRootLogger());
-//        for (Logger logger : loggers) {
-//            // out("troff:: %s \t was:%s", logger.getName(), logger.getLevel());
-//            oldLevels.add(logger.getLevel());
-//            logger.setLevel(Level.OFF);
-//        }
+        // loggers.clear();
+        // oldLevels.clear();
+        // loggers.addAll(Collections.<Logger> list(LogManager.getCurrentLoggers()));
+        // loggers.add(LogManager.getRootLogger());
+        // for (Logger logger : loggers) {
+        // // out("troff:: %s \t was:%s", logger.getName(), logger.getLevel());
+        // oldLevels.add(logger.getLevel());
+        // logger.setLevel(Level.OFF);
+        // }
     }
 
     void enableLogging() {
-//        ListIterator<Logger> itor = loggers.listIterator();
-//        for (Level level : oldLevels) {
-//            itor.next().setLevel(level);
-//        }
+        // ListIterator<Logger> itor = loggers.listIterator();
+        // for (Level level : oldLevels) {
+        // itor.next().setLevel(level);
+        // }
     }
 
     void logstats(String title, SummaryStatistics stats) {
@@ -81,7 +81,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     // obliterate hibernate caches(1st level, 2nd level, and query cache), then return the current session
     Session cleanSession() {
         evictCache();
-//        searchIndexService.flushToIndexes();
+        // searchIndexService.flushToIndexes();
         Cache cache = sessionFactory.getCache();
         cache.evictEntityRegions();
         cache.evictCollectionRegions();
@@ -150,11 +150,9 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
 
     // http://stackoverflow.com/questions/1519736/random-shuffling-of-an-array
     // Implementing Fisher–Yates shuffle
-    static void shuffleArray(Runnable[] ar)
-    {
+    static void shuffleArray(Runnable[] ar) {
         Random rnd = new Random();
-        for (int i = ar.length - 1; i > 0; i--)
-        {
+        for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
             // Simple swap
             Runnable a = ar[index];

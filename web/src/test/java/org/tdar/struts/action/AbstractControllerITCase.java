@@ -37,10 +37,9 @@ import org.tdar.struts.action.resource.AbstractSupportingInformationResourceCont
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractControllerITCase extends AbstractIntegrationControllerTestCase  implements TestFileUploadHelper {
+public abstract class AbstractControllerITCase extends AbstractIntegrationControllerTestCase implements TestFileUploadHelper {
 
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
-
 
     public <C> C setupAndLoadResource(String filename, Class<C> cls) throws TdarActionException {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
@@ -53,8 +52,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) throws TdarActionException {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
-    
-
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) throws TdarActionException {
@@ -132,7 +129,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     public TdarUser getUser() {
         return getUser(getUserId());
     }
-
 
     protected void reindex() {
         searchIndexService.purgeAll();

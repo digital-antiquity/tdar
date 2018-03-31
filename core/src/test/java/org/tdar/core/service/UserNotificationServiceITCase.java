@@ -31,10 +31,10 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
 
     @Before
     public void setUp() {
-        // clean out "new" notifications 
+        // clean out "new" notifications
         userNotificationService.findAll().forEach(note -> {
             if (note.getMessageType() == UserNotificationType.SYSTEM_BROADCAST && !note.getMessageKey().contains("lithic")) {
-                logger.debug("deleting: {} {} ", note.getMessageKey(), note );
+                logger.debug("deleting: {} {} ", note.getMessageKey(), note);
                 genericService.delete(note);
                 genericService.synchronize();
             }
@@ -85,12 +85,12 @@ public class UserNotificationServiceITCase extends AbstractIntegrationTestCase {
         }
         for (TdarUser otherUser : otherUsers) {
             List<UserNotification> currentNotifications = userNotificationService.getCurrentNotifications(otherUser);
-            assertEquals(5 , currentNotifications.size());
+            assertEquals(5, currentNotifications.size());
             Map<UserNotificationType, Integer> counts = getNotificationTypeCounts(currentNotifications);
             assertEquals(2, counts.get(UserNotificationType.INFO).intValue());
             assertEquals(1, counts.get(UserNotificationType.ERROR).intValue());
             assertEquals(1, counts.get(UserNotificationType.WARNING).intValue());
-            assertEquals(1 , counts.get(UserNotificationType.SYSTEM_BROADCAST).intValue());
+            assertEquals(1, counts.get(UserNotificationType.SYSTEM_BROADCAST).intValue());
         }
         assertEquals("The original user should only have lithic.announce broadcast",
                 initialNotifications, userNotificationService.getCurrentNotifications(user));

@@ -14,7 +14,7 @@ import org.tdar.utils.ResourceCitationFormatter;
 public class DocumentCitationFormatTestCase {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Test
     public void testBookWithSeries() {
         Document doc = new Document();
@@ -38,7 +38,7 @@ public class DocumentCitationFormatTestCase {
         doc.setSeriesNumber(null);
         assertEquals("publisherLocation: publisher. 1234", formatter.getFormattedSourceInformation());
     }
-    
+
     @Test
     public void testBookChapter() {
         Document doc = new Document();
@@ -66,6 +66,7 @@ public class DocumentCitationFormatTestCase {
         ResourceCitationFormatter formatter = setupDocumentWithAllFields(doc, DocumentType.OTHER);
         assertEquals("1234", formatter.getFormattedSourceInformation());
     }
+
     @Test
     public void testReport() {
         Document doc = new Document();

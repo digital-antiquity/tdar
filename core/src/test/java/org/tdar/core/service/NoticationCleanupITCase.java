@@ -12,11 +12,11 @@ import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.notification.UserNotificationType;
 import org.tdar.core.service.processes.weekly.WeeklyUserNotificationCleanup;
 
-public class NoticationCleanupITCase extends AbstractIntegrationTestCase  {
+public class NoticationCleanupITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     WeeklyUserNotificationCleanup cleanup;
-    
+
     @Test
     @Rollback
     public void testCleanupDefault() {
@@ -28,7 +28,6 @@ public class NoticationCleanupITCase extends AbstractIntegrationTestCase  {
         assertEmpty("should have 0 old", cleanup.getOld());
         assertEmpty("should have 0 expired", cleanup.getExpired());
     }
-
 
     @Test
     @Rollback
@@ -51,7 +50,8 @@ public class NoticationCleanupITCase extends AbstractIntegrationTestCase  {
     @Test
     @Rollback
     public void testCleanupRetainsInvoiceAndSystemBroadcast() {
-        UserNotification notification = new UserNotification(WeeklyUserNotificationCleanup.PRE_TDAR_INVOICE, UserNotificationType.INFO, UserNotificationDisplayType.NORMAL, getBasicUser());
+        UserNotification notification = new UserNotification(WeeklyUserNotificationCleanup.PRE_TDAR_INVOICE, UserNotificationType.INFO,
+                UserNotificationDisplayType.NORMAL, getBasicUser());
         notification.setDateCreated(DateTime.now().minusDays(1000).toDate());
         genericService.saveOrUpdate(notification);
         UserNotification broadcast = new UserNotification("test", UserNotificationType.SYSTEM_BROADCAST, UserNotificationDisplayType.NORMAL, getBasicUser());

@@ -103,7 +103,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         addComparitiveCollections(bulkUploadController);
 
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-//        bulkUploadController.setAsync(false);
+        // bulkUploadController.setAsync(false);
         // saving
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(TdarActionSupport.SUCCESS_ASYNC, bulkUploadController.save());
@@ -114,7 +114,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         boolean manifest_gc = false;
         boolean manifest_book = false;
         logger.info("{}", details);
-        logger.info("{}",basa.getStatus().getAsyncErrors());
+        logger.info("{}", basa.getStatus().getAsyncErrors());
         assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
@@ -190,7 +190,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         return sc;
     }
 
-
     @Test
     @Rollback
     // @Ignore
@@ -199,7 +198,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         File file = TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
         files.add(file);
         assertTrue(file.exists());
-        BulkUploadController bulkUploadController = setupBasicBulkUploadTest( TdarActionSupport.SUCCESS_ASYNC, files);
+        BulkUploadController bulkUploadController = setupBasicBulkUploadTest(TdarActionSupport.SUCCESS_ASYNC, files);
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
         assertTrue(100f == basa.getStatus().getPercentComplete());
 
@@ -219,13 +218,13 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // testing that an Float that is effectively an int 120.00 is ok in an int field
         List<Pair<Long, String>> details = basa.getStatus().getDetails();
         logger.info("{}", details);
-        logger.debug("{}",basa.getStatus().getAsyncErrors());
+        logger.debug("{}", basa.getStatus().getAsyncErrors());
         assertTrue(StringUtils.isEmpty(basa.getStatus().getAsyncErrors()));
         Resource find1 = resourceService.find(details.get(0).getFirst());
         assertEquals(Status.ACTIVE, find1.getStatus());
         assertTrue(resourceService.find(details.get(1).getFirst()).isActive());
-//        assertEquals(new Integer(1234), ((InformationResource) resourceService.find(details.get(0).getFirst())).getDate());
-//        assertEquals(new Integer(2222), ((InformationResource) resourceService.find(details.get(1).getFirst())).getDate());
+        // assertEquals(new Integer(1234), ((InformationResource) resourceService.find(details.get(0).getFirst())).getDate());
+        // assertEquals(new Integer(2222), ((InformationResource) resourceService.find(details.get(1).getFirst())).getDate());
     }
 
     private BulkUploadController setupBasicBulkUploadTest(String expectedResponse, List<File> uploadFiles) throws Exception {
@@ -240,7 +239,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setProjectId(TestConstants.ADMIN_INDEPENDENT_PROJECT_ID);
         // setup controller
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-//        bulkUploadController.setAsync(false);
+        // bulkUploadController.setAsync(false);
         // saving
         bulkUploadController.setServletRequest(getServletPostRequest());
         assertEquals(expectedResponse, bulkUploadController.save());
@@ -256,8 +255,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         return basa;
     }
 
-
-    private BulkUploadController setupBasicBulkUploadTest( String successAsync) throws Exception {
+    private BulkUploadController setupBasicBulkUploadTest(String successAsync) throws Exception {
         File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         assertTrue(testImagesDirectory.isDirectory());
         List<File> uploadFiles = new ArrayList<File>();
@@ -276,7 +274,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         dataset.setDate(1234);
         genericService.saveOrUpdate(dataset);
         dataset.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "This is a note, hello"));
-        Document document = resourceService.createResourceFrom(getAdminUser(),dataset, Document.class, true);
+        Document document = resourceService.createResourceFrom(getAdminUser(), dataset, Document.class, true);
         assertFalse(document.getResourceNotes().isEmpty());
         assertEquals(1, document.getResourceNotes().size());
         ResourceNote documentNote = document.getResourceNotes().iterator().next();
@@ -294,31 +292,31 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // assuming all inheritance flags are false by default.
 
         expected.setInheritingCulturalInformation(true);
-        Image image1 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image1 = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.isInheritingCulturalInformation(), image1.isInheritingCulturalInformation());
 
         expected.setInheritingInvestigationInformation(true);
-        Image image2 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image2 = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.isInheritingInvestigationInformation(), image2.isInheritingInvestigationInformation());
 
         expected.setInheritingMaterialInformation(true);
-        Image image3 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image3 = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.isInheritingMaterialInformation(), image3.isInheritingMaterialInformation());
 
         expected.setInheritingOtherInformation(true);
-        Image image4 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image4 = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.isInheritingOtherInformation(), image4.isInheritingOtherInformation());
 
         expected.setInheritingSiteInformation(true);
-        Image image5 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image5 = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.isInheritingSiteInformation(), image5.isInheritingSiteInformation());
 
         expected.setInheritingSpatialInformation(true);
-        Image image6 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image6 = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.isInheritingSpatialInformation(), image6.isInheritingSpatialInformation());
 
         expected.setInheritingTemporalInformation(true);
-        Image image8 = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image8 = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.isInheritingTemporalInformation(), image8.isInheritingTemporalInformation());
     }
 
@@ -336,7 +334,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         rcc.setText("rcc text");
         expected.getRelatedComparativeCollections().add(rcc);
 
-        Image image = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.getRelatedComparativeCollections().iterator().next().getText(),
                 image.getRelatedComparativeCollections().iterator().next().getText());
     }
@@ -356,7 +354,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         sc.setText("source collection text");
         expected.getSourceCollections().add(sc);
 
-        Image image = resourceService.createResourceFrom(getAdminUser(),expected, Image.class, true);
+        Image image = resourceService.createResourceFrom(getAdminUser(), expected, Image.class, true);
         assertEquals(expected.getSourceCollections().iterator().next().getText(),
                 image.getSourceCollections().iterator().next().getText());
     }
@@ -365,7 +363,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testCloneImageWithNoLicenceEnabled() {
         Image expected = new Image();
-        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(), expected, expected.getClass(), true);
         // the assumption is that both of these will default to null
         assertTrue(image.getLicenseType() == null);
         assertTrue(image.getLicenseText() == null);
@@ -379,7 +377,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         expected.setLicenseType(LicenseType.CREATIVE_COMMONS_ATTRIBUTION);
         expected.setLicenseText("This should be ignored");
         expected.markUpdated(getAdminUser());
-        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(), expected, expected.getClass(), true);
         assertTrue(LicenseType.CREATIVE_COMMONS_ATTRIBUTION.equals(image.getLicenseType()));
         assertTrue(image.getLicenseText() == null);
     }
@@ -391,7 +389,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Image expected = new Image();
         expected.setLicenseType(LicenseType.OTHER);
         expected.setLicenseText(OTHER_LICENCE_TYPE_BOILERPLATE);
-        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(), expected, expected.getClass(), true);
         assertTrue(LicenseType.OTHER.equals(image.getLicenseType()));
         assertTrue(OTHER_LICENCE_TYPE_BOILERPLATE.equals(image.getLicenseText()));
     }
@@ -403,7 +401,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Image expected = new Image();
         Person copyrightHolder = entityService.find(getAdminUserId());
         expected.setCopyrightHolder(copyrightHolder);
-        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(), expected, expected.getClass(), true);
         assertTrue(copyrightHolder.equals(image.getCopyrightHolder()));
     }
 
@@ -411,7 +409,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testCloneImageWithNoCopyrightEnabled() {
         Image expected = new Image();
-        Image image = resourceService.createResourceFrom(getAdminUser(),expected, expected.getClass(), true);
+        Image image = resourceService.createResourceFrom(getAdminUser(), expected, expected.getClass(), true);
         // the assumption is that this will default to null
         assertTrue(image.getCopyrightHolder() == null);
     }
@@ -447,7 +445,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
         // setup controller
         bulkUploadController.setFileProxies(proxyPair.getSecond());
-//        bulkUploadController.setAsync(false);
+        // bulkUploadController.setAsync(false);
         bulkUploadController.getResource().setTitle("test");
         bulkUploadController.getResource().setDescription("test");
         bulkUploadController.getResource().setDate(1234);
@@ -464,7 +462,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         BulkUpdateStatusAction basa = checkStatus(bulkUploadController.getTicketId());
         basa.checkStatus();
         assertTrue(100f == basa.getStatus().getPercentComplete());
-
 
         // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
         int newSharedCount = getCollectionCount(CollectionResourceSection.MANAGED);
@@ -491,20 +488,20 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             collections.addAll(resourceCollections);
         }
         assertEquals("we should have a total of 3 collections (0 internal +2 shared)", 2, collections.size());
-//        int internalCount = 0;
+        // int internalCount = 0;
         for (ResourceCollection col : collections) {
             logger.debug("{} : {}", col, col.getManagedResources());
-//            if (col instanceof InternalCollection) {
-//                assertEquals(1, col.getResources().size());
-//                internalCount++;
-//            } else {
-                assertEquals(2, col.getManagedResources().size());
-//            }
+            // if (col instanceof InternalCollection) {
+            // assertEquals(1, col.getResources().size());
+            // internalCount++;
+            // } else {
+            assertEquals(2, col.getManagedResources().size());
+            // }
         }
         assertEquals("we should have one new adhoc collection", 2, newSharedCount - origSharedCount);
         // ensure N internal collections created
-         String msg = String.format("We should have %s new internal collections.  newcount:%s oldcount:%s", uploadFiles.size(),
-          0, 0);
+        String msg = String.format("We should have %s new internal collections.  newcount:%s oldcount:%s", uploadFiles.size(),
+                0, 0);
         // assertEquals(msg, uploadFiles.size(), newInternalCount - origInternalCount );
     }
 

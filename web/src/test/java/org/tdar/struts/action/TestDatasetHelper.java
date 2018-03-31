@@ -138,7 +138,7 @@ public interface TestDatasetHelper {
             assertEquals(col.getName() + " is missing coding sheet", mapping.getDefaultCodingSheet(), col.getDefaultCodingSheet());
         }
     }
-    
+
     <T extends ActionSupport> T generateNewInitializedController(Class<T> class1);
 
     GenericService getGenericService();

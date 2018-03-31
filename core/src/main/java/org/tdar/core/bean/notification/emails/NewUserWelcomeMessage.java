@@ -14,20 +14,20 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("NEW_USER_WELCOME")
 public class NewUserWelcomeMessage extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5682400223003342499L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5682400223003342499L;
 
-	/**
-	 * 
-	 */
+    /**
+     * 
+     */
 
-	@Override
-	public String createSubjectLine() {
-		logger.debug("generating the subject line for NewUserWelcomeMessage");
-		String tdar = TdarConfiguration.getInstance().getSiteAcronym();
-		return MessageHelper.getMessage(EmailType.NEW_USER_WELCOME.getLocaleKey(),Arrays.asList(tdar));
-	}
+    @Override
+    public String createSubjectLine() {
+        logger.debug("generating the subject line for NewUserWelcomeMessage");
+        String tdar = TdarConfiguration.getInstance().getSiteAcronym();
+        return MessageHelper.getMessage(EmailType.NEW_USER_WELCOME.getLocaleKey(), Arrays.asList(tdar));
+    }
 
 }

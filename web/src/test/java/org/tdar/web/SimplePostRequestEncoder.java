@@ -12,18 +12,20 @@ public class SimplePostRequestEncoder {
     private StringBuilder data = new StringBuilder();
 
     /**
-     * Create a new encoder with the character encoding  (e.g. UTF-8).
+     * Create a new encoder with the character encoding (e.g. UTF-8).
+     * 
      * @param encoding
      * @throws UnsupportedEncodingException
      */
     public SimplePostRequestEncoder(String encoding) throws UnsupportedEncodingException {
-        //create throwaway string to ensure encoding is valid
+        // create throwaway string to ensure encoding is valid
         URLEncoder.encode("test", encoding);
         this.encoding = encoding;
     }
 
     /**
      * Create a new encoder with default character encoding.
+     * 
      * @throws UnsupportedEncodingException
      */
     public SimplePostRequestEncoder() throws UnsupportedEncodingException {
@@ -32,22 +34,25 @@ public class SimplePostRequestEncoder {
 
     /**
      * Add a name/value to the message body.
+     * 
      * @param name
      * @param data
      * @return the encoder object, for method chaining.
      */
     public SimplePostRequestEncoder put(String name, String data) {
         try {
-            if(count++ > 0) {
+            if (count++ > 0) {
                 data.concat("&");
             }
             data.concat(name + "=" + URLEncoder.encode(data, encoding));
-        } catch (UnsupportedEncodingException ignored) {}
+        } catch (UnsupportedEncodingException ignored) {
+        }
         return this;
     }
 
     /**
      * return a string containing the message body in x-www-form-urlencoded format.
+     * 
      * @return
      */
     public String toString() {

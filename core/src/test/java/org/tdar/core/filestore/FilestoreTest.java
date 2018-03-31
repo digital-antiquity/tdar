@@ -97,7 +97,8 @@ public class FilestoreTest {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         String name = "abc.txt";
         InformationResourceFileVersion version = generateVersion(name);
-        String baseAssert = store.getFilestoreLocation() + File.separator + "resource" + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1" + File.separator;
+        String baseAssert = store.getFilestoreLocation() + File.separator + "resource" + baseIrPath + INFORMATION_RESOURCE_FILE_ID + File.separator + "v1"
+                + File.separator;
         assertEquals(baseAssert + "archival" + File.separator + name, store.getAbsoluteFilePath(FilestoreObjectType.RESOURCE, version));
         version.setFileVersionType(VersionType.WEB_LARGE);
         assertEquals(baseAssert + PairtreeFilestore.DERIV + File.separator + name, store.getAbsoluteFilePath(FilestoreObjectType.RESOURCE, version));
@@ -223,7 +224,7 @@ public class FilestoreTest {
     public void testStorageAndRetrievalDeleted() throws IOException {
         cleanup();
         File file = new File(TEST_IMAGE);
-        assertTrue(String.format("%s exists", file.getCanonicalFile()),file.exists());
+        assertTrue(String.format("%s exists", file.getCanonicalFile()), file.exists());
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
         InformationResourceFileVersion version = generateVersion(TEST_IMAGE_NAME);
         version.getInformationResourceFile().setLatestVersion(2);

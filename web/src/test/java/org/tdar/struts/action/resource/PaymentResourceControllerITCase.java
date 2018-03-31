@@ -53,8 +53,8 @@ import com.opensymphony.xwork2.Action;
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 public class PaymentResourceControllerITCase extends AbstractControllerITCase implements TestBillingAccountHelper, TestResourceCollectionHelper {
 
-//    private 
-    
+    // private
+
     @Autowired
     private BillingAccountService accountService;
 
@@ -65,9 +65,9 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         return controller;
     }
 
-//    public void setController(DocumentController controller) {
-//        this.controller = controller;
-//    }
+    // public void setController(DocumentController controller) {
+    // this.controller = controller;
+    // }
 
     @SuppressWarnings("deprecation")
     @Test
@@ -145,7 +145,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         adminAccount.setName("admin account");
         basicAccount.setName("basic account");
         dataset.setSubmitter(getBasicUser());
-        
+
         // dataset being set to admin account
         adminAccount.getResources().add(dataset);
         genericService.saveOrUpdate(adminAccount);
@@ -161,7 +161,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         logger.debug("accountId:{}", dc.getAccountId());
         assertTrue(dc.getActiveAccounts().contains(basicAccount));
         assertEquals(adminAccount.getId(), dc.getAccountId());
-        //asserting we're still admin account
+        // asserting we're still admin account
         dc.setServletRequest(getServletPostRequest());
         dc.save();
         assertFalse(getActionErrors().size() > 0);
@@ -205,7 +205,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         // mark the user as a contributor, and you should get BILLING WARNING
         user.setContributor(true);
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
-        result = runController(user,true);
+        result = runController(user, true);
         Assert.assertEquals(ResourceController.BILLING, result);
         BillingAccount account = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), user);
         genericService.saveOrUpdate(account);
@@ -259,7 +259,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         // Account account = createAccount(getBasicUser());
         // d.setAccount(account);
         genericService.saveOrUpdate(d);
-        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(),d.getSubmitter(),Permissions.MODIFY_RECORD));
+        d.getAuthorizedUsers().add(new AuthorizedUser(d.getSubmitter(), d.getSubmitter(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(d);
         logger.info("account: {}", d.getAccount());
         setIgnoreActionErrors(true);
@@ -371,7 +371,6 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         d.markUpdated(getUser());
         return d;
     }
-
 
     public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();

@@ -30,10 +30,9 @@ import com.google.common.base.Objects;
 
 public class UserInviteITCase extends AbstractIntegrationTestCase {
 
-
     @Autowired
     private AuthenticationService authenticationService;
-    
+
     @Test
     @Rollback
     public void testRedmption() {
@@ -56,16 +55,15 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         reg.setConfirmEmail(person.getEmail());
         reg.setPassword("pass");
         reg.setConfirmPassword("pass");
-        authenticationService.addAndAuthenticateUser(reg,  new MockHttpServletRequest("POST", "/"), new MockHttpServletResponse() ,getSessionData());
+        authenticationService.addAndAuthenticateUser(reg, new MockHttpServletRequest("POST", "/"), new MockHttpServletResponse(), getSessionData());
     }
-    
-    
 
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     /**
      * Check that draft and normal rights can be applied properly
+     * 
      * @throws Exception
      */
     public void testDraftResourceIssue() throws Exception {
@@ -76,11 +74,11 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
         String name = "test collection";
         String description = "test description";
-        
+
         // create a collection
         ResourceCollection collection = new ResourceCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection);
         Long id = collection.getId();
         genericService.synchronize();
@@ -91,9 +89,9 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         ResourceCollection myCollection = genericService.find(ResourceCollection.class, id);
 
         // grant basic user and admin user rights on the collection
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD)));
-                
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.MODIFY_RECORD)));
+
         List<UserRightsProxy> aus = new ArrayList<>();
         for (AuthorizedUser user : users) {
             aus.add(new UserRightsProxy(user));
@@ -115,12 +113,12 @@ public class UserInviteITCase extends AbstractIntegrationTestCase {
         for (AuthorizedUser au : myCollection.getAuthorizedUsers()) {
             logger.debug("  : {} - {}", au, au.getUser().getId());
             if (Objects.equal(au.getUser().getId(), testPerson.getId())) {
-                    user = au;
+                user = au;
             }
         }
         assertNotNull(user);
         assertEquals(Permissions.VIEW_ALL, user.getGeneralPermission());
 
     }
-    
+
 }

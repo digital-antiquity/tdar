@@ -14,7 +14,7 @@ import org.tdar.utils.activity.Activity;
 public class ActivityAgentTest {
 
     transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Test
     public void testBots() {
         List<String> bots = Arrays.asList("Googlebot/2.1; +http://www.google.com/bot",
@@ -35,12 +35,13 @@ public class ActivityAgentTest {
 
     @Test
     public void testUsers() {
-    List<String> users = Arrays.asList("Mozilla/5.0 (iPhone; CPU iPhone OS 10_1_1 like Mac OS X) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0 Mobile/14B100 Safari/602.1",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.1 Safari/603.1.30",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:29.0) Gecko/20100101 Firefox/49");
-    users.forEach(bot -> {
-        logger.debug("{} - {}", bot, Activity.testUserAgent(bot));
-        assertFalse(Activity.testUserAgent(bot));
-    });
+        List<String> users = Arrays.asList(
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 10_1_1 like Mac OS X) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0 Mobile/14B100 Safari/602.1",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.1 Safari/603.1.30",
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:29.0) Gecko/20100101 Firefox/49");
+        users.forEach(bot -> {
+            logger.debug("{} - {}", bot, Activity.testUserAgent(bot));
+            assertFalse(Activity.testUserAgent(bot));
+        });
     }
 }

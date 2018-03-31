@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import java.util.ArrayList;
@@ -17,11 +16,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for ListIdentifiersType complex type.
+ * <p>
+ * Java class for ListIdentifiersType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="ListIdentifiersType">
@@ -40,8 +40,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ListIdentifiersType", propOrder = {
-    "header",
-    "resumptionToken"
+        "header",
+        "resumptionToken"
 })
 @XmlRootElement
 public class ListIdentifiersType implements ListResponse {
@@ -61,8 +61,9 @@ public class ListIdentifiersType implements ListResponse {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getHeader().add(newItem);
+     * getHeader().add(newItem);
      * </pre>
      * 
      * 
@@ -83,9 +84,9 @@ public class ListIdentifiersType implements ListResponse {
      * Gets the value of the resumptionToken property.
      * 
      * @return
-     *     possible object is
-     *     {@link ResumptionTokenType }
-     *     
+     *         possible object is
+     *         {@link ResumptionTokenType }
+     * 
      */
     public ResumptionTokenType getResumptionToken() {
         return resumptionToken;
@@ -95,9 +96,9 @@ public class ListIdentifiersType implements ListResponse {
      * Sets the value of the resumptionToken property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ResumptionTokenType }
-     *     
+     *            allowed object is
+     *            {@link ResumptionTokenType }
+     * 
      */
     @Override
     public void setResumptionToken(ResumptionTokenType value) {

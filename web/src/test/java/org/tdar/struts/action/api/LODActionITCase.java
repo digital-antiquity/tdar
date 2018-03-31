@@ -44,8 +44,6 @@ public class LODActionITCase extends AbstractControllerITCase {
 
     }
 
-    
-    
     @Test
     @IgnoreActionErrors
     public void testLodCreatorAPIInvalid() throws Exception {
@@ -67,7 +65,6 @@ public class LODActionITCase extends AbstractControllerITCase {
 
     }
 
-    
     @Test
     @IgnoreActionErrors
     public void testLodCollectionAPIInvalid() throws Exception {
@@ -110,7 +107,6 @@ public class LODActionITCase extends AbstractControllerITCase {
 
     }
 
-    
     private void prepareAndValid(AbstractJsonApiAction controller, String label) throws Exception, IOException {
         controller.prepare();
         String body = IOUtils.toString(controller.getJsonInputStream());

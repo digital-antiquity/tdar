@@ -7,7 +7,7 @@ public interface WebScheduledProcessService {
     void evictCaches();
 
     void cronQueueEmail();
-    
+
     void cronProcessEmailErrors();
 
     /**

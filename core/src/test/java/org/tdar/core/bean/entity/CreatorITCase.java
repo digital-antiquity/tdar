@@ -22,22 +22,20 @@ public class CreatorITCase extends AbstractIntegrationTestCase {
     @Autowired
     private InstitutionDao institutionDao;
 
-    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testInstitutionMerge() {
         Institution master = new Institution("master");
         Institution dup = new Institution("dup");
-        genericService.saveOrUpdate(master,dup);
+        genericService.saveOrUpdate(master, dup);
         dup.setStatus(Status.DUPLICATE);
         master.getSynonyms().add(dup);
-        genericService.saveOrUpdate(dup,master);
+        genericService.saveOrUpdate(dup, master);
         genericService.synchronize();
-        assertEquals(master,institutionDao.findAuthorityFromDuplicate(dup));
+        assertEquals(master, institutionDao.findAuthorityFromDuplicate(dup));
     }
 
-    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
@@ -45,15 +43,13 @@ public class CreatorITCase extends AbstractIntegrationTestCase {
         Person master = createAndSaveNewPerson("aa@bb.cc", "master");
         Person dup = createAndSaveNewPerson("aa@bb.ccd", "dup");
 
-        genericService.saveOrUpdate(master,dup);
+        genericService.saveOrUpdate(master, dup);
         dup.setStatus(Status.DUPLICATE);
         master.getSynonyms().add(dup);
-        genericService.saveOrUpdate(dup,master);
+        genericService.saveOrUpdate(dup, master);
         genericService.synchronize();
 
-        assertEquals(master,personDao.findAuthorityFromDuplicate(dup));
+        assertEquals(master, personDao.findAuthorityFromDuplicate(dup));
     }
 
-    
-    
 }

@@ -503,7 +503,8 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
     }
 
     enum Mode {
-        UPDATE, ADD;
+        UPDATE,
+        ADD;
     }
 
     /**

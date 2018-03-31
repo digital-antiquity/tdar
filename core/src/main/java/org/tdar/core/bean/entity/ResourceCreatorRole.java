@@ -29,44 +29,66 @@ import org.tdar.utils.MessageHelper;
 // FIXME: the logic of these roles, when they are relevant, when they should be accepted for input, and when they should be included for citation, is almost
 // totally inscrutable
 public enum ResourceCreatorRole implements HasLabel, Localizable {
-    CONTACT("Contact", ResourceCreatorRoleType.CREDIT), AUTHOR("Author", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DOCUMENT), CONTRIBUTOR(
-            "Contributor", ResourceCreatorRoleType.CREDIT), EDITOR("Editor", ResourceCreatorRoleType.AUTHORSHIP, CreatorType.PERSON,
-                    ResourceType.DOCUMENT), TRANSLATOR("Translator", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON, ResourceType.DOCUMENT), FIELD_DIRECTOR(
-                            "Field Director", ResourceCreatorRoleType.CREDIT,
-                            CreatorType.PERSON), LAB_DIRECTOR("Lab Director", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON), PRINCIPAL_INVESTIGATOR(
-                                    "Principal Investigator", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON), PROJECT_DIRECTOR("Project Director",
-                                            ResourceCreatorRoleType.CREDIT, CreatorType.PERSON), COLLABORATOR("Collaborator", ResourceCreatorRoleType.CREDIT,
-                                                    CreatorType.INSTITUTION), LANDOWNER("Landowner", ResourceCreatorRoleType.CREDIT), SPONSOR("Sponsor",
-                                                            ResourceCreatorRoleType.CREDIT), PERMITTER("Permitting Agency", ResourceCreatorRoleType.CREDIT,
-                                                                    CreatorType.INSTITUTION), REPOSITORY("Repository", ResourceCreatorRoleType.CREDIT,
-                                                                            CreatorType.INSTITUTION), CREATOR("Creator", ResourceCreatorRoleType.AUTHORSHIP,
-                                                                                    null, ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.IMAGE,
-                                                                                    ResourceType.DATASET,
-                                                                                    ResourceType.SENSORY_DATA, ResourceType.ARCHIVE, ResourceType.GEOSPATIAL,
-                                                                                    ResourceType.VIDEO, ResourceType.AUDIO), PREPARER("Prepared By",
-                                                                                            ResourceCreatorRoleType.CREDIT,
-                                                                                            CreatorType.INSTITUTION), SUBMITTED_TO("Submitted To",
-                                                                                                    ResourceCreatorRoleType.CREDIT,
-                                                                                                    CreatorType.INSTITUTION), COPYRIGHT_HOLDER(
-                                                                                                            "Copyright Holder", ResourceCreatorRoleType.OTHER,
-                                                                                                            null, ResourceType.CODING_SHEET,
-                                                                                                            ResourceType.ONTOLOGY, ResourceType.IMAGE,
-                                                                                                            ResourceType.DATASET, ResourceType.ARCHIVE,
-                                                                                                            ResourceType.GEOSPATIAL, ResourceType.VIDEO,
-                                                                                                            ResourceType.SENSORY_DATA, ResourceType.DOCUMENT,
-                                                                                                            ResourceType.AUDIO), SUBMITTER("Submitter",
-                                                                                                                    ResourceCreatorRoleType.OTHER,
-                                                                                                                    CreatorType.PERSON), UPDATER("Updater",
-                                                                                                                            ResourceCreatorRoleType.OTHER,
-                                                                                                                            CreatorType.PERSON), RESOURCE_PROVIDER(
-                                                                                                                                    "Resource Provider",
-                                                                                                                                    ResourceCreatorRoleType.OTHER,
-                                                                                                                                    CreatorType.INSTITUTION), PUBLISHER(
-                                                                                                                                            "Publisher",
-                                                                                                                                            ResourceCreatorRoleType.OTHER), UPLOADER(
-                                                                                                                                                    "Uploader",
-                                                                                                                                                    ResourceCreatorRoleType.OTHER,
-                                                                                                                                                    CreatorType.PERSON);
+    CONTACT("Contact", ResourceCreatorRoleType.CREDIT),
+    AUTHOR("Author", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DOCUMENT),
+    CONTRIBUTOR(
+            "Contributor", ResourceCreatorRoleType.CREDIT),
+    EDITOR("Editor", ResourceCreatorRoleType.AUTHORSHIP, CreatorType.PERSON,
+            ResourceType.DOCUMENT),
+    TRANSLATOR("Translator", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON, ResourceType.DOCUMENT),
+    FIELD_DIRECTOR(
+            "Field Director", ResourceCreatorRoleType.CREDIT,
+            CreatorType.PERSON),
+    LAB_DIRECTOR("Lab Director", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON),
+    PRINCIPAL_INVESTIGATOR(
+            "Principal Investigator", ResourceCreatorRoleType.CREDIT, CreatorType.PERSON),
+    PROJECT_DIRECTOR("Project Director",
+            ResourceCreatorRoleType.CREDIT, CreatorType.PERSON),
+    COLLABORATOR("Collaborator", ResourceCreatorRoleType.CREDIT,
+            CreatorType.INSTITUTION),
+    LANDOWNER("Landowner", ResourceCreatorRoleType.CREDIT),
+    SPONSOR("Sponsor",
+            ResourceCreatorRoleType.CREDIT),
+    PERMITTER("Permitting Agency", ResourceCreatorRoleType.CREDIT,
+            CreatorType.INSTITUTION),
+    REPOSITORY("Repository", ResourceCreatorRoleType.CREDIT,
+            CreatorType.INSTITUTION),
+    CREATOR("Creator", ResourceCreatorRoleType.AUTHORSHIP,
+            null, ResourceType.CODING_SHEET, ResourceType.ONTOLOGY, ResourceType.IMAGE,
+            ResourceType.DATASET,
+            ResourceType.SENSORY_DATA, ResourceType.ARCHIVE, ResourceType.GEOSPATIAL,
+            ResourceType.VIDEO, ResourceType.AUDIO),
+    PREPARER("Prepared By",
+            ResourceCreatorRoleType.CREDIT,
+            CreatorType.INSTITUTION),
+    SUBMITTED_TO("Submitted To",
+            ResourceCreatorRoleType.CREDIT,
+            CreatorType.INSTITUTION),
+    COPYRIGHT_HOLDER(
+            "Copyright Holder", ResourceCreatorRoleType.OTHER,
+            null, ResourceType.CODING_SHEET,
+            ResourceType.ONTOLOGY, ResourceType.IMAGE,
+            ResourceType.DATASET, ResourceType.ARCHIVE,
+            ResourceType.GEOSPATIAL, ResourceType.VIDEO,
+            ResourceType.SENSORY_DATA, ResourceType.DOCUMENT,
+            ResourceType.AUDIO),
+    SUBMITTER("Submitter",
+            ResourceCreatorRoleType.OTHER,
+            CreatorType.PERSON),
+    UPDATER("Updater",
+            ResourceCreatorRoleType.OTHER,
+            CreatorType.PERSON),
+    RESOURCE_PROVIDER(
+            "Resource Provider",
+            ResourceCreatorRoleType.OTHER,
+            CreatorType.INSTITUTION),
+    PUBLISHER(
+            "Publisher",
+            ResourceCreatorRoleType.OTHER),
+    UPLOADER(
+            "Uploader",
+            ResourceCreatorRoleType.OTHER,
+            CreatorType.PERSON);
 
     private final String label;
     private final CreatorType relevantCreatorType;

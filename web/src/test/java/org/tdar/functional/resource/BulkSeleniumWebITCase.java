@@ -75,14 +75,13 @@ public class BulkSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
-
     @Test
-    public void testBasicBulkUploadSetup()  {
+    public void testBasicBulkUploadSetup() {
         gotoPage("/bulk/add");
         WebElement form = find("#metadataForm").first();
         expandAllTreeviews();
         prepIndexedFields();
-        //uploadFileAsync(FileAccessRestriction.PUBLIC, TestConstants.getFile(TestConstants.TEST_IMAGE));
+        // uploadFileAsync(FileAccessRestriction.PUBLIC, TestConstants.getFile(TestConstants.TEST_IMAGE));
         // fill in various text fields
         for (Map.Entry<String, String> entry : docValMap.entrySet()) {
             find(By.name(entry.getKey())).val(entry.getValue());

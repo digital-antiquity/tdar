@@ -63,12 +63,12 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         TdarUserController uc = generateNewInitializedController(TdarUserController.class, user);
         Long userId = user.getId();
         user = null;
-        
+
         uc.setId(userId);
         uc.prepare();
         uc.edit();
         logger.debug("{}", uc.getPersistable());
-//        Assert.assertEquals(uc.getPersistable().getFirstName().toLowerCase(), "allen");
+        // Assert.assertEquals(uc.getPersistable().getFirstName().toLowerCase(), "allen");
         assertEquals(false, uc.getContributor());
         uc.setContributor(true);
         uc.setServletRequest(getServletPostRequest());

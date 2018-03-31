@@ -67,7 +67,6 @@ public class WebElementSelection implements Iterable<WebElement> {
         this(Collections.<WebElement> emptyList(), driver);
     }
 
-
     @Override
     public Iterator<WebElement> iterator() {
         return elements.iterator();
@@ -78,7 +77,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      */
     public WebElement first() {
         if (CollectionUtils.isEmpty(elements)) {
-            if(locator == null) {
+            if (locator == null) {
                 throw new IllegalStateException("cannot call first() on empty selection");
             } else {
                 throw new IllegalStateException("cannot call first() on empty selection (locator:" + this.locator + ")");
@@ -228,7 +227,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      */
     public WebElementSelection find(By by) {
         List<WebElement> elements = new ArrayList<>();
-        for(WebElement elem : toList()) {
+        for (WebElement elem : toList()) {
             elements.addAll(elem.findElements(by));
         }
         return new WebElementSelection(elements, driver);
@@ -450,7 +449,7 @@ public class WebElementSelection implements Iterable<WebElement> {
                             // click to check if element has equal value and is not currently checked, or...
                             (elem.getAttribute("value").equals(val) && !elem.isSelected()) ||
 
-                                    // ...click to *uncheck* if element has unequal value and is currently checked
+                            // ...click to *uncheck* if element has unequal value and is currently checked
                                     (elem.getAttribute("value").equals(val) && elem.isSelected())) {
                                 elem.click();
                             }
@@ -490,13 +489,13 @@ public class WebElementSelection implements Iterable<WebElement> {
 
     /**
      * Boolean wrapper for {@link #val(String)}. Usable for all fields, but helpful for checkboxes and 'boolean' radio buttons.
+     * 
      * @param val
      * @return
      */
     public WebElementSelection val(boolean val) {
         return this.val(val ? "true" : "false");
     }
-
 
     /**
      * return first element of selection as Select object.

@@ -66,7 +66,7 @@ public class DropboxClient {
 
     public DropboxClient(DropboxUserMapping userMapping) throws FileNotFoundException, URISyntaxException, IOException {
         config = new DropboxConfig();
-//        logger.trace(userMapping.getToken());
+        // logger.trace(userMapping.getToken());
         client = new DbxClientV2(config.buildRequest(), config.getDefaultToken());
     }
 
@@ -155,12 +155,12 @@ public class DropboxClient {
     }
 
     public Metadata move(String from, String to) throws RelocationErrorException, DbxException {
-        logger.debug("Moving {} -> {}",from, to);
+        logger.debug("Moving {} -> {}", from, to);
         Metadata move = client.files().move(from, to);
-        logger.trace("\t{}",move);
+        logger.trace("\t{}", move);
         return move;
     }
-    
+
     public Boolean getDebug() {
         return debug;
     }
@@ -184,9 +184,9 @@ public class DropboxClient {
     }
 
     public Metadata copy(String from, String to) throws RelocationErrorException, DbxException {
-        logger.debug("Moving {} -> {}",from, to);
+        logger.debug("Moving {} -> {}", from, to);
         Metadata move = client.files().copy(from, to);
-        logger.trace("\t{}",move);
+        logger.trace("\t{}", move);
         return move;
     }
 

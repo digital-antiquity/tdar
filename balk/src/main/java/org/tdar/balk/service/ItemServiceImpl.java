@@ -86,7 +86,9 @@ public class ItemServiceImpl implements ItemService {
         apiClient = new APIClient();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#store(org.tdar.utils.dropbox.ToPersistListener)
      */
     @Override
@@ -97,7 +99,9 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#findParentByPath(java.lang.String, boolean)
      */
     @Override
@@ -106,7 +110,9 @@ public class ItemServiceImpl implements ItemService {
         return itemDao.findByParentPath(fullPath, isDir, archived);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#hasUploaded(java.lang.String, boolean)
      */
     @Override
@@ -122,7 +128,9 @@ public class ItemServiceImpl implements ItemService {
         return true;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#markUploaded(java.lang.String, java.lang.Long, boolean)
      */
     @Override
@@ -134,14 +142,16 @@ public class ItemServiceImpl implements ItemService {
         genericDao.saveOrUpdate(item.getTdarReferences());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#store(org.tdar.utils.dropbox.DropboxItemWrapper)
      */
     @Override
     @Transactional(readOnly = false)
     public void store(DropboxItemWrapper dropboxItemWrapper) {
         if (dropboxItemWrapper == null || dropboxItemWrapper.getId() == null) {
-            // when something is deleted, the first step is that an event for the file with  a .tag:deleted is passed
+            // when something is deleted, the first step is that an event for the file with a .tag:deleted is passed
             logger.warn("id is null for path: {} (deleted: {})", dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDeleted());
             DropboxFile file = itemDao.findByPath(dropboxItemWrapper.getFullPath(), false);
             if (file != null && dropboxItemWrapper.isDeleted()) {
@@ -187,7 +197,7 @@ public class ItemServiceImpl implements ItemService {
     private void updatePathInfo(DropboxItemWrapper dropboxItemWrapper, AbstractDropboxItem item, boolean archived) {
         item.setPath(dropboxItemWrapper.getFullPath());
         item.setName(dropboxItemWrapper.getName());
-        DropboxDirectory parent = findParentByPath(dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDir(),archived);
+        DropboxDirectory parent = findParentByPath(dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDir(), archived);
         if (parent != null) {
             item.setParentId(parent.getDropboxId());
         }
@@ -208,7 +218,9 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#handleUploads()
      */
     @Override
@@ -227,7 +239,7 @@ public class ItemServiceImpl implements ItemService {
                 upload(file);
                 TdarReference ref = file.getTdarReference();
                 if (ref != null && PersistableUtils.isNotNullOrTransient(ref.getTdarId())) {
-                    msg.append(String.format(" - %s (%s)\n",file.getName(), ref.getTdarId()));
+                    msg.append(String.format(" - %s (%s)\n", file.getName(), ref.getTdarId()));
                 }
             } catch (Exception e) {
                 logger.error("{}", e, e);
@@ -241,12 +253,11 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    
     private void logout() {
         try {
             apiClient.apiLogout();
         } catch (IOException e1) {
-            logger.error("{}",e1,e1);
+            logger.error("{}", e1, e1);
         }
     }
 
@@ -265,11 +276,11 @@ public class ItemServiceImpl implements ItemService {
             }
         }
         boolean debug = false;
-        
+
         if (isNotValidExtension(file.getExtension())) {
             markUploaded(file.getDropboxId(), -1L, false);
         }
-        
+
         if (!loggedIn && debug == false) {
             apiClient.apiLogin();
         }
@@ -305,7 +316,6 @@ public class ItemServiceImpl implements ItemService {
         return false;
     }
 
-    
     private ApiClientResponse uploadFile(DropboxFile file, File actualFile, String docXml) throws ClientProtocolException, IOException {
         Long accountId = apiClient.getDefaultAccount();
         if (file.getAccountId() != null) {
@@ -324,8 +334,8 @@ public class ItemServiceImpl implements ItemService {
         try {
             ApiClientResponse response = apiClient.uploadRecord(docXml, null, accountId, actualFile);
             return response;
-        } catch (Throwable t){
-            logger.error("{}",t,t);
+        } catch (Throwable t) {
+            logger.error("{}", t, t);
             return null;
         }
     }
@@ -384,7 +394,9 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#itemStatusReport(java.lang.String, int, int, java.util.TreeMap, boolean)
      */
     @Override
@@ -409,7 +421,9 @@ public class ItemServiceImpl implements ItemService {
         return total;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#findByDropboxId(java.lang.String, boolean)
      */
     @Override
@@ -417,8 +431,11 @@ public class ItemServiceImpl implements ItemService {
         return itemDao.findByDropboxId(id, dir);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.balk.service.ItemService#move(org.tdar.balk.bean.AbstractDropboxItem, org.tdar.balk.service.Phases, org.tdar.balk.bean.DropboxUserMapping, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.balk.service.ItemService#move(org.tdar.balk.bean.AbstractDropboxItem, org.tdar.balk.service.Phases, org.tdar.balk.bean.DropboxUserMapping,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = false)
@@ -434,8 +451,11 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.balk.service.ItemService#copy(org.tdar.balk.bean.AbstractDropboxItem, java.lang.String, org.tdar.balk.bean.DropboxUserMapping, org.tdar.core.bean.entity.TdarUser)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.balk.service.ItemService#copy(org.tdar.balk.bean.AbstractDropboxItem, java.lang.String, org.tdar.balk.bean.DropboxUserMapping,
+     * org.tdar.core.bean.entity.TdarUser)
      */
     @Override
     @Transactional(readOnly = false)
@@ -451,7 +471,9 @@ public class ItemServiceImpl implements ItemService {
         // store(listener);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#listChildPaths(java.lang.String)
      */
     @Override
@@ -460,7 +482,9 @@ public class ItemServiceImpl implements ItemService {
         return itemDao.findTopLevelPaths(path, archived);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#listTopLevelPaths()
      */
     @Override
@@ -469,7 +493,9 @@ public class ItemServiceImpl implements ItemService {
         return itemDao.findTopLevelPaths(config.getBaseDropboxPath().replace("/", ""), archived);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.ItemService#listTopLevelManagedPaths()
      */
     @Override
@@ -478,7 +504,7 @@ public class ItemServiceImpl implements ItemService {
         return itemDao.findTopLevelManagedPaths(archived);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void archive(AbstractDropboxItem item, TdarUser authenticatedUser) {
         itemDao.archive(item);
     }

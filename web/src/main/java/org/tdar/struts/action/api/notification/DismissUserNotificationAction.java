@@ -43,7 +43,7 @@ public class DismissUserNotificationAction extends AbstractJsonApiAction impleme
             setJsonObject(resultObject);
             getLogger().debug("id: {} notification: {}, user: {}", getId(), getNotification(), getAuthenticatedUser());
         } catch (Throwable e) {
-            getLogger().error(e.getMessage(),e);
+            getLogger().error(e.getMessage(), e);
             addActionError(e.getLocalizedMessage());
             return INPUT;
         }
@@ -61,9 +61,9 @@ public class DismissUserNotificationAction extends AbstractJsonApiAction impleme
     @Override
     public void prepare() throws Exception {
         try {
-        setNotification(userNotificationService.find(id));
+            setNotification(userNotificationService.find(id));
         } catch (Throwable t) {
-            getLogger().error(t.getMessage(),t);
+            getLogger().error(t.getMessage(), t);
             addActionErrorWithException(t.getMessage(), t);
         }
     }

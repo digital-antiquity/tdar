@@ -5,8 +5,12 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum TransactionStatus implements HasLabel, Localizable {
-    PREPARED("Prepared"), PENDING_TRANSACTION("Pending Transaction"), TRANSACTION_SUCCESSFUL("Transaction Successful"), TRANSACTION_FAILED(
-            "Transaction Failed"), TRANSACTION_CANCELLED("Transaction Cancelled");
+    PREPARED("Prepared"),
+    PENDING_TRANSACTION("Pending Transaction"),
+    TRANSACTION_SUCCESSFUL("Transaction Successful"),
+    TRANSACTION_FAILED(
+            "Transaction Failed"),
+    TRANSACTION_CANCELLED("Transaction Cancelled");
 
     private String label;
 

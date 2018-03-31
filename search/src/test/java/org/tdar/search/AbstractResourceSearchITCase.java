@@ -47,7 +47,6 @@ import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
-
     public static final String REASON = "because";
     public static final String _33_CU_314 = "33-Cu-314";
     public static final String CONSTANTINOPLE = "Constantinople";
@@ -148,7 +147,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
     public SearchResult<Resource> doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams,
-            SortOption ... option ) throws SearchException, IOException {
+            SortOption... option) throws SearchException, IOException {
         asqo = new AdvancedSearchQueryObject();
         SearchParameters params = params_;
         if (params == null) {
@@ -159,11 +158,11 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         }
         SearchResult<Resource> result = new SearchResult<>();
         if (option != null && option.length > 0) {
-        result.setSortField(option[0]);
-        } 
+            result.setSortField(option[0]);
+        }
         if (option != null && option.length > 1) {
-        result.setSecondarySortField(option[1]);
-        } 
+            result.setSecondarySortField(option[1]);
+        }
         asqo.getSearchParameters().add(params);
         asqo.setReservedParams(reservedParams);
 
@@ -190,7 +189,6 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         searchIndexService.index(doc);
     }
 
-
     protected Project sparseProject(Long id) {
         Project project = new Project(id, "sparse");
         return project;
@@ -202,22 +200,23 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         return collection;
     }
 
-    protected void setSortThenCheckFirstResult(String message, SortOption sortField, Long projectId, Long expectedId) throws IOException ,SearchException, SearchIndexException{
+    protected void setSortThenCheckFirstResult(String message, SortOption sortField, Long projectId, Long expectedId)
+            throws IOException, SearchException, SearchIndexException {
         SearchParameters sp = new SearchParameters();
         sp.getProjects().add(sparseProject(projectId));
         SearchResult<Resource> result = doSearch(null, null, sp, null, sortField);
-//        logger.info("{}", result.getResults());
-        for (Resource d: result.getResults()) {
-            InformationResource ir = (InformationResource)d;
-            logger.debug("{} {} {}", ir.getDate(),ir.getId(), ir);
+        // logger.info("{}", result.getResults());
+        for (Resource d : result.getResults()) {
+            InformationResource ir = (InformationResource) d;
+            logger.debug("{} {} {}", ir.getDate(), ir.getId(), ir);
         }
         Indexable found = result.getResults().iterator().next();
         logger.info("{}", found);
         Assert.assertEquals(message, expectedId, found.getId());
     }
 
-
-    protected Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException, IOException ,SearchException, SearchIndexException{
+    protected Document createDocumentWithContributorAndSubmitter()
+            throws InstantiationException, IllegalAccessException, IOException, SearchException, SearchIndexException {
         TdarUser submitter = new TdarUser("E", "deVos", "ecd@tdar.net");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
@@ -230,7 +229,6 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         return doc;
     }
 
-
     protected Document createDocumentWithDates(int i, int j) throws InstantiationException, IllegalAccessException {
         Document document = createAndSaveNewInformationResource(Document.class);
         CoverageDate date = new CoverageDate(CoverageType.CALENDAR_DATE, i, j);
@@ -239,26 +237,26 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         return document;
     }
 
-
-    public SearchResult<Resource> performSearch(String term, TdarUser user, int max) throws  IOException,SearchException, SearchIndexException {
+    public SearchResult<Resource> performSearch(String term, TdarUser user, int max) throws IOException, SearchException, SearchIndexException {
         return performSearch(term, null, null, null, null, user, null, null, max);
     }
 
     public SearchResult<Resource> performSearch(String term, Long projectId, Long collectionId, Boolean includeParent, Long categoryId, TdarUser user,
-            ReservedSearchParameters reservedSearchParameters, int max) throws IOException,SearchException, SearchIndexException {
+            ReservedSearchParameters reservedSearchParameters, int max) throws IOException, SearchException, SearchIndexException {
         return performSearch(term, projectId, collectionId, includeParent, categoryId, user, reservedSearchParameters, null, max);
     }
 
     public SearchResult<Resource> performSearch(String term, Long projectId, Long collectionId, Boolean includeParent, Long categoryId, TdarUser user,
-            ReservedSearchParameters reservedSearchParameters, Permissions permission, int max) throws IOException,SearchException, SearchIndexException {
+            ReservedSearchParameters reservedSearchParameters, Permissions permission, int max) throws IOException, SearchException, SearchIndexException {
         SearchResult<Resource> result = new SearchResult<>(max);
         logger.debug("{}, {}", resourceSearchService, MessageHelper.getInstance());
-        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent,null, collectionId, categoryId, permission, reservedSearchParameters);
+        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent, null, collectionId, categoryId, permission,
+                reservedSearchParameters);
         resourceSearchService.lookupResource(user, rl, result, MessageHelper.getInstance());
         return result;
     }
 
-    public void setupTestDocuments() throws InstantiationException, IllegalAccessException,IOException ,SearchException, SearchIndexException{
+    public void setupTestDocuments() throws InstantiationException, IllegalAccessException, IOException, SearchException, SearchIndexException {
         String[] titles = {
                 "Preliminary Archeological Investigation at the Site of a Mid-Nineteenth Century Shop and Yard Complex Associated With the Belvidere and Delaware Railroad, Lambertville, New Jersey",
                 "The James Franks Site (41DT97): Excavations at a Mid-Nineteenth Century Farmstead in the South Sulphur River Valley, Cooper Lake Project, Texas",

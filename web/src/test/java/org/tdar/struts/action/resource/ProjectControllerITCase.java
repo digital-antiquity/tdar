@@ -18,7 +18,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -52,7 +51,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
 
     @Autowired
     ResourceCollectionService resourceCollectionService;
-    
+
     @Autowired
     private SerializationService serializationService;
 
@@ -82,8 +81,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         assertTrue(projectAsJson.contains("21234"));
         assertTrue(projectAsJson.contains("key23123"));
     }
-    
-    
+
     @SuppressWarnings("unused")
     @Test
     @Rollback
@@ -109,7 +107,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         int expectedSize = personSet.size();
 
         ProjectController controller = generateNewInitializedController(ProjectController.class);
-//        controller.setAsync(false);
+        // controller.setAsync(false);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
 
@@ -124,7 +122,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         controller.setCreditProxies(creditProxies);
         controller.getProject().setTitle("test");
         controller.getProject().setDescription("test");
-//        controller.setAsync(false);
+        // controller.setAsync(false);
         controller.save();
 
         Project project = controller.getProject();
@@ -151,20 +149,20 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         project.setDescription("test");
         project.markUpdated(getBasicUser());
         genericService.save(project);
-        project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
+        project.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.MODIFY_RECORD));
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>();
-        users.add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
+        users.add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(project);
-//        resourceCollectionService.saveAuthorizedUsersForResource(project, users, true, getBasicUser());
+        // resourceCollectionService.saveAuthorizedUsersForResource(project, users, true, getBasicUser());
         project.setSubmitter(getAdminUser());
         genericService.saveOrUpdate(project);
         // ensure that basicUser can edit the project
         Long id = project.getId();
         project = null;
         Project project_ = genericService.find(Project.class, id);
-        CollectionDataExtractor  extractor = new CollectionDataExtractor(project_);
+        CollectionDataExtractor extractor = new CollectionDataExtractor(project_);
         assertTrue(extractor.getUsersWhoCanModify().contains(getBasicUser().getId()));
-//        assertNotNull(project_.getInternalResourceCollection());
+        // assertNotNull(project_.getInternalResourceCollection());
         Set<AuthorizedUser> authorizedUsers = project_.getAuthorizedUsers();
 
         // ensure that the project has only one authorizedUser, and that it is basicUser
@@ -193,10 +191,10 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         genericService.saveOrUpdate(testCollection);
         genericService.saveOrUpdate(project_);
         List<AuthorizedUser> users2 = new ArrayList<AuthorizedUser>();
-        users2.addAll(Arrays.asList(new AuthorizedUser(getAdminUser(), testModify, Permissions.MODIFY_RECORD), 
+        users2.addAll(Arrays.asList(new AuthorizedUser(getAdminUser(), testModify, Permissions.MODIFY_RECORD),
                 new AuthorizedUser(getAdminUser(), testView, Permissions.VIEW_ALL),
-                new AuthorizedUser(getAdminUser(),testAdmin, Permissions.ADMINISTER_COLLECTION)));
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true,  getBasicUser(),RevisionLogType.EDIT);
+                new AuthorizedUser(getAdminUser(), testAdmin, Permissions.ADMINISTER_COLLECTION)));
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, getBasicUser(), RevisionLogType.EDIT);
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
@@ -278,7 +276,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
     private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) throws TdarActionException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
-//        controller.setAsync(false);
+        // controller.setAsync(false);
         controller.prepare();
         controller.setServletRequest(getServletPostRequest());
         // controller.edit();
@@ -290,7 +288,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         detachedCollection.setName(rc.getName());
         detachedCollection.setId(rc.getId());
         detachedCollection.setHidden(false);
-//        detachedCollection.setSortBy(SortOption.RELEVANCE);
+        // detachedCollection.setSortBy(SortOption.RELEVANCE);
         detachedCollection.markUpdated(rc.getOwner());
         controller.getShares().add(detachedCollection);
         assertNotEquals(getUser(), rc.getOwner());
@@ -306,7 +304,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
     public void testAddProjectToAdHocCollection() throws Exception {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
-//        controller.setAsync(false);
+        // controller.setAsync(false);
         controller.prepare();
 
         Project project = controller.getProject();
@@ -334,7 +332,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         assertNotNull(loadedProject);
         Collection<ResourceCollection> cols = new HashSet<>();
         for (ResourceCollection rrc : loadedProject.getManagedResourceCollections()) {
-            cols.add((ResourceCollection)rrc);
+            cols.add((ResourceCollection) rrc);
         }
         assertUniqueCollections(cols, name1, name2);
 
@@ -359,7 +357,7 @@ public class ProjectControllerITCase extends AbstractControllerITCase {
         genericService.save(owner);
         rc.markUpdated(owner);
         rc.setName(name);
-//        rc.setSortBy(SortOption.RELEVANCE);
+        // rc.setSortBy(SortOption.RELEVANCE);
         assertTrue(rc.isValid());
         genericService.saveOrUpdate(rc);
         return rc;

@@ -426,48 +426,47 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         assertTrue("child is still in transient children", alternate.getTransientChildren().contains(child));
         assertTrue("child has grandchild", PersistableUtils.extractIds(child.getTransientChildren()).contains(grandchildId));
     }
-    
-    
+
     @Test
     @Rollback
     /**
-     * Ensure that both the managed/unmanaged resources are retrieved for a collection. 
+     * Ensure that both the managed/unmanaged resources are retrieved for a collection.
      */
-    public void testVerifyAllResourcesRetrieved(){
-    	ResourceCollection resourceCollection = createAndSaveNewResourceCollection("parent");
-    	Long collectionId = resourceCollection.getId();
-    	
-    	Resource resource1 = createAndSaveNewResource(Image.class);
-    	Resource resource2 = createAndSaveNewResource(Image.class);
-    	Resource resource3 = createAndSaveNewResource(Image.class);
-    	
-    	resourceCollection.getUnmanagedResources().add(resource1);
-    	resourceCollection.getUnmanagedResources().add(resource2);
-    	resourceCollection.getManagedResources().add(resource3);
-    	
-    	resource1.getUnmanagedResourceCollections().add(resourceCollection);
-    	resource2.getUnmanagedResourceCollections().add(resourceCollection);
-    	resource3.getManagedResourceCollections().add(resourceCollection);
-    	
-    	genericService.saveOrUpdate(resourceCollection);
-    	resourceCollection  = null;
-    	
-    	genericService.synchronize();
-    	
-    	resourceCollection = genericService.find(ResourceCollection.class, collectionId);
-    	
-    	logger.debug("Managed resources : {}",resourceCollection.getManagedResources());
-    	logger.debug("Unmanaged resources : {}",resourceCollection.getUnmanagedResources());
-    
-    	assertEquals("The resource collection contains managed resources",1,resourceCollection.getManagedResources().size());
-    	assertEquals("The resource collection contains unmanaged resources",2,resourceCollection.getUnmanagedResources().size());
-    	
-    	ScrollableResults result = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(resourceCollection);
-    	
-    	List<Resource> results = new ArrayList<Resource>();
-    	while(result.next()){
-    		results.add((Resource) result.get(0));
-    	}
-    	assertEquals("There are three resources in the Dao result", 3,results.size());
+    public void testVerifyAllResourcesRetrieved() {
+        ResourceCollection resourceCollection = createAndSaveNewResourceCollection("parent");
+        Long collectionId = resourceCollection.getId();
+
+        Resource resource1 = createAndSaveNewResource(Image.class);
+        Resource resource2 = createAndSaveNewResource(Image.class);
+        Resource resource3 = createAndSaveNewResource(Image.class);
+
+        resourceCollection.getUnmanagedResources().add(resource1);
+        resourceCollection.getUnmanagedResources().add(resource2);
+        resourceCollection.getManagedResources().add(resource3);
+
+        resource1.getUnmanagedResourceCollections().add(resourceCollection);
+        resource2.getUnmanagedResourceCollections().add(resourceCollection);
+        resource3.getManagedResourceCollections().add(resourceCollection);
+
+        genericService.saveOrUpdate(resourceCollection);
+        resourceCollection = null;
+
+        genericService.synchronize();
+
+        resourceCollection = genericService.find(ResourceCollection.class, collectionId);
+
+        logger.debug("Managed resources : {}", resourceCollection.getManagedResources());
+        logger.debug("Unmanaged resources : {}", resourceCollection.getUnmanagedResources());
+
+        assertEquals("The resource collection contains managed resources", 1, resourceCollection.getManagedResources().size());
+        assertEquals("The resource collection contains unmanaged resources", 2, resourceCollection.getUnmanagedResources().size());
+
+        ScrollableResults result = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(resourceCollection);
+
+        List<Resource> results = new ArrayList<Resource>();
+        while (result.next()) {
+            results.add((Resource) result.get(0));
+        }
+        assertEquals("There are three resources in the Dao result", 3, results.size());
     }
 }

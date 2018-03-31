@@ -74,15 +74,14 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
             String json = transformer.convert(serializationService, r, null);
             logger.debug(json);
             if (r.getCreatorType() == CreatorType.PERSON) {
-                assertTrue("contains type", StringUtils.containsIgnoreCase(json,r.getCreatorType().name()));
+                assertTrue("contains type", StringUtils.containsIgnoreCase(json, r.getCreatorType().name()));
             } else {
-                assertTrue("contains type", StringUtils.containsIgnoreCase(json,"Organization"));
+                assertTrue("contains type", StringUtils.containsIgnoreCase(json, "Organization"));
             }
             // have to remove quotes
-            assertTrue("contains name", StringUtils.contains(json,r.getProperName().replace("\"", "")));
+            assertTrue("contains name", StringUtils.contains(json, r.getProperName().replace("\"", "")));
         }
     }
-
 
     @Test
     @Rollback
@@ -90,7 +89,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
         SchemaOrgKeywordTransformer transformer = new SchemaOrgKeywordTransformer();
         CultureKeyword random = genericService.find(CultureKeyword.class, 4L);
         ExternalKeywordMapping assertion = new ExternalKeywordMapping(HTTP_WWW_TEST_COM, RelationType.DCTERMS_IS_REPLACED_BY);
-        random.getAssertions().add(assertion );
+        random.getAssertions().add(assertion);
         String json = transformer.convert(serializationService, random);
         logger.debug(json);
         assertTrue("json contains URL", json.contains(HTTP_WWW_TEST_COM));

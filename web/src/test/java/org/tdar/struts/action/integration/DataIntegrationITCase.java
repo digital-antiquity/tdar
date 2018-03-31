@@ -74,8 +74,8 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
     @Autowired
     private OntologyNodeDao ontologyNodeDao;
 
-    public Map<Class,Object> setup() throws Exception {
-        Map<Class, Object> map  = new HashMap<>();
+    public Map<Class, Object> setup() throws Exception {
+        Map<Class, Object> map = new HashMap<>();
         Ontology taxonOntology = setupAndLoadResource("fauna-taxon---tag-uk-updated---default-ontology-draft.owl", Ontology.class);
         map.put(Ontology.class, taxonOntology);
         logger.trace("{}", taxonOntology.getOntologyNodes());
@@ -95,7 +95,7 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         assertNotNull(spitalSpeciesColumn.getDefaultCodingSheet().getDefaultOntology());
         return map;
     }
-    
+
     @Test
     @Rollback
     public void testFilteredNodesSurviveHierarchy() throws Exception {
@@ -157,8 +157,7 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         }
 
     }
-    
-    
+
     @Test
     @Rollback
     public void testDoubleFilters() throws Exception {
@@ -201,8 +200,7 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         // gadidae,
         // paracanthopt)));
         // tests that the mapped ontology node is not aggregated up to pleuronectiformes
-        
-        
+
         for (String term : plaiceFlounderTerms) {
             OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(term, spitalSpeciesColumn);
             logger.debug("{}", mappedOntologyNode);
@@ -254,8 +252,8 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         elementColumn2.setId(spitalMainTable.getColumnByName(BONE_COMMON_NAME_COL).getId());
         taxonColumn2.setId(spitalMainTable.getColumnByName(SPECIES_COMMON_NAME_COL).getId());
 
-        
-        Map<String, Long> idMap = setupIdMap(bElementOntology, taxonOntology, alexandriaTable, spitalMainTable, elementColumn, taxonColumn, elementColumn2, taxonColumn2);
+        Map<String, Long> idMap = setupIdMap(bElementOntology, taxonOntology, alexandriaTable, spitalMainTable, elementColumn, taxonColumn, elementColumn2,
+                taxonColumn2);
 
         mapColumnsToDataset(spitalDb, spitalMainTable, elementColumn2, taxonColumn2);
 
@@ -344,6 +342,7 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
 
     @Autowired
     PersonalFilestoreService personalFilestoreService;
+
     private Workbook writeWorkbookAndReload(ModernIntegrationDataResult result) throws IOException, FileNotFoundException {
         result.getWorkbook().getFileName();
         List<PersonalFilestoreFile> files = personalFilestoreService.retrieveAllPersonalFilestoreFiles(result.getTicket().getId());
@@ -394,7 +393,7 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
             idMap.put("$canis", taxonOntology.getNodeByName("Canis familiaris (Dog)").getId());
             idMap.put("$ovis", taxonOntology.getNodeByName("Ovis aries (Sheep)").getId());
         }
-        
+
         idMap.put("$atlas", bElementOntology.getNodeByName("Atlas").getId());
         idMap.put("$axis", bElementOntology.getNodeByName("Axis").getId());
         idMap.put("$astragalus", bElementOntology.getNodeByName("Astragalus").getId());
@@ -459,9 +458,9 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         mapDataOntologyValues(alexandriaTable, BELEMENT_COL, getHierarchyElementMap(), bElementOntology);
         mapDataOntologyValues(spitalTable, BONE_COMMON_NAME_COL, getHierarchyElementMap(), bElementOntology);
 
-        Map<String,Long> idMap = setupIdMap(bElementOntology, null, alexandriaTable, spitalTable, elementColumn, null, elementColumn2, null);
+        Map<String, Long> idMap = setupIdMap(bElementOntology, null, alexandriaTable, spitalTable, elementColumn, null, elementColumn2, null);
 
-//        // select tables
+        // // select tables
         List<Long> tableIds = new ArrayList<>();
         tableIds.add(alexandriaTable.getId());
         tableIds.add(spitalTable.getId());
@@ -481,11 +480,10 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         int astragalus = 0;
         int empty = 0;
 
-
         int unmapped = 0;
         int nulls = 0;
         Workbook workbook = writeWorkbookAndReload(result);
-        
+
         Sheet sheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {

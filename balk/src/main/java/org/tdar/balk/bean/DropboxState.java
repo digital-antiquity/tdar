@@ -22,15 +22,16 @@ public class DropboxState extends AbstractPersistable {
     private String cursor;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "poll_type", length=25)
+    @Column(name = "poll_type", length = 25)
     private PollType type;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_polled")
     private Date lastPolled;
 
-    public DropboxState() {}
-    
+    public DropboxState() {
+    }
+
     public DropboxState(Date date, String currentCursor, PollType type) {
         this.lastPolled = date;
         this.cursor = currentCursor;
@@ -60,5 +61,5 @@ public class DropboxState extends AbstractPersistable {
     public void setLastPolled(Date lastPolled) {
         this.lastPolled = lastPolled;
     }
-    
+
 }

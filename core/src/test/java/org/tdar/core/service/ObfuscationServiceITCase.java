@@ -46,9 +46,9 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         assertNotObfuscated(project);
         logger.debug("submitter: {} ", project.getSubmitter());
         logger.debug("{}", project.getManagedResourceCollections());
-//        logger.debug("{}", project.getInternalCollections());
+        // logger.debug("{}", project.getInternalCollections());
         // setup a fake user on the resource collection (just in case)
-        
+
         // THIS IS A CASE OF BAD SETUP -- A PREVIOUS TEST IS ADJUSTING THIS PROJECT'S COLLECTION ASSIGNMENTS FROM 1 INTERNAL COLLECTION TO 1 SHARED COLLECTION
         if (project.getAuthorizedUsers() == null) {
             project.setAuthorizedUsers(new HashSet<>());

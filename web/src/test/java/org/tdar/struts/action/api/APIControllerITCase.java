@@ -173,11 +173,11 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         genericService.delete(importedRecord);
         for (ResourceCollection rc : importedRecord.getManagedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
-                if (rc.getName().equals("hidden")) {
-                    assertTrue(rc.isHidden());
-                } else {
-                    assertFalse(rc.isHidden());
-                }
+            if (rc.getName().equals("hidden")) {
+                assertTrue(rc.isHidden());
+            } else {
+                assertFalse(rc.isHidden());
+            }
         }
     }
 

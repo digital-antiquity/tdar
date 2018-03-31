@@ -15,9 +15,8 @@ import org.tdar.core.service.external.EmailService;
 
 import com.amazonaws.services.sqs.model.Message;
 
-
 /**
- * Scheduled process to poll AWS SQS Queue for bouce notifications, and update the email with the messages. 
+ * Scheduled process to poll AWS SQS Queue for bouce notifications, and update the email with the messages.
  * 
  * @author briancastellanos
  *
@@ -26,15 +25,15 @@ import com.amazonaws.services.sqs.model.Message;
 @Scope("prototype")
 public class PollEmailBouncesProcess extends AbstractScheduledProcess {
 
-	private static final long serialVersionUID = 686514606029804834L;
+    private static final long serialVersionUID = 686514606029804834L;
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private static final String BOUNCE = "Bounce";
-	
-	@Autowired
-	private EmailService emailService;
-	
+    private static final String BOUNCE = "Bounce";
+
+    @Autowired
+    private EmailService emailService;
+
     @Autowired
     private AwsQueuePollerService awsQueueService;
 
@@ -42,12 +41,10 @@ public class PollEmailBouncesProcess extends AbstractScheduledProcess {
     @Qualifier("genericDao")
     protected GenericDao genericDao;
 
-
     @Override
     public String getDisplayName() {
         return "Process Email Bounces";
     }
-
 
     @Override
     public boolean isSingleRunProcess() {
@@ -64,39 +61,38 @@ public class PollEmailBouncesProcess extends AbstractScheduledProcess {
         return true;
     }
 
-	@Override
-	public void execute() {
-		List<Message> messages = awsQueueService.getBouncedMessages();
-		
-		for(Message message : messages){
-			JSONArray headers 	= awsQueueService.getMessageHeaders(message);
-			String messageId 	= awsQueueService.getTdarMessageId(headers);
-			String errorMessage = awsQueueService.getBounce(message);
-			
-			if(awsQueueService.getNotificationType(message).equals(BOUNCE))
-			emailService.markMessageAsBounced(messageId, errorMessage);
-		}
-	}
+    @Override
+    public void execute() {
+        List<Message> messages = awsQueueService.getBouncedMessages();
 
-	@Override
-	public boolean isCompleted() {
-		return true;
-	}
-	
-	
-	public AwsQueuePollerService getAwsQueueService() {
-		return awsQueueService;
-	}
+        for (Message message : messages) {
+            JSONArray headers = awsQueueService.getMessageHeaders(message);
+            String messageId = awsQueueService.getTdarMessageId(headers);
+            String errorMessage = awsQueueService.getBounce(message);
 
-	public void setAwsQueueService(AwsQueuePollerService awsQueuePoller) {
-		this.awsQueueService = awsQueuePoller;
-	}
-	
-	public EmailService getEmailService() {
-		return emailService;
-	}
+            if (awsQueueService.getNotificationType(message).equals(BOUNCE))
+                emailService.markMessageAsBounced(messageId, errorMessage);
+        }
+    }
 
-	public void setEmailService(EmailService emailService) {
-		this.emailService = emailService;
-	}
+    @Override
+    public boolean isCompleted() {
+        return true;
+    }
+
+    public AwsQueuePollerService getAwsQueueService() {
+        return awsQueueService;
+    }
+
+    public void setAwsQueueService(AwsQueuePollerService awsQueuePoller) {
+        this.awsQueueService = awsQueuePoller;
+    }
+
+    public EmailService getEmailService() {
+        return emailService;
+    }
+
+    public void setEmailService(EmailService emailService) {
+        this.emailService = emailService;
+    }
 }

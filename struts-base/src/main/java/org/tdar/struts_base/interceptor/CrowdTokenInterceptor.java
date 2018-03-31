@@ -25,7 +25,7 @@ public class CrowdTokenInterceptor extends AbstractAuthenticationInterceptor {
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
         // get the token name
-        
+
         String token = getSSoTokenFromParams();
         // if not authenticated, check for the token, then validate that
         if (!getSessionData().isAuthenticated()) {

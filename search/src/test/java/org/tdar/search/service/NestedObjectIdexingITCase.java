@@ -29,17 +29,17 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
 
     @Autowired
     SearchIndexService searchIndexService;
-    
+
     @Autowired
     ResourceSearchService resourceSearchService;
-    
+
     @Autowired
     GenericService genericService;
-    
+
     @Override
     public void reindex() {
     }
-    
+
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
@@ -47,9 +47,9 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     public void testFlush() {
         ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Dataset dc = createAndSaveNewDataset();
-        for (int i=0;i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             Image image = createAndSaveNewInformationResource(Image.class);
-            image.setTitle(i + ":"+ image.getTitle() );
+            image.setTitle(i + ":" + image.getTitle());
             collection.getManagedResources().add(image);
             image.getManagedResourceCollections().add(collection);
             genericService.saveOrUpdate(image);
@@ -63,13 +63,13 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         logger.debug("===================");
 
     }
-    
+
     @SuppressWarnings({ "deprecation", "unchecked" })
     @Test
     @Ignore
     @Rollback(true)
     public void testIndexing() throws SearchException, SearchIndexException, IOException, ParseException {
-//        sessionFactory.getCurrentSession().
+        // sessionFactory.getCurrentSession().
         ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Image image = createAndSaveNewInformationResource(Image.class);
         genericService.synchronize();
@@ -84,7 +84,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         SearchResult<Resource> result = new SearchResult<>();
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         SearchParameters params = new SearchParameters();
-//        params.getCollections().add(collection);
+        // params.getCollections().add(collection);
         params.getResourceIds().add(image.getId());
         asqo.getSearchParameters().add(params);
         resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());

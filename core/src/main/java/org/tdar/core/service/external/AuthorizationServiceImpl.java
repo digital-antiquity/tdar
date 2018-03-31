@@ -437,7 +437,6 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, Permissions.MODIFY_RECORD);
     }
 
-
     /*
      * (non-Javadoc)
      * 
@@ -624,9 +623,9 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
             item.setViewable(viewable);
         }
     }
-    
+
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void applyTransientEditableFlag(Editable p, TdarUser authenticatedUser) {
         // FIXME: it'd be nice if this took an array and could handle multiple lookups at once
         logger.trace("applying transient editable flag to : {}", p);

@@ -122,7 +122,7 @@ public class IntegrationWorkflowServiceImpl extends ServiceInterface.TypedDaoBas
     @Transactional(readOnly = true)
     public List<DataIntegrationWorkflow> getWorkflowsForUser(TdarUser authorizedUser) {
         List<DataIntegrationWorkflow> workflowsForUser = getDao().getWorkflowsForUser(authorizedUser, authorizationService.isEditor(authorizedUser));
-        for (DataIntegrationWorkflow workflow: workflowsForUser) {
+        for (DataIntegrationWorkflow workflow : workflowsForUser) {
             workflow.setEditable(authorizationService.canEditWorkflow(authorizedUser, workflow));
         }
         return workflowsForUser;
@@ -140,7 +140,7 @@ public class IntegrationWorkflowServiceImpl extends ServiceInterface.TypedDaoBas
         getDao().delete(persistable);
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     @Override
     public DataIntegrationWorkflow duplicateWorkflow(DataIntegrationWorkflow workflow, TdarUser user) {
         DataIntegrationWorkflow copy = new DataIntegrationWorkflow();

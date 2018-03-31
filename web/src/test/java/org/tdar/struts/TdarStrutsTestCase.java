@@ -15,7 +15,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
-
 /**
  * This class mostly serves as a workaround for issues that arise when trying to use the StrutsSpringJUnit4TestCase
  * in Struts applications that use the Convention Plugin.
@@ -41,16 +40,18 @@ public abstract class TdarStrutsTestCase<T> extends StrutsSpringJUnit4TestCase<T
 
     /**
      * Request execute an action while simulating the specified HTTP method
-     * @param url url of action to execute.
-     * @param method uppercased http method name, e.g. GET, POST, HEAD, OPTIONS, PUT, DELETE
+     * 
+     * @param url
+     *            url of action to execute.
+     * @param method
+     *            uppercased http method name, e.g. GET, POST, HEAD, OPTIONS, PUT, DELETE
      * @return
      * @throws ServletException
      * @throws UnsupportedEncodingException
      */
-    private String executeAction(String url, String method) throws ServletException, UnsupportedEncodingException{
+    private String executeAction(String url, String method) throws ServletException, UnsupportedEncodingException {
         request.setMethod(method);
         return super.executeAction(url);
     }
-
 
 }

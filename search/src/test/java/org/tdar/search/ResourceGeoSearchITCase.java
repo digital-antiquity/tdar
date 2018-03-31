@@ -45,7 +45,7 @@ public class ResourceGeoSearchITCase extends AbstractResourceSearchITCase {
     @Rollback(true)
     // FIXME: This test tests too many pointless things, but it's the only thing that covers processManagedKeywords. Remove this
     // once we have a proper test for processManagedKeywords.
-    public void testPersistedManagedKeyword() throws IOException,SearchException, SearchIndexException {
+    public void testPersistedManagedKeyword() throws IOException, SearchException, SearchIndexException {
         Project project = genericService.find(Project.class, 3738L);
         Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = project.getLatitudeLongitudeBoxes();
         project.getManagedGeographicKeywords().clear();

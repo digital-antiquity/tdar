@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import java.util.ArrayList;
@@ -16,11 +15,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for setType complex type.
+ * <p>
+ * Java class for setType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="setType">
@@ -40,9 +40,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "setType", propOrder = {
-    "setSpec",
-    "setName",
-    "setDescription"
+        "setSpec",
+        "setName",
+        "setDescription"
 })
 public class SetType {
 
@@ -56,9 +56,9 @@ public class SetType {
      * Gets the value of the setSpec property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getSetSpec() {
         return setSpec;
@@ -68,9 +68,9 @@ public class SetType {
      * Sets the value of the setSpec property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setSetSpec(String value) {
         this.setSpec = value;
@@ -80,9 +80,9 @@ public class SetType {
      * Gets the value of the setName property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getSetName() {
         return setName;
@@ -92,9 +92,9 @@ public class SetType {
      * Sets the value of the setName property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setSetName(String value) {
         this.setName = value;
@@ -111,8 +111,9 @@ public class SetType {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getSetDescription().add(newItem);
+     * getSetDescription().add(newItem);
      * </pre>
      * 
      * 

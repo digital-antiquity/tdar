@@ -23,19 +23,22 @@ import com.dropbox.core.DbxException;
 public class CursorServiceImpl implements CursorService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Autowired
     private CursorDao cursorDao;
-    
-    @Autowired 
+
+    @Autowired
     private GenericDao genericDao;
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.CursorService#pollAndProcess(org.tdar.balk.bean.PollType, java.lang.String, org.tdar.utils.dropbox.MetadataListener)
      */
     @Override
-    @Transactional(readOnly=false)
-    public void pollAndProcess(PollType type, String path, MetadataListener listener) throws FileNotFoundException, URISyntaxException, IOException, DbxException {
+    @Transactional(readOnly = false)
+    public void pollAndProcess(PollType type, String path, MetadataListener listener)
+            throws FileNotFoundException, URISyntaxException, IOException, DbxException {
         String latestCursorFor = cursorDao.getLatestCursorFor(type);
         logger.debug("running: {}", listener.getClass());
         DropboxClient client = new DropboxClient();
@@ -49,9 +52,9 @@ public class CursorServiceImpl implements CursorService {
                 break;
             default:
                 break;
-            
+
         }
-        
+
         DropboxState newCursor = new DropboxState(new Date(), client.getCurrentCursor(), type);
         genericDao.saveOrUpdate(newCursor);
 

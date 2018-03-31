@@ -7,5 +7,7 @@ package org.tdar.core.service;
  * 
  */
 public enum GeoRssMode {
-    NONE, POINT, ENVELOPE;
+    NONE,
+    POINT,
+    ENVELOPE;
 }

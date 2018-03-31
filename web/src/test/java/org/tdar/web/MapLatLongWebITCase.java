@@ -87,7 +87,6 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertNodeDoesNotLatLongAttributes(obfuscatedMap);
         assertTextPresent(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE);
 
-        
         // test that the share is ok
         gotoPage(shareUrl);
         logger.info(getPageBodyCode());
@@ -98,7 +97,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent(RESOURCE_WITH_OBFUSCATED_LAT_LONG);
         assertNodeDoesNotLatLongAttributes(obfuscatedMap);
         assertTextPresent(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE);
-//        assertNodeDoesNotLatLongAttributes(confidentialFile);
+        // assertNodeDoesNotLatLongAttributes(confidentialFile);
 
         // should do the same thing with urls:
         gotoPage("/search/results?query=" + LAT_LONG_SECURITY_TEST + "&orientation=MAP");
@@ -106,8 +105,8 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logout();
         gotoPage(collectionUrl);
         // anonymous user
-//        assertTextNotPresent(RESOURCE_WITH_DRAFT);
-//        assertNodeDoesNotLatLongAttributes(draft);
+        // assertTextNotPresent(RESOURCE_WITH_DRAFT);
+        // assertNodeDoesNotLatLongAttributes(draft);
         assertTextPresent(RESOURCE_WITH_NORMAL);
         assertNodeHasLatLongAttributes(normal);
         assertTextPresent(RESOURCE_WITH_OBFUSCATED_LAT_LONG);
@@ -139,7 +138,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         // make assertions
     }
-    
+
     private void assertNodeHasLatLongAttributes(Long confidentialFile) {
         DomNode node = getPageContentsWithId(confidentialFile);
         Assert.assertNotNull("should have lat-long", node.getAttributes().getNamedItem("data-lat"));

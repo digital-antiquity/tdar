@@ -18,16 +18,16 @@ import org.tdar.utils.MessageHelper;
  * @version $Revision$
  */
 public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
-    CODING_SHEET(10, "Dataset", "unknown", "Dataset", CodingSheet.class), 
-    DATASET(3, "Dataset", "unknown", "Dataset", Dataset.class), 
-    DOCUMENT(1, "Text", "document", "Book", Document.class), 
-    IMAGE(2, "Still Image", "unknown", "Photograph", Image.class), 
-    SENSORY_DATA(7, "Interactive Resource", "unknown", "Dataset", SensoryData.class), 
-    GEOSPATIAL(6, "Dataset", "unknown", "Dataset", Geospatial.class), 
-    ONTOLOGY(9, "Dataset", "unknown", "Dataset",Ontology.class), 
-    PROJECT(5, "ItemList", Project.class), 
-    VIDEO(4, "Moving Image", "unknown", "Movie", Video.class), 
-    ARCHIVE(8, "Collection", "unknown", "SoftwareApplication", Archive.class), 
+    CODING_SHEET(10, "Dataset", "unknown", "Dataset", CodingSheet.class),
+    DATASET(3, "Dataset", "unknown", "Dataset", Dataset.class),
+    DOCUMENT(1, "Text", "document", "Book", Document.class),
+    IMAGE(2, "Still Image", "unknown", "Photograph", Image.class),
+    SENSORY_DATA(7, "Interactive Resource", "unknown", "Dataset", SensoryData.class),
+    GEOSPATIAL(6, "Dataset", "unknown", "Dataset", Geospatial.class),
+    ONTOLOGY(9, "Dataset", "unknown", "Dataset", Ontology.class),
+    PROJECT(5, "ItemList", Project.class),
+    VIDEO(4, "Moving Image", "unknown", "Movie", Video.class),
+    ARCHIVE(8, "Collection", "unknown", "SoftwareApplication", Archive.class),
     AUDIO(11, "Sound", "unknown", "AudioObject", Audio.class);
 
     /**

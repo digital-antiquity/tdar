@@ -12,12 +12,13 @@ import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 
 public class QueryPartITCase extends AbstractWithIndexIntegrationTestCase {
 
-
     @Test
     public void test() {
         // this is really brittle, but a good test of our builder actually working
-        StatusAndRelatedPermissionsQueryPart sqp = new StatusAndRelatedPermissionsQueryPart(Arrays.asList(Status.DRAFT, Status.ACTIVE), getBasicUser(), TdarGroup.TDAR_USERS);
+        StatusAndRelatedPermissionsQueryPart sqp = new StatusAndRelatedPermissionsQueryPart(Arrays.asList(Status.DRAFT, Status.ACTIVE), getBasicUser(),
+                TdarGroup.TDAR_USERS);
         logger.debug(sqp.toString());
-        assertEquals("( effectivelyPublic:(true) OR ( ( usersWhoCanModify:(8092) OR usersWhoCanView:(8092) )  AND ( status:(DRAFT) OR hidden:(true) )  )  ) ", sqp.generateQueryString());
+        assertEquals("( effectivelyPublic:(true) OR ( ( usersWhoCanModify:(8092) OR usersWhoCanView:(8092) )  AND ( status:(DRAFT) OR hidden:(true) )  )  ) ",
+                sqp.generateQueryString());
     }
 }

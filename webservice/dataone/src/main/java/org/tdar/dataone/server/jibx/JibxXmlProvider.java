@@ -55,7 +55,7 @@ public class JibxXmlProvider implements MessageBodyReader<Object>, MessageBodyWr
     public Object readFrom(Class<Object> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-                    throws IOException, WebApplicationException {
+            throws IOException, WebApplicationException {
         try {
             IBindingFactory factory = BindingDirectory.getFactory(type);
             IUnmarshallingContext context = factory.createUnmarshallingContext();
@@ -69,7 +69,7 @@ public class JibxXmlProvider implements MessageBodyReader<Object>, MessageBodyWr
     public void writeTo(Object obj, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> headers, OutputStream outputStream)
-                    throws IOException, WebApplicationException {
+            throws IOException, WebApplicationException {
         try {
             IBindingFactory factory = BindingDirectory.getFactory(type);
             IMarshallingContext context = factory.createMarshallingContext();

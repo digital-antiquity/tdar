@@ -24,12 +24,11 @@ public class LoginWebITCase extends AbstractAnonymousWebTestCase {
     public void setup() {
         login("mu@tdar.net", PASSWORD);
     }
-    
+
     @After
     public void teardown() {
         logout();
     }
-    
 
     @Test
     public void testAbstractLogin() {

@@ -49,8 +49,7 @@ public class SerializationTestCase {
         }
     }
 
-    protected void handleFile(Pattern pattern, File file) throws IOException
-    {
+    protected void handleFile(Pattern pattern, File file) throws IOException {
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");
         try {
             while (it.hasNext()) {
@@ -71,8 +70,7 @@ public class SerializationTestCase {
         }
     }
 
-    protected Collection<? extends String> handleInvalidUse(Pattern pattern, File file) throws IOException
-    {
+    protected Collection<? extends String> handleInvalidUse(Pattern pattern, File file) throws IOException {
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");
         List<String> results = new ArrayList<>();
         try {

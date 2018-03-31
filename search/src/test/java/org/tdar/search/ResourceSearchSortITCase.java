@@ -22,7 +22,6 @@ import org.tdar.search.query.SearchResult;
 
 public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
 
-
     // note: relevance sort broken out into SearchRelevancyITCase
     @Test
     @Rollback
@@ -57,7 +56,8 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testSortFieldProject() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
+    public void testSortFieldProject() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException,
+            IOException, SearchException, SearchIndexException {
         searchIndexService.purgeAll();
         Project project = createAndSaveNewProject("my project");
         Project project2 = createAndSaveNewProject("my project 2");
@@ -75,7 +75,7 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
         List<Resource> results = result.getResults();
         for (Resource r : results) {
             if (r instanceof InformationResource) {
-                InformationResource ir = (InformationResource)r;
+                InformationResource ir = (InformationResource) r;
                 logger.debug("{} {} {}", r.getId(), ir.getProjectTitle() + r.getName(), ir.getProjectId());
             } else {
                 logger.debug("{} {}", r.getId(), r.getName());

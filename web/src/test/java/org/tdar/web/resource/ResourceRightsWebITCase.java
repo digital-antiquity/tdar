@@ -21,8 +21,8 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
      * Test that the form takes entries properly with repeats
      */
     public void testImageAuthorizedRightsIssue() {
-        Map<String,String> docValMap = new HashMap<>();
-        docValMap .put("projectId", "1");
+        Map<String, String> docValMap = new HashMap<>();
+        docValMap.put("projectId", "1");
         docValMap.put("image.title", "test title");
         docValMap.put("image.description", "A resource description");
         docValMap.put("image.date", "1923");
@@ -33,7 +33,7 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         }
         submitForm();
         clickLinkOnPage(PERMISSIONS);
-        Map<String,String> docUnorderdValMap = new HashMap<>();
+        Map<String, String> docUnorderdValMap = new HashMap<>();
         docUnorderdValMap.put("proxies[0].id", "121");
         docUnorderdValMap.put("proxies[1].id", "5349");
         docUnorderdValMap.put("proxies[0].permission", Permissions.MODIFY_RECORD.name());
@@ -56,16 +56,14 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         assertTextPresentInPage(docValMap.get("image.title"));
     }
 
-    
-
     @Test
     @Rollback(true)
     /**
      * Test that the form takes entries properly with repeats
      */
     public void testDatasetInviteRights() {
-        Map<String,String> docValMap = new HashMap<>();
-        docValMap .put("projectId", "1");
+        Map<String, String> docValMap = new HashMap<>();
+        docValMap.put("projectId", "1");
         docValMap.put("dataset.title", "test title");
         docValMap.put("dataset.description", "A resource description");
         docValMap.put("dataset.date", "1923");
@@ -76,7 +74,7 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         }
         submitForm();
         clickLinkOnPage(PERMISSIONS);
-        Map<String,String> docUnorderdValMap = new HashMap<>();
+        Map<String, String> docUnorderdValMap = new HashMap<>();
         docUnorderdValMap.put("invites[0].permission", Permissions.MODIFY_RECORD.name());
         docUnorderdValMap.put("invites[0].firstName", "Bert");
         docUnorderdValMap.put("invites[0].lastName", YAGER);
@@ -102,13 +100,11 @@ public class ResourceRightsWebITCase extends AbstractAdminAuthenticatedWebTestCa
         setInput("proxies[1].displayName", "");
         setInput("proxies[1].inviteId", "");
         setInput("proxies[1].permission", "");
-        
 
         submitForm();
         assertFalse(getCurrentUrlPath().contains(PERMISSIONS));
         assertTextNotPresent(YAGER);
         assertTextPresentInPage(docValMap.get("dataset.title"));
-}
+    }
 
-    
 }

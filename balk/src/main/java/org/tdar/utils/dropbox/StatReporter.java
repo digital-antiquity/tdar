@@ -44,7 +44,7 @@ public class StatReporter implements MetadataListener {
             sb.append(entry.getKey()).append(SEP);
             File f = new File(entry.getKey());
             if (f.isFile()) {
-            String extension = FilenameUtils.getExtension(f.getName());
+                String extension = FilenameUtils.getExtension(f.getName());
                 sb.append(extension);
             }
             sb.append(SEP);
@@ -77,6 +77,6 @@ public class StatReporter implements MetadataListener {
 
     @Override
     public void setDebug(Boolean debug) {
-            this.debug = debug;        
+        this.debug = debug;
     }
 }

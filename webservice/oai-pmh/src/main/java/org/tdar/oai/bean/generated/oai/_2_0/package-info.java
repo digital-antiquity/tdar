@@ -6,9 +6,9 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(
-        namespace = "http://www.openarchives.org/OAI/2.0/", 
-                xmlns = {
+        namespace = "http://www.openarchives.org/OAI/2.0/",
+        xmlns = {
                 @javax.xml.bind.annotation.XmlNs(prefix = "oai",
                         namespaceURI = "http://www.openarchives.org/OAI/2.0/")
-        },elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+        }, elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.tdar.oai.bean.generated.oai._2_0;

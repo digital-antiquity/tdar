@@ -9,12 +9,12 @@ import javax.persistence.Entity;
 public class DropboxFile extends AbstractDropboxItem {
 
     private static final long serialVersionUID = 3849742039989754238L;
-    
+
     public DropboxFile() {
         setType(ItemType.FILE);
     }
 
-    @Column(name="extension", length=10)
+    @Column(name = "extension", length = 10)
     private String extension;
 
     public String getExtension() {
@@ -24,5 +24,5 @@ public class DropboxFile extends AbstractDropboxItem {
     public void setExtension(String extension) {
         this.extension = extension;
     }
-    
+
 }

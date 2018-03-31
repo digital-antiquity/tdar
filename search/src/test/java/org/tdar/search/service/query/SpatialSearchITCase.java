@@ -50,8 +50,9 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.RESOURCE);
     }
-    
-    private Document createGeoDoc(String title, double minLatY, double minLongX, double maxLatY, double maxLongX) throws SearchException, SearchIndexException, IOException {
+
+    private Document createGeoDoc(String title, double minLatY, double minLongX, double maxLatY, double maxLongX)
+            throws SearchException, SearchIndexException, IOException {
         Document doc = null;
         try {
             doc = createAndSaveNewInformationResource(Document.class);
@@ -94,7 +95,9 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     /**
      * Setup matches how data is being passed in from searchbox, so we must flip it
-     * @throws SearchException, SearchIndexException
+     * 
+     * @throws SearchException,
+     *             SearchIndexException
      * @throws IOException
      * @throws ParseException
      */
@@ -102,25 +105,22 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     @Rollback
     public void testSearchPetra() throws SearchException, SearchIndexException, IOException, ParseException {
-                                                        //double minLatY, double minLongX, double maxLatY, double maxLongX
+        // double minLatY, double minLongX, double maxLatY, double maxLongX
         SearchResult<Resource> result = performGeoSearch(
                 30.329055131879333,
                 35.450043082237244,
                 30.325934299334392,
-                35.44148147106171
-                );
+                35.44148147106171);
     }
 
-
-    
-//    @Test
-//    @Rollback
-//    public void testSearchScientificNotation() throws SearchException, SearchIndexException, IOException, ParseException {
-//        // if we get scientific notation into a lat/long, then this will throw an exception
-//        assertEquals(36.2265501474709, Double.parseDouble("3.62265501474709E14"), .1);
-//        SpatialQueryPart sqp = new SpatialQueryPart(new LatitudeLongitudeBox(21.68701171875, 3.62265501474709E14, 24.32373046875, 40.3130432088809));
-//        logger.debug(sqp.generateQueryString());
-//    }
+    // @Test
+    // @Rollback
+    // public void testSearchScientificNotation() throws SearchException, SearchIndexException, IOException, ParseException {
+    // // if we get scientific notation into a lat/long, then this will throw an exception
+    // assertEquals(36.2265501474709, Double.parseDouble("3.62265501474709E14"), .1);
+    // SpatialQueryPart sqp = new SpatialQueryPart(new LatitudeLongitudeBox(21.68701171875, 3.62265501474709E14, 24.32373046875, 40.3130432088809));
+    // logger.debug(sqp.generateQueryString());
+    // }
 
     @Test
     @Rollback

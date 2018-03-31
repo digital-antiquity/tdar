@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -19,11 +18,12 @@ import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
-
 /**
- * <p>Java class for GetRecordType complex type.
+ * <p>
+ * Java class for GetRecordType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="GetRecordType">
@@ -41,10 +41,10 @@ import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GetRecordType", propOrder = {
-    "record"
+        "record"
 })
 @XmlRootElement
-@XmlSeeAlso(value={DublinCoreDocument.class,ModsDocument.class, QualifiedDublinCoreDocument.class})
+@XmlSeeAlso(value = { DublinCoreDocument.class, ModsDocument.class, QualifiedDublinCoreDocument.class })
 public class GetRecordType {
 
     @XmlElement(required = true)
@@ -54,9 +54,9 @@ public class GetRecordType {
      * Gets the value of the record property.
      * 
      * @return
-     *     possible object is
-     *     {@link RecordType }
-     *     
+     *         possible object is
+     *         {@link RecordType }
+     * 
      */
     public RecordType getRecord() {
         return record;
@@ -66,9 +66,9 @@ public class GetRecordType {
      * Sets the value of the record property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link RecordType }
-     *     
+     *            allowed object is
+     *            {@link RecordType }
+     * 
      */
     public void setRecord(RecordType value) {
         this.record = value;

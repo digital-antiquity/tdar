@@ -32,7 +32,7 @@ import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.search.AdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;
 
-public class SearchRelevancyITCase extends AbstractControllerITCase  {
+public class SearchRelevancyITCase extends AbstractControllerITCase {
 
     private static final String TEST_RELEVANCY_DIR = TestConstants.TEST_ROOT_DIR + "relevancy_tests/";
 
@@ -177,6 +177,5 @@ public class SearchRelevancyITCase extends AbstractControllerITCase  {
         assertTrue(controller.getResults().contains(p));
         assertTrue(controller.getResults().contains(document));
     }
-
 
 }

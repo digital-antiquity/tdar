@@ -100,9 +100,9 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 
         ResourceCollection collectionChild = new ResourceCollection();
         collectionChild.setName("child collection with project");
-//        collectionChild.setSortBy(SortOption.RELEVANCE);
+        // collectionChild.setSortBy(SortOption.RELEVANCE);
         collectionChild.setParent(collection);
-//        collectionChild.setOrientation(DisplayOrientation.GRID);
+        // collectionChild.setOrientation(DisplayOrientation.GRID);
         collectionChild.setDescription(collectionChild.getTitle());
         collectionChild.markUpdated(getAdminUser());
         project.getManagedResourceCollections().add(collectionChild);
@@ -131,22 +131,22 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         genericService.saveOrUpdate(doc);
         ResourceCollection collection = createResourceCollectionWithAdminRights();
         genericService.saveOrUpdate(collection);
-//        InternalCollection internal = new InternalCollection();
-//        internal.markUpdated(getAdminUser());
-//        genericService.saveOrUpdate(internal);
-        doc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
-//        genericService.saveOrUpdate(internal);
+        // InternalCollection internal = new InternalCollection();
+        // internal.markUpdated(getAdminUser());
+        // genericService.saveOrUpdate(internal);
+        doc.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.MODIFY_RECORD));
+        // genericService.saveOrUpdate(internal);
 
         doc.getManagedResourceCollections().add(collection);
-//        doc.getInternalCollections().add(internal);
-//        internal.getResources().add(doc);
+        // doc.getInternalCollections().add(internal);
+        // internal.getResources().add(doc);
         collection.getManagedResources().add(doc);
-//        genericService.saveOrUpdate(internal);
+        // genericService.saveOrUpdate(internal);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(doc);
         Long docId = doc.getId();
         doc = null;
-//        internal = null;
+        // internal = null;
         collection = null;
         genericService.synchronize();
 
@@ -165,12 +165,12 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     private ResourceCollection createResourceCollectionWithAdminRights() {
         ResourceCollection collection = new ResourceCollection();
         collection.setName("parent collection with rights");
-//        collection.setSortBy(SortOption.RELEVANCE);
-//        collection.setOrientation(DisplayOrientation.GRID);
+        // collection.setSortBy(SortOption.RELEVANCE);
+        // collection.setOrientation(DisplayOrientation.GRID);
         collection.setDescription(collection.getTitle());
         collection.markUpdated(getAdminUser());
         genericService.saveOrUpdate(collection);
-        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.MODIFY_RECORD));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(collection);
         return collection;
     }
@@ -201,7 +201,6 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         assertEquals(Action.SUCCESS, dc.save());
         setIgnoreActionErrors(true);
 
-        
         // try to edit as basic user -- should work
         doc = null;
         dc = generateNewInitializedController(DocumentController.class, getBasicUser());
@@ -268,7 +267,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
                 doc.getResourceCreators().add(rc);
                 genericService.saveOrUpdate(rc);
             }
-            File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
+            File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
             addFileToResource(doc, file);
             genericService.saveOrUpdate(doc);
         }
@@ -343,7 +342,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         rva.view();
 
         d = controller.getResource();
-//        Assert.assertEquals(d.getInternalResourceCollection(), null);
+        // Assert.assertEquals(d.getInternalResourceCollection(), null);
         Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, d.getId());
         Set<ResourceCreator> resourceCreators = d.getResourceCreators();
         Assert.assertTrue(resourceCreators.size() > 0);
@@ -657,7 +656,6 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 
     }
 
-
     @Test
     @Rollback
     @IgnoreActionErrors
@@ -686,7 +684,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         assertEquals(Action.SUCCESS, rrc.save());
         evictCache();
         genericService.synchronize();
-        
+
         UploadController uc = generateNewInitializedController(UploadController.class, newUser);
         uc.grabTicket();
         Long ticketId = uc.getPersonalFilestoreTicket().getId();
@@ -694,7 +692,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.upload();
-        
+
         doc = genericService.find(Document.class, id);
         assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
                 InternalTdarRights.EDIT_ANY_RESOURCE, Permissions.ADMINISTER_COLLECTION));
@@ -717,11 +715,11 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
             String save = dc.save();
             assertEquals(TdarActionSupport.INPUT, save);
         } catch (TdarActionException e) {
-            logger.error("{}",e,e);
+            logger.error("{}", e, e);
             assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
             seenException = true;
         }
-        
+
         assertFalse(seenException);
         assertNotEmpty("should have action errors", dc.getActionErrors());
 
@@ -778,8 +776,6 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     public PersonalFilestoreService getFilestoreService() {
         return filestoreService;
     }
-
-
 
     public ResourceCreatorProxy getNewResourceCreator(String last, String first, String email, Long id, ResourceCreatorRole role) {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();

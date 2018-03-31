@@ -12,6 +12,6 @@ public class ResourceCreatorProxyTestCase {
     @Test
     public void testRCP() {
         ResourceCreatorProxy rcp = new ResourceCreatorProxy();
-        logger.debug("{}",rcp);
+        logger.debug("{}", rcp);
     }
 }

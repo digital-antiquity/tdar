@@ -6,10 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -51,7 +49,6 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;
@@ -303,7 +300,7 @@ public class ResourceExportServiceImpl implements ResourceExportService {
 
     @Transactional(readOnly = false)
     public void sendEmail(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
-    	String url = String.format("%s/export/download?filename=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
+        String url = String.format("%s/export/download?filename=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
         Email email = emailService.createMessage(EmailType.RESOURCE_EXPORT, authenticatedUser.getEmail());
         email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
         email.addData("resources", resourceExportProxy);

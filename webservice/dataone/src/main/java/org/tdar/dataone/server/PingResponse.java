@@ -41,7 +41,7 @@ public class PingResponse extends AbstractDataOneResponse {
     @Path("ping")
     @Produces("text/plain")
     public Response ping() {
-        setupResponseContext(response,request);
+        setupResponseContext(response, request);
         return Response.ok().build();
     }
 

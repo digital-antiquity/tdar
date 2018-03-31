@@ -11,15 +11,14 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("ADMIN_OVRDRW_NOTFY")
 public class AdminOverdrawnNotification extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6728687907398205464L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6728687907398205464L;
 
-	
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getMessage(EmailType.ADMIN_OVERDRAWN_NOTIFICATION.getLocaleKey());
-	}
-	
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getMessage(EmailType.ADMIN_OVERDRAWN_NOTIFICATION.getLocaleKey());
+    }
+
 }

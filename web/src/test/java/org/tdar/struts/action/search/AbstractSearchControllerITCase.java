@@ -228,19 +228,19 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
     }
 
     protected void logResults(AbstractLookupController controller_) {
-        for (Indexable r : (List<Indexable>)controller_.getResults()) {
+        for (Indexable r : (List<Indexable>) controller_.getResults()) {
             logger.debug("Search Result:" + r);
         }
     }
 
-//    protected void setResourceTypes(ResourceType ... resourceTypes) {
-//        setResourceTypes(Arrays.asList(resourceTypes));
-//    }
+    // protected void setResourceTypes(ResourceType ... resourceTypes) {
+    // setResourceTypes(Arrays.asList(resourceTypes));
+    // }
 
-//    protected void setResourceTypes(List<ResourceType> resourceTypes) {
-//        controller.getResourceTypes().clear();
-//        controller.getResourceTypes().addAll(resourceTypes);
-//    }
+    // protected void setResourceTypes(List<ResourceType> resourceTypes) {
+    // controller.getResourceTypes().clear();
+    // controller.getResourceTypes().addAll(resourceTypes);
+    // }
 
     @Override
     public TdarUser getSessionUser() {
@@ -258,10 +258,9 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return controller.getMap();
     }
 
-
-//    protected void setObjectTypes(ObjectType ... resourceTypes) {
-//        setObjectTypes(Arrays.asList(resourceTypes));
-//    }
+    // protected void setObjectTypes(ObjectType ... resourceTypes) {
+    // setObjectTypes(Arrays.asList(resourceTypes));
+    // }
 
     protected void setObjectTypes(AbstractAdvancedSearchController controller, List<ObjectType> resourceTypes) {
         controller.getObjectTypes().clear();

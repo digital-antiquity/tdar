@@ -29,19 +29,16 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public static final String PERMISSIONS = "permissions";
     private static final String LISTCOLLECTION = "/collection/";
 
-
     private void gotoEdit(String url_) {
         String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
         String id = org.apache.commons.lang3.StringUtils.substringAfterLast(url, "/");
-        gotoPage(LISTCOLLECTION + id +"/edit");
+        gotoPage(LISTCOLLECTION + id + "/edit");
     }
-
 
     private static final String RETAIN_COLLECTION = "My Test Retain Collection";
     private static final TestConfiguration TEST = TestConfiguration.getInstance();
     private static final String RETAIN_COLLECTION_2 = "My test dataset revoke collection";
-
 
     @Test
     public void testCreateEditDocumentBlankCollection() {
@@ -79,7 +76,6 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage(pageUrl);
         assertTextPresentInPage(RETAIN_COLLECTION);
     }
-    
 
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
@@ -111,7 +107,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         clickLinkWithText(PERMISSIONS);
         // now go back to the edit page, add some users and remove some of the resources
         List<TdarUser> registeredUsers = getSomeUsers();
-        logger.debug("adding users: {}" , registeredUsers);
+        logger.debug("adding users: {}", registeredUsers);
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
             if (StringUtils.containsIgnoreCase(user.getProperName(), "user")) {
@@ -172,7 +168,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         doc1.setTitle(title1);
         return doc1;
     }
-    
+
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testDeleteCollection() {
@@ -200,7 +196,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm("delete");
         logger.debug("currentPage: " + currentUrlPath);
         gotoPageWithoutErrorCheck(currentUrlPath);
-        logger.debug("{}",getPageText());
+        logger.debug("{}", getPageText());
         assertTrue(getPageCode().contains("my fancy collection"));
         assertTrue(getPageCode().contains("Deleted"));
 
@@ -234,6 +230,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/dashboard/collections");
         assertTextPresentInPage(name);
     }
+
     // assign a parent collection, then go back to dashboard
     @Test
     public void testCreateChildCollectionBadHierarchy() {
@@ -283,13 +280,11 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         submitFormWithoutErrorCheck();
 
-        // assertTrue("we should  be on the INPUT page. current page: " + getCurrentUrlPath(), getCurrentUrlPath().contains("/collection/save.action"));
+        // assertTrue("we should be on the INPUT page. current page: " + getCurrentUrlPath(), getCurrentUrlPath().contains("/collection/save.action"));
 
-//        Person person = entityService.findByEmail(user.getEmail());
-//        assertNull("person from form should not be persisted", person);
+        // Person person = entityService.findByEmail(user.getEmail());
+        // assertNull("person from form should not be persisted", person);
     }
-
-
 
     @Test
     public void testAssignNonUserToCollection2() {
@@ -329,12 +324,11 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertTextPresent("my fancy collection");
     }
-    
 
     @SuppressWarnings("unused")
     @Test
     public void testCollectionRightsRevoke() {
-        //create test collection with basic user having adminGroup rights
+        // create test collection with basic user having adminGroup rights
         gotoPage(LISTCOLLECTION + "add");
         String name = "my fancy collection";
         String desc = "description goes here";
@@ -348,7 +342,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), Permissions.ADMINISTER_COLLECTION.toString());
         submitForm();
         logout();
-        
+
         // logout and login as that user, remove self
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(url);
@@ -359,15 +353,15 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         removeElementsByName(String.format(FMT_AUTHUSERS_PERMISSION, 0));
         String path = getCurrentUrlPath();
         submitForm();
-        
+
         // assert that we can no longer edit that collection
         int status = gotoPageWithoutErrorCheck(path);
-        assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(),status);
+        assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), status);
         logout();
         // logout / login, try again (assert not allowd)
         login(CONFIG.getUsername(), CONFIG.getPassword());
         status = gotoPageWithoutErrorCheck(path);
-        assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(),status);
-        
+        assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), status);
+
     }
 }

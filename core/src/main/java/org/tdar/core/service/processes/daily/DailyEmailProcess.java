@@ -86,15 +86,15 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isNotEmpty(people)) {
-        	Email message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getStaffEmail());
-        	message.setMap(initDataModel());
-        	message.addData("users", people);
+            Email message = emailService.createMessage(EmailType.ADMIN_NEW_USER_REPORT, config.getStaffEmail());
+            message.setMap(initDataModel());
+            message.addData("users", people);
             message.addData("totalUsers", people.size());
             message.setUserGenerated(false);
-        	message.setDate(new Date());
-        	emailService.updateEmailSubject(message);
-        	emailService.renderAndUpdateEmailContent(message);
-        	emailService.queue(message);
+            message.setDate(new Date());
+            emailService.updateEmailSubject(message);
+            emailService.renderAndUpdateEmailContent(message);
+            emailService.queue(message);
 
         }
     }
@@ -102,19 +102,17 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);
         if (CollectionUtils.isNotEmpty(emails)) {
-        	Email message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getStaffEmail());
-        	message.setMap(initDataModel());
-        	message.addData("emails", emails);
-        	message.addData("totalEmails",emails.size());
-        	message.setUserGenerated(false);
-        	message.setDate(new Date());
-        	emailService.updateEmailSubject(message);
-        	emailService.renderAndUpdateEmailContent(message);
-        	emailService.queue(message);
+            Email message = emailService.createMessage(EmailType.ADMIN_QUARANTINE_REVIEW, config.getStaffEmail());
+            message.setMap(initDataModel());
+            message.addData("emails", emails);
+            message.addData("totalEmails", emails.size());
+            message.setUserGenerated(false);
+            message.setDate(new Date());
+            emailService.updateEmailSubject(message);
+            emailService.renderAndUpdateEmailContent(message);
+            emailService.queue(message);
         }
     }
-    
-    
 
     /**
      * This ScheduledProcess is finished to completion after execute().

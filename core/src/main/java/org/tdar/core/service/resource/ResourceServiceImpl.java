@@ -751,13 +751,12 @@ public class ResourceServiceImpl implements ResourceService {
         List<Resource> popular = aggregateStatisticsDao.getWeeklyPopularResources(count);
         return popular;
     }
-    
+
     @Override
-    @Transactional(readOnly=true)
-    public List<Resource> getMostPopularResourcesForBillingAccount(BillingAccount billingAccount, int limit){
-    	return aggregateStatisticsDao.getMostPopularResourcesForBillingAccount(billingAccount, limit);
+    @Transactional(readOnly = true)
+    public List<Resource> getMostPopularResourcesForBillingAccount(BillingAccount billingAccount, int limit) {
+        return aggregateStatisticsDao.getMostPopularResourcesForBillingAccount(billingAccount, limit);
     }
-    
 
     /*
      * (non-Javadoc)

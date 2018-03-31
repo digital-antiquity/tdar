@@ -23,146 +23,146 @@ import org.tdar.core.service.resource.ResourceService;
 
 @Component
 public class EmailStatisticsHelper {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private StatisticsService statisticsService;
+    @Autowired
+    private StatisticsService statisticsService;
 
-	@Autowired
-	private ResourceService resourceService;
+    @Autowired
+    private ResourceService resourceService;
 
-	public Map<String, Number> generateUserResourcesPieChartData(BillingAccount billingAccount) {
-		Set<Resource> resources = billingAccount.getResources();
-		Map<String, Number> map = new HashMap<String, Number>();
-		for (Resource r : resources) {
-			String mediaType = MessageHelper.getInstance().getText(r.getResourceType().getPluralLocaleKey());
-			
-			//The pie graph generator requires a label for the axis
-			if(mediaType.equals("")){ 
-				mediaType = "(Unknown)";
-			}
+    public Map<String, Number> generateUserResourcesPieChartData(BillingAccount billingAccount) {
+        Set<Resource> resources = billingAccount.getResources();
+        Map<String, Number> map = new HashMap<String, Number>();
+        for (Resource r : resources) {
+            String mediaType = MessageHelper.getInstance().getText(r.getResourceType().getPluralLocaleKey());
 
-			int count = 1;
-			if (map.containsKey(mediaType)) {
-				count = map.get(mediaType).intValue() + 1;
-			}
-			map.put(mediaType, count);
-		}
-		return map;
-	}
+            // The pie graph generator requires a label for the axis
+            if (mediaType.equals("")) {
+                mediaType = "(Unknown)";
+            }
 
-	public StatsResultObject getAccountStatistics(BillingAccount billingAccount, DateGranularity granularity) {
-		return statisticsService.getStatsForAccount(billingAccount, MessageHelper.getInstance(), granularity);
-	}
+            int count = 1;
+            if (map.containsKey(mediaType)) {
+                count = map.get(mediaType).intValue() + 1;
+            }
+            map.put(mediaType, count);
+        }
+        return map;
+    }
 
-	public Map<String, Number> generateTotalViewsChartData(BillingAccount billingAccount, StatsResultObject stats) {
-		Map<String, Number> map = new LinkedHashMap<String, Number>();
-		Collection<Map<String, Object>> data = stats.getObjectForJson();
-		for (Map<String, Object> row : data) {
-			String date = (String) row.get("date");
-			Number value = (Number) row.get("Views");
-			map.put(date, value);
-		}
+    public StatsResultObject getAccountStatistics(BillingAccount billingAccount, DateGranularity granularity) {
+        return statisticsService.getStatsForAccount(billingAccount, MessageHelper.getInstance(), granularity);
+    }
 
-		logger.debug("Map is {}", map);
-		return map;
-	}
+    public Map<String, Number> generateTotalViewsChartData(BillingAccount billingAccount, StatsResultObject stats) {
+        Map<String, Number> map = new LinkedHashMap<String, Number>();
+        Collection<Map<String, Object>> data = stats.getObjectForJson();
+        for (Map<String, Object> row : data) {
+            String date = (String) row.get("date");
+            Number value = (Number) row.get("Views");
+            map.put(date, value);
+        }
 
-	public Map<String, Number> generateTotalDownloadsChartData(BillingAccount billingAccount, StatsResultObject stats) {
-		Map<String, Number> map = new LinkedHashMap<String, Number>();
-		Collection<Map<String, Object>> data = stats.getObjectForJson();
-		for (Map<String, Object> row : data) {
-			String date = (String) row.get("date");
-			Number value = (Number) row.get("Downloads");
-			map.put(date, value);
-		}
+        logger.debug("Map is {}", map);
+        return map;
+    }
 
-		logger.debug("Map is {}", map);
-		return map;
-	}
+    public Map<String, Number> generateTotalDownloadsChartData(BillingAccount billingAccount, StatsResultObject stats) {
+        Map<String, Number> map = new LinkedHashMap<String, Number>();
+        Collection<Map<String, Object>> data = stats.getObjectForJson();
+        for (Map<String, Object> row : data) {
+            String date = (String) row.get("date");
+            Number value = (Number) row.get("Downloads");
+            map.put(date, value);
+        }
 
-	public List<Resource> getTopResources(BillingAccount billingAccount) {
-		return resourceService.getMostPopularResourcesForBillingAccount(billingAccount, 10);
-	}
+        logger.debug("Map is {}", map);
+        return map;
+    }
 
-	/**
-	 * Calculate the start and end dates of the range from a set of resources.
-	 * Used to determine the granularity of
-	 * 
-	 * @param resources
-	 * @return
-	 */
-	public Date getStartDate(Set<Resource> resources) {
-		GregorianCalendar calendar = new GregorianCalendar();
-		calendar.set(1900, 1, 1);
-		Date startDate = new Date();
+    public List<Resource> getTopResources(BillingAccount billingAccount) {
+        return resourceService.getMostPopularResourcesForBillingAccount(billingAccount, 10);
+    }
 
-		for (Resource r : resources) {
-			if (r.getDateCreated().before(startDate)) {
-				startDate = r.getDateCreated();
-			}
-		}
+    /**
+     * Calculate the start and end dates of the range from a set of resources.
+     * Used to determine the granularity of
+     * 
+     * @param resources
+     * @return
+     */
+    public Date getStartDate(Set<Resource> resources) {
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.set(1900, 1, 1);
+        Date startDate = new Date();
 
-		return startDate;
-	}
+        for (Resource r : resources) {
+            if (r.getDateCreated().before(startDate)) {
+                startDate = r.getDateCreated();
+            }
+        }
 
-	/**
-	 * Compares the start date to the current date to determine the interval
-	 * that should be used for date granularity. If the start date is in the
-	 * current month, the granularity is by day. If it is the same year, it is
-	 * by month, otherwise it is by year.
-	 * 
-	 * @param startDate
-	 * @param endDate
-	 * @return
-	 */
-	public DateGranularity getDateGranularity(Date startDate) {
-		GregorianCalendar calendar = new GregorianCalendar();
+        return startDate;
+    }
 
-		logger.debug("Start date is {}", startDate);
+    /**
+     * Compares the start date to the current date to determine the interval
+     * that should be used for date granularity. If the start date is in the
+     * current month, the granularity is by day. If it is the same year, it is
+     * by month, otherwise it is by year.
+     * 
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public DateGranularity getDateGranularity(Date startDate) {
+        GregorianCalendar calendar = new GregorianCalendar();
 
-		calendar.setTime(startDate);
-		int minYear = calendar.get(Calendar.YEAR);
-		int minMonth = calendar.get(Calendar.MONTH);
+        logger.debug("Start date is {}", startDate);
 
-		calendar.setTime(new Date());
-		int maxYear = calendar.get(Calendar.YEAR);
-		int maxMonth = calendar.get(Calendar.MONTH);
+        calendar.setTime(startDate);
+        int minYear = calendar.get(Calendar.YEAR);
+        int minMonth = calendar.get(Calendar.MONTH);
 
-		if (minYear == maxYear) {
-			logger.debug("Years are the same ({})", maxYear);
-			// If the stats are for the same month, then aggregate by day.
-			if (minMonth == maxMonth) {
-				logger.debug("Months are the same ({})", maxMonth);
-				return DateGranularity.DAY;
-			}
-			// If the data available is for one year, then aggregate by month.
-			else {
-				logger.debug("Months are different");
-				return DateGranularity.MONTH;
-			}
-		}
-		// If there's more than one year of data available, then aggregate by
-		// year.
-		else {
-			logger.debug("Years are different. {}, {}", minYear, maxYear);
-			return DateGranularity.YEAR;
-		}
-	}
+        calendar.setTime(new Date());
+        int maxYear = calendar.get(Calendar.YEAR);
+        int maxMonth = calendar.get(Calendar.MONTH);
 
-	public StatisticsService getStatisticsService() {
-		return statisticsService;
-	}
+        if (minYear == maxYear) {
+            logger.debug("Years are the same ({})", maxYear);
+            // If the stats are for the same month, then aggregate by day.
+            if (minMonth == maxMonth) {
+                logger.debug("Months are the same ({})", maxMonth);
+                return DateGranularity.DAY;
+            }
+            // If the data available is for one year, then aggregate by month.
+            else {
+                logger.debug("Months are different");
+                return DateGranularity.MONTH;
+            }
+        }
+        // If there's more than one year of data available, then aggregate by
+        // year.
+        else {
+            logger.debug("Years are different. {}, {}", minYear, maxYear);
+            return DateGranularity.YEAR;
+        }
+    }
 
-	public void setStatisticsService(StatisticsService statisticsService) {
-		this.statisticsService = statisticsService;
-	}
+    public StatisticsService getStatisticsService() {
+        return statisticsService;
+    }
 
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
+    public void setStatisticsService(StatisticsService statisticsService) {
+        this.statisticsService = statisticsService;
+    }
 
-	public void setResourceService(ResourceService resourceService) {
-		this.resourceService = resourceService;
-	}
+    public ResourceService getResourceService() {
+        return resourceService;
+    }
+
+    public void setResourceService(ResourceService resourceService) {
+        this.resourceService = resourceService;
+    }
 }

@@ -30,7 +30,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     public void init() {
         boolean first = true;
         for (String name : collectionNames) {
-            ResourceCollection collection = new ResourceCollection(name, name,  getAdminUser());
+            ResourceCollection collection = new ResourceCollection(name, name, getAdminUser());
             collection.setDescription(name);
             collection.markUpdated(collection.getOwner());
             genericService.saveOrUpdate(collection);

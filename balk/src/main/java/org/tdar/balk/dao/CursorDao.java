@@ -8,15 +8,12 @@ import org.hibernate.annotations.NamedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.PollType;
-import org.tdar.core.dao.base.GenericDao;
 
 @Component
 @NamedQuery(
         name = "cursor.latest",
-        query = "select cursor from DropboxState where type=:type order by lastPolled desc"
-        )
+        query = "select cursor from DropboxState where type=:type order by lastPolled desc")
 public class CursorDao {
-
 
     @Autowired
     private transient SessionFactory sessionFactory;

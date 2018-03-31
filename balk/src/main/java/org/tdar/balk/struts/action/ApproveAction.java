@@ -1,7 +1,6 @@
 package org.tdar.balk.struts.action;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -43,7 +42,7 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
     private String path;
     private String redirectPath;
     private DropboxUserMapping userMapping;
-    
+
     @Override
     public void prepare() throws Exception {
         setItem(itemService.findByDropboxId(id, false));
@@ -51,7 +50,7 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
         setRedirectPath(cleanupPath(PATH, getPath()));
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="${redirectPath}")})
+    @Action(value = "", results = { @Result(name = SUCCESS, type = REDIRECT, location = "${redirectPath}") })
     @Override
     public String execute() throws Exception {
         try {

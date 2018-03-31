@@ -121,12 +121,12 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
     @Override
     @Transactional(readOnly = true)
     public <R extends Resource> Boolean isAbleToUploadFiles(TdarUser authenticatedUser, R persistable, List<BillingAccount> activeAccounts) {
-    	//Check if the user has permission to upload files, if not
-        
+        // Check if the user has permission to upload files, if not
+
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled() == false || PersistableUtils.isNullOrTransient(persistable)) {
             return true;
         }
-        
+
         boolean isAbleToUploadFiles = authorizationService.canUploadFiles(authenticatedUser, persistable);
 
         if (isAbleToUploadFiles == false) {
@@ -142,7 +142,7 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
                 isAbleToUploadFiles = false;
             }
         }
-        
+
         return isAbleToUploadFiles;
     }
 
@@ -250,8 +250,8 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
     }
 
     @Override
-	public <R extends Resource> Boolean isAbleToAdjustPermissions(TdarUser authenticatedUser, R persistable) {
-    	//Sort of a misnomer to check if a file can be uploaded, but this will check if the user has permisison to Edit a resource & modify records.
-    	return authorizationService.canModifyPermissions(authenticatedUser, persistable);
-	}
+    public <R extends Resource> Boolean isAbleToAdjustPermissions(TdarUser authenticatedUser, R persistable) {
+        // Sort of a misnomer to check if a file can be uploaded, but this will check if the user has permisison to Edit a resource & modify records.
+        return authorizationService.canModifyPermissions(authenticatedUser, persistable);
+    }
 }

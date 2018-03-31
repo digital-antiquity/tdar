@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,11 +13,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for metadataFormatType complex type.
+ * <p>
+ * Java class for metadataFormatType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="metadataFormatType">
@@ -38,9 +38,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "metadataFormatType", propOrder = {
-    "metadataPrefix",
-    "schema",
-    "metadataNamespace"
+        "metadataPrefix",
+        "schema",
+        "metadataNamespace"
 })
 public class MetadataFormatType {
 
@@ -57,9 +57,9 @@ public class MetadataFormatType {
      * Gets the value of the metadataPrefix property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getMetadataPrefix() {
         return metadataPrefix;
@@ -69,9 +69,9 @@ public class MetadataFormatType {
      * Sets the value of the metadataPrefix property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setMetadataPrefix(String value) {
         this.metadataPrefix = value;
@@ -81,9 +81,9 @@ public class MetadataFormatType {
      * Gets the value of the schema property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getSchema() {
         return schema;
@@ -93,9 +93,9 @@ public class MetadataFormatType {
      * Sets the value of the schema property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setSchema(String value) {
         this.schema = value;
@@ -105,9 +105,9 @@ public class MetadataFormatType {
      * Gets the value of the metadataNamespace property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getMetadataNamespace() {
         return metadataNamespace;
@@ -117,9 +117,9 @@ public class MetadataFormatType {
      * Sets the value of the metadataNamespace property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setMetadataNamespace(String value) {
         this.metadataNamespace = value;

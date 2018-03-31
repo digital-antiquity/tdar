@@ -14,13 +14,14 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("ADMIN_EMBARGO_EXPIRE")
 public class AdminEmbargoExpireNotification extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4337253829902982350L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4337253829902982350L;
 
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getMessage(EmailType.EMBARGO_EXPIRATION_ADMIN_NOTIFICATION.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
-	}
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getMessage(EmailType.EMBARGO_EXPIRATION_ADMIN_NOTIFICATION.getLocaleKey(),
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
+    }
 }

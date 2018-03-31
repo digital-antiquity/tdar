@@ -32,11 +32,9 @@ public class OaiPmhAppConfiguration extends AbstractAppConfiguration {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-
-
     @Bean(name = "AuthenticationProvider")
     public AuthenticationProvider getAuthProvider() throws IOException {
-        return  null;
+        return null;
     }
 
 }

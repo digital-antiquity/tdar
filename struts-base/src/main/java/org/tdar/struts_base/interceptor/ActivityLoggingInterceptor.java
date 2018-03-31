@@ -9,7 +9,6 @@ import org.slf4j.MDC;
 import org.tdar.core.LoggingConstants;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ReflectionHelper;
-import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -71,7 +70,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         try {
             invoke = invocation.invoke();
         } catch (Throwable t) {
-            logger.error("{}", t,t);
+            logger.error("{}", t, t);
             throw t;
         } finally {
             if (activity != null) {
@@ -87,6 +86,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
 
     /**
      * Initialize the MDC for this request (clearing out any previous entries)
+     * 
      * @param request
      */
     private void setupMDC(HttpServletRequest request) {
@@ -95,7 +95,6 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         MDC.put(LoggingConstants.TAG_AGENT, tagHelper.tagify(request.getHeader(Activity.USER_AGENT)));
         MDC.put(LoggingConstants.TAG_REQUEST_ID, tagHelper.tagify(System.nanoTime()));
     }
-
 
     @Override
     public void destroy() {

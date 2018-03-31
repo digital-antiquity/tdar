@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.Action;
  * @author Adam Brin
  * 
  */
-public class UserPermissionsITCase extends AbstractControllerITCase  implements TestResourceCollectionHelper {
+public class UserPermissionsITCase extends AbstractControllerITCase implements TestResourceCollectionHelper {
 
     @Autowired
     EntityService entityService;

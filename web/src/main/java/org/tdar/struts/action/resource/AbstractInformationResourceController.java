@@ -129,7 +129,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public String saveInformationResource(InformationResource document) throws TdarActionException {
         // save basic metadata
-        
+
         // We set the project here to avoid getProjectId() being indexed too early (see TDAR-2001 for more info)
         resolveProject();
         getResource().setProject(getProject());
@@ -153,19 +153,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         fsw.setTicketId(getTicketId());
         fsw.setUploadedFilesFileName(getUploadedFilesFileName());
         fsw.setUploadedFiles(getUploadedFiles());
-        
-        
+
         if (isBulkUpload()) {
-//            super.save(getPersistable());
+            // super.save(getPersistable());
             return bulkUploadSave();
         }
         getLogger().debug("save ir");
 
-        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(), isEditor());
+        AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(),
+                isEditor());
         resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
         setHasFileProxyChanges(fsw.isFileProxyChanges());
-//        super.save(document);
-        
+        // super.save(document);
+
         return SUCCESS;
 
     }
@@ -263,7 +263,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
-    
+
     @Autowired
     private SerializationService serializationService;
 
@@ -361,7 +361,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return potentialParents;
     }
-
 
     @Autowired
     public void setFileAnalyzer(FileAnalyzer analyzer) {
@@ -508,16 +507,14 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         return ableToUploadFiles;
     }
-    
-    public boolean isAbleToAdjustPermissions(){
-    	if(ableToAdjustPermissions == null){
-    		ableToAdjustPermissions = resourceEditControllerService.isAbleToAdjustPermissions(getAuthenticatedUser(), getPersistable());
-    	}
-    	
-    	return ableToAdjustPermissions;
+
+    public boolean isAbleToAdjustPermissions() {
+        if (ableToAdjustPermissions == null) {
+            ableToAdjustPermissions = resourceEditControllerService.isAbleToAdjustPermissions(getAuthenticatedUser(), getPersistable());
+        }
+
+        return ableToAdjustPermissions;
     }
-    
-    
 
     public boolean isHasFileProxyChanges() {
         return hasFileProxyChanges;
@@ -580,7 +577,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         }
         return types;
     }
-
 
     public String getFileInputMethod() {
         return fileInputMethod;

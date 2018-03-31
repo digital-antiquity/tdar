@@ -11,15 +11,15 @@ import org.tdar.core.configuration.TdarConfiguration;
 @DiscriminatorValue("ACCESS_REQUEST")
 public class AccessRequestCustomMessage extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5737055649043090324L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5737055649043090324L;
 
-	@Override
-	public String createSubjectLine() {
-		Resource resource =  (Resource) getMap().get(EmailKeys.RESOURCE);
-		return TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle();
-	}
+    @Override
+    public String createSubjectLine() {
+        Resource resource = (Resource) getMap().get(EmailKeys.RESOURCE);
+        return TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle();
+    }
 
 }

@@ -52,10 +52,9 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
-
     @Test
     public void testBulkUploadDups() throws FileNotFoundException {
-        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_BULK_DIR , "TDAR-2380");
+        File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_BULK_DIR, "TDAR-2380");
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, true);
         testBulkUploadController("TDAR-2380/tdar-bulk-upload-template.xls", listFiles, null, false);
         logger.debug("--------------------------------------------------");
@@ -242,7 +241,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
         gotoPage("/bulk/add");
         setInput("status", Status.ACTIVE.name());
-//        setInput("uploadedFiles", TestConstants.TEST_BULK_DIR + filename);
+        // setInput("uploadedFiles", TestConstants.TEST_BULK_DIR + filename);
         if (extra != null) {
             boolean hasInput = true;
             try {
@@ -292,7 +291,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
                 } catch (InterruptedException e) {
                     fail("InterruptedException during bulk upload.  sorry.");
                 }
-                
+
             }
             if (expectSuccess && CollectionUtils.isNotEmpty(readValue.getAsyncErrors())) {
                 Assert.fail(getPageBodyCode());

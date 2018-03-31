@@ -30,7 +30,6 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         return new String[] {};
     };
 
-
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
 
     @Autowired
@@ -38,7 +37,6 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
     public void setIntegrationDataSource(DataSource dataSource) {
         tdarDataImportDatabase.setDataSource(dataSource);
     }
-
 
     @Test
     @Rollback(true)

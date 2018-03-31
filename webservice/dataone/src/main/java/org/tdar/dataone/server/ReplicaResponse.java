@@ -24,7 +24,6 @@ public class ReplicaResponse extends AbstractDataOneResponse {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-
     @Context
     private HttpServletResponse response;
 
@@ -36,7 +35,7 @@ public class ReplicaResponse extends AbstractDataOneResponse {
     @Path("{pid:.*}")
     public Response replica(@PathParam("pid") String id) {
         setupResponseContext(response, request);
-        return constructObjectResponse(id, request,Event.REPLICATE);
+        return constructObjectResponse(id, request, Event.REPLICATE);
     }
 
 }

@@ -40,7 +40,7 @@ public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
     private static final String SRC_TEST_EMPTY_ACCDB = "data_integration_tests/empty.accdb";
     private static final String DOUBLE_DATASET = "coding sheet/double_translation_test_dataset.xlsx";
     private static final String TEXT_DATASET = "coding sheet/csvCodingSheetText.csv";
-    
+
     @Autowired
     private DatasetService datasetService;
 

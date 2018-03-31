@@ -36,17 +36,16 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         updateAndIndex(doc);
         SearchParameters sp = new SearchParameters();
         sp.setTitles(Arrays.asList("USAF"));
-        SearchResult<Resource> result = doSearch(null,null,sp,null);
-        
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
+
         assertTrue(result.getResults().contains(doc));
         doc.setTitle("USAF");
         updateAndIndex(doc);
         sp = new SearchParameters();
         sp.setTitles(Arrays.asList("usaf"));
-        result = doSearch(null,null,sp,null);
+        result = doSearch(null, null, sp, null);
         assertTrue(result.getResults().contains(doc));
     }
-
 
     @SuppressWarnings("deprecation")
     @Test
@@ -80,23 +79,23 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
             docs.add(doc);
         }
         genericService.synchronize();
-//        searchIndexService.indexCollection(docs);
+        // searchIndexService.indexCollection(docs);
         SearchResult<Resource> result = doSearch("AZ U:9:1(ASM)");
         List<Resource> results = result.getResults();
         for (Resource r : result.getResults()) {
             logger.debug("results: {}", r);
         }
-        
+
         assertTrue("controller should not contain titles with MACROFLORAL", CollectionUtils.containsAny(results, badMatches));
         assertTrue("controller should not contain titles with MACROFLORAL",
                 CollectionUtils.containsAll(results.subList(results.size() - 3, results.size()), badMatches));
 
     }
 
-
     @Test
     @Rollback
-    public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException , SearchException, SearchIndexException{
+    public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException,
+            SearchException, SearchIndexException {
         Document doc = createDocumentWithContributorAndSubmitter();
         String title = "the archaeology of class and war";
         doc.setTitle(title);
@@ -104,7 +103,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         searchIndexService.index(doc);
         SearchParameters sp = new SearchParameters();
         sp.getTitles().add(title);
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
 
         logger.info("{}", result.getResults());
         assertEquals("only one result expected", 1L, result.getResults().size());
@@ -113,7 +112,8 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException, SearchException, SearchIndexException {
+    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException,
+            IOException, SearchException, SearchIndexException {
         Document doc = createDocumentWithContributorAndSubmitter();
         String title = "the archaeology of class ( AND ) war";
         doc.setTitle(title);
@@ -121,12 +121,11 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         searchIndexService.index(doc);
         SearchParameters sp = new SearchParameters();
         sp.getAllFields().add(title);
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         logger.info("{}", result.getResults());
         assertEquals("only one result expected", 1L, result.getResults().size());
         assertEquals(doc, result.getResults().iterator().next());
     }
-
 
     @SuppressWarnings("deprecation")
     @Test
@@ -309,7 +308,6 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
 
     }
 
-
     @Test
     @Rollback
     public void testTitle() throws ParseException, SearchException, SearchIndexException, IOException {
@@ -319,34 +317,33 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         String projectTitle = project.getTitle();
         SearchParameters sp = new SearchParameters();
         sp.getTitles().add(projectTitle);
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         result.getResults().contains(project);
     }
 
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
-    public void testTitleRelevancy() throws SearchException, SearchIndexException, IOException, ParseException , SearchException, SearchIndexException{
-        //(11R5)-1
-        //1/4
-        //4\"
+    public void testTitleRelevancy() throws SearchException, SearchIndexException, IOException, ParseException, SearchException, SearchIndexException {
+        // (11R5)-1
+        // 1/4
+        // 4\"
         String exact = "Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen";
-        //Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen
+        // Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen
         List<String> titles = Arrays.asList(
-                "Coding sheet for Element ("+exact+")",
-                "Coding sheet for Recovery ("+exact+")",
-                "Coding sheet for CulturalAffiliation ("+exact+")",
-                "Coding sheet for Resource Type ("+exact+")",
-                "Coding sheet for Taxon ("+exact+")",
-                "Coding sheet for Portion3 ("+exact+")",
-                "Coding sheet for Resource Type ("+exact+")",
-                "Coding sheet for ContextType ("+exact+")",
-                "Coding sheet for LevelType ("+exact+")",
-                "Coding sheet for Site ("+exact+")",
-                "Coding sheet for LevelType ("+exact+")",
+                "Coding sheet for Element (" + exact + ")",
+                "Coding sheet for Recovery (" + exact + ")",
+                "Coding sheet for CulturalAffiliation (" + exact + ")",
+                "Coding sheet for Resource Type (" + exact + ")",
+                "Coding sheet for Taxon (" + exact + ")",
+                "Coding sheet for Portion3 (" + exact + ")",
+                "Coding sheet for Resource Type (" + exact + ")",
+                "Coding sheet for ContextType (" + exact + ")",
+                "Coding sheet for LevelType (" + exact + ")",
+                "Coding sheet for Site (" + exact + ")",
+                "Coding sheet for LevelType (" + exact + ")",
                 exact,
                 "Coding sheet for Taxon (Modoc Rock Shelter (11R5), Randolph County, IL-1984, Main Trench 1/4\" screen fauna)");
-
 
         List<Resource> docs = new ArrayList<>();
         for (String title : titles) {
@@ -370,7 +367,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         for (Resource r : result.getResults()) {
             logger.debug("results: {}", r);
         }
-        assertEquals(exact,result.getResults().get(0).getTitle());
+        assertEquals(exact, result.getResults().get(0).getTitle());
     }
 
 }

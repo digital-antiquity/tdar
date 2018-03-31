@@ -11,13 +11,13 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("RES_EXPORT_REQ")
 public class ResourceExportRequestMessage extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 264784414649423978L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 264784414649423978L;
 
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getMessage(EmailType.RESOURCE_EXPORT.getLocaleKey());
-	}
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getMessage(EmailType.RESOURCE_EXPORT.getLocaleKey());
+    }
 }

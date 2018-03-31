@@ -27,7 +27,6 @@ public class HashingTest {
         Base32 b32 = new Base32();
         Base64 b64 = new Base64(true);
 
-
         HashCode hashCode = hc128.hashString("/upload/upload", Charset.defaultCharset());
         logger.debug(hashCode.toString());
         logger.debug(b32.encodeToString(hashCode.asBytes()));

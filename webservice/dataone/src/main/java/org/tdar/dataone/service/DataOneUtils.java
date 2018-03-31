@@ -80,8 +80,8 @@ public class DataOneUtils {
     }
 
     public static DateTime parseAndConvertToLocalTime(final String string) {
-        String local = StringUtils.replace(string, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00 
-        DateTime dt = new DateTime(local,DateTimeZone.UTC);
+        String local = StringUtils.replace(string, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00
+        DateTime dt = new DateTime(local, DateTimeZone.UTC);
         return dt.toDateTime(DateTimeZone.getDefault());
     }
 

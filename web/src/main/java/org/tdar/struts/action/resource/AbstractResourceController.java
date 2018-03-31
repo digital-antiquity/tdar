@@ -189,13 +189,12 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return sw.toString();
     }
 
-
     @Override
     public String save(Resource resource) {
         getLogger().debug("calling save");
         String toReturn = SUCCESS;
         if (resource instanceof InformationResource) {
-            try { 
+            try {
                 toReturn = saveInformationResource(getPersistable());
             } catch (TdarActionException e) {
                 addActionErrorWithException(e.getMessage(), e);
@@ -212,15 +211,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         resolvePostSaveAction(getPersistable());
         return toReturn;
     }
-    
+
     public void saveCustomMetadata() {
         // TODO Auto-generated method stub
-        
+
     }
 
     public void resolvePostSaveAction(R persistable) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -383,70 +382,68 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return editable;
     }
 
-    
     /**
-     * Resolves the state between whether the resource has lat/long boundaries, and if after the save it will have them. 
-     * Used to control whether an alert message should be displayed or not. 
+     * Resolves the state between whether the resource has lat/long boundaries, and if after the save it will have them.
+     * Used to control whether an alert message should be displayed or not.
+     * 
      * @author briancastellanos
      * @param activeBoxes
      * @param newBoxes
-     * @return boolean 
+     * @return boolean
      */
     @SuppressWarnings("deprecation")
-    protected boolean willHaveLatLongBoxes(Set<LatitudeLongitudeBox> activeBoxes, List<LatitudeLongitudeBox> newBoxes){
-    	
-    	boolean isActiveBoxesEmpty = CollectionUtils.isEmpty(activeBoxes);
-    	boolean isNewBoxesEmpty = CollectionUtils.isEmpty(newBoxes);
-       	boolean result;
-    	
-    	if(!isNewBoxesEmpty){
-    		LatitudeLongitudeBox l  = newBoxes.get(0);
-    		//If there's no boundaries, the fields will all be null.
-    		isNewBoxesEmpty =  !l.isInitializedAndValid();
-    	}
-    	
- 
-    	getLogger().debug("{} ",newBoxes);
-    	getLogger().debug("Checking if willHaveLatLongBoxes - isActiveBoxesEmpty: {} ,  isNewBoxesEmpty: {} ", isActiveBoxesEmpty, isNewBoxesEmpty);
-    	
-    	//There are no current boxes
-    	if(isActiveBoxesEmpty){
-    		 if(isNewBoxesEmpty){
-    			 result = false; 
-    		 }
-    		 //The boxes are being added. 
-    		 else{
-    			 result = true;
-    		 }
-    	}
-    	//There are current boxes
-    	else {
-    		//the boxes are being removed
-    		if(isNewBoxesEmpty){
-    			result = false;
-	   		}
-    		//The boxes will stay.
-	   		else{
-	   			result = true;
-	   		}
-    	}
-    	
-    	getLogger().debug("will have boundaries: {} ", result);
-    	
-    	return result;
-    	
+    protected boolean willHaveLatLongBoxes(Set<LatitudeLongitudeBox> activeBoxes, List<LatitudeLongitudeBox> newBoxes) {
+
+        boolean isActiveBoxesEmpty = CollectionUtils.isEmpty(activeBoxes);
+        boolean isNewBoxesEmpty = CollectionUtils.isEmpty(newBoxes);
+        boolean result;
+
+        if (!isNewBoxesEmpty) {
+            LatitudeLongitudeBox l = newBoxes.get(0);
+            // If there's no boundaries, the fields will all be null.
+            isNewBoxesEmpty = !l.isInitializedAndValid();
+        }
+
+        getLogger().debug("{} ", newBoxes);
+        getLogger().debug("Checking if willHaveLatLongBoxes - isActiveBoxesEmpty: {} ,  isNewBoxesEmpty: {} ", isActiveBoxesEmpty, isNewBoxesEmpty);
+
+        // There are no current boxes
+        if (isActiveBoxesEmpty) {
+            if (isNewBoxesEmpty) {
+                result = false;
+            }
+            // The boxes are being added.
+            else {
+                result = true;
+            }
+        }
+        // There are current boxes
+        else {
+            // the boxes are being removed
+            if (isNewBoxesEmpty) {
+                result = false;
+            }
+            // The boxes will stay.
+            else {
+                result = true;
+            }
+        }
+
+        getLogger().debug("will have boundaries: {} ", result);
+
+        return result;
+
     }
-    
-    
+
     /**
      * Saves keywords, full / read user access, and confidentiality.
      */
     protected void saveBasicResourceMetadata() {
         AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
 
-        if (	!willHaveLatLongBoxes(authWrapper.getItem().getActiveLatitudeLongitudeBoxes(),getLatitudeLongitudeBoxes()) && 
-        		!(this instanceof BulkUploadController) &&  // 
-        		!(this instanceof AbstractSupportingInformationResourceController)) {
+        if (!willHaveLatLongBoxes(authWrapper.getItem().getActiveLatitudeLongitudeBoxes(), getLatitudeLongitudeBoxes()) &&
+                !(this instanceof BulkUploadController) && //
+                !(this instanceof AbstractSupportingInformationResourceController)) {
             addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(authWrapper.getItem().getResourceType().getLabel())));
         }
 

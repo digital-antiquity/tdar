@@ -31,7 +31,7 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
     public void testAltenrateParentInCollectionPageSearch() throws SolrServerException, IOException, ParseException, SearchException, SearchIndexException {
         Long dsId = setupDataset(Status.ACTIVE);
         // setup beans
-        Dataset d = genericService.find(Dataset.class, dsId); 
+        Dataset d = genericService.find(Dataset.class, dsId);
         ResourceCollection parent = createCollection("parent", getAdminUser());
         ResourceCollection alternate = createCollection("alternate", getAdminUser());
         ResourceCollection child = createCollection("child", getAdminUser());
@@ -41,7 +41,7 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         genericService.saveOrUpdate(d);
         genericService.saveOrUpdate(grantChild);
         genericService.synchronize();
-        d= null;
+        d = null;
         // set alternate parent
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), grantChild, child);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child, parent);
@@ -50,7 +50,7 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         genericService.saveOrUpdate(alternate);
         genericService.saveOrUpdate(child);
         genericService.synchronize();
-        
+
         searchIndexService.index(genericService.find(Dataset.class, dsId));
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         SearchParameters sp = new SearchParameters();
@@ -63,7 +63,7 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         sp.getShares().add(alternate);
         result = doSearch("", null, sp, rparams);
         assertTrue("expected to find resource (alternate parent)", resultsContainId(result, dsId));
-}
+    }
 
     private ResourceCollection createCollection(String name, TdarUser tdarUser) {
         ResourceCollection c = new ResourceCollection();
@@ -74,6 +74,4 @@ public class ResourceCollectionAlternateParentSearchITCase extends AbstractResou
         return c;
     }
 
-    
-    
 }

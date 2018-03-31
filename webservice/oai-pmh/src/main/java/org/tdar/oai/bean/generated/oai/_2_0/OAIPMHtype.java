@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import java.util.ArrayList;
@@ -23,11 +22,12 @@ import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
-
 /**
- * <p>Java class for OAI-PMHtype complex type.
+ * <p>
+ * Java class for OAI-PMHtype complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="OAI-PMHtype">
@@ -55,17 +55,17 @@ import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OAI-PMHtype", propOrder = {
-    "responseDate",
-    "request",
-    "error",
-    "identify",
-    "listMetadataFormats",
-    "listSets",
-    "getRecord",
-    "listIdentifiers",
-    "listRecords"
+        "responseDate",
+        "request",
+        "error",
+        "identify",
+        "listMetadataFormats",
+        "listSets",
+        "getRecord",
+        "listIdentifiers",
+        "listRecords"
 })
-@XmlSeeAlso(value={ModsDocument.class, DublinCoreDocument.class, QualifiedDublinCoreDocument.class})
+@XmlSeeAlso(value = { ModsDocument.class, DublinCoreDocument.class, QualifiedDublinCoreDocument.class })
 public class OAIPMHtype {
 
     @XmlElement(required = true)
@@ -91,9 +91,9 @@ public class OAIPMHtype {
      * Gets the value of the responseDate property.
      * 
      * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *         possible object is
+     *         {@link XMLGregorianCalendar }
+     * 
      */
     public XMLGregorianCalendar getResponseDate() {
         return responseDate;
@@ -103,9 +103,9 @@ public class OAIPMHtype {
      * Sets the value of the responseDate property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *            allowed object is
+     *            {@link XMLGregorianCalendar }
+     * 
      */
     public void setResponseDate(XMLGregorianCalendar value) {
         this.responseDate = value;
@@ -115,9 +115,9 @@ public class OAIPMHtype {
      * Gets the value of the request property.
      * 
      * @return
-     *     possible object is
-     *     {@link RequestType }
-     *     
+     *         possible object is
+     *         {@link RequestType }
+     * 
      */
     public RequestType getRequest() {
         return request;
@@ -127,9 +127,9 @@ public class OAIPMHtype {
      * Sets the value of the request property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link RequestType }
-     *     
+     *            allowed object is
+     *            {@link RequestType }
+     * 
      */
     public void setRequest(RequestType value) {
         this.request = value;
@@ -146,8 +146,9 @@ public class OAIPMHtype {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getError().add(newItem);
+     * getError().add(newItem);
      * </pre>
      * 
      * 
@@ -168,9 +169,9 @@ public class OAIPMHtype {
      * Gets the value of the identify property.
      * 
      * @return
-     *     possible object is
-     *     {@link IdentifyType }
-     *     
+     *         possible object is
+     *         {@link IdentifyType }
+     * 
      */
     public IdentifyType getIdentify() {
         return identify;
@@ -180,9 +181,9 @@ public class OAIPMHtype {
      * Sets the value of the identify property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link IdentifyType }
-     *     
+     *            allowed object is
+     *            {@link IdentifyType }
+     * 
      */
     public void setIdentify(IdentifyType value) {
         this.identify = value;
@@ -192,9 +193,9 @@ public class OAIPMHtype {
      * Gets the value of the listMetadataFormats property.
      * 
      * @return
-     *     possible object is
-     *     {@link ListMetadataFormatsType }
-     *     
+     *         possible object is
+     *         {@link ListMetadataFormatsType }
+     * 
      */
     public ListMetadataFormatsType getListMetadataFormats() {
         return listMetadataFormats;
@@ -204,9 +205,9 @@ public class OAIPMHtype {
      * Sets the value of the listMetadataFormats property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ListMetadataFormatsType }
-     *     
+     *            allowed object is
+     *            {@link ListMetadataFormatsType }
+     * 
      */
     public void setListMetadataFormats(ListMetadataFormatsType value) {
         this.listMetadataFormats = value;
@@ -216,9 +217,9 @@ public class OAIPMHtype {
      * Gets the value of the listSets property.
      * 
      * @return
-     *     possible object is
-     *     {@link ListSetsType }
-     *     
+     *         possible object is
+     *         {@link ListSetsType }
+     * 
      */
     public ListSetsType getListSets() {
         return listSets;
@@ -228,9 +229,9 @@ public class OAIPMHtype {
      * Sets the value of the listSets property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ListSetsType }
-     *     
+     *            allowed object is
+     *            {@link ListSetsType }
+     * 
      */
     public void setListSets(ListSetsType value) {
         this.listSets = value;
@@ -240,9 +241,9 @@ public class OAIPMHtype {
      * Gets the value of the getRecord property.
      * 
      * @return
-     *     possible object is
-     *     {@link GetRecordType }
-     *     
+     *         possible object is
+     *         {@link GetRecordType }
+     * 
      */
     public GetRecordType getGetRecord() {
         return getRecord;
@@ -252,9 +253,9 @@ public class OAIPMHtype {
      * Sets the value of the getRecord property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link GetRecordType }
-     *     
+     *            allowed object is
+     *            {@link GetRecordType }
+     * 
      */
     public void setGetRecord(GetRecordType value) {
         this.getRecord = value;
@@ -264,9 +265,9 @@ public class OAIPMHtype {
      * Gets the value of the listIdentifiers property.
      * 
      * @return
-     *     possible object is
-     *     {@link ListIdentifiersType }
-     *     
+     *         possible object is
+     *         {@link ListIdentifiersType }
+     * 
      */
     public ListIdentifiersType getListIdentifiers() {
         return listIdentifiers;
@@ -276,9 +277,9 @@ public class OAIPMHtype {
      * Sets the value of the listIdentifiers property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ListIdentifiersType }
-     *     
+     *            allowed object is
+     *            {@link ListIdentifiersType }
+     * 
      */
     public void setListIdentifiers(ListIdentifiersType value) {
         this.listIdentifiers = value;
@@ -288,9 +289,9 @@ public class OAIPMHtype {
      * Gets the value of the listRecords property.
      * 
      * @return
-     *     possible object is
-     *     {@link ListRecordsType }
-     *     
+     *         possible object is
+     *         {@link ListRecordsType }
+     * 
      */
     public ListRecordsType getListRecords() {
         return listRecords;
@@ -300,9 +301,9 @@ public class OAIPMHtype {
      * Sets the value of the listRecords property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link ListRecordsType }
-     *     
+     *            allowed object is
+     *            {@link ListRecordsType }
+     * 
      */
     public void setListRecords(ListRecordsType value) {
         this.listRecords = value;

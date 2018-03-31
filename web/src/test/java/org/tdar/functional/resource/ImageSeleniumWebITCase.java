@@ -85,16 +85,15 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
-
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
     @Ignore
-    public void testCreateImageEditSavehasResource()  {
+    public void testCreateImageEditSavehasResource() {
         gotoPage("/image/add");
         WebElement form = find("#metadataForm").first();
         expandAllTreeviews();
         prepIndexedFields();
-        //uploadFileAsync(FileAccessRestriction.PUBLIC, TestConstants.getFile(TestConstants.TEST_IMAGE));
+        // uploadFileAsync(FileAccessRestriction.PUBLIC, TestConstants.getFile(TestConstants.TEST_IMAGE));
         // fill in various text fields
         for (Map.Entry<String, String> entry : docValMap.entrySet()) {
             find(By.name(entry.getKey())).val(entry.getValue());
@@ -114,14 +113,13 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     }
 
     @Test
-    public  void testKeywordsRemoved() {
+    public void testKeywordsRemoved() {
         testCreateImageEditSavehasResource();
         find(".toolbar-edit").click();
         waitForPageload();
         select2Clear(find("#uncontrolledMaterialKeywordsRepeatable"));
-        assertThat(getText(), not( containsString("very small rocks")));
+        assertThat(getText(), not(containsString("very small rocks")));
     }
-
 
     @Override
     public boolean testRequiresLucene() {

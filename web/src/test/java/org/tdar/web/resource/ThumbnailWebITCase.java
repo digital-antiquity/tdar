@@ -93,7 +93,7 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logout();
         // LOGIN, CHANGE FROM CONFIDENTIAL TO PUBLIC THEN LOGOUT... WE SHOULD SEE THE THUMBNAIL
         makeFilePublic(editPage);
-        
+
         gotoPage(viewPage);
         assertTextNotPresent("/img/sm");
 
@@ -138,7 +138,6 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         Long imageId = extractTdarIdFromCurrentURL();
 
         assertDeniedAccess(irFileIds, irFileVersionIds);
-
 
     }
 

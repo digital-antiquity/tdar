@@ -1,16 +1,12 @@
 package org.tdar.struts.action.admin;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-
-import javax.mail.MessagingException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -19,7 +15,6 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.mail.MailException;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.notification.Email;
@@ -28,7 +23,7 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+
 import com.opensymphony.xwork2.Preparable;
 
 @Component
@@ -44,44 +39,40 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     private List<Long> ids = new ArrayList<>();
     private Status emailAction;
     private Long emailId;
-    
+
     private InputStream inputStream;
-    
+
     @Autowired
     private transient EmailService emailService;
 
     private String contentType;
-    
+
     @Action(value = "emailContent/{emailId}",
-    		results = {
-    				@Result(name = SUCCESS, type = "stream", params = {
-    	                    "contentType", "${contentType}", 
-    	                    "inputName", "inputStream"
-    				}) 
-    		})
-    public String viewEmailContent(){
-    	Email email = getGenericService().find(Email.class, getEmailId());
-    	
-    	List<Email> list = new ArrayList<Email>();
-	    list.add(email);
-    	setEmails(list);
-    	
-    	emailService.dequeue(email);
-    	
-    	if(email.getClass().equals(Email.class)){
-    		setContentType("text/plain");
-    	}
-    	else {
-    		setContentType("text/html");
-    	}
-    	
-    	setInputStream(new ByteArrayInputStream(email.getMessage().getBytes()));
-		return SUCCESS;
+            results = {
+                    @Result(name = SUCCESS, type = "stream", params = {
+                            "contentType", "${contentType}",
+                            "inputName", "inputStream"
+                    })
+            })
+    public String viewEmailContent() {
+        Email email = getGenericService().find(Email.class, getEmailId());
+
+        List<Email> list = new ArrayList<Email>();
+        list.add(email);
+        setEmails(list);
+
+        emailService.dequeue(email);
+
+        if (email.getClass().equals(Email.class)) {
+            setContentType("text/plain");
+        } else {
+            setContentType("text/html");
+        }
+
+        setInputStream(new ByteArrayInputStream(email.getMessage().getBytes()));
+        return SUCCESS;
     }
-    
-    
-    
-    
+
     @Action("email")
     public String execute() {
         setEmails(getGenericService().findAllSorted(Email.class));
@@ -109,8 +100,8 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
     @Action(value = "changeEmailStatus",
             results = {
                     @Result(name = SUCCESS, type = REDIRECT, location = "/admin/email"),
-                    @Result(name = INPUT, location = "email.ftl") 
-                    })
+                    @Result(name = INPUT, location = "email.ftl")
+            })
     @PostOnly
     public String changeEmailStatus() {
         emailService.changeEmailStatus(getEmailAction(), emails);
@@ -164,15 +155,15 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
         this.emailsToReview = emailsToReview;
     }
 
-	public Long getEmailId() {
-		return emailId;
-	}
+    public Long getEmailId() {
+        return emailId;
+    }
 
-	public void setEmailId(Long emailId) {
-		this.emailId = emailId;
-	}
-	
-	public InputStream getInputStream() {
+    public void setEmailId(Long emailId) {
+        this.emailId = emailId;
+    }
+
+    public InputStream getInputStream() {
         return inputStream;
     }
 
@@ -180,11 +171,11 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
         this.inputStream = inputStream;
     }
 
-	public String getContentType() {
-		return contentType;
-	}
+    public String getContentType() {
+        return contentType;
+    }
 
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 }

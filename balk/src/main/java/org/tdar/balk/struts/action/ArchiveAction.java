@@ -37,7 +37,7 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
     private Phases phase;
     private String path;
     private String redirectPath;
-    
+
     @Override
     public void prepare() throws Exception {
         setItem(itemService.findByDropboxId(id, false));
@@ -47,11 +47,11 @@ public class ArchiveAction extends AbstractAuthenticatedAction implements Prepar
         setRedirectPath(cleanupPath(PATH, getPath()));
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location=PATH)})
+    @Action(value = "", results = { @Result(name = SUCCESS, type = REDIRECT, location = PATH) })
     @Override
     public String execute() throws Exception {
         try {
-            getLogger().debug("archving:{} ({}/{})", item, item.getPath(),item.getName());
+            getLogger().debug("archving:{} ({}/{})", item, item.getPath(), item.getName());
             itemService.archive(item, getAuthenticatedUser());
         } catch (Exception e) {
             getLogger().error("{}", e, e);

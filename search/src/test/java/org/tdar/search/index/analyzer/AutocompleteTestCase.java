@@ -25,12 +25,12 @@ public class AutocompleteTestCase {
         String text = "U.S. Department of Agriculture";
         logger.debug(text.replaceAll("(\\w)([\\,\\-\\.\\;])", "$1"));
         Map<String, String> args = new HashMap<>();
-        args.put("generateWordParts","0");
-        args.put("generateNumberParts","0");
-        args.put("catenateWords","1");
-        args.put("catenateNumbers","1");
-        args.put("preserveOriginal","1");
-        args.put("catenateAll","0");
+        args.put("generateWordParts", "0");
+        args.put("generateNumberParts", "0");
+        args.put("catenateWords", "1");
+        args.put("catenateNumbers", "1");
+        args.put("preserveOriginal", "1");
+        args.put("catenateAll", "0");
         WordDelimiterFilterFactory wdff = new WordDelimiterFilterFactory(args);
         KeywordAnalyzer ka = new KeywordAnalyzer();
         TokenStream tokenStream = ka.tokenStream("test", text);

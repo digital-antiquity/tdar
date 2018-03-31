@@ -23,7 +23,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user" + System.currentTimeMillis());
         personmap.remove("registration.contributorReason");
-        testRegister(personmap, TERMS.TOS,true);
+        testRegister(personmap, TERMS.TOS, true);
         assertCurrentUrlContains("dashboard");
         assertTextNotPresentIgnoreCase("new project");
         logout();
@@ -40,12 +40,13 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         assertPageTitleEquals("add a new resource");
         logout();
     }
-    
+
     @Test
     public void testDisableAccount() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributor" + System.currentTimeMillis());
-        String username = personmap.get("registration.person.username");;
+        String username = personmap.get("registration.person.username");
+        ;
         String password = personmap.get("registration.password");
         testRegister(personmap, TERMS.BOTH, true);
         assertCurrentUrlContains("dashboard");
@@ -61,23 +62,23 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         logger.debug(getPageText());
         assertTextPresent("Authentication failed.");
     }
-    
+
     @Test
     public void testRegisterNonContributor() {
-    	Map<String, String> personmap = new HashMap<String, String>();
-    	setupBasicUser(personmap, "contributor" + System.currentTimeMillis());
+        Map<String, String> personmap = new HashMap<String, String>();
+        setupBasicUser(personmap, "contributor" + System.currentTimeMillis());
         personmap.remove("registration.contributorReason");
-    	testRegister(personmap, TERMS.TOS, true);
+        testRegister(personmap, TERMS.TOS, true);
 
-    	assertCurrentUrlContains("dashboard");
-    	assertTextNotPresentIgnoreCase("Start a new Project");
-    	
-    	//clickLinkWithText("UPLOAD");
-    	//assertPageTitleEquals("add a new resource");
-    	
-    	logger.debug(getPageText());
-    	
-    	logout();
+        assertCurrentUrlContains("dashboard");
+        assertTextNotPresentIgnoreCase("Start a new Project");
+
+        // clickLinkWithText("UPLOAD");
+        // assertPageTitleEquals("add a new resource");
+
+        logger.debug(getPageText());
+
+        logout();
     }
 
     @Test
@@ -104,6 +105,5 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.BOTH, true);
 
     }
-
 
 }

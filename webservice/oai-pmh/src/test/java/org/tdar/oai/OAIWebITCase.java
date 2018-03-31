@@ -82,10 +82,11 @@ public class OAIWebITCase extends AbstractGenericWebTest {
         gotoPage(getBase() + "ListIdentifiers&metadataPrefix=tdar");
         response = getPageDOM();
         logger.debug(getPageCode());
-//        firstPersonIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Person')][1]", response);
-//        Assert.assertTrue("First page of ListIdentifier results includes a Person", (firstPersonIdentifier.contains("Person")));
-//        firstInstitutionIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Institution')][1]", response);
-//        Assert.assertTrue("First page of ListIdentifier results includes an Institution", (firstInstitutionIdentifier.contains("Institution")));
+        // firstPersonIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Person')][1]", response);
+        // Assert.assertTrue("First page of ListIdentifier results includes a Person", (firstPersonIdentifier.contains("Person")));
+        // firstInstitutionIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Institution')][1]",
+        // response);
+        // Assert.assertTrue("First page of ListIdentifier results includes an Institution", (firstInstitutionIdentifier.contains("Institution")));
         firstResourceIdentifier = xpathEngine.evaluate("oai:OAI-PMH/oai:ListIdentifiers/oai:header/oai:identifier[contains(., 'Resource')][1]", response);
         Assert.assertTrue("First page of ListIdentifier results includes a Resource", (firstResourceIdentifier.contains("Resource")));
     }
@@ -118,7 +119,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
             int recordCount = Integer.valueOf(xpathEngine.evaluate("count(oai:OAI-PMH/oai:" + verb + "/*)", response));
             String identifier = xpathEngine.evaluate("//oai:identifier", response);
             if (identifiers.contains(identifier)) {
-                fail("we've already seen this identifier: "+ identifier + " "+ identifiers);
+                fail("we've already seen this identifier: " + identifier + " " + identifiers);
             }
             identifiers.add(identifier);
             // must be > 0 (otherwise, repository is empty, or else the repository issued us with an unnecessary resumptionToken
@@ -144,7 +145,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
         logger.info("mods identifiers: {}", identifiers);
         List<String> modsRecords = listIdentifiersOrRecords("ListRecords", "mods");
         logger.info("mods records: {}", identifiers);
-        List<String> dcIdentifiers  = listIdentifiersOrRecords("ListIdentifiers", "oai_dc");
+        List<String> dcIdentifiers = listIdentifiersOrRecords("ListIdentifiers", "oai_dc");
         List<String> dcRecords = listIdentifiersOrRecords("ListRecords", "oai_dc");
         identifiers.clear();
         // check that the numbers make sense
@@ -171,7 +172,8 @@ public class OAIWebITCase extends AbstractGenericWebTest {
         Assert.assertEquals("Number of identifiers for tDAR format matches number of identifiers for DC format", tdarIdentifiers.size(), dcIdentifiers.size());
 
         // NB people and institutions are not disseminated in MODS, so the number should be smaller
-        Assert.assertEquals("Number of identifiers for tDAR format:" + tdarIdentifiers.size() + " greater than number of identifier for MODS format:" + modsIdentifiers.size(), tdarIdentifiers.size() , modsIdentifiers.size());
+        Assert.assertEquals("Number of identifiers for tDAR format:" + tdarIdentifiers.size() + " greater than number of identifier for MODS format:"
+                + modsIdentifiers.size(), tdarIdentifiers.size(), modsIdentifiers.size());
         Assert.assertTrue("Number of harvested records > 0", modsIdentifiers.size() > 0);
     }
 
@@ -182,7 +184,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
     // http://xmlunit.sourceforge.net/userguide/html/
 
     private void testValidOAIResponse() throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
-        testValidXMLResponse(new StringInputStream(getPageCode(), "utf8"), "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd",v);
+        testValidXMLResponse(new StringInputStream(getPageCode(), "utf8"), "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", v);
     }
 
     @Test
@@ -230,7 +232,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
             // get a person in DC format
             getRecord("oai_dc", firstPersonIdentifier);
             assertXpathExists("oai:OAI-PMH/oai:GetRecord/oai:record/oai:metadata/oai_dc:dc/dc:identifier");
-    
+
             // try to get a person in MODS format (and fail, because Person records aren't disseminated in MODS)
             getRecord("mods", firstPersonIdentifier);
             assertXpathExists("oai:OAI-PMH/oai:error[@code='cannotDisseminateFormat']");
@@ -270,7 +272,8 @@ public class OAIWebITCase extends AbstractGenericWebTest {
 
     }
 
-    private void getRecord(String metadataPrefix, String identifier) throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
+    private void getRecord(String metadataPrefix, String identifier)
+            throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
         gotoPage(getBase() + "GetRecord&metadataPrefix=" + metadataPrefix + "&identifier=" + identifier);
         testValidOAIResponse();
     }

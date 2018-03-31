@@ -17,7 +17,10 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum ResourceAccessType implements HasLabel, Localizable {
-    CITATION("Citation Only"), PUBLICALLY_ACCESSIBLE("Publicly Accessible Files"), PARTIALLY_RESTRICTED("Some Files Restricted"), RESTRICTED(
+    CITATION("Citation Only"),
+    PUBLICALLY_ACCESSIBLE("Publicly Accessible Files"),
+    PARTIALLY_RESTRICTED("Some Files Restricted"),
+    RESTRICTED(
             "Restricted Files");
 
     private String label;

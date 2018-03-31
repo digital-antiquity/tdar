@@ -69,7 +69,9 @@ public class GenericDao {
     private static final String SELECT_ID_FROM_HQL_ORDER_BY_ID_ASC = "select id from %s order by id asc";
 
     public enum FindOptions {
-        FIND_FIRST, FIND_ALL, FIND_FIRST_OR_CREATE;
+        FIND_FIRST,
+        FIND_ALL,
+        FIND_FIRST_OR_CREATE;
     }
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

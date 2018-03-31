@@ -18,12 +18,11 @@ import org.tdar.struts.action.api.lookup.ResourceLookupAction;
 
 public class LookupControllerITCase extends AbstractIntegrationControllerTestCase {
 
-    
     @Test
     @Rollback
     public void testVerifyManagedAndUnmanagedCollections() throws SolrServerException, IOException {
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
-    
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
+
         ResourceLookupAction controller = generateNewInitializedController(ResourceLookupAction.class);
         controller.setRecordsPerPage(99);
         List<Long> collectionIds = new ArrayList<Long>();

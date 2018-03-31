@@ -28,7 +28,6 @@ import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.utils.AsynchTester;
 
-
 /**
  * @author Adam Brin
  *         borrowed from http://eyalsch.wordpress.com/2010/07/13/multithreaded-tests/
@@ -70,7 +69,7 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
                                 InformationResource ir = irfv.getInformationResourceFile().getInformationResource();
                                 ir = gs.merge(ir);
-                                analyzer.processFiles(Arrays.asList(irfv),false);
+                                analyzer.processFiles(Arrays.asList(irfv), false);
                             } catch (Exception e) {
                                 logger.error("exception in workflowITCase", e);
                                 throw new TdarRecoverableRuntimeException("something happened", e);

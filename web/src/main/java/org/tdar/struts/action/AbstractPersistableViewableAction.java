@@ -17,7 +17,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;

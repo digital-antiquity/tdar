@@ -14,15 +14,13 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("OVRDRW_NOTIFY")
 public class OverdrawnNotification extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4083360442424946685L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4083360442424946685L;
 
-	
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getMessage(EmailType.OVERDRAWN_NOTIFICATION.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
-	}
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getMessage(EmailType.OVERDRAWN_NOTIFICATION.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
+    }
 }
-

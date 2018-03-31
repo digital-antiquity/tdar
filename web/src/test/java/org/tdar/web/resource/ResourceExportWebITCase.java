@@ -14,7 +14,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractAuthenticatedWebTestCase;
 
 @RunWith(MultipleWebTdarConfigurationRunner.class)
-public class ResourceExportWebITCase  extends AbstractAuthenticatedWebTestCase {
+public class ResourceExportWebITCase extends AbstractAuthenticatedWebTestCase {
 
     public static String IMAGE_TITLE_FIELDNAME = "image.title";
     public static String DESCRIPTION_FIELDNAME = "image.description";
@@ -56,7 +56,7 @@ public class ResourceExportWebITCase  extends AbstractAuthenticatedWebTestCase {
         addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, TEST_IMAGE_NAME);
         // setInput("resourceAvailability", "Public");
         submitForm();
-        
+
         gotoPage("/dashboard");
         clickLinkWithText("Export");
         logger.debug(getPageText());

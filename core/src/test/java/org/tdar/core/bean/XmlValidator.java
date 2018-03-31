@@ -37,12 +37,12 @@ public class XmlValidator {
 
     public XmlValidator() {
         try {
-        setupValidator(true);
+            setupValidator(true);
         } catch (FileNotFoundException fnf) {
-            logger.error("{}",fnf,fnf);
+            logger.error("{}", fnf, fnf);
         }
     }
-    
+
     /**
      * Validate a response against an external schema
      * 
@@ -50,7 +50,7 @@ public class XmlValidator {
      *            the URL of the schema to use to validate the document
      * @throws ConfigurationException
      * @throws SAXException
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
     public void testValidXMLResponse(InputStream code, String schemaLocation) throws ConfigurationException, SAXException, FileNotFoundException {
         testValidXML(code, schemaLocation, true);
@@ -153,7 +153,7 @@ public class XmlValidator {
                 "schemaCache/oai-identifier.xsd"));
 
         try {
-//            addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", schema);
+            // addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", schema);
         } catch (Exception e) {
             logger.error("an error occured creating the schema", e);
             assertTrue(false);

@@ -1,7 +1,6 @@
 package org.tdar.struts_base.interceptor;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,8 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.util.UrlUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.struts2.RequestUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.StrutsStatics;
 import org.apache.struts2.dispatcher.HttpParameters;
@@ -18,7 +15,6 @@ import org.apache.struts2.dispatcher.Parameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.service.ReflectionHelper;
-import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
@@ -26,7 +22,6 @@ import org.tdar.struts_base.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 
@@ -113,7 +108,7 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
         HttpServletResponse response = (HttpServletResponse) invocation.getInvocationContext().get(StrutsStatics.HTTP_RESPONSE);
 
         // it'd be really nice to use the session here, but with things like CHrome making many prefetch requests, it's impossible
-        // to tie the "actual" request with the login. Hence, we redirect with the actual path 
+        // to tie the "actual" request with the login. Hence, we redirect with the actual path
         if (StringUtils.isNotBlank(returnUrl)) {
             response.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
             response.sendRedirect("/login?url=" + UrlUtils.urlEncode(returnUrl));
@@ -160,7 +155,7 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
             logger.warn("Not setting return url for anything other than a get {}", request.getMethod());
             return null;
         }
-//        this.parameters = new String[map.size() * 2];
+        // this.parameters = new String[map.size() * 2];
         StringBuilder queryString = new StringBuilder();
         HttpParameters parameters = invocation.getInvocationContext().getParameters();
         parameters.entrySet().forEach(param_ -> {
@@ -180,15 +175,15 @@ public abstract class BaseAuthenticationInterceptor extends AbstractAuthenticati
                     queryString.append("&");
                 }
                 queryString.append(key).append("=").append(param.getValue());
-                
+
             }
-            
+
         });
-        
+
         if (returnUrl.startsWith("//")) {
             returnUrl = StringUtils.substring(returnUrl, 1);
         }
-        
+
         if (queryString.length() > 0) {
             returnUrl += "?" + queryString;
         }

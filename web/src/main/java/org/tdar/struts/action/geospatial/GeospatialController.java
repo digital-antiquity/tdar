@@ -33,7 +33,6 @@ public class GeospatialController extends AbstractDatasetController<Geospatial> 
 
     private static final long serialVersionUID = 6576781526708737335L;
 
-
     @Override
     public Class<Geospatial> getPersistableClass() {
         return Geospatial.class;

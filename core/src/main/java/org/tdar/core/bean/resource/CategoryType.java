@@ -10,5 +10,6 @@ package org.tdar.core.bean.resource;
  * @version $Revision$
  */
 public enum CategoryType {
-    CATEGORY, SUBCATEGORY; // VARIABLE
+    CATEGORY,
+    SUBCATEGORY; // VARIABLE
 }

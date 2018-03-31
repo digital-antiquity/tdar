@@ -56,8 +56,7 @@ public class SensoryDataController extends AbstractInformationResourceController
         Collections.sort(sensoryDataImages);
         Collections.sort(sensoryDataScans);
     }
-    
-    
+
     public void saveCustomMetadata() {
         AbstractSequenced.applySequence(getSensoryDataImages());
         resourceService.saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataImages(),

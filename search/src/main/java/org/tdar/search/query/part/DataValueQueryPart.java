@@ -12,6 +12,7 @@ import org.tdar.search.query.QueryFieldNames;
 public class DataValueQueryPart extends FieldQueryPart<String> {
 
     private boolean escaped = false;
+
     public DataValueQueryPart() {
     }
 
@@ -24,9 +25,8 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         this.escaped = escaped;
     }
 
-
     public DataValueQueryPart(String text, Operator operator, List<String> contents) {
-        super(QueryFieldNames.VALUE, text,operator, contents);
+        super(QueryFieldNames.VALUE, text, operator, contents);
     }
 
     @Override
@@ -36,14 +36,14 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         if (escaped) {
             content.setPhraseFormatters(PhraseFormatter.EMBEDDED);
-        } else{
+        } else {
             content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         }
         subq.append(content);
         FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_PHRASE, getFieldValues());
         if (escaped) {
             content2.setPhraseFormatters(PhraseFormatter.EMBEDDED);
-        } else{
+        } else {
             content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         }
         subq.append(content2);

@@ -51,7 +51,12 @@ public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implem
     }
 
     public enum Level {
-        CONTINENT("Continent"), COUNTRY("Country"), STATE("State / Territory"), COUNTY("County"), CITY("City"), FIPS_CODE("Fips Code");
+        CONTINENT("Continent"),
+        COUNTRY("Country"),
+        STATE("State / Territory"),
+        COUNTY("County"),
+        CITY("City"),
+        FIPS_CODE("Fips Code");
 
         private String label;
 

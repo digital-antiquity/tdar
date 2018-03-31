@@ -53,7 +53,6 @@ public class OaiPmhServer {
     @Autowired
     private GenericService genericService;
 
-
     private OAIVerb verb;
 
     private OAIMetadataFormat requestedFormat;
@@ -116,11 +115,11 @@ public class OaiPmhServer {
             error.setValue(oaie.getMessage());
             response.getError().add(error);
         } catch (Throwable e) {
-            logger.error("{}",e,e);
+            logger.error("{}", e, e);
         }
         Response build = Response.ok(factory.createOAIPMH(response)).build();
         logger.debug("{} - {}", response, service);
-        logger.debug(">>>  {}?{}", servletRequest.getRequestURI(),servletRequest.getQueryString());
+        logger.debug(">>>  {}?{}", servletRequest.getRequestURI(), servletRequest.getQueryString());
         return build;
     }
 
@@ -136,7 +135,8 @@ public class OaiPmhServer {
      * @param resumptionToken_
      * @return
      */
-    private RequestType createRequest(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_, String resumptionToken_,
+    private RequestType createRequest(String verb_, String identifier_, String metadataPrefix_, String set, String from_, String until_,
+            String resumptionToken_,
             HttpServletRequest servletRequest) {
         RequestType request = new RequestType();
         if (identifier_ != null) {
@@ -159,7 +159,7 @@ public class OaiPmhServer {
         }
         request.setValue(servletRequest.getRequestURI());
         request.setVerb(VerbType.fromValue(verb_));
-        logger.debug("<<< {}?{}", servletRequest.getRequestURI(),servletRequest.getQueryString());
+        logger.debug("<<< {}?{}", servletRequest.getRequestURI(), servletRequest.getQueryString());
         return request;
     }
 
@@ -256,13 +256,13 @@ public class OaiPmhServer {
         }
 
         if (StringUtils.isNotBlank(from_)) {
-            String local = StringUtils.replace(from_, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00 
-            DateTime dt = new DateTime(local,DateTimeZone.UTC);
+            String local = StringUtils.replace(from_, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00
+            DateTime dt = new DateTime(local, DateTimeZone.UTC);
             from = dt.toDateTime(DateTimeZone.getDefault()).toDate();
         }
         if (StringUtils.isNotBlank(until_)) {
-            String local = StringUtils.replace(until_, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00 
-            DateTime dt = new DateTime(local,DateTimeZone.UTC);
+            String local = StringUtils.replace(until_, " ", "+"); // fix 2016-12-21T18:10:37.445 00:00 from DataOne to 2016-12-21T18:10:37.445+00:00
+            DateTime dt = new DateTime(local, DateTimeZone.UTC);
             until = dt.toDateTime(DateTimeZone.getDefault()).toDate();
         }
 

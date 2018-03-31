@@ -18,7 +18,6 @@ import org.dataone.service.types.v2.SystemMetadata;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
-import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResource;
 
 public interface DataOneService extends DataOneConstants {

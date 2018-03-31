@@ -127,7 +127,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         box.setWest(-107.78792202517137);
         box.setNorth(46.08765565625065);
         box.setSouth(36.08765565625065);
-        logger.debug("valid:{}",box.isValid());
+        logger.debug("valid:{}", box.isValid());
         assertTrue(box.isValid());
         document.getLatitudeLongitudeBoxes().add(box);
         genericService.saveOrUpdate(document.getLatitudeLongitudeBoxes());
@@ -191,9 +191,9 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
             Document doc = builder.parse(new ByteArrayInputStream(string.getBytes()));
         } catch (SAXException e) {
             exceptions = true;
-            logger.error("e: {}",e,e);
+            logger.error("e: {}", e, e);
         }
-        assertFalse("Should not have seen any parsing exceptions",exceptions);
+        assertFalse("Should not have seen any parsing exceptions", exceptions);
 
         logger.debug("{}", controller.getActionErrors());
         // the record we created should be the absolute first record

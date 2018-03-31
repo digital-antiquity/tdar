@@ -25,7 +25,7 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
     public MultipleWebTdarConfigurationRunner(Class<?> klass) throws InitializationError {
         super(klass);
     }
-    
+
     private Description describeTest(FrameworkMethod method) {
         Description description = Description.createSuiteDescription(testName(method), method.getAnnotations());
         try {
@@ -46,7 +46,6 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
         }
         return description;
     }
-
 
     @Override
     protected void runChild(final FrameworkMethod method, RunNotifier notifier) {
@@ -71,7 +70,6 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
         }
         setConfiguration(method, currentConfig);
     }
-
 
     protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
 

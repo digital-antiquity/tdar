@@ -5,5 +5,6 @@
 // Generated on: 2015.05.19 at 03:35:05 PM MST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.openarchives.org/OAI/2.0/oai-identifier", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.openarchives.org/OAI/2.0/oai-identifier",
+        elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.tdar.oai.bean.generated.oai_identifier._2_0;

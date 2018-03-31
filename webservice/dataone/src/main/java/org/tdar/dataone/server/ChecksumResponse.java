@@ -58,7 +58,7 @@ public class ChecksumResponse extends AbstractDataOneResponse {
             }
             return Response.ok().entity(checksumResponse).build();
         } catch (Exception e) {
-            logger.error("error in checksum response: {}",e,e);
+            logger.error("error in checksum response: {}", e, e);
             return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
         }
     }

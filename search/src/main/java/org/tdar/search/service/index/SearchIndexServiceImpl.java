@@ -143,18 +143,18 @@ public class SearchIndexServiceImpl implements SearchIndexService {
             index(record);
             return;
         }
-        
-        if (event.getType() == EventType.REINDEX_CHILDREN)  {
+
+        if (event.getType() == EventType.REINDEX_CHILDREN) {
             try {
-            partialIndexAllResourcesInCollectionSubTreeAsync((ResourceCollection) event.getRecord());
+                partialIndexAllResourcesInCollectionSubTreeAsync((ResourceCollection) event.getRecord());
             } catch (Throwable t) {
-                logger.error("{}",t,t);
+                logger.error("{}", t, t);
             }
             return;
         }
 
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @EventListener
     public void handleIndexingEvent(TdarEvent event) throws Exception {
@@ -173,11 +173,11 @@ public class SearchIndexServiceImpl implements SearchIndexService {
             return;
         }
 
-        if (event.getType() == EventType.REINDEX_CHILDREN)  {
+        if (event.getType() == EventType.REINDEX_CHILDREN) {
             try {
-            partialIndexAllResourcesInCollectionSubTreeAsync((ResourceCollection) event.getRecord());
+                partialIndexAllResourcesInCollectionSubTreeAsync((ResourceCollection) event.getRecord());
             } catch (Throwable t) {
-                logger.error("{}",t,t);
+                logger.error("{}", t, t);
             }
             return;
         }

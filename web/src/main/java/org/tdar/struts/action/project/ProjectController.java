@@ -64,7 +64,7 @@ public class ProjectController extends AbstractResourceController<Project> {
 
     @Override
     public void indexPersistable() throws SearchIndexException, IOException {
-            searchIndexService.indexProjectAsync(getPersistable());
+        searchIndexService.indexProjectAsync(getPersistable());
     }
 
     Object result;

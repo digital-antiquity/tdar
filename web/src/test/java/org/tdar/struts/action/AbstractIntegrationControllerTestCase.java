@@ -70,23 +70,22 @@ import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
 import com.opensymphony.xwork2.inject.Container;
 import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
 
-@ContextConfiguration(classes = {TdarSearchAppConfiguration.class, AbstractIntegrationControllerTestCase.SimpleCacheConfig.class})
+@ContextConfiguration(classes = { TdarSearchAppConfiguration.class, AbstractIntegrationControllerTestCase.SimpleCacheConfig.class })
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationControllerTestCase extends AbstractIntegrationTestCase implements ErrorListener {
-
 
     @Configuration
     @EnableCaching
     static class SimpleCacheConfig {
 
-      // Simulating your caching configuration
-      @Bean
-      CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("popularResources");
-      }
+        // Simulating your caching configuration
+        @Bean
+        CacheManager cacheManager() {
+            return new ConcurrentMapCacheManager("popularResources");
+        }
 
     }
-    
+
     protected HttpServletRequest defaultHttpServletRequest = new MockHttpServletRequest();
 
     protected HttpServletRequest httpServletRequest = defaultHttpServletRequest;
@@ -261,7 +260,9 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         init(controller, null);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.struts.action.TestFixtureSetup#getSessionData()
      */
     @Override
@@ -276,14 +277,18 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         this.httpServletRequest = httpServletRequest;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.struts.action.TestFixtureSetup#getServletRequest()
      */
     public HttpServletRequest getServletRequest() {
         return httpServletRequest;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.struts.action.TestFixtureSetup#getServletPostRequest()
      */
     public HttpServletRequest getServletPostRequest() {
@@ -298,13 +303,14 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         this.httpServletResponse = httpServletResponse;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.struts.action.TestFixtureSetup#getServletResponse()
      */
     public HttpServletResponse getServletResponse() {
         return httpServletResponse;
     }
-
 
     /**
      * @param ignoreActionErrors
@@ -375,7 +381,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     public EntityService getEntityService() {
         return entityService;
     }
-    
+
     @Override
     public GenericService getGenericService() {
         return genericService;

@@ -1,4 +1,4 @@
-    package org.tdar.web;
+package org.tdar.web;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.not;
@@ -36,13 +36,13 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
     public Long getItemId(String name) {
         switch (name) {
-        // HARD CODED to ta database
-        case "error":
-            return 1L;
-        case "unknown":
-            return 3L;
-        case "decline":
-            return 2L;
+            // HARD CODED to ta database
+            case "error":
+                return 1L;
+            case "unknown":
+                return 3L;
+            case "decline":
+                return 2L;
         }
         return -1L;
     }

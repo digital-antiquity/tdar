@@ -66,7 +66,7 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
     public void cronQueueEmail() {
         scheduledProcessService.queue(SendEmailProcess.class);
     }
-    
+
     /*
      * (non-Javadoc)
      * 
@@ -75,7 +75,7 @@ public class WebScheduledProcessServiceImpl implements WebScheduledProcessServic
     @Override
     @Scheduled(fixedDelay = ScheduledProcessService.FIVE_MIN_MS)
     public void cronProcessEmailErrors() {
-    	scheduledProcessService.queue(PollEmailBouncesProcess.class);
+        scheduledProcessService.queue(PollEmailBouncesProcess.class);
     }
 
     /*

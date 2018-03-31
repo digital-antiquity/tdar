@@ -30,10 +30,18 @@ import org.tdar.utils.MessageHelper;
  */
 @SuppressWarnings("unchecked")
 public enum Permissions implements HasLabel, Localizable {
-    NONE(-1000), VIEW_ALL(100, Resource.class, ResourceCollection.class), MODIFY_METADATA(400, Resource.class, ResourceCollection.class), MODIFY_RECORD(500,
-            Resource.class, ResourceCollection.class), ADD_TO_COLLECTION(4000, ResourceCollection.class), REMOVE_FROM_COLLECTION(4500,
-                    ResourceCollection.class), ADMINISTER_COLLECTION(5000,
-                            ResourceCollection.class), EDIT_ACCOUNT(10000, BillingAccount.class), EDIT_INTEGRATION(2000, DataIntegrationWorkflow.class);
+    NONE(-1000),
+    VIEW_ALL(100, Resource.class, ResourceCollection.class),
+    MODIFY_METADATA(400, Resource.class, ResourceCollection.class),
+    MODIFY_RECORD(500,
+            Resource.class, ResourceCollection.class),
+    ADD_TO_COLLECTION(4000, ResourceCollection.class),
+    REMOVE_FROM_COLLECTION(4500,
+            ResourceCollection.class),
+    ADMINISTER_COLLECTION(5000,
+            ResourceCollection.class),
+    EDIT_ACCOUNT(10000, BillingAccount.class),
+    EDIT_INTEGRATION(2000, DataIntegrationWorkflow.class);
 
     private Integer effectivePermissions;
     private List<Class<? extends Persistable>> contexts;
@@ -84,16 +92,16 @@ public enum Permissions implements HasLabel, Localizable {
         }
         return permissions;
     }
-    
+
     public boolean matches(Permissions p) {
-        if (p == null ) {
+        if (p == null) {
             return false;
         }
-        
+
         if (p.getEffectivePermissions() > getEffectivePermissions()) {
             return true;
         }
-        
+
         return false;
     }
 

@@ -1,7 +1,6 @@
 package org.tdar.struts_base.action;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +26,6 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
@@ -84,7 +82,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String UNKNOWN_ERROR = "exception"; // 500
     public static final String BAD_REQUEST = "badrequest"; // 400
 
-//    public static final String TYPE_TDAR_REDIRECT = "redirect";
+    // public static final String TYPE_TDAR_REDIRECT = "redirect";
 
     public static final String FORBIDDEN = "forbidden"; // 403
     public static final String NOT_FOUND = "not_found"; // 404
@@ -182,8 +180,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.sessionData = sessionData;
     }
 
-
-
     public String getServerEnvironmentStatus() {
         return getTdarConfiguration().getServerEnvironmentStatus();
     }
@@ -232,7 +228,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return output.toString();
     }
 
-
     protected Logger getLogger() {
         return logger;
     }
@@ -275,7 +270,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 this.addFieldError(field, getText(error));
             }
         }
-        
+
         if (fieldErrors.size() > 0 && !hasActionErrors()) {
             addActionError(getText("tdarActionSupport.error_occurred"));
         }
@@ -303,7 +298,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void setServletRequest(HttpServletRequest servletRequest) {
         this.servletRequest = servletRequest;
     }
-    
+
     public String getContextPath() {
         return getServletRequest().getContextPath();
     }
@@ -319,7 +314,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     @Deprecated
     /**
-     * Avoid direct references to the request object and http methods.  It's a sign that you are doing something
+     * Avoid direct references to the request object and http methods. It's a sign that you are doing something
      * best handled by an Interceptor or a ResultType.
      */
     protected final boolean isPostRequest() {
@@ -337,7 +332,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public Integer getHttpsPort() {
         return getTdarConfiguration().getHttpsPort();
     }
-
 
     public boolean isSecure() {
         if (servletRequest.isSecure() || StringUtils.startsWithIgnoreCase(servletRequest.getRequestURL().toString(), "https:")) {
@@ -368,18 +362,16 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             port = ":" + getTdarConfiguration().getStaticContentPort();
         }
 
-        return String.format("%s//%s%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port,getStaticContext());
+        return String.format("%s//%s%s%s", getProtocol(), getTdarConfiguration().getStaticContentHost(), port, getStaticContext());
     }
-    
+
     private String getStaticContext() {
         return getTdarConfiguration().getStaticContext();
     }
 
-
     public String getCurrentUrl() {
         return UrlService.getOriginalUrlPath(servletRequest);
     }
-
 
     public String getJavascriptErrorLogDefault() {
         return JS_ERRORLOG_NOSCRIPT;
@@ -433,6 +425,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getText(String aTextName, Object... args) {
         return super.getText(aTextName, Arrays.asList(args));
     }
+
     public String getMoreInfoUrlKey() {
         return moreInfoUrlKey;
     }
@@ -440,8 +433,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public void setMoreInfoUrlKey(String moreInfoUrl) {
         this.moreInfoUrlKey = moreInfoUrl;
     }
-
-
 
     public void addActionErrors(List<String> errors) {
         if (CollectionUtils.isEmpty(errors)) {
@@ -451,7 +442,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             addActionError(error);
         }
     }
-    
 
     public boolean isUseCDN() {
         return getTdarConfiguration().shouldUseCDN();
@@ -477,7 +467,6 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return fileProxy;
 
     }
-
 
     /**
      * Throw an exception with a status code
@@ -523,15 +512,14 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     /**
      * Indicates whether the view layer should show sub-navigation elements (usually true while logged in, but some actions may wish to disable).
      *
-     * */
+     */
     public boolean isSubnavEnabled() {
         return true;
     }
-    
+
     public boolean isNavSearchBoxVisible() {
         return true;
     }
-    
 
     /**
      * show the left sidebar in the future should override page.properties
@@ -541,7 +529,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isLeftSidebar() {
         return false;
     }
-    
+
     /**
      * show the right sidebar in the future should override page.properties
      * 
@@ -550,7 +538,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isRightSidebar() {
         return false;
     }
- 
+
     @Override
     public Collection<String> getErrorMessages() {
         return getActionErrors();
@@ -558,13 +546,14 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
 
     /**
      * Remove null items from the specified list(s).
+     * 
      * @param lists
      */
-    public final void stripNulls(List<?> ...lists) {
+    public final void stripNulls(List<?>... lists) {
         Arrays.stream(lists)
-                //if list is null itself, skip it
+                // if list is null itself, skip it
                 .filter(list -> list != null)
-                //otherwise, remove all the null items
+                // otherwise, remove all the null items
                 .forEach(list -> {
                     list.removeIf(item -> item == null);
                 });
@@ -587,5 +576,5 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     private String doubleSubmitKey;
-    
+
 }

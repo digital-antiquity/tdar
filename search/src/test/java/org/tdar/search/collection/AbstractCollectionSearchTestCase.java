@@ -13,7 +13,7 @@ public abstract class AbstractCollectionSearchTestCase extends AbstractWithIndex
     @Override
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.COLLECTION);
-        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.COLLECTION), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.COLLECTION), getAdminUser());
     };
 
     @Autowired

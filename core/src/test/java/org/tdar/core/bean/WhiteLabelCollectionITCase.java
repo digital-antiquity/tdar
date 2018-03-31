@@ -45,16 +45,16 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
 
     private Long setup() {
         ResourceCollection rc = new ResourceCollection();
-        rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
+        rc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false, false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
         rc.markUpdated(getAdminUser());
-//        Institution institution = new Institution("Bob's burgers");
+        // Institution institution = new Institution("Bob's burgers");
         genericService.saveOrUpdate(rc);
         // Note: if you remove @Cascade annotation from WhiteLabelCollection.institution, you must also uncomment the next line.
         // genericService.save(institution);
 
-//        rc.getProperties().setInstitution(institution);
+        // rc.getProperties().setInstitution(institution);
         genericService.save(rc);
         // todo: see if same is true for genericService.saveOrUpdate()
         assertThat(rc.getId(), not(nullValue()));
@@ -81,7 +81,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
             }
         }
 
-        assertEquals("expecting 1 resource collection",1, rcs.size());
+        assertEquals("expecting 1 resource collection", 1, rcs.size());
     }
 
     @Test
@@ -115,7 +115,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         logger.debug("wlcid:{},  resources:{}", wlcId, wlc.getUnmanagedResources());
         assertThat(wlc.getUnmanagedResources().size(), greaterThan(0));
         if (wlc.getProperties() == null) {
-            wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
+            wlc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false, false));
         }
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().getFeaturedResources().add(featuredDocument);
@@ -125,17 +125,15 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @SuppressWarnings("unused")
     private ResourceCollection createAndSaveWhiteLabelCollection() {
         ResourceCollection rc = new ResourceCollection();
-        rc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
+        rc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false, false));
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
         rc.markUpdated(getAdminUser());
-//        Institution institution = new Institution("Bob's burgers");
-//        rc.getProperties().setInstitution(institution);
+        // Institution institution = new Institution("Bob's burgers");
+        // rc.getProperties().setInstitution(institution);
         genericService.save(rc);
         return rc;
     }
-    
-    
 
     @Test
     @Rollback
@@ -151,7 +149,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testWhitelabelsetup() {
-        CollectionDisplayProperties props = new CollectionDisplayProperties(false,false,false,false,false,false,false);
+        CollectionDisplayProperties props = new CollectionDisplayProperties(false, false, false, false, false, false, false);
         ResourceCollection c = new ResourceCollection();
         c.setName("test");
         c.markUpdated(getAdminUser());

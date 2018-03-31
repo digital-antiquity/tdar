@@ -25,7 +25,7 @@ public class ResourceTypeBoostITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testFacetPivotStats() throws SolrServerException, IOException, ParseException , SearchException, SearchIndexException {
+    public void testFacetPivotStats() throws SolrServerException, IOException, ParseException, SearchException, SearchIndexException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.setMapFacet(true);

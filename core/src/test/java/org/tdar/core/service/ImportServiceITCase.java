@@ -46,7 +46,6 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         logger.debug(serializationService.convertToXML(newDoc));
     }
 
-    
     @Test
     @Rollback
     public void testImportWithAuthorizedUser() throws Exception {
@@ -54,14 +53,14 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         document.setTitle("test");
         document.setDescription("test description");
         document.setDocumentType(DocumentType.BOOK);
-        document.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), new TdarUser(null, null, null, getBillingUser().getUsername()), Permissions.ADMINISTER_COLLECTION));
+        document.getAuthorizedUsers()
+                .add(new AuthorizedUser(getAdminUser(), new TdarUser(null, null, null, getBillingUser().getUsername()), Permissions.ADMINISTER_COLLECTION));
         Document newDoc = importService.bringObjectOntoSession(document, getAdminUser(), null, null, true);
         genericService.synchronize();
         Set<AuthorizedUser> authorizedUsers = newDoc.getAuthorizedUsers();
-        logger.debug("AU:{}",authorizedUsers);
+        logger.debug("AU:{}", authorizedUsers);
         assertEquals(authorizedUsers.iterator().next().getUser(), getBillingUser());
     }
-
 
     @SuppressWarnings("deprecation")
     @Test
@@ -69,15 +68,15 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
     public void testCloneInternalCollection() throws Exception {
         Document document = genericService.find(Document.class, 4287L);
         Long id = document.getId();
-        ResourceCollection rc = new ResourceCollection(document,getAdminUser());
+        ResourceCollection rc = new ResourceCollection(document, getAdminUser());
         rc.setDescription("test");
         rc.setName("name");
         rc.markUpdated(getAdminUser());
         genericService.saveOrUpdate(rc);
         document.getManagedResourceCollections().add(rc);
-        
+
         genericService.saveOrUpdate(document);
-        logger.debug("IRC:{}",document.getAuthorizedUsers());
+        logger.debug("IRC:{}", document.getAuthorizedUsers());
         genericService.synchronize();
         Document newDoc = importService.cloneResource(document, getAdminUser());
         genericService.synchronize();
@@ -87,11 +86,8 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("{}", document.getAuthorizedUsers());
         logger.debug("{}", newDoc.getAuthorizedUsers());
         // add one for the new authorized user
-        Assert.assertEquals(document.getAuthorizedUsers().size() +1, newDoc.getAuthorizedUsers().size());
+        Assert.assertEquals(document.getAuthorizedUsers().size() + 1, newDoc.getAuthorizedUsers().size());
         logger.debug(serializationService.convertToXML(newDoc));
     }
-    
-
-    
 
 }

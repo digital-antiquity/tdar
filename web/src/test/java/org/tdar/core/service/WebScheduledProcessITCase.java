@@ -10,7 +10,7 @@ public class WebScheduledProcessITCase extends AbstractIntegrationWebTestCase {
 
     @Autowired
     WebScheduledProcessService scheduledProcessService;
-    
+
     @Test
     @Rollback(true)
     public void testAccountUsageHistory() {

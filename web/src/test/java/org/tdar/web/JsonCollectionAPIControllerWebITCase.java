@@ -44,8 +44,8 @@ import com.sun.media.rtsp.protocol.StatusCode;
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 // @ContextConfiguration(classes = TdarAppConfiguration.class)
 public class JsonCollectionAPIControllerWebITCase extends AbstractWebTestCase {
-//FIXME: too much duplicate code with APIControllerWebITCase (subclass and share)
-    
+    // FIXME: too much duplicate code with APIControllerWebITCase (subclass and share)
+
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
     private APIClient apiClient;
@@ -54,7 +54,6 @@ public class JsonCollectionAPIControllerWebITCase extends AbstractWebTestCase {
     public void setupAPIClient() {
         apiClient = new APIClient(CONFIG.getBaseSecureUrl(), 500);
     }
-
 
     private JaxbResultContainer setupValidLogin() {
         try {
@@ -110,19 +109,18 @@ public class JsonCollectionAPIControllerWebITCase extends AbstractWebTestCase {
         JaxbResultContainer login = setupValidLogin();
         CloseableHttpClient client2 = SimpleHttpUtils.createClient();
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/collection/upload");
-        
-//        String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/newDocument.xml"));
+
+        // String docXml = FileUtils.readFileToString(TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/xml/newDocument.xml"));
 
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        //FIXME: put in test-resources
+        // FIXME: put in test-resources
         String docXml = "{\"status\" : \"ACTIVE\",\"sortBy\" : \"TITLE\",\"orientation\" : \"LIST\",\"name\" : \"Viking\",\"description\" : \"Viking test\"}";
-        
+
         builder.addTextBody("record", docXml, ContentType.create("application/json", Consts.UTF_8));
         // add sessionToken
         builder.addTextBody(login.getSessionKeyName(), login.getApiToken(), ContentType.create("application/text", Consts.UTF_8));
         post.setEntity(builder.build());
 
-        
         CloseableHttpResponse execute = client2.execute(post);
         int statusCode = execute.getStatusLine().getStatusCode();
         logger.debug("status:{}", statusCode);

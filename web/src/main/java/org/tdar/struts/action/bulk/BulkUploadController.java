@@ -45,7 +45,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
 
     @Autowired
     private transient FileAnalyzer analyzer;
-    
+
     @Autowired
     private transient BulkUploadService bulkUploadService;
 
@@ -66,40 +66,40 @@ public class BulkUploadController extends AbstractInformationResourceController<
             addActionError(getText("bulkUploadController.no_files"));
             return INPUT;
         }
-        
-//        getLogger().debug("ticketId: {} ", getTicketId());
-//        getLogger().debug("proxy:    {}", getFileProxies());
-//        getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
-//
+
+        // getLogger().debug("ticketId: {} ", getTicketId());
+        // getLogger().debug("proxy: {}", getFileProxies());
+        // getLogger().info("{} and names {}", getUploadedFiles(), getUploadedFilesFileName());
+        //
         AuthWrapper<InformationResource> auth = new AuthWrapper<InformationResource>(getImage(), isAuthenticated(), getAuthenticatedUser(), isEditor());
-//        
-//        fsw.setBulkUpload(isBulkUpload());
-//        fsw.setFileProxies(getFileProxies());
-//        fsw.setTextInput(false);
-//        fsw.setMultipleFileUploadEnabled(isMultipleFileUploadEnabled());
-//        fsw.setTicketId(getTicketId());
-//        fsw.setUploadedFilesFileName(getUploadedFilesFileName());
-//        fsw.setUploadedFiles(getUploadedFiles());
+        //
+        // fsw.setBulkUpload(isBulkUpload());
+        // fsw.setFileProxies(getFileProxies());
+        // fsw.setTextInput(false);
+        // fsw.setMultipleFileUploadEnabled(isMultipleFileUploadEnabled());
+        // fsw.setTicketId(getTicketId());
+        // fsw.setUploadedFilesFileName(getUploadedFilesFileName());
+        // fsw.setUploadedFiles(getUploadedFiles());
 
         Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, fsw, null);
-        
+
         setupAccountForSaving();
         getCreditProxies().clear();
         getGenericService().detachFromSession(getPersistable());
         getGenericService().detachFromSession(getAuthenticatedUser());
         // getGenericService().detachFromSession(getPersistable().getResourceCollections());
-//        for (ResourceCreator rc : image.getResourceCreators()) {
-//            getLogger().debug("resourceCreators:{} {}", rc, rc.getId());
-//        }
+        // for (ResourceCreator rc : image.getResourceCreators()) {
+        // getLogger().debug("resourceCreators:{} {}", rc, rc.getId());
+        // }
 
-            getLogger().info("running asyncronously");
-            bulkUploadService.saveAsync(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
-            setPersistable(null);
-//        } else {
-//            getLogger().info("running inline");
-//            bulkUploadService.save(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
-//            setPersistable(null);
-//        }
+        getLogger().info("running asyncronously");
+        bulkUploadService.saveAsync(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
+        setPersistable(null);
+        // } else {
+        // getLogger().info("running inline");
+        // bulkUploadService.save(getPersistable(), getAuthenticatedUser().getId(), getTicketId(), fileProxiesToProcess, getAccountId());
+        // setPersistable(null);
+        // }
         // setPersistable(null);
         return SUCCESS_ASYNC;
     }
@@ -151,7 +151,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         return bulkFileName;
     }
 
-
     @Override
     public boolean isMultipleFileUploadEnabled() {
         return true;
@@ -166,7 +165,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
     public boolean isBulkUpload() {
         return true;
     }
-
 
     @Override
     protected void postSaveCleanup(String returnString) {

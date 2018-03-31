@@ -56,10 +56,10 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
 
     @Autowired
     DatasetDao datasetDao;
-    
+
     @Autowired
     FileAnalyzer analyzer;
-    
+
     @Test
     @Rollback
     public void testUnassignedInvoice() {
@@ -94,7 +94,6 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         updateModel(model, false, false, false);
         assertTrue(re.accountHasMinimumForNewResource(account, null));
     }
-
 
     @Test
     @Rollback
@@ -186,7 +185,7 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
 
         assertFalse(account.getResources().contains(resource));
 
-        AccountAdditionStatus status = accountService.updateQuota(account, resource.getSubmitter() ,resource);
+        AccountAdditionStatus status = accountService.updateQuota(account, resource.getSubmitter(), resource);
         genericService.refresh(account);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status);
         logger.info("{} space used in bytes ({})", account.getSpaceUsedInBytes(), spaceUsedInBytes);
@@ -202,7 +201,6 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         assertEquals(filesUsed.longValue() + resource.getFilesUsed(), account.getFilesUsed().longValue());
     }
 
-    
     @Test
     @Rollback
     public void testAccountUpdateQuotaDeletedFast() throws InstantiationException, IllegalAccessException, FileNotFoundException {
@@ -221,7 +219,7 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
 
         assertFalse(account.getResources().contains(resource));
 
-        AccountAdditionStatus status = accountService.updateQuota(account, resource.getSubmitter() ,resource);
+        AccountAdditionStatus status = accountService.updateQuota(account, resource.getSubmitter(), resource);
         genericService.refresh(account);
         Long spaceUsedInBytesAfterAdd = account.getSpaceUsedInBytes();
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status);
@@ -237,13 +235,13 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
         // assertEquals(resourcesUsed.longValue() + resource.getResourcesUsed(), account.getResourcesUsed().longValue());
         assertEquals(filesUsed.longValue() + resource.getFilesUsed(), account.getFilesUsed().longValue());
 
-        AccountAdditionStatus status2 = accountService.updateQuota(account, resource2.getSubmitter() ,resource2);
-        logger.debug("{}",status2);
+        AccountAdditionStatus status2 = accountService.updateQuota(account, resource2.getSubmitter(), resource2);
+        logger.debug("{}", status2);
         genericService.refresh(account);
         resource2.setStatus(Status.DELETED);
         genericService.saveOrUpdate(resource2);
         genericService.refresh(account);
-        AccountAdditionStatus status3 = accountService.updateQuota(account, resource2.getSubmitter() ,resource2);
+        AccountAdditionStatus status3 = accountService.updateQuota(account, resource2.getSubmitter(), resource2);
         logger.debug("{} {} {} {}", status3, account.getStatus(), account.getSpaceUsedInBytes(), account.getFilesUsed());
 
         assertEquals(spaceUsedInBytesAfterAdd.longValue(), account.getSpaceUsedInBytes().longValue());
@@ -251,17 +249,14 @@ public class AccountITCase extends AbstractIntegrationTestCase implements TestBi
 
         genericService.refresh(account);
         resource2.setUpdated(false);
-        AccountAdditionStatus status4 = accountService.updateQuota(account, resource2.getSubmitter() ,resource2);
-        logger.debug("{} {} {}",status2, status3,status4);
+        AccountAdditionStatus status4 = accountService.updateQuota(account, resource2.getSubmitter(), resource2);
+        logger.debug("{} {} {}", status2, status3, status4);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status2);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status3);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status4);
 
     }
 
-    
-    
-    
     @Test
     @Rollback
     public void testAccountUpdateQuotaOverdrawnMinorEdit() throws InstantiationException, IllegalAccessException, FileNotFoundException {

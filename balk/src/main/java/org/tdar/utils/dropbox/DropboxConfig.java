@@ -91,7 +91,7 @@ public class DropboxConfig {
     }
 
     public String getUploadPath() {
-        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.UPLOAD_TO_TDAR , "/");
+        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.UPLOAD_TO_TDAR, "/");
     }
 
     public String getDonePdfa() {
@@ -103,23 +103,23 @@ public class DropboxConfig {
     }
 
     public String getCreatePdfaPath() {
-        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.CREATE_PDFA , "/");
+        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.CREATE_PDFA, "/");
     }
 
     public Object getCombinePath() {
-        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.COMBINE_PDF_DIR , "/");
+        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.COMBINE_PDF_DIR, "/");
     }
 
     public String getInputPath() {
-        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.INPUT , "/");
+        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.INPUT, "/");
     }
 
     public String getOutputPath() {
-        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.OUTPUT , "/");
+        return StringUtils.appendIfMissing(getBaseDropboxPath() + DropboxConstants.OUTPUT, "/");
     }
 
     public String[] getEmailAddresses() {
-        String props = getProperties().getProperty("dropbox.email", "adam.brin@asu.edu , Rachel.Fernandez.1@asu.edu" );
+        String props = getProperties().getProperty("dropbox.email", "adam.brin@asu.edu , Rachel.Fernandez.1@asu.edu");
         return props.split(",");
     }
 

@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -15,16 +14,17 @@ import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-
 /**
- * Define requestType, indicating the protocol request that 
- *       led to the response. Element content is BASE-URL, attributes are arguments 
- *       of protocol request, attribute-values are values of arguments of protocol 
- *       request
+ * Define requestType, indicating the protocol request that
+ * led to the response. Element content is BASE-URL, attributes are arguments
+ * of protocol request, attribute-values are values of arguments of protocol
+ * request
  * 
- * <p>Java class for requestType complex type.
+ * <p>
+ * Java class for requestType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="requestType">
@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "requestType", propOrder = {
-    "value"
+        "value"
 })
 public class RequestType {
 
@@ -72,9 +72,9 @@ public class RequestType {
      * Gets the value of the value property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getValue() {
         return value;
@@ -84,9 +84,9 @@ public class RequestType {
      * Sets the value of the value property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setValue(String value) {
         this.value = value;
@@ -96,9 +96,9 @@ public class RequestType {
      * Gets the value of the verb property.
      * 
      * @return
-     *     possible object is
-     *     {@link VerbType }
-     *     
+     *         possible object is
+     *         {@link VerbType }
+     * 
      */
     public VerbType getVerb() {
         return verb;
@@ -108,9 +108,9 @@ public class RequestType {
      * Sets the value of the verb property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link VerbType }
-     *     
+     *            allowed object is
+     *            {@link VerbType }
+     * 
      */
     public void setVerb(VerbType value) {
         this.verb = value;
@@ -120,9 +120,9 @@ public class RequestType {
      * Gets the value of the identifier property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getIdentifier() {
         return identifier;
@@ -132,9 +132,9 @@ public class RequestType {
      * Sets the value of the identifier property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setIdentifier(String value) {
         this.identifier = value;
@@ -144,9 +144,9 @@ public class RequestType {
      * Gets the value of the metadataPrefix property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getMetadataPrefix() {
         return metadataPrefix;
@@ -156,9 +156,9 @@ public class RequestType {
      * Sets the value of the metadataPrefix property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setMetadataPrefix(String value) {
         this.metadataPrefix = value;
@@ -168,9 +168,9 @@ public class RequestType {
      * Gets the value of the from property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getFrom() {
         return from;
@@ -180,9 +180,9 @@ public class RequestType {
      * Sets the value of the from property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setFrom(String value) {
         this.from = value;
@@ -192,9 +192,9 @@ public class RequestType {
      * Gets the value of the until property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getUntil() {
         return until;
@@ -204,9 +204,9 @@ public class RequestType {
      * Sets the value of the until property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setUntil(String value) {
         this.until = value;
@@ -216,9 +216,9 @@ public class RequestType {
      * Gets the value of the set property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getSet() {
         return set;
@@ -228,9 +228,9 @@ public class RequestType {
      * Sets the value of the set property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setSet(String value) {
         this.set = value;
@@ -240,9 +240,9 @@ public class RequestType {
      * Gets the value of the resumptionToken property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getResumptionToken() {
         return resumptionToken;
@@ -252,9 +252,9 @@ public class RequestType {
      * Sets the value of the resumptionToken property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setResumptionToken(String value) {
         this.resumptionToken = value;

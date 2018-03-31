@@ -72,7 +72,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     private static final String TRUNCATED_HARP_EXCEL_FILENAME = "heshfaun-truncated.xls";
     private static final String BELEMENT_COL = "belement";
 
-//    private DatasetController controller;
+    // private DatasetController controller;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -94,7 +94,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD})    
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testAccountListExistsInDatasetController() throws TdarActionException {
         // setup new dataset with authorized user (direct) and grant EDIT rights
         // associate resource with billing account
@@ -108,7 +108,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         dataset.getAuthorizedUsers().add(new AuthorizedUser(p, createAndSaveNewPerson, Permissions.MODIFY_RECORD));
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
-        
+
         // done setup
         Long datasetId = dataset.getId();
         DatasetController c = generateNewInitializedController(DatasetController.class, createAndSaveNewPerson);
@@ -127,7 +127,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     @Test
     @Rollback(true)
     public void testTranslatedGeneratedCodingSheet() throws Exception {
-        //test for TDAR-5038 ;; issue is that the translated values are being pushed into coding sheets.
+        // test for TDAR-5038 ;; issue is that the translated values are being pushed into coding sheets.
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
@@ -140,20 +140,18 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         mapColumnsToDataset(dataset, dataTable, elementColumn);
         DataTableColumn column = dataTable.getColumnByName(BELEMENT_COL);
         database.translateInPlace(column, column.getDefaultCodingSheet());
-        database.executeUpdateOrDelete(String.format("update %s set %s='ABCD'", dataTable.getName(),column.getName()));
+        database.executeUpdateOrDelete(String.format("update %s set %s='ABCD'", dataTable.getName(), column.getName()));
         assertNotNull(column.getDefaultCodingSheet());
         assertTrue(column.getDefaultCodingSheet().isGenerated());
 
         List<String> original = database.selectNonNullDistinctValues(column, true);
-        logger.debug("original:{}",original);
+        logger.debug("original:{}", original);
         assertFalse(original.contains("ABCD"));
         List<String> mapped = database.selectNonNullDistinctValues(column, false);
         logger.debug("mapped:{}", mapped);
         assertTrue(mapped.contains("ABCD"));
-        
+
     }
-    
-    
 
     @Test
     @Rollback
@@ -173,7 +171,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
         assertNotNull(column.getDefaultCodingSheet());
         assertTrue(column.getDefaultCodingSheet().isGenerated());
-        
+
         codingSheetController.setId(column.getDefaultCodingSheet().getId());
         codingSheetController.prepare();
         codingSheetController.loadOntologyMappedColumns();
@@ -236,7 +234,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
                     if (e instanceof TdarActionException) {
                         TdarActionException exception = (TdarActionException) e;
                         setIgnoreActionErrors(true);
-                        logger.error("{}",exception);
+                        logger.error("{}", exception);
                         // assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
                         // exception.getResultName());
                     }
@@ -258,6 +256,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     @Rollback(value = false)
     /**
      * make sure that the column names are re-aligned
+     * 
      * @throws TdarActionException
      */
     public void testDatasetReplaceLegacy() throws TdarActionException {
@@ -393,7 +392,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         controller.prepare();
         controller.edit();
         String filename = TestConstants.SPITAL_DB_NAME;
-        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR , filename)));
+        controller.setUploadedFiles(Arrays.asList(TestConstants.getFile(TestConstants.TEST_DATA_INTEGRATION_DIR, filename)));
         controller.setUploadedFilesFileName(Arrays.asList(filename));
         controller.setServletRequest(getServletPostRequest());
         assertEquals(com.opensymphony.xwork2.Action.SUCCESS, controller.save());
@@ -455,7 +454,6 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
     }
 
     protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
-
 
     @Autowired
     @Qualifier("tdarDataImportDataSource")

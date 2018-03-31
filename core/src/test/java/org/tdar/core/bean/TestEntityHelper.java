@@ -34,9 +34,9 @@ public interface TestEntityHelper {
         getGenericService().save(testPerson);
         return testPerson;
     }
-    
+
     GenericService getGenericService();
-    
+
     EntityService getEntityService();
 
 }

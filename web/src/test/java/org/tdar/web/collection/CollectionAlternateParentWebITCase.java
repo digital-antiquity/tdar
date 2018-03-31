@@ -8,8 +8,6 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class CollectionAlternateParentWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-
-    
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateRemoveAlternateParent() {
@@ -26,7 +24,7 @@ public class CollectionAlternateParentWebITCase extends AbstractAdminAuthenticat
         Long altId = extractTdarIdFromCurrentURL();
 
         String altUrl = getCurrentUrlPath();
-        
+
         String namec = "my child collection: " + System.currentTimeMillis();
         String descc = "description goes here: " + System.currentTimeMillis();
         createTestCollection(CollectionResourceSection.MANAGED, namec, descc, new ArrayList<>());
@@ -43,7 +41,7 @@ public class CollectionAlternateParentWebITCase extends AbstractAdminAuthenticat
         assertTextPresentInPage(namea);
         gotoPage(altUrl);
         assertTextPresentInPage(namec);
-        
+
         gotoPage(childUrl);
         clickLinkWithText("edit");
         assertTextPresentInPage(namea);
@@ -54,9 +52,9 @@ public class CollectionAlternateParentWebITCase extends AbstractAdminAuthenticat
         submitForm();
         assertTextNotPresent(namea);
         assertTextNotPresent(name);
-        
+
         logout();
 
     }
-    
+
 }

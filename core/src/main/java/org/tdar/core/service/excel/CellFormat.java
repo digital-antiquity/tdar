@@ -12,7 +12,8 @@ import org.apache.poi.ss.usermodel.Workbook;
  */
 public class CellFormat {
     public enum Style {
-        NORMAL(false), BOLD(true);
+        NORMAL(false),
+        BOLD(true);
 
         private boolean bold;
 

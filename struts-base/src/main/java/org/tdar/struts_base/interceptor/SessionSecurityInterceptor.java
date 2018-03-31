@@ -42,7 +42,8 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     enum SessionType {
-        READ_ONLY, WRITEABLE
+        READ_ONLY,
+        WRITEABLE
     }
 
     @Autowired

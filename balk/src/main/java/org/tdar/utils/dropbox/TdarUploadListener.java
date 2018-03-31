@@ -70,7 +70,7 @@ public class TdarUploadListener implements MetadataListener {
             if (debug == false) {
                 logger.debug("uploading: {}", file);
                 ApiClientResponse response = apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
-                itemService.markUploaded(fileWrapper.getId(), response.getTdarId() , fileWrapper.isDir());
+                itemService.markUploaded(fileWrapper.getId(), response.getTdarId(), fileWrapper.isDir());
             }
         }
     }

@@ -134,18 +134,18 @@ public class PairtreeFilestore extends BaseFilestore {
 
     @Override
     public void logFilestoreWrite(File outFile) {
-        logAction(outFile,"WRITE");
+        logAction(outFile, "WRITE");
     }
 
     private void logAction(File outFile, String action) {
         File logFile = new File(baseStoreDirectory, FilestoreObjectType.LOG.getRootDir() + "/write.log");
-        
-        String logLine = String.format("%s\t%s\t%s\n", new Date(), outFile.getAbsolutePath(),Charset.defaultCharset(), action);
+
+        String logLine = String.format("%s\t%s\t%s\n", new Date(), outFile.getAbsolutePath(), Charset.defaultCharset(), action);
         synchronized (logFile) {
             try {
-            FileUtils.writeStringToFile(logFile, logLine, Charset.defaultCharset(), true);
+                FileUtils.writeStringToFile(logFile, logLine, Charset.defaultCharset(), true);
             } catch (Throwable t) {
-                logger.error(t.getMessage(),t);
+                logger.error(t.getMessage(), t);
             }
         }
     }

@@ -47,15 +47,14 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(),"rpms_corrected.mdb"), 1224L);
+        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "rpms_corrected.mdb"), 1224L);
         for (DataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
 
     }
-    
-    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
 
+    protected PostgresDatabase tdarDataImportDatabase = new PostgresDatabase();
 
     @Autowired
     @Qualifier("tdarDataImportDataSource")
@@ -274,7 +273,6 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         // FIXME: add more depth to testing
     }
 
-
     static Long spitalIrId = (long) (Math.random() * 10000);
 
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
@@ -282,7 +280,6 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
         return converter;
     }
-
 
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
         InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
@@ -293,8 +290,6 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         setDataImportTables((String[]) ArrayUtils.addAll(getDataImportTables(), converter.getTableNames().toArray(new String[0])));
         return converter;
     }
-
-
 
     String[] dataImportTables = new String[0];
 

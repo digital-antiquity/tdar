@@ -38,7 +38,6 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertNull(p);
     }
 
-    
     @Test
     @Rollback
     public void testPersonSimiar() {
@@ -48,7 +47,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         logger.debug("people: {}", findSimilarPeople);
         assertTrue(findSimilarPeople.size() == 3);
     }
-    
+
     @Test
     @Rollback
     public void testFindByExample() {

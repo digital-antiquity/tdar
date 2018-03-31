@@ -1,6 +1,5 @@
 package org.tdar.struts.action.admin;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -32,80 +30,68 @@ import com.opensymphony.xwork2.Preparable;
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
 public class AdminEmailQueuePollerController extends AbstractAuthenticatableAction implements Preparable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2036850880577174539L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2036850880577174539L;
 
-	@Autowired 
-	private AwsQueuePollerService awsQueueService;
-	
-	
-	@Autowired
-	private EmailService emailService;
-	
-	@Override
-	public void prepare() throws Exception {
-		// TODO Auto-generated method stub
-	}
-	
-	private List<Pair<String, String>> allMessages;
-	private List<Pair<String, String>> bouncedMessages;
-	
-	@WriteableSession
-	@Action(value = "pollMessageQueue", results = {@Result(name=SUCCESS, location="queuePollResult.ftl")})
-	@PostOnly
-	public String execute(){
-		bouncedMessages = new ArrayList<Pair<String, String>>();
-		allMessages	    = new ArrayList<Pair<String, String>>();
-		
-		List<Message> messages = awsQueueService.getBouncedMessages();
-		
-		getLogger().debug("There were {} messages", messages.size());
-		getLogger().debug("{}",messages);
-		for(Message message : messages){
-			JSONArray headers 	= awsQueueService.getMessageHeaders(message);
-			String messageId 	= awsQueueService.getTdarMessageId(headers);
-			String errorMessage = awsQueueService.getBounce(message);
-			
-			if(awsQueueService.getNotificationType(message).equals("Bounce")){
-				emailService.markMessageAsBounced(messageId, errorMessage);
-				bouncedMessages.add(new Pair<String, String>(errorMessage, awsQueueService.getMessageJson(message).toJSONString()));
-			}
-			allMessages.add(new Pair<String, String>(errorMessage, awsQueueService.getMessageJson(message).toJSONString()));
-		}
-		return SUCCESS;
-	}
+    @Autowired
+    private AwsQueuePollerService awsQueueService;
 
+    @Autowired
+    private EmailService emailService;
 
+    @Override
+    public void prepare() throws Exception {
+        // TODO Auto-generated method stub
+    }
 
-	public void setAwsQueue(AwsQueuePollerService awsQueue) {
-		this.awsQueueService = awsQueue;
-	}
+    private List<Pair<String, String>> allMessages;
+    private List<Pair<String, String>> bouncedMessages;
 
+    @WriteableSession
+    @Action(value = "pollMessageQueue", results = { @Result(name = SUCCESS, location = "queuePollResult.ftl") })
+    @PostOnly
+    public String execute() {
+        bouncedMessages = new ArrayList<Pair<String, String>>();
+        allMessages = new ArrayList<Pair<String, String>>();
 
+        List<Message> messages = awsQueueService.getBouncedMessages();
 
-	public List<Pair<String, String>> getAllMessages() {
-		return allMessages;
-	}
+        getLogger().debug("There were {} messages", messages.size());
+        getLogger().debug("{}", messages);
+        for (Message message : messages) {
+            JSONArray headers = awsQueueService.getMessageHeaders(message);
+            String messageId = awsQueueService.getTdarMessageId(headers);
+            String errorMessage = awsQueueService.getBounce(message);
 
+            if (awsQueueService.getNotificationType(message).equals("Bounce")) {
+                emailService.markMessageAsBounced(messageId, errorMessage);
+                bouncedMessages.add(new Pair<String, String>(errorMessage, awsQueueService.getMessageJson(message).toJSONString()));
+            }
+            allMessages.add(new Pair<String, String>(errorMessage, awsQueueService.getMessageJson(message).toJSONString()));
+        }
+        return SUCCESS;
+    }
 
+    public void setAwsQueue(AwsQueuePollerService awsQueue) {
+        this.awsQueueService = awsQueue;
+    }
 
-	public void setAllMessages(List<Pair<String, String>> messages) {
-		this.allMessages = messages;
-	}
+    public List<Pair<String, String>> getAllMessages() {
+        return allMessages;
+    }
 
+    public void setAllMessages(List<Pair<String, String>> messages) {
+        this.allMessages = messages;
+    }
 
+    public List<Pair<String, String>> getBouncedMessages() {
+        return bouncedMessages;
+    }
 
-	public List<Pair<String, String>> getBouncedMessages() {
-		return bouncedMessages;
-	}
-
-
-
-	public void setBouncedMessages(List<Pair<String, String>> bouncedMessages) {
-		this.bouncedMessages = bouncedMessages;
-	}
-	
+    public void setBouncedMessages(List<Pair<String, String>> bouncedMessages) {
+        this.bouncedMessages = bouncedMessages;
+    }
 
 }

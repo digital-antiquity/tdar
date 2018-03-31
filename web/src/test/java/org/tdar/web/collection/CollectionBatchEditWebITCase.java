@@ -20,11 +20,11 @@ public class CollectionBatchEditWebITCase extends AbstractEditorAuthenticatedWeb
         for (int i = 0; i < 5; i++) {
             try {
                 HtmlElement input = getInput("ids[" + i + "]");
-                logger.debug("{} --> {} --> {}",input, input.getNodeValue(), input.getAttribute("value"));
+                logger.debug("{} --> {} --> {}", input, input.getNodeValue(), input.getAttribute("value"));
                 if (StringUtils.equals(input.getAttribute("value"), "1628")) {
-                    setInput("titles["+i+"]", HORP_TITLE);
-                    setInput("descriptions["+i+"]", HORP_DESCRIPTION);
-//                    setInput("dates["+i+"]", _12345);
+                    setInput("titles[" + i + "]", HORP_TITLE);
+                    setInput("descriptions[" + i + "]", HORP_DESCRIPTION);
+                    // setInput("dates["+i+"]", _12345);
                     seen = true;
                 }
             } catch (Exception e) {
@@ -36,7 +36,7 @@ public class CollectionBatchEditWebITCase extends AbstractEditorAuthenticatedWeb
         gotoPage("/collection/1004");
         assertTextPresentInPage(HORP_TITLE);
         assertTextPresentInPage(HORP_DESCRIPTION);
-//        assertTextPresentInPage(_12345);
+        // assertTextPresentInPage(_12345);
         assertTextNotPresent("(HARP)");
 
         logger.debug(getPageText());

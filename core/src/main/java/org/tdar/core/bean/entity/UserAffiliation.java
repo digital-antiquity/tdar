@@ -9,11 +9,23 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum UserAffiliation implements HasLabel, Localizable {
-    K12_STUDENT("K-12 Student"), UNDERGRADUATE_STUDENT("Undergraduate Student"), GRADUATE_STUDENT("Graduate Student"), K_12_TEACHER(
-            "K-12 Teacher"), HIGHER_ED_FACULTY("Higher Ed. Faculty"), INDEPENDENT_RESEARCHER("Independent Researcher"), PUBLIC_AGENCY_ARCH(
-                    "Public Agency Archaeologist"), CRM_ARCHAEOLOGIST("CRM Firm Archaeologist"), NON_PROFESSIONAL_ARCH(
-                            "Nonprofessional/Avocational Archaeologist"), GENERAL_PUBLIC("General Public"), NO_RESPONSE(
-                                    "No Response"), INDIGENEOUS_RESEARCHER("Native American/Indigenous Researcher"), PRIOR_TO_ASKING("Prior to Asking");
+    K12_STUDENT("K-12 Student"),
+    UNDERGRADUATE_STUDENT("Undergraduate Student"),
+    GRADUATE_STUDENT("Graduate Student"),
+    K_12_TEACHER(
+            "K-12 Teacher"),
+    HIGHER_ED_FACULTY("Higher Ed. Faculty"),
+    INDEPENDENT_RESEARCHER("Independent Researcher"),
+    PUBLIC_AGENCY_ARCH(
+            "Public Agency Archaeologist"),
+    CRM_ARCHAEOLOGIST("CRM Firm Archaeologist"),
+    NON_PROFESSIONAL_ARCH(
+            "Nonprofessional/Avocational Archaeologist"),
+    GENERAL_PUBLIC("General Public"),
+    NO_RESPONSE(
+            "No Response"),
+    INDIGENEOUS_RESEARCHER("Native American/Indigenous Researcher"),
+    PRIOR_TO_ASKING("Prior to Asking");
 
     private String label;
 

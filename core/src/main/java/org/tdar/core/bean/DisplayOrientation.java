@@ -12,7 +12,10 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum DisplayOrientation implements HasLabel, Localizable {
-    LIST("List"), LIST_FULL("List (Full)"), GRID("Grid"), MAP("Map");
+    LIST("List"),
+    LIST_FULL("List (Full)"),
+    GRID("Grid"),
+    MAP("Map");
 
     private String label;
 

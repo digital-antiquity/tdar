@@ -27,7 +27,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.utils.MessageHelper;
 
-
 public class PdfServiceITCase extends AbstractIntegrationWebTestCase {
 
     @Autowired
@@ -35,7 +34,8 @@ public class PdfServiceITCase extends AbstractIntegrationWebTestCase {
 
     @Before
     public void setup() {
-        /** setup for jUnit
+        /**
+         * setup for jUnit
          */
         File f = new File("target/tdar-web/WEB-INF/themes/tdar/cover_page.pdf");
         if (!f.exists()) {
@@ -46,17 +46,15 @@ public class PdfServiceITCase extends AbstractIntegrationWebTestCase {
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
-            } 
+            }
         }
     }
-    
+
     @Test
     public void transliterateTest() {
-        assertEquals("aeiou",pdfService.transliterate("åéîøü"));
+        assertEquals("aeiou", pdfService.transliterate("åéîøü"));
     }
-    
 
-    
     @Test
     @Rollback(true)
     public void testPDFCoversheet() throws Exception {

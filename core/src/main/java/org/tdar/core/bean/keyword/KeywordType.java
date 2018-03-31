@@ -6,10 +6,17 @@ import org.tdar.utils.MessageHelper;
 
 public enum KeywordType implements Localizable {
 
-    CULTURE_KEYWORD(CultureKeyword.class, "culture-keyword"), INVESTIGATION_TYPE(InvestigationType.class, "investigation-type"), MATERIAL_TYPE(
-            MaterialKeyword.class, "material-type"), GEOGRAPHIC_KEYWORD(GeographicKeyword.class, "geographic-keyword"), OTHER_KEYWORD(OtherKeyword.class,
-                    "other-keyword"), SITE_NAME_KEYWORD(SiteNameKeyword.class,
-                            "site-name"), SITE_TYPE_KEYWORD(SiteTypeKeyword.class, "site-type"), TEMPORAL_KEYWORD(TemporalKeyword.class, "temporal-keyword");
+    CULTURE_KEYWORD(CultureKeyword.class, "culture-keyword"),
+    INVESTIGATION_TYPE(InvestigationType.class, "investigation-type"),
+    MATERIAL_TYPE(
+            MaterialKeyword.class, "material-type"),
+    GEOGRAPHIC_KEYWORD(GeographicKeyword.class, "geographic-keyword"),
+    OTHER_KEYWORD(OtherKeyword.class,
+            "other-keyword"),
+    SITE_NAME_KEYWORD(SiteNameKeyword.class,
+            "site-name"),
+    SITE_TYPE_KEYWORD(SiteTypeKeyword.class, "site-type"),
+    TEMPORAL_KEYWORD(TemporalKeyword.class, "temporal-keyword");
 
     private Class<? extends Keyword> keywordClass;
     private String urlSuffix;

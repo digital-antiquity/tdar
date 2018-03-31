@@ -5,7 +5,10 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 
 public enum FilestoreObjectType {
-    LOG, RESOURCE, CREATOR, COLLECTION;
+    LOG,
+    RESOURCE,
+    CREATOR,
+    COLLECTION;
 
     public static FilestoreObjectType fromClass(Class<?> cls) {
         if (Resource.class.isAssignableFrom(cls)) {

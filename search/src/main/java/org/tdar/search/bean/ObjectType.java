@@ -11,7 +11,19 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.utils.MessageHelper;
 
 public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {
-    DOCUMENT, DATASET, PROJECT, COLLECTION, CODING_SHEET, IMAGE, GEOSPATIAL, SENSORY_DATA, ONTOLOGY, VIDEO, AUDIO, ARCHIVE, INTEGRATION;
+    DOCUMENT,
+    DATASET,
+    PROJECT,
+    COLLECTION,
+    CODING_SHEET,
+    IMAGE,
+    GEOSPATIAL,
+    SENSORY_DATA,
+    ONTOLOGY,
+    VIDEO,
+    AUDIO,
+    ARCHIVE,
+    INTEGRATION;
 
     public static ObjectType from(ResourceType resourceType) {
         switch (resourceType) {

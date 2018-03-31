@@ -29,15 +29,16 @@ import nu.validator.xml.SystemErrErrorHandler;
 public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "</selectize>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
+    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "</selectize>", "<footer>", "</header>", "</nav>",
+            "<svg>", "</svg>", "<use>", "</use>",
             "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
             "missing </a> before <h3>",
             "discarding unexpected </div",
-            "missing </fieldset> before </div>" , 
-            "missing </form> before </div>\n" , 
+            "missing </fieldset> before </div>",
+            "missing </form> before </div>\n",
             "discarding unexpected </fieldset",
             "discarding unexpected </form",
             "missing </form> before </div",
@@ -50,7 +51,7 @@ public class HtmlValidator {
             "replacing element</p>",
             "discarding unexpected hr"
     };
-    
+
     void validateHtmlViaNuValidator(Page internalPage) {
         SimpleDocumentValidator validator = new SimpleDocumentValidator(false);
         try {
@@ -76,13 +77,13 @@ public class HtmlValidator {
             errorHandler.setHtml(true);
             validator.setUpValidatorAndParsers(errorHandler, false, false);
             validator.checkHtmlInputSource(new InputSource(internalPage.getWebResponse().getContentAsStream()));
-            errorHandler.end("success", "failed","en");
+            errorHandler.end("success", "failed", "en");
             logger.debug("fatal: {}, errors: {}, warnings: {} ", errorHandler.getFatalErrors(), errorHandler.getErrors(), errorHandler.getWarnings());
             List<String> errors = new ArrayList<String>();
             List<String> warnings = new ArrayList<String>();
             if (errorHandler.getFatalErrors() > 0 || errorHandler.getErrors() > 0) {
                 for (String line : out.toString().split("\n")) {
-                    line = internalPage.getUrl() + " : "+ line;
+                    line = internalPage.getUrl() + " : " + line;
                     if (line.contains(" error:")) {
                         // unapi standard
                         if (line.contains("The string \"unapi-server\" is not a registered keyword")) {
@@ -105,14 +106,14 @@ public class HtmlValidator {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         // hr / blockquote / h3
                         if (line.contains("not allowed as child of element \"span\"")) {
                             warnings.add(line);
                             continue;
                         }
-                        
-                        //https://localhost:8143/search/advanced?siteNameKeywords=disneyland (search results page)
+
+                        // https://localhost:8143/search/advanced?siteNameKeywords=disneyland (search results page)
                         if (line.contains("Attribute \"target\" not allowed on element \"input\" at this point")) {
                             warnings.add(line);
                             continue;
@@ -125,16 +126,17 @@ public class HtmlValidator {
                             continue;
                         }
 
-                        if (line.contains("Any \"input\" descendant of a \"label\" element with a \"for\" attribute must have an ID value that matches that \"for\" attribute")) {
+                        if (line.contains(
+                                "Any \"input\" descendant of a \"label\" element with a \"for\" attribute must have an ID value that matches that \"for\" attribute")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         if (line.contains("The \"nowrap\" attribute on the")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         // google scholar page
                         if (line.contains("End tag \"div\" seen, but there were open elements")) {
                             warnings.add(line);
@@ -146,7 +148,7 @@ public class HtmlValidator {
                             continue;
                         }
 
-                        //https://localhost:8143/billing/4 
+                        // https://localhost:8143/billing/4
                         if (line.contains("Element \"thead\" not allowed as child of element ")) {
                             warnings.add(line);
                             continue;
@@ -155,8 +157,7 @@ public class HtmlValidator {
                         // old table attributes
                         if (line.contains("The \"width\" attribute ") ||
                                 line.contains("The \"cellpadding\" attribute") ||
-                                line.contains("The \"cellspacing\" attribute")
-                                ) {
+                                line.contains("The \"cellspacing\" attribute")) {
                             warnings.add(line);
                             continue;
                         }
@@ -171,23 +172,24 @@ public class HtmlValidator {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         if (line.contains("Element \"option\" without attribute \"label\" must not be empty.")) {
                             warnings.add(line);
                             continue;
                         }
-                        
-                        if (line.contains("\"label\" element may contain at most one \"input\", \"button\", \"select\", \"textarea\", or \"keygen\" descendant.")) {
+
+                        if (line.contains(
+                                "\"label\" element may contain at most one \"input\", \"button\", \"select\", \"textarea\", or \"keygen\" descendant.")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         if (line.contains("established by element \"td\" has no cells beginning in it")) {
                             warnings.add(line);
                             continue;
                         }
-                        
-                        if(line.contains("error: \"&\" did not start a character reference")) {
+
+                        if (line.contains("error: \"&\" did not start a character reference")) {
                             warnings.add(line);
                             continue;
                         }
@@ -200,31 +202,33 @@ public class HtmlValidator {
                         if (line.contains("Duplicate ID \"groups[{")) {
                             continue;
                         }
-                        
-                        //:221.9-221.177: error: Bad value "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210110&explore=true" for attribute "href" on element "a": Illegal character in query: not a URL code point.
+
+                        // :221.9-221.177: error: Bad value
+                        // "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&groups[0].approvedCultureKeywordIdLists[0]=210110&explore=true" for
+                        // attribute "href" on element "a": Illegal character in query: not a URL code point.
                         if (line.contains("for attribute \"href\" on element \"a\": Illegal character in query: not a URL code point")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         // struts2 template issue?
                         if (line.contains("Bad value \"true\" for attribute \"required\"")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         if (line.contains("Attribute \"value\" not allowed on element \"input\" at this point.")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         //
                         if (line.contains("Bad value  for attribute \"src\" on element \"img\": Illegal character in query")) {
                             warnings.add(line);
                             continue;
                         }
-                        
-                        ///collection/2821/test-security-collection?null?type=
+
+                        /// collection/2821/test-security-collection?null?type=
                         if (line.contains("Attribute \"alt\" not allowed on element \"i\"")) {
                             warnings.add(line);
                             continue;
@@ -234,15 +238,15 @@ public class HtmlValidator {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         if (line.contains("Duplicate ID \"metadataForm_authorshipProxies") ||
-                            line.contains("Duplicate ID \"metadataForm_authorizedUsers")) {
+                                line.contains("Duplicate ID \"metadataForm_authorizedUsers")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         // tdar custom elements
-                        if(line.contains("Attribute \"autocomplete") || 
+                        if (line.contains("Attribute \"autocomplete") ||
                                 line.contains("Attribute \"book") ||
                                 line.contains("Attribute \"callback") ||
                                 line.contains("Attribute \"journal") ||
@@ -256,12 +260,11 @@ public class HtmlValidator {
                                 line.contains("Attribute \"placeholder\"") ||
                                 line.contains("Attribute \"tooltipfor") ||
                                 line.contains("Attribute \"labelposition") ||
-                                line.contains("Attribute \"addanother\"") 
-                                ) {
+                                line.contains("Attribute \"addanother\"")) {
                             warnings.add(line);
                             continue;
                         }
-                        
+
                         errors.add(line);
                     } else {
                         warnings.add(line);
@@ -276,7 +279,7 @@ public class HtmlValidator {
                     for (String warn : warnings) {
                         logger.warn(warn);
                     }
-                    fail(StringUtils.join(errors,"\n"));
+                    fail(StringUtils.join(errors, "\n"));
                 } else {
                     for (String warn : warnings) {
                         logger.warn(warn);
@@ -346,10 +349,4 @@ public class HtmlValidator {
         } // run tidy, providing an input and output stream
     }
 
-    
-    
-    
-    
-    
-    
 }

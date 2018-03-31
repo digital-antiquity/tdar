@@ -18,15 +18,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class TestProfile implements AsyncConfigurer {
 
     public transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Override
     public Executor getAsyncExecutor() {
         SyncTaskExecutor executor = new SyncTaskExecutor();
-//        executor.setCorePoolSize(2);
-//        executor.setMaxPoolSize(5);
-//        executor.setQueueCapacity(50);
-//        executor.setThreadNamePrefix("async-");
-//        executor.initialize();
+        // executor.setCorePoolSize(2);
+        // executor.setMaxPoolSize(5);
+        // executor.setQueueCapacity(50);
+        // executor.setThreadNamePrefix("async-");
+        // executor.initialize();
         return executor;
     }
 

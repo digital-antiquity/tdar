@@ -64,6 +64,7 @@ public class AdminPermissonsRequestAction extends AbstractProcessPermissonsActio
         }
         return super.getAvailablePermissions();
     }
+
     public RequestCollection getCustom() {
         return custom;
     }

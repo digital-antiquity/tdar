@@ -21,6 +21,7 @@ public interface ResourceEditControllerService {
     List<Resource> getPotentialParents(InformationResource persistable, TdarUser submitter, Project project, TextProvider provider);
 
     <R extends Resource> Boolean isAbleToUploadFiles(TdarUser authenticatedUser, R persistable, List<BillingAccount> activeAccounts);
+
     <R extends Resource> Boolean isAbleToAdjustPermissions(TdarUser authenticatedUser, R persistable);
 
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
@@ -34,6 +35,5 @@ public interface ResourceEditControllerService {
             List<ResourceCollection> resourceCollections);
 
     String loadFilesJson(InformationResource persistable);
-
 
 }

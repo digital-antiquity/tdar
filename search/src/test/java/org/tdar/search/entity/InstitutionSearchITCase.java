@@ -35,7 +35,6 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Autowired
     EntityService entityService;
 
-
     @Autowired
     CreatorSearchService<Institution> creatorSearchService;
 
@@ -44,7 +43,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Override
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.INSTITUTION);
-        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.INSTITUTION),getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.INSTITUTION), getAdminUser());
     };
 
     public List<Institution> setupInstitutionSearch() throws SearchException, SearchIndexException, IOException {
@@ -63,7 +62,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         LuceneSearchResultHandler<Institution> result = new SearchResult<>();
         creatorSearchService.searchInstitution("Arizona State Unive", result, MessageHelper.getInstance());
     }
-    
+
     @Test
     @Rollback
     public void testInstitutionMultiWordSearch() throws ParseException, SearchException, SearchIndexException, IOException {
@@ -79,14 +78,16 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     }
 
     private SearchResult<Institution> searchInstitution(String term) throws ParseException, SearchException, SearchIndexException, IOException {
-        return searchInstitution(term, MIN,true);
+        return searchInstitution(term, MIN, true);
     }
 
-    private SearchResult<Institution> searchInstitution(String term,boolean testResults) throws ParseException, SearchException, SearchIndexException, IOException {
+    private SearchResult<Institution> searchInstitution(String term, boolean testResults)
+            throws ParseException, SearchException, SearchIndexException, IOException {
         return searchInstitution(term, MIN, testResults);
     }
 
-    private SearchResult<Institution> searchInstitution(String term, int min, boolean testResults) throws ParseException, SearchException, SearchIndexException, IOException {
+    private SearchResult<Institution> searchInstitution(String term, int min, boolean testResults)
+            throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Institution> result = new SearchResult<>();
         creatorSearchService.findInstitution(term, result, MessageHelper.getInstance(), min);
         logger.debug("{}", result.getResults());
@@ -130,7 +131,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         Institution inst = new Institution("Arizona State University (ASU)");
         genericService.saveOrUpdate(inst);
         genericService.saveOrUpdate(inst);
-        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.INSTITUTION),getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.INSTITUTION), getAdminUser());
         SearchResult<Institution> result = searchInstitution("ASU");
         List<Institution> institutions = result.getResults();
         logger.debug("institutions: {} ", institutions);
@@ -223,7 +224,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         Institution in2 = new Institution("US Depoartment of Agriculture");
         genericService.save(in1);
         genericService.save(in2);
-        SearchResult<Institution> results = searchInstitution("US",false);
+        SearchResult<Institution> results = searchInstitution("US", false);
         logger.debug("results:{}", results);
         boolean seenPeriod = false;
         boolean seenWithoutPeriod = false;
@@ -236,8 +237,8 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
                 seenWithoutPeriod = true;
             }
         }
-        assertTrue("seen U.S.",seenPeriod);
-        assertTrue("seen US",seenWithoutPeriod);
+        assertTrue("seen U.S.", seenPeriod);
+        assertTrue("seen US", seenWithoutPeriod);
 
     }
 

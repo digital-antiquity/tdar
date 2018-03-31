@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import java.util.ArrayList;
@@ -18,11 +17,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for IdentifyType complex type.
+ * <p>
+ * Java class for IdentifyType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="IdentifyType">
@@ -48,15 +48,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IdentifyType", propOrder = {
-    "repositoryName",
-    "baseURL",
-    "protocolVersion",
-    "adminEmail",
-    "earliestDatestamp",
-    "deletedRecord",
-    "granularity",
-    "compression",
-    "description"
+        "repositoryName",
+        "baseURL",
+        "protocolVersion",
+        "adminEmail",
+        "earliestDatestamp",
+        "deletedRecord",
+        "granularity",
+        "compression",
+        "description"
 })
 @XmlRootElement
 public class IdentifyType {
@@ -83,9 +83,9 @@ public class IdentifyType {
      * Gets the value of the repositoryName property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getRepositoryName() {
         return repositoryName;
@@ -95,9 +95,9 @@ public class IdentifyType {
      * Sets the value of the repositoryName property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setRepositoryName(String value) {
         this.repositoryName = value;
@@ -107,9 +107,9 @@ public class IdentifyType {
      * Gets the value of the baseURL property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getBaseURL() {
         return baseURL;
@@ -119,9 +119,9 @@ public class IdentifyType {
      * Sets the value of the baseURL property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setBaseURL(String value) {
         this.baseURL = value;
@@ -131,9 +131,9 @@ public class IdentifyType {
      * Gets the value of the protocolVersion property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getProtocolVersion() {
         return protocolVersion;
@@ -143,9 +143,9 @@ public class IdentifyType {
      * Sets the value of the protocolVersion property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setProtocolVersion(String value) {
         this.protocolVersion = value;
@@ -162,8 +162,9 @@ public class IdentifyType {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getAdminEmail().add(newItem);
+     * getAdminEmail().add(newItem);
      * </pre>
      * 
      * 
@@ -184,9 +185,9 @@ public class IdentifyType {
      * Gets the value of the earliestDatestamp property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getEarliestDatestamp() {
         return earliestDatestamp;
@@ -196,9 +197,9 @@ public class IdentifyType {
      * Sets the value of the earliestDatestamp property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setEarliestDatestamp(String value) {
         this.earliestDatestamp = value;
@@ -208,9 +209,9 @@ public class IdentifyType {
      * Gets the value of the deletedRecord property.
      * 
      * @return
-     *     possible object is
-     *     {@link DeletedRecordType }
-     *     
+     *         possible object is
+     *         {@link DeletedRecordType }
+     * 
      */
     public DeletedRecordType getDeletedRecord() {
         return deletedRecord;
@@ -220,9 +221,9 @@ public class IdentifyType {
      * Sets the value of the deletedRecord property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link DeletedRecordType }
-     *     
+     *            allowed object is
+     *            {@link DeletedRecordType }
+     * 
      */
     public void setDeletedRecord(DeletedRecordType value) {
         this.deletedRecord = value;
@@ -232,9 +233,9 @@ public class IdentifyType {
      * Gets the value of the granularity property.
      * 
      * @return
-     *     possible object is
-     *     {@link GranularityType }
-     *     
+     *         possible object is
+     *         {@link GranularityType }
+     * 
      */
     public GranularityType getGranularity() {
         return granularity;
@@ -244,9 +245,9 @@ public class IdentifyType {
      * Sets the value of the granularity property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link GranularityType }
-     *     
+     *            allowed object is
+     *            {@link GranularityType }
+     * 
      */
     public void setGranularity(GranularityType value) {
         this.granularity = value;
@@ -263,8 +264,9 @@ public class IdentifyType {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getCompression().add(newItem);
+     * getCompression().add(newItem);
      * </pre>
      * 
      * 
@@ -292,8 +294,9 @@ public class IdentifyType {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getDescription().add(newItem);
+     * getDescription().add(newItem);
      * </pre>
      * 
      * 

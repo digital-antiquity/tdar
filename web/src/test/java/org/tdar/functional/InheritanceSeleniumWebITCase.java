@@ -231,8 +231,8 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         clearPageCache();
         String val = find("#metadataForm_creditProxies_2__institution_name").val();
         logger.debug(val);
-//        Thread.sleep(1000000);
-        
+        // Thread.sleep(1000000);
+
         assertTrue("should have Illinois", val.contains("Illinois"));
         find("#dateCreated").val("2013");
         find("#submitButton").click();

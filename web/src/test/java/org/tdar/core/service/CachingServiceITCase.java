@@ -46,6 +46,7 @@ public class CachingServiceITCase extends AbstractIntegrationWebTestCase {
         }
         return new Long(count);
     }
+
     @Test
     @Rollback
     public void testCachingService() throws Exception {
@@ -95,7 +96,7 @@ public class CachingServiceITCase extends AbstractIntegrationWebTestCase {
         evictCache();
         count_ = new Long(findAll.size());
         assertEquals(count, count_);
-        for (HomepageGeographicCache c: findAll) {
+        for (HomepageGeographicCache c : findAll) {
             logger.trace("{} {} {}", c.getCode(), c.getCount(), c.getResourceType());
         }
 
@@ -104,7 +105,7 @@ public class CachingServiceITCase extends AbstractIntegrationWebTestCase {
         findAll = resourceService.getISOGeographicCounts();
         count_ = new Long(findAll.size());
         logger.info("list: {} ", findAll);
-        for (HomepageGeographicCache c: findAll) {
+        for (HomepageGeographicCache c : findAll) {
             logger.trace("{} {} {}", c.getCode(), c.getCount(), c.getResourceType());
         }
         assertFalse(count.equals(count_));

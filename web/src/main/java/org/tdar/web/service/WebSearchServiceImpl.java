@@ -50,12 +50,15 @@ public class WebSearchServiceImpl implements WebSearchService {
 
     @Autowired
     private ApplicationEventPublisher publisher;
-    
+
     @Autowired
     private SearchIndexService searchIndexService;
-    
-    /* (non-Javadoc)
-     * @see org.tdar.web.service.WebSearchService#saveSearchResultsForUserAsync(org.tdar.search.bean.AdvancedSearchQueryObject, java.lang.Long, java.lang.Long, boolean)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.web.service.WebSearchService#saveSearchResultsForUserAsync(org.tdar.search.bean.AdvancedSearchQueryObject, java.lang.Long, java.lang.Long,
+     * boolean)
      */
     @Override
     @Transactional(readOnly = false)
@@ -101,7 +104,7 @@ public class WebSearchServiceImpl implements WebSearchService {
                 recordsProcessed++;
                 Float percentDone = ((float) recordsProcessed / totalRecords) * 100;
                 status.setPercentComplete(percentDone);
-                status.setMessage(String.format("Saving %s of %s records", recordsProcessed,totalRecords));
+                status.setMessage(String.format("Saving %s of %s records", recordsProcessed, totalRecords));
                 status.update(status.getPercentComplete(), String.format("saving %s", resource.getTitle()));
                 logger.debug("{} percent complete", percentDone);
 
@@ -109,7 +112,7 @@ public class WebSearchServiceImpl implements WebSearchService {
                 resourceCollectionService.addResourceCollectionToResource(resource, currentResources, user, true, ErrorHandling.NO_VALIDATION, collection,
                         sectionToAddTo);
             }
-            
+
             // Update and set the status as completed.
             searchIndexService.indexAllResourcesInCollectionSubTree(collection);
             status.setPercentComplete(100f);
@@ -124,7 +127,9 @@ public class WebSearchServiceImpl implements WebSearchService {
         return status;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.web.service.WebSearchService#constructKey(java.lang.Long, java.lang.Long)
      */
     @Override
@@ -132,11 +137,11 @@ public class WebSearchServiceImpl implements WebSearchService {
         return "SaveSearchResult::" + collectionId + "::" + userId;
     }
 
-	public SearchIndexService getSearchIndexService() {
-		return searchIndexService;
-	}
+    public SearchIndexService getSearchIndexService() {
+        return searchIndexService;
+    }
 
-	public void setSearchIndexService(SearchIndexService searchIndexService) {
-		this.searchIndexService = searchIndexService;
-	}
+    public void setSearchIndexService(SearchIndexService searchIndexService) {
+        this.searchIndexService = searchIndexService;
+    }
 }

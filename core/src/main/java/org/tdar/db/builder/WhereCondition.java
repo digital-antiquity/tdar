@@ -12,11 +12,15 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     private static final long serialVersionUID = -5257989550031533775L;
 
     public enum ValueCondition {
-        EQUALS, IN, IS_NOT, NOT_EQUALS;
+        EQUALS,
+        IN,
+        IS_NOT,
+        NOT_EQUALS;
     }
 
     public enum Condition {
-        AND, OR;
+        AND,
+        OR;
     }
 
     private String column;

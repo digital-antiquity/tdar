@@ -30,9 +30,9 @@ public class PDFJBIG2TestCase {
 
     @SuppressWarnings("unused")
     @Test
-//    @Ignore("test for PDFBox issue, not tDAR issue")
+    // @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
-        File pdfFile = TestConstants.getFile(TestConstants.TEST_ROOT_DIR , "/documents/pia-09-lame-1980-small.pdf");
+        File pdfFile = TestConstants.getFile(TestConstants.TEST_ROOT_DIR, "/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
         ImageIO.scanForPlugins();
         int resolution;
@@ -55,7 +55,7 @@ public class PDFJBIG2TestCase {
             // if (w.getClass().getName().contains("CLibJPEGImageWriter")) {
             // ir.remove();
             // }
-            // log.debug("getDefaultImageMetadata():  {}", w.getDefaultImageMetadata(type, writerParams));
+            // log.debug("getDefaultImageMetadata(): {}", w.getDefaultImageMetadata(type, writerParams));
         }
 
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
@@ -83,7 +83,6 @@ public class PDFJBIG2TestCase {
         log.debug("output file: {} size: {}", outputFile, outputFile.length());
         assertTrue(outputFile.length() > 2);
     }
-
 
     private PDDocument openPDF(String password, File pdfFile) throws IOException {
         PDDocument document = null;

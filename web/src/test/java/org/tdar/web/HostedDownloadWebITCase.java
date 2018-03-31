@@ -83,12 +83,11 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         httpget.addHeader(HttpHeaders.REFERER, REFERER_URL);
 
         try (CloseableHttpResponse response = httpclient.execute(httpget)) {
-            //make sure that the server gave us a successful response
+            // make sure that the server gave us a successful response
             assertThat(response.getStatusLine().getStatusCode(), is(HttpStatus.SC_NOT_FOUND));
         }
     }
 
-    
     @Test
     /**
      * Perform a hosted download request with valid key, referrer, and file ID.
@@ -96,17 +95,17 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
     public void testHostedDownloadSuccess() throws URISyntaxException, IOException {
         login(TEST.getAdminUsername(), TEST.getAdminPassword());
         createDocumentAndUploadFile("test");
-        gotoPage("/document/"+ extractTdarIdFromCurrentURL() + "/edit");
+        gotoPage("/document/" + extractTdarIdFromCurrentURL() + "/edit");
         setInput("shares[0].id", 999L);
         setInput("shares[0].name", "download authorization");
         submitForm();
         String txt = getPageCode();
-        txt = txt.substring(txt.indexOf(FILESTORE_DOWNLOAD) + FILESTORE_DOWNLOAD.length() );
-//        logger.debug(txt.substring(0,100));
+        txt = txt.substring(txt.indexOf(FILESTORE_DOWNLOAD) + FILESTORE_DOWNLOAD.length());
+        // logger.debug(txt.substring(0,100));
         txt = txt.substring(0, txt.indexOf("\""));
-        
+
         logout();
-        
+
         HttpGet httpget = httpGet(uriBuilder()
                 .setScheme("http")
                 .setHost(tdarConfig.getHostName())
@@ -116,16 +115,16 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
         httpget.addHeader(HttpHeaders.REFERER, REFERER_URL);
 
         try (CloseableHttpResponse response = httpclient.execute(httpget)) {
-            //make sure that the server gave us a successful response
+            // make sure that the server gave us a successful response
             assertThat(response.getStatusLine().getStatusCode(), is(HttpStatus.SC_OK));
 
             HttpEntity entity = response.getEntity();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             // assert that a download actually occurred
-//            assertThat(entity.getContentLength(), greaterThan(0L));
+            // assertThat(entity.getContentLength(), greaterThan(0L));
             entity.writeTo(baos);
             assertTrue("filesize matches response.entity.contentLength", (long) baos.size() > 0);
         }
     }
-    
+
 }

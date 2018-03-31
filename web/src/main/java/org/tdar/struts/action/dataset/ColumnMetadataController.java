@@ -100,7 +100,8 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     private Integer recordsPerPage = 10;
 
     public enum PostSaveColumnMapActions implements HasLabel, Localizable {
-        SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"), SAVE_MAP_THIS("Save, and return to this edit page",
+        SAVE_VIEW("Save, and go to the view page", "Save, and go to the view page"),
+        SAVE_MAP_THIS("Save, and return to this edit page",
                 "Save, and return to this edit page");
 
         private String label;

@@ -23,10 +23,8 @@ import org.tdar.core.bean.resource.Resource;
 
 public class ReflectionServiceTestCase {
 
-
     ReflectionService reflectionService = new ReflectionServiceImpl();
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
 
     @Test
     public void testMarshallSupport() throws NoSuchBeanDefinitionException, ClassNotFoundException {
@@ -36,6 +34,7 @@ public class ReflectionServiceTestCase {
         logger.debug("{}", document);
         assertEquals(Document.class, document);
     }
+
     @Test
     public void testHasLabel() throws ClassNotFoundException {
         Set<Class<? extends HasLabel>> findClassesThatImplement = ReflectionHelper.findClassesThatImplement(HasLabel.class);
@@ -66,7 +65,6 @@ public class ReflectionServiceTestCase {
     // }
     // }
     // }
-
 
     @Test
     public void testCultureKeywordReferences() {

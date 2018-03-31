@@ -79,7 +79,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @Path("{id:.*}")
     public Response object(@PathParam("id") String id) {
         setupResponseContext(response, request);
-        return constructObjectResponse(id, request,Event.READ);
+        return constructObjectResponse(id, request, Event.READ);
     }
 
     @HEAD
@@ -103,8 +103,8 @@ public class ObjectResponse extends AbstractDataOneResponse {
         } catch (Exception e) {
             logger.error("execption in DataOne object head request", e);
             response.setHeader(DATA_ONE_EXCEPTION_NAME, SERVER_ERROR);
-//            response.setHeader(DATA_ONE_EXCEPTION_DETAIL_CODE, "1380");
-//            response.setHeader(DATA_ONE_EXCEPTION_DESCRIPTION, SPECIFIED_OBJECT_DOES_NOT_EXIST_ON_THIS_NODE);
+            // response.setHeader(DATA_ONE_EXCEPTION_DETAIL_CODE, "1380");
+            // response.setHeader(DATA_ONE_EXCEPTION_DESCRIPTION, SPECIFIED_OBJECT_DOES_NOT_EXIST_ON_THIS_NODE);
             response.setHeader(DATA_ONE_EXCEPTION_PID, id);
             return Response.serverError().status(Status.NOT_FOUND).build();
         }
@@ -125,7 +125,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
             @QueryParam(START) @DefaultValue("0") int start,
             @QueryParam(COUNT) @DefaultValue("10") int count
 
-            ) {
+    ) {
         setupResponseContext(response, request);
         try {
             Date fromDate = null;
@@ -138,7 +138,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
             }
             return Response.ok().entity(service.getListObjectsResponse(fromDate, toDate, formatid, identifier, start, count)).build();
         } catch (Exception e) {
-            logger.error("error in listObjects: {}",e ,e);
+            logger.error("error in listObjects: {}", e, e);
         }
         return Response.serverError().status(Status.INTERNAL_SERVER_ERROR).build();
     }

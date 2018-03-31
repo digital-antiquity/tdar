@@ -15,20 +15,21 @@ import org.knowm.xchart.PieChartBuilder;
 import org.knowm.xchart.style.Styler.LegendPosition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 //@Ignore
 public class TdarPieChartTest {
     // from https://stackoverflow.com/a/18980655/667818
     Logger logger = LoggerFactory.getLogger(getClass());
 
     // Customize Chart
-    Color[] sliceColors = new Color[] { new Color(235,215,144),
-    new Color(214,184,75),
-    new Color(195,170,114),
-    new Color(160,157,91),
-    new Color(144,157,91),
-    new Color(220,118,18),
-    new Color(189,50,0),
-    new Color(102,0,0)};
+    Color[] sliceColors = new Color[] { new Color(235, 215, 144),
+            new Color(214, 184, 75),
+            new Color(195, 170, 114),
+            new Color(160, 157, 91),
+            new Color(144, 157, 91),
+            new Color(220, 118, 18),
+            new Color(189, 50, 0),
+            new Color(102, 0, 0) };
 
     @Test
     @SuppressWarnings("restriction")
@@ -39,18 +40,16 @@ public class TdarPieChartTest {
         data.put("a", 50);
         data.put("b", 50);
         data.put("c", 150);
-//        TdarPieChart sample = new TdarPieChart("test", 1000, 1000, "testPie", data);
-//        JavaFxChartRunnable wrapper = new JavaFxChartRunnable();
-//        wrapper.setGraph(sample);
+        // TdarPieChart sample = new TdarPieChart("test", 1000, 1000, "testPie", data);
+        // JavaFxChartRunnable wrapper = new JavaFxChartRunnable();
+        // wrapper.setGraph(sample);
         logger.debug("starting to create chart");
-        
-        
 
         // Create Chart
         PieChart chart = new PieChartBuilder().width(800).height(600).title(getClass().getSimpleName()).build();
-     
+
         chart.getStyler().setSeriesColors(sliceColors);
-     
+
         // Series
         chart.addSeries("Gold", 24);
         chart.addSeries("Silver", 21);
@@ -61,7 +60,7 @@ public class TdarPieChartTest {
         chart.getStyler().setPlotBorderVisible(false);
         chart.getStyler().setLegendBorderColor(Color.WHITE);
         BitmapEncoder.saveBitmap(chart, "target/Sample_Chart", BitmapFormat.PNG);
-//        VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
+        // VectorGraphicsEncoder.saveVectorGraphic(chart, "./Sample_Chart", VectorGraphicsFormat.EPS);
 
     }
 
@@ -89,11 +88,9 @@ public class TdarPieChartTest {
         r3.put("c", 20);
 
         data.put("2003", r3);
-//        TdarBarChart sample = new TdarBarChart("test", "time", "more time", data, 1000, 1000, "testBar");
-//        ChartGenerator cg = new ChartGenerator();
-//        cg.execute(sample);
-
-        
+        // TdarBarChart sample = new TdarBarChart("test", "time", "more time", data, 1000, 1000, "testBar");
+        // ChartGenerator cg = new ChartGenerator();
+        // cg.execute(sample);
 
         // Create Chart
         CategoryChart chart = new CategoryChartBuilder().width(800).height(600).title("Score Histogram").xAxisTitle("Score").yAxisTitle("Number").build();
@@ -101,13 +98,12 @@ public class TdarPieChartTest {
         // Customize Chart
         chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
         chart.getStyler().setHasAnnotations(true);
-     
+
         // Series
         chart.addSeries("test 1", Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
         chart.addSeries("test 2", Arrays.asList(new Integer[] { 0, 1, 2, 3, 4 }), Arrays.asList(new Integer[] { 4, 5, 9, 6, 5 }));
 
         BitmapEncoder.saveBitmap(chart, "target/Sample_Chart2", BitmapFormat.PNG);
-
 
     }
 

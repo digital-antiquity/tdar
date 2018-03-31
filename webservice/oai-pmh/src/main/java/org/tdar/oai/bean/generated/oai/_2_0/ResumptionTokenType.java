@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import java.math.BigInteger;
@@ -18,15 +17,16 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
  * A resumptionToken may have 3 optional attributes
- *        and can be used in ListSets, ListIdentifiers, ListRecords
- *        responses.
+ * and can be used in ListSets, ListIdentifiers, ListRecords
+ * responses.
  * 
- * <p>Java class for resumptionTokenType complex type.
+ * <p>
+ * Java class for resumptionTokenType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="resumptionTokenType">
@@ -44,7 +44,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "resumptionTokenType", propOrder = {
-    "value"
+        "value"
 })
 public class ResumptionTokenType {
 
@@ -64,9 +64,9 @@ public class ResumptionTokenType {
      * Gets the value of the value property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getValue() {
         return value;
@@ -76,9 +76,9 @@ public class ResumptionTokenType {
      * Sets the value of the value property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setValue(String value) {
         this.value = value;
@@ -88,9 +88,9 @@ public class ResumptionTokenType {
      * Gets the value of the expirationDate property.
      * 
      * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *         possible object is
+     *         {@link XMLGregorianCalendar }
+     * 
      */
     public XMLGregorianCalendar getExpirationDate() {
         return expirationDate;
@@ -100,9 +100,9 @@ public class ResumptionTokenType {
      * Sets the value of the expirationDate property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *            allowed object is
+     *            {@link XMLGregorianCalendar }
+     * 
      */
     public void setExpirationDate(XMLGregorianCalendar value) {
         this.expirationDate = value;
@@ -112,9 +112,9 @@ public class ResumptionTokenType {
      * Gets the value of the completeListSize property.
      * 
      * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     *         possible object is
+     *         {@link BigInteger }
+     * 
      */
     public BigInteger getCompleteListSize() {
         return completeListSize;
@@ -124,9 +124,9 @@ public class ResumptionTokenType {
      * Sets the value of the completeListSize property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *            allowed object is
+     *            {@link BigInteger }
+     * 
      */
     public void setCompleteListSize(BigInteger value) {
         this.completeListSize = value;
@@ -136,9 +136,9 @@ public class ResumptionTokenType {
      * Gets the value of the cursor property.
      * 
      * @return
-     *     possible object is
-     *     {@link BigInteger }
-     *     
+     *         possible object is
+     *         {@link BigInteger }
+     * 
      */
     public BigInteger getCursor() {
         return cursor;
@@ -148,9 +148,9 @@ public class ResumptionTokenType {
      * Sets the value of the cursor property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link BigInteger }
-     *     
+     *            allowed object is
+     *            {@link BigInteger }
+     * 
      */
     public void setCursor(BigInteger value) {
         this.cursor = value;

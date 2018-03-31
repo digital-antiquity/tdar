@@ -160,6 +160,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
     private void addUrlHighPriority(WebSitemapGenerator wsg, String url) throws MalformedURLException {
         wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.WEEKLY).priority(1.0).build());
     }
+
     private void addUrlDefaultPriority(WebSitemapGenerator wsg, String url) throws MalformedURLException {
         wsg.addUrl(new WebSitemapUrl.Options(url).changeFreq(ChangeFreq.MONTHLY).priority(.5).build());
     }

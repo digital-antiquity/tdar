@@ -8,21 +8,21 @@ public class WorkflowStatusReport {
     private DropboxFile toPdf;
     private DropboxFile doneOcr;
     private DropboxFile toUpload;
-    
+
     public boolean isUsingWorkflow() {
         if (toPdf == null && doneOcr == null && toUpload == null) {
             return false;
         }
         return true;
     }
-    
+
     public Phases getNextPhase() {
         if (doneOcr != null && toUpload == null || toUpload != null && toUpload.getTdarReference() == null) {
             return Phases.UPLOAD_TDAR;
         }
         return null;
     }
-    
+
     public Phases getCurrentPhase() {
         if (toUpload == null && doneOcr != null) {
             return Phases.DONE_PDFA;
@@ -32,8 +32,8 @@ public class WorkflowStatusReport {
             return Phases.TO_PDFA;
         }
         return null;
-}
-    
+    }
+
     public DropboxFile getToPdf() {
         return toPdf;
     }

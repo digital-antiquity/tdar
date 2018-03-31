@@ -12,7 +12,10 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
  */
 public interface Database {
     enum DatabaseType {
-        ACCESS, DB2, EXCEL, POSTGRES
+        ACCESS,
+        DB2,
+        EXCEL,
+        POSTGRES
     };
 
     DatabaseType getDatabaseType();

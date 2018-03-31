@@ -186,13 +186,13 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Rollback
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
-         List<ResourceType> types = Arrays.asList(ResourceType.DATASET, ResourceType.DOCUMENT, ResourceType.IMAGE, ResourceType.GEOSPATIAL);
+        List<ResourceType> types = Arrays.asList(ResourceType.DATASET, ResourceType.DOCUMENT, ResourceType.IMAGE, ResourceType.GEOSPATIAL);
         for (ResourceType rt : types) {
             createResourceFromType(rt, "test");
         }
 
         reindex();
-        for (ResourceType type :types) {
+        for (ResourceType type : types) {
             gotoPage(SEARCH_RESULTS_BASE_URL + "?");
             logger.debug("{} -- TYPE", type);
             if (getPageLink(type.getPlural()) != null) {
@@ -221,7 +221,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         try {
             return getHtmlPage().getAnchorByText(plural);
         } catch (Exception e) {
-            
+
         }
         return null;
     }

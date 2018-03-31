@@ -25,20 +25,18 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
         return "oaiPmh";
     }
 
-
     @Override
     public Class<? extends AbstractAppConfiguration> getConfigurationClass() {
         return OaiPmhAppConfiguration.class;
     }
 
-    
     @Override
     public void onStartup(ServletContext container) throws ServletException {
         if (StringUtils.isNotBlank(getFailureMessage())) {
             throw new ServletException(getFailureMessage());
         }
 
-//        setupContainer(container);
+        // setupContainer(container);
         setupOpenSessionInViewFilter(container);
 
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey

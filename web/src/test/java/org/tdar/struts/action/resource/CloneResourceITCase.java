@@ -14,7 +14,7 @@ public class CloneResourceITCase extends AbstractAdminControllerITCase {
 
     @Autowired
     SerializationService serializationService;
-    
+
     @Autowired
     private ImportService importService;
 
@@ -35,7 +35,6 @@ public class CloneResourceITCase extends AbstractAdminControllerITCase {
         logger.debug(serializationService.convertToXML(newDoc));
 
     }
-
 
     @SuppressWarnings("deprecation")
     @Test

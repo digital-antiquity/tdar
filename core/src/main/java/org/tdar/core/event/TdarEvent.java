@@ -12,8 +12,9 @@ import java.io.Serializable;
 public class TdarEvent extends AbstractTdarEvent implements Serializable {
 
     private static final long serialVersionUID = -6141090148370581562L;
+
     public TdarEvent(Object irFile, EventType type, Long extraId) {
-        super(irFile,type,extraId);
+        super(irFile, type, extraId);
     }
 
     public TdarEvent(Object indexable, EventType type) {

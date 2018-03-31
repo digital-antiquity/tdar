@@ -15,27 +15,26 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("ADMIN_NOTIFY_MSG")
 public class AdminNotificationMessage extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 4278006286599861751L;
-	
-	@Override
-	public String createSubjectLine() {
-		@SuppressWarnings("rawtypes")
-		AuthorityManagementLog logData  = (AuthorityManagementLog) getMap().get("log");
-		int    numUpdated = (int) getMap().get("numUpdated");
-		String className  = (String) getMap().get("className");
-		
-		return MessageHelper.getMessage(EmailType.ADMIN_NOTIFICATION.getLocaleKey(),
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4278006286599861751L;
+
+    @Override
+    public String createSubjectLine() {
+        @SuppressWarnings("rawtypes")
+        AuthorityManagementLog logData = (AuthorityManagementLog) getMap().get("log");
+        int numUpdated = (int) getMap().get("numUpdated");
+        String className = (String) getMap().get("className");
+
+        return MessageHelper.getMessage(EmailType.ADMIN_NOTIFICATION.getLocaleKey(),
                 Arrays.asList(
-                		TdarConfiguration.getInstance().getSiteAcronym(),
+                        TdarConfiguration.getInstance().getSiteAcronym(),
                         MessageHelper.getMessage("authorityManagementService.service_name"),
-                        logData.getUserDisplayName(), 
-                        numUpdated, 
-                        className, 
-                        logData.getAuthority().toString())
-            );
-	}
+                        logData.getUserDisplayName(),
+                        numUpdated,
+                        className,
+                        logData.getAuthority().toString()));
+    }
 
 }

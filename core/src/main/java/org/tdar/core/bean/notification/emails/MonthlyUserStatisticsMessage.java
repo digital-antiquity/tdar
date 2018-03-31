@@ -10,13 +10,13 @@ import org.tdar.utils.MessageHelper;
 @Entity
 @DiscriminatorValue("STATS_MESSAGE")
 public class MonthlyUserStatisticsMessage extends Email {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8514278566758205698L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8514278566758205698L;
 
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getMessage(EmailType.MONTHLY_USER_STATISTICS.getLocaleKey());
-	}
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getMessage(EmailType.MONTHLY_USER_STATISTICS.getLocaleKey());
+    }
 }

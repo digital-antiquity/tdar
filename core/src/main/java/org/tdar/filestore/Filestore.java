@@ -13,7 +13,9 @@ public interface Filestore {
     static final String FILENAME_SANITIZE_REGEX = "([\\W&&[^\\s\\-\\+\\.]])";
 
     public enum StorageMethod {
-        NO_ROTATION, ROTATE, DATE;
+        NO_ROTATION,
+        ROTATE,
+        DATE;
         private int rotations = 5;
 
         public int getRotations() {
@@ -26,7 +28,9 @@ public interface Filestore {
     }
 
     public enum LogType {
-        FILESTORE_VERIFICATION("verify"), AUTHORITY_MANAGEMENT("authmgmt"), OTHER("other");
+        FILESTORE_VERIFICATION("verify"),
+        AUTHORITY_MANAGEMENT("authmgmt"),
+        OTHER("other");
         private String dir;
 
         private LogType(String dir) {
@@ -110,12 +114,14 @@ public interface Filestore {
 
     /**
      * Get the current filestore location
+     * 
      * @return
      */
     String getFilestoreLocation();
 
     /**
      * create a MD5
+     * 
      * @param f
      * @return
      */
@@ -123,6 +129,7 @@ public interface Filestore {
 
     /**
      * verify a file in the filestore
+     * 
      * @param type
      * @param object
      * @return
@@ -133,6 +140,7 @@ public interface Filestore {
 
     /**
      * Mark a file as read only
+     * 
      * @param type
      * @param filesToProcess
      */
@@ -149,6 +157,7 @@ public interface Filestore {
 
     /**
      * logs the write to the filestore
+     * 
      * @param outFile
      */
     void logFilestoreWrite(File outFile);

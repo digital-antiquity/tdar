@@ -71,7 +71,6 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
     public final static String TAB_ONTOLOGY_FILE = TestConstants.TEST_ROOT_DIR + "/ontology/tabOntologyFile.txt";
     public final static String UPDATED_TAB_ONTOLOGY_FILE = TestConstants.TEST_ROOT_DIR + "/ontology/updatedTabOntologyFile.txt";
 
-
     @Test
     @Rollback
     public void testDegenerateOntologyDuplicates() throws Exception {
@@ -198,7 +197,7 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testOntologyWithSpaces() throws Exception {
-        String ontText =readToText(TestConstants.TEST_ROOT_DIR +"/ontology/degenerate_spaces_taxon.txt");
+        String ontText = readToText(TestConstants.TEST_ROOT_DIR + "/ontology/degenerate_spaces_taxon.txt");
         setIgnoreActionErrors(true);
         Long id = loadOntologyFromText(ontText);
         assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
@@ -208,7 +207,7 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testOntologyWithDegenerateTree() throws Exception {
-        String ontText = readToText(TestConstants.TEST_ROOT_DIR +"/ontology/degenerate_tree_taxon.txt");
+        String ontText = readToText(TestConstants.TEST_ROOT_DIR + "/ontology/degenerate_tree_taxon.txt");
         setIgnoreActionErrors(true);
         Long id = loadOntologyFromText(ontText);
         assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));

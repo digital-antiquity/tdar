@@ -68,7 +68,7 @@ public class BalkServletConfiguration extends AbstractServletConfiguration
         if (configuration.isProductionEnvironment()) {
             throw new IllegalStateException("dev startup tasks not allowed in production");
         }
-//      logServerInfo(container);
+        // logServerInfo(container);
     }
 
     private void configureFreemarker(ServletContext container) {

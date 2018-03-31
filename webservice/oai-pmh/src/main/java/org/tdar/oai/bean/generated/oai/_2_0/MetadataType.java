@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -23,15 +22,16 @@ import edu.asu.lib.mods.ModsDocument;
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 import gov.loc.mods.v3.ModsType;
 
-
 /**
  * Metadata must be expressed in XML that complies
- *        with another XML Schema (namespace=#other). Metadata must be 
- *        explicitly qualified in the response.
+ * with another XML Schema (namespace=#other). Metadata must be
+ * explicitly qualified in the response.
  * 
- * <p>Java class for metadataType complex type.
+ * <p>
+ * Java class for metadataType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="metadataType">
@@ -49,9 +49,10 @@ import gov.loc.mods.v3.ModsType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "metadataType", propOrder = {
-    "any"
+        "any"
 })
-@XmlSeeAlso(value={Resource.class, Creator.class, DublinCoreDocument.class, ModsDocument.class, ModsType.class, QualifiedDublinCoreDocument.class, ElementOrRefinementContainer.class})
+@XmlSeeAlso(value = { Resource.class, Creator.class, DublinCoreDocument.class, ModsDocument.class, ModsType.class, QualifiedDublinCoreDocument.class,
+        ElementOrRefinementContainer.class })
 public class MetadataType {
 
     @XmlAnyElement(lax = true)
@@ -61,9 +62,9 @@ public class MetadataType {
      * Gets the value of the any property.
      * 
      * @return
-     *     possible object is
-     *     {@link Object }
-     *     
+     *         possible object is
+     *         {@link Object }
+     * 
      */
     public Object getAny() {
         return any;
@@ -73,9 +74,9 @@ public class MetadataType {
      * Sets the value of the any property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
+     *            allowed object is
+     *            {@link Object }
+     * 
      */
     public void setAny(Object value) {
         this.any = value;

@@ -8,13 +8,14 @@ import org.tdar.utils.dropbox.DropboxConfig;
 import org.tdar.utils.dropbox.DropboxConstants;
 
 public enum Phases {
-    TO_PDFA, DONE_PDFA, UPLOAD_TDAR;
+    TO_PDFA,
+    DONE_PDFA,
+    UPLOAD_TDAR;
     static DropboxConfig config = DropboxConfig.getInstance();
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private final static transient Logger staticlogger = LoggerFactory.getLogger(Phases.class);
 
-    
     public String getPath() {
         switch (this) {
             case TO_PDFA:
@@ -43,19 +44,19 @@ public enum Phases {
         switch (this) {
             case TO_PDFA:
                 if (StringUtils.containsIgnoreCase(file.getPath(), DropboxConstants.CREATE_PDFA)) {
-                    logger.trace("setting status for {} to {}",file.getPath(), this);
+                    logger.trace("setting status for {} to {}", file.getPath(), this);
                     status.setToPdf(file);
                 }
                 break;
             case DONE_PDFA:
                 if (StringUtils.containsIgnoreCase(file.getPath(), DropboxConstants.DONE_OCR)) {
-                    logger.trace("setting status for {} to {}",file.getPath(), this);
+                    logger.trace("setting status for {} to {}", file.getPath(), this);
                     status.setDoneOcr(file);
                 }
                 break;
             case UPLOAD_TDAR:
                 if (StringUtils.containsIgnoreCase(file.getPath(), DropboxConstants.UPLOAD_TO_TDAR)) {
-                    logger.trace("setting status for {} to {}",file.getPath(), this);
+                    logger.trace("setting status for {} to {}", file.getPath(), this);
                     status.setToUpload(file);
                 }
                 break;
@@ -65,6 +66,7 @@ public enum Phases {
     public static String createKey(DropboxFile file) {
         return createKey(file.getPath());
     }
+
     public static String createKey(String path) {
         String key = path.toLowerCase();
         for (Phases phase : Phases.values()) {

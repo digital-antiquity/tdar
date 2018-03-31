@@ -69,19 +69,19 @@ public class OverdrawnAccountUpdate extends AbstractScheduledBatchProcess<Billin
 
     @Override
     public void execute() {
-    	String adminEmail = getTdarConfiguration().getSystemAdminEmail();
+        String adminEmail = getTdarConfiguration().getSystemAdminEmail();
         List<BillingAccount> accounts = genericDao.findAll(getPersistentClass(), getNextBatch());
-        
+
         Email email = emailService.createMessage(EmailType.ADMIN_OVERDRAWN_NOTIFICATION, adminEmail);
         email.addData("accounts", accounts);
         email.setUserGenerated(false);
 
         logger.debug("sending admin email");
         emailService.renderAndQueueMessage(email);
-        
+
         logger.debug("sending {} user email(s)", accounts.size());
         for (BillingAccount account : accounts) {
-        	//These messages should be going to the users, but there was no email address specified previously?
+            // These messages should be going to the users, but there was no email address specified previously?
             Email email_ = emailService.createMessage(EmailType.OVERDRAWN_NOTIFICATION, adminEmail);
             email_.setUserGenerated(false);
             email_.addData("account", account);

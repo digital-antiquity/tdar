@@ -10,7 +10,9 @@ import org.tdar.core.bean.entity.permissions.Permissions;
 public class UserPermissionCacheKey {
 
     public enum CacheResult {
-        TRUE, FALSE, NOT_FOUND;
+        TRUE,
+        FALSE,
+        NOT_FOUND;
 
         public Boolean getBooleanEquivalent() {
             switch (this) {

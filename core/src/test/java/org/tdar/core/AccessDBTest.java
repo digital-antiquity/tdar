@@ -22,7 +22,7 @@ public class AccessDBTest {
 
     @Test
     public void dataarc() {
-        Collection<File> files = FileUtils.listFiles(new File("/Users/abrin/Desktop/tDAr_NABO_upload"), new SuffixFileFilter(".mdb"),TrueFileFilter.INSTANCE );
+        Collection<File> files = FileUtils.listFiles(new File("/Users/abrin/Desktop/tDAr_NABO_upload"), new SuffixFileFilter(".mdb"), TrueFileFilter.INSTANCE);
         for (File file : files) {
             DatabaseBuilder builder = new DatabaseBuilder();
             builder.setReadOnly(true);
@@ -47,10 +47,10 @@ public class AccessDBTest {
                     System.out.print(q.getName());
                     System.out.print("\t");
                     String sql = q.toSQLString();
-                    sql = StringUtils.replace(sql,"\n", " ");
+                    sql = StringUtils.replace(sql, "\n", " ");
                     System.out.print(sql);
                     System.out.print("\n");
-                    
+
                 }
             } catch (IOException e) {
                 // TODO Auto-generated catch block

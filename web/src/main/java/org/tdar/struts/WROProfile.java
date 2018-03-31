@@ -1,7 +1,8 @@
 package org.tdar.struts;
 
 public enum WROProfile {
-    DEFAULT, NG_INTEGRATE;
+    DEFAULT,
+    NG_INTEGRATE;
 
     public String getProfileName() {
         switch (this) {

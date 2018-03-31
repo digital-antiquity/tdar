@@ -123,7 +123,8 @@ public class AuthorityManagementControllerITCase extends AbstractAdminController
         controller.prepare();
         controller.validate();
         controller.selectAuthority();
-        assertEquals(MessageHelper.getMessage("authorityManagementController.error_too_many_protected_records"), controller.getActionErrors().iterator().next());
+        assertEquals(MessageHelper.getMessage("authorityManagementController.error_too_many_protected_records"),
+                controller.getActionErrors().iterator().next());
     }
 
     @Test

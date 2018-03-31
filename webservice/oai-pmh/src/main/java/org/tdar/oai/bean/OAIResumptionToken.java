@@ -44,13 +44,13 @@ public class OAIResumptionToken {
 
     public OAIResumptionToken(Token cursor2, Date effectiveFrom, Date effectiveUntil, OAIMetadataFormat metadataFormat, Long collectionId) throws OAIException {
         try {
-        setCursor(cursor2);
-        setFromDate(effectiveFrom);
-        setUntilDate(effectiveUntil);
-        if (metadataFormat != null) {
-            setMetadataPrefix(metadataFormat.getPrefix());
-        }
-        setSet(collectionId);
+            setCursor(cursor2);
+            setFromDate(effectiveFrom);
+            setUntilDate(effectiveUntil);
+            if (metadataFormat != null) {
+                setMetadataPrefix(metadataFormat.getPrefix());
+            }
+            setSet(collectionId);
         } catch (Exception e) {
             System.err.println(e);
             e.printStackTrace();

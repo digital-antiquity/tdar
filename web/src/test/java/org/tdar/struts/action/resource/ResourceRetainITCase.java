@@ -17,14 +17,14 @@ public class ResourceRetainITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testResourceCollectionRetain() throws InstantiationException, IllegalAccessException, TdarActionException {
-        Document doc  = createAndSaveNewInformationResource(Document.class, true);
+        Document doc = createAndSaveNewInformationResource(Document.class, true);
         ResourceCollection collection = createAndSaveNewResourceCollection("uneditable");
         doc.getManagedResourceCollections().add(collection);
         collection.getManagedResources().add(doc);
         genericService.saveOrUpdate(doc);
         genericService.saveOrUpdate(collection);
         genericService.synchronize();
-        
+
         TdarUser submitter = doc.getSubmitter();
         assertNotEquals(getUser(), submitter);
         Long id = doc.getId();
@@ -38,7 +38,7 @@ public class ResourceRetainITCase extends AbstractControllerITCase {
         controller.getShares().clear();
         controller.setServletRequest(getServletPostRequest());
         controller.save();
-        
+
         doc = genericService.find(Document.class, id);
         assertTrue(PersistableUtils.extractIds(doc.getManagedResourceCollections()).contains(collectionId));
 
