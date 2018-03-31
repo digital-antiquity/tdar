@@ -8,6 +8,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Resource;
@@ -67,8 +68,8 @@ public class CollectionDataExtractor {
 
         // This is a set of TdarUsers who have the ability to write changes.
         HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(resource.getSubmitter());
-        writable.add(resource.getUpdatedBy());
+//        writable.add(resource.getSubmitter());
+//        writable.add(resource.getUpdatedBy());
         for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             if (!collection.isActive()) {
                 continue;
@@ -77,6 +78,12 @@ public class CollectionDataExtractor {
             // Find all users who can modify metadata, in addition to the submitter and updater.
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection,
                     Permissions.MODIFY_METADATA, true));
+        }
+        
+        for (AuthorizedUser user : resource.getAuthorizedUsers()) {
+            if (user.getEffectiveGeneralPermission() >= Permissions.MODIFY_METADATA.getEffectivePermissions()) {
+                writable.add(user.getUser());
+            }
         }
 
         // Iterate through the users and get the ids.
@@ -101,12 +108,19 @@ public class CollectionDataExtractor {
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
         HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(resource.getSubmitter());
-        writable.add(resource.getUpdatedBy());
+//        writable.add(resource.getSubmitter());
+//        writable.add(resource.getUpdatedBy());
         for (ResourceCollection collection : resource.getManagedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection) collection,
                     Permissions.VIEW_ALL, true));
         }
+        
+        for (AuthorizedUser user : resource.getAuthorizedUsers()) {
+            if (user.getEffectiveGeneralPermission() >= Permissions.VIEW_ALL.getEffectivePermissions()) {
+                writable.add(user.getUser());
+            }
+        }
+
         for (TdarUser p : writable) {
             if (PersistableUtils.isNullOrTransient(p)) {
                 continue;

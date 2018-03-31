@@ -526,6 +526,7 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
      */
     @Override
     public void post(LoggingObjectContainer o) throws Exception {
+        logger.trace("event write to filestore: {}", o);
         writeToFilestore(o.getFilestoreObjectType(), o.getPersistableId(), new FileInputStream(o.getDoc()));
     }
 }

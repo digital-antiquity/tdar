@@ -84,6 +84,18 @@ public enum Permissions implements HasLabel, Localizable {
         }
         return permissions;
     }
+    
+    public boolean matches(Permissions p) {
+        if (p == null ) {
+            return false;
+        }
+        
+        if (p.getEffectivePermissions() > getEffectivePermissions()) {
+            return true;
+        }
+        
+        return false;
+    }
 
     public static List<Permissions> resourcePermissions() {
         List<Permissions> permissions = new ArrayList<>(Arrays.asList(Permissions.values()));

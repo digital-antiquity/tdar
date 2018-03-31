@@ -39,6 +39,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -1032,6 +1033,27 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         logger.debug("results:{}", result.getResults());
         List<Long> ids2 = PersistableUtils.extractIds(result.getResults());
         Assert.assertArrayEquals(ids.toArray(), ids2.toArray());
+    }
+    
+
+
+    @Test
+    @Rollback(true)
+    public void testLocalPermissions() throws SearchException, SearchIndexException, IOException, ParseException, InstantiationException, IllegalAccessException {
+        Document doc = generateDocumentWithUser();
+        doc.setTitle("this is my unique title");
+        doc.setStatus(Status.DRAFT);
+        doc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), Permissions.MODIFY_RECORD ));
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+        searchIndexService.index(doc);
+        ReservedSearchParameters params = new ReservedSearchParameters();
+
+        SearchResult<Resource> result = performSearch("unique", null, null, null, null, getBasicUser(), params, Permissions.MODIFY_RECORD, 1000);
+        logger.debug("results:{}", result.getResults());
+        List<Long> ids = PersistableUtils.extractIds(result.getResults());
+
+        Assert.assertTrue(ids.contains(doc.getId()));
     }
 
     @Test
