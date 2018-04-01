@@ -30,7 +30,6 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.utils.Pair;
 
-
 public class KeywordITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -80,7 +79,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         CultureKeyword historicKeyword = genericKeywordService.findByLabel(CultureKeyword.class, "Historic");
         Long id = historicKeyword.getId();
         ExternalKeywordMapping e = new ExternalKeywordMapping("http://www.wikipedia.org", RelationType.DCTERMS_IS_VERSION_OF);
-//        historicKeyword.getAssertions().add(e);
+        // historicKeyword.getAssertions().add(e);
         genericKeywordService.saveKeyword(historicKeyword.getLabel(), historicKeyword.getDefinition(), historicKeyword, Arrays.asList(e));
         historicKeyword = null;
         assertNotNull(e.getId());
@@ -107,9 +106,9 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
                 assertEquals(RelationType.DCTERMS_RELATION, keyword.getAssertions().iterator().next().getRelationType());
                 return null;
             }
-            
+
         });
-        
+
     }
 
     @Test

@@ -30,10 +30,10 @@ public class AuthorizeAction extends AbstractAuthenticatedAction implements Prep
             config = new DropboxConfig();
             setAuthorizedUrl(config.getAuthorizedUrl());
         } catch (URISyntaxException | IOException e) {
-            getLogger().error("{}",e,e);
+            getLogger().error("{}", e, e);
         }
     }
-    
+
     @Override
     @Action(value = "request", results = {
             @Result(name = TdarActionSupport.SUCCESS, location = "/WEB-INF/content/setup/request.ftl")

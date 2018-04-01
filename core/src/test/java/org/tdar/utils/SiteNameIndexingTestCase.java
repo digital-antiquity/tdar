@@ -30,7 +30,7 @@ public class SiteNameIndexingTestCase {
         assertMatches(compile, "22:22:13-0005");
         assertMatches(compile, "RI-0006");
         assertMatches(compile, "AZ U:9:1(ASM)");
-//        assertMatches(compile, "NA18,009(MNA)");
+        // assertMatches(compile, "NA18,009(MNA)");
         assertMatches(compile, "AZ N:16:45 (PC)");
         assertMatches(compile, "VT-03-12-06-193(USFS)");
         assertMatches(compile, "CA-H-46-62 (NN)");
@@ -44,25 +44,25 @@ public class SiteNameIndexingTestCase {
     @Test
     public void testHawaiiSiteExtractor() {
         String title = "POLLEN AND MACROFLORAL ANALYSIS OF SEDIMENT FROM LOKO KAIPUNI FISHPOND (SIHP # 50-80-14-4573), WAIKĪKĪ, O’AHU, HAWAI’I";
-        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(title,true);
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(title, true);
         logger.debug("{}", extractSiteCodeTokens);
         assertTrue("should have one site code", extractSiteCodeTokens.size() == 1);
         assertEquals("5080144573", extractSiteCodeTokens.iterator().next());
     }
-    
+
     @Test
     public void boundaryTest() {
         String phrase = "GB-235-1D I01";
-        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(phrase,false);
-        logger.debug("{}",extractSiteCodeTokens);
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(phrase, false);
+        logger.debug("{}", extractSiteCodeTokens);
         assertTrue(extractSiteCodeTokens.size() == 0);
     }
-    
+
     @Test
     public void testAZ() {
         String phrase = "AZ U:15:110(ASM ) Shelltown AA:1:66 Pit structure AZ U:15:110(ASM) Feature 757 All except;  context AZ U:10:6 ; four canals at Las Canopas (AZ U:9:161 [ASM]), located between ;  PRS-01 AZ U:15:110 (ASM) Crushed rock Plain";
-        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(phrase,false);
-        logger.debug("{}",extractSiteCodeTokens);
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(phrase, false);
+        logger.debug("{}", extractSiteCodeTokens);
         assertTrue(extractSiteCodeTokens.contains("AZ U:9:161 [ASM]"));
         assertTrue(extractSiteCodeTokens.contains("AZ U:10:6"));
         assertTrue(extractSiteCodeTokens.contains("AA:1:66"));
@@ -70,25 +70,26 @@ public class SiteNameIndexingTestCase {
         assertTrue(extractSiteCodeTokens.contains("AZ U:15:110(ASM)"));
         assertTrue(extractSiteCodeTokens.contains("AZ U:15:110(ASM )"));
     }
-    
+
     @Test
     public void testExtractor() {
-        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("38-AK-500",true);
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("38-AK-500", true);
         logger.debug("{}", extractSiteCodeTokens);
         assertTrue("should have one site code", extractSiteCodeTokens.size() == 1);
     }
-    
+
     @Test
     public void testExtractorInPhrase() {
-        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("G- AZ U:15:1, Snaketown, 8D:Strat Test 1, Level 3; H - AZ U:13:1, Snaketown, 8D:Strat Test 1, Level 4; I - AZ AA:1:66,\n",false);
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens(
+                "G- AZ U:15:1, Snaketown, 8D:Strat Test 1, Level 3; H - AZ U:13:1, Snaketown, 8D:Strat Test 1, Level 4; I - AZ AA:1:66,\n", false);
         logger.debug("{}", extractSiteCodeTokens);
         assertTrue("should have one site code", extractSiteCodeTokens.size() == 3);
     }
-    
+
     @Test
     public void testReader() throws IOException {
         String reader = " CA-AAA-0001 asasd qrqewr 22:22:13-0010 sadas d RI-0090  44:PG:0462";
-        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader,true);
+        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader, true);
         Iterator<String> iterator = found.iterator();
         while (iterator.hasNext()) {
             String term = iterator.next();
@@ -100,7 +101,7 @@ public class SiteNameIndexingTestCase {
     @Test
     public void testNormalization() throws IOException {
         String reader = " CA-AAA-0001RI-191-0  44:PG:0462";
-        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader,true);
+        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader, true);
         Iterator<String> iterator = found.iterator();
         while (iterator.hasNext()) {
             String term = iterator.next();
@@ -113,7 +114,7 @@ public class SiteNameIndexingTestCase {
     @Test
     public void testReader2() throws IOException {
         String reader = "44PG0462";
-        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader,true);
+        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader, true);
         Iterator<String> iterator = found.iterator();
         while (iterator.hasNext()) {
             String term = iterator.next();

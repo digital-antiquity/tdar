@@ -47,9 +47,8 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
     @Autowired
     UrlService urlService;
 
-
     @Autowired
-    DoiProcess doiProcess;                
+    DoiProcess doiProcess;
 
     @Test
     public void testDoiList() {
@@ -61,7 +60,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
                 seenProject = true;
             }
             if (r instanceof InformationResource) {
-                InformationResource ir = (InformationResource)r;
+                InformationResource ir = (InformationResource) r;
                 if (ir.getInformationResourceFiles().size() > 0) {
                     seenResource = true;
                 }
@@ -70,6 +69,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
         assertTrue("should see at least one project", seenProject);
         assertTrue("should see at least one resource with file", seenResource);
     }
+
     @Test
     public void testLogin() {
         try {

@@ -20,7 +20,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class ProductionProfile implements AsyncConfigurer {
 
     public transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Override
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

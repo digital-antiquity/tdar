@@ -15,7 +15,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
     private static final String EDIT = "/collection/admin/whitelabel/1003/edit";
     private static final String COLLECTION_2580 = "/collection/1003";
     private static final String COLLECTION_ADMIN_2580 = "/collection/admin/1003";
-    
+
     @Before
     public void setupWhiteLabel() {
         gotoPage(COLLECTION_2580);
@@ -34,7 +34,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
         setInput("collection.properties.subtitle", ABCDEF);
         setInput("collection.properties.searchEnabled", "true");
         submitForm();
-        assertTrue("page contains new subtitle",getPageText().contains(ABCDEF));
+        assertTrue("page contains new subtitle", getPageText().contains(ABCDEF));
         gotoPage(EDIT);
         setInput("collection.properties.searchEnabled", "false");
         submitForm();
@@ -45,7 +45,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
         gotoPage(EDIT);
         setInput("collection.properties.css", BODY_FONT_COLOR_RUST);
         submitForm();
-        assertTrue("page contains custom css",getPageCode().contains(BODY_FONT_COLOR_RUST));
+        assertTrue("page contains custom css", getPageCode().contains(BODY_FONT_COLOR_RUST));
     }
 
     @Test
@@ -63,7 +63,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 
             if (name.contains("Document")) {
                 gotoPage("/resource/4292");
-                //FIXME: need image
+                // FIXME: need image
                 gotoPage(COLLECTION_2580);
             }
 
@@ -73,7 +73,8 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
             }
 
             if (name.contains("subCollections")) {
-                assertEquals("page contains subcollection 3 times (title 2x, description 1x)", 3, StringUtils.countMatches(getPageText(), "display_orientationGRID"));
+                assertEquals("page contains subcollection 3 times (title 2x, description 1x)", 3,
+                        StringUtils.countMatches(getPageText(), "display_orientationGRID"));
             }
 
         }

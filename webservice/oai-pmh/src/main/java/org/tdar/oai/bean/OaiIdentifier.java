@@ -15,6 +15,7 @@ public class OaiIdentifier {
 
     /**
      * Simple bean model to help manage the creation of and validation of identifiers.
+     * 
      * @param identifier
      * @throws OAIException
      */

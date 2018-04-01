@@ -212,7 +212,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     public void testPersonLookupWithOneResult() throws SearchException, SearchIndexException, IOException, ParseException {
         Person person_ = setupPerson(null, null, "test@tdar.org", null);
-        SearchResult<Person> result = findPerson(person_, null, null, min,null,getBasicUser());
+        SearchResult<Person> result = findPerson(person_, null, null, min, null, getBasicUser());
         List<Person> people = result.getResults();
         assertEquals("person list should have exactly one item", people.size(), 1);
     }
@@ -361,7 +361,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
             SearchResult<Person> findPerson = findPerson(person, null, null, 0);
             for (Person p : findPerson.getResults()) {
                 if (StringUtils.equals(p.getEmail(), person.getEmail())) {
-//                    seen = true;
+                    // seen = true;
                 } else {
                     seen = false;
                 }
@@ -413,7 +413,6 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
             assertTrue(pers.getInstitution().getName().contains(" "));
         }
     }
-    
 
     @Test
     @Rollback(true)
@@ -457,10 +456,13 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return result;
     }
 
-    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2, SortOption option) throws ParseException, SearchException, SearchIndexException, IOException {
+    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2, SortOption option)
+            throws ParseException, SearchException, SearchIndexException, IOException {
         return findPerson(person, term, registered, min2, option, null);
     }
-    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2) throws ParseException, SearchException, SearchIndexException, IOException {
+
+    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2)
+            throws ParseException, SearchException, SearchIndexException, IOException {
         return findPerson(person, term, registered, min2, null, null);
     }
 }

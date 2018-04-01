@@ -24,17 +24,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
-import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.dao.base.DoiDao;
 import org.tdar.core.dao.base.GenericDao;
-import org.tdar.core.service.SerializationService;
 import org.tdar.dataone.DataOneAppConfiguration;
 import org.tdar.utils.TestConfiguration;
+
 @ContextConfiguration(classes = DataOneAppConfiguration.class)
 @SuppressWarnings("rawtypes")
 public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringContextTests {
@@ -48,13 +46,14 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
 
     @Autowired
     private GenericDao genericDao;
-    
+
     @Autowired
     protected DoiDao doiDao;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-//    @Autowired
-//    SerializationService serializationService;
+
+    // @Autowired
+    // SerializationService serializationService;
     @Test
     @Rollback
     public void testOaiORE() throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
@@ -64,7 +63,7 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
     }
 
     String checksum = null;
-    
+
     @Test
     public void testIdentifierParser() {
         IdentifierParser ip = new IdentifierParser(TEST_META, doiDao);
@@ -76,7 +75,7 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
     public void testMetadataRequest() {
         service.metadataRequest(TEST_META);
     }
-    
+
     @Test
     @Rollback(false)
     public void testDCTransformer() throws Exception {
@@ -85,21 +84,21 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
         doc.setDescription("test");
         doc.markUpdated(genericDao.find(TdarUser.class, TestConfiguration.getInstance().getUserId()));
         doc.setDate(2012);
-        LatitudeLongitudeBox box = new LatitudeLongitudeBox(10.0001,10.0001,10.000101,10.000101);
-//        box.setObfuscatedEast(box.getObfuscatedEast());
-//        box.setObfuscatedSouth(box.getObfuscatedSouth());
-//        box.setObfuscatedNorth(box.getObfuscatedNorth());
-//        box.setObfuscatedWest(box.getObfuscatedWest());
+        LatitudeLongitudeBox box = new LatitudeLongitudeBox(10.0001, 10.0001, 10.000101, 10.000101);
+        // box.setObfuscatedEast(box.getObfuscatedEast());
+        // box.setObfuscatedSouth(box.getObfuscatedSouth());
+        // box.setObfuscatedNorth(box.getObfuscatedNorth());
+        // box.setObfuscatedWest(box.getObfuscatedWest());
 
-//        box.setObfuscatedValues();
+        // box.setObfuscatedValues();
         doc.getLatitudeLongitudeBoxes().add(box);
         logger.debug("n:{}", doc.getFirstActiveLatitudeLongitudeBox().getObfuscatedNorth());
         genericDao.saveOrUpdate(doc);
         genericDao.saveOrUpdate(doc.getLatitudeLongitudeBoxes());
         Long id = doc.getId();
         doc = null;
-        for (int i=0;i< 1000; i++) {
-             test(id, true);
+        for (int i = 0; i < 1000; i++) {
+            test(id, true);
         }
         genericDao.clearCurrentSession();
         doc = genericDao.find(Image.class, id);
@@ -107,7 +106,7 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
         genericDao.saveOrUpdate(doc);
         doc = null;
         test(id, false);
-        
+
     }
 
     private String test(Long id, boolean same) throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException, IOException {
@@ -129,20 +128,20 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
         return checksum;
     }
 
-    
     @Test
     @Rollback
-    public void testObjectTotals() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
+    public void testObjectTotals() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException,
+            JDOMException, IOException, JAXBException {
         service.synchronizeTdarChangesWithDataOneObjects();
         ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 10);
         assertEquals(4, listObjectsResponse.getTotal());
         assertEquals(4, listObjectsResponse.getObjectInfoList().size());
     }
 
-
     @Test
     @Rollback
-    public void testObjectCounts() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
+    public void testObjectCounts() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException,
+            JDOMException, IOException, JAXBException {
         service.synchronizeTdarChangesWithDataOneObjects();
         ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 2);
         assertEquals(2, listObjectsResponse.getCount());
@@ -150,10 +149,10 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
         assertEquals(2, listObjectsResponse.getObjectInfoList().size());
     }
 
-
     @Test
     @Rollback
-    public void testObjectStarts() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
+    public void testObjectStarts() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException,
+            JDOMException, IOException, JAXBException {
         service.synchronizeTdarChangesWithDataOneObjects();
         ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 3, 2);
         assertEquals(1, listObjectsResponse.getCount());

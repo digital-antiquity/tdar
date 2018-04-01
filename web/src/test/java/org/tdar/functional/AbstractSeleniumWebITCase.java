@@ -124,7 +124,6 @@ public abstract class AbstractSeleniumWebITCase {
     private static WebDriver driver;
     private static Browser currentBrowser;
 
-
     protected static Logger logger = LoggerFactory.getLogger(AbstractSeleniumWebITCase.class);
     private static WebDriver rawDriver;
 
@@ -141,10 +140,10 @@ public abstract class AbstractSeleniumWebITCase {
         @Override
         public Boolean apply(@Nullable WebDriver webDriver) {
             try {
-            String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
-            return "complete".equals(readyState);
+                String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
+                return "complete".equals(readyState);
             } catch (Throwable t) {
-                logger.error("{}",t,t);
+                logger.error("{}", t, t);
             }
             return false;
         }
@@ -157,7 +156,7 @@ public abstract class AbstractSeleniumWebITCase {
                 String readyState = (String) ((JavascriptExecutor) webDriver).executeScript("return document.readyState");
                 return !"complete".equals(readyState);
             } catch (Throwable t) {
-                logger.error("{}",t,t);
+                logger.error("{}", t, t);
             }
             return true;
         }
@@ -229,7 +228,10 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected enum Browser {
-        FIREFOX, CHROME, SAFARI, IE;
+        FIREFOX,
+        CHROME,
+        SAFARI,
+        IE;
     }
 
     @Before
@@ -317,7 +319,6 @@ public abstract class AbstractSeleniumWebITCase {
                 // profile.setPreference("browser.download.dir","c:\\downloads");
                 rawDriver = new FirefoxDriver(options);
 
-
                 break;
             case CHROME:
                 // http://peter.sh/experiments/chromium-command-line-switches
@@ -350,8 +351,8 @@ public abstract class AbstractSeleniumWebITCase {
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "--dns-prefetch-disable",
-//                        "--headless",
-//                        "--disable-gpu",
+                        // "--headless",
+                        // "--disable-gpu",
                         "noerrdialogs");
                 rawDriver = new ChromeDriver(service, copts);
 
@@ -391,7 +392,7 @@ public abstract class AbstractSeleniumWebITCase {
     @After
     public void after() {
         report();
-        //disable navigation warning
+        // disable navigation warning
         if (CollectionUtils.isNotEmpty(driver.getWindowHandles())) {
             executeJavascript("$(window).off('beforeunload');");
         }
@@ -451,7 +452,6 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
-    
     public final void report() {
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
@@ -802,11 +802,11 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void logout() {
-        if (CollectionUtils.isNotEmpty(getDriver().getWindowHandles())){ 
+        if (CollectionUtils.isNotEmpty(getDriver().getWindowHandles())) {
             WebElementSelection find = find("#logout-button");
             // driver.manage().deleteAllCookies();
             logger.debug("LOGOUT: {} ", find);
-    
+
             if (find.size() > 0) {
                 // handle modal dialogs
                 try {
@@ -823,7 +823,7 @@ public abstract class AbstractSeleniumWebITCase {
                 }
             }
         }
-        
+
         gotoPage("/login");
         WebElementSelection find = find("#logout-button");
         if (find.size() > 0) {
@@ -876,7 +876,7 @@ public abstract class AbstractSeleniumWebITCase {
             Object result = executor.executeScript(functionBody, arguments);
             return (T) result;
         } catch (Throwable t) {
-            logger.error("{}",t,t);
+            logger.error("{}", t, t);
         }
         return null;
     }
@@ -1473,7 +1473,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public String switchToWindow(String url) {
-        for (int i=0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             waitFor(1);
             if (getDriver().getWindowHandles().size() > 1) {
                 continue;
@@ -1677,7 +1677,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void reloadUntilFound(String url, String text, int i) {
-        for (int count = 0; count < i; count ++) {
+        for (int count = 0; count < i; count++) {
             gotoPage(url);
             if (!getText().contains(text)) {
                 try {
@@ -1691,7 +1691,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
     }
-    
+
     /**
      * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
      * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium

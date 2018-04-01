@@ -1,6 +1,6 @@
 <#import "email-macro.ftl" as mail /> 
 <@mail.content>
-The following accounts are overdrawn:<br />
+<b>The following accounts are overdrawn:</b><br />
 <#list accounts as account>
     <p>
     ${account.name} ( ${account.owner.properName} - ${account.owner.email} )<br />
@@ -11,10 +11,10 @@ The following accounts are overdrawn:<br />
     </p>
 
     <p>
-        Flagged Items:
+        <b>Flagged Items:</b>
         <ul>
         <#list account.flaggedResources as resource>
-          <a href="${baseUrl}${resource.detailUrl}">${resource.id} ${resource.resourceType} ${resource.title}</a>
+          <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id})
         </#list>
         </ul>
     </p>

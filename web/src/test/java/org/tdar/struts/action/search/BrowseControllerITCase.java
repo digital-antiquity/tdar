@@ -26,7 +26,7 @@ import com.opensymphony.xwork2.Action;
 public class BrowseControllerITCase extends AbstractSearchControllerITCase {
 
     private BrowseCreatorController controller = null;
-    
+
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @Before

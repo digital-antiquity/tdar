@@ -176,7 +176,7 @@ public class Resource implements Persistable,
     private transient boolean viewable;
     @Transient
     private transient boolean editable;
-    
+
     @Transient
     private transient boolean viewConfidential;
     @Transient

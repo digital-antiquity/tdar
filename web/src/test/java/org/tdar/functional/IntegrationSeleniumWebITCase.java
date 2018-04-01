@@ -99,7 +99,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
-        //find(id("btnAddDisplayColumn")).click();
+        // find(id("btnAddDisplayColumn")).click();
         waitFor(ExpectedConditions.elementToBeClickable(id("btnAddDisplayColumn"))).click();
         By tab1 = id("tab0");
         waitFor(tab1).isDisplayed();
@@ -180,7 +180,6 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // wait until integration column becomes visible
         waitFor(visibilityOfElementLocated(id("tab1")));
 
-
         find(aves).click();
         find(rabbit).click();
         find(sheep).click();
@@ -200,8 +199,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitForPageload();
 
         // wait until integration column becomes visible
-//        waitFor(visibilityOfElementLocated(id("tab1")));
-
+        // waitFor(visibilityOfElementLocated(id("tab1")));
 
         waitFor(partialLinkText("Fauna Taxon Ontology")).click();
         waitFor(".nodechild1");
@@ -216,8 +214,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
                 containsString("taxon"),
                 containsString("element"),
                 containsString("spitalfield"),
-                containsString("alexandria")
-                ));
+                containsString("alexandria")));
 
         assertThat(find(aves).isSelected(), is(true));
         assertThat(find(rabbit).isSelected(), is(true));
@@ -234,7 +231,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // add integration column with a few check boxes
         takeScreenshot();
         WebElementSelection btn = waitFor(linkText("Add Integration Column"));
-        // elementToBeClickable doesn't work for links because selenium considers links to always be "enabled".  Thumbs up, selenium team!!!
+        // elementToBeClickable doesn't work for links because selenium considers links to always be "enabled". Thumbs up, selenium team!!!
         waitFor((ignored) -> !btn.hasClass("disabled"));
         waitFor(elementToBeClickable(linkText("Add Integration Column"))).click();
 
@@ -292,7 +289,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     private void removeDatasetByPartialName(String name) {
         waitFor(stabilityOfElement(By.cssSelector("table.selected-datasets tbody tr"), 500));
         find("table.selected-datasets tbody tr ").stream()
-                .filter( elem -> elem.getText().contains(name))
+                .filter(elem -> elem.getText().contains(name))
                 .findFirst()
                 .ifPresent(row -> row.findElement(By.cssSelector("a.delete-button")).click());
     }

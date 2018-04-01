@@ -45,12 +45,12 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
     SearchService<Resource> searchService;
-    
+
     public static class SortTestStruct {
         public SortTestStruct(LookupSource type) {
             this.type = type;
             this.qb = setupQueryBuilder();
-            
+
         }
 
         public LookupSource type;
@@ -115,7 +115,6 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
         return title1;
     }
 
-
     @BeforeClass
     public static void before() {
         SortTestStruct resourceInfo = new SortTestStruct(LookupSource.RESOURCE);
@@ -143,12 +142,12 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
         assertSortOrder(SortOption.DATE_REVERSE, yearComparator);
     }
 
-
     static ResourceQueryBuilder setupQueryBuilder() {
         ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
         // get information resources only
-        FieldQueryPart<String> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE,Operator.OR, 
-                Arrays.asList(ResourceType.DATASET.name(), ResourceType.DOCUMENT.name(),ResourceType.IMAGE.name(),ResourceType.CODING_SHEET.name(), ResourceType.ONTOLOGY.name()));
+        FieldQueryPart<String> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE, Operator.OR,
+                Arrays.asList(ResourceType.DATASET.name(), ResourceType.DOCUMENT.name(), ResourceType.IMAGE.name(), ResourceType.CODING_SHEET.name(),
+                        ResourceType.ONTOLOGY.name()));
         resourceQueryBuilder.append(fqp);
         return resourceQueryBuilder;
     }
@@ -185,8 +184,6 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
             }
         };
         assertSortOrder(SortOption.RESOURCE_TYPE, resourceTypeComparator);
-        assertSortOrder(SortOption.RESOURCE_TYPE_REVERSE, resourceTypeComparator);
-
     }
 
     @Test
@@ -196,15 +193,15 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     public void testAllSortFields() throws ParseException, SearchException, SearchIndexException, IOException {
 
         for (SortTestStruct sortTestInfo : sortTests) {
-            
-            getSearchIndexService().indexAll(new QuietIndexReciever(), Arrays.asList( sortTestInfo.type), getAdminUser());
+
+            getSearchIndexService().indexAll(new QuietIndexReciever(), Arrays.asList(sortTestInfo.type), getAdminUser());
             for (Map.Entry<SortOption, Comparator<?>> entry : sortTestInfo.comparators.entrySet()) {
                 // assumption: an empty queryBuilder returns alldocs
                 SortOption sortOption = entry.getKey();
-                
+
                 SearchResult result = new SearchResult();
                 result.setSortField(entry.getKey());
-//                sortTestInfo.qb.append(new FieldQueryPart<>(QueryFieldNames.NAME,"*"));;
+                // sortTestInfo.qb.append(new FieldQueryPart<>(QueryFieldNames.NAME,"*"));;
                 searchService.handleSearch(sortTestInfo.qb, result, MessageHelper.getInstance());
                 List results = result.getResults();
                 assertFalse("list should not be empty", results.isEmpty());
@@ -242,7 +239,8 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
         assertSortOrder(SortOption.PROJECT, projectComparator);
     }
 
-    private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator) throws ParseException, SearchException, SearchIndexException, IOException {
+    private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator)
+            throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<Resource> result = new SearchResult<>();
         result.setSortField(sortOption);
         searchService.handleSearch(setupQueryBuilder(), result, MessageHelper.getInstance());

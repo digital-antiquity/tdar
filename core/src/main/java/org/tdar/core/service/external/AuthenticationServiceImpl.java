@@ -80,7 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     private InstitutionDao institutionDao;
-    
+
     private AuthenticationProvider provider;
 
     /*
@@ -480,7 +480,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         logger.debug("Trying to add user to auth service...");
 
         emailService.sendWelcomeEmail(person);
-       
+
         userNotificationService.info(person, reg.getWelcomeNewUserMessageKey(), UserNotificationDisplayType.FREEMARKER);
         logger.info("Added user to auth service successfully.");
         // } else {
@@ -531,7 +531,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 notices.get(authorizer).add((HasName) invite.getResourceCollection());
                 publisher.publishEvent(new TdarEvent(invite.getResourceCollection(), EventType.CREATE_OR_UPDATE));
                 publisher.publishEvent(new AsyncTdarEvent(invite.getResourceCollection(), EventType.REINDEX_CHILDREN));
-            } 
+            }
 
             if (invite.getResource() != null) {
                 invite.getResource().getAuthorizedUsers().add(user);
@@ -562,7 +562,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         return result;
     }
-
 
     private TdarUser reconcilePersonWithTransient(TdarUser incoming, TdarUser resultOfLookup, String error) {
         if ((resultOfLookup != null) && PersistableUtils.isNullOrTransient(incoming)) {

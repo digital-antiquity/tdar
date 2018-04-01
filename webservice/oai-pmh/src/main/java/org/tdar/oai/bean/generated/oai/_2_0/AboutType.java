@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,14 +12,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * Data "about" the record must be expressed in XML
- *       that is compliant with an XML Schema defined by a community.
+ * that is compliant with an XML Schema defined by a community.
  * 
- * <p>Java class for aboutType complex type.
+ * <p>
+ * Java class for aboutType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="aboutType">
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "aboutType", propOrder = {
-    "any"
+        "any"
 })
 public class AboutType {
 
@@ -49,9 +49,9 @@ public class AboutType {
      * Gets the value of the any property.
      * 
      * @return
-     *     possible object is
-     *     {@link Object }
-     *     
+     *         possible object is
+     *         {@link Object }
+     * 
      */
     public Object getAny() {
         return any;
@@ -61,9 +61,9 @@ public class AboutType {
      * Sets the value of the any property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
+     *            allowed object is
+     *            {@link Object }
+     * 
      */
     public void setAny(Object value) {
         this.any = value;

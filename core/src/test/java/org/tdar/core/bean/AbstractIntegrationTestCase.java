@@ -95,12 +95,13 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.StatsChartGenerator;
 import org.tdar.utils.TestConfiguration;
+
 // 
 @ContextConfiguration(classes = TdarAppConfiguration.class)
 @SuppressWarnings("rawtypes")
-@ActiveProfiles(profiles= {"test"})
+@ActiveProfiles(profiles = { "test" })
 public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests implements TestEntityHelper {
-    
+
     protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
     protected PlatformTransactionManager transactionManager;
@@ -109,7 +110,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public static final String SPITAL_DB_NAME = TestConstants.SPITAL_DB_NAME;
     protected static final String PATH = TestConstants.TEST_DATA_INTEGRATION_DIR;
-    
+
     @Autowired
     protected SessionFactory sessionFactory;
     @Autowired
@@ -150,17 +151,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     @Autowired
     protected EmailServiceImpl emailService;
-    
+
     @Autowired
     protected EmailStatisticsHelper emailStatsHelper;
-    
+
     @Autowired
-	protected StatsChartGenerator chartGenerator;
-    
+    protected StatsChartGenerator chartGenerator;
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private SessionData sessionData;
-    
+
     public AbstractIntegrationTestCase() {
         // making sure all test-index data ends up in target
         System.setProperty("solr.data.dir", "target/junit-solr/");
@@ -177,8 +177,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             AbstractIntegrationTestCase.this.onFail(e, description);
         }
     };
-    
-    
 
     @Before
     public void announceTestStarting() {
@@ -209,7 +207,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
     }
 
-
     @Deprecated
     /*
      * deprecated, use generateInformationResourceWithFileAndUser() or generateInformationResourceWithUser() instead
@@ -217,7 +214,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public InformationResource generateInformationResourceWithFile() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -251,7 +248,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public Document createAndSaveDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, false);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -265,7 +262,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException, FileNotFoundException {
         Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);
-        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR , TestConstants.TEST_DOCUMENT_NAME);
+        File file = TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
         assertTrue("testing " + TestConstants.TEST_DOCUMENT_NAME + " exists", file.exists());
         ir = (Document) addFileToResource(ir, file);
         return ir;
@@ -308,7 +305,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    
     public <R extends InformationResource> R replaceFileOnResource(R ir, File file, InformationResourceFile oldFile) {
         try {
             FileProxy proxy = new FileProxy(file.getName(), file, VersionType.UPLOADED, FileAction.REPLACE);
@@ -360,7 +356,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
             iResource.setCopyrightHolder(persistentPerson);
         }
-//        iResource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, GeneralPermissions.MODIFY_RECORD));
+        // iResource.getAuthorizedUsers().add(new AuthorizedUser(persistentPerson, persistentPerson, GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(iResource);
         genericService.saveOrUpdate(iResource.getAuthorizedUsers());
         return iResource;
@@ -410,7 +406,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewResource(cls, persistentPerson, resourceTitle);
     }
 
-
     // create new, public, collection with the getUser() as the owner and no resources
     public ResourceCollection createAndSaveNewResourceCollection(String name) {
         return init(new ResourceCollection(), name);
@@ -418,12 +413,13 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public ResourceCollection createAndSaveNewWhiteLabelCollection(String name) {
         ResourceCollection wlc = new ResourceCollection();
-        wlc.setProperties(new CollectionDisplayProperties(false,false,false,false,false,false,false));
+        wlc.setProperties(new CollectionDisplayProperties(false, false, false, false, false, false, false));
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");
         init(wlc, name);
         return wlc;
     }
+
     protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
@@ -543,17 +539,17 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public void addAuthorizedUser(Resource resource, TdarUser person, Permissions permission) {
         AuthorizedUser authorizedUser = new AuthorizedUser(person, person, permission);
-//        InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
-//        if (internalResourceCollection == null) {
-//            internalResourceCollection = new InternalCollection();
-//            internalResourceCollection.setOwner(person);
-//            internalResourceCollection.markUpdated(person);
-//            resource.getInternalCollections().add(internalResourceCollection);
-//            genericService.save(internalResourceCollection);
-//        }
+        // InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
+        // if (internalResourceCollection == null) {
+        // internalResourceCollection = new InternalCollection();
+        // internalResourceCollection.setOwner(person);
+        // internalResourceCollection.markUpdated(person);
+        // resource.getInternalCollections().add(internalResourceCollection);
+        // genericService.save(internalResourceCollection);
+        // }
         resource.getAuthorizedUsers().add(authorizedUser);
-//        logger.debug("{}", internalResourceCollection);
-//        genericService.saveOrUpdate(internalResourceCollection);
+        // logger.debug("{}", internalResourceCollection);
+        // genericService.saveOrUpdate(internalResourceCollection);
         genericService.saveOrUpdate(authorizedUser);
         genericService.saveOrUpdate(resource);
     }
@@ -601,8 +597,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             runInNewTransaction(verifyTransactionCallback);
         }
     }
-
-
 
     public TransactionCallback getVerifyTransactionCallback() {
         return verifyTransactionCallback;
@@ -659,7 +653,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         assertTrue(message, CollectionUtils.isNotEmpty(results));
     }
 
-    public static void assertEmpty(String message,Collection<?> results) {
+    public static void assertEmpty(String message, Collection<?> results) {
         assertTrue(message, CollectionUtils.isEmpty(results));
     }
 
@@ -705,22 +699,21 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return version;
     }
 
-
     @Override
     public GenericService getGenericService() {
         return genericService;
     }
-    
+
     @Override
     public EntityService getEntityService() {
         return entityService;
     }
 
-	public StatsChartGenerator getChartGenerator() {
-		return chartGenerator;
-	}
+    public StatsChartGenerator getChartGenerator() {
+        return chartGenerator;
+    }
 
-	public void setChartGenerator(StatsChartGenerator chartGenerator) {
-		this.chartGenerator = chartGenerator;
-	}
+    public void setChartGenerator(StatsChartGenerator chartGenerator) {
+        this.chartGenerator = chartGenerator;
+    }
 }

@@ -27,7 +27,7 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private InformationResourceFileDao informationResourceFileDao;
-    
+
     @Test
     @Rollback
     public void testEmbargoWarning() throws InstantiationException, IllegalAccessException, FileNotFoundException {
@@ -60,7 +60,7 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
         logger.debug(" expired: {}", expired);
         assertFalse("expired should not contain irf", expired.contains(irf));
         assertFalse("expiring should contain irf", expiring.contains(irf));
-        
+
         // increment expiring by 1 day
         irf.setDateMadePublic(DateTime.now().minusDays(1).toDate());
         genericService.saveOrUpdate(irf);
@@ -72,7 +72,7 @@ public class EmbargoITCase extends AbstractIntegrationTestCase {
         assertFalse("expiring should  not contain irf", expiring.contains(irf));
 
     }
-    
+
     @Test
     @Rollback
     public void testChangedEmbargoExpiry() throws InstantiationException, IllegalAccessException, IOException {

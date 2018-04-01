@@ -21,7 +21,7 @@ import org.tdar.utils.MessageHelper;
  * @author <a href='mailto:allen.lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-public class RedirectMessageITCase extends AbstractControllerITCase  implements TestUserAccountHelper {
+public class RedirectMessageITCase extends AbstractControllerITCase implements TestUserAccountHelper {
 
     @Autowired
     private AuthenticationService authService;
@@ -44,7 +44,7 @@ public class RedirectMessageITCase extends AbstractControllerITCase  implements 
         assertEquals(MessageHelper.getMessage("userAccountController.successful_registration_message"), controller.getActionMessages().iterator().next());
         assertTrue("no errors expected", controller.getActionErrors().isEmpty());
     }
-    
+
     @Override
     public AuthenticationService getAuthenticationService() {
         return authenticationService;

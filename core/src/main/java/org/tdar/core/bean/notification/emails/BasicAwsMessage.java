@@ -9,14 +9,14 @@ import org.tdar.core.bean.notification.Email;
 @DiscriminatorValue("BASIC")
 public class BasicAwsMessage extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -152769506900833762L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -152769506900833762L;
 
-	@Override
-	public String createSubjectLine() {
-		return this.getSubject();
-	}
+    @Override
+    public String createSubjectLine() {
+        return this.getSubject();
+    }
 
 }

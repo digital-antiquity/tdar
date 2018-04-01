@@ -2,7 +2,6 @@ package org.tdar.dataone.service;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.persistence.Transient;
 
@@ -24,12 +23,14 @@ public class DataOneScheduledProcessServiceImpl implements DataOneScheduledProce
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneScheduledProcessService#cronChangesAdded()
      */
     @Override
     @Scheduled(fixedDelay = ScheduledProcessService.FIVE_MIN_MS)
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void cronChangesAdded() {
         logger.debug("running sync...");
         dataOneService.synchronizeTdarChangesWithDataOneObjects();

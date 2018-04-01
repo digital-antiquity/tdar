@@ -152,11 +152,11 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
     protected void sendNotifications() {
         Set<String> adminNotes = new HashSet<>();
         for (TdarUser owner : ownerNotes.keySet()) {
-        	Email email = emailService.createMessage(EmailType.ACCESS_EXPIRE_OWNER_NOTIFICATION, owner.getEmail());
-        	List<String> notes = ownerNotes.getOrDefault(owner, new ArrayList<>());
-        	email.setUserGenerated(false);
-        	email.addData("user", owner);
-        	email.addData("notes", notes);
+            Email email = emailService.createMessage(EmailType.ACCESS_EXPIRE_OWNER_NOTIFICATION, owner.getEmail());
+            List<String> notes = ownerNotes.getOrDefault(owner, new ArrayList<>());
+            email.setUserGenerated(false);
+            email.addData("user", owner);
+            email.addData("notes", notes);
             logger.debug("user notes: {}", notes);
             emailService.renderAndQueueMessage(email);
             adminNotes.addAll(notes);

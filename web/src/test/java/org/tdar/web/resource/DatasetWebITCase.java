@@ -235,12 +235,12 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private String getDataTableId() {
         Long datasetId = extractTdarIdFromCurrentURL();
         gotoPage("/dataset/" + datasetId);
-//        logger.debug(getPageCode());
+        // logger.debug(getPageCode());
         int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID) + DATA_DEFAULT_DATA_TABLE_ID.length();
         logger.debug("index:{}", indexOf);
-        String substring = StringUtils.substring(getPageCode(), indexOf,indexOf + 100);
+        String substring = StringUtils.substring(getPageCode(), indexOf, indexOf + 100);
         logger.debug("index:{}", substring);
-        substring = StringUtils.substring(substring,0, substring.indexOf("\""));
+        substring = StringUtils.substring(substring, 0, substring.indexOf("\""));
         return substring;
     }
 
@@ -384,12 +384,13 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // Convert this JSON to a map of ontology ID's keyed by ontology name
         String json = querySelectorAll("#flattenedOntologyNodes").get(0).getTextContent();
         ObjectMapper mapper = new ObjectMapper();
-        List<Map<String, String>> nodes = mapper.readValue(json, new TypeReference<List<Map<String, String>>>(){});
+        List<Map<String, String>> nodes = mapper.readValue(json, new TypeReference<List<Map<String, String>>>() {
+        });
 
         // Let's further transform the list of maps into a single map
         Map<String, Long> ontologyMap = nodes.stream()
                 // filter out blank items
-                .filter(m -> isNotBlank(m.get("id"))  && isNotBlank(m.get("name")))
+                .filter(m -> isNotBlank(m.get("id")) && isNotBlank(m.get("name")))
                 // merge the list of maps into a single map (key = "name", value = "id")
                 .collect(Collectors.toMap(
                         node -> node.get("name").toString().replaceAll("[\\|\\-]", "").trim().toLowerCase(),

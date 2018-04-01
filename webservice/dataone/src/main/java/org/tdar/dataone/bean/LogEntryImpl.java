@@ -45,11 +45,11 @@ public class LogEntryImpl implements Serializable {
     @Column(name = "event", length = FieldLength.FIELD_LENGTH_50)
     @Enumerated(EnumType.STRING)
     private Event event;
-    
+
     @Column(name = "subject", length = FieldLength.FIELD_LENGTH_255)
     private String subject = DATAONE_UNAUTHENTICATED_SUBJECT;
 
-    @Column(name = "date_logged", nullable =false)
+    @Column(name = "date_logged", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateLogged;
 
@@ -133,9 +133,10 @@ public class LogEntryImpl implements Serializable {
 
     /**
      * Convert an entry to a DataOne LogEntry
+     * 
      * @return
      */
-    
+
     public LogEntry toEntry() {
         LogEntry entry = new LogEntry();
         entry.setDateLogged(DataOneUtils.toUtc(getDateLogged()).toDate());

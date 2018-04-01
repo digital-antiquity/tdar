@@ -1,10 +1,10 @@
 <#import "email-macro.ftl" as mail /> 
 <@mail.content>
-Dear ${account.owner.properName},<br />
+Dear ${account.owner.properName},<br /><br/>
 Your ${siteAcronym} account is overdrawn.  Until additional funds have been added to your account, resources within this account may not be available. 
 <br />
 <p>
-Account Details:
+<b>Account Details:</b>
 <hr />
 Resources: ${account.totalNumberOfResources} (Used: ${account.resourcesUsed}) <br />
 Files: ${account.totalNumberOfFiles} (Used: ${account.filesUsed}) <br />
@@ -12,11 +12,11 @@ Space: ${account.totalSpaceInMb} (Used: ${account.spaceUsedInMb})<br />
 </p>
 
 <p>
-Flagged Items:
+<b>Flagged Items:</b>
 <ul>
 <#list account.flaggedResources as resource>
   <li>
-  <a href="${baseUrl}${resource.detailUrl}">${resource.id} ${resource.resourceType} ${resource.title}</a>
+  <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id})
   </li>
 </#list>
 <ul>

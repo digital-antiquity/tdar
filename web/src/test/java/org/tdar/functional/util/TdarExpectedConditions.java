@@ -142,7 +142,7 @@ public class TdarExpectedConditions {
             public Boolean apply(WebDriver driver) {
                 for (WebElement element : driver.findElements(locator)) {
                     if (!isStale(element)) {
-                        //Apparently things can go stale in the instant of time between checking if it's stale.  Oh, Selenium.
+                        // Apparently things can go stale in the instant of time between checking if it's stale. Oh, Selenium.
                         try {
                             if (element.getText().contains(text)) {
                                 return true;
@@ -182,13 +182,13 @@ public class TdarExpectedConditions {
     }
 
     /**
-     * Wait for the element located by the locator to be "stable" for longer than the specified number of milliseconds.  We define "stable"
+     * Wait for the element located by the locator to be "stable" for longer than the specified number of milliseconds. We define "stable"
      * as:
-     *  - does not become stale within specified threshold
-     *  - the locator does not choose a new/different element within specified threshold
-     *  - the locator does not return null
+     * - does not become stale within specified threshold
+     * - the locator does not choose a new/different element within specified threshold
+     * - the locator does not return null
      *
-     *  In other words:  wait up to ${timeout} seconds for element to be stable for ${stableMillis}.
+     * In other words: wait up to ${timeout} seconds for element to be stable for ${stableMillis}.
      *
      * @param locator
      * @param stableMillis
@@ -202,62 +202,60 @@ public class TdarExpectedConditions {
             WebElement current = null;
             WebElement previous = null;
 
-            @Nullable @Override public WebElement apply(@Nullable WebDriver driver) {
+            @Nullable
+            @Override
+            public WebElement apply(@Nullable WebDriver driver) {
                 previous = current;
                 current = null;
                 long timeNow;
 
                 try {
                     current = driver.findElement(locator);
-                } catch(NullPointerException ignored){}
+                } catch (NullPointerException ignored) {
+                }
 
-                //locator is unstable if nothing found
-                if(current == null) {
+                // locator is unstable if nothing found
+                if (current == null) {
                     timeElapsed = 0;
-                    //System.out.println("no element found. returning null");
+                    // System.out.println("no element found. returning null");
                     return null;
                 }
 
-                //System.out.println("element found");
+                // System.out.println("element found");
 
-
-
-                //locator is unstable if:  current not equal to previous,  or if selenium throws StaleElementException
-                try{
-                    //System.out.println(" current:" + current);
-                    //System.out.println("previous:" + previous);
-                    if(!(current.equals(previous) && current.isEnabled())) {
-                        //System.out.println("element has changed from what it was before. returning null.");
+                // locator is unstable if: current not equal to previous, or if selenium throws StaleElementException
+                try {
+                    // System.out.println(" current:" + current);
+                    // System.out.println("previous:" + previous);
+                    if (!(current.equals(previous) && current.isEnabled())) {
+                        // System.out.println("element has changed from what it was before. returning null.");
                         return null;
                     }
 
                 } catch (StaleElementReferenceException ex) {
-                    //System.out.println("stale element exception. returning null");
+                    // System.out.println("stale element exception. returning null");
                     return null;
                 }
 
-
-                //all the above conditions must be met for longer than stableMillis
+                // all the above conditions must be met for longer than stableMillis
                 timeNow = System.currentTimeMillis();
 
                 timeElapsed += timeNow - timeLast;
                 timeLast = timeNow;
-                //System.out.println("timeElapsed: " + timeElapsed);
-                if(timeElapsed < stableMillis) {
+                // System.out.println("timeElapsed: " + timeElapsed);
+                if (timeElapsed < stableMillis) {
                     return null;
                 }
 
-                //System.out.println("element is stable");
+                // System.out.println("element is stable");
 
                 return current;
             }
         };
     }
 
-
     public static ExpectedCondition<WebElement> stabilityOfElement(String cssSelector) {
         return stabilityOfElement(By.cssSelector(cssSelector), STABLE_MILLIS_DEFAULT);
     }
-
 
 }

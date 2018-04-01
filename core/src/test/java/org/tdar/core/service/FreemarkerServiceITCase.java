@@ -17,8 +17,8 @@ public class FreemarkerServiceITCase extends AbstractIntegrationTestCase {
     @Autowired
     private FreemarkerService freemarkerService;
 
-//    @Autowired
-//    private RebuildHomepageCache homepageCache;
+    // @Autowired
+    // private RebuildHomepageCache homepageCache;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

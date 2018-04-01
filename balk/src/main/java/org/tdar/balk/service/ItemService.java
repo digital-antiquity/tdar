@@ -12,7 +12,6 @@ import org.tdar.utils.dropbox.ToPersistListener;
 
 public interface ItemService {
 
-
     void store(ToPersistListener listener);
 
     DropboxDirectory findParentByPath(String fullPath, boolean isDir, boolean archived);

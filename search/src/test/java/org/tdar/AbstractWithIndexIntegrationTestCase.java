@@ -11,14 +11,13 @@ import org.tdar.search.service.index.SearchIndexService;
 @ContextConfiguration(classes = TdarSearchAppConfiguration.class)
 public abstract class AbstractWithIndexIntegrationTestCase extends AbstractIntegrationTestCase {
 
-
     @Autowired
     protected SearchIndexService searchIndexService;
 
     public SearchIndexService getSearchIndexService() {
         return searchIndexService;
     }
-    
+
     @Before
     public void setupIndexingEvents() {
         searchIndexService.setUseTransactionalEvents(false);

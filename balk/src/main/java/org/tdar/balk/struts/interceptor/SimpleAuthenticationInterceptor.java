@@ -36,19 +36,18 @@ public class SimpleAuthenticationInterceptor extends BaseAuthenticationIntercept
     }
 
     @Override
-    public
-    boolean isMemberOf(SessionData sessionData, TdarGroup group, Object action, String methodName) {
+    public boolean isMemberOf(SessionData sessionData, TdarGroup group, Object action, String methodName) {
         if (authorizationService.isMember(sessionData.getUsername(), group)) {
             // user is authenticated and authorized to perform requested action
             return true;
         }
-        logger.debug("unauthorized access to {}/{} from {} with required group {}", action.getClass().getSimpleName(), methodName, sessionData.getUsername(), group);
+        logger.debug("unauthorized access to {}/{} from {} with required group {}", action.getClass().getSimpleName(), methodName, sessionData.getUsername(),
+                group);
         return false;
     }
 
     @Override
-    public
-    String getSkipRedirectRegex() {
+    public String getSkipRedirectRegex() {
         return "(.*)/(lookup|page-not-found|unauthorized|datatable\\/browse)/(.*)";
     }
 

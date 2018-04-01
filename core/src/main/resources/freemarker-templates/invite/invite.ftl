@@ -8,10 +8,9 @@ ${invite.resource.title}</#if></a> with you on The Digital Archaeological Record
 
 <#if invite.note?has_content>
   <br />
-  <p>
-  <hr />
+  <blockquote>
   ${invite.note} 
-  </p> 
+  </blockquote> 
 </#if>
 <br />
 <br />

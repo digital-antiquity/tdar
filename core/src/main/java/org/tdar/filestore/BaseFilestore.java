@@ -197,7 +197,7 @@ public abstract class BaseFilestore implements Filestore {
         logger.trace("\told: {} new: {}", object.getChecksum(), hex);
         return hex.trim().equalsIgnoreCase(object.getChecksum().trim());
     }
-    
+
     public DigestInputStream appendMessageDigestStream(InputStream content) {
         DigestInputStream digestInputStream = null;
         MessageDigest messageDigest = null;

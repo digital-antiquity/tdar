@@ -1,6 +1,6 @@
 {
   "name": "tDAR",
-  "version": "14.0.0",
+  "version": "18.0.0",
   "description": "The Digital Archaeological Record Web Application",
   "main": "index.js",
   "dependencies": {

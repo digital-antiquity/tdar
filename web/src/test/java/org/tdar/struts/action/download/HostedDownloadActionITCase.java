@@ -77,7 +77,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
 
         controller.prepare();
         controller.validate();
-        assertThat(controller.getActionErrors(), is( not( empty())));
+        assertThat(controller.getActionErrors(), is(not(empty())));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
 
         controller.prepare();
         controller.validate();
-        assertThat(controller.getActionErrors(), is( not( empty())));
+        assertThat(controller.getActionErrors(), is(not(empty())));
     }
 
     @Test
@@ -109,7 +109,6 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
         controller.setDelete("delete");
         controller.delete();
     }
-    
 
     @Test
     @Rollback
@@ -127,7 +126,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
 
         controller.prepare();
         controller.validate();
-        assertThat(controller.getActionErrors(), is( not( empty())));
+        assertThat(controller.getActionErrors(), is(not(empty())));
     }
 
     @Test
@@ -145,7 +144,7 @@ public class HostedDownloadActionITCase extends AbstractAdminControllerITCase {
 
         controller.prepare();
         controller.validate();
-        assertThat(controller.getActionErrors(), is( not( empty())));
+        assertThat(controller.getActionErrors(), is(not(empty())));
     }
 
     public Long setup() throws InstantiationException, IllegalAccessException, FileNotFoundException {

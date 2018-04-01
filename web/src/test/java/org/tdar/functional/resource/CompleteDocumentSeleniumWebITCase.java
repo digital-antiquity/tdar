@@ -172,17 +172,17 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertTrue(getText().contains("Conference Location"));
         setFieldByName("document.date", "1923");
         setFieldByName("projectId", "-1");
-        
+
         submitForm();
-        
+
         assertEquals("count of edit buttons", 1, find(By.partialLinkText(RIGHTS)).size());
         WebElementSelection button = find(By.partialLinkText(RIGHTS));
         try {
             button.click();
-        } catch(Throwable t) {
-            logger.error("{}",t,t);
+        } catch (Throwable t) {
+            logger.error("{}", t, t);
         }
-//        waitForPageload();
+        // waitForPageload();
         logger.debug(getPageCode());
         WebElementSelection find = waitFor("#divAccessRightsAddAnotherButton");
         find.click();
@@ -206,7 +206,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find(By.name("projectId")).val("-1");
         // add a person to satisfy the confidential file requirement
         addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
-        
+
         find("#authorshipRow_0_ .institutionButton").click();
         waitFor("#authorshipSection .addanother").click();
         find("#creditSection .addanother").click();
@@ -296,7 +296,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     }
 
     @Test
-    //@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.SELECT2})
+    // @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.SELECT2})
     public void testCreateDocument() {
         gotoPage("/document/add");
         expandAllTreeviews();

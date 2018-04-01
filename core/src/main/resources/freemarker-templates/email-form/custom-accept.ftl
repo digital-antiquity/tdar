@@ -7,7 +7,7 @@ Dear ${requestor.properName},<br />
 Thanks for your interest in the ${customName}.  You have been granted access
 to the requested tDAR record.<br />
 <br />
- <a href="${baseUrl}${resource.detailUrl}">${resource.title} (${resource.id?c})</a>.<br />  
+ <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id?c}).<br />  
  <br />
 ${descriptionResponse!"To edit your abstract and upload your paper, poster, or presentation please visit the following URL"}:<br />
 <br />

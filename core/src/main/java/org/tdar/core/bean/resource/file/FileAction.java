@@ -1,7 +1,12 @@
 package org.tdar.core.bean.resource.file;
 
 public enum FileAction {
-    NONE, ADD, REPLACE, DELETE, MODIFY_METADATA, ADD_DERIVATIVE;
+    NONE,
+    ADD,
+    REPLACE,
+    DELETE,
+    MODIFY_METADATA,
+    ADD_DERIVATIVE;
 
     public boolean shouldExpectFileHandle() {
         switch (this) {

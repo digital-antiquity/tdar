@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.base.DoiDao;
-import org.tdar.core.dao.resource.InformationResourceDao;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.utils.PersistableUtils;
 
@@ -31,7 +30,7 @@ public class IdentifierParser implements DataOneConstants {
         doi = base.replace(D1CONFIG.getDoiPrefix() + ":", D1CONFIG.getDoiPrefix() + "/");
         partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
         if (NumberUtils.isDigits(doi)) {
-            ir = doiDao.find(InformationResource.class,Long.parseLong(doi));
+            ir = doiDao.find(InformationResource.class, Long.parseLong(doi));
             setSeriesIdentifier(true);
         } else {
             ir = doiDao.findByDoi(doi);

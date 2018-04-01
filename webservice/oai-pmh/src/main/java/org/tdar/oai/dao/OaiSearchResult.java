@@ -39,7 +39,7 @@ public class OaiSearchResult implements Serializable {
     }
 
     public int getNextPageStartRecord() {
-        return  recordsPerPage;
+        return recordsPerPage;
     }
 
     public Token getCursor() {

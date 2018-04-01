@@ -17,11 +17,11 @@ import javax.persistence.TemporalType;
 import org.tdar.core.bean.FieldLength;
 
 /**
- * This object matches and maps to a DataONE SystemMetadata Response / header and tries to track everything that could be 
+ * This object matches and maps to a DataONE SystemMetadata Response / header and tries to track everything that could be
  * asked for and thus maintains what could be requested and caches it in the database so that an object request can always
- * get at the basic info in a way that we can respond and list it back to DataONE.  This is critically important to help 
- * maintain changes in a specific record syncronized.  E.g. tDAR updates record 1, DataONE needs to see two records the original
- * and the update. 
+ * get at the basic info in a way that we can respond and list it back to DataONE. This is critically important to help
+ * maintain changes in a specific record syncronized. E.g. tDAR updates record 1, DataONE needs to see two records the original
+ * and the update.
  * 
  * @author abrin
  *

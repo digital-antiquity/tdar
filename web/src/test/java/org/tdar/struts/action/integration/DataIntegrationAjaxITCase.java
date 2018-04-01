@@ -154,14 +154,12 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         logger.debug(writer.toString());
     }
 
-    
     @Test
     public void testEmptyCountColumn() throws IOException, IntegrationDeserializationException {
         StringWriter writer = runJson(TEST_PATH + "test-empty-count-column.json");
         logger.debug(writer.toString());
     }
 
-    
     @Test
     @Rollback(true)
     public void testRelaxedIntegration() throws IOException, IntegrationDeserializationException {

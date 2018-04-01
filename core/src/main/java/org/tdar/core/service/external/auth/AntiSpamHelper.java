@@ -39,7 +39,6 @@ public class AntiSpamHelper implements Serializable {
         this.comment = comment;
     }
 
-
     public boolean checkForSpammers(boolean ignoreTimecheck, String remoteHost, String contributorReason, boolean requestingContributorAccess) {
         long now = System.currentTimeMillis();
         checkUserInfo();

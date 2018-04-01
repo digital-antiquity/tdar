@@ -48,6 +48,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
 
     /**
      * Simulate situation where system encounters more files than file proxies.
+     * 
      * @throws Exception
      */
     @Test
@@ -204,7 +205,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
             // assertFalse(irFile.isConfidential());
             // }
         }
-//        SessionProxy.getInstance().flushAll();
+        // SessionProxy.getInstance().flushAll();
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
         controller.prepare();
@@ -252,8 +253,8 @@ public class FileProxyITCase extends AbstractControllerITCase {
         controller.setTicketId(ticket.getId());
         controller.validate();
         String resultName = controller.save();
-        assertThat(resultName, is( SUCCESS));
-        assertThat(controller.getActionErrors(), is( empty()));
+        assertThat(resultName, is(SUCCESS));
+        assertThat(controller.getActionErrors(), is(empty()));
     }
 
     private Document getNewDocument(DocumentController controller) {

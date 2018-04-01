@@ -30,7 +30,6 @@ public class SynchronizationFailedResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletRequest request;
 
-    
     @POST
     @Produces("text/plain")
     @Consumes("application/xml")

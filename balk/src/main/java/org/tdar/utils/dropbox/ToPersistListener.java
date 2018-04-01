@@ -17,7 +17,7 @@ public class ToPersistListener implements MetadataListener {
     public ToPersistListener(ItemService itemService) {
         this.itemService = itemService;
     }
-    
+
     @Override
     public void consume(DropboxItemWrapper fileWrapper) throws Exception {
         itemService.store(fileWrapper);
@@ -26,7 +26,7 @@ public class ToPersistListener implements MetadataListener {
 
     @Override
     public void setDebug(Boolean debug) {
-            this.debug = debug;        
+        this.debug = debug;
     }
 
     public List<DropboxItemWrapper> getWrappers() {

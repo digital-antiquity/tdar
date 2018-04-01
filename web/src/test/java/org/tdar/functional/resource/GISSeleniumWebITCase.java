@@ -133,7 +133,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             submitForm("#submitButton");
             waitForPageload();
             path = getDriver().getCurrentUrl();
-            
+
         }
         return path;
     }

@@ -39,8 +39,8 @@ public class TdarBarChart extends AbstractChart {
         chart.getStyler().setYAxisTitleVisible(true);
         chart.getStyler().setAxisTicksMarksVisible(false);
         chart.getStyler().setAxisTickMarkLength(0);
-        
-//        chart.getStyler().setAxisTicksVisible(false);
+
+        // chart.getStyler().setAxisTicksVisible(false);
         addRowsToChart(data, chart, getTitle());
 
         return renderAndExport(chart);

@@ -34,7 +34,6 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
     @Autowired
     ReflectionService reflectionService;
 
-
     public Map<String, Resource> setup() {
         Map<String, Resource> filenameResourceMap = new HashMap<String, Resource>();
         filenameResourceMap.put("test1.pdf", new Document());
@@ -47,6 +46,5 @@ public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
         }
         return filenameResourceMap;
     }
-
 
 }

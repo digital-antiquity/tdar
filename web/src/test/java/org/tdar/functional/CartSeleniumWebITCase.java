@@ -36,18 +36,18 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-//    String startWindow = null;
+    // String startWindow = null;
 
-//    @Before
-//    public void cartTestBefore() {
-//        startWindow = getDriver().getWindowHandle();
-//        force1024x768();
-//    }
-//
-//    @After
-//    public void cleanup() {
-//        resetSize();
-//    }
+    // @Before
+    // public void cartTestBefore() {
+    // startWindow = getDriver().getWindowHandle();
+    // force1024x768();
+    // }
+    //
+    // @After
+    // public void cleanup() {
+    // resetSize();
+    // }
 
     @Test
     // ideal walk-through of purchase process for a visitor with no mistakes along the way.
@@ -181,7 +181,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         gotoPage(CART_ADD);
         // choose the large package
         selectPackage();
-        
+
         // try to log in with a blank username (javascript whould catch this, but we want to make sure we handle server-side too
         find(ByLabelText.byPartialLabelText("Username")).val("");
 
@@ -211,7 +211,6 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getSource(), containsString("tDAR encountered the following problems with this submission"));
         assertThat(getCurrentUrl(), endsWith("/cart/process-registration"));
     }
-
 
     @Override
     public void waitForPageload() {

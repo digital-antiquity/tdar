@@ -50,7 +50,7 @@ public class LocalizationTestCase {
     public void testLocalization() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Set<Class<? extends Localizable>> findClassesThatImplement = ReflectionHelper.findClassesThatImplement(Localizable.class);
         Set<String> badKeys = new HashSet<>();
-        for (Class<? extends Localizable> cls: findClassesThatImplement) {
+        for (Class<? extends Localizable> cls : findClassesThatImplement) {
             logger.debug("{} {}", cls, cls.getEnumConstants());
             for (Object obj : cls.getEnumConstants()) {
                 String key = String.format("%s.%s", cls.getSimpleName(), obj);
@@ -223,8 +223,7 @@ public class LocalizationTestCase {
         }
     }
 
-    protected void handleFile(Pattern pattern, File file) throws IOException
-    {
+    protected void handleFile(Pattern pattern, File file) throws IOException {
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");
         try {
             int lineNum = 0;
@@ -251,8 +250,7 @@ public class LocalizationTestCase {
         }
     }
 
-    protected Collection<? extends String> handleInvalidUse(Pattern pattern, File file) throws IOException
-    {
+    protected Collection<? extends String> handleInvalidUse(Pattern pattern, File file) throws IOException {
         LineIterator it = FileUtils.lineIterator(file, "UTF-8");
         List<String> results = new ArrayList<>();
         try {

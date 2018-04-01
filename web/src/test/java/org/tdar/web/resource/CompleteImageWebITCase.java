@@ -117,8 +117,6 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("image.copyLocation", "test");
     }
 
-    
-    
     @Test
     @Rollback(true)
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })

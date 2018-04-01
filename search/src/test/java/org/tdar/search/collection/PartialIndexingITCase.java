@@ -32,7 +32,7 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
 
     @Autowired
     ResourceSearchService resourceSearchService;
-    
+
     @Test
     @Rollback
     public void testPartialIndexing() throws SolrServerException, IOException, ParseException, SearchException, SearchIndexException {
@@ -49,16 +49,18 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
         SolrDocument byId = template.getById(SearchUtils.createKey(ds));
         logger.debug("{}", byId);
         SearchResult<Resource> result = new SearchResult<>();
-        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, new ReservedSearchParameters(), result, MessageHelper.getInstance(), getAdminUser());
+        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, new ReservedSearchParameters(), result, MessageHelper.getInstance(),
+                getAdminUser());
         logger.debug("{}", result.getResults());
         assertEquals(1, result.getResults().size());
         searchIndexService.partialIndexAllResourcesInCollectionSubTree(rc);
         result = new SearchResult<>();
-        
-        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, new ReservedSearchParameters(), result, MessageHelper.getInstance(), getAdminUser());
+
+        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, new ReservedSearchParameters(), result, MessageHelper.getInstance(),
+                getAdminUser());
         logger.debug("{}", result.getResults());
         assertEquals(1, result.getResults().size());
         logger.debug("{}", template.getById(SearchUtils.createKey(ds)));
-        
+
     }
 }

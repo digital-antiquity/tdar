@@ -87,9 +87,8 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         String viewPage = internalPage.getUrl().getPath().toLowerCase();
 
-
         // bookmark it, confirm it's on workspace
-        //clickBookmarkLink();
+        // clickBookmarkLink();
         String resourceId = querySelectorAll(".bookmark-link").get(0).getAttribute("resource-id");
         bookmark(resourceId);
         gotoPage(viewPage);
@@ -105,14 +104,14 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             submitForm();
             gotoPage(URLConstants.BOOKMARKS);
 
-//            boolean seen = false;
-//            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#bookmarks")) {
-//                Element el = (Element) element_;
-//                if (el.toString().contains(docTitle)) {
-//                    seen = true;
-//                }
-//                logger.info(el.toString());
-//            }
+            // boolean seen = false;
+            // for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#bookmarks")) {
+            // Element el = (Element) element_;
+            // if (el.toString().contains(docTitle)) {
+            // seen = true;
+            // }
+            // logger.info(el.toString());
+            // }
 
             // anyMatch() returns returns true (and terminates scan) if match found; returns false if scan produces no match.
             boolean seen = querySelectorAll("#bookmarks").stream()
@@ -131,7 +130,6 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresentInCode(docTitle);
     }
 
-
     private void removeBookmark(String resourceId) throws IOException {
         post(getBaseSecureUrl() + "resource/removeBookmark", resourceId);
 
@@ -145,20 +143,20 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         webRequest.setEncodingType(FormEncodingType.MULTIPART);
         Page page = webClient.getPage(webRequest);
         int code = page.getWebResponse().getStatusCode();
-        
+
     }
 
     private void bookmark(String resourceId) throws IOException {
         post(getBaseSecureUrl() + "resource/bookmark", resourceId);
     }
 
-//    private void clickBookmarkLink() {
-//        try {
-//            ((DomElement)htmlPage.getDocumentElement().querySelector(".bookmark-link")).click();
-//        } catch (IOException e) {
-//            logger.error("{}",e,e);
-//        }
-//    }
+    // private void clickBookmarkLink() {
+    // try {
+    // ((DomElement)htmlPage.getDocumentElement().querySelector(".bookmark-link")).click();
+    // } catch (IOException e) {
+    // logger.error("{}",e,e);
+    // }
+    // }
 
     private void setDocumentRequiredFields(String docTitle, String docDescription) {
         setInput(TestConstants.DOCUMENT_FIELD_TITLE, docTitle);
@@ -168,6 +166,5 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
     }
-
 
 }

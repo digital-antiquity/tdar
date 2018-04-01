@@ -15,7 +15,7 @@ import org.tdar.core.bean.resource.Resource;
 public class GeneralPermissionsTestCase {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    
+
     @Test
     public void getAvailableForResource() {
         List<Permissions> availablePermissionsFor = Permissions.getAvailablePermissionsFor(Resource.class);

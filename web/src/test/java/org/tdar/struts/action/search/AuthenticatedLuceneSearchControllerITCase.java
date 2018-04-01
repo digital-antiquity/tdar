@@ -50,13 +50,13 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         logger.info("{}", getUser());
         Long imgId = setupImage();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(controller,getInheritingTypes());
+        setObjectTypes(controller, getInheritingTypes());
         List<String> approvedCultureKeywordIds = new ArrayList<String>();
         approvedCultureKeywordIds.add("9");
-        setStatuses(controller,Status.DRAFT);
+        setStatuses(controller, Status.DRAFT);
         firstGroup(controller).getApprovedCultureKeywordIdLists().add(approvedCultureKeywordIds);
         doSearch(controller, "");
-        assertTrue("'Archaic' defined in parent project should be found in information resource", resultsContainId(controller,imgId));
+        assertTrue("'Archaic' defined in parent project should be found in information resource", resultsContainId(controller, imgId));
         // fail("Um, actually this test doesn't do anything close to what it says it's doing");
     }
 
@@ -69,10 +69,10 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(controller,allResourceTypes);
-        setStatuses(controller,Status.DELETED);
+        setObjectTypes(controller, allResourceTypes);
+        setStatuses(controller, Status.DELETED);
         doSearch(controller, "precambrian");
-        assertTrue(resultsContainId(controller,datasetId));
+        assertTrue(resultsContainId(controller, datasetId));
     }
 
     @Test
@@ -82,11 +82,11 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(controller,allResourceTypes);
-        setStatuses(controller,Status.DELETED);
+        setObjectTypes(controller, allResourceTypes);
+        setStatuses(controller, Status.DELETED);
         setIgnoreActionErrors(true);
         doSearch(controller, "precambrian", true);
-        assertFalse(resultsContainId(controller,datasetId));
+        assertFalse(resultsContainId(controller, datasetId));
         assertEquals(1, controller.getActionErrors().size());
     }
 
@@ -100,8 +100,8 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
         searchIndexService.index(genericService.find(Dataset.class, datasetId));
-        setObjectTypes(controller,allResourceTypes);
-        setStatuses(controller,Status.DELETED);
+        setObjectTypes(controller, allResourceTypes);
+        setStatuses(controller, Status.DELETED);
         doSearch(controller, "precambrian", true);
         assertTrue(controller.getActionErrors().size() > 0);
     }
@@ -113,10 +113,10 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller.setRecordsPerPage(50);
         Long imgId = setupImage();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(controller,allResourceTypes);
-        setStatuses(controller,Status.DRAFT);
+        setObjectTypes(controller, allResourceTypes);
+        setStatuses(controller, Status.DRAFT);
         doSearch(controller, "description");
-        assertTrue(resultsContainId(controller,imgId));
+        assertTrue(resultsContainId(controller, imgId));
     }
 
     @Test
@@ -127,10 +127,10 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         Long imgId = setupImage();
         logger.info("Created new image: " + imgId);
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
-        setObjectTypes(controller,allResourceTypes);
+        setObjectTypes(controller, allResourceTypes);
         setStatusAll(controller);
         doSearch(controller, "PaleoIndian");
-        assertTrue(resultsContainId(controller,imgId));
+        assertTrue(resultsContainId(controller, imgId));
     }
 
     @Test
@@ -138,11 +138,11 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testFindAllSearchPhrase() throws ParseException, SolrServerException, IOException {
         AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class, getUser());
         controller.setRecordsPerPage(50);
-        doSearch( controller,"");
+        doSearch(controller, "");
         logger.debug(controller.getSearchDescription());
         logger.debug(controller.getSearchPhrase());
         logger.debug(controller.getSearchSubtitle());
-       assertTrue(controller.getSearchPhrase().contains("All"));
+        assertTrue(controller.getSearchPhrase().contains("All"));
     }
 
     @Test
@@ -166,6 +166,5 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         Indexable resource = controller.getResults().iterator().next();
         assertEquals(expectedId, resource.getId());
     }
-
 
 }

@@ -20,9 +20,9 @@ public class DatasetTestCase {
         assertEquals(TEST, name);
         names.add(name);
         name = datasetDao.getUniqueTableName(names, TEST);
-        assertEquals(TEST + " (1)" , name);
+        assertEquals(TEST + " (1)", name);
         names.add(name);
         name = datasetDao.getUniqueTableName(names, TEST);
-        assertEquals(TEST + " (2)" , name);
+        assertEquals(TEST + " (2)", name);
     }
 }

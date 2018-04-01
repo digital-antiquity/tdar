@@ -13,8 +13,10 @@ public enum DupeMode implements HasLabel, Localizable {
      * 3. User consolidation mode -- mark the "dups" as dups, but keep the references set on the "dup" instead of the authority. If I have 2 versions of a
      * person from different jobs, this is useful for consolidating the people, but keeping the context of that person at that time.
      */
-    DELETE_DUPLICATES("Delete Duplicates (irreversable)"), MARK_DUPS_AND_CONSOLDIATE(
-            "Mark duplicates and update references (somewhat reversable)"), MARK_DUPS_ONLY("Mark As Dup (reversable)");
+    DELETE_DUPLICATES("Delete Duplicates (irreversable)"),
+    MARK_DUPS_AND_CONSOLDIATE(
+            "Mark duplicates and update references (somewhat reversable)"),
+    MARK_DUPS_ONLY("Mark As Dup (reversable)");
 
     private String label;
 

@@ -39,7 +39,9 @@ public class ResourceRelationship extends AbstractPersistable {
     private ResourceRelationshipType type;
 
     private enum ResourceRelationshipType implements HasLabel, Localizable {
-        REFERENCES("References"), REPLACES("Replaces"), VERSION_OF("Version Of");
+        REFERENCES("References"),
+        REPLACES("Replaces"),
+        VERSION_OF("Version Of");
 
         private String label;
 

@@ -22,6 +22,8 @@ public interface ResourceEditControllerService {
 
     <R extends Resource> Boolean isAbleToUploadFiles(TdarUser authenticatedUser, R persistable, List<BillingAccount> activeAccounts);
 
+    <R extends Resource> Boolean isAbleToAdjustPermissions(TdarUser authenticatedUser, R persistable);
+
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).

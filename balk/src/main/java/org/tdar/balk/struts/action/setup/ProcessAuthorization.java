@@ -41,17 +41,17 @@ public class ProcessAuthorization extends AbstractAuthenticatedAction implements
             DropboxConfig config = new DropboxConfig();
             token = config.finish(getCode());
         } catch (URISyntaxException | IOException | DbxException e) {
-            getLogger().error("{}",e,e);
+            getLogger().error("{}", e, e);
         }
     }
-    
+
     @Override
     @Action(value = "response", results = {
-            @Result(name = TdarActionSupport.SUCCESS, type= TdarActionSupport.REDIRECT, location = "/"),
-            @Result(name = TdarActionSupport.INPUT, type= TdarActionSupport.REDIRECT, location = "/setup/request")
+            @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.REDIRECT, location = "/"),
+            @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.REDIRECT, location = "/setup/request")
     })
     public String execute() throws Exception {
-        userService.saveTokenFor(getAuthenticatedUser(),token);
+        userService.saveTokenFor(getAuthenticatedUser(), token);
         return SUCCESS;
     }
 
@@ -62,6 +62,5 @@ public class ProcessAuthorization extends AbstractAuthenticatedAction implements
     public void setCode(String code) {
         this.code = code;
     }
-
 
 }

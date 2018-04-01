@@ -30,6 +30,7 @@ public class AdminStatsControllerITCase extends AbstractAdminControllerITCase {
         AdminUserStatsController ausc = generateNewInitializedController(AdminUserStatsController.class, getAdminUser());
         ausc.userInfo();
     }
+
     @Test
     public void testUserStatsExport() {
         AdminUserStatsExportAction ausc = generateNewInitializedController(AdminUserStatsExportAction.class, getAdminUser());

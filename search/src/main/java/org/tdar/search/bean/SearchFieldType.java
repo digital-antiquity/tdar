@@ -17,35 +17,56 @@ import org.tdar.utils.MessageHelper;
 
 public enum SearchFieldType implements HasLabel, Localizable {
     // basic fields
-    ALL_FIELDS("allFields", SearchFieldGroup.BASIC_FIELDS, "All Fields"), TITLE("titles", SearchFieldGroup.BASIC_FIELDS, "Title"), DESCRIPTION("descriptions",
-            SearchFieldGroup.BASIC_FIELDS, "Description"), CONTENTS("contents", SearchFieldGroup.BASIC_FIELDS, "Full-Text"), RESOURCE_CREATOR_PERSON(
-                    "resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Person"), RESOURCE_CREATOR_INSTITUTION("resourceCreatorProxies",
-                            SearchFieldGroup.BASIC_FIELDS, "Institution"), TDAR_ID("resourceIds", SearchFieldGroup.BASIC_FIELDS, "Id"), COVERAGE_DATE_CALENDAR(
-                                    "coverageDates", SearchFieldGroup.BASIC_FIELDS, "Calendar Dates"), COVERAGE_DATE_RADIOCARBON("coverageDates",
-                                            SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates"), PROJECT("projects", SearchFieldGroup.BASIC_FIELDS,
-                                                    "Project"), COLLECTION("shares", SearchFieldGroup.BASIC_FIELDS, "Collection"),
+    ALL_FIELDS("allFields", SearchFieldGroup.BASIC_FIELDS, "All Fields"),
+    TITLE("titles", SearchFieldGroup.BASIC_FIELDS, "Title"),
+    DESCRIPTION("descriptions",
+            SearchFieldGroup.BASIC_FIELDS, "Description"),
+    CONTENTS("contents", SearchFieldGroup.BASIC_FIELDS, "Full-Text"),
+    RESOURCE_CREATOR_PERSON(
+            "resourceCreatorProxies", SearchFieldGroup.BASIC_FIELDS, "Person"),
+    RESOURCE_CREATOR_INSTITUTION("resourceCreatorProxies",
+            SearchFieldGroup.BASIC_FIELDS, "Institution"),
+    TDAR_ID("resourceIds", SearchFieldGroup.BASIC_FIELDS, "Id"),
+    COVERAGE_DATE_CALENDAR(
+            "coverageDates", SearchFieldGroup.BASIC_FIELDS, "Calendar Dates"),
+    COVERAGE_DATE_RADIOCARBON("coverageDates",
+            SearchFieldGroup.BASIC_FIELDS, "RadioCarbon Dates"),
+    PROJECT("projects", SearchFieldGroup.BASIC_FIELDS,
+            "Project"),
+    COLLECTION("shares", SearchFieldGroup.BASIC_FIELDS, "Collection"),
     // SHARE("shares", SearchFieldGroup.BASIC_FIELDS, "Share", false),
     FILENAME("filenames", SearchFieldGroup.BASIC_FIELDS, "File Name"),
 
     // freeform keywords
-    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords", GeographicKeyword.class), FFK_SITE("siteNames",
-            SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names", SiteNameKeyword.class), FFK_SITE_TYPE("uncontrolledSiteTypes", SearchFieldGroup.FREEFORM_KEYWORDS,
-                    "Site Type"), FFK_CULTURAL("uncontrolledCultureKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Culture Keywords"), FFK_MATERIAL(
-                            "uncontrolledMaterialKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Material Keywords"), FFK_TEMPORAL("temporalKeywords",
-                                    SearchFieldGroup.FREEFORM_KEYWORDS, "Temporal Keywords", TemporalKeyword.class), FFK_GENERAL("otherKeywords",
-                                            SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords", OtherKeyword.class),
+    FFK_GEOGRAPHIC("geographicKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Geographic Keywords", GeographicKeyword.class),
+    FFK_SITE("siteNames",
+            SearchFieldGroup.FREEFORM_KEYWORDS, "Site Names", SiteNameKeyword.class),
+    FFK_SITE_TYPE("uncontrolledSiteTypes", SearchFieldGroup.FREEFORM_KEYWORDS,
+            "Site Type"),
+    FFK_CULTURAL("uncontrolledCultureKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Culture Keywords"),
+    FFK_MATERIAL(
+            "uncontrolledMaterialKeywords", SearchFieldGroup.FREEFORM_KEYWORDS, "Material Keywords"),
+    FFK_TEMPORAL("temporalKeywords",
+            SearchFieldGroup.FREEFORM_KEYWORDS, "Temporal Keywords", TemporalKeyword.class),
+    FFK_GENERAL("otherKeywords",
+            SearchFieldGroup.FREEFORM_KEYWORDS, "General Keywords", OtherKeyword.class),
 
     // managed keywords
-    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", InvestigationType.class), KEYWORD_SITE(
-            "approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", SiteTypeKeyword.class), KEYWORD_MATERIAL(
-                    "materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", MaterialKeyword.class), KEYWORD_CULTURAL(
-                            "approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", CultureKeyword.class),
+    KEYWORD_INVESTIGATION("investigationTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Investigation Types", InvestigationType.class),
+    KEYWORD_SITE(
+            "approvedSiteTypeIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Site Type(Controlled)", SiteTypeKeyword.class),
+    KEYWORD_MATERIAL(
+            "materialKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Material Types", MaterialKeyword.class),
+    KEYWORD_CULTURAL(
+            "approvedCultureKeywordIdLists", SearchFieldGroup.CONTROLLED_KEYWORDS, "Culture Keywords", CultureKeyword.class),
 
     // TODO: add these
     CREATION_DECADE("creationDecades", SearchFieldGroup.EXPLORE, "Creation Decade"),
 
-    DATE_CREATED("createdDates", SearchFieldGroup.BASIC_FIELDS, "Year"), DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS,
-            "Date Created"), DATE_UPDATED("updatedDates", SearchFieldGroup.BASIC_FIELDS, "Date Updated");
+    DATE_CREATED("createdDates", SearchFieldGroup.BASIC_FIELDS, "Year"),
+    DATE_REGISTERED("registeredDates", SearchFieldGroup.BASIC_FIELDS,
+            "Date Created"),
+    DATE_UPDATED("updatedDates", SearchFieldGroup.BASIC_FIELDS, "Date Updated");
 
     private String label = "";
     private SearchFieldGroup fieldGroup;

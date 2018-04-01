@@ -34,15 +34,16 @@ public class ResourceAnnotationKeySearchITCase extends AbstractWithIndexIntegrat
 
     @Override
     public void reindex() {
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE_ANNOTATION_KEY), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE_ANNOTATION_KEY), getAdminUser());
     }
+
     @Test
     public void testAllSearch() throws ParseException, SearchException, SearchIndexException, IOException {
         SearchResult<ResourceAnnotationKey> result = new SearchResult<>();
         resourceAnnotationKeySearchService.buildAnnotationSearch(null, result, 2, MessageHelper.getInstance());
         assertTrue(result.getTotalRecords() > 0);
     }
-    
+
     @Test
     public void testKeySearch() throws ParseException, SearchException, SearchIndexException, IOException {
         ResourceAnnotationKey key = new ResourceAnnotationKey();
@@ -54,7 +55,7 @@ public class ResourceAnnotationKeySearchITCase extends AbstractWithIndexIntegrat
         key2.setResourceAnnotationType(ResourceAnnotationType.IDENTIFIER);
         genericService.save(key2);
 
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE_ANNOTATION_KEY), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE_ANNOTATION_KEY), getAdminUser());
         SearchResult<ResourceAnnotationKey> result = new SearchResult<>();
         resourceAnnotationKeySearchService.buildAnnotationSearch("IS", result, 2, MessageHelper.getInstance());
         List<ResourceAnnotationKey> resources = result.getResults();

@@ -253,7 +253,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
 
         clickLinkOnPage(CollectionWebITCase.PERMISSIONS);
         alternateCodeLookup.clear();
-        Map<String,String> authMap = new HashMap<>();
+        Map<String, String> authMap = new HashMap<>();
         authMap.put("proxies[0].id", "121");
         authMap.put("proxies[1].id", "5349");
         authMap.put("proxies[0].permission", Permissions.MODIFY_RECORD.name());
@@ -263,12 +263,11 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         alternateCodeLookup.add(Permissions.MODIFY_RECORD.name());
         alternateCodeLookup.add(Permissions.VIEW_ALL.name());
 
-        
         setInputs(authMap, new HashMap<>());
         submitForm();
         assertViewPage(authMap, new HashMap<>());
         clickLinkOnPage(CollectionWebITCase.PERMISSIONS);
-        assertEditPage(authMap, new HashMap<String,List<String>>(), authMap);
+        assertEditPage(authMap, new HashMap<String, List<String>>(), authMap);
 
     }
 
@@ -295,7 +294,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         }
     }
 
-    private void assertViewPage(Map<String,String> _docValMap, Map<String,List<String>> _docMultiValMapLab) {
+    private void assertViewPage(Map<String, String> _docValMap, Map<String, List<String>> _docMultiValMapLab) {
         logger.trace(getPageText());
         for (String key : _docValMap.keySet()) {
             // avoid the issue of the fuzzy distances or truncation... use just
@@ -329,7 +328,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         }
     }
 
-    private void setInputs(Map<String,String> valMap, Map<String, List<String>>  multiValMap) {
+    private void setInputs(Map<String, String> valMap, Map<String, List<String>> multiValMap) {
         for (String key : valMap.keySet()) {
             setInput(key, valMap.get(key));
         }

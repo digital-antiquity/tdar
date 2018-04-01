@@ -10,7 +10,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 public class StaticContentWebITCase extends AbstractAnonymousWebTestCase {
 
     TdarConfiguration tdarConfig = TdarConfiguration.getInstance();
-    
+
     @Test
     public void testStaticRequestedFile() {
         StaticContentServlet servlet = new StaticContentServlet();
@@ -25,6 +25,5 @@ public class StaticContentWebITCase extends AbstractAnonymousWebTestCase {
         Assert.assertThat(file.getParent(), Matchers.endsWith("/12/34/56/rec"));
 
     }
-
 
 }

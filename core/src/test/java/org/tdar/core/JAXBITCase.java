@@ -9,15 +9,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -26,12 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -40,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FileProxies;
@@ -83,7 +72,6 @@ import org.tdar.transform.ExtendedDcTransformer;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
-import org.xml.sax.SAXException;
 
 public class JAXBITCase extends AbstractIntegrationTestCase {
 
@@ -218,10 +206,10 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         rc.getManagedResources().addAll(genericService.findRandom(Resource.class, 4));
         genericService.saveOrUpdate(rc);
         try {
-        String json = serializationService.convertToJson(rc);
-        logger.debug(json);
-        ResourceCollection rc2 = serializationService.readObjectFromJson(json, ResourceCollection.class);
-        logger.debug("{}",rc2);
+            String json = serializationService.convertToJson(rc);
+            logger.debug(json);
+            ResourceCollection rc2 = serializationService.readObjectFromJson(json, ResourceCollection.class);
+            logger.debug("{}", rc2);
         } catch (Throwable t) {
             logger.error("{}", t, t);
             fail(t.getMessage());
@@ -330,11 +318,11 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
                     newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
                     newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
-                    logger.debug("collections:{}",newProject.getManagedResourceCollections());
-                     size = newProject.getManagedResourceCollections().size();
+                    logger.debug("collections:{}", newProject.getManagedResourceCollections());
+                    size = newProject.getManagedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;
-                    logger.warn("exception: {}", e,e);
+                    logger.warn("exception: {}", e, e);
                 } finally {
                     // genericService.delete(newProject.getResourceCollections());
                     // genericService.delete(newProject);
@@ -394,7 +382,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         assertNotNull("this xml has intentional errors and should cause parse exceptions", parseException);
         assertNull(obj);
     }
-    
+
     @Test
     /**
      * Because our our rdbms does not include timezone w/ it's timestamp values, the safest approach

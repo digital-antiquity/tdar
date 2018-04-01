@@ -19,7 +19,6 @@ import org.tdar.utils.PersistableUtils;
 
 public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearchITCase {
 
-
     @Test
     public void testSearchPhraseWithQuote() throws ParseException, SearchException, SearchIndexException, IOException {
         doSearch("\"test");
@@ -40,10 +39,10 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
         doSearch("\"test ( abc ");
     }
 
-
     @Test
     @Rollback(true)
-    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException, SearchException, SearchIndexException {
+    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException,
+            ParseException, SearchException, SearchIndexException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -57,14 +56,15 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
+    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException,
+            ParseException, SearchException, SearchIndexException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
         setupTestDocuments();
         SearchParameters params = new SearchParameters();
         params.getTitles().add(resourceTitle);
-        SearchResult<Resource> result = doSearch("", null,params,null);
+        SearchResult<Resource> result = doSearch("", null, params, null);
         logger.info("results:{}", result.getResults());
         assertTrue(result.getResults().contains(document));
         assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
@@ -72,14 +72,15 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
+    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException,
+            ParseException, SearchException, SearchIndexException {
         String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
         setupTestDocuments();
         SearchParameters params = new SearchParameters();
         params.getTitles().add(resourceTitle.replaceAll("\\-", ""));
-        SearchResult<Resource> result = doSearch("", null,params,null);
+        SearchResult<Resource> result = doSearch("", null, params, null);
         logger.info("results:{}", result.getResults());
         assertTrue(result.getResults().contains(document));
         assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
@@ -87,7 +88,8 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
+    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException,
+            ParseException, SearchException, SearchIndexException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
         String label = _33_CU_314;
@@ -110,7 +112,8 @@ public class ResourceSpecialCharacterSearchITCase extends AbstractResourceSearch
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException,SearchException, SearchIndexException {
+    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException,
+            IOException, ParseException, SearchException, SearchIndexException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
         String label = _33_CU_314;

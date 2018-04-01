@@ -110,8 +110,8 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
         }
     }
 
-    private void sendEmail(TdarUser submitter, Set<InformationResourceFile> files, EmailType type){//String subject, String template) {
-    	Email email = emailService.createMessage(type, submitter.getEmail());
+    private void sendEmail(TdarUser submitter, Set<InformationResourceFile> files, EmailType type) {// String subject, String template) {
+        Email email = emailService.createMessage(type, submitter.getEmail());
         email.addData("files", files);
         email.addData("submitter", submitter);
         email.setUserGenerated(false);

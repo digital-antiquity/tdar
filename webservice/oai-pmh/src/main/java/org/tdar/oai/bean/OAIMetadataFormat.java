@@ -33,7 +33,7 @@ public enum OAIMetadataFormat {
 
     public static OAIMetadataFormat fromString(String val) throws OAIException {
         for (OAIMetadataFormat prefix_ : OAIMetadataFormat.values()) {
-            if (StringUtils.equalsIgnoreCase(prefix_.getPrefix(),val) || StringUtils.equalsIgnoreCase(prefix_.name(), val)) {
+            if (StringUtils.equalsIgnoreCase(prefix_.getPrefix(), val) || StringUtils.equalsIgnoreCase(prefix_.name(), val)) {
                 return prefix_;
             }
         }

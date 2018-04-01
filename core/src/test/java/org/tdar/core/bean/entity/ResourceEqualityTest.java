@@ -20,7 +20,7 @@ public class ResourceEqualityTest {
         assertFalse(ClassUtils.isAssignable(Resource.class, Document.class));
         assertTrue(ClassUtils.isAssignable(Image.class, Resource.class));
     }
-    
+
     @Test
     // pick a class that doesn't overRide the base Persistable.Base implementation of equalityFields. We are trying to assert that it's behavior
     // w.r.t equality is the same as Object.equals() and Object.hashCode()

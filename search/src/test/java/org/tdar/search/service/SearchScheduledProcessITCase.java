@@ -29,7 +29,6 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     @Autowired
     private transient ScheduledProcessService scheduledProcessService;
 
-    
     @Autowired
     DailyEmailProcess dailyEmailProcess;
 
@@ -43,9 +42,9 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         assertTrue(dailyEmailProcess.isCompleted());
         scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        
+
     }
-    
+
     @Test
     @Rollback
     public void testUpgradeTask() {
@@ -63,8 +62,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         assertFalse(runUpgradeTasks.contains(process.getDisplayName()));
 
     }
-    
-    
+
     @Test
     @Rollback(true)
     public void testWeeklyStats() {

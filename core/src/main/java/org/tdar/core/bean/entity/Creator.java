@@ -104,7 +104,8 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     private static final long serialVersionUID = 2296217124845743224L;
 
     public enum CreatorType {
-        PERSON("P"), INSTITUTION("I");
+        PERSON("P"),
+        INSTITUTION("I");
         private String code;
 
         private CreatorType(String code) {

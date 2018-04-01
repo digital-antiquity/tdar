@@ -5,19 +5,18 @@ Dear ${to.properName},
 
 <p>
     ${from.properName} wants to suggest an edit or correction to the resource:
-     <a href="${baseUrl}${resource.detailUrl}">${resource.title} (${resource.id?c})</a> that you have administrative rights 
+     <a href="${baseUrl}${resource.detailUrl}">${resource.title}</a> (${resource.id?c}) that you have administrative rights 
      to in tDAR.
 </p>
----
-<p>
+<blockquote>
 ${message}
-</p>
----
+</blockquote>
+
 <p>
 You may correspond with ${from.properName} via ${from.email}.  To make 
 edits to your ${siteAcronym} resource, log in to ${siteAcronym} and visit 
-<a href="${baseUrl}/${resource.urlNamespace}/${resource.id?c}">
-${baseUrl}/${resource.urlNamespace}/${resource.id?c}</a>.  
+<a href="${baseUrl}${resource.detailUrl}">
+${baseUrl}${resource.detailUrl}</a>.  
 Select the edit tab at the top of the page, make any changes, and press save. 
 </p>
 <p>
@@ -26,7 +25,7 @@ Kind regards,<br />
 Staff at ${serviceProvider}
 </p>
 <p>
----------<br />
+<hr>
 Note: please do not reply to this automated email
 </p>
 </@mail.content>

@@ -48,9 +48,9 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateAdded;
 
-    @Column(name="archived", nullable=false)
+    @Column(name = "archived", nullable = false)
     private boolean archived = false;
-    
+
     @Column(name = "date_modified")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateModified;
@@ -65,9 +65,8 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
     private Long accountId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(nullable = true, updatable = false, name = "dropbox_id", referencedColumnName="dropbox_id")
+    @JoinColumn(nullable = true, updatable = false, name = "dropbox_id", referencedColumnName = "dropbox_id")
     private Set<TdarReference> tdarReferences = new LinkedHashSet<>();
-
 
     public String getParentId() {
         return parentId;
@@ -154,12 +153,12 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
     }
 
     public TdarReference getTdarReference() {
-        if (CollectionUtils.isEmpty(tdarReferences )) {
+        if (CollectionUtils.isEmpty(tdarReferences)) {
             return null;
         }
         return tdarReferences.iterator().next();
     }
-    
+
     public Set<TdarReference> getTdarReferences() {
         return tdarReferences;
     }

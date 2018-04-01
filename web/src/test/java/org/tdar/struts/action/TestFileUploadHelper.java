@@ -104,7 +104,6 @@ public interface TestFileUploadHelper {
         return (C) controller.getResource();
     }
 
-
     default FileProxy uploadFileAsync(File file, PersonalFilestoreTicket ticket) throws FileNotFoundException {
         return uploadFilesAsync(Arrays.asList(file), ticket).getSecond().get(0);
     }
@@ -113,7 +112,8 @@ public interface TestFileUploadHelper {
         return uploadFilesAsync(uploadFiles, grabTicket());
     }
 
-    default Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles, PersonalFilestoreTicket ticket) throws FileNotFoundException {
+    default Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles, PersonalFilestoreTicket ticket)
+            throws FileNotFoundException {
         UploadController uploadController;
         Pair<PersonalFilestoreTicket, List<FileProxy>> toReturn = new Pair<PersonalFilestoreTicket, List<FileProxy>>(ticket, new ArrayList<FileProxy>());
         uploadController = generateNewInitializedController(UploadController.class);
@@ -154,7 +154,7 @@ public interface TestFileUploadHelper {
         assertEquals(Action.SUCCESS, uploadController.grabTicket());
         return uploadController.getPersonalFilestoreTicket();
     }
-    
+
     String getTestFilePath();
 
     SessionData getSessionData();

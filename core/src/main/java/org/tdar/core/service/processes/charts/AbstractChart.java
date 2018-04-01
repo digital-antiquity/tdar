@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 
-
 public abstract class AbstractChart {
 
     private String outputDir = TdarConfiguration.getInstance().getTempDirectory().getAbsolutePath();
@@ -27,17 +26,17 @@ public abstract class AbstractChart {
     private boolean showLegend;
 
     // Customize Chart
-    Color[] sliceColors = TdarConfiguration.getInstance().getBarColors().stream().map(key-> Color.decode(key)).toArray(Color[]::new);
-    		
-    File renderAndExport(Chart<?,?> bc) throws IOException {
+    Color[] sliceColors = TdarConfiguration.getInstance().getBarColors().stream().map(key -> Color.decode(key)).toArray(Color[]::new);
+
+    File renderAndExport(Chart<?, ?> bc) throws IOException {
         render(bc);
-        File file  = exportChart(bc, Paths.get(getOutputDir() + getFilename()));
+        File file = exportChart(bc, Paths.get(getOutputDir() + getFilename()));
         return file;
     }
 
     public abstract File createChart() throws IOException;
 
-    public void render(Chart<?,?> chart) {
+    public void render(Chart<?, ?> chart) {
         chart.setTitle(title);
         chart.getStyler().setSeriesColors(sliceColors);
         chart.getStyler().setChartBackgroundColor(Color.WHITE);
@@ -47,13 +46,13 @@ public abstract class AbstractChart {
         chart.getStyler().setLegendVisible(showLegend);
     }
 
-    public File exportChart(Chart<?,?> chart, Path path_) throws IOException {
+    public File exportChart(Chart<?, ?> chart, Path path_) throws IOException {
         Path path = path_.normalize();
-        String filename = path.toAbsolutePath().toString()+".png";
+        String filename = path.toAbsolutePath().toString() + ".png";
         logger.debug("exporting: {}", path.toAbsolutePath());
         File outputFile = new File(filename);
         BitmapEncoder.saveBitmap(chart, new FileOutputStream(outputFile), BitmapFormat.PNG);
-       
+
         return outputFile;
     }
 
@@ -96,9 +95,9 @@ public abstract class AbstractChart {
     public void setOutputDir(String outputDir) {
         this.outputDir = outputDir;
     }
-    
-    public void setShowLegend(boolean showLegend){
-    	this.showLegend = showLegend;
+
+    public void setShowLegend(boolean showLegend) {
+        this.showLegend = showLegend;
     }
-    
+
 }

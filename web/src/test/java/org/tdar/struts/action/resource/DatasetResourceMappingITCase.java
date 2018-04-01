@@ -139,7 +139,7 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
         image.setDescription(filename);
         controller.setProjectId(p.getId());
         image.markUpdated(getSessionUser());
-        File file = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR , filename);
+        File file = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR, filename);
         addFileToResource(image, file);
         // controller.setUploadedFiles(Arrays.asList(file));
         // controller.setUploadedFilesFileName(Arrays.asList(filename));

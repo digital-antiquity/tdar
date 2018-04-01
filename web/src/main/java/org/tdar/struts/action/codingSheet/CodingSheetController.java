@@ -14,7 +14,6 @@ import org.tdar.struts.action.resource.AbstractSupportingInformationResourceCont
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
-
 /**
  * $Id$
  * 
@@ -68,8 +67,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @Override
     public Set<String> getValidFileExtensions() {
-        //FIXME: was showing all valid dataset extensions
-        return new HashSet<>(Arrays.asList("csv","xlsx","xls"));
+        // FIXME: was showing all valid dataset extensions
+        return new HashSet<>(Arrays.asList("csv", "xlsx", "xls"));
     }
 
     @Override

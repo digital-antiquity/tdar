@@ -15,16 +15,16 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("INVITE_MESSAGE")
 public class InviteMessage extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4517475490706454849L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4517475490706454849L;
 
-	@Override
-	public String createSubjectLine() {
-		String properName = ((TdarUser) getMap().get(EmailKeys.FROM)).getProperName();
-		String tdar = TdarConfiguration.getInstance().getSiteAcronym();
-		return MessageHelper.getMessage(EmailType.INVITE.getLocaleKey(),Arrays.asList(properName,tdar));
-	}
+    @Override
+    public String createSubjectLine() {
+        String properName = ((TdarUser) getMap().get(EmailKeys.FROM)).getProperName();
+        String tdar = TdarConfiguration.getInstance().getSiteAcronym();
+        return MessageHelper.getMessage(EmailType.INVITE.getLocaleKey(), Arrays.asList(properName, tdar));
+    }
 
 }

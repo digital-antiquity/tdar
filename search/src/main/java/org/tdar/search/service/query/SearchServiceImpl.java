@@ -330,7 +330,7 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
             qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE, MessageHelper.getMessage("searchService.resourceType"), Operator.OR,
                     selectedResourceTypes));
             // If we sort by resource type, then change the primary sort field to the secondary as we're faceting by resource type
-            if ((handler.getSortField() == SortOption.RESOURCE_TYPE) || (handler.getSortField() == SortOption.RESOURCE_TYPE_REVERSE)) {
+            if (handler.getSortField() == SortOption.RESOURCE_TYPE) {
                 handler.setSortField(handler.getSecondarySortField());
             }
         }

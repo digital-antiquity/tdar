@@ -57,8 +57,8 @@ public class KeywordActionITCase extends AbstractAdminControllerITCase {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
-         String result = bkc.view();
-         assertEquals(TdarActionSupport.NOT_FOUND, result);
+        String result = bkc.view();
+        assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test
@@ -71,8 +71,8 @@ public class KeywordActionITCase extends AbstractAdminControllerITCase {
         it.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(it);
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
-         String result = bkc.view();
-         assertEquals(TdarActionSupport.NOT_FOUND, result);
+        String result = bkc.view();
+        assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test

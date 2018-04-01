@@ -13,7 +13,6 @@ import org.tdar.oai.exception.OAIException;
 import org.tdar.oai.service.OaiPmhConfiguration;
 import org.tdar.utils.MessageHelper;
 
-
 /**
  * @author ctuohy
  * 
@@ -47,7 +46,7 @@ public enum OAIRecordType {
         }
         return null;
     }
-    
+
     public OAIMetadataFormat[] getMetadataFormats() {
         return metadataFormats;
     }

@@ -25,7 +25,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
 
         Archive result = createAndSaveNewInformationResource(Archive.class, false);
         assertTrue(result.getResourceType() == ResourceType.ARCHIVE);
-        File file = TestConstants.getFile(TestConstants.TEST_ARCHIVE_DIR , archive);
+        File file = TestConstants.getFile(TestConstants.TEST_ARCHIVE_DIR, archive);
         assertTrue("testing " + TestConstants.FAULTY_ARCHIVE + " doesn't exis?", file.exists());
         result = (Archive) addFileToResource(result, file); // now take the file through the work flow.
         return result;

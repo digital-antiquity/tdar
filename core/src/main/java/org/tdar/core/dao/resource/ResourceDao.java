@@ -319,7 +319,9 @@ public abstract class ResourceDao<E extends Resource> extends HibernateBase<E> {
     }
 
     public enum StatisticsQueryMode {
-        ACCESS_DAY, ACCESS_OVERALL, DOWNLOAD_DAY;
+        ACCESS_DAY,
+        ACCESS_OVERALL,
+        DOWNLOAD_DAY;
     }
 
     @SuppressWarnings("unchecked")

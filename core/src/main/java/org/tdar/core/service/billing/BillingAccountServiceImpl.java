@@ -484,11 +484,11 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
             } else {
                 selectedAccount = processBillingAccountChoice(invoice, invoice.getOwner());
             }
-            
+
             if (CollectionUtils.isEmpty(selectedAccount.getAuthorizedUsers())) {
                 selectedAccount.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.EDIT_ACCOUNT));
             }
-            
+
         } else {
             selectedAccount = getDao().find(BillingAccount.class, id);
         }

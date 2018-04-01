@@ -71,8 +71,8 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
         this.invocation = invocation;
         InputStream inputStream = getInputStream();
         Object jsonObject_ = getJsonObjectValue();
-        Map<String,Object> errorResult = constructErrorObject(invocation);
-        
+        Map<String, Object> errorResult = constructErrorObject(invocation);
+
         if (inputStream == null && jsonObject_ == null && MapUtils.isEmpty(errorResult)) {
             String msg = MessageHelper.getMessage("jsonDocumentResult.document_not_found", invocation.getInvocationContext().getLocale(),
                     Arrays.asList(stream).toArray());
@@ -84,13 +84,13 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
             if (jsonObject_ == null) {
                 jsonObject_ = new HashMap<>();
             }
-            ((Map<String,Object>)jsonObject_).put(ERRORS_KEY, errorResult);
+            ((Map<String, Object>) jsonObject_).put(ERRORS_KEY, errorResult);
             String jsonForStream = serializationService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
             encodeAndRespond(inputStream);
             return;
         }
-        
+
         if (jsonObject_ != null && inputStream == null) {
             String jsonForStream = serializationService.convertFilteredJsonForStream(jsonObject_, getJsonViewValue(), getCallbackValue());
             inputStream = new ByteArrayInputStream(jsonForStream.getBytes());
@@ -122,7 +122,7 @@ public class JsonDocumentResult implements Result, TdarResultHeader {
             if (tas.hasFieldErrors()) {
                 errors.put(FIELD_ERRORS, tas.getFieldErrors());
             }
-            if( MapUtils.isNotEmpty(errors)) {
+            if (MapUtils.isNotEmpty(errors)) {
                 logger.debug("errors: {}", errors);
             }
             return errors;

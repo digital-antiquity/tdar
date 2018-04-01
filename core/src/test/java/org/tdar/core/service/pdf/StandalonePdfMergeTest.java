@@ -12,7 +12,6 @@ import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.junit.Ignore;
 import org.junit.Test;
 
-
 /**
  * This test attempts to recreate the missing page issue per https://issues.tdar.org/browse/TDAR-4906
  *
@@ -20,9 +19,9 @@ import org.junit.Test;
  * TDAR core libraries.
  *
  * Prerequisites:
- *  - test expects all files to be placed in /tmp
- *  - test expects /tmp/coverpage.pdf & /tmp/document.pdf  (where document.pdf is a pdf that causes tdar to exhibit the buggy
- *      behavior when merged with coverpage.pdf)
+ * - test expects all files to be placed in /tmp
+ * - test expects /tmp/coverpage.pdf & /tmp/document.pdf (where document.pdf is a pdf that causes tdar to exhibit the buggy
+ * behavior when merged with coverpage.pdf)
  *
  */
 @Ignore
@@ -40,7 +39,6 @@ public class StandalonePdfMergeTest {
         documentPdf = new File(TMP_FOLDER, "document.pdf");
     }
 
-
     @Test
     public void sanityCheck() {
         assertThat(TMP_FOLDER.exists(), is(true));
@@ -57,8 +55,8 @@ public class StandalonePdfMergeTest {
         ut.setDestinationFileName(destinationPdf.getCanonicalPath());
         ut.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
 
-        //not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
-        assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is( greaterThan(documentPdf.length())));
+        // not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
+        assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is(greaterThan(documentPdf.length())));
     }
 
     @Test
@@ -70,8 +68,8 @@ public class StandalonePdfMergeTest {
         ut.setDestinationFileName(destinationPdf.getCanonicalPath());
         ut.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
 
-        //not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
-        assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is( greaterThan(documentPdf.length())));
+        // not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
+        assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is(greaterThan(documentPdf.length())));
     }
 
     @Test
@@ -83,8 +81,8 @@ public class StandalonePdfMergeTest {
         ut.setDestinationFileName(destinationPdf.getCanonicalPath());
         ut.mergeDocuments(MemoryUsageSetting.setupMixed(1000L));
 
-        //not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
-        assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is( greaterThan(documentPdf.length())));
+        // not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
+        assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is(greaterThan(documentPdf.length())));
     }
 
 }

@@ -6,7 +6,12 @@ import org.tdar.utils.MessageHelper;
 
 public enum PersonSearchOption implements HasLabel, Localizable {
 
-    ALL_FIELDS("allFields"), FIRST_NAME("firstName"), LAST_NAME("lastName"), USERNAME("username"), INSTITUTION("institution"), EMAIL("email");
+    ALL_FIELDS("allFields"),
+    FIRST_NAME("firstName"),
+    LAST_NAME("lastName"),
+    USERNAME("username"),
+    INSTITUTION("institution"),
+    EMAIL("email");
 
     private String fieldName = "";
 

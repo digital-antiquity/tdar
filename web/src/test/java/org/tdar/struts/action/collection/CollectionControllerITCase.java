@@ -27,7 +27,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TestResourceCollectionHelper;
 
-public class CollectionControllerITCase extends AbstractControllerITCase implements TestResourceCollectionHelper  {
+public class CollectionControllerITCase extends AbstractControllerITCase implements TestResourceCollectionHelper {
 
     @Autowired
     private GenericService genericService;
@@ -48,14 +48,13 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         indexCount++;
     }
 
-
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testPublicCollection() throws Exception {
         long currentTimeMillis = System.currentTimeMillis();
-        String email = "abc"+currentTimeMillis+"@ab.com";
-        final TdarUser testPerson = createAndSaveNewPerson(email, ""+currentTimeMillis);
+        String email = "abc" + currentTimeMillis + "@ab.com";
+        final TdarUser testPerson = createAndSaveNewPerson(email, "" + currentTimeMillis);
         String name = "test collection";
         String description = "test description";
 
@@ -66,12 +65,11 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.ADD_TO_COLLECTION)));
+                new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.ADD_TO_COLLECTION)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, new ArrayList<>(), null);
-        
-        
+
         final Long id = collection.getId();
         String slug = collection.getSlug();
         collection = null;
@@ -85,20 +83,19 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         normal.getUnmanagedResourceCollections().add(collection);
         draft = genericService.find(InformationResource.class, draftId);
         draft.getUnmanagedResourceCollections().add(collection);
-//        collection.getUnmanagedResources().addAll(resources);
-//        genericService.saveOrUpdate(collection);
+        // collection.getUnmanagedResources().addAll(resources);
+        // genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(normal);
         genericService.saveOrUpdate(draft);
 
-        
-//-----------------------
+        // -----------------------
         ResourceCollectionRightsController cc = generateNewInitializedController(ResourceCollectionRightsController.class, getAdminUser());
         cc.setId(id);
         cc.prepare();
         cc.edit();
         cc.setServletRequest(getServletPostRequest());
-        cc.getProxies().add(new UserRightsProxy( new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
-//        cc.setAsync(false);
+        cc.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(), testPerson, Permissions.MODIFY_RECORD)));
+        // cc.setAsync(false);
         cc.save();
         cc = null;
         assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, normal, Permissions.MODIFY_METADATA));
@@ -106,9 +103,8 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));
         assertTrue(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
         /*
-*/
+        */
     }
-    
 
     @Test
     @Rollback
@@ -120,12 +116,12 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(
-                new AuthorizedUser(getAdminUser(),getBasicUser(), Permissions.ADMINISTER_COLLECTION),
-                new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.MODIFY_RECORD), 
-                new AuthorizedUser(getAdminUser(),testPerson, Permissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.ADMINISTER_COLLECTION),
+                new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.MODIFY_RECORD),
+                new AuthorizedUser(getAdminUser(), testPerson, Permissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        ResourceCollection collection = 
-                generateResourceCollection(name, description, true, users, getUser(), resources, null, ResourceCollectionController.class, ResourceCollection.class);
+        ResourceCollection collection = generateResourceCollection(name, description, true, users, getUser(), resources, null,
+                ResourceCollectionController.class, ResourceCollection.class);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getManagedResources());
         assertFalse(collectionid.equals(-1L));
@@ -159,6 +155,5 @@ public class CollectionControllerITCase extends AbstractControllerITCase impleme
         }
         assertEquals(3, count);
     }
-
 
 }

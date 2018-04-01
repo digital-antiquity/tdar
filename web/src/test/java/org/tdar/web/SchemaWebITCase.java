@@ -12,6 +12,6 @@ public class SchemaWebITCase extends AbstractWebTestCase {
     public void testSchemaGeneration() throws ConfigurationException, SAXException, IOException {
         gotoPage("/schema/current");
         assertTextPresentInCode("CHEROKEE");
-//        testValidXMLSchemaResponse(getPageCode());
+        // testValidXMLSchemaResponse(getPageCode());
     }
 }

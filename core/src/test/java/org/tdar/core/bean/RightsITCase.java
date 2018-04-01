@@ -41,12 +41,10 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         Long id = dataset.getId();
         genericService.synchronize();
 
-        
         List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(new AuthorizedUser(badUser, badUser, Permissions.MODIFY_RECORD)));
-        
+
         saveAndAssertException(dataset, badUser, proxies);
     }
-
 
     private void saveAndAssertException(Dataset dataset, TdarUser badUser, List<UserRightsProxy> proxies) {
         TdarAuthorizationException tau = null;
@@ -57,7 +55,6 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         }
         assertNotNull("we should have an exception", tau);
     }
-    
 
     @Test
     @Rollback
@@ -75,13 +72,11 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         Long id = dataset.getId();
         genericService.synchronize();
 
-        
         AuthorizedUser au = new AuthorizedUser(badUser, badUser, Permissions.MODIFY_METADATA);
         au.setDateExpires(soon);
         List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(au));
         saveAndAssertException(dataset, badUser, proxies);
     }
-    
 
     @Test
     @Rollback
@@ -99,13 +94,11 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         Long id = dataset.getId();
         genericService.synchronize();
 
-        
         AuthorizedUser au = new AuthorizedUser(badUser, badUser, Permissions.ADMINISTER_COLLECTION);
         au.setDateExpires(soon);
         List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(au));
         saveAndAssertException(dataset, badUser, proxies);
     }
-    
 
     @Test
     @Rollback
@@ -119,17 +112,14 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         dataset.getAuthorizedUsers().add(authorizedUser);
         genericService.saveOrUpdate(dataset);
         genericService.saveOrUpdate(authorizedUser);
-//        authorizedUser = null;
+        // authorizedUser = null;
         genericService.synchronize();
 
-        
         AuthorizedUser au = new AuthorizedUser(badUser, getEditorUser(), Permissions.MODIFY_RECORD);
-//        au.setDateExpires(soon);
-        List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(au),new UserRightsProxy(authorizedUser));
+        // au.setDateExpires(soon);
+        List<UserRightsProxy> proxies = Arrays.asList(new UserRightsProxy(au), new UserRightsProxy(authorizedUser));
         saveAndAssertException(dataset, badUser, proxies);
     }
-
-
 
     @Test
     @Rollback(true)
@@ -153,7 +143,7 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         ResourceCollection collection = new ResourceCollection("rights inherit", "rights inherit", getBasicUser());
         collection.markUpdated(getBasicUser());
         collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), Permissions.ADMINISTER_COLLECTION));
-        
+
         // setup a completely different inheritance tree
         ResourceCollection collection2 = new ResourceCollection("rights2", "rights2", getBasicUser());
         collection2.markUpdated(getBasicUser());
@@ -175,15 +165,15 @@ public class RightsITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(collection2);
         collection2.getManagedResources().add(dataset);
         genericService.saveOrUpdate(dataset);
-//        authorizedUser = null;
+        // authorizedUser = null;
         Long datasetId = dataset.getId();
         Long collectionId = collection.getId();
         Long parentId = grandParent.getId();
         Long userId = removeUser.getId();
         Long ownerId = ownerUser.getId();
         removeUser = null;
-        dataset=null;
-        collection= null;
+        dataset = null;
+        collection = null;
         grandParent = null;
         genericService.synchronize();
 

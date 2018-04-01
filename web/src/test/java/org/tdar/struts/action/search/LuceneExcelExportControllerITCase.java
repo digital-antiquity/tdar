@@ -55,9 +55,9 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
         Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
         Sheet sheet = workbook.getSheet("results");
-        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT >  4);
+        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT > 4);
     }
-    
+
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
@@ -65,19 +65,20 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
             InvalidFormatException, TdarActionException {
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         // currentUser = getBasicUser();
-        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class, genericService.find(TdarUser.class, getAdminUserId()));
+        AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
+                genericService.find(TdarUser.class, getAdminUserId()));
 
         File tempFile = search(controller);
 
         Workbook workbook = WorkbookFactory.create(new FileInputStream(tempFile));
         Sheet sheet = workbook.getSheet("results");
-        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT >  4);
+        Assert.assertTrue(sheet.getLastRowNum() - EXCEL_EXPORT_HEADER_ROWCOUNT > 4);
     }
 
     private File search(AdvancedSearchDownloadAction controller) throws ParseException, TdarActionException, IOException, FileNotFoundException {
         controller.setServletRequest(getServletRequest());
 
-        doSearch( controller,"");
+        doSearch(controller, "");
         assertEquals(Action.SUCCESS, controller.viewExcelReport());
         assertFalse(controller.getSearchPhrase() + " should not have bold tag", controller.getSearchPhrase().toLowerCase().contains("<b>"));
         File tempFile = File.createTempFile("report", ".xls");

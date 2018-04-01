@@ -77,7 +77,7 @@ public class DataIntegrationWorkflow extends AbstractPersistable
 
     @Transient
     private transient boolean editable;
-    
+
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })
     @JoinColumn(nullable = false, name = "user_id")
     @NotNull

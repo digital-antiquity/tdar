@@ -46,8 +46,8 @@ public class ScreenshotHelper {
 
         screenidx++;
 
-    } 
-    
+    }
+
     public void screenshotSinglePage(WebDriver driver, TestName testName, String filename) throws IOException {
         incrementCounter();
         File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
@@ -68,7 +68,7 @@ public class ScreenshotHelper {
 
     public void screenshotMultipage(WebDriver driver, TestName testName, String filename) throws IOException {
         incrementCounter();
-        
+
         Screenshot takeScreenshot = new AShot()
                 .shootingStrategy(ShootingStrategies.scaling(0.5f))
                 .takeScreenshot(driver);

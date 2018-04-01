@@ -87,11 +87,11 @@ public class ResourceCollectionRightsController extends AbstractRightsController
          * (a) permissions change
          * (b) visibility changes
          */
-//        if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
-//        } else {
-//            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
-//        }
+        // if (isAsync()) {
+        searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+        // } else {
+        // searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
+        // }
     }
 
     public void setResourceCollection(ResourceCollection rc) {

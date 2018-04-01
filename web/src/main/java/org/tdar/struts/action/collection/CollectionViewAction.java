@@ -498,7 +498,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
                     throw e;
                 }
             }
-            for (Resource r: getResults()) {
+            for (Resource r : getResults()) {
                 if (isManaged(r)) {
                     getPermissionsCache().getManagedResources().add(r.getId());
                 }

@@ -16,19 +16,19 @@ public interface TestBillingAccountHelper {
 
     /**
      * Creates a new BillingAccount object
+     * 
      * @param model
      * @param user
      * @return BillingAccount initialized to 6 mb
      */
     default BillingAccount setupAccountWithInvoiceForSpecifiedMb(BillingActivityModel model, TdarUser user, Long size) {
-    	BillingAccount account = new BillingAccount();
-    	account.setName("test with " + size.toString()  + " mb" );
-    	BillingActivity activity = new BillingActivity(size.toString()+" mb", 10f, 0, 0L, 0L, size, model);
-    	initAccount(account, activity, getUser());
-    	getGenericService().saveOrUpdate(account);
-    	return account;
+        BillingAccount account = new BillingAccount();
+        account.setName("test with " + size.toString() + " mb");
+        BillingActivity activity = new BillingActivity(size.toString() + " mb", 10f, 0, 0L, 0L, size, model);
+        initAccount(account, activity, getUser());
+        getGenericService().saveOrUpdate(account);
+        return account;
     }
-
 
     default BillingAccount setupAccountWithInvoiceFor6Mb(BillingActivityModel model, TdarUser user) {
         BillingAccount account = new BillingAccount();
@@ -89,7 +89,7 @@ public interface TestBillingAccountHelper {
 
     default Invoice initAccount(BillingAccount account, BillingActivity activity, TdarUser user) {
         account.markUpdated(user);
-        account.getAuthorizedUsers().add(new AuthorizedUser(user,user, Permissions.EDIT_ACCOUNT));
+        account.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.EDIT_ACCOUNT));
         Invoice invoice = setupInvoice(activity, user);
         account.getInvoices().add(invoice);
         return invoice;
@@ -119,16 +119,14 @@ public interface TestBillingAccountHelper {
         getGenericService().saveOrUpdate(account);
         return account;
     }
-    
+
     default void updateModel(BillingActivityModel model, boolean resources, boolean files, boolean space) {
         model.setCountingResources(resources);
         model.setCountingFiles(files);
         model.setCountingSpace(space);
     }
 
-
     GenericService getGenericService();
-
 
     TdarUser getUser();
 }

@@ -39,6 +39,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -83,9 +84,7 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.range.DateRange;
 
-public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
-
-
+public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Autowired
     CreatorSearchService<Creator<?>> creatorSearchService;
@@ -97,15 +96,16 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     EntityService entityService;
 
     @Test
-    public void testInvalidPhrase() throws ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
+    public void testInvalidPhrase() throws ParseException, SearchException, SearchIndexException, IOException, SearchException, SearchIndexException {
         ResourceLookupObject look = new ResourceLookupObject();
         look.setTerm("he operation and evolution of an irrigation system\"");
         LuceneSearchResultHandler<Resource> result = new SearchResult<>();
-        resourceSearchService.lookupResource(getAdminUser(), look, result , MessageHelper.getInstance());
+        resourceSearchService.lookupResource(getAdminUser(), look, result, MessageHelper.getInstance());
     }
-    
+
     @Test
-    public void testInvalidPhraseWithBrackets() throws ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
+    public void testInvalidPhraseWithBrackets()
+            throws ParseException, SearchException, SearchIndexException, IOException, SearchException, SearchIndexException {
         SearchParameters sp = new SearchParameters();
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         asqo.getSearchParameters().add(sp);
@@ -115,11 +115,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     }
 
     @Test
-    public void testInvalidWithColon() throws ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
+    public void testInvalidWithColon() throws ParseException, SearchException, SearchIndexException, IOException, SearchException, SearchIndexException {
         ResourceLookupObject look = new ResourceLookupObject();
         look.setTerm("Temporal Control in the Southern North Coast Ranges of California: The Application of Obsidian Hydration Analysis");
         LuceneSearchResultHandler<Resource> result = new SearchResult<>();
-        resourceSearchService.lookupResource(getAdminUser(), look, result , MessageHelper.getInstance());
+        resourceSearchService.lookupResource(getAdminUser(), look, result, MessageHelper.getInstance());
     }
 
     @Test
@@ -141,10 +141,10 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(doc);
         SearchParameters sp = new SearchParameters();
         sp.getSiteNames().add(snk.getLabel());
-        SearchResult<Resource> result = doSearch(null,null,sp,null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertFalse("we should get back at least one hit", result.getResults().isEmpty());
         for (Indexable resource : result.getResults()) {
-            assertTrue("expecting site name for resource", ((Resource)resource).getSiteNameKeywords().contains(snk));
+            assertTrue("expecting site name for resource", ((Resource) resource).getSiteNameKeywords().contains(snk));
         }
     }
 
@@ -156,9 +156,9 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Long docId = doc.getId();
         genericService.saveOrUpdate(doc);
         SearchParameters sp = new SearchParameters();
-        SearchResult<Resource> result = doSearch("doi:10.6067/XCV8Z89BKF",null,sp,null);
+        SearchResult<Resource> result = doSearch("doi:10.6067/XCV8Z89BKF", null, sp, null);
         assertFalse("we should get back at least one hit", result.getResults().isEmpty());
-        logger.debug("{}",doc);
+        logger.debug("{}", doc);
         logger.debug("---------");
         boolean seenId = false;
         for (Indexable resource : result.getResults()) {
@@ -167,9 +167,9 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
                 seenId = true;
             }
         }
-            assertTrue("expecting doi for resource search", seenId);
+        assertTrue("expecting doi for resource search", seenId);
     }
-    
+
     @Test
     @Rollback
     public void testSiteCode() throws SearchException, SearchIndexException, IOException, ParseException {
@@ -180,13 +180,12 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(doc);
         SearchParameters sp = new SearchParameters();
         sp.getAllFields().add("38ak500");
-        SearchResult<Resource> result = doSearch(null,null,sp,null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertFalse("we should get back at least one hit", result.getResults().isEmpty());
         for (Indexable resource : result.getResults()) {
-            assertTrue("expecting site name for resource", ((Resource)resource).getSiteNameKeywords().contains(snk));
+            assertTrue("expecting site name for resource", ((Resource) resource).getSiteNameKeywords().contains(snk));
         }
     }
-
 
     @Test
     @Rollback
@@ -198,10 +197,10 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         searchIndexService.index(doc);
         SearchParameters sp = new SearchParameters();
         sp.getGeographicKeywords().add("Greece");
-        SearchResult<Resource> result = doSearch(null,null, sp,null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertFalse("we should get back at least one hit", result.getResults().isEmpty());
         for (Resource resource : result.getResults()) {
-            assertTrue("expecting site name for resource", ((Resource)resource).getGeographicKeywords().contains(snk));
+            assertTrue("expecting site name for resource", ((Resource) resource).getGeographicKeywords().contains(snk));
         }
     }
 
@@ -222,14 +221,13 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
             ResourceCreator rc = new ResourceCreator(p, null);
             sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));
         }
-        SearchResult<Resource> result = doSearch(null,null,sp,null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         logger.info(result.getSearchTitle());
         for (String name : names) {
             assertTrue(result.getSearchTitle().contains(name));
         }
         // lookForCreatorNameInResult(lastName, person);
     }
-
 
     @Test
     @Rollback
@@ -260,7 +258,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertFalse("we should get back at least one hit", result.getResults().isEmpty());
         assertTrue(resultsContainId(result, 262L));
-//        result.getIncludedStatuses().add(Status.ACTIVE);
+        // result.getIncludedStatuses().add(Status.ACTIVE);
         for (Indexable resource : result.getResults()) {
             // if it's a project, the keyword should be found in either it's own keyword list, or the keyword list
             // of one of the projects informationResources
@@ -276,8 +274,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
                         keywords.contains(keyword));
 
             } else {
-                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource)resource).getActiveSiteTypeKeywords());
-                assertTrue("expecting site type for resource:", ((Resource)resource).getActiveSiteTypeKeywords().contains(keyword));
+                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource) resource).getActiveSiteTypeKeywords());
+                assertTrue("expecting site type for resource:", ((Resource) resource).getActiveSiteTypeKeywords().contains(keyword));
             }
         }
     }
@@ -289,11 +287,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Keyword keyword = genericService.find(MaterialKeyword.class, 2L);
         SearchParameters sp = new SearchParameters();
         sp.getMaterialKeywordIdLists().add(Arrays.asList(keyword.getId().toString()));
-        SearchResult<Resource> result = doSearch(null,null, sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
         // every resource in results should have that material keyword (or should have at least one informationResource that has that keyword)
         for (Indexable resource : result.getResults()) {
-            Set<Keyword> keywords = new HashSet<Keyword>(((Resource)resource).getActiveMaterialKeywords());
+            Set<Keyword> keywords = new HashSet<Keyword>(((Resource) resource).getActiveMaterialKeywords());
             if (resource instanceof Project) {
                 // check that at least one child uses this keyword
                 Project project = (Project) resource;
@@ -314,7 +312,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         sp.getUncontrolledCultureKeywords().add(label);
         Keyword keyword = genericKeywordService.findByLabel(CultureKeyword.class, label);
 
-        SearchResult<Resource> result = doSearch(null, null,sp ,null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
 
         for (Indexable resource : result.getResults()) {
@@ -332,8 +330,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
                         keywords.contains(keyword));
 
             } else {
-                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource)resource).getActiveCultureKeywords());
-                assertTrue("expecting site type for resource:", ((Resource)resource).getActiveCultureKeywords().contains(keyword));
+                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource) resource).getActiveCultureKeywords());
+                assertTrue("expecting site type for resource:", ((Resource) resource).getActiveCultureKeywords().contains(keyword));
             }
         }
 
@@ -347,7 +345,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Keyword keyword = genericService.find(CultureKeyword.class, keywordId);
         SearchParameters sp = new SearchParameters();
         sp.getApprovedCultureKeywordIdLists().add(Arrays.asList(keywordId.toString()));
-        SearchResult<Resource> result = doSearch(null,null,sp ,null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
         for (Indexable resource : result.getResults()) {
             // if it's a project, the keyword should be found in either it's own keyword list, or the keyword list
@@ -364,13 +362,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
                         keywords.contains(keyword));
 
             } else {
-                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource)resource).getActiveCultureKeywords());
-                assertTrue("expecting site type for resource:", ((Resource)resource).getActiveCultureKeywords().contains(keyword));
+                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource) resource).getActiveCultureKeywords());
+                assertTrue("expecting site type for resource:", ((Resource) resource).getActiveCultureKeywords().contains(keyword));
             }
         }
     }
-    
-
 
     @Test
     @Rollback
@@ -381,7 +377,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         sp.getProjects().add(sparseProject(projectId));
         ReservedSearchParameters rsp = new ReservedSearchParameters();
         rsp.getObjectTypes().clear(); // select all resource types
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         int resourceCount = 0;
         for (Indexable resource : result.getResults()) {
             if (resource instanceof InformationResource) {
@@ -392,8 +388,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         }
         assertTrue("search should have at least 1 result", resourceCount > 0);
     }
-    
-
 
     @Test
     @Rollback
@@ -402,14 +396,13 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Person person = genericService.find(Person.class, 6L);
         SearchParameters sp = new SearchParameters();
         sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(person, ResourceCreatorRole.SUBMITTER));
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
 
         // make sure every resource has that submitter
         for (Indexable resource : result.getResults()) {
-            assertEquals("Expecting same submitterId", person.getId(), ((Resource)resource).getSubmitter().getId());
+            assertEquals("Expecting same submitterId", person.getId(), ((Resource) resource).getSubmitter().getId());
         }
     }
-
 
     @Test
     @Rollback(true)
@@ -427,7 +420,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         boolean seen = false;
         for (Indexable res : result.getResults()) {
             logger.info("{}", res);
-            if (((Resource)res).getGeographicKeywords().contains(kwd)) {
+            if (((Resource) res).getGeographicKeywords().contains(kwd)) {
                 seen = true;
             } else {
                 fail("found resource without keyword");
@@ -435,7 +428,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         }
         assertTrue(seen);
     }
-
 
     @Test
     @Rollback
@@ -466,9 +458,9 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         SearchParameters params = new SearchParameters();
         params.getUpdatedDates().add(new DateRange(format.parse("2010-03-05"), format.parse("2010-07-22")));
-        SearchResult<Resource> result = doSearch(null,null, params, null, SortOption.DATE_UPDATED);
+        SearchResult<Resource> result = doSearch(null, null, params, null, SortOption.DATE_UPDATED);
         for (Indexable r : result.getResults()) {
-            logger.debug("{} - {} - {}", r.getId(), ((Resource)r).getDateUpdated(), ((Resource)r).getTitle());
+            logger.debug("{} - {} - {}", r.getId(), ((Resource) r).getDateUpdated(), ((Resource) r).getTitle());
         }
         assertFalse(result.getResults().contains(documentAfter));
         assertFalse(result.getResults().contains(document));
@@ -477,9 +469,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     /**
      * lucene translates dates to utc prior to indexing. When performing a search the system must similarly transform the begin/end
      * dates in a daterange
-     * @throws IOException 
-     * @throws SearchException, SearchIndexException 
-     * @throws ParseException 
+     * 
+     * @throws IOException
+     * @throws SearchException,
+     *             SearchIndexException
+     * @throws ParseException
      */
     @SuppressWarnings("deprecation")
     @Test
@@ -501,7 +495,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         SearchParameters sp = new SearchParameters();
         sp.getRegisteredDates().add(dateRange);
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         Long docId = doc.getId();
         assertThat(PersistableUtils.extractIds(result.getResults()), contains(docId));
 
@@ -509,14 +503,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         dateRange.setStart(searchDateTime.plusDays(1).toDate());
         dateRange.setEnd(searchDateTime.plusDays(2).toDate());
         sp.getRegisteredDates().add(dateRange);
-        result = doSearch(null,null,sp, null);
+        result = doSearch(null, null, sp, null);
         assertThat(PersistableUtils.extractIds(result.getResults()), not(contains(docId)));
 
         // if we decrement the search begin/end by one day, we should not see it in search results
         dateRange.setStart(searchDateTime.minusDays(1).toDate());
         dateRange.setEnd(searchDateTime.toDate());
         sp.getRegisteredDates().add(dateRange);
-        result = doSearch(null,null,sp, null);
+        result = doSearch(null, null, sp, null);
         assertThat(PersistableUtils.extractIds(result.getResults()), not(contains(docId)));
     }
 
@@ -541,7 +535,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         sp.getOtherKeywords().add(ok.getLabel());
         rsp.getObjectTypes().add(ObjectType.DOCUMENT);
-        SearchResult<Resource> result = doSearch(null,null,sp, rsp);
+        SearchResult<Resource> result = doSearch(null, null, sp, rsp);
         Set<Indexable> results = new HashSet<Indexable>();
         results.addAll(result.getResults());
         assertEquals("only expecting one result", 1L, result.getResults().size());
@@ -551,7 +545,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testTemporalKeywords() throws ParseException, InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException {
+    public void testTemporalKeywords()
+            throws ParseException, InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException {
         // Create a document w/ some temporal keywords, then try to find that document in a search
         TemporalKeyword tk = new TemporalKeyword();
         tk.setLabel("testtemporalkeyword");
@@ -570,7 +565,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         sp.getTemporalKeywords().add(tk.getLabel());
         rsp.getObjectTypes().add(ObjectType.DOCUMENT);
-        SearchResult<Resource> result = doSearch(null,null,sp, rsp);
+        SearchResult<Resource> result = doSearch(null, null, sp, rsp);
         Set<Indexable> results = new HashSet<Indexable>();
         results.addAll(result.getResults());
         assertEquals("only expecting one result", 1L, result.getResults().size());
@@ -598,7 +593,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         sp.getGeographicKeywords().add(gk.getLabel());
         ReservedSearchParameters rsp = new ReservedSearchParameters();
         rsp.getObjectTypes().add(ObjectType.DOCUMENT);
-        SearchResult<Resource> result = doSearch(null,null,sp, rsp);
+        SearchResult<Resource> result = doSearch(null, null, sp, rsp);
         Set<Indexable> results = new HashSet<Indexable>();
         results.addAll(result.getResults());
         assertEquals("only expecting one result", 1L, result.getResults().size());
@@ -608,13 +603,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testSearchBySubmitterIds() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException {
+    public void testSearchBySubmitterIds()
+            throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException {
         Document doc = createDocumentWithContributorAndSubmitter();
         Long submitterId = doc.getSubmitter().getId();
         assertFalse(submitterId == -1);
         SearchParameters sp = new SearchParameters();
         sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(doc.getSubmitter(), ResourceCreatorRole.SUBMITTER));
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
 
         assertTrue("only one result expected", 1 <= result.getResults().size());
         assertTrue(result.getResults().contains(doc));
@@ -622,13 +618,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testSearchContributorIds2() throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException {
+    public void testSearchContributorIds2()
+            throws InstantiationException, IllegalAccessException, ParseException, SearchException, SearchIndexException, IOException {
         Document doc = createDocumentWithContributorAndSubmitter();
         ResourceCreator contributor = doc.getResourceCreators().iterator().next();
         SearchParameters sp = new SearchParameters();
         sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(contributor.getCreator(), contributor.getRole()));
-        
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
 
         assertEquals("only one result expected", 1L, result.getResults().size());
         assertEquals(doc, result.getResults().iterator().next());
@@ -639,7 +636,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue(String.format("looking for string '%s' in search phrase '%s'", term, result.getSearchTitle()),
                 result.getSearchTitle().toLowerCase().contains(term.toLowerCase()));
     }
-
 
     @Test
     @Rollback
@@ -655,7 +651,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         SearchParameters sp = new SearchParameters();
         sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(person, ResourceCreatorRole.AUTHOR));
 
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
 
         logger.info("{}", result.getResults());
         assertTrue(String.format("expecting %s in results", resource), result.getResults().contains(resource));
@@ -674,7 +670,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         SearchParameters sp = new SearchParameters();
         sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(person, null));
 
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         assertTrue(String.format("expecting %s in results", resource), result.getResults().contains(resource));
     }
 
@@ -699,14 +695,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         SearchParameters params = new SearchParameters();
         params.setAllFields(Arrays.asList(ISTANBUL, CONSTANTINOPLE));
         params.setOperator(Operator.OR);
-        
-        SearchResult<Resource> result = doSearch(null,null,params, null);
+
+        SearchResult<Resource> result = doSearch(null, null, params, null);
         assertTrue(result.getResults().contains(doc1));
         assertTrue(result.getResults().contains(doc2));
         logger.debug("results:{}", result.getResults());
 
         params.setOperator(Operator.AND);
-        result = doSearch(null,null,params, null);
+        result = doSearch(null, null, params, null);
         logger.debug("results:{}", result.getResults());
         assertFalse(result.getResults().contains(doc1));
         assertFalse(result.getResults().contains(doc2));
@@ -727,7 +723,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 1200);
         SearchParameters sp = new SearchParameters();
         sp.getCoverageDates().add(cd);
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
 
         assertFalse("expecting multiple results", result.getResults().isEmpty());
         assertTrue(result.getResults().contains(start));
@@ -754,7 +750,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         doc.setSiteTypeKeywords(siteTypes);
         genericService.saveOrUpdate(doc);
         genericService.synchronize();
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
 
         SearchParameters sp = new SearchParameters();
         sp.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
@@ -808,8 +804,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
-        logger.debug("c's:{}",sp.getCollections());
-        assertEquals(colname, ((ResourceCollection)sp.getShares().get(1)).getName());
+        logger.debug("c's:{}", sp.getCollections());
+        assertEquals(colname, ((ResourceCollection) sp.getShares().get(1)).getName());
     }
 
     @Test
@@ -817,7 +813,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
     public void testSparseObjectNameLoading() throws SearchException, SearchIndexException, IOException, ParseException {
         String colname = "my fancy collection";
-        logger.debug("self assignable to self? {}",ResourceCollection.class.isAssignableFrom(ResourceCollection.class));
+        logger.debug("self assignable to self? {}", ResourceCollection.class.isAssignableFrom(ResourceCollection.class));
         Project proj = createAndSaveNewResource(Project.class);
         ResourceCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
@@ -831,20 +827,19 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // sp.getProjects().add(new Project(null,proj.getName()));
         // sp.getCollections().add(null); // [0]
         SearchParameters sp = new SearchParameters();
-        sp.getShares().add(new ResourceCollection(colname,null, null)); // [1]
+        sp.getShares().add(new ResourceCollection(colname, null, null)); // [1]
 
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
-        
         // skeleton lists should have been loaded w/ sparse records...
         // assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
-        assertEquals(colname, ((ResourceCollection)sp.getShares().get(0)).getName());
+        assertEquals(colname, ((ResourceCollection) sp.getShares().get(0)).getName());
         assertTrue(result.getResults().contains(proj));
         // assertEquals(proj.getId(), sp.getProjects().get(0).getId());
         // assertEquals(coll.getId(), sp.getCollections().get(1).getId());
     }
 
-    @SuppressWarnings({  "unused" })
+    @SuppressWarnings({ "unused" })
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
@@ -856,7 +851,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         doc1.setProject(proj);
         genericService.saveOrUpdate(doc1);
         genericService.saveOrUpdate(proj);
-//        SharedCollection coll = createAndSaveNewResourceCollection(colname);
+        // SharedCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(doc1, proj);
 
         // simulate searchParamerters that represents a project at [0] and collection at [1]
@@ -868,8 +863,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
         assertTrue(PersistableUtils.extractIds(result.getResults()).contains(doc1.getId()));
     }
-
-
 
     @SuppressWarnings("unused")
     @Test
@@ -927,7 +920,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     protected boolean resultsContainId(SearchResult<Resource> result, Long id) {
         boolean found = false;
         for (Indexable r_ : result.getResults()) {
-            Resource r = (Resource)r_;
+            Resource r = (Resource) r_;
             logger.trace(r.getId() + " " + r.getResourceType());
             if (id.equals(r.getId())) {
                 found = true;
@@ -936,11 +929,10 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         return found;
     }
 
-    
     @Test
     @Rollback(true)
     public void testCreatorOwnerQueryPart() throws ParseException, SearchException, SearchIndexException, IOException {
-        
+
         Document authorDocument = new Document();
         authorDocument.setTitle("author");
         authorDocument.setDescription(REASON);
@@ -991,8 +983,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue(result.getResults().contains(ownerDocument));
     }
 
-
-
     @Test
     @Rollback(true)
     public void testSelectedResourceLookup() throws SearchException, SearchIndexException, IOException, ParseException {
@@ -1005,18 +995,18 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(collection);
         ont.getManagedResourceCollections().add(collection);
         genericService.saveOrUpdate(ont);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setObjectTypes(Arrays.asList(ObjectType.ONTOLOGY));
         SearchResult<Resource> result = performSearch("", null, collection.getId(), null, null, null, params, 100);
         assertFalse(result.getResults().isEmpty());
         assertTrue(result.getResults().contains(ont));
     }
-    
+
     @Override
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.RESOURCE);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
     }
 
     @Test
@@ -1035,8 +1025,28 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     }
 
     @Test
+    @Rollback(true)
+    public void testLocalPermissions()
+            throws SearchException, SearchIndexException, IOException, ParseException, InstantiationException, IllegalAccessException {
+        Document doc = generateDocumentWithUser();
+        doc.setTitle("this is my unique title");
+        doc.setStatus(Status.DRAFT);
+        doc.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), Permissions.MODIFY_RECORD));
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+        searchIndexService.index(doc);
+        ReservedSearchParameters params = new ReservedSearchParameters();
+
+        SearchResult<Resource> result = performSearch("unique", null, null, null, null, getBasicUser(), params, Permissions.MODIFY_RECORD, 1000);
+        logger.debug("results:{}", result.getResults());
+        List<Long> ids = PersistableUtils.extractIds(result.getResults());
+
+        Assert.assertTrue(ids.contains(doc.getId()));
+    }
+
+    @Test
     public void testResourceLookupByType() throws SearchException, SearchIndexException, IOException, ParseException {
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
         // get back all documents
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setObjectTypes(Arrays.asList(ObjectType.DOCUMENT));
@@ -1141,7 +1151,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         boolean seen = true;
         for (Indexable idx : result.getResults()) {
-            if (!StringUtils.containsIgnoreCase( ((Resource) idx).getTitle(),"HARP")) {
+            if (!StringUtils.containsIgnoreCase(((Resource) idx).getTitle(), "HARP")) {
                 seen = false;
             }
         }
@@ -1149,7 +1159,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue(seen);
     }
 
-    
     @Test
     public void testResourceLookupById() throws IOException, SearchException, SearchIndexException, ParseException {
         ReservedSearchParameters params = initControllerFields();
@@ -1177,7 +1186,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         flaggedDoc.setStatus(Status.FLAGGED);
         List<Document> docs = Arrays.asList(activeDoc, draftDoc, flaggedDoc);
         genericService.saveOrUpdate(docs);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
 
         // login as an admin
         for (Document doc : docs) {
@@ -1200,15 +1209,12 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     }
 
-
     protected static List<ObjectType> allResourceTypes = Arrays.asList(ObjectType.values());
 
     @Autowired
     SearchIndexService searchIndexService;
     @Autowired
     GenericKeywordService genericKeywordService;
-    
-
 
     @Test
     @Rollback(true)
@@ -1217,13 +1223,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         reserved.getObjectTypes().add(ObjectType.IMAGE);
         SearchResult<Resource> result = doSearch("", null, null, reserved);
         for (Indexable r : result.getResults()) {
-            assertEquals(ResourceType.IMAGE, ((Resource)r).getResourceType());
+            assertEquals(ResourceType.IMAGE, ((Resource) r).getResourceType());
         }
     }
 
     @Test
     @Rollback(true)
-    public void testExactTitleMatchInKeywordSearch() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
+    public void testExactTitleMatchInKeywordSearch()
+            throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         String resourceTitle = "Archeological Excavation at Site 33-Cu-314: A Mid-Nineteenth Century Structure on the Ohio and Erie Canal";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -1233,7 +1240,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue(result.getResults().contains(document));
         assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
     }
-
 
     @Test
     @Rollback(true)
@@ -1252,7 +1258,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.getResourceIds().add(Long.valueOf(3074));
         SearchResult<Resource> result = doSearch("", null, null, params);
-        assertTrue(resultsContainId(result,3074l));
+        assertTrue(resultsContainId(result, 3074l));
         for (Indexable r : result.getResults()) {
             logger.info("{}", r);
         }
@@ -1283,7 +1289,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         logger.info(keyword2.getLabel());
         // this test is failing because the "Skeleton" versions of these fields just have IDs, and thus, when they're put into a set
         // they fall in on themselves, thus, bad.
-        
+
         SearchParameters params = new SearchParameters();
         params.getApprovedCultureKeywordIdLists().add(Arrays.asList(keyword1.getId().toString(), keyword2.getId().toString()));
         params.getAllFields().add("test");
@@ -1344,12 +1350,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         rparams.setObjectTypes(Arrays.asList(ObjectType.DOCUMENT, ObjectType.IMAGE));
         LatitudeLongitudeBox box = new LatitudeLongitudeBox(-1d, -1d, 1d, 1d);
         rparams.getLatitudeLongitudeBoxes().add(box);
-        SearchResult<Resource> result = doSearch("test",null, null, rparams);
+        SearchResult<Resource> result = doSearch("test", null, null, rparams);
         assertTrue(result.getSearchTitle().contains(ObjectType.DOCUMENT.getLabel()));
         assertTrue(result.getSearchTitle().contains(ObjectType.IMAGE.getLabel()));
         assertTrue(result.getSearchTitle().contains("Resource Located"));
     }
-
 
     @Test
     @Rollback(true)
@@ -1359,13 +1364,13 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Long codingSheetId = setupCodingSheet();
 
         logger.info("imgId:" + imgId + " datasetId:" + datasetId + " codingSheetId:" + codingSheetId);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setObjectTypes(allResourceTypes);
-        SearchResult<Resource> result = doSearch("precambrian",null, null, rparams);
-        assertFalse(resultsContainId(result,datasetId));
-        assertTrue(resultsContainId(result,codingSheetId));
-        assertFalse(resultsContainId(result,imgId));
+        SearchResult<Resource> result = doSearch("precambrian", null, null, rparams);
+        assertFalse(resultsContainId(result, datasetId));
+        assertTrue(resultsContainId(result, codingSheetId));
+        assertFalse(resultsContainId(result, imgId));
     }
 
     @Test
@@ -1376,11 +1381,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         CodingSheet sheet = genericService.find(CodingSheet.class, codingSheetId);
         sheet.setGenerated(true);
         genericService.save(sheet);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.getObjectTypes().add(ObjectType.CODING_SHEET);
         SearchResult<Resource> result = doSearch("", null, null, rparams);
-        assertFalse(resultsContainId(result,codingSheetId));
+        assertFalse(resultsContainId(result, codingSheetId));
     }
 
     @Test
@@ -1393,19 +1398,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         rparams.setObjectTypes(allResourceTypes);
         rparams.getStatuses().addAll(Arrays.asList(Status.values()));
         SearchResult<Resource> result = doSearch("testabc", null, null, rparams);
-        assertTrue("expected to find person in keyword style search of firstname", resultsContainId(result,imgId));
+        assertTrue("expected to find person in keyword style search of firstname", resultsContainId(result, imgId));
         result = doSearch("\"" + TestConstants.DEFAULT_FIRST_NAME + "abc " + TestConstants.DEFAULT_LAST_NAME + "abc\"");
-        assertTrue("expected to find person in phrase style search of full name", resultsContainId(result,imgId));
+        assertTrue("expected to find person in phrase style search of full name", resultsContainId(result, imgId));
 
         result = doSearch("university");
-        assertTrue("institutional author expected to find in search", resultsContainId(result,imgId));
+        assertTrue("institutional author expected to find in search", resultsContainId(result, imgId));
     }
 
-    
-    
-    
-    
-    
     @Test
     @Rollback(true)
     // try a search that will fail the strict parsing pass, but work under lenient parsing.
@@ -1419,7 +1419,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     public void testDatedSearch() throws ParseException, SearchException, SearchIndexException, IOException {
         Long docId = setupDatedDocument();
         logger.info("Created new document: " + docId);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setObjectTypes(allResourceTypes);
 
@@ -1427,21 +1427,21 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         SearchParameters params = new SearchParameters();
         params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -900, 1000));
         SearchResult<Resource> result = doSearch("", null, params, rparams);
-        assertTrue("expected to find document "+docId+" for inner range match", resultsContainId(result,docId));
+        assertTrue("expected to find document " + docId + " for inner range match", resultsContainId(result, docId));
 
         rparams = new ReservedSearchParameters();
         rparams.setObjectTypes(allResourceTypes);
         params = new SearchParameters();
         params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -2000, -1));
         result = doSearch("", null, params, rparams);
-        assertTrue("expected to find document for overlapping range (lower)", resultsContainId(result,docId));
+        assertTrue("expected to find document for overlapping range (lower)", resultsContainId(result, docId));
 
         rparams = new ReservedSearchParameters();
         rparams.setObjectTypes(allResourceTypes);
         params = new SearchParameters();
         params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 1999, 2009));
         result = doSearch("", null, params, rparams);
-        assertTrue("expected to find document for overlapping range (upper)", resultsContainId(result,docId));
+        assertTrue("expected to find document for overlapping range (upper)", resultsContainId(result, docId));
 
         // test invalid range
         rparams = new ReservedSearchParameters();
@@ -1449,7 +1449,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         params = new SearchParameters();
         params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -7000, -1001));
         result = doSearch("", null, params, rparams);
-        assertFalse("expected not to find document in invalid range", resultsContainId(result,docId));
+        assertFalse("expected not to find document in invalid range", resultsContainId(result, docId));
 
         // test exact range (query inclusive)
         rparams = new ReservedSearchParameters();
@@ -1457,7 +1457,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         params = new SearchParameters();
         params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 2000));
         result = doSearch("", null, params, rparams);
-        assertTrue("expected to find document for exact range match", resultsContainId(result,docId));
+        assertTrue("expected to find document for exact range match", resultsContainId(result, docId));
     }
 
     @Test
@@ -1467,21 +1467,20 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // TODO:dynamically get the list of 'used investigation types' and the resources that use them
         SearchParameters params = addInvestigationTypes(new SearchParameters());
         ReservedSearchParameters reserved = new ReservedSearchParameters();
-        
+
         // this fails because all of the Skeleton Investigation Types with IDs get put into a set, and thus fold into each other
         // because equality based on label[NULL]
         reserved.setObjectTypes(allResourceTypes);
         reserved.getStatuses().addAll(Arrays.asList(Status.ACTIVE, Status.DELETED, Status.DRAFT, Status.FLAGGED));
-        SearchResult<Resource> result = doSearch("",null, params, reserved);
+        SearchResult<Resource> result = doSearch("", null, params, reserved);
         assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
-        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,2420L));
-        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,1628L));
-        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,3805L));
-        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,3738L));
-        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,4287L));
-        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,262L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result, 2420L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result, 1628L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result, 3805L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result, 3738L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result, 4287L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result, 262L));
     }
-
 
     // add all investigation types... for some reason
     private SearchParameters addInvestigationTypes(SearchParameters params) {
@@ -1496,7 +1495,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
+    public void testLookupResourceWithDateRegisteredRange()
+            throws InstantiationException, IllegalAccessException, SearchException, SearchIndexException, IOException, ParseException {
         // From the Hibernate documentation:
         // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time."
         // The Joda DateMidnight defaults to DateTimeZone.getDefault(). Which is probably *not* GMT
@@ -1524,7 +1524,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         dateRange.setEnd(dm2.plusDays(1).toDate());
         SearchParameters params = new SearchParameters();
         params.getRegisteredDates().add(dateRange);
-        SearchResult<Resource> result = doSearch("",null, params,null);
+        SearchResult<Resource> result = doSearch("", null, params, null);
 
         doSearch("", null, params, null);
 
@@ -1535,12 +1535,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         dateRange.setEnd(dm2.minusDays(1).toDate());
         params = new SearchParameters();
         params.getRegisteredDates().add(dateRange);
-        result = doSearch("",null, params,null);
+        result = doSearch("", null, params, null);
 
         assertTrue(result.getResults().contains(document1));
         assertFalse(result.getResults().contains(document2));
     }
-
 
     @Test
     @Rollback
@@ -1571,7 +1570,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         assertTrue(result.getResults().contains(document1));
         assertFalse(result.getResults().contains(document2));
-        
+
         result = new SearchResult<>();
         resourceSearchService.findByTdarYear(2017, result, MessageHelper.getInstance());
 
@@ -1579,6 +1578,4 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertFalse(result.getResults().contains(document2));
     }
 
-
-    
 }

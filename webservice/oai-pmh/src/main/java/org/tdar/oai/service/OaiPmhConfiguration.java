@@ -24,7 +24,6 @@ public class OaiPmhConfiguration extends AbstractConfigurationFile {
 
     private String configurationFile;
 
-
     public String getConfigurationFile() {
         return configurationFile;
     }
@@ -37,7 +36,6 @@ public class OaiPmhConfiguration extends AbstractConfigurationFile {
         System.setProperty("java.awt.headless", "true");
         setConfigurationFile(configurationFile);
     }
-
 
     public boolean enableTdarFormatInOAI() {
         return assistant.getBooleanProperty("oai.repository.enableTdarMetadataFormat", false);
@@ -58,9 +56,9 @@ public class OaiPmhConfiguration extends AbstractConfigurationFile {
             assistant.loadProperties(configurationFile);
             this.configurationFile = configurationFile;
         } catch (ConfigurationFileException cfe) {
-            logger.warn("could not load dataOne.properties (using defaults)");
+            logger.warn("could not load oaipmh.properties (using defaults)");
         } catch (Exception e) {
-            logger.error("could not load dataOne.properties (using defaults)",e);
+            logger.error("could not load oaipmh.properties (using defaults)", e);
         }
     }
 

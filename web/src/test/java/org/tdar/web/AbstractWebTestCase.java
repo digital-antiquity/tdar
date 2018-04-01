@@ -68,7 +68,7 @@ import net.sf.json.JSONObject;
  * @author Adam Brin
  * 
  */
-//@ContextConfiguration(classes = TdarAppConfiguration.class)
+// @ContextConfiguration(classes = TdarAppConfiguration.class)
 public abstract class AbstractWebTestCase extends AbstractGenericWebTest implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";
@@ -80,8 +80,8 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
     // formats for form element names
     public static final String FMT_AUTHUSERS_ID = "proxies[%s].id";
     public static final String FMT_AUTHUSERS_NAME = "proxies[%s].displayName";
-//    public static final String FMT_AUTHUSERS_EMAIL = "proxies[%s].user.email";
-//    public static final String FMT_AUTHUSERS_INSTITUTION = "proxies[%s].user.institution.name";
+    // public static final String FMT_AUTHUSERS_EMAIL = "proxies[%s].user.email";
+    // public static final String FMT_AUTHUSERS_INSTITUTION = "proxies[%s].user.institution.name";
     public static final String FMT_AUTHUSERS_PERMISSION = "proxies[%s].permission";
 
     private static final String ELIPSIS = "<!-- ==================== ... ======================= -->";
@@ -100,33 +100,31 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
 
     // "unescaped & or unknown entity" /*add back later */,
 
-//
-//
-//    /**
-//     * Write the current page to the "screenshots" directory.
-//     *
-//     * @param file
-//     */
-//    private void saveHtml(File file ) {
-//        file.getParentFile().mkdirs();
-//        try {
-//            FileUtils.writeStringToFile(file, getPageCode(), StandardCharsets.UTF_8);
-//        } catch (IOException e) {
-//            logger.error("Tried to save html to {}", file.getAbsolutePath(), e);
-//        }
-//    }
+    //
+    //
+    // /**
+    // * Write the current page to the "screenshots" directory.
+    // *
+    // * @param file
+    // */
+    // private void saveHtml(File file ) {
+    // file.getParentFile().mkdirs();
+    // try {
+    // FileUtils.writeStringToFile(file, getPageCode(), StandardCharsets.UTF_8);
+    // } catch (IOException e) {
+    // logger.error("Tried to save html to {}", file.getAbsolutePath(), e);
+    // }
+    // }
 
-//    public void saveHtml(String prefix) {
-//        // fixme: put this file into a test-specific directory  (e.g. target/htmlunit/MyTestSuite/myTestName)
-//        saveHtml(Paths.get("./target/htmlunit-screenshots/", prefix + ".html").toFile());
-//    }
-    
+    // public void saveHtml(String prefix) {
+    // // fixme: put this file into a test-specific directory (e.g. target/htmlunit/MyTestSuite/myTestName)
+    // saveHtml(Paths.get("./target/htmlunit-screenshots/", prefix + ".html").toFile());
+    // }
 
     @SuppressWarnings("unused")
     private HtmlElement documentElement;
 
     // disregard an encoding error if it's in the exclusions set;
-
 
     /**
      * Go to the specified page, with explicit assertions that the server did not return with a 500 error or contain any inline exception text
@@ -142,7 +140,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         assertNoAccessibilityErrors();
         return statusCode;
     }
-
 
     public Long createResourceFromType(ResourceType rt, String title) {
         final String path = "/" + rt.getUrlNamespace() + "/add";
@@ -215,7 +212,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         clone.setAttribute("name", newName);
         elementByName.getParentNode().appendChild(clone);
     }
-
 
     public HtmlElement getInput(String name) {
         HtmlPage page = (HtmlPage) internalPage;
@@ -394,7 +390,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
                     }
                 } else if (el.getAttribute("value").equalsIgnoreCase(val)
                         && (((el instanceof HtmlCheckBoxInput) && ((HtmlCheckBoxInput) el).isChecked()) || ((el instanceof HtmlRadioButtonInput)
-                        && ((HtmlRadioButtonInput) el).isChecked()))) {
+                                && ((HtmlRadioButtonInput) el).isChecked()))) {
                     return true;
                 }
             } else if (((el instanceof HtmlTextInput) || (el instanceof HtmlHiddenInput) || (el instanceof HtmlPasswordInput))
@@ -473,7 +469,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         }
     }
 
-    private HtmlElement getButtonWithName(String buttonName ) {
+    private HtmlElement getButtonWithName(String buttonName) {
         // get all the likely suspects we consider to be a "button" and return the best match
         logger.trace("get button by name, form {}", _internalForm);
         List<HtmlElement> elements = new ArrayList<HtmlElement>();
@@ -490,7 +486,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             return elements.iterator().next();
         }
     }
-
 
     // return a fun-sized version of the response string ( title section, the error section and h1 through to the footer);
     // FIXME: too much expurgation!!!
@@ -527,8 +522,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             }
         }
     }
-    
-
 
     public void testOntologyView() {
         gotoPage("/ontology/3029");
@@ -551,7 +544,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
 
     public void testProjectView() {
         // this should probably be done @before every test but it would slow things down even more
-//        logger.debug(getCurrentUrlPath());
+        // logger.debug(getCurrentUrlPath());
         gotoPage("/project/3805");
         logger.trace("{}", this);
         assertTextPresentInPage("New Philadelphia Archaeology Project");
@@ -574,14 +567,12 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         assertTextPresentInPage("dataset_3088_knowthstage8.xls");
     }
 
-
     public void testAdvancedSearchView() {
         gotoPage("/search/advanced");
         assertTextPresentInPage("Limit by geographic region");
         assertTextPresentInPage("Choose Search Terms");
         assertTextPresentInPage("All Fields");
     }
-
 
     public Long extractTdarIdFromCurrentURL() {
         String url = internalPage.getUrl().toString();
@@ -597,7 +588,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         throw new TdarRecoverableRuntimeException("could not find tDAR ID in URL" + internalPage.getUrl().toString());
     }
 
-    //fixme: replace this madness with css selector-based methods
+    // fixme: replace this madness with css selector-based methods
     /**
      * Get the "main" form. It's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna
      * specify it outright.
@@ -611,8 +602,8 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
                 logger.trace("only one form: {}", htmlForm.getNameAttribute());
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
-                    if (StringUtils.isNotBlank(form.getActionAttribute()) && 
-                            !StringUtils.containsAny(form.getNameAttribute().toLowerCase(), "autosave","logoutform","searchheader","logoutformmenu")) {
+                    if (StringUtils.isNotBlank(form.getActionAttribute()) &&
+                            !StringUtils.containsAny(form.getNameAttribute().toLowerCase(), "autosave", "logoutform", "searchheader", "logoutformmenu")) {
                         htmlForm = form;
                         logger.trace("using form: {}", htmlForm.getNameAttribute());
                         break;
@@ -654,7 +645,8 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
 
     public String getPersonalFilestoreTicketId() {
         gotoPageWithoutErrorCheck("/upload/grab-ticket");
-        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(), internalPage.getWebResponse().getContentType().contains("json"));
+        assertTrue("internalPage is not TextPage. It is: " + internalPage.getClass().getName(),
+                internalPage.getWebResponse().getContentType().contains("json"));
         String json = getPageCode();
         logger.debug("ticket json:: {}", json.trim());
         JSONObject jsonObject = JSONObject.fromObject(json);
@@ -724,7 +716,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         }
         return code;
     }
-
 
     protected void assertFileSizes(Page page, List<File> files) {
         JSONObject json = toJson(page.getWebResponse().getContentAsString());
@@ -815,7 +806,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         return toReturn;
     }
 
-
     protected String getAccountPollingRequest(URL polingUrl) {
         try {
             WebWindow openWindow = webClient.openWindow(null, "polling" + System.currentTimeMillis());
@@ -850,7 +840,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
         }
         submitForm();
-        
+
         assertAccountPageCorrect(users, userIds, accountName);
         clickLinkOnPage("edit");
         String id = getInput("id").getAttribute("value");
@@ -874,8 +864,8 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
 
     public int login(String user, String pass, boolean expectingErrors) {
         if (internalPage == null || !StringUtils.contains(getCurrentUrlPath(), "/login")) {
-        gotoPage("/");
-        clickLinkOnPage("Log In");
+            gotoPage("/");
+            clickLinkOnPage("Log In");
         }
         completeLoginForm(user, pass, expectingErrors);
         return internalPage.getWebResponse().getStatusCode();
@@ -900,7 +890,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
     public void logout() {
         logger.debug("~~~~~~~ LOGOUT ~~~~~~~");
         webClient.getOptions().setJavaScriptEnabled(false);
-        if (internalPage instanceof HtmlPage && 
+        if (internalPage instanceof HtmlPage &&
                 getHtmlPage().getElementById("logout-button") != null) {
             clickElementWithId("logout-button");
         } else {
@@ -914,7 +904,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         webClient.getCookieManager().clearCookies();
         assertTextPresentIgnoreCase("log in");
     }
-
 
     public enum TERMS {
         TOS,
@@ -960,7 +949,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         }
     }
 
-
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
         setupBasicUser(personmap, prefix, "registration");
     }
@@ -982,7 +970,6 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         // personmap.put("registration.acceptTermsOfUse","true");
         // personmap.put("registration.requestingContributorAccess", "true");
     }
-
 
     public void reindexUnauthenticated() {
         String url = getCurrentUrlPath();
@@ -1020,7 +1007,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             Thread.sleep(1000);
             logger.debug(getPageCode());
         } catch (Exception e) {
-            logger.error("exception in reindexing",e);
+            logger.error("exception in reindexing", e);
             fail("exception in reindexing");
         }
     }
@@ -1029,13 +1016,13 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         logger.info("setiting user [{}] to {} {}", i, user, viewAll);
         createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), user.getId());
         createInput("text", String.format(FMT_AUTHUSERS_NAME, i), user.getFirstName() + " " + user.getLastName());
-//        createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
-//        createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
+        // createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
+        // createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
         String inst = user.getInstitutionName();
         if (inst == null) {
             inst = "";
         }
-//        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), inst);
+        // createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), inst);
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), viewAll.toString());
     }
 

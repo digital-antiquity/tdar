@@ -20,14 +20,14 @@ import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.resource.ErrorHandling;
 
 public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCase {
-    
+
     @Autowired
     ResourceCollectionService resourceCollectionService;
-    
+
     @Test
     @Rollback(true)
     public void testUnmanagedConfidentialResource() throws InstantiationException, IllegalAccessException, FileNotFoundException {
-        //create confidential document with owner of BasicUser
+        // create confidential document with owner of BasicUser
         Document document = createAndSaveDocumentWithFileAndUseDefaultUser();
         document.getFirstInformationResourceFile().setRestriction(FileAccessRestriction.CONFIDENTIAL);
         genericService.saveOrUpdate(document);
@@ -39,10 +39,10 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
         collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), tdarUser, Permissions.ADMINISTER_COLLECTION));
         genericService.saveOrUpdate(collection.getAuthorizedUsers());
         genericService.saveOrUpdate(collection);
-      
-        resourceCollectionService.addResourceCollectionToResource(document, document.getManagedResourceCollections(), getBasicUser(), true, 
+
+        resourceCollectionService.addResourceCollectionToResource(document, document.getManagedResourceCollections(), getBasicUser(), true,
                 ErrorHandling.NO_VALIDATION, collection, CollectionResourceSection.UNMANAGED);
-        
+
         // get the Ids
         Long userId = tdarUser.getId();
         Long documentId = document.getId();
@@ -61,12 +61,12 @@ public class UnmanagedResourceCollectionITCase extends AbstractIntegrationTestCa
         assertTrue(collection.getUnmanagedResources().contains(document));
         assertFalse(collection.getManagedResources().contains(document));
     }
-    
+
     @Test
     @Ignore
     @Rollback(true)
     public void testUnmanagedDraftResource() {
-        
+
     }
 
 }

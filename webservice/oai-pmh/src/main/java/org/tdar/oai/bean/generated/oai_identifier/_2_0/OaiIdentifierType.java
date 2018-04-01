@@ -5,7 +5,6 @@
 // Generated on: 2015.05.19 at 03:35:05 PM MST 
 //
 
-
 package org.tdar.oai.bean.generated.oai_identifier._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,11 +13,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for oai-identifierType complex type.
+ * <p>
+ * Java class for oai-identifierType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="oai-identifierType">
@@ -39,10 +39,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "oai-identifierType", propOrder = {
-    "scheme",
-    "repositoryIdentifier",
-    "delimiter",
-    "sampleIdentifier"
+        "scheme",
+        "repositoryIdentifier",
+        "delimiter",
+        "sampleIdentifier"
 })
 @XmlRootElement
 public class OaiIdentifierType {
@@ -60,9 +60,9 @@ public class OaiIdentifierType {
      * Gets the value of the scheme property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getScheme() {
         return scheme;
@@ -72,9 +72,9 @@ public class OaiIdentifierType {
      * Sets the value of the scheme property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setScheme(String value) {
         this.scheme = value;
@@ -84,9 +84,9 @@ public class OaiIdentifierType {
      * Gets the value of the repositoryIdentifier property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getRepositoryIdentifier() {
         return repositoryIdentifier;
@@ -96,9 +96,9 @@ public class OaiIdentifierType {
      * Sets the value of the repositoryIdentifier property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setRepositoryIdentifier(String value) {
         this.repositoryIdentifier = value;
@@ -108,9 +108,9 @@ public class OaiIdentifierType {
      * Gets the value of the delimiter property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getDelimiter() {
         return delimiter;
@@ -120,9 +120,9 @@ public class OaiIdentifierType {
      * Sets the value of the delimiter property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setDelimiter(String value) {
         this.delimiter = value;
@@ -132,9 +132,9 @@ public class OaiIdentifierType {
      * Gets the value of the sampleIdentifier property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getSampleIdentifier() {
         return sampleIdentifier;
@@ -144,9 +144,9 @@ public class OaiIdentifierType {
      * Sets the value of the sampleIdentifier property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setSampleIdentifier(String value) {
         this.sampleIdentifier = value;

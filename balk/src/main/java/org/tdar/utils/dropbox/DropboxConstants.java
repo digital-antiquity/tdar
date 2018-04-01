@@ -6,7 +6,7 @@ public interface DropboxConstants {
     final String INPUT = "input";
     final String OUTPUT = "output";
     final String UPLOAD_TO_TDAR = "Upload to tDAR";
-    final String DONE_OCR = CREATE_PDFA + "/"+OUTPUT+"/";
-    final String TO_PDFA = CREATE_PDFA + "/"+INPUT+"/";
+    final String DONE_OCR = CREATE_PDFA + "/" + OUTPUT + "/";
+    final String TO_PDFA = CREATE_PDFA + "/" + INPUT + "/";
     final String COMBINE_PDF_DIR = "Combine Folder and PDFA";
 }

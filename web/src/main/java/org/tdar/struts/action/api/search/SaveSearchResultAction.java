@@ -38,7 +38,7 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
     private String key;
 
     private ResourceCollection resourceCollection;
-//    private boolean async = true;
+    // private boolean async = true;
     private boolean addAsManaged = false;
     AsynchronousStatus saveSearchResultsForUserAsync = null;
 
@@ -93,7 +93,7 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
             setMode("json");
             setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
             setLookupSource(LookupSource.RESOURCE);
-          
+
             // we need this for tests to be able to change the projection model so
             // we get full objects
             if (getProjectionModel() == null) {
@@ -101,10 +101,11 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
             }
 
             processLegacySearchParameters();
-            
+
             prepareAdvancedSearchQueryObject();
-            
-            saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId, addAsManaged);
+
+            saveSearchResultsForUserAsync = webSearchService.saveSearchResultsForUserAsync(getAsqo(), getAuthenticatedUser().getId(), collectionId,
+                    addAsManaged);
             // invoke the UI to update/notify that results have been completed. jsonifyResult(JsonLookupFilter.class);
         }
 
@@ -128,13 +129,13 @@ public class SaveSearchResultAction extends AbstractAdvancedSearchController imp
         this.collectionId = collectionId;
     }
 
-//    public boolean isAsync() {
-//        return async;
-//    }
-//
-//    public void setAsync(boolean async) {
-//        this.async = async;
-//    }
+    // public boolean isAsync() {
+    // return async;
+    // }
+    //
+    // public void setAsync(boolean async) {
+    // this.async = async;
+    // }
 
     public boolean isAddAsManaged() {
         return addAsManaged;

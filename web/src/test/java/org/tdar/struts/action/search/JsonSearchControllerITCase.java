@@ -35,10 +35,9 @@ import org.xml.sax.SAXException;
 @Transactional
 public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
-
     @Autowired
     SearchIndexService searchIndexService;
-    
+
     @Autowired
     SerializationService serializationService;
 
@@ -86,7 +85,8 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(document);
         String xml = setupGeoJsonCall(document, GeoRssMode.ENVELOPE);
         logger.debug(xml);
-        assertTrue(xml.contains("\"coordinates\" : [ [ [ -107.78792202517137, 36.08765565625065 ], [ -107.78792202517137, 46.08765565625065 ], [ -100.78792202517137, 46.08765565625065 ], [ -100.78792202517137, 36.08765565625065 ], [ -107.78792202517137, 36.08765565625065 ] ] ]"));
+        assertTrue(xml.contains(
+                "\"coordinates\" : [ [ [ -107.78792202517137, 36.08765565625065 ], [ -107.78792202517137, 46.08765565625065 ], [ -100.78792202517137, 46.08765565625065 ], [ -100.78792202517137, 36.08765565625065 ], [ -107.78792202517137, 36.08765565625065 ] ] ]"));
     }
 
     @Test

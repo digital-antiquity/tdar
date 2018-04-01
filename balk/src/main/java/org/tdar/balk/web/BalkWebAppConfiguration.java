@@ -31,13 +31,13 @@ public class BalkWebAppConfiguration extends SimpleAppConfiguration {
     public AuthenticationProvider getAuthProvider() throws IOException {
         return new CrowdRestDao();
     }
-    
+
     @Override
     public String getMetadataDatabaseName() {
         return "tdarbalk";
     }
 
-    @Bean(name="obfuscationEnabled")
+    @Bean(name = "obfuscationEnabled")
     public Boolean isObfuscationEnabled() {
         return false;
     }

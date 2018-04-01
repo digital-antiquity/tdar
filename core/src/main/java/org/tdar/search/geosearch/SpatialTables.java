@@ -4,8 +4,11 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 
 public enum SpatialTables {
-    COUNTRY("\"tdar\".\"country_wgs84\"", "long_name", "iso_3digit"), COUNTY("\"tdar\".\"us_counties_wgs84\"", "cnty_name",
-            "state_name"), ADMIN("\"tdar\".\"admin1_wgs84\"", "admin_name", "type_eng"), CONTINENT("\"tdar\".\"continents_wgs84\"", "continent");
+    COUNTRY("\"tdar\".\"country_wgs84\"", "long_name", "iso_3digit"),
+    COUNTY("\"tdar\".\"us_counties_wgs84\"", "cnty_name",
+            "state_name"),
+    ADMIN("\"tdar\".\"admin1_wgs84\"", "admin_name", "type_eng"),
+    CONTINENT("\"tdar\".\"continents_wgs84\"", "continent");
 
     private String tableName;
     private String[] columns;

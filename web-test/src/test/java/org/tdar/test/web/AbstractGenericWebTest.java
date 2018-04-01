@@ -18,11 +18,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,21 +31,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
-import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,9 +47,7 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.TestConstants;
 import org.tdar.core.JaxbSchemaValidator;
-import org.tdar.core.service.SerializationService;
 import org.tdar.utils.TestConfiguration;
 import org.xml.sax.SAXException;
 
@@ -395,7 +383,6 @@ public abstract class AbstractGenericWebTest {
         }
     }
 
-    
     public String pathToUrl(final String localPath_) {
         String localPath = localPath_;
         String prefix = getBaseUrl();
@@ -446,9 +433,10 @@ public abstract class AbstractGenericWebTest {
      *            the URL of the schema to use to validate the document
      * @throws ConfigurationException
      * @throws SAXException
-     * @throws FileNotFoundException 
+     * @throws FileNotFoundException
      */
-    public void testValidXMLResponse(InputStream code, String schemaLocation, JaxbSchemaValidator v) throws ConfigurationException, SAXException, FileNotFoundException {
+    public void testValidXMLResponse(InputStream code, String schemaLocation, JaxbSchemaValidator v)
+            throws ConfigurationException, SAXException, FileNotFoundException {
         InputStream rereadableStream = null;
         try {
             rereadableStream = new ByteArrayInputStream(IOUtils.toByteArray(code));
@@ -480,7 +468,6 @@ public abstract class AbstractGenericWebTest {
             Assert.fail("Instance invalid: " + errors.toString() + " in:\n" + content);
         }
     }
-
 
     public void assertTextPresentInPage(String text) {
         assertTextPresentInPage(text, true);
@@ -591,7 +578,6 @@ public abstract class AbstractGenericWebTest {
             fail("Invalid json string: >>" + json + "<<");
         }
     }
-    
 
     public NameValuePair nameValuePair(String name, String value) {
         return new NameValuePair(name, value);
@@ -603,11 +589,10 @@ public abstract class AbstractGenericWebTest {
     }
 
     protected NameValuePair nameValuePair(String name, File file, String contentType) {
-        //(name, file, contentType, "utf8");
+        // (name, file, contentType, "utf8");
         KeyDataPair keyDataPair = new KeyDataPair(name, file, file.getName(), contentType, "utf8");
         return keyDataPair;
     }
-
 
     /**
      * assert provided string is valid json and return a JSONObject, otherwise call fail()
@@ -666,7 +651,6 @@ public abstract class AbstractGenericWebTest {
         webClient.getCache().clear();
     }
 
-
     public void assertNotEquals(Object o1, Object o2) {
         assertFalse(Objects.equals(o1, o2));
     }
@@ -675,7 +659,8 @@ public abstract class AbstractGenericWebTest {
      * Returns a list of DomElement nodes (ignoring any nodes that are not DomElements) that match the specified CSS selector, using the
      * querySelector of the active window.
      *
-     * @param selector a css selector
+     * @param selector
+     *            a css selector
      * @return A list of matching elements. List is empty if no matches found.
      */
     public List<DomElement> querySelectorAll(String selector) {
@@ -691,6 +676,5 @@ public abstract class AbstractGenericWebTest {
                 .collect(Collectors.toList());
         return elements;
     }
-
 
 }

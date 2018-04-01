@@ -53,9 +53,7 @@ import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Action;
 
-
 public class CartControllerITCase extends AbstractControllerITCase implements TestBillingControllerHelper, TestBillingAccountHelper {
-
 
     @Autowired
     NelNetPaymentDao dao;
@@ -228,7 +226,6 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         assertEquals(received.getFrom(), emailService.getFromEmail());
     }
 
-
     @Test
     @Rollback
     public void testCartPaymentManual() throws TdarActionException, IOException {
@@ -287,7 +284,6 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         assertEquals(invoiceNumber, invoice.getInvoiceNumber());
     }
 
-    
     @Test
     @Rollback
     public void testCartCouponWithRights() throws TdarActionException, IOException, InstantiationException, IllegalAccessException {
@@ -299,14 +295,14 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         coupon.setCode("ABCD");
         coupon.setNumberOfFiles(1L);
         coupon.setDateCreated(new DateTime().minusDays(5).toDate());
-//        coupon.setUser(getAdminUser());
+        // coupon.setUser(getAdminUser());
         coupon.setDateExpires(new DateTime().plusDays(4).toDate());
         coupon.getResourceIds().add(doc.getId());
         genericService.saveOrUpdate(coupon);
         logger.debug("couponId:{}", coupon.getId());
         genericService.saveOrUpdate(account);
         Long docId = doc.getId();
-        doc= null;
+        doc = null;
         CartController controller = setupPaymentTests(null);
         Invoice invoice = controller.getInvoice();
         invoice.setCoupon(coupon);
@@ -325,7 +321,7 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         controller.getSessionData().setInvoiceId(invoice.getId());
         controller.prepare();
         controller.validate();
-        
+
         response = controller.processPaymentRequest();
         assertEquals(CartController.SUCCESS, response);
 
@@ -335,7 +331,7 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         assertEquals(TransactionStatus.TRANSACTION_SUCCESSFUL, invoice.getTransactionStatus());
         assertEquals(PaymentMethod.INVOICE, invoice.getPaymentMethod());
         assertEquals(invoiceNumber, invoice.getInvoiceNumber());
-        doc =  genericService.find(Document.class, docId);
+        doc = genericService.find(Document.class, docId);
         AuthorizedUser user = null;
         for (AuthorizedUser au : doc.getAuthorizedUsers()) {
             if (au.getUser().getId().equals(getUserId())) {
@@ -388,7 +384,6 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         assertEquals(TransactionStatus.PENDING_TRANSACTION, invoice.getTransactionStatus());
     }
 
-
     @Test
     @Rollback
     public void testPaymentPermissions() {
@@ -411,14 +406,12 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         return accountService;
     }
 
-    
-
     protected CartController setupPaymentTests() throws TdarActionException {
         return setupPaymentTests(null);
     }
 
     protected CartController setupPaymentTests(String coupon) throws TdarActionException {
-//        controller_.setCode(coupon);
+        // controller_.setCode(coupon);
         Long invoiceId = setupAndTestBillingAddress(coupon);
         CartController controller = generateNewInitializedController(CartController.class);
         controller.getSessionData().setInvoiceId(invoiceId);
@@ -596,11 +589,10 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         return response2;
     }
 
-
     protected Invoice setupAccountWithCouponForFiles(long numFilesForCoupon, long numberOfFilesForInvoice) throws TdarActionException {
         BillingAccount account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
         Invoice invoice_ = account.getInvoices().iterator().next();
-        String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_,getAdminUser());
+        String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_, getAdminUser());
         Long invoiceId = createAndTestInvoiceQuantity(numberOfFilesForInvoice, code);
         Invoice invoice = genericService.find(Invoice.class, invoiceId);
         invoice.markFinal();
@@ -646,7 +638,7 @@ public class CartControllerITCase extends AbstractControllerITCase implements Te
         assertEquals(Action.SUCCESS, response2);
         return genericService.find(Invoice.class, invoiceId);
     }
-    
+
     protected void assertInMapAndEquals(Map<String, String[]> params, String key, String val) {
         assertTrue(params.containsKey(key));
         assertEquals(val, params.get(key)[0]);

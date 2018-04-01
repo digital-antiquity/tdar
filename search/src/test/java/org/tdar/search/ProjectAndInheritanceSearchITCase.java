@@ -30,15 +30,15 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
     @Test
     @Rollback(true)
     public void testForInheritedCulturalInformationFromProject() throws ParseException, SearchException, SearchIndexException, IOException {
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setObjectTypes(Arrays.asList(ObjectType.DOCUMENT, ObjectType.IMAGE));
-        SearchResult<Resource> result = doSearch("Archaic",null,null,rparams);
-        assertTrue("'Archaic' defined inparent project should be found in information resource", resultsContainId(result,DOCUMENT_INHERITING_CULTURE_ID));
-        assertFalse("A child document that inherits nothing from parent project should not appear in results", resultsContainId(result,DOCUMENT_INHERITING_NOTHING_ID));
+        SearchResult<Resource> result = doSearch("Archaic", null, null, rparams);
+        assertTrue("'Archaic' defined inparent project should be found in information resource", resultsContainId(result, DOCUMENT_INHERITING_CULTURE_ID));
+        assertFalse("A child document that inherits nothing from parent project should not appear in results",
+                resultsContainId(result, DOCUMENT_INHERITING_NOTHING_ID));
     }
 
-    
     @Test
     @Rollback(true)
     public void testForProjectWithChild() throws ParseException, SearchException, SearchIndexException, IOException {
@@ -54,7 +54,7 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
         rparams.getApprovedCultureKeywordIdLists().add(new ArrayList<String>());
         rparams.getApprovedCultureKeywordIdLists().get(0).add(ck.getId().toString());
         rparams.setObjectTypes(Arrays.asList(ObjectType.PROJECT));
-        SearchResult<Resource> result = doSearch(null,null,rparams, null);
+        SearchResult<Resource> result = doSearch(null, null, rparams, null);
         assertTrue(result.getResults().contains(project));
     }
 

@@ -31,7 +31,6 @@ import org.tdar.search.service.CoreNames;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.MessageHelper;
 
-
 public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
@@ -68,18 +67,15 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         SolrQuery params = new SolrQuery();
         params.setQuery("*:*");
 
-        QueryResponse query = template.query(CoreNames.DATA_MAPPINGS, params );
+        QueryResponse query = template.query(CoreNames.DATA_MAPPINGS, params);
         logger.debug("{}", query);
         assertTrue(query.toString().contains(dtc.getId().toString()));
 
         // search exact
-        searchFor(dataset,"Concorde");
+        searchFor(dataset, "Concorde");
         // search lowercase
-        searchFor(dataset,"concorde");
-        
-        
-        
-        
+        searchFor(dataset, "concorde");
+
     }
 
     private void searchFor(Dataset dataset, String term) throws IOException, SearchException, SearchIndexException {
@@ -104,6 +100,5 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         // TextProvider support) throws SearchException, IOE
         return result;
     }
-
 
 }

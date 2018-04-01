@@ -73,13 +73,13 @@ public class CrowdRestITCase extends AbstractIntegrationTestCase {
         assertEquals(user.getProperName(), cu.getDisplayName());
         assertEquals(user.getFirstName(), cu.getFirstName());
         assertEquals(user.getLastName(), cu.getLastName());
-//        assertEquals(user.getEmail(), cu.getExternalId());
+        // assertEquals(user.getEmail(), cu.getExternalId());
         String[] findGroupMemberships = dao.findGroupMemberships(user);
         logger.debug("groups {}", findGroupMemberships);
         assertTrue(ArrayUtils.contains(findGroupMemberships, TdarGroup.CONFLUENCE_USERS.toString()));
         assertTrue(ArrayUtils.contains(findGroupMemberships, TdarGroup.TDAR_EDITOR.toString()));
         deleteUser(dao, user);
-        
+
     }
 
     private void deleteUser(CrowdRestDao dao, TdarUser user) {

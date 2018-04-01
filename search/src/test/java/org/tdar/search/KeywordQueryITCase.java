@@ -23,9 +23,8 @@ import org.tdar.search.service.query.KeywordSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
-public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
+public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase {
 
-    
     @Autowired
     SearchIndexService searchIndexService;
 
@@ -37,10 +36,9 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
 
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.KEYWORD);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.KEYWORD), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.KEYWORD), getAdminUser());
     };
-    
-    
+
     @Test
     public void testMultiWordKeyword() throws SearchException, SearchIndexException, IOException {
         GeographicKeyword kwd = new GeographicKeyword();
@@ -49,17 +47,17 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
         genericService.save(kwd);
         searchIndexService.index(kwd);
         logger.debug("ID:{}", kwd.getId());
-        SearchResult<Keyword> result = processSearch("Pima County","GeographicKeyword",2);
+        SearchResult<Keyword> result = processSearch("Pima County", "GeographicKeyword", 2);
         List<Keyword> resources = result.getResults();
         logger.debug("{}", PersistableUtils.extractIds(resources));
         assertTrue("at least one keyword", resources.size() > 0);
-        
-        result = processSearch("Pima","GeographicKeyword",2);
+
+        result = processSearch("Pima", "GeographicKeyword", 2);
         resources = result.getResults();
         logger.debug("{}", PersistableUtils.extractIds(resources));
         assertTrue("at least one keyword", resources.size() > 0);
 
-        result = processSearch("Pima Co","GeographicKeyword",2);
+        result = processSearch("Pima Co", "GeographicKeyword", 2);
         resources = result.getResults();
         logger.debug("{}", PersistableUtils.extractIds(resources));
         assertTrue("at least one keyword", resources.size() > 0);
@@ -68,16 +66,15 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
 
     @Test
     public void testKeywordLookup() throws SearchException, SearchIndexException, IOException {
-        
-        SearchResult<Keyword> result = processSearch("Folsom","CultureKeyword",2);
+
+        SearchResult<Keyword> result = processSearch("Folsom", "CultureKeyword", 2);
         List<Keyword> resources = result.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
 
-
     private SearchResult<Keyword> processSearch(String term, String type, int min) throws SearchException, SearchIndexException, IOException {
         SearchResult<Keyword> result = new SearchResult<>();
-        keywordSearchService.findKeyword(term, type,result, MessageHelper.getInstance(), min);
+        keywordSearchService.findKeyword(term, type, result, MessageHelper.getInstance(), min);
         return result;
     }
 
@@ -86,13 +83,13 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
         SiteNameKeyword keyword = new SiteNameKeyword();
         keyword.setLabel("18-ST-389");
         genericService.saveOrUpdate(keyword);
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.KEYWORD), getAdminUser());
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.KEYWORD), getAdminUser());
 
-        SearchResult<Keyword> result = processSearch("18-ST-389","SiteNameKeyword",2);
+        SearchResult<Keyword> result = processSearch("18-ST-389", "SiteNameKeyword", 2);
         List<Keyword> resources = result.getResults();
         assertTrue("at least one document", resources.size() >= 1);
 
-        result = processSearch("18ST389","SiteNameKeyword",2);
+        result = processSearch("18ST389", "SiteNameKeyword", 2);
         resources = result.getResults();
         assertTrue("at least one document", resources.size() >= 1);
 

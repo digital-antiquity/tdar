@@ -16,7 +16,7 @@ public class GeoAPIITCase extends AbstractControllerITCase {
     @Test
     public void testGeoAPI() throws Exception {
         GeoLookupAction gla = generateNewInitializedController(GeoLookupAction.class);
-        gla.setCountries(Arrays.asList("England","Scotland","Wales","Northern Ireland"));
+        gla.setCountries(Arrays.asList("England", "Scotland", "Wales", "Northern Ireland"));
         gla.prepare();
 
         String body = serializationService.convertToJson(gla.getResultObject());
@@ -26,6 +26,7 @@ public class GeoAPIITCase extends AbstractControllerITCase {
 
     @Autowired
     private SerializationService serializationService;
+
     @Test
     public void testGeoAPIEmpty() throws Exception {
         GeoLookupAction gla = generateNewInitializedController(GeoLookupAction.class);

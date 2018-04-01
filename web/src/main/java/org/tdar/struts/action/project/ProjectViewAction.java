@@ -202,9 +202,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     public List<SortOption> getSortOptions() {
         List<SortOption> options = SortOption.getOptionsForContext(Resource.class);
         options.remove(SortOption.RESOURCE_TYPE);
-        options.remove(SortOption.RESOURCE_TYPE_REVERSE);
         options.add(0, SortOption.RESOURCE_TYPE);
-        options.add(1, SortOption.RESOURCE_TYPE_REVERSE);
         return options;
     }
 

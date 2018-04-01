@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import java.util.ArrayList;
@@ -17,17 +16,18 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * A header has a unique identifier, a datestamp,
- *         and setSpec(s) in case the item from which
- *         the record is disseminated belongs to set(s).
- *         the header can carry a deleted status indicating
- *         that the record is deleted.
+ * and setSpec(s) in case the item from which
+ * the record is disseminated belongs to set(s).
+ * the header can carry a deleted status indicating
+ * that the record is deleted.
  * 
- * <p>Java class for headerType complex type.
+ * <p>
+ * Java class for headerType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="headerType">
@@ -48,9 +48,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "headerType", propOrder = {
-    "identifier",
-    "datestamp",
-    "setSpec"
+        "identifier",
+        "datestamp",
+        "setSpec"
 })
 public class HeaderType {
 
@@ -66,9 +66,9 @@ public class HeaderType {
      * Gets the value of the identifier property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getIdentifier() {
         return identifier;
@@ -78,9 +78,9 @@ public class HeaderType {
      * Sets the value of the identifier property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setIdentifier(String value) {
         this.identifier = value;
@@ -90,9 +90,9 @@ public class HeaderType {
      * Gets the value of the datestamp property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getDatestamp() {
         return datestamp;
@@ -102,9 +102,9 @@ public class HeaderType {
      * Sets the value of the datestamp property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setDatestamp(String value) {
         this.datestamp = value;
@@ -121,8 +121,9 @@ public class HeaderType {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getSetSpec().add(newItem);
+     * getSetSpec().add(newItem);
      * </pre>
      * 
      * 
@@ -143,9 +144,9 @@ public class HeaderType {
      * Gets the value of the status property.
      * 
      * @return
-     *     possible object is
-     *     {@link StatusType }
-     *     
+     *         possible object is
+     *         {@link StatusType }
+     * 
      */
     public StatusType getStatus() {
         return status;
@@ -155,9 +156,9 @@ public class HeaderType {
      * Sets the value of the status property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link StatusType }
-     *     
+     *            allowed object is
+     *            {@link StatusType }
+     * 
      */
     public void setStatus(StatusType value) {
         this.status = value;

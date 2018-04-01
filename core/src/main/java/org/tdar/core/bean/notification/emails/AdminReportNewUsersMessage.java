@@ -13,14 +13,15 @@ import org.tdar.utils.MessageHelper;
 @Entity
 @DiscriminatorValue("NEW_USERS_REPORT")
 public class AdminReportNewUsersMessage extends Email {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3711536317796542612L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3711536317796542612L;
 
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getMessage(EmailType.ADMIN_NEW_USER_REPORT.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers")));
-	}
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getMessage(EmailType.ADMIN_NEW_USER_REPORT.getLocaleKey(),
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym().toUpperCase(), getMap().get("totalUsers")));
+    }
 
 }

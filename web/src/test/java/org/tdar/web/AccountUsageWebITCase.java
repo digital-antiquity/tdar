@@ -31,7 +31,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartWithAccountFilling() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "user"+ System.currentTimeMillis());
+        setupBasicUser(personmap, "user" + System.currentTimeMillis());
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH, true);
         assertTextPresent("Start a new Project");
@@ -119,9 +119,10 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
 
     @Test
     /**
-     * This test tries to recreate a very specific set of steps that cause tdar to incorrectly flag a resource.  Basically you 
-     * create a draft citation, and then add an attachment in an edit pass.   If you perform this step 2-3 times the system may flag the resource,
+     * This test tries to recreate a very specific set of steps that cause tdar to incorrectly flag a resource. Basically you
+     * create a draft citation, and then add an attachment in an edit pass. If you perform this step 2-3 times the system may flag the resource,
      * even if the billing account has plenty of space remaining.
+     * 
      * @throws Exception
      */
     public void testUploadOnSecondEditProperAccountDecrement() throws Exception {

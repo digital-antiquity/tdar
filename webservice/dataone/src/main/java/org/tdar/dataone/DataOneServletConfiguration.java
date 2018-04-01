@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.web.WebApplicationInitializer;
 import org.tdar.core.configuration.AbstractAppConfiguration;
-import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.web.AbstractServletConfiguration;
 
 public class DataOneServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {
@@ -24,7 +23,7 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
     public String getAppPropertyPrefix() {
         return "dataOne";
     }
-    
+
     @Override
     public Class<? extends AbstractAppConfiguration> getConfigurationClass() {
         return DataOneAppConfiguration.class;

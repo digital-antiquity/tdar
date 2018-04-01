@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,16 +15,17 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.tdar.oai.bean.generated.oai_identifier._2_0.OaiIdentifierType;
 
-
 /**
  * The descriptionType is used for the description
- *       element in Identify and for setDescription element in ListSets.
- *       Content must be compliant with an XML Schema defined by a 
- *       community.
+ * element in Identify and for setDescription element in ListSets.
+ * Content must be compliant with an XML Schema defined by a
+ * community.
  * 
- * <p>Java class for descriptionType complex type.
+ * <p>
+ * Java class for descriptionType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="descriptionType">
@@ -44,7 +44,7 @@ import org.tdar.oai.bean.generated.oai_identifier._2_0.OaiIdentifierType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso(OaiIdentifierType.class)
 @XmlType(name = "descriptionType", propOrder = {
-    "any"
+        "any"
 })
 public class DescriptionType {
 
@@ -55,9 +55,9 @@ public class DescriptionType {
      * Gets the value of the any property.
      * 
      * @return
-     *     possible object is
-     *     {@link Object }
-     *     
+     *         possible object is
+     *         {@link Object }
+     * 
      */
     public Object getAny() {
         return any;
@@ -67,9 +67,9 @@ public class DescriptionType {
      * Sets the value of the any property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link Object }
-     *     
+     *            allowed object is
+     *            {@link Object }
+     * 
      */
     public void setAny(Object value) {
         this.any = value;

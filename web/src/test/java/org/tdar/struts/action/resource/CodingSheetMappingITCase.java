@@ -92,7 +92,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     @Autowired
     private DatasetDao datasetDao;
-    
+
     @Test
     @Rollback
     /**
@@ -399,14 +399,10 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         assertTrue(found);
     }
 
-    
-    
-    
-
     @Test
     @Rollback
     public void testCodingSheetMappingRights() throws Exception {
-        Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);        
+        Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);
         CodingSheet codingSheet = setupCodingSheet(EXCEL_FILE_NAME, EXCEL_FILE_PATH, ontology, null);
         ResourceCollection sharedCollection = createAndSaveNewResourceCollection("test");
         TdarUser person = createAndSaveNewPerson("aas23@.com", "asdasff");
@@ -417,7 +413,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         codingSheet.getManagedResourceCollections().add(sharedCollection);
         codingSheet.getAuthorizedUsers().clear();
         genericService.saveOrUpdate(codingSheet);
-        
+
         CodingSheetController csc = generateNewInitializedController(CodingSheetController.class, person);
         csc.setId(codingSheet.getId());
         csc.prepare();
@@ -425,13 +421,9 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         assertTrue(authorize);
         assertEquals(TdarActionSupport.SUCCESS, csc.edit());
         logger.debug("authorized: {}", authorize);
-        
+
     }
 
-    
-    
-    
-    
     @SuppressWarnings("unused")
     @Test
     @Rollback
@@ -444,8 +436,8 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     public void testCodingSheetMappingReplace2() throws Exception {
-        File PERIOD_1 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR , "period.csv");
-        File PERIOD_2 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR , "period2.csv");
+        File PERIOD_1 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR, "period.csv");
+        File PERIOD_2 = TestConstants.getFile(TestConstants.TEST_CODING_SHEET_DIR, "period2.csv");
         CodingSheet codingSheet = setupCodingSheet(null, null, null, PERIOD_1);
         Long codingId = codingSheet.getId();
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
@@ -500,7 +492,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith=RunWithTdarConfiguration.SMALL_EXCEL)
+    @RunWithTdarConfiguration(runWith = RunWithTdarConfiguration.SMALL_EXCEL)
     public void testBigDatasetSpansSheets() throws Exception {
         try {
             // setup coding sheet
@@ -572,7 +564,6 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         return codingRule;
     }
 
-
     @SuppressWarnings("unused")
     @Test
     @Rollback
@@ -587,7 +578,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         datasetController.prepare();
         datasetController.editColumnMetadata();
         Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);
-        //        period_.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+        // period_.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
         period_.setTransientOntology(ontology);
         datasetController.setDataTableColumns(Arrays.asList(period_));
         datasetController.saveColumnMetadata();
@@ -657,6 +648,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     /**
      * note, this just mainly works for coding sheets... it's not intended to be perfect
+     * 
      * @param dtc
      * @return
      */

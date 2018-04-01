@@ -19,14 +19,14 @@ public class StrutsIndexControllerITCase extends TdarStrutsTestCase<TdarActionSu
     public void testRobots() throws Exception {
         executeAction("/robots");
         logger.debug(response.getContentAsString());
-        assertThat(getAction().getActionErrors(), is( empty()));
+        assertThat(getAction().getActionErrors(), is(empty()));
     }
 
     @Test
     public void testHome() throws Exception {
         executeAction("/");
         logger.debug(response.getContentAsString());
-        assertThat(getAction().getActionErrors(), is( empty()));
+        assertThat(getAction().getActionErrors(), is(empty()));
     }
 
 }

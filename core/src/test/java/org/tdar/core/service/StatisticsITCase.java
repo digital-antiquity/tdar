@@ -45,7 +45,6 @@ import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.utils.MessageHelper;
 
-
 public class StatisticsITCase extends AbstractIntegrationTestCase {
 
     @Autowired
@@ -64,14 +63,13 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     @Autowired
     private AggregateStatisticsDao aggregateStatisticsDao;
 
-    
     @Test
     public void testContributorStats() {
         Set<Long> findAllContributorIds = entityService.findAllContributorIds();
         logger.debug("{}", findAllContributorIds);
         assertNotEmpty("should have contributor ids", findAllContributorIds);
     }
-    
+
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
@@ -97,12 +95,11 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         dailyTask.execute();
         genericService.synchronize();
         ResourceStatisticsObject usageStatsForResource = statisticService.getUsageStatsObjectForResource(MessageHelper.getInstance(), document);
-         logger.debug("{} {}", StringUtils.join(usageStatsForResource));
-        //        assertEquals(3L, usageStatsForResource.getUsageStatsForResource().get(0).getTotal().longValue());
+        logger.debug("{} {}", StringUtils.join(usageStatsForResource));
+        // assertEquals(3L, usageStatsForResource.getUsageStatsForResource().get(0).getTotal().longValue());
 
     }
 
-    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
@@ -118,7 +115,6 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         assertEquals(1L, usageStatsForResource.get(0).getTotal().longValue());
     }
 
-    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
@@ -168,9 +164,6 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         assertTrue(statsForAccount.getTotals().contains(3L));
     }
 
-
-    
-
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
@@ -181,9 +174,8 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         List<Resource> resources = resourceService.getWeeklyPopularResources(10);
         logger.debug("{}", resources);
         assertFalse(CollectionUtils.isEmpty(resources));
-//        assertTrue(statsForAccount.getTotals().contains(3L));
+        // assertTrue(statsForAccount.getTotals().contains(3L));
     }
-
 
     private Document setupDacumentWithStats() {
         Document document = new Document();
@@ -194,13 +186,11 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(document);
         genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().toDate(), document, false));
         genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().minusDays(1).toDate(), document, false));
-        genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().minusDays(1).toDate(), document,true));
+        genericService.saveOrUpdate(new ResourceAccessStatistic(DateTime.now().minusDays(1).toDate(), document, true));
         genericService.synchronize();
         return document;
     }
 
-    
-    
     @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)

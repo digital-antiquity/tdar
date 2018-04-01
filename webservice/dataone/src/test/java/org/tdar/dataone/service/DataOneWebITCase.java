@@ -91,7 +91,7 @@ public class DataOneWebITCase extends AbstractGenericWebTest {
         StringWriter body = new StringWriter();
         HttpResponse record = getRecord("/v2/object", body);
         Document xmlDocument = getXmlDocument(new InputSource(new StringReader(body.toString())));
-//        logger.debug(body.toString());
+        // logger.debug(body.toString());
         NodeList elementsByTagName = xmlDocument.getElementsByTagName("objectInfo");
         for (int i = 0; i < elementsByTagName.getLength(); i++) {
             logger.debug("-------------------------------------------------------------------------------------");
@@ -125,7 +125,7 @@ public class DataOneWebITCase extends AbstractGenericWebTest {
             logger.debug("encoding:{}", objectResponse.getEntity().getContentEncoding());
             String xml = contents.toString();
             String md5Hex = DigestUtils.md5Hex(xml);
-//            logger.debug("{}", xml);
+            // logger.debug("{}", xml);
             logger.debug("{} {} {} {}", id, md5Hex, checksum, headerChecksum);
             assertEquals(md5Hex, checksum);
 
@@ -148,7 +148,7 @@ public class DataOneWebITCase extends AbstractGenericWebTest {
         }
         response.append(getContents(httpResponse));
         String xml = response.toString();
-//        xml = xml; // not valid XML, but making sure we're matching what we put in
+        // xml = xml; // not valid XML, but making sure we're matching what we put in
         logger.debug(xml);
         if (path.contains(TEST_DOI) && path.contains("/object")) {
             assertTrue(xml.contains("dcterms:identifier rdf:datatype")); // dataOne object
@@ -193,13 +193,14 @@ public class DataOneWebITCase extends AbstractGenericWebTest {
         String path = "/v2/object/" + TEST_DOI;
         headRecord(path);
     }
+
     CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
 
     private HttpResponse headRecord(String path) throws IOException, ClientProtocolException {
-        logger.debug("requesting path: {}",path);
+        logger.debug("requesting path: {}", path);
         HttpHead getMethod = new HttpHead(TestConfiguration.getInstance().getBaseSecureUrl() + path);
         httpClient.getConnectionManager().closeExpiredConnections();
-//        httpClient.removeRequestInterceptorByClass(RequestAcceptEncoding.class);
+        // httpClient.removeRequestInterceptorByClass(RequestAcceptEncoding.class);
 
         HttpResponse httpResponse = httpClient.execute(getMethod);
         int statusCode = httpResponse.getStatusLine().getStatusCode();
@@ -262,8 +263,8 @@ public class DataOneWebITCase extends AbstractGenericWebTest {
     public void testOldTdarMeta() throws ClientProtocolException, IOException {
         StringWriter contents = new StringWriter();
         HttpResponse record = getRecord("/v2/meta/" + TEST_META, contents);
-                                                //obsoletedBy>doi:10.6067:XCV8SN0B29_meta&v=1281812043684</obsoletedBy>
-        String s = "<obsoletedBy>"+TEST_DOI_META +"</obsoletedBy>";
+        // obsoletedBy>doi:10.6067:XCV8SN0B29_meta&v=1281812043684</obsoletedBy>
+        String s = "<obsoletedBy>" + TEST_DOI_META + "</obsoletedBy>";
         logger.debug(s);
         assertTrue(contents.toString().contains(s));
     }

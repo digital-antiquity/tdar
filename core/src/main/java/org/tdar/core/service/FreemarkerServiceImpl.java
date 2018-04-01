@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import freemarker.template.Configuration;
 
@@ -37,7 +36,7 @@ public class FreemarkerServiceImpl implements FreemarkerService {
             return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), dataModel);
         } catch (Exception e) {
             logger.error("Unable to process template " + templateName, e);
-            throw new TdarRecoverableRuntimeException(e);
+            throw new FreemarkerRenderingException(e);
         }
     }
 

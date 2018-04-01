@@ -32,7 +32,7 @@ public abstract class AbstractAuthenticatedAction extends TdarActionSupport impl
         return format;
 
     }
-    
+
     @Override
     @DoNotObfuscate(reason = "never obfuscate the session user")
     public TdarUser getAuthenticatedUser() {

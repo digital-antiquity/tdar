@@ -6,14 +6,14 @@ import java.util.Date;
 import org.tdar.dataone.service.IdentifierParser;
 
 /**
- * Helper object for tracking an Object Response. 
+ * Helper object for tracking an Object Response.
+ * 
  * @author abrin
  *
  */
 public class ListObjectEntry implements Serializable {
 
     private static final long serialVersionUID = 8894503838119896193L;
-
 
     private String identifier;
     private Long persistableId;
@@ -24,7 +24,6 @@ public class ListObjectEntry implements Serializable {
     private Integer version;
     private String contentType;
 
-    
     @Override
     public String toString() {
         return String.format("id: %s type: %s", identifier, type);

@@ -14,13 +14,13 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("INVITE_ACCEPTED")
 public class InviteAcceptedMessage extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6035465612724342667L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6035465612724342667L;
 
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getInstance().getText(EmailType.INVITE_ACCEPTED.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
-	}
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getInstance().getText(EmailType.INVITE_ACCEPTED.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
+    }
 }

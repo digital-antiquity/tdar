@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import java.util.ArrayList;
@@ -16,14 +15,15 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * A record has a header, a metadata part, and
- *         an optional about container
+ * an optional about container
  * 
- * <p>Java class for recordType complex type.
+ * <p>
+ * Java class for recordType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="recordType">
@@ -43,9 +43,9 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "recordType", propOrder = {
-    "header",
-    "metadata",
-    "about"
+        "header",
+        "metadata",
+        "about"
 })
 public class RecordType {
 
@@ -58,9 +58,9 @@ public class RecordType {
      * Gets the value of the header property.
      * 
      * @return
-     *     possible object is
-     *     {@link HeaderType }
-     *     
+     *         possible object is
+     *         {@link HeaderType }
+     * 
      */
     public HeaderType getHeader() {
         return header;
@@ -70,9 +70,9 @@ public class RecordType {
      * Sets the value of the header property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link HeaderType }
-     *     
+     *            allowed object is
+     *            {@link HeaderType }
+     * 
      */
     public void setHeader(HeaderType value) {
         this.header = value;
@@ -82,9 +82,9 @@ public class RecordType {
      * Gets the value of the metadata property.
      * 
      * @return
-     *     possible object is
-     *     {@link MetadataType }
-     *     
+     *         possible object is
+     *         {@link MetadataType }
+     * 
      */
     public MetadataType getMetadata() {
         return metadata;
@@ -94,9 +94,9 @@ public class RecordType {
      * Sets the value of the metadata property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link MetadataType }
-     *     
+     *            allowed object is
+     *            {@link MetadataType }
+     * 
      */
     public void setMetadata(MetadataType value) {
         this.metadata = value;
@@ -113,8 +113,9 @@ public class RecordType {
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * 
      * <pre>
-     *    getAbout().add(newItem);
+     * getAbout().add(newItem);
      * </pre>
      * 
      * 

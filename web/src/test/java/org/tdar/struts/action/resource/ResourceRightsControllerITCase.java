@@ -21,7 +21,6 @@ import com.opensymphony.xwork2.Action;
 
 public class ResourceRightsControllerITCase extends AbstractControllerITCase {
 
-
     @Test
     @Rollback
     public void testUserPermIssuesUsers() throws Exception {
@@ -35,23 +34,21 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
         doc.setDescription("my description");
         dc.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, dc.save());
-        
+
         Long id = doc.getId();
         doc = null;
 
         evictCache();
         ResourceRightsController rrc;
-        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, Permissions.MODIFY_METADATA));
+        saveUser(id, new AuthorizedUser(getAdminUser(), newUser, Permissions.MODIFY_METADATA));
         doc = genericService.find(Document.class, id);
         logger.debug("RC: {}", doc.getAuthorizedUsers());
         // change the submitter to the admin
-        saveUser(id, new AuthorizedUser(getAdminUser(),newUser, Permissions.MODIFY_RECORD));
+        saveUser(id, new AuthorizedUser(getAdminUser(), newUser, Permissions.MODIFY_RECORD));
         logger.debug("RC: {}", doc.getAuthorizedUsers());
 
         evictCache();
     }
-
-    
 
     @Test
     @Rollback
@@ -70,7 +67,7 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
         evictCache();
         Long imgId = image.getId();
         assertNotNull(imgId);
-        saveUser(imgId, new AuthorizedUser(getAdminUser(),p, Permissions.MODIFY_RECORD));
+        saveUser(imgId, new AuthorizedUser(getAdminUser(), p, Permissions.MODIFY_RECORD));
 
         ResourceRightsController rrc = generateNewInitializedController(ResourceRightsController.class, getBasicUser());
         rrc.setId(imgId);
@@ -90,12 +87,11 @@ public class ResourceRightsControllerITCase extends AbstractControllerITCase {
             imageController.edit();
             seen = true;
         } catch (TdarActionException e) {
-            logger.error("{}",e,e);
+            logger.error("{}", e, e);
         }
         assertTrue(seen);
     }
 
-    
     private void saveUser(Long id, AuthorizedUser au) throws Exception, TdarActionException {
         ResourceRightsController rrc = generateNewInitializedController(ResourceRightsController.class, getBasicUser());
         rrc.setId(id);

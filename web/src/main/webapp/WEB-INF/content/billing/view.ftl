@@ -137,8 +137,23 @@
         <div class="row">
             <div class="span4">
 	            <@s.hidden name="id" value="${account.id?c!-1}" />
-                <@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
-		        <@s.textfield name="expires" cssClass="date  input-small datepicker" label="Date Expires" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+	            <#if editor>
+    	            <@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
+                <#else>
+		            <@s.hidden name="quantity" value="1" />
+                </#if>
+                
+                <div class="control-group ">
+                
+                <label class="control-label">Date Expires</label>
+                 <div class="controls">
+	                <div class="input-append">
+	   		          <input name="expires" class="input-small span2 datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
+	                  <span class="add-on"><i class="icon-th"></i></span>
+	                </div>
+				</div>
+				</div>
+
             </div>
             <div class="span4">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>

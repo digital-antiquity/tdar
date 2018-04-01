@@ -1,7 +1,5 @@
 package org.tdar.struts_base.interceptor;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
@@ -25,7 +23,7 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
     transient AuthenticationService authenticationService;
 
     private SessionData sessionData;
-    
+
     public SessionData getSessionData() {
         return sessionData;
     }
@@ -35,11 +33,10 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
         sessionData = null;
         authenticationService = null;
     }
-    
+
     public void setSessionData(SessionData sessionData) {
         this.sessionData = sessionData;
     }
-
 
     protected boolean validateSsoTokenAndAttachUser(String token) {
         if (StringUtils.isBlank(token)) {
@@ -55,9 +52,8 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
         return result.getType().isValid();
     }
 
-
     protected String getSSoTokenFromParams() {
         return authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
     }
-    
+
 }

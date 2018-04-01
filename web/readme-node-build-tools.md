@@ -48,3 +48,5 @@ It's a good idea to keep these dependencies up to date, but the process is a bit
 4. commit the updated file to your repo
 5. IMPORTANT: make sure the npm-shrinkwrap file works on your build server.  NPM is supposed to omit platform-specific dependencies, but sometimes (due to bugs or poorly configured 3rd-party JS libraries) they slip through.  A good quick/dirty way to check for issues is to copy the `npm-shrinkwrap.json`  and `package.json` file to a temp folder on the build server and execute `npm install`.   If NPM fails,  find the offending dependencies and manually remove them from the XML file.  Then repeat 
 
+
+(also see https://github.com/thewoolleyman/npm-shrinkwrap-helper for more info)

@@ -33,7 +33,6 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
     private AuthenticationProvider provider;
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
-
     /*
      * Authenticate a web user passing in the Request, Response, username and password. Checks that (a) the username is valid (b) that the user can authenticate
      * (c) that user exists and is valid within tDAR (active);
@@ -46,8 +45,11 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
      * 
      * @param sessionData - the @SessionData object to intialize with the user's session / cookie information if logged in properly.
      */
-    /* (non-Javadoc)
-     * @see org.tdar.balk.service.SimpleAuthenticationService#authenticatePerson(org.tdar.core.service.external.auth.UserLogin, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.service.external.session.SessionData)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.balk.service.SimpleAuthenticationService#authenticatePerson(org.tdar.core.service.external.auth.UserLogin,
+     * javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.tdar.core.service.external.session.SessionData)
      */
     @Override
     @Transactional
@@ -62,7 +64,7 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         if (!isMember(userLogin.getLoginUsername(), TdarGroup.TDAR_BALK)) {
             logger.debug("Couldn't authenticate {} - (reason: {})", userLogin.getLoginUsername(), "not balk user");
             throw new TdarRecoverableRuntimeException("auth.couldnt_authenticate", Arrays.asList(result.getType().getMessage()));
-            
+
         }
         setupUser(userLogin.getLoginUsername(), sessionData);
 
@@ -70,17 +72,18 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         return result;
     }
 
-
     private void setupUser(String username, SessionData sessionData) {
         TdarUser user = new TdarUser();
         user.setUsername(username);
         user.setId(1L);
         sessionData.setTdarUser(user);
     }
-    
 
-    /* (non-Javadoc)
-     * @see org.tdar.balk.service.SimpleAuthenticationService#checkToken(java.lang.String, org.tdar.core.service.external.session.SessionData, javax.servlet.http.HttpServletRequest)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.balk.service.SimpleAuthenticationService#checkToken(java.lang.String, org.tdar.core.service.external.session.SessionData,
+     * javax.servlet.http.HttpServletRequest)
      */
     @Override
     public AuthenticationResult checkToken(String token, SessionData sessionData, HttpServletRequest request) {
@@ -92,12 +95,13 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         return result;
     }
 
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.SimpleAuthenticationService#setProvider(org.tdar.core.dao.external.auth.AuthenticationProvider)
      */
     @Override
-    @Autowired(required=false)
+    @Autowired(required = false)
     @Qualifier("AuthenticationProvider")
     public void setProvider(AuthenticationProvider provider) {
         this.provider = provider;
@@ -108,7 +112,9 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.SimpleAuthenticationService#getProvider()
      */
     @Override
@@ -116,8 +122,11 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         return provider;
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.balk.service.SimpleAuthenticationService#logout(org.tdar.core.service.external.session.SessionData, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.balk.service.SimpleAuthenticationService#logout(org.tdar.core.service.external.session.SessionData, javax.servlet.http.HttpServletRequest,
+     * javax.servlet.http.HttpServletResponse)
      */
     @Override
     @Transactional(readOnly = true)
@@ -126,8 +135,10 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         String token = getSsoTokenFromRequest(servletRequest);
         getProvider().logout(servletRequest, servletResponse, token, null);
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.SimpleAuthenticationService#getSsoTokenFromRequest(javax.servlet.http.HttpServletRequest)
      */
     @Override
@@ -147,9 +158,9 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         return null;
     }
 
-
-
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.SimpleAuthenticationService#findGroupWithGreatestPermissions(java.lang.String)
      */
     @Override
@@ -171,7 +182,9 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         return greatestPermissionGroup;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.SimpleAuthenticationService#findGroupMemberships(org.tdar.core.bean.entity.TdarUser)
      */
     @Override
@@ -185,7 +198,9 @@ public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationServ
         return toReturn;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.balk.service.SimpleAuthenticationService#isMember(java.lang.String, org.tdar.core.bean.TdarGroup)
      */
     @Override

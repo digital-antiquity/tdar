@@ -181,7 +181,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         evictCache();
         @SuppressWarnings("unused")
         ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
-        
+
         map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             logger.debug("version: {}", irfv);

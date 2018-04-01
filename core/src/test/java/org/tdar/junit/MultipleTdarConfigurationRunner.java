@@ -42,7 +42,6 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         return description;
     }
 
-
     @Override
     protected void runChild(final FrameworkMethod method, RunNotifier notifier) {
         Description description = describeTest(method);

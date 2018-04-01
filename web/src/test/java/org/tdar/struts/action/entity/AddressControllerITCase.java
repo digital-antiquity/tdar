@@ -23,7 +23,6 @@ public class AddressControllerITCase extends AbstractAdminControllerITCase {
 
     }
 
-
     @Test
     @Rollback
     public void addNullAddressToPerson() throws Exception {
@@ -118,8 +117,6 @@ public class AddressControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(0, person_.getAddresses().size());
         genericService.delete(person_);
     }
-
-    
 
     private Long addAddressToNewPerson() throws Exception {
         Person p = createAndSaveNewUser();

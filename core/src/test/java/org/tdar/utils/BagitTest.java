@@ -46,7 +46,6 @@ public class BagitTest {
     private BagFactory bagFactory = new BagFactory();
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
 
     private TdarConfiguration cfg = TdarConfiguration.getInstance();
@@ -100,9 +99,9 @@ public class BagitTest {
         completer.setNonDefaultManifestSeparator("\t");
 
         List<File> filesToAdd = new ArrayList<File>();
-        filesToAdd.add(TestConstants.getFile(PATH , "images/handbook_of_archaeology.jpg"));
-        filesToAdd.add(TestConstants.getFile(PATH , "data_integration_tests/evmpp-fauna.xls"));
-        filesToAdd.add(TestConstants.getFile(PATH , "xml/documentImport.xml"));
+        filesToAdd.add(TestConstants.getFile(PATH, "images/handbook_of_archaeology.jpg"));
+        filesToAdd.add(TestConstants.getFile(PATH, "data_integration_tests/evmpp-fauna.xls"));
+        filesToAdd.add(TestConstants.getFile(PATH, "xml/documentImport.xml"));
 
         Bag bag = this.getBag(bagHome);
         for (File fileToAdd : filesToAdd) {

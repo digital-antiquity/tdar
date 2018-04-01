@@ -30,7 +30,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
     public static final String LAT_LONG_SECURITY_TEST = "latLongSecurityTest";
     public static final String TEST_SECURITY_COLLECTION = "test security collection";
     public static final String TEST_LIST_COLLECTION = "test list collection";
-    
+
     @Before
     @Override
     public void setUp() {
@@ -43,14 +43,12 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         setInput("resourceCollection.description", desc);
 
         String fieldPrefix;
-        if(collectionType == CollectionResourceSection.MANAGED){
-        	fieldPrefix = "toAddManaged";
+        if (collectionType == CollectionResourceSection.MANAGED) {
+            fieldPrefix = "toAddManaged";
+        } else {
+            fieldPrefix = "toAddUnmanaged";
         }
-        else {
-        	fieldPrefix = "toAddUnmanaged";
-        }
-        
-        
+
         for (int i = 0; i < someResources.size(); i++) {
             Resource resource = someResources.get(i);
             // FIXME: we don't set id's in the form this way but setInput() doesn't understand 'resources.id' syntax. fix it so that it can.
@@ -63,7 +61,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
     }
 
     private Document createDoc(Long id, String title, int dateCreated, DocumentType documentType, Status status) {
-        Document doc  = new Document();
+        Document doc = new Document();
         doc.setTitle(title);
         doc.setDescription(title);
         doc.setDate(dateCreated);
@@ -72,25 +70,28 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         doc.setId(id);
         return doc;
     }
-    
+
     protected List<? extends Resource> getSomeResources() {
         List<Document> someDocs = new ArrayList<>();
-        someDocs.add(createDoc(4287L,"Archeological Survey and Architectural Study of Montezuma Castle National Monument",  2010,  DocumentType.BOOK, Status.ACTIVE));
+        someDocs.add(
+                createDoc(4287L, "Archeological Survey and Architectural Study of Montezuma Castle National Monument", 2010, DocumentType.BOOK, Status.ACTIVE));
         someDocs.add(createDoc(3794L, "Faunal Coding Key", 1988, DocumentType.OTHER, Status.ACTIVE));
-        someDocs.add(createDoc(4230L,"2008 New Philadelphia Archaeology Report, Chapter 2, An Investigation of New Philadelphia Using Thermal Infrared Remote Sensing", 2008, DocumentType.OTHER, Status.ACTIVE));
-        someDocs.add(createDoc(4231L,"2008 New Philadelphia Archaeology Report, Chapter 3, Block 3, Lot 4", 2008, DocumentType.OTHER, Status.ACTIVE));
-        someDocs.add(createDoc(4232L,"2008 New Philadelphia Archaeology Report, Chapter 4, Block 7, Lot 1", 2008, DocumentType.OTHER, Status.ACTIVE));
+        someDocs.add(createDoc(4230L,
+                "2008 New Philadelphia Archaeology Report, Chapter 2, An Investigation of New Philadelphia Using Thermal Infrared Remote Sensing", 2008,
+                DocumentType.OTHER, Status.ACTIVE));
+        someDocs.add(createDoc(4231L, "2008 New Philadelphia Archaeology Report, Chapter 3, Block 3, Lot 4", 2008, DocumentType.OTHER, Status.ACTIVE));
+        someDocs.add(createDoc(4232L, "2008 New Philadelphia Archaeology Report, Chapter 4, Block 7, Lot 1", 2008, DocumentType.OTHER, Status.ACTIVE));
         return someDocs;
     }
 
     protected List<TdarUser> getSomeUsers() {
         // let's only get authorized users
         List<TdarUser> users = new ArrayList<>();
-        users.add(new TdarUser("Allen", "Lee", "allen.lee@dsu.edu","allen.lee", 1L));
-        users.add(new TdarUser("Keith","Kintigh","kintigh@dsu.edu","kintigh", 6L));
-        users.add(new TdarUser("Mallorie", "Hatch","mallorie.hatch@dsu.edu","mallorie.hatch", 38L));
-        users.add(new TdarUser("Matthew","Peeples", "matthew.peeples@dsu.edu","matthew.peeples", 60L));
-        users.add(new TdarUser("Michelle","Elliott","michelle.elliott@dsu.edu","michelle.elliott", 121L));
+        users.add(new TdarUser("Allen", "Lee", "allen.lee@dsu.edu", "allen.lee", 1L));
+        users.add(new TdarUser("Keith", "Kintigh", "kintigh@dsu.edu", "kintigh", 6L));
+        users.add(new TdarUser("Mallorie", "Hatch", "mallorie.hatch@dsu.edu", "mallorie.hatch", 38L));
+        users.add(new TdarUser("Matthew", "Peeples", "matthew.peeples@dsu.edu", "matthew.peeples", 60L));
+        users.add(new TdarUser("Michelle", "Elliott", "michelle.elliott@dsu.edu", "michelle.elliott", 121L));
         return users;
     }
 
@@ -142,12 +143,11 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         return extractTdarIdFromCurrentURL();
     }
 
-
     public void createUserFields(int i, Person user, Permissions perm, Long id) {
         if (id == null) {
             createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), ""); // leave the id blank
         } else {
-            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), id.toString()); 
+            createInput("hidden", String.format(FMT_AUTHUSERS_ID, i), id.toString());
         }
         createInput("text", String.format(FMT_AUTHUSERS_NAME, i), user.getFirstName() + " " + user.getLastName());
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), perm.toString());

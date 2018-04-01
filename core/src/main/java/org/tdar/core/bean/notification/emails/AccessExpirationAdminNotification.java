@@ -14,16 +14,17 @@ import org.tdar.utils.MessageHelper;
 @DiscriminatorValue("ACCESS_EXP_ADMIN")
 public class AccessExpirationAdminNotification extends Email {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1104245121870699051L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1104245121870699051L;
 
-	/**
-	 * 
-	 */
-	@Override
-	public String createSubjectLine() {
-		return MessageHelper.getMessage(EmailType.ACCESS_EXPIRE_ADMIN_NOTIFICATION.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
-	}
+    /**
+     * 
+     */
+    @Override
+    public String createSubjectLine() {
+        return MessageHelper.getMessage(EmailType.ACCESS_EXPIRE_ADMIN_NOTIFICATION.getLocaleKey(),
+                Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
+    }
 }

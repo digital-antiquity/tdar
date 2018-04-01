@@ -338,7 +338,12 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     public enum RequestType {
-        EDIT, CREATE, DELETE, SAVE, NONE, VIEW;
+        EDIT,
+        CREATE,
+        DELETE,
+        SAVE,
+        NONE,
+        VIEW;
 
         public String getLabel() {
             switch (this) {

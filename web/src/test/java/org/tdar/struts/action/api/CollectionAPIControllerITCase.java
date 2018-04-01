@@ -27,7 +27,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         String uploadStatus;
         CollectionAPIAction controller = setupParent();
         rc = genericService.find(ResourceCollection.class, controller.getId());
-//        rc.setOrientation(DisplayOrientation.LIST);
+        // rc.setOrientation(DisplayOrientation.LIST);
         rc.setName("another name");
         String childXml = serializationService.convertToXML(rc);
         rc = null;
@@ -51,9 +51,9 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         String uploadStatus;
         CollectionAPIAction controller = setupParent();
 
-        rc = new ResourceCollection("child", "child description",  getBasicUser());
+        rc = new ResourceCollection("child", "child description", getBasicUser());
         rc.setParent(genericService.find(ResourceCollection.class, controller.getId()));
-//        rc.setOrientation(DisplayOrientation.GRID);
+        // rc.setOrientation(DisplayOrientation.GRID);
         String childXml = serializationService.convertToXML(rc);
         rc = null;
         controller = generateNewInitializedController(CollectionAPIAction.class);
@@ -70,7 +70,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
 
     private CollectionAPIAction setupParent() throws Exception {
         ResourceCollection rc = new ResourceCollection("parent", "parent description", getBasicUser());
-//        rc.setOrientation(DisplayOrientation.GRID);
+        // rc.setOrientation(DisplayOrientation.GRID);
         String docXml = serializationService.convertToXML(rc);
         logger.info(docXml);
         rc = null;
@@ -92,8 +92,8 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
     @Ignore
     @Rollback
     public void testAPIControllerJSON() throws Exception {
-        ResourceCollection rc = new ResourceCollection("parent", "parent description",  getBasicUser());
-//        rc.setOrientation(DisplayOrientation.GRID);
+        ResourceCollection rc = new ResourceCollection("parent", "parent description", getBasicUser());
+        // rc.setOrientation(DisplayOrientation.GRID);
         String docXml = serializationService.convertToJson(rc);
         logger.info(docXml);
         rc = null;
@@ -109,9 +109,9 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         docXml = serializationService.convertToJson(controller.getImportedRecord());
         logger.info(docXml);
 
-        rc = new ResourceCollection("child", "child description",  getBasicUser());
+        rc = new ResourceCollection("child", "child description", getBasicUser());
         rc.setParent(genericService.find(ResourceCollection.class, controller.getId()));
-//        rc.setOrientation(DisplayOrientation.GRID);
+        // rc.setOrientation(DisplayOrientation.GRID);
         String childXml = serializationService.convertToJson(rc);
         rc = null;
         controller = generateNewInitializedController(CollectionAPIAction.class);

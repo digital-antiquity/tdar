@@ -46,7 +46,7 @@ public class SharingITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    public void testResourceInCollection() { 
+    public void testResourceInCollection() {
         // test that a direct collection share works
         Dataset dataset = createAndSaveNewDataset();
         ResourceCollection collection = createAndSaveNewResourceCollection("test collection");

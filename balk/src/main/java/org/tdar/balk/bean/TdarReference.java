@@ -18,8 +18,9 @@ public class TdarReference extends AbstractPersistable {
     @Column(name = "dropbox_id")
     private String dropboxId;
 
-    public TdarReference(){}
-    
+    public TdarReference() {
+    }
+
     public TdarReference(String id, Long tdarId2) {
         this.dropboxId = id;
         this.tdarId = tdarId2;
@@ -41,6 +42,4 @@ public class TdarReference extends AbstractPersistable {
         this.dropboxId = dropboxId;
     }
 
-
-    
 }

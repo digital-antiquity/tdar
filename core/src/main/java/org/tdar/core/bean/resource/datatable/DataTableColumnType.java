@@ -22,8 +22,15 @@ public enum DataTableColumnType implements HasLabel, Localizable {
 
     // See: http://msdn.microsoft.com/en-us/library/bb896344.aspx for EdmSimpleTypes
 
-    BOOLEAN(Types.BOOLEAN), VARCHAR(Types.VARCHAR), BIGINT(Types.BIGINT), DOUBLE(Types.DOUBLE), TEXT(Types.CLOB), DATE(Types.DATE), DATETIME(
-            Types.TIMESTAMP), BLOB(Types.BLOB);
+    BOOLEAN(Types.BOOLEAN),
+    VARCHAR(Types.VARCHAR),
+    BIGINT(Types.BIGINT),
+    DOUBLE(Types.DOUBLE),
+    TEXT(Types.CLOB),
+    DATE(Types.DATE),
+    DATETIME(
+            Types.TIMESTAMP),
+    BLOB(Types.BLOB);
 
     private final int sqlType;
 

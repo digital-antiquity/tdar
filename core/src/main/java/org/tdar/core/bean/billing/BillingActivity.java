@@ -33,7 +33,8 @@ public class BillingActivity extends AbstractPersistable implements Comparable<B
     private static final long BYTES_IN_MB = 1_048_576L;
 
     public enum BillingActivityType {
-        PRODUCTION, TEST;
+        PRODUCTION,
+        TEST;
     }
 
     @Length(max = FieldLength.FIELD_LENGTH_255)

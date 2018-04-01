@@ -246,7 +246,6 @@ public class TestConfiguration {
         UNIX,
         TRS_80;
 
-
         public static OS CURRENT;
         static {
             if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX)

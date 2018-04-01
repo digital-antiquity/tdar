@@ -21,7 +21,7 @@ import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.query.SearchResult;
 import org.tdar.utils.StringPair;
 
-public class ResourceAnnotationSearchITCase  extends AbstractResourceSearchITCase {
+public class ResourceAnnotationSearchITCase extends AbstractResourceSearchITCase {
 
     private static final String _18ST659_158 = "18ST659/158";
     private static final String _18ST659_143 = "18ST659/143";
@@ -36,7 +36,7 @@ public class ResourceAnnotationSearchITCase  extends AbstractResourceSearchITCas
         sp.getAnnotations().add(new StringPair(MAC_LAB_LOT_NUMBER, _18ST659_143));
         ReservedSearchParameters rsp = new ReservedSearchParameters();
         rsp.getObjectTypes().clear(); // select all resource types
-        SearchResult<Resource> result = doSearch(null,null,sp, null);
+        SearchResult<Resource> result = doSearch(null, null, sp, null);
         int resourceCount = 0;
         for (Indexable resource : result.getResults()) {
             if (resource instanceof InformationResource) {
@@ -44,17 +44,15 @@ public class ResourceAnnotationSearchITCase  extends AbstractResourceSearchITCas
             }
         }
         assertTrue("search should have at least 1 result", resourceCount > 0);
-        
-        
-    }
 
+    }
 
     @Test
     @Rollback
     public void testResourceAnnotationKeywordSearch() throws SearchException, SearchIndexException, IOException, ParseException {
         String code = _18ST659_158;
         Document doc = createDocumentWithAnnotationKey(code);
-        SearchResult<Resource> result = doSearch(code,null,null,null);
+        SearchResult<Resource> result = doSearch(code, null, null, null);
         assertFalse("we should get back at least one hit", result.getResults().isEmpty());
         assertTrue(result.getResults().contains(doc));
     }

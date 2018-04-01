@@ -39,14 +39,14 @@ public class StartWokflowAction extends AbstractAuthenticatedAction implements P
     private Phases phase;
     private String path;
     private DropboxUserMapping userMapping;
-    
+
     @Override
     public void prepare() throws Exception {
         setItem(itemService.findByDropboxId(id, false));
         userMapping = userService.findUser(getAuthenticatedUser());
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/list?path=${path}")})
+    @Action(value = "", results = { @Result(name = SUCCESS, type = REDIRECT, location = "/items/list?path=${path}") })
     @Override
     public String execute() throws Exception {
         try {

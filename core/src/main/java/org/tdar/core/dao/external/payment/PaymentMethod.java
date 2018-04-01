@@ -12,7 +12,10 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum PaymentMethod implements HasLabel, Localizable {
-    CREDIT_CARD("Credit Card"), CHECK("Check"), INVOICE("Invoice / Customer Work Order"), MANUAL("Manual");
+    CREDIT_CARD("Credit Card"),
+    CHECK("Check"),
+    INVOICE("Invoice / Customer Work Order"),
+    MANUAL("Manual");
 
     private String label;
 

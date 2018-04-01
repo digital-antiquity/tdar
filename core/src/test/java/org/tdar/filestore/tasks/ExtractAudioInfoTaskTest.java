@@ -20,10 +20,8 @@ public class ExtractAudioInfoTaskTest {
 
     private static final String UNKNOWN_CODEC = " - ";
 
-    private static final String AIFF_EXPECTED =
-            "AIFF (.aif) file, byte length: 829726, data format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo, 4 bytes/frame, big-endian, frame length: 207360";
-    private static final String WAV_EXPECTED =
-            "WAVE (.wav) file, byte length: 829786, data format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo, 4 bytes/frame, little-endian, frame length: 207360";
+    private static final String AIFF_EXPECTED = "AIFF (.aif) file, byte length: 829726, data format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo, 4 bytes/frame, big-endian, frame length: 207360";
+    private static final String WAV_EXPECTED = "WAVE (.wav) file, byte length: 829786, data format: PCM_SIGNED 44100.0 Hz, 16 bit, stereo, 4 bytes/frame, little-endian, frame length: 207360";
     private Audio testSubject = new Audio();
 
     @Test
@@ -48,7 +46,7 @@ public class ExtractAudioInfoTaskTest {
 
     private void testFileCodec(String fileName, String expected) throws FileNotFoundException {
         ExtractAudioInfoTask task = new ExtractAudioInfoTask();
-        File audioFile = TestConstants.getFile(TestConstants.TEST_AUDIO_DIR , fileName);
+        File audioFile = TestConstants.getFile(TestConstants.TEST_AUDIO_DIR, fileName);
         task.writeFileMetadataToAudioFile(testSubject, audioFile);
         final String audioCodecFound = testSubject.getAudioCodec();
         assertTrue("Expected: '" + expected + "' but found: '" + audioCodecFound + "'", expected.equals(audioCodecFound));

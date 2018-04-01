@@ -11,8 +11,12 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum DataTableColumnEncodingType implements HasLabel, Localizable {
-    UNCODED_VALUE("Uncoded Value", false, true, false), CODED_VALUE("Coded Value", true, true, false), MEASUREMENT("Measurement", false, false,
-            true), COUNT("Count", false, false, false), FILENAME("Filename", false, false, false);
+    UNCODED_VALUE("Uncoded Value", false, true, false),
+    CODED_VALUE("Coded Value", true, true, false),
+    MEASUREMENT("Measurement", false, false,
+            true),
+    COUNT("Count", false, false, false),
+    FILENAME("Filename", false, false, false);
 
     private final String label;
     private boolean supportsOntology;

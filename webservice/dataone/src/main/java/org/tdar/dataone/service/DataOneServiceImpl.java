@@ -91,7 +91,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
     @Autowired
     private DoiDao doiDao;
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#createResourceMap(org.tdar.core.bean.resource.InformationResource)
      */
     @Override
@@ -101,7 +103,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return generator.generate();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#getNodeResponse()
      */
     @Override
@@ -186,8 +190,11 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         services.getServiceList().add(service);
     }
 
-    /* (non-Javadoc)
-     * @see org.tdar.dataone.service.DataOneService#getLogResponse(java.util.Date, java.util.Date, org.dataone.service.types.v1.Event, java.lang.String, int, int, javax.servlet.http.HttpServletRequest)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.dataone.service.DataOneService#getLogResponse(java.util.Date, java.util.Date, org.dataone.service.types.v1.Event, java.lang.String, int,
+     * int, javax.servlet.http.HttpServletRequest)
      */
     @Override
     @Transactional(readOnly = true)
@@ -206,7 +213,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return log;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#getChecksumResponse(java.lang.String, java.lang.String)
      */
     @Override
@@ -219,7 +228,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return DataOneUtils.createChecksum(resp.getChecksum());
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#getListObjectsResponse(java.util.Date, java.util.Date, java.lang.String, java.lang.String, int, int)
      */
     @Override
@@ -245,7 +256,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return list;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#synchronizeTdarChangesWithDataOneObjects()
      */
     @Override
@@ -257,7 +270,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         logger.trace("sync complete");
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#checkForChecksumConflict(java.lang.String)
      */
     @Override
@@ -313,7 +328,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#metadataRequest(java.lang.String)
      */
     @Override
@@ -435,7 +452,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return DataOneUtils.createSubject(String.format("CN=%s,O=TDAR,DC=org", CONFIG.getSystemAdminEmail()));
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#getObject(java.lang.String, javax.servlet.http.HttpServletRequest, org.dataone.service.types.v1.Event)
      */
     @Override
@@ -515,7 +534,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return resp;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#constructMetadataFormatObject(org.tdar.core.bean.resource.InformationResource)
      */
     @Override
@@ -538,7 +559,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return resp;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#constructD1FormatObject(org.tdar.core.bean.resource.InformationResource)
      */
     @Override
@@ -569,7 +592,9 @@ public class DataOneServiceImpl implements DataOneConstants, D1Formatter, DataOn
         return resp;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.tdar.dataone.service.DataOneService#replicate(java.lang.String, javax.servlet.http.HttpServletRequest)
      */
     @Override

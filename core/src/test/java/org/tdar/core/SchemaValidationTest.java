@@ -50,7 +50,6 @@ public class SchemaValidationTest {
         }
     }
 
-
     /**
      * Validate a response against an external schema
      * 
@@ -59,7 +58,7 @@ public class SchemaValidationTest {
      * @throws ConfigurationException
      * @throws SAXException
      * @throws FileNotFoundException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     public void testValidXMLResponse(InputStream code) throws ConfigurationException, SAXException, FileNotFoundException, ClassNotFoundException {
         testValidXML(code);
@@ -71,7 +70,7 @@ public class SchemaValidationTest {
      * @throws ConfigurationException
      * @throws SAXException
      * @throws IOException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     public void testValidXMLSchemaResponse(String code) throws ConfigurationException, SAXException, IOException, ClassNotFoundException {
         SerializationService serializationService = new SerializationServiceImpl();

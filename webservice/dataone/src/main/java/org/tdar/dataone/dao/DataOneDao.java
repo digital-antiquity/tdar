@@ -34,11 +34,13 @@ import org.tdar.dataone.service.ObjectResponseContainer;
 
 @Component
 public class DataOneDao {
-    private static final String TDAR_DATAONE_MERGE = "select id, externalId, dateUpdated from Resource where resourceType not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and" +
-             "(externalId is not null and externalId != '') and (dateUpdated > (select max(sysMetadataModified) from DataOneObject) or dateCreated  > (select max(sysMetadataModified) from DataOneObject) or (select max(sysMetadataModified) from DataOneObject) is null )";
+    private static final String TDAR_DATAONE_MERGE = "select id, externalId, dateUpdated from Resource where resourceType not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and"
+            +
+            "(externalId is not null and externalId != '') and (dateUpdated > (select max(sysMetadataModified) from DataOneObject) or dateCreated  > (select max(sysMetadataModified) from DataOneObject) or (select max(sysMetadataModified) from DataOneObject) is null )";
 
     private static final String DATONE_FIND_BY_IDENTIFIER = "from DataOneObject where identifier=:identifier";
-    private static final String DATAONE_FIND_LAST_HARVESTED = "from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier";  // and type=:type
+    private static final String DATAONE_FIND_LAST_HARVESTED = "from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier"; // and
+                                                                                                                                                                                      // type=:type
     private static final String DATAONE_LIMIT = "from DataOneObject where (:type is null or type=:type) and "
             + "(sysMetadataModified between :start and :end) and "
             + "(:identifier is null or identifier=:identifier)";
@@ -116,7 +118,7 @@ public class DataOneDao {
                 long tdarId = ((Long) obj[0]);
                 DateTime dateUpdated = DataOneUtils.toUtc((Date) obj[2]);
                 unifyEntry(formatter, externalId, tdarId, dateUpdated);
-            
+
             } catch (Exception e) {
                 logger.error("{}", e, e);
             }
@@ -136,44 +138,47 @@ public class DataOneDao {
     private void processEntry(ListObjectEntry entry, D1Formatter formatter) {
         ObjectInfo info = new ObjectInfo();
         try {
-        
-        ObjectResponseContainer object = null;
 
-        // contstruct the metadata/response
-        if (entry.getType() != EntryType.FILE) {
-            InformationResource resource = genericDao.find(InformationResource.class, entry.getPersistableId());
-            if (resource == null || StringUtils.isBlank(resource.getExternalId())) {
-                return;
+            ObjectResponseContainer object = null;
+
+            // contstruct the metadata/response
+            if (entry.getType() != EntryType.FILE) {
+                InformationResource resource = genericDao.find(InformationResource.class, entry.getPersistableId());
+                if (resource == null || StringUtils.isBlank(resource.getExternalId())) {
+                    return;
+                }
+                if (entry.getType() == EntryType.D1) {
+                    object = formatter.constructD1FormatObject(resource);
+                }
+                if (entry.getType() == EntryType.TDAR) {
+                    object = formatter.constructMetadataFormatObject(resource);
+                }
             }
-            if (entry.getType() == EntryType.D1) {
-                object = formatter.constructD1FormatObject(resource);
+            info.setDateSysMetadataModified(entry.getDateUpdated());
+            info.setFormatId(DataOneUtils.contentTypeToD1Format(entry.getType(), entry.getContentType()));
+            Identifier currentIdentifier = DataOneUtils.createIdentifier(entry.getFormattedIdentifier());
+            info.setIdentifier(currentIdentifier);
+            if (object != null) {
+                info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
+                info.setSize(BigInteger.valueOf(object.getSize()));
             }
-            if (entry.getType() == EntryType.TDAR) {
-                object = formatter.constructMetadataFormatObject(resource);
+            InformationResource tdarResource = object.getTdarResource();
+            String seriesId = DataOneUtils.createSeriesId(tdarResource.getId(), entry.getType());
+            DataOneObject current = updateObjectEntries(info, entry.getType(), seriesId, tdarResource.getId(), tdarResource.getSubmitter().getProperName(),
+                    tdarResource.getDateUpdated());
+            DataOneObject previous = findAndObsoleteLastHarvestedVersion(seriesId, current);
+            // have to assume that we're sending back extra record
+            if (previous != null) {
+                ObjectInfo old = new ObjectInfo();
+                old.setDateSysMetadataModified(previous.getSysMetadataModified());
+                old.setFormatId(DataOneUtils.contentTypeToD1Format(previous.getType(), entry.getContentType()));
+                old.setIdentifier(DataOneUtils.createIdentifier(previous.getIdentifier()));
+                old.setChecksum(DataOneUtils.createChecksum(previous.getChecksum()));
+                old.setSize(BigInteger.valueOf(previous.getSize()));
             }
+        } catch (Exception e) {
+            logger.error("{}", e, e);
         }
-        info.setDateSysMetadataModified(entry.getDateUpdated());
-        info.setFormatId(DataOneUtils.contentTypeToD1Format(entry.getType(), entry.getContentType()));
-        Identifier currentIdentifier = DataOneUtils.createIdentifier(entry.getFormattedIdentifier());
-        info.setIdentifier(currentIdentifier);
-        if (object != null) {
-            info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
-            info.setSize(BigInteger.valueOf(object.getSize()));
-        }
-        InformationResource tdarResource = object.getTdarResource();
-        String seriesId = DataOneUtils.createSeriesId(tdarResource.getId() , entry.getType());
-        DataOneObject current = updateObjectEntries(info, entry.getType(), seriesId, tdarResource.getId(),tdarResource.getSubmitter().getProperName(), tdarResource.getDateUpdated());
-        DataOneObject previous = findAndObsoleteLastHarvestedVersion(seriesId, current);
-        // have to assume that we're sending back extra record
-        if (previous != null) {
-            ObjectInfo old = new ObjectInfo();
-            old.setDateSysMetadataModified(previous.getSysMetadataModified());
-            old.setFormatId(DataOneUtils.contentTypeToD1Format(previous.getType(), entry.getContentType()));
-            old.setIdentifier(DataOneUtils.createIdentifier(previous.getIdentifier()));
-            old.setChecksum(DataOneUtils.createChecksum(previous.getChecksum()));
-            old.setSize(BigInteger.valueOf(previous.getSize()));
-        }
-        } catch (Exception e) {logger.error("{}",e,e);}        
     }
 
     @SuppressWarnings("unchecked")
@@ -281,7 +286,7 @@ public class DataOneDao {
         query.setParameter("id", tdarId);
         query.setParameter("dateUpdated", dateUpdated);
         query.executeUpdate();
-        
+
     }
 
 }

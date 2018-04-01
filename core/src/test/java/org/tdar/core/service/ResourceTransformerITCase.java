@@ -38,7 +38,7 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
         logger.debug(writer.toString());
 
     }
-    
+
     @Test
     public void transformDC() throws JAXBException {
         Document d = new Document();
@@ -60,8 +60,6 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
         assertEquals("see only one contrib", 1, StringUtils.countMatches(str, getAdminUser().getName()));
     }
 
-
-    
     @Test
     public void transformMods() throws JAXBException {
         Document d = new Document();
@@ -74,7 +72,7 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
         d.getSiteTypeKeywords().add(new SiteTypeKeyword("SiteType"));
         d.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
         d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.CONTRIBUTOR));
-//        d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.EDITOR));
+        // d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.EDITOR));
         ModsDocument transformAny = ModsTransformer.transformAny(d);
         StringWriter writer = new StringWriter();
         JaxbDocumentWriter.write(transformAny, writer, true);

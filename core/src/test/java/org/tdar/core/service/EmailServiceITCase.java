@@ -35,293 +35,288 @@ import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
-public class EmailServiceITCase extends AbstractIntegrationTestCase { 
+public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
-	@Test
-	@Rollback
-	public void testUsingMockAwsObject(){
-		assertTrue("The object is an AWS mock", emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl);
-	}
-	
-	@Test
-	@Rollback(false)
-	public void testSendRequestAccessEmail(){
-		sendContactRequestEmail(EmailType.REQUEST_ACCESS);
-	}
+    @Test
+    @Rollback
+    public void testUsingMockAwsObject() {
+        assertTrue("The object is an AWS mock", emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl);
+    }
 
-	@Test
-	@Rollback
-	public void testSendResourceOwnerContactEmail(){
-		sendContactRequestEmail(EmailType.CONTACT);
-	}
-	
-	@Test
-	@Rollback
-	public void testSendSuggestCorrectionEmail(){
-		sendContactRequestEmail(EmailType.SUGGEST_CORRECTION);
-	}
-	
-	@Test
-	@Rollback
-	public void testPermissionRequestRejectedEmail(){
-		EmailType emailType = EmailType.PERMISSION_REQUEST_REJECTED;
-		String comment = "Your permission request has been rejected";
-		processPermissionRequestEmail(emailType, comment);
-	}
-	
-	@Test
-	@Rollback
-	public void testPermissionRequestCustomEmail(){
-		EmailType emailType = EmailType.PERMISSION_REQUEST_CUSTOM;
-		String comment = "Your permission request is pending further review";
-		processPermissionRequestEmail(emailType, comment);
-	}
-	
-	@Test
-	@Rollback
-	public void testPermissionRequestAcceptedEmail(){
-		EmailType emailType = EmailType.PERMISSION_REQUEST_ACCEPTED;
-		String comment = "Your permission request has been accepted";
-		processPermissionRequestEmail(emailType, comment);
-	}
+    @Test
+    @Rollback(false)
+    public void testSendRequestAccessEmail() {
+        sendContactRequestEmail(EmailType.REQUEST_ACCESS);
+    }
 
-	
-	
-	@Test
-	@Rollback
-	public void testMockMailSender() {
-		Person to = new Person(null, null, getTestUserEmail());
-		String mailBody = "this is a message body";
-		String subject = "this is a subject";
-		Email email = new Email();
-		email.addToAddress(to.getEmail());
-		email.setMessage(mailBody);
-		email.setSubject(subject);
-		emailService.send(email);
+    @Test
+    @Rollback
+    public void testSendResourceOwnerContactEmail() {
+        sendContactRequestEmail(EmailType.CONTACT);
+    }
 
-		Email received = checkMailAndGetLatest(mailBody);
+    @Test
+    @Rollback
+    public void testSendSuggestCorrectionEmail() {
+        sendContactRequestEmail(EmailType.SUGGEST_CORRECTION);
+    }
 
-		assertEquals(received.getSubject(), subject);
-		assertEquals(received.getMessage(), mailBody);
-		assertEquals(received.getFrom(), emailService.getFromEmail());
-		assertEquals(received.getTo(), to.getEmail());
+    @Test
+    @Rollback
+    public void testPermissionRequestRejectedEmail() {
+        EmailType emailType = EmailType.PERMISSION_REQUEST_REJECTED;
+        String comment = "Your permission request has been rejected";
+        processPermissionRequestEmail(emailType, comment);
+    }
 
-		assertEquals(email.getStatus(), Status.SENT);
-		// implicit assumption that something that is marked sent has a
-		// sent-date
-		assertThat(email.getDateSent(), is(not(nullValue())));
-	}
+    @Test
+    @Rollback
+    public void testPermissionRequestCustomEmail() {
+        EmailType emailType = EmailType.PERMISSION_REQUEST_CUSTOM;
+        String comment = "Your permission request is pending further review";
+        processPermissionRequestEmail(emailType, comment);
+    }
 
-	@Test
-	@Rollback
-	public void testSendInviteEmail() {
-		Person to = new Person("To", "Person", getTestUserEmail());
-		Person from = new Person("From", "Somone", "toguy@tdar.net");
-		TdarUser fromUser = new TdarUser(from, "from");
-		UserInvite invite = new UserInvite();
-		invite.setPerson(to);
+    @Test
+    @Rollback
+    public void testPermissionRequestAcceptedEmail() {
+        EmailType emailType = EmailType.PERMISSION_REQUEST_ACCEPTED;
+        String comment = "Your permission request has been accepted";
+        processPermissionRequestEmail(emailType, comment);
+    }
 
-		Resource project = createAndSaveNewProject("Test Project");
-		assertEquals(project.getTitle(), "Test Project");
+    @Test
+    @Rollback
+    public void testMockMailSender() {
+        Person to = new Person(null, null, getTestUserEmail());
+        String mailBody = "this is a message body";
+        String subject = "this is a subject";
+        Email email = new Email();
+        email.addToAddress(to.getEmail());
+        email.setMessage(mailBody);
+        email.setSubject(subject);
+        emailService.send(email);
 
-		invite.setResource(project);
-		Email email = emailService.sendUserInviteEmail(invite, fromUser);
-		
-		emailService.send(email);
-	}
-	
-	@Test
-	@Rollback
-	public void testSendWelcomeEmail(){
-		TdarUser to = new TdarUser("To", "Person", getTestUserEmail(),"testuser");
-		Email email = emailService.sendWelcomeEmail(to);
-		assertTrue("email has 'Welcome' in the subject'",email.getSubject().contains("Welcome"));
-		assertTrue("email has content", email.getMessage().contains("Hello To,<br />"));
-	}
+        Email received = checkMailAndGetLatest(mailBody);
 
-	@Test
-	@Rollback
-	public void testSendTemplate() {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("foo", "Hieronymous");
-		map.put("bar", "Basho");
-		Email email = new Email();
-		email.addToAddress(getTestUserEmail());
-		email.setSubject("test");
-		emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
-		sendEmailProcess.execute();
-		assertTrue("expecting a mail in in the inbox", ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().size() > 0);
-	}
+        assertEquals(received.getSubject(), subject);
+        assertEquals(received.getMessage(), mailBody);
+        assertEquals(received.getFrom(), emailService.getFromEmail());
+        assertEquals(received.getTo(), to.getEmail());
 
-	@Test
-	@Rollback
-	public void testBounceMailResponses() throws IOException, MessagingException { 
-		Email message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
-		message.setSubject("Subject");
-		message.setMessage("This is a test message");
-		message.addData("foo", "foo");
-		message.addData("bar", "bar");
-		message.addData("firstName", "First");
-		message.addData("lastName", "Last");
+        assertEquals(email.getStatus(), Status.SENT);
+        // implicit assumption that something that is marked sent has a
+        // sent-date
+        assertThat(email.getDateSent(), is(not(nullValue())));
+    }
 
-		SendRawEmailResult response = emailService.renderAndSendMessage(message);
-		logger.debug("Response is {}",response);
-	}
+    @Test
+    @Rollback
+    public void testSendInviteEmail() {
+        Person to = new Person("To", "Person", getTestUserEmail());
+        Person from = new Person("From", "Somone", "toguy@tdar.net");
+        TdarUser fromUser = new TdarUser(from, "from");
+        UserInvite invite = new UserInvite();
+        invite.setPerson(to);
 
-	@Test
-	@Rollback
-	public void testSendUserStats() throws MessagingException, IOException {
-		TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
-		Long billingAccountId = 1L;
-		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+        Resource project = createAndSaveNewProject("Test Project");
+        assertEquals(project.getTitle(), "Test Project");
 
-		emailService.generateAndSendUserStatisticEmail(user, billingAccount);
-	}
-	
-	
-	@Test
-	@Rollback(false)
-	public void testDequeuingUserStatsEmail(){
-		TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
-		Long billingAccountId = 1L;
-		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
-		Email email = emailService.generateUserStatisticsEmail(user, billingAccount);
-		assertTrue("The message has a UUID", StringUtils.isNotBlank(email.getMessageUuid()));
-		logger.debug("The email UUID is {}",email.getMessageUuid());
-		emailService.queue(email);
-		Long emailId = email.getId();
-		email = null;
-		
-		Email message = genericService.find(Email.class, emailId);
-		assertTrue("email id is not -1", emailId!=-1);
-		//assertTrue("Email doesn't have attachments", message.getInlineAttachments().size()==0);
-		emailService.dequeue(message);
-		
-		assertNotNull("Email has content",message.getMessage());
-		//logger.debug("The message content is : {}", message.getMessage());
-		assertTrue("email has 3 attachments",message.getInlineAttachments().size()==3);
-		
-		assertNotNull("The message has a UUID", message.getMessageUuid());
-		logger.debug("The UUID is {}", message.getMessageUuid());
-		
-		try {
-			emailService.sendAwsHtmlMessage(message);
-		} catch (MessagingException | IOException e) {
-			logger.debug("The message could not be sent: {} ",e);
-		}
-	}
-	
+        invite.setResource(project);
+        Email email = emailService.sendUserInviteEmail(invite, fromUser);
 
-	@Test
-	@Rollback
-	public void testCreateImages() {
-		TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
-		Long billingAccountId = 1L;
-		BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+        emailService.send(email);
+    }
 
-		// Get the date granularity.
-		Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
-		DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
-		StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
+    @Test
+    @Rollback
+    public void testSendWelcomeEmail() {
+        TdarUser to = new TdarUser("To", "Person", getTestUserEmail(), "testuser");
+        Email email = emailService.sendWelcomeEmail(to);
+        assertTrue("email has 'Welcome' in the subject'", email.getSubject().contains("Welcome"));
+        assertTrue("email has content", email.getMessage().contains("Hello To,<br />"));
+    }
 
-		// Generate temporary file names
-		String piechartFileName = System.currentTimeMillis() + "_resource-piechart";
-		String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
-		String viewsFileName = System.currentTimeMillis() + "_views-barchart";
+    @Test
+    @Rollback
+    public void testSendTemplate() {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("foo", "Hieronymous");
+        map.put("bar", "Basho");
+        Email email = new Email();
+        email.addToAddress(getTestUserEmail());
+        email.setSubject("test");
+        emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
+        sendEmailProcess.execute();
+        assertTrue("expecting a mail in in the inbox", ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().size() > 0);
+    }
 
-		// Generate the resources pie graph.
-		Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
-		File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
+    @Test
+    @Rollback
+    public void testBounceMailResponses() throws IOException, MessagingException {
+        Email message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
+        message.setSubject("Subject");
+        message.setMessage("This is a test message");
+        message.addData("foo", "foo");
+        message.addData("bar", "bar");
+        message.addData("firstName", "First");
+        message.addData("lastName", "Last");
 
-		// Generate the downloads graph
-		Map<String, Number> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount,
-				stats);
-		File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
+        SendRawEmailResult response = emailService.renderAndSendMessage(message);
+        logger.debug("Response is {}", response);
+    }
 
-		// Generate the total views graph
-		Map<String, Number> totalViewsData = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
-		File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
-		
-		assertTrue("The piechart exists",   piechart.exists());
-		assertTrue("The barchart 1 exists", barchart1.exists());
-		assertTrue("The barchart 2 exists", barchart2.exists());
-	}
+    @Test
+    @Rollback
+    public void testSendUserStats() throws MessagingException, IOException {
+        TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
+        Long billingAccountId = 1L;
+        BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
 
-	@Test
-	@Rollback
-	public void testEmailContent() throws IOException {
-		Email message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
-		message.setSubject("Subject");
-		message.setMessage("This is a test message");
-		message.addData("foo", "foo");
-		message.addData("bar", "bar");
-		message.addData("firstName", "Brian");
-		message.addData("lastName", "Castellanos");
+        emailService.generateAndSendUserStatisticEmail(user, billingAccount);
+    }
 
-		try {
-			emailService.renderAndSendMessage(message);
-		} catch (MessagingException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void sendContactRequestEmail(EmailType type){
-		TdarUser from = new TdarUser("Test","User","test@tdar.org","tdartest",getAdminUserId());
-		TdarUser to = new TdarUser("Test","User",getTestUserEmail(),"tdartest",getUserId());
-		Resource resource = createAndSaveNewDataset();
-		String subject = "";
-		String messageBody = "This is a test message";
-		Map<String, String[]> params = null ;
-       
-		Email email = emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
+    @Test
+    @Rollback(false)
+    public void testDequeuingUserStatsEmail() {
+        TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
+        Long billingAccountId = 1L;
+        BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+        Email email = emailService.generateUserStatisticsEmail(user, billingAccount);
+        assertTrue("The message has a UUID", StringUtils.isNotBlank(email.getMessageUuid()));
+        logger.debug("The email UUID is {}", email.getMessageUuid());
+        emailService.queue(email);
+        Long emailId = email.getId();
+        email = null;
 
-		email.setFrom("test@tdar.org");
-		
-		/**
-		 * Commented out because AWS is mocked, and it doesn't actually send message. 
-		 * The status is actually set to IN_REVIEW. 
-		 * 
-		Email received = emailService.dequeue(email);
-		received.setFrom(from.getEmail());
-		received.setTo(to.getEmail());
-		received.setStatus(Status.QUEUED);
-		genericService.saveOrUpdate(email);
-				
-		sendEmailProcess.execute();
-		Email received = checkMailAndGetLatest(messageBody);
-		**/
+        Email message = genericService.find(Email.class, emailId);
+        assertTrue("email id is not -1", emailId != -1);
+        // assertTrue("Email doesn't have attachments", message.getInlineAttachments().size()==0);
+        emailService.dequeue(message);
 
-		assertNotNull("Expect the subject to be the same", email.getSubject());
-		
-		try {
-		emailService.sendAwsHtmlMessage(email);
-		}
-		catch (MessagingException | IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void processPermissionRequestEmail(EmailType emailType, String comment){
-		TdarUser authenticatedUser = getAdminUser();
-		TdarUser requestor = new TdarUser("Test","User",getTestUserEmail(),"tdartest",getUserId());
-		Resource resource = createAndSaveNewDataset();
-		boolean reject = emailType == EmailType.PERMISSION_REQUEST_REJECTED;
-		Date expires = null;
-		Permissions permission = Permissions.VIEW_ALL;
-		
-		Email email = emailService.proccessPermissionsRequest(requestor, resource, authenticatedUser, comment, reject, emailType, permission, expires);
-		
-		assertTrue("The message is the same", email.getMessage().contains(comment));
-		assertEquals("The mesage is to the right person", requestor.getEmail(), email.getTo());
-		
-		try {
-			emailService.sendAwsHtmlMessage(email);
-		} catch (MessagingException | IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public String getTestUserEmail(){
-		return getTdarConfiguration().getDeveloperTestEmail();
-	}
+        assertNotNull("Email has content", message.getMessage());
+        // logger.debug("The message content is : {}", message.getMessage());
+        assertTrue("email has 3 attachments", message.getInlineAttachments().size() == 3);
+
+        assertNotNull("The message has a UUID", message.getMessageUuid());
+        logger.debug("The UUID is {}", message.getMessageUuid());
+
+        try {
+            emailService.sendAwsHtmlMessage(message);
+        } catch (MessagingException | IOException e) {
+            logger.debug("The message could not be sent: {} ", e);
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testCreateImages() {
+        TdarUser user = new TdarUser("Test", "User", getTestUserEmail());
+        Long billingAccountId = 1L;
+        BillingAccount billingAccount = genericService.find(BillingAccount.class, billingAccountId);
+
+        // Get the date granularity.
+        Date date = emailStatsHelper.getStartDate(billingAccount.getResources());
+        DateGranularity granularity = emailStatsHelper.getDateGranularity(date);
+        StatsResultObject stats = emailStatsHelper.getAccountStatistics(billingAccount, granularity);
+
+        // Generate temporary file names
+        String piechartFileName = System.currentTimeMillis() + "_resource-piechart";
+        String downloadsFileName = System.currentTimeMillis() + "_downloads-barchart";
+        String viewsFileName = System.currentTimeMillis() + "_views-barchart";
+
+        // Generate the resources pie graph.
+        Map<String, Number> pieChartData = emailStatsHelper.generateUserResourcesPieChartData(billingAccount);
+        File piechart = chartGenerator.generateResourcesPieChart(pieChartData, piechartFileName);
+
+        // Generate the downloads graph
+        Map<String, Number> totalDownloadsData = emailStatsHelper.generateTotalDownloadsChartData(billingAccount,
+                stats);
+        File barchart1 = chartGenerator.generateTotalDownloadsBarChart(totalDownloadsData, downloadsFileName);
+
+        // Generate the total views graph
+        Map<String, Number> totalViewsData = emailStatsHelper.generateTotalViewsChartData(billingAccount, stats);
+        File barchart2 = chartGenerator.generateTotalViewsBarChart(totalViewsData, viewsFileName);
+
+        assertTrue("The piechart exists", piechart.exists());
+        assertTrue("The barchart 1 exists", barchart1.exists());
+        assertTrue("The barchart 2 exists", barchart2.exists());
+    }
+
+    @Test
+    @Rollback
+    public void testEmailContent() throws IOException {
+        Email message = emailService.createMessage(EmailType.TEST_EMAIL, "bounce@simulator.amazonses.com");
+        message.setSubject("Subject");
+        message.setMessage("This is a test message");
+        message.addData("foo", "foo");
+        message.addData("bar", "bar");
+        message.addData("firstName", "Brian");
+        message.addData("lastName", "Castellanos");
+
+        try {
+            emailService.renderAndSendMessage(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendContactRequestEmail(EmailType type) {
+        TdarUser from = new TdarUser("Test", "User", "test@tdar.org", "tdartest", getAdminUserId());
+        TdarUser to = new TdarUser("Test", "User", getTestUserEmail(), "tdartest", getUserId());
+        Resource resource = createAndSaveNewDataset();
+        String subject = "";
+        String messageBody = "This is a test message";
+        Map<String, String[]> params = null;
+
+        Email email = emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
+
+        email.setFrom("test@tdar.org");
+
+        /**
+         * Commented out because AWS is mocked, and it doesn't actually send message.
+         * The status is actually set to IN_REVIEW.
+         * 
+         * Email received = emailService.dequeue(email);
+         * received.setFrom(from.getEmail());
+         * received.setTo(to.getEmail());
+         * received.setStatus(Status.QUEUED);
+         * genericService.saveOrUpdate(email);
+         * 
+         * sendEmailProcess.execute();
+         * Email received = checkMailAndGetLatest(messageBody);
+         **/
+
+        assertNotNull("Expect the subject to be the same", email.getSubject());
+
+        try {
+            emailService.sendAwsHtmlMessage(email);
+        } catch (MessagingException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void processPermissionRequestEmail(EmailType emailType, String comment) {
+        TdarUser authenticatedUser = getAdminUser();
+        TdarUser requestor = new TdarUser("Test", "User", getTestUserEmail(), "tdartest", getUserId());
+        Resource resource = createAndSaveNewDataset();
+        boolean reject = emailType == EmailType.PERMISSION_REQUEST_REJECTED;
+        Date expires = null;
+        Permissions permission = Permissions.VIEW_ALL;
+
+        Email email = emailService.proccessPermissionsRequest(requestor, resource, authenticatedUser, comment, reject, emailType, permission, expires);
+
+        assertTrue("The message is the same", email.getMessage().contains(comment));
+        assertEquals("The mesage is to the right person", requestor.getEmail(), email.getTo());
+
+        try {
+            emailService.sendAwsHtmlMessage(email);
+        } catch (MessagingException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getTestUserEmail() {
+        return getTdarConfiguration().getDeveloperTestEmail();
+    }
 }

@@ -11,7 +11,9 @@ import org.tdar.utils.MessageHelper;
  * 
  */
 public enum AddressType implements HasLabel, Localizable {
-    MAILING("Mailing Address"), BILLING("Billing Address"), OTHER("Other");
+    MAILING("Mailing Address"),
+    BILLING("Billing Address"),
+    OTHER("Other");
 
     private String label;
 

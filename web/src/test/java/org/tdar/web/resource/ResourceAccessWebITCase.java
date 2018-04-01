@@ -37,8 +37,6 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         logout();
     }
 
-
-    
     @Test
     public void testShareAccessExpiresSuccess() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
@@ -60,12 +58,12 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         assertThat(getPageText(), containsString(hasBeenGrantedString));
     }
 
-@Test
+    @Test
     public void testShareAccessDenied() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
         setInput("permission", Permissions.MODIFY_METADATA.name());
         setInput("reject", "true");
-        setInput("comment","message!");
+        setInput("comment", "message!");
         submitForm("submit");
         logger.info(getCurrentUrlPath());
         logger.info(getPageText());
@@ -83,7 +81,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         setInput("userLogin.loginPassword", getAdminPassword());
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));
         submitForm("submitLogin");
-        
+
         // try and submit without comment
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));
         String txt = getPageText();
@@ -92,7 +90,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         assertCurrentUrlContains("/resource/request");
         submitFormWithoutErrorCheck("send");
         assertFalse(getPageText().contains("Message Sent"));
-        
+
         // add comment
         setInput("messageBody", "this is my comment");
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));

@@ -17,7 +17,7 @@ public class ObjectResponseContainer {
     private Reader reader;
     private InformationResource tdarResource;
     private EntryType type;
-    
+
     public String getObjectFormat() {
         return objectFormat;
     }

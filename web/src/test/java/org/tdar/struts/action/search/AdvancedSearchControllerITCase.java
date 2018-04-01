@@ -98,7 +98,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         resetController();
         controller.setRecordsPerPage(50);
     }
-    
 
     @Test
     @Rollback
@@ -108,7 +107,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getRelevantPersonRoles().contains(ResourceCreatorRole.RESOURCE_PROVIDER));
     }
 
-    
     @Test
     @Rollback
     public void testSorting() {
@@ -124,7 +122,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertFalse(controller.getRelevantInstitutionRoles().contains(ResourceCreatorRole.UPDATER));
         assertTrue(controller.getRelevantInstitutionRoles().contains(ResourceCreatorRole.RESOURCE_PROVIDER));
     }
-    
 
     @Test
     @Rollback(true)
@@ -148,7 +145,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         testResourceCounts(p);
     }
 
-    
     @Test
     @Rollback(true)
     public void testResultCountsAsBasicContributor() throws SearchIndexException, IOException {
@@ -164,7 +160,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         evictCache();
         testResourceCounts(getAdminUser());
     }
-    
 
     private void testResourceCounts(TdarUser user) throws SearchIndexException, IOException {
         for (ResourceType type : ResourceType.values()) {
@@ -180,7 +175,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
             }
         }
     }
-    
 
     @Test
     @Rollback
@@ -210,7 +204,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         doSearch();
 
     }
-
 
     // compare the counts returned from searchController against the counts we get from the database
     private void assertResultCount(ResourceType resourceType, Status status, TdarUser user) {
@@ -249,11 +242,11 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     public void testResourceCaseSensitivity() throws SearchIndexException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
-        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test",  getAdminUser());
+        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test", getAdminUser());
         titleCase.markUpdated(getAdminUser());
-        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test",  getAdminUser());
+        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test", getAdminUser());
         lowerCase.markUpdated(getAdminUser());
-        ResourceCollection upperCase = new ResourceCollection("USAF", "test",  getAdminUser());
+        ResourceCollection upperCase = new ResourceCollection("USAF", "test", getAdminUser());
         upperCase.markUpdated(getAdminUser());
         ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", getAdminUser());
         usafLowerCase.markUpdated(getAdminUser());
@@ -269,8 +262,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         controller.setQuery("usaf");
         doSearch();
         assertTrue(controller.getResults().contains(doc));
-//        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
-//        assertTrue(controller.getCollectionResults().contains(upperCase));
+        // assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        // assertTrue(controller.getCollectionResults().contains(upperCase));
         doc.setTitle("usaf");
         resetController();
         updateAndIndex(doc);
@@ -278,44 +271,43 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         // search uppercase one word
         controller.setQuery("USAF");
         doSearch();
-//        assertTrue(controller.getCollectionResults().contains(usafLowerCase));
-//        assertTrue(controller.getCollectionResults().contains(upperCase));
+        // assertTrue(controller.getCollectionResults().contains(usafLowerCase));
+        // assertTrue(controller.getCollectionResults().contains(upperCase));
         assertTrue(controller.getResults().contains(doc));
 
         resetController();
         // search lowercase phrase
         controller.setQuery("us air");
         doSearch();
-//        assertTrue(controller.getCollectionResults().contains(titleCase));
-//        assertTrue(controller.getCollectionResults().contains(lowerCase));
+        // assertTrue(controller.getCollectionResults().contains(titleCase));
+        // assertTrue(controller.getCollectionResults().contains(lowerCase));
 
         resetController();
         // search titlecase phrase
         controller.setQuery("US Air");
         doSearch();
-//        assertTrue(controller.getCollectionResults().contains(titleCase));
-//        assertTrue(controller.getCollectionResults().contains(lowerCase));
+        // assertTrue(controller.getCollectionResults().contains(titleCase));
+        // assertTrue(controller.getCollectionResults().contains(lowerCase));
 
         resetController();
         // search uppercase phrase
         controller.setQuery("US AIR");
         doSearch();
-//        assertTrue(controller.getCollectionResults().contains(titleCase));
-//        assertTrue(controller.getCollectionResults().contains(lowerCase));
+        // assertTrue(controller.getCollectionResults().contains(titleCase));
+        // assertTrue(controller.getCollectionResults().contains(lowerCase));
 
         // search lowercase middle word
         controller.setQuery("force");
         doSearch();
-//        assertTrue(controller.getCollectionResults().contains(titleCase));
-//        assertTrue(controller.getCollectionResults().contains(lowerCase));
+        // assertTrue(controller.getCollectionResults().contains(titleCase));
+        // assertTrue(controller.getCollectionResults().contains(lowerCase));
 
         // search uppercase middle word
         controller.setQuery("FORCE");
         doSearch();
-//        assertTrue(controller.getCollectionResults().contains(titleCase));
-//        assertTrue(controller.getCollectionResults().contains(lowerCase));
+        // assertTrue(controller.getCollectionResults().contains(titleCase));
+        // assertTrue(controller.getCollectionResults().contains(lowerCase));
     }
-
 
     @Test
     public void testRefineSimpleSearch() {
@@ -352,7 +344,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     protected void reindex() {
         evictCache();
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON, LookupSource.COLLECTION, LookupSource.INSTITUTION, LookupSource.KEYWORD,LookupSource.RESOURCE);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON, LookupSource.COLLECTION, LookupSource.INSTITUTION, LookupSource.KEYWORD,
+                LookupSource.RESOURCE);
     }
 
     protected void doSearch() {
@@ -374,7 +367,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         lookForCreatorNameInResult(lastName, person);
     }
 
-
     @Test
     @Rollback
     public void testInstitutionSearchWithoutAutocomplete() throws SearchIndexException, IOException {
@@ -383,7 +375,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Institution institution = new Institution(name);
         lookForCreatorNameInResult(name, institution);
     }
-
 
     @Test
     @Rollback
@@ -395,7 +386,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         logger.debug(controller.getSearchPhrase());
         assertFalse(StringUtils.contains(controller.getSearchPhrase(), "null"));
     }
-
 
     private void lookForCreatorNameInResult(String namePart, Creator<?> creator_) {
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
@@ -438,8 +428,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
         return seen;
     }
-
-
 
     @SuppressWarnings("deprecation")
     @Test

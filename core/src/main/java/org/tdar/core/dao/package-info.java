@@ -397,13 +397,12 @@
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES,
                 query = "select r from Resource r "
-                		+ "left join r.managedResourceCollections as rc "
-                		+ "left join r.unmanagedResourceCollections as urc "
-                		+ "left join rc.parentIds parentId  "
-                		+ "left join urc.parentIds uparentId where "
-                		+ "((parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE') or "
-                		+ "((uparentId IN (:id) or urc.id=:id) and urc.status='ACTIVE')"
-                		),
+                        + "left join r.managedResourceCollections as rc "
+                        + "left join r.unmanagedResourceCollections as urc "
+                        + "left join rc.parentIds parentId  "
+                        + "left join urc.parentIds uparentId where "
+                        + "((parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE') or "
+                        + "((uparentId IN (:id) or urc.id=:id) and urc.status='ACTIVE')"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
                 query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.managedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
@@ -551,9 +550,8 @@
                 name = org.tdar.core.dao.TdarNamedQueries.MONTHLY_USAGE_FOR_RESOURCE,
                 query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId"),
         @NamedQuery(
-        		name = org.tdar.core.dao.TdarNamedQueries.FIND_EMAIL_BY_GUID,
-        		query = "from Email email where email.messageUuid=:guid"
-        		)
+                name = org.tdar.core.dao.TdarNamedQueries.FIND_EMAIL_BY_GUID,
+                query = "from Email email where email.messageUuid=:guid")
 })
 package org.tdar.core.dao;
 

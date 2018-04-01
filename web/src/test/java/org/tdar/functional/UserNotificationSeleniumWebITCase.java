@@ -14,7 +14,7 @@ public class UserNotificationSeleniumWebITCase extends AbstractEditorSeleniumWeb
     public boolean testRequiresLucene() {
         return false;
     }
-    
+
     @Test
     public void testDismiss() throws InterruptedException {
         gotoPage("/dashboard");

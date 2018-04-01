@@ -9,7 +9,19 @@ import java.util.List;
  * @version $Rev$
  */
 public enum VersionType {
-    UPLOADED, UPLOADED_TEXT, UPLOADED_ARCHIVAL, ARCHIVAL, WEB_SMALL, WEB_MEDIUM, WEB_LARGE, GEOJSON, TRANSLATED, INDEXABLE_TEXT, METADATA, LOG, RECORD;
+    UPLOADED,
+    UPLOADED_TEXT,
+    UPLOADED_ARCHIVAL,
+    ARCHIVAL,
+    WEB_SMALL,
+    WEB_MEDIUM,
+    WEB_LARGE,
+    GEOJSON,
+    TRANSLATED,
+    INDEXABLE_TEXT,
+    METADATA,
+    LOG,
+    RECORD;
 
     public boolean isDerivative() {
         switch (this) {

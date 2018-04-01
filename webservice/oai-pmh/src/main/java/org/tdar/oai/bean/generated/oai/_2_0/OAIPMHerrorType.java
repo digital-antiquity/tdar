@@ -5,7 +5,6 @@
 // Generated on: 2015.05.11 at 04:55:08 PM CDT 
 //
 
-
 package org.tdar.oai.bean.generated.oai._2_0;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,11 +13,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-
 /**
- * <p>Java class for OAI-PMHerrorType complex type.
+ * <p>
+ * Java class for OAI-PMHerrorType complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
  * &lt;complexType name="OAI-PMHerrorType">
@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlValue;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "OAI-PMHerrorType", propOrder = {
-    "value"
+        "value"
 })
 public class OAIPMHerrorType {
 
@@ -47,9 +47,9 @@ public class OAIPMHerrorType {
      * Gets the value of the value property.
      * 
      * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *         possible object is
+     *         {@link String }
+     * 
      */
     public String getValue() {
         return value;
@@ -59,9 +59,9 @@ public class OAIPMHerrorType {
      * Sets the value of the value property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *            allowed object is
+     *            {@link String }
+     * 
      */
     public void setValue(String value) {
         this.value = value;
@@ -71,9 +71,9 @@ public class OAIPMHerrorType {
      * Gets the value of the code property.
      * 
      * @return
-     *     possible object is
-     *     {@link OAIPMHerrorcodeType }
-     *     
+     *         possible object is
+     *         {@link OAIPMHerrorcodeType }
+     * 
      */
     public OAIPMHerrorcodeType getCode() {
         return code;
@@ -83,9 +83,9 @@ public class OAIPMHerrorType {
      * Sets the value of the code property.
      * 
      * @param value
-     *     allowed object is
-     *     {@link OAIPMHerrorcodeType }
-     *     
+     *            allowed object is
+     *            {@link OAIPMHerrorcodeType }
+     * 
      */
     public void setCode(OAIPMHerrorcodeType value) {
         this.code = value;

@@ -45,7 +45,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         Geospatial doc = generateAndStoreVersion(Geospatial.class, "untitled.tif", TestConstants.getFile(TestConstants.TEST_GEOTIFF), store);
         Geospatial doc2 = generateAndStoreVersion(Geospatial.class, "untitled.tfw", TestConstants.getFile(TestConstants.TEST_GEOTIFF_TFW),
                 store);
-        InformationResourceFileVersion originalFile= doc.getLatestUploadedVersion();
+        InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
         InformationResourceFileVersion supportingFile = doc2.getLatestUploadedVersion();
 
         Workflow workflow = fileAnalyzer.getWorkflow(originalFile, supportingFile);

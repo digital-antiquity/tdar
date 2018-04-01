@@ -162,7 +162,7 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
         if (CollectionUtils.isNotEmpty(invites)) {
             invites.forEach(invite -> {
                 // only add unredemmed invites
-                if (invite.getDateRedeemed() == null && !(invite.getUser() instanceof TdarUser))  {
+                if (invite.getDateRedeemed() == null && !(invite.getUser() instanceof TdarUser)) {
                     proxies.add(new UserRightsProxy(invite));
                 }
             });
@@ -212,7 +212,6 @@ public abstract class AbstractRightsController extends AbstractAuthenticatableAc
     public void setOwner(TdarUser owner) {
         this.owner = owner;
     }
-
 
     public List<UserRightsProxy> getInvites() {
         return invites;

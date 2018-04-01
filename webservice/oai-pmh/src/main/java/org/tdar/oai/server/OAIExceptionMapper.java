@@ -12,11 +12,10 @@ public class OAIExceptionMapper implements ExceptionMapper<Exception> {
     public Response toResponse(Exception e) {
         e.printStackTrace();
         return Response
-                    .status(Status.INTERNAL_SERVER_ERROR)
-                    .type(MediaType.APPLICATION_XML)
-                    .entity(e.getCause())
-                    .build();
+                .status(Status.INTERNAL_SERVER_ERROR)
+                .type(MediaType.APPLICATION_XML)
+                .entity(e.getCause())
+                .build();
     }
-
 
 }

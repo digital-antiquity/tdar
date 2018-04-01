@@ -75,20 +75,20 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             // sanity check on other subtypes
             if (dataset.getClass().equals(Dataset.class)) {
                 // only deal with datasets in this test
-//                Class<? extends Indexable>[] classes = LookupSource.RESOURCE.getClasses();
-//                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Dataset.class);
-//                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Resource.class);
-//                for (Class<? extends Indexable> subtype : classes) {
-//                    Class<? extends Resource> resourceSubtype = (Class<? extends Resource>) subtype;
+                // Class<? extends Indexable>[] classes = LookupSource.RESOURCE.getClasses();
+                // classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Dataset.class);
+                // classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Resource.class);
+                // for (Class<? extends Indexable> subtype : classes) {
+                // Class<? extends Resource> resourceSubtype = (Class<? extends Resource>) subtype;
 
-                    for (Resource r : genericService.findAll(Resource.class)) {
-                        if (r.getResourceType().isDataset()) {
-                            continue;
-                        }
-                        assertFalse(dataset.equals(r));
-                        assertFalse(dataset.hashCode() == r.hashCode());
+                for (Resource r : genericService.findAll(Resource.class)) {
+                    if (r.getResourceType().isDataset()) {
+                        continue;
                     }
-//                }
+                    assertFalse(dataset.equals(r));
+                    assertFalse(dataset.hashCode() == r.hashCode());
+                }
+                // }
             }
         }
     }
@@ -98,7 +98,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testAuthorizedUserInEquality() {
         // with the equals and hashCode of AuthorizedUser, this is now never going to be true
-        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(),getAdminUser(), Permissions.VIEW_ALL);
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.VIEW_ALL);
         AuthorizedUser authorizedUser2 = new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.VIEW_ALL);
         assertNotEquals(authorizedUser, authorizedUser2);
     }
@@ -107,11 +107,11 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     /**
      * 
-     * This test makes various assertions based on our expectations of our implementation of hashCode() and equals(). How we think it works: 
-     *  - If object.id == -1,  hashcode is object.id.hashCode()
-     *  - If object.id != -1,  hashcode is based on object.equalityFields
-     *  - we cache an object's hashCode() value to avoid "hiding" set/map items by modifying their contents (e.g. saving an object in a set)
-     *  
+     * This test makes various assertions based on our expectations of our implementation of hashCode() and equals(). How we think it works:
+     * - If object.id == -1, hashcode is object.id.hashCode()
+     * - If object.id != -1, hashcode is based on object.equalityFields
+     * - we cache an object's hashCode() value to avoid "hiding" set/map items by modifying their contents (e.g. saving an object in a set)
+     * 
      */
     // FIXME This test currently fails because it violates the hashCode contract {@link java.lang.Object#hashCode()}.
     public void testPersonEqualsHashCode() {

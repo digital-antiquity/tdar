@@ -14,9 +14,8 @@ public interface TestConstants {
     public static Long TEST_INSTITUTION_ID = 12088L;
     // public final static int DEFAULT_PORT = 8180;
     // public final static int DEFAULT_SECURE_PORT = 8143;
-    
- 
-    public final static String TEST_ROOT_DIR = "target/test-resources/";//src/test/resources/";
+
+    public final static String TEST_ROOT_DIR = "target/test-resources/";// src/test/resources/";
 
     public static String FILESTORE_PATH = "target/generated/filestore/";
 
@@ -86,17 +85,17 @@ public interface TestConstants {
             .quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent"));
     public static final Pattern REGEX_TYPEKIT = Pattern.compile("use.typekit.net");
     public static final Pattern REGEX_GOOGLE_ANALYTICS = Pattern.compile("ssl.google-analytics.com");
-    
+
     static File getFile(String testPath, String filename) throws FileNotFoundException {
-        File test = new File(testPath,filename);
+        File test = new File(testPath, filename);
         if (test.exists()) {
             return test;
         }
         test = new File("../test-resources/src/main/resources/" + testPath.replace("target/test-resources/", ""), filename);
-        if (test.exists() ) {
+        if (test.exists()) {
             return test;
         }
-        throw new FileNotFoundException("could not find " +testPath + "/"+ filename);
+        throw new FileNotFoundException("could not find " + testPath + "/" + filename);
     }
 
     static File getFile(String filename) throws FileNotFoundException {
@@ -105,9 +104,9 @@ public interface TestConstants {
             return test;
         }
         test = new File("../test-resources/src/main/resources/", filename.replace("target/test-resources/", ""));
-        if (test.exists() ) {
+        if (test.exists()) {
             return test;
         }
-        throw new FileNotFoundException("could not find "+ filename);
+        throw new FileNotFoundException("could not find " + filename);
     }
 }

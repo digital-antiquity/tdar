@@ -14,8 +14,10 @@ import org.tdar.core.bean.resource.InformationResource;
 
 public interface D1Formatter {
 
-    ObjectResponseContainer constructMetadataFormatObject(InformationResource resource) throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException;
+    ObjectResponseContainer constructMetadataFormatObject(InformationResource resource)
+            throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException;
 
-    ObjectResponseContainer constructD1FormatObject(InformationResource resource) throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, UnsupportedEncodingException, NoSuchAlgorithmException;
+    ObjectResponseContainer constructD1FormatObject(InformationResource resource)
+            throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, UnsupportedEncodingException, NoSuchAlgorithmException;
 
 }

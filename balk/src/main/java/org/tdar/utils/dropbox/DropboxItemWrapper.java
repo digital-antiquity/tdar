@@ -72,8 +72,8 @@ public class DropboxItemWrapper {
                     logger.trace("\t {} -> {} ", es.getKey(), es.getValue());
                 });
             }
-            
-            this.tag =(String) readValue.get(".tag");
+
+            this.tag = (String) readValue.get(".tag");
             this.size = (Integer) readValue.get("size");
             if (!StringUtils.equals(tag, DELETED) && !StringUtils.equals("file", tag)) {
                 this.dir = true;
@@ -83,7 +83,7 @@ public class DropboxItemWrapper {
             fullPath = (String) readValue.get("path_display");
             this.path = new File(fullPath).getParentFile();
             String mod = (String) readValue.get("server_modified");
-            
+
             if (!dir) {
                 extension = FilenameUtils.getExtension(name);
             }
@@ -106,7 +106,7 @@ public class DropboxItemWrapper {
     }
 
     public File getFile() throws DownloadErrorException, FileNotFoundException, DbxException, IOException {
-        File tempDir = new File(System.getProperty("java.io.tmpdir"),"dropbox");
+        File tempDir = new File(System.getProperty("java.io.tmpdir"), "dropbox");
         tempDir.mkdirs();
         File file = new File(tempDir, getName());
         client.getFile(fullPath, new FileOutputStream(file));
@@ -220,7 +220,7 @@ public class DropboxItemWrapper {
     public void setTag(String tag) {
         this.tag = tag;
     }
-    
+
     public boolean isDeleted() {
         if (DELETED.equals(tag)) {
             return true;

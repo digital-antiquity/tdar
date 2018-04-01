@@ -222,7 +222,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         }
     }
 
-    
     @Test
     @Rollback
     public void testCountySearch() {
@@ -251,7 +250,7 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-//    @Ignore
+    // @Ignore
     /* THIS TEST IS NOT VALID BECAUSE OF THE VALIDATION RULES ON LATLONGBOX, but it is, nonetheless, a good test to document */
     public void testMicronesia() {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(-171.142, -14.602, 146.154, 20.617);
@@ -266,11 +265,12 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         }
         assertEquals("Should not find africa for search for Micronesia", 0, found);
     }
-    
+
     @Test
     @Rollback
     public void testGeoReverseExtract() {
-        LatitudeLongitudeBox extractEnvelopeForCountries = geoSearchService.extractEnvelopeForCountries(Arrays.asList("England","Scotland","Wales","Northern Ireland"));
+        LatitudeLongitudeBox extractEnvelopeForCountries = geoSearchService
+                .extractEnvelopeForCountries(Arrays.asList("England", "Scotland", "Wales", "Northern Ireland"));
         logger.debug("{}", extractEnvelopeForCountries);
         assertNotNull(extractEnvelopeForCountries);
     }

@@ -21,8 +21,8 @@ import org.tdar.core.service.external.AuthenticationServiceImpl;
  * Created by jim on 8/19/15.
  *
  * email address tests courtesy of:
- *  - https://en.wikipedia.org/wiki/Email_address#Valid_email_addresses
- *  - http://codefool.tumblr.com/post/15288874550/list-of-valid-and-invalid-email-addresses
+ * - https://en.wikipedia.org/wiki/Email_address#Valid_email_addresses
+ * - http://codefool.tumblr.com/post/15288874550/list-of-valid-and-invalid-email-addresses
  */
 public class AuthenticationServiceTest {
 
@@ -43,20 +43,20 @@ public class AuthenticationServiceTest {
 
     @Test
     public void testUsernameLengths() {
-        assertThat(service.isValidUsername("b"),  is (false));
-        assertThat(service.isValidUsername("bo"),  is (false));
-        assertThat(service.isValidUsername("bob"),  is (false));
-        assertThat(service.isValidUsername("bobb"),  is (false));
-        assertThat(service.isValidUsername("bobby"),  is (true));
+        assertThat(service.isValidUsername("b"), is(false));
+        assertThat(service.isValidUsername("bo"), is(false));
+        assertThat(service.isValidUsername("bob"), is(false));
+        assertThat(service.isValidUsername("bobb"), is(false));
+        assertThat(service.isValidUsername("bobby"), is(true));
     }
 
     @Test
     public void testPossibleUsernameLengths() {
-        assertThat(service.isPossibleValidUsername("b"),  is (false));
-        assertThat(service.isPossibleValidUsername("bo"),  is (true));
-        assertThat(service.isPossibleValidUsername("bob"),  is (true));
-        assertThat(service.isPossibleValidUsername("bobb"),  is (true));
-        assertThat(service.isPossibleValidUsername("bobby"),  is (true));
+        assertThat(service.isPossibleValidUsername("b"), is(false));
+        assertThat(service.isPossibleValidUsername("bo"), is(true));
+        assertThat(service.isPossibleValidUsername("bob"), is(true));
+        assertThat(service.isPossibleValidUsername("bobb"), is(true));
+        assertThat(service.isPossibleValidUsername("bobby"), is(true));
         assertThat(service.isPossibleValidUsername("jim"), is(true));
     }
 
@@ -76,25 +76,28 @@ public class AuthenticationServiceTest {
         assertThat(service.isPossibleValidUsername("bobby tables"), is(true));
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testValidEmailAddresses() {
-        for(String email : readLines("email-addresses-valid.txt")) {
+        for (String email : readLines("email-addresses-valid.txt")) {
             String message = String.format("email address should be considered valid: %s", email);
             assertThat(message, service.isValidEmail(email), is(true));
         }
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testUnusualEmailAddresses() {
-        for(String email : readLines("email-addresses-valid-unusual.txt")) {
+        for (String email : readLines("email-addresses-valid-unusual.txt")) {
             String message = String.format("email address should be valid: %s", email);
             assertThat(message, service.isValidEmail(email), is(true));
         }
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     public void testInvalidEmailAddresses() {
-        for(String email : readLines("email-addresses-invalid.txt")) {
+        for (String email : readLines("email-addresses-invalid.txt")) {
             String message = String.format("email address should be invalid: %s", email);
             assertThat(message, service.isValidEmail(email), is(false));
         }

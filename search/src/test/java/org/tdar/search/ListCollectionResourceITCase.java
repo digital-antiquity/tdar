@@ -24,7 +24,7 @@ import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
-public class ListCollectionResourceITCase  extends AbstractResourceSearchITCase {
+public class ListCollectionResourceITCase extends AbstractResourceSearchITCase {
 
     @Autowired
     CreatorSearchService<Creator<?>> creatorSearchService;
@@ -35,39 +35,32 @@ public class ListCollectionResourceITCase  extends AbstractResourceSearchITCase 
     @Autowired
     EntityService entityService;
 
-
     @Test
     @Rollback
-    public void testFindResourcesForUnmanagedCollection() throws ParseException, SearchException, SearchIndexException, IOException,SearchException, SearchIndexException {
-        String term    = null;
-		Long projectId = null;
-		Boolean includeParent = false;
-		Long collectionId = 1000L;
-		Long shareId = null;
-		Long categoryId = null;
-		Permissions permission = Permissions.VIEW_ALL;
-		ReservedSearchParameters reservedSearchParameters = null;
-        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
+    public void testFindResourcesForUnmanagedCollection()
+            throws ParseException, SearchException, SearchIndexException, IOException, SearchException, SearchIndexException {
+        String term = null;
+        Long projectId = null;
+        Boolean includeParent = false;
+        Long collectionId = 1000L;
+        Long shareId = null;
+        Long categoryId = null;
+        Permissions permission = Permissions.VIEW_ALL;
+        ReservedSearchParameters reservedSearchParameters = null;
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList(LookupSource.RESOURCE), getAdminUser());
 
-		ResourceLookupObject resourceLookupObject = new ResourceLookupObject(term, projectId, includeParent, collectionId, shareId, categoryId, permission, reservedSearchParameters);
+        ResourceLookupObject resourceLookupObject = new ResourceLookupObject(term, projectId, includeParent, collectionId, shareId, categoryId, permission,
+                reservedSearchParameters);
         LuceneSearchResultHandler<Resource> result = new SearchResult<>();
-		resourceSearchService.lookupResource(getAdminUser(), resourceLookupObject, result, MessageHelper.getInstance());
+        resourceSearchService.lookupResource(getAdminUser(), resourceLookupObject, result, MessageHelper.getInstance());
 
-		assertNotEmpty("There were results found", result.getResults());
-		getLogger().debug("Results are {}",result);
-		getLogger().debug("Results are {}",result.getResults());
-		Map<Long, Resource> createIdMap = PersistableUtils.createIdMap(result.getResults());
-		Resource resource = createIdMap.get(5000L);
+        assertNotEmpty("There were results found", result.getResults());
+        getLogger().debug("Results are {}", result);
+        getLogger().debug("Results are {}", result.getResults());
+        Map<Long, Resource> createIdMap = PersistableUtils.createIdMap(result.getResults());
+        Resource resource = createIdMap.get(5000L);
         assertEmpty("should have 0 managed collections", resource.getManagedResourceCollections());
-		assertNotEmpty("should have at least one unmanaged collection", resource.getUnmanagedResourceCollections());
+        assertNotEmpty("should have at least one unmanaged collection", resource.getUnmanagedResourceCollections());
     }
-    
-    
-    
-    
-    
-    
 
-
-    
 }
