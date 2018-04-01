@@ -179,7 +179,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         Email received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
         assertTrue(received.getMessage().contains("not found"));
-        assertTrue("should find " + totalFiles.intValue(), received.getMessage().contains("Total Files: " + totalFiles.intValue()));
+        assertTrue("should find " + totalFiles.intValue(), received.getMessage().contains("Total Files:</b> " + totalFiles.intValue()));
         assertFalse(received.getMessage().contains(document.getInformationResourceFiles().iterator().next().getFilename()));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
