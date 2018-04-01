@@ -11,6 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,7 +196,18 @@ public class WeeklyFilestoreLoggingProcess extends AbstractScheduledProcess {
         String filename = "verify-" + df.format(new Date()) + ".txt";
         try {
             String message = freemarkerService.render("filestore-stats.ftl", map);
-            filestore.storeLog(LogType.FILESTORE_VERIFICATION, filename, message);
+            String log = new String(message);
+            log = StringUtils.replace(log, "<li>", " - ");
+            log = StringUtils.replace(log, "</li>", "");
+            log = StringUtils.replace(log, "<br/>", "");
+            log = StringUtils.replace(log, "<b>", "");
+            log = StringUtils.replace(log, "<p>", "");
+            log = StringUtils.replace(log, "</p>", "");
+            log = StringUtils.replace(log, "</b>", "");
+            log = StringUtils.replace(log, "<ul>", "");
+            log = StringUtils.replace(log, "</ul>", "");
+            log = StringUtils.replace(log, "<hr>", "====================================");
+            filestore.storeLog(LogType.FILESTORE_VERIFICATION, filename, log);
 
             logger.debug(subject + "[ " + getTdarConfiguration().getSystemAdminEmail() + " ]");
             logger.debug(message);

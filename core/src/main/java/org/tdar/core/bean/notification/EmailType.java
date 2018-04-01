@@ -15,6 +15,7 @@ import org.tdar.core.bean.notification.emails.AdminNotificationMessage;
 import org.tdar.core.bean.notification.emails.AdminOverdrawnNotification;
 import org.tdar.core.bean.notification.emails.AdminQuarantineReviewMessage;
 import org.tdar.core.bean.notification.emails.AdminReportNewUsersMessage;
+import org.tdar.core.bean.notification.emails.EmbargoExpirationAdminNotification;
 import org.tdar.core.bean.notification.emails.EmbargoExpirationNotification;
 import org.tdar.core.bean.notification.emails.EmbargoExpirationWarningNotification;
 import org.tdar.core.bean.notification.emails.InviteAcceptedMessage;
@@ -44,7 +45,7 @@ public enum EmailType implements Localizable, HasLabel {
     ADMIN_NEW_USER_REPORT("email_new_users.ftl", null, AdminReportNewUsersMessage.class),
     ADMIN_QUARANTINE_REVIEW("email_review_message.ftl", null, AdminQuarantineReviewMessage.class),
 
-    EMBARGO_EXPIRATION_ADMIN_NOTIFICATION("embargo/expiration-admin.ftl", null, AccessExpirationAdminNotification.class),
+    EMBARGO_EXPIRATION_ADMIN_NOTIFICATION("embargo/expiration-admin.ftl", null, EmbargoExpirationAdminNotification.class),
     EMBARGO_EXPIRATION_WARNING_NOTIFICATION("embargo/expiration-warning.ftl", null, EmbargoExpirationWarningNotification.class),
     EMBARGO_EXPIRATION_NOTIFICATION("embargo/expiration.ftl", null, EmbargoExpirationNotification.class),
 

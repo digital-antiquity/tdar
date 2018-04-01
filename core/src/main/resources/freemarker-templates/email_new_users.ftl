@@ -4,11 +4,11 @@
 The following users registered with ${siteAcronym} since (${date?date?string.short}):<br />
      <ul>
     <#items as user>
-        <ol><a href="https://core.tdar.org/browse/creators/${user.id?c}">${user.properName}</a><br/>
-        email: ${user.email}<br/>
-        institution: ${(user.institutionName)!"None"}<br/>
+        <li><a href="https://core.tdar.org/browse/creators/${user.id?c}">${user.properName}</a> ( ${user.email}) <br/>
+        ${(user.institutionName)!"None"}<br/>
         affiliation: ${(user.affiliation.label)!"None"}<br/>
-        contributor reason: <#if !user.contributorReason?? || (user.contributorReason?trim == "")>None<#else>${user.contributorReason?trim}</#if></ol>
+        contributor reason: <#if !user.contributorReason?? || (user.contributorReason?trim == "")>None<#else>${user.contributorReason?trim}</#if>
+        </li>
     </#items>
     </ul>
 </#list>
