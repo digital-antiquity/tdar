@@ -31,6 +31,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.geospatial.GeospatialController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
@@ -96,7 +98,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private String fileInputMethod;
     private String fileTextInput;
     protected FileSaveWrapper fsw = new FileSaveWrapper();
-
+    private String uploadSettings;
+    private String vueFilesFallback;
+    
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
 
@@ -275,8 +279,15 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
         Object proj = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
         json = serializationService.convertFilteredJsonForStream(proj, JsonProjectLookupFilter.class, null);
+        initializeFileProxies();
         return retval;
     }
+
+
+    public Collection<RequiredOptionalPairs> getRequiredOptionalPairs() {
+        return new ArrayList<>();
+    }
+
 
     @Override
     public String loadEditMetadata() throws TdarActionException {
@@ -596,5 +607,46 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setFileTextInput(String fileTextInput) {
         this.fileTextInput = fileTextInput;
+    }
+    
+
+    public String getUploadSettings() {
+        return uploadSettings;
+    }
+
+
+    public String getFileUploadSettings() {
+        initializeFileProxies();
+        FileUploadSettings settings = new FileUploadSettings();
+        settings.setAbleToUpload(isAbleToUploadFiles());
+        if (this instanceof DatasetController) {
+            settings.setDataTableEnabled(true);
+        }
+        if (this instanceof GeospatialController) {
+            settings.setSideCarOnly(true);
+        }
+        getLogger().debug("proxies: {} ({})", fileProxies, fileProxies.size());
+        settings.getFiles().addAll(fileProxies);
+        settings.setMultipleUpload(isMultipleFileUploadEnabled());
+        settings.setMaxNumberOfFiles(getMaxUploadFilesPerRecord());
+        settings.setResourceId(getId());
+        settings.setTicketId(getTicketId());
+        settings.setUserId(getAuthenticatedUser().getId());
+        settings.getValidFormats().addAll(getValidFileExtensions());
+        settings.getRequiredOptionalPairs().addAll(getRequiredOptionalPairs());
+        try {
+            return serializationService.convertToJson(settings);
+        } catch (Throwable t) {
+            getLogger().error("{}", t, t);
+            return "{}";
+        }
+    }
+
+    public String getVueFilesFallback() {
+        return vueFilesFallback;
+    }
+
+    public void setVueFilesFallback(String vueFilesFallback) {
+        this.vueFilesFallback = vueFilesFallback;
     }
 }
