@@ -6,7 +6,7 @@ Dear tDAR Admin:<br />
 <p><b>The following files will be un-embargoed tomorrow:</b></p>
 <ul>
 <#items as file>
- <li><a href="${baseUrl}${file.informationResource.detailUrl}">${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})</a>
+ <li><a href="${baseUrl}${file.informationResource.detailUrl}">${file.filename} (${file.id?c}):  ${file.informationResource.title}</a> (${file.informationResource.id?c})
     (${file.informationResource.submitter.properName})</li>
 </#items>
 </ul>
@@ -17,8 +17,8 @@ Dear tDAR Admin:<br />
 <p><b>The following files have been unembargoed:</b></p>
 <ul>
 <#items as file>
- <li><a href="${baseUrl}${file.informationResource.detailUrl}"> ${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})
-    (${file.informationResource.submitter.properName})</a></li>
+ <li><a href="${baseUrl}${file.informationResource.detailUrl}"> ${file.filename} (${file.id?c}):  ${file.informationResource.title}</a> (${file.informationResource.id?c})
+    (${file.informationResource.submitter.properName})</li>
 </#items>
 </ul>
 </#list>

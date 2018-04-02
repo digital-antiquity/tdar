@@ -656,6 +656,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <@s.select name="accountId" list="%{activeAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
             </div>
             </#if>
+        <#else>
+        <i>Charging is disabled (TESTING), re-enable in tdar.properties</i>    
         </#if>
     </#macro>
 
@@ -868,7 +870,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
    						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yyyy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
-                Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
+                Description      <@s.textarea cssClass="input-block-level resizable resize-vertical" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
             </div>
             </@_singleFileUpload>
