@@ -656,6 +656,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <@s.select name="accountId" list="%{activeAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
             </div>
             </#if>
+        <#else>
+        <i>Charging is disabled (TESTING), re-enable in tdar.properties</i>    
         </#if>
     </#macro>
 
