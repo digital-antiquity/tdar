@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
+import org.tdar.utils.EmailRawMessageHelper;
 
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
@@ -108,6 +110,23 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         // implicit assumption that something that is marked sent has a
         // sent-date
         assertThat(email.getDateSent(), is(not(nullValue())));
+    }
+
+    @Test
+    public void testSendingToMulitpleRecipients() throws MessagingException {
+        String toRecipients = "toPerson1@email.com,toEmail2@email.com";
+        Email email = new Email();
+        email.setMessage("Some message");
+        email.setTo(toRecipients);
+        email.setFrom("From@me.com");
+        email.setSubject("Test Subject");
+
+        EmailRawMessageHelper helper = new EmailRawMessageHelper();
+        MimeMessage mimeMessage = helper.createMimeMessage(email);
+
+        logger.debug("Testing if there's  2 recipients");
+        assertEquals("There are 2 recipients in the mime message", 2, mimeMessage.getAllRecipients().length);
+
     }
 
     @Test
