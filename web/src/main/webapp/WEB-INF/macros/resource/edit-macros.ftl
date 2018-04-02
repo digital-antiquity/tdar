@@ -868,7 +868,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
    						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yyyy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
-                Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
+                Description      <@s.textarea cssClass="input-block-level resizable resize-vertical" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
             </div>
             </@_singleFileUpload>
