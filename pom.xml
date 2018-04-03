@@ -638,19 +638,24 @@
             <artifactId>xz</artifactId>
             <version>1.6</version>
         </dependency>
-    </dependencies>		
+        <dependency>
+           <groupId>org.glassfish</groupId>
+           <artifactId>javax.el</artifactId>
+           <version>3.0.1-b08</version>
+        </dependency>
+      </dependencies>		
     </dependencyManagement>
 
     <dependencies>
         <dependency>
+           <groupId>org.glassfish</groupId>
+           <artifactId>javax.el</artifactId>
+           <version>3.0.1-b08</version>
+        </dependency>
+        <dependency>
             <groupId>org.knowm.xchart</groupId>
             <artifactId>xchart</artifactId>
             <version>${xchart.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
