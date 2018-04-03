@@ -279,7 +279,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         obfuscationService.obfuscate(obsProj, getAuthenticatedUser());
         Object proj = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
         json = serializationService.convertFilteredJsonForStream(proj, JsonProjectLookupFilter.class, null);
-        initializeFileProxies();
         return retval;
     }
 
