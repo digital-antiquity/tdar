@@ -113,8 +113,26 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    public void testSendingToMulitpleRecipients() throws MessagingException {
-        String toRecipients = "toPerson1@email.com,toEmail2@email.com";
+    public void testMultipleRecipientsWithCommas() throws MessagingException{
+        String toRecipients = "toPerson1@email.com,toEmail2@email.com,toEmail3@email.com";
+        testSendingToMulitpleRecipients(toRecipients, 3);
+    }
+    
+    @Test
+    public void testMultipleRecipientsWithSemiColons() throws MessagingException{
+        String toRecipients = "toPerson1@email.com;toEmail2@email.com;toEmail3@email.com";
+        testSendingToMulitpleRecipients(toRecipients, 3);
+    }
+    
+    @Test
+    public void testMultipleRecipientsCommasAndSemiColons() throws MessagingException{
+        String toRecipients = "toPerson1@email.com,toEmail2@email.com;toEmail3@email.com";
+        testSendingToMulitpleRecipients(toRecipients, 3);
+    }
+    
+    
+    public void testSendingToMulitpleRecipients(String toRecipients, int size) throws MessagingException {
+       
         Email email = new Email();
         email.setMessage("Some message");
         email.setTo(toRecipients);
@@ -124,8 +142,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         EmailRawMessageHelper helper = new EmailRawMessageHelper();
         MimeMessage mimeMessage = helper.createMimeMessage(email);
 
-        logger.debug("Testing if there's  2 recipients");
-        assertEquals("There are 2 recipients in the mime message", 2, mimeMessage.getAllRecipients().length);
+        String assertion = String.format("Testing if there's %s recipients", size);
+        logger.debug(assertion);
+        assertEquals(assertion, size, mimeMessage.getAllRecipients().length);
 
     }
 
