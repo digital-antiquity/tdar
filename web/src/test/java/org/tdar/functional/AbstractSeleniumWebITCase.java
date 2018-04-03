@@ -315,7 +315,7 @@ public abstract class AbstractSeleniumWebITCase {
                 FirefoxOptions options = new FirefoxOptions();
                 options.setBinary(fb);
                 options.setProfile(profile);
-                options.addCapabilities(caps);
+                options.merge(caps);
                 // profile.setPreference("browser.download.dir","c:\\downloads");
                 rawDriver = new FirefoxDriver(options);
 
