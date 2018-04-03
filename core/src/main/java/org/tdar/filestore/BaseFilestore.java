@@ -1,5 +1,7 @@
 package org.tdar.filestore;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -123,6 +125,7 @@ public abstract class BaseFilestore implements Filestore {
             if (version.getVersionType().isArchival() || version.getVersionType().isUploaded()) {
                 File checksum = new File(file.getParentFile(), String.format("%s.%s", file.getName(), digest.getAlgorithm()));
                 FileUtils.write(checksum, version.getChecksum(), Charset.defaultCharset());
+                logFilestoreWrite(checksum);
             }
         }
         if (version.getDateCreated() == null) {
