@@ -171,8 +171,4 @@ public enum EmailType implements Localizable, HasLabel {
         this.fromAddress = fromAddress;
     }
     
-    @Override
-    public String toString(){
-        return this.name().replaceAll("_", " ");
-    }
 }
