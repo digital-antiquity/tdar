@@ -16,7 +16,7 @@ function showMessage(id){
         console.log("there's no iframe for "+id);
         var container = $("#email-"+id+" .email-container");
         console.log(container);
-        container.html("<iframe src='/admin/emailContent/"+id+"' seamless='seamless' frameborder='0'></iframe>"); 
+        container.html("<iframe src='/admin/emailContent/"+id+"' seamless='seamless' frameborder='0' sandbox='allow-popup'></iframe>"); 
     }
     
     $("#email-"+id).toggleClass('hidden');

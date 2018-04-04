@@ -72,7 +72,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
             to = custom.getContact();
         }
 
-        emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
+        emailService.createAccessRequestEmail(from, to, resource, subject, messageBody, type, params);
         addActionMessage("Message Sent");
 
         return SUCCESS;

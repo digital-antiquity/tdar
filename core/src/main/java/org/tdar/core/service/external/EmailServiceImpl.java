@@ -316,21 +316,6 @@ public class EmailServiceImpl implements EmailService {
         this.mailSender = mailSender;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.tdar.core.service.external.EmailService#constructEmail(org.tdar.core.
-     * bean.entity.Person, org.tdar.core.bean.entity.HasEmail,
-     * org.tdar.core.bean.resource.Resource, java.lang.String, java.lang.String,
-     * org.tdar.utils.EmailType)
-     */
-    @Override
-    @Transactional(readOnly = false)
-    public Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody,
-            EmailType type) {
-        return constructEmail(from, to, resource, subject, messageBody, type, null);
-    }
 
     /*
      * (non-Javadoc)
@@ -343,13 +328,22 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     @Transactional(readOnly = false)
-    public Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
+    public Email createAccessRequestEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
             EmailType type, Map<String, String[]> params) {
+        
+        String subjectPart = type.name();
+
         Email email = createMessage(type, to.getEmail());
         genericDao.markWritable(email);
+        setupBasicComponents(email.getMap());
         email.setFrom(CONFIG.getDefaultFromEmail());
-        String subjectPart = MessageHelper.getMessage(type.getLocaleKey());
-        Map<String, Object> map = new HashMap<>();
+        email.setTo(to.getEmail());
+        email.setType(type);
+        email.setStatus(Status.IN_REVIEW);
+        email.addData(EmailKeys.FROM, from);
+        email.addData(EmailKeys.TO, to);
+        email.addData(EmailKeys.MESSAGE, messageBody);
+        email.addData(EmailKeys.TYPE, type);
 
         if (type == EmailType.CUSTOM) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
@@ -358,51 +352,30 @@ public class EmailServiceImpl implements EmailService {
             email.addData(DESCRIPTION_REQUEST, customRequest.getDescriptionRequest());
             email.addData(CUSTOM_NAME, customRequest.getName());
         }
+        
+        if (MapUtils.isNotEmpty(params)) {
+            email.getMap().putAll(params);
+        }
 
+        if (resource != null) {
+            email.setResource(resource);
+            email.addData(EmailKeys.RESOURCE, resource);
+        }
+        
         if (CONFIG.isSendEmailToTester()) {
             email.setTo(from.getEmail());
         }
 
-        email.setTo(to.getEmail());
         createResourceRevisionLogEntry(from, to, resource, subjectPart);
-
-        String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), subjectPart, resource.getId(),
-                from.getProperName());
+        updateEmailSubject(email);
         if (StringUtils.isNotBlank(subjectSuffix)) {
-            subject += " - " + subjectSuffix;
+           String subject = email.getSubject().concat(" - " + subjectSuffix);
+           email.setSubject(subject);
         }
-
-        email.setSubject(subject);
-        email.setType(type);
-
-        if (resource != null) {
-            email.setResource(resource);
-        }
-
-        email.setStatus(Status.IN_REVIEW);
-
-        email.addData(EmailKeys.FROM, from);
-        email.addData(EmailKeys.TO, to);
-
-        setupBasicComponents(email.getMap());
-
-        if (MapUtils.isNotEmpty(params)) {
-            map.putAll(params);
-        }
-
-        if (resource != null) {
-            email.addData(EmailKeys.RESOURCE, resource);
-        }
-
-        email.addData(EmailKeys.MESSAGE, messageBody);
-        email.addData(EmailKeys.TYPE, type);
-
+        
         renderAndUpdateEmailContent(email);
         queue(email);
-
-        // queueWithFreemarkerTemplate(type.getTemplateLocation(), map, email);
         return email;
-
     }
 
     private void createResourceRevisionLogEntry(Person from, HasEmail to, Resource resource, String subjectPart) {
@@ -470,7 +443,6 @@ public class EmailServiceImpl implements EmailService {
     @Transactional(readOnly = false)
     public Email proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser,
             String comment, boolean reject, EmailType type, Permissions permission, Date expires) {
-
         EmailType emailType = null;
         if (reject) {
             emailType = EmailType.PERMISSION_REQUEST_REJECTED;

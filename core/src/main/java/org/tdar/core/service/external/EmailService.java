@@ -63,18 +63,11 @@ public interface EmailService {
      */
     void send(Email email);
 
-    /**
-     * Deprecated method. use construct email instead, since it generates HTML emails.
-     */
-    @Deprecated
-    Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody,
-            EmailType type);
 
     /**
      * Deprecated method. use construct email instead, since it generates HTML emails.
      */
-    @Deprecated
-    Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
+    Email createAccessRequestEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
             EmailType type, Map<String, String[]> params);
 
     void changeEmailStatus(Status action, List<Email> emails);
