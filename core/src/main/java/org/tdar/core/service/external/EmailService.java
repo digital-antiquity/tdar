@@ -33,8 +33,6 @@ public interface EmailService {
     String _VIEWS_BARCHART_PNG = "_views-barchart.png";
     String _DOWNLOADS_BARCHART_PNG = "_downloads-barchart.png";
     String _RESOURCE_PIECHART_PNG = "_resource-piechart.png";
-    String CUSTOM_NAME = "customName";
-    String DESCRIPTION_REQUEST = "descriptionRequest";
 
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates

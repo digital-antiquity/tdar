@@ -345,12 +345,12 @@ public class EmailServiceImpl implements EmailService {
         email.addData(EmailKeys.MESSAGE, messageBody);
         email.addData(EmailKeys.TYPE, type);
 
-        if (type == EmailType.CUSTOM) {
+        if (type == EmailType.CUSTOM_CONTACT) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
             logger.debug("{}", customRequest);
             subjectPart = customRequest.getName();
-            email.addData(DESCRIPTION_REQUEST, customRequest.getDescriptionRequest());
-            email.addData(CUSTOM_NAME, customRequest.getName());
+            email.addData(EmailKeys.DESCRIPTION_REQUEST, customRequest.getDescriptionRequest());
+            email.addData(EmailKeys.CUSTOM_NAME, customRequest.getName());
         }
         
         if (MapUtils.isNotEmpty(params)) {
@@ -447,7 +447,7 @@ public class EmailServiceImpl implements EmailService {
         if (reject) {
             emailType = EmailType.PERMISSION_REQUEST_REJECTED;
         } else {
-            if (type == EmailType.CUSTOM) {
+            if (type == EmailType.CUSTOM_CONTACT) {
                 emailType = EmailType.PERMISSION_REQUEST_CUSTOM;
             } else {
                 emailType = EmailType.PERMISSION_REQUEST_ACCEPTED;
@@ -462,9 +462,9 @@ public class EmailServiceImpl implements EmailService {
         message.addData(EmailKeys.EXPIRES, expires);
 
         message.addData(EmailKeys.AUTHORIZED_USER, authenticatedUser);
-        if (type == EmailType.CUSTOM) {
+        if (type == EmailType.CUSTOM_CONTACT) {
             RequestCollection customRequest = resourceCollectionDao.findCustomRequest(resource);
-            message.addData(CUSTOM_NAME, customRequest.getName());
+            message.addData(EmailKeys.CUSTOM_NAME, customRequest.getName());
             message.addData(EmailKeys.DESCRIPTION_RESPONSE, customRequest.getDescriptionResponse());
         }
         if (StringUtils.isNotBlank(comment)) {

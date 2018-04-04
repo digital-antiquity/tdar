@@ -19,5 +19,6 @@ public interface EmailKeys {
     String TO = "to";
     String FROM = "from";
     String INVITE = "invite";
-
+    String CUSTOM_NAME = "customName";
+    String DESCRIPTION_REQUEST = "descriptionRequest";
 }

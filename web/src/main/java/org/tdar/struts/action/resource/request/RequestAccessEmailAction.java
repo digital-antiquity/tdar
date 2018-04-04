@@ -67,7 +67,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     @PostOnly
     public String execute() {
         // if we're in the SAA process, then override the "to" with the specified ID
-        if (type == EmailType.CUSTOM) {
+        if (type == EmailType.CUSTOM_CONTACT) {
             RequestCollection custom = resourceService.findCustom(getResource());
             to = custom.getContact();
         }

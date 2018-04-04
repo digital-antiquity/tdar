@@ -25,8 +25,8 @@ public class CustomMessage extends Email {
     public String createSubjectLine() {
         Resource resource = (Resource) getMap().get(EmailKeys.RESOURCE);
         Person from = (Person) getMap().get(EmailKeys.FROM);
-
-        return MessageHelper.getMessage(EmailType.CUSTOM.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(),
+        String subjectPart = (String) getMap().get(EmailKeys.CUSTOM_NAME);
+        return MessageHelper.getMessage(EmailType.CUSTOM_CONTACT.getLocaleKey(), Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym(),subjectPart,
                 String.valueOf(resource.getId()), from.getProperName()));
     }
 }
