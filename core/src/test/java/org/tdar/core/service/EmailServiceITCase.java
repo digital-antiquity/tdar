@@ -65,6 +65,13 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
+    public void testMergeRequestEmail(){
+        sendContactRequestEmail(EmailType.MERGE_REQUEST);
+    }
+    
+    
+    @Test
+    @Rollback
     public void testPermissionRequestRejectedEmail() {
         EmailType emailType = EmailType.PERMISSION_REQUEST_REJECTED;
         String comment = "Your permission request has been rejected";
@@ -303,12 +310,12 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         TdarUser from = new TdarUser("Test", "User", "test@tdar.org", "tdartest", getAdminUserId());
         TdarUser to = new TdarUser("Test", "User", getTestUserEmail(), "tdartest", getUserId());
         Resource resource = createAndSaveNewDataset();
-        String subject = "";
+        String subjectSuffix = "suffix";
         String messageBody = "This is a test message";
         Map<String, String[]> params = null;
 
-        Email email = emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
-
+        Email email = emailService.createAccessRequestEmail(from, to, resource, subjectSuffix, messageBody, type, params);
+        
         email.setFrom("test@tdar.org");
 
         /**
@@ -326,7 +333,9 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
          **/
 
         assertNotNull("Expect the subject to be the same", email.getSubject());
+        assertTrue("Expect the email subject to not be blank", !email.getSubject().equals(""));
 
+        logger.debug("The subject is {} ",email.getSubject());
         try {
             emailService.sendAwsHtmlMessage(email);
         } catch (MessagingException | IOException e) {
