@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.RequestCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
@@ -69,6 +71,12 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         sendContactRequestEmail(EmailType.MERGE_REQUEST);
     }
     
+    
+    @Test
+    @Rollback
+    public void testCustomContactEmail(){
+        sendContactRequestEmail(EmailType.CUSTOM_CONTACT);
+    }
     
     @Test
     @Rollback
@@ -310,6 +318,21 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         TdarUser from = new TdarUser("Test", "User", "test@tdar.org", "tdartest", getAdminUserId());
         TdarUser to = new TdarUser("Test", "User", getTestUserEmail(), "tdartest", getUserId());
         Resource resource = createAndSaveNewDataset();
+        ResourceCollection collection = createAndSaveNewResourceCollection("test resource collection");
+        collection.getManagedResources().add(resource);
+        resource.getManagedResourceCollections().add(collection);
+        RequestCollection reqCollection = new RequestCollection();
+        
+        reqCollection.getCollections().add(collection.getId());
+        reqCollection.setContact(getAdminUser());
+        reqCollection.setName("Test Request Collection");
+        
+        genericService.saveOrUpdate(resource);
+        genericService.saveOrUpdate(collection);
+        genericService.saveOrUpdate(reqCollection);
+
+        genericService.synchronize();
+        
         String subjectSuffix = "suffix";
         String messageBody = "This is a test message";
         Map<String, String[]> params = null;

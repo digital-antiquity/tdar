@@ -68,7 +68,7 @@ public enum EmailType implements Localizable, HasLabel {
     REQUEST_ACCESS("email-form/access-request.ftl",null,RequestAccessMessage.class),
     SUGGEST_CORRECTION("email-form/correction.ftl",null,CorrectionSuggestionMessage.class),//There's no references to this enum, or the template in any java class.
     MERGE_REQUEST("email-form/merge-people.ftl", null, MergeRequestMessage.class), //There's no references to this enum, or the template in any java class.
-    CUSTOM("email-form/custom-request.ftl",null,CustomMessage.class);
+    CUSTOM_CONTACT("email-form/custom-request.ftl",null,CustomMessage.class);
 
     /**
      * a string representation of the .ftl template to use
@@ -121,7 +121,7 @@ public enum EmailType implements Localizable, HasLabel {
         for (EmailType type : valuesForUserSelection()) {
             switch (type) {
                 case REQUEST_ACCESS:
-                case CUSTOM:
+                case CUSTOM_CONTACT:
                 case MERGE_REQUEST:
                     break;
                 default:
@@ -134,7 +134,7 @@ public enum EmailType implements Localizable, HasLabel {
     public static List<EmailType> valuesWithoutCustom() {
         ArrayList<EmailType> types = new ArrayList<EmailType>();
         for (EmailType type : valuesForUserSelection()) {
-            if (type != CUSTOM && type != MERGE_REQUEST) {
+            if (type != CUSTOM_CONTACT && type != MERGE_REQUEST) {
                 types.add(type);
             }
         }
@@ -147,7 +147,7 @@ public enum EmailType implements Localizable, HasLabel {
                 REQUEST_ACCESS,
                 SUGGEST_CORRECTION,
                 MERGE_REQUEST,
-                CUSTOM
+                CUSTOM_CONTACT
         ));
     }
 
