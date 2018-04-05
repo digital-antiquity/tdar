@@ -106,9 +106,28 @@ public enum EmailType implements Localizable, HasLabel {
         return true;
     }
 
+    /**
+     * Some labels require that the LocaleKey is not the same as the subject. 
+     * This will append _label to those enum values 
+     * @return
+     */
+    private String getMessageKey(EmailType type){
+        switch(type){
+            case CONTACT:
+            case REQUEST_ACCESS:
+            case SUGGEST_CORRECTION:
+            case MERGE_REQUEST:
+            case CUSTOM_CONTACT:
+                return type.getLocaleKey().concat("_label");
+            default:
+                return type.getLocaleKey();
+        }
+    }
+    
+    
     @Override
     public String getLabel() {
-        return MessageHelper.getMessage(getLocaleKey());
+        return MessageHelper.getMessage(getMessageKey(this));
     }
 
     @Override
