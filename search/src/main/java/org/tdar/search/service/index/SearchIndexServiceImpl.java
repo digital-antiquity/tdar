@@ -369,6 +369,9 @@ public class SearchIndexServiceImpl implements SearchIndexService {
             String core = "";
             for (C toIndex : indexable) {
                 count++;
+                if (toIndex ==null) {
+                    continue;
+                }
                 core = LookupSource.getCoreForClass(toIndex.getClass());
                 try {
                     // if we were called via async, the objects will belong to
