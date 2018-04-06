@@ -35,6 +35,8 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
         if (StringUtils.isNotBlank(getFailureMessage())) {
             throw new ServletException(getFailureMessage());
         }
+        
+        container.setInitParameter("spring.profiles.active", "oaipmh");
 
         // setupContainer(container);
         setupOpenSessionInViewFilter(container);
