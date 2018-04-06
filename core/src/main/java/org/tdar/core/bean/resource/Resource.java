@@ -418,14 +418,14 @@ public class Resource implements Persistable,
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.sharedCollections")
     private Set<ResourceCollection> managedResourceCollections = new LinkedHashSet<>();
 
-    // MAINTAINED FOR HQL QUERY USE
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
-            nullable = false, name = "collection_id") })
-    @XmlTransient
-    @Where(clause = "status='ACTIVE' ")
-    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
+//    // MAINTAINED FOR HQL QUERY USE
+//    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+//    @LazyCollection(LazyCollectionOption.EXTRA)
+//    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+//            nullable = false, name = "collection_id") })
+//    @XmlTransient
+//    @Where(clause = "status='ACTIVE' ")
+//    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -1244,6 +1244,10 @@ public class Resource implements Persistable,
     @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
     public Set<ResourceCollection> getManagedResourceCollections() {
         return managedResourceCollections;
+    }
+    
+    public void setManagedResourceCollections(LinkedHashSet<ResourceCollection> mrc )  {
+        this.managedResourceCollections = mrc;
     }
 
     // @Transient
