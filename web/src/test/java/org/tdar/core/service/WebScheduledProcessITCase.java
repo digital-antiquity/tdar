@@ -56,6 +56,6 @@ public class WebScheduledProcessITCase extends AbstractIntegrationWebTestCase {
         scheduledProcessService.getManager().addProcess(SendEmailProcess.class);
         Email received = checkMailAndGetLatest("The following resources were added to");
         assertEquals(received.getFrom(), emailService.getFromEmail());
-        assertEquals(received.getTo(), getTdarConfiguration().getSystemAdminEmail());
+        assertEquals(received.getTo(), getTdarConfiguration().getStaffEmail());
     }
 }
