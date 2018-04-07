@@ -127,24 +127,22 @@ public class ResourceProxy implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @Where(clause = "collection_type='SHARED'")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    private Set<ResourceCollection> sharedCollections = new LinkedHashSet<>();
+
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    @Where(clause = "status='ACTIVE'")
-    private Set<ResourceCollection> managedResourceCollections = new LinkedHashSet<>();
-
-
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
-            nullable = false, name = "collection_id") })
-    @XmlTransient
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    @Where(clause = "status='ACTIVE'")
-    private Set<ResourceCollection> unmanagedResourceCollections = new LinkedHashSet<>();
+    @Where(clause = "collection_type!='LIST'")
+    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "resource_id")
@@ -287,15 +285,26 @@ public class ResourceProxy implements Serializable {
         res.setDateUpdated(this.getDateUpdated());
         res.setId(this.getId());
         logger.trace("recursing down");
-        res.getManagedResourceCollections().addAll(getManagedResourceCollections());
-        res.getUnmanagedResourceCollections().addAll(getUnmanagedResourceCollections());
+        res.getManagedResourceCollections().addAll(getSharedCollections());
         res.getAuthorizedUsers().addAll(getAuthorizedUsers());
         logger.trace("done generation");
         return res;
     }
 
-    public void setManagedResourceCollections(Set<ResourceCollection> resourceCollections) {
-        this.managedResourceCollections = resourceCollections;
+    public Set<ResourceCollection> getSharedCollections() {
+        return sharedCollections;
+    }
+
+    public void setSharedCollections(Set<ResourceCollection> resourceCollections) {
+        this.sharedCollections = resourceCollections;
+    }
+
+    public Set<ResourceCollection> getResourceCollections() {
+        return resourceCollections;
+    }
+
+    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+        this.resourceCollections = resourceCollections;
     }
 
     public Set<AuthorizedUser> getAuthorizedUsers() {
@@ -304,18 +313,6 @@ public class ResourceProxy implements Serializable {
 
     public void setAuthorizedUsers(Set<AuthorizedUser> authorizedUsers) {
         this.authorizedUsers = authorizedUsers;
-    }
-
-    public Set<ResourceCollection> getUnmanagedResourceCollections() {
-        return unmanagedResourceCollections;
-    }
-
-    public void setUnmanagedResourceCollections(Set<ResourceCollection> unmanagedResourceCollections) {
-        this.unmanagedResourceCollections = unmanagedResourceCollections;
-    }
-
-    public Set<ResourceCollection> getManagedResourceCollections() {
-        return managedResourceCollections;
     }
 
 }
