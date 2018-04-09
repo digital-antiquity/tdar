@@ -1,0 +1,4 @@
+# test that we can override the stemming algorithm with our own mappings
+# these must be tab-separated
+australian	australia
+american	america
