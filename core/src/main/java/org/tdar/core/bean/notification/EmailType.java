@@ -118,7 +118,7 @@ public enum EmailType implements Localizable, HasLabel {
             case SUGGEST_CORRECTION:
             case MERGE_REQUEST:
             case CUSTOM_CONTACT:
-                return type.getLocaleKey().concat("_label");
+                return type.getLocaleKey().concat("_LABEL");
             default:
                 return type.getLocaleKey();
         }
