@@ -36,11 +36,28 @@ import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.utils.EmailRawMessageHelper;
+import org.tdar.utils.MessageHelper;
 
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
+    
+    @Test
+    public void testEnumLabelsAndLocalesExist(){
+        for(EmailType emailType : EmailType.values()){
+            String localeKey  = emailType.getLocaleKey();
+            String labelKey  = emailType.getLabel();
+            String localeMessage  = MessageHelper.getMessage(localeKey);
+            String labelMessage   = MessageHelper.getMessage(labelKey);
+            getLogger().debug("Email Type: {}",emailType);
+            getLogger().debug("Locale Key : {}", localeKey);
+            getLogger().debug("Label Key : {}", labelKey);
+            assertTrue("The locale key exists", StringUtils.isNotEmpty(localeMessage));            
+            assertTrue("The label key exists", StringUtils.isNotEmpty(labelMessage));            
+        }
+    }
+    
     @Test
     @Rollback
     public void testUsingMockAwsObject() {
@@ -77,6 +94,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     public void testCustomContactEmail(){
         sendContactRequestEmail(EmailType.CUSTOM_CONTACT);
     }
+    
     
     @Test
     @Rollback

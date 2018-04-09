@@ -29,6 +29,7 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.InvoiceDao;
@@ -390,26 +391,12 @@ public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, I
      * @param invoice
      */
     private void sendNotificationEmail(Invoice invoice) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("invoice", invoice);
-        map.put("date", new Date());
         try {
-            List<Person> people = new ArrayList<>();
-            for (String email : StringUtils.split(TdarConfiguration.getInstance().getBillingAdminEmail(), ";")) {
-                if (StringUtils.isBlank(email)) {
-                    continue;
-                }
-                Person person = new Person("Billing", "Info", email.trim());
-                genericDao.markReadOnly(person);
-                people.add(person);
-            }
-            Email email = new Email();
-            email.setSubject(MessageHelper.getMessage("cartController.subject", Arrays.asList(invoice.getId(), invoice.getTransactedBy().getProperName())));
-            for (Person person : people) {
-                email.addToAddress(person.getEmail());
-            }
+            Email email = emailService.createMessage(EmailType.TRANSACTION_COMPLETE_ADMIN, TdarConfiguration.getInstance().getBillingAdminEmail());
+            email.addData("invoice", invoice);
+            email.addData("date", new Date());
             email.setUserGenerated(false);
-            emailService.queueWithFreemarkerTemplate("transaction-complete-admin.ftl", map, email);
+            emailService.renderAndQueueMessage(email);
         } catch (Exception e) {
             logger.error("could not send email: {} ", e);
         }

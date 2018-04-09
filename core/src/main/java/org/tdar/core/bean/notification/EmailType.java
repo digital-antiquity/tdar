@@ -31,14 +31,19 @@ import org.tdar.core.bean.notification.emails.NewUserWelcomeMessage;
 import org.tdar.core.bean.notification.emails.OverdrawnNotification;
 import org.tdar.core.bean.notification.emails.RequestAccessMessage;
 import org.tdar.core.bean.notification.emails.TestAwsMessage;
+import org.tdar.core.bean.notification.emails.TransactionCompleteMessage;
 import org.tdar.utils.MessageHelper;
 
 public enum EmailType implements Localizable, HasLabel {
+    
+    //Note: Setting Null for the email will cause the EmailServiceImpl 
+    //to use the default email address in TdarConfig
+    
     INVITE("invite/invite.ftl", "no-reply@tdar.org", InviteMessage.class),
     INVITE_ACCEPTED("invite/invite-accepted.ftl", "no-reply@tdar.org", InviteAcceptedMessage.class),
-    NEW_USER_NOTIFY("email_new_users.ftl"),
+    //NEW_USER_NOTIFY("email_new_users.ftl"), -> Changed to ADMIN_NEW_USER_NOTIFY
     NEW_USER_WELCOME("email-welcome.ftl", "no-reply@tdar.org", NewUserWelcomeMessage.class),
-    TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
+    TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl",null, TransactionCompleteMessage.class),
 
     PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl", "no-reply@tdar.org", AccessRequestGrantedMessage.class),
     PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl", "no-reply@tdar.org", AccessRequestRejectedMessage.class),
