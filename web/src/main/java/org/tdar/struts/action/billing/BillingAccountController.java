@@ -90,10 +90,10 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             setupOwnerField();
             List<UserRightsProxy> proxies = new ArrayList<>();
             for (TdarUser user : authorizedMembers) {
-                proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_ACCOUNT)));
+                if (user != null) {
+                    proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_ACCOUNT)));
+                }
             }
-            // saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser
-            // authenticatedUser)
             accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies);
         } catch (Exception e) {
             getLogger().debug("{}", e, e);
@@ -240,16 +240,16 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     public String loadEditMetadata() throws TdarActionException {
         setOwner(getPersistable().getOwner());
         setupOwnerField();
+        getAccount().getAuthorizedUsers().forEach(au -> {
+            getAuthorizedMembers().add(au.getUser());
+            getAuthorizedUsersFullNames().add(au.getUser().getProperName());
+        });
         return SUCCESS;
     }
 
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        getAccount().getAuthorizedUsers().forEach(au -> {
-            getAuthorizedMembers().add(au.getUser());
-            getAuthorizedUsersFullNames().add(au.getUser().getProperName());
-        });
     }
 
     public List<Status> getStatuses() {
