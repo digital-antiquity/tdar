@@ -1,0 +1,54 @@
+<div id="add-resource-form" data-administrator="${editor?c}" data-unmanaged-enabled="${administrator?c}" data-can-edit="${editable?c}" data-resource-id="${resource.id?c}">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" >&times;</button>
+    <h3>Add to a Collection</h3>
+  </div>
+  
+  <div class="modal-body" >
+          <form>
+              <div>
+                <span data-content="A collection must be selected">Select a collection, or create one</span>
+                <div class="form-group">
+                  <div>
+                    <selectize v-bind:options="options" v-model="selectedCollection" size="1"
+                         data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list" 
+                         data-value-field='id' data-label-field='text' data-search-field='text' data-sort-field='text'>
+                    </selectize>
+                  </div>
+                  <div style="margin-top:15px;" v-if="isNaN(selectedCollection)" >
+                      <label for="newCollectionDescription">Collection Description</label>
+                      <textarea class="wide-textarea" name="description" id='newCollectionDescription' v-model="newCollectionDescription"></textarea> 
+                  </div>
+              </div>
+
+            <div v-if="canEdit">
+                <label>
+                    <input type="checkbox" id="managedResource" v-model="managedResource"  :disabled="!administrator" />
+                     Grant rights to edit this record to users administering this collection
+                </label>
+             </div>
+             
+                 <div>
+                    <h3>Included as part of : </h3>
+                    <ul id='existing-collections-list'>
+	                    <li v-for="collection in collections.managed">
+	                        {{ellipse(collection.name)}} <span v-show="unmanagedEnabled">(managed)</span> <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
+	                    </li>
+                    
+                    <li v-show="unmanagedEnabled" v-for="collection in collections.unmanaged">
+                        {{ellipse(collection.name)}} (unmanaged) <a v-on:click='removeResourceFromCollection(collection,"UNMANAGED")' style="cursor:pointer">Remove</a>
+                    </li>
+                    </ul>
+                    <div v-if="collections.managed.length == 0 && collections.unmanaged.length==0">
+                        Not part of any collections
+                    </div>
+                 </div>
+             </div>
+        </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade">Cancel</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade == false">Close</button>
+    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" v-on:click="saveAddToCollectionChanges" :disabled="!changesMade">Save Changes</button>
+  </div>
+</div>  

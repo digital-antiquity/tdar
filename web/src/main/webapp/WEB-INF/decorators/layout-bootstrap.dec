@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
+<#import "decorator-macros.ftl" as dec>
+<#import "whitelabel-decorator-macros.ftl" as wdec>
+<#import "/WEB-INF/macros/bootstrap-macros.ftl" as bs>
+
+<!-- README - UPDATE BOWER.JSON in lockstep -->
+<#global jquery_version="1.11.3">
+<#global jquery_ui_version="1.11.4">
+<#global jquery_ui_css_version="1.11.4">
+<#global jquery_validate_version="1.15.1" >
+<#assign pageType ="view">
+<#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
+    <#assign pageType=actionName>
+</#if>
+
+<#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
+     This is a less-than ideal solution, but seems to be the best that we have. -->
+<#if !(protocol?has_content)>
+    <#include "/500.html" />
+    </html>
+<#else>
+    <#import "/WEB-INF/macros/common.ftl" as common><#t>
+    <#import "/WEB-INF/macros/common-auth.ftl" as auth><#t>
+    <#import "/WEB-INF/macros/header.ftl" as header>
+    <#assign uri = request.requestURI />
+    <#assign bodyid = 'alt' />
+    <#if (homepage!false)>
+        <#assign bodyid = "home" />
+    </#if>
+
+<#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
+<head>
+    <title>${title!siteName}</title>
+    <#if authenticatedUser??>
+        <!-- logged-in-as: ${authenticatedUser.email} -->
+    </#if>
+    <!-- BEGIN-PAGE-HEADER -->
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <link rel="unapi-server" type="application/xml" title="unAPI" href="<@s.url value='/unapi'/>" />
+    <link rel="search" type="application/opensearchdescription+xml" href='<@s.url value="/opensearch.xml"/>' title="Search ${siteAcronym}" />
+
+<#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
+    <#if useCDN>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+    <#else>
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
+    </#if>
+
+        <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.min.css">
+        <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.theme.min.css">
+
+    <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
+    <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
+    <@header.css (webFilePreprocessingEnabled ) />
+
+    <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
+    <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
+    <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
+    <#if useCDN>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
+    <#else>
+        <script src="${staticHost}/includes/jquery-${jquery_version}.min.js"></script>
+    </#if>
+    
+    <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}.custom/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <#include "/${config.themeDir}/head.dec" />
+    <#if whiteLabelCollection??>  
+        <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
+    </#if>
+    
+${head}
+
+    <@common.globalJavascript />
+
+    <#if schemaOrgJsonLD?has_content>
+        <script type="application/ld+json">
+    ${schemaOrgJsonLD}
+
+        </script>
+    </#if>
+    <#if contextPath?has_content>
+    <base id="basePath" href="<@s.url value='/'/>">
+    </#if>
+
+<#if (homepage!false)>
+    <meta name="description"
+      content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
+    <meta name="keywords" content="tdar, database, archaeology, digital repository, Digital Antiquity, preservation, access"/>
+</#if> 
+
+<#if (persistable?has_content)>
+	<#if (persistable.description)?has_content && !persistable.description?contains("does not have a copy of this document")>
+	    <meta name="description" content="${persistable.description?html}"/>
+	    <meta name="keywords" content="${persistable.name?html}"/>
+	<#elseif !(persistable.description)?has_content || persistable.description?contains("does not have a copy of this document")>
+	<#assign _name = "" />
+ 	    <#if (persistable.name?has_content)> 
+	       <#assign _name = persistable.name />
+	    </#if>
+ 	    <#if (persistable.title?has_content)> 
+	       <#assign _name = persistable.title />
+	    </#if>
+ 	    <#if (persistable.label?has_content)> 
+	       <#assign _name = persistable.label />
+	    </#if>
+	    <meta name="description" content="${_name?html}"/>
+	    <meta name="keywords" content="${_name?html}"/>
+	</#if>
+</#if>
+
+
+    <#if selenium>
+    	<style>
+    		#sidebar-right #notice, .subnavbar.affix, .subnavbar.affix-top, .popover {display:none;visibility:hidden}
+    	</style>
+    </#if>
+</head>
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${pageType} <#if !production>not-production</#if>"
+	 data-leaflet-api-key="${config.leafletApiKey}" data-leaflet-tile-provider="${config.leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${config.mapDefaultLat}" data-centerLong="${config.mapDefaultLng}"  data-useGeoLoc="${config.geoLocationToBeUsed?then('true', 'false')}"
+    data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
+     <#if authenticatedUser?has_content>data-userid="${authenticatedUser.id?c}" data-currentTime="1" </#if>
+     <#if ngApplicationName?has_content>ng-cloak</#if>
+    >
+    <#if hostName?contains("alpha") >
+    <div class="ribbon-green">ALPHA</div>
+    </#if>
+    <@header.outdatedBrowserWarning />
+
+    <div class="${bs.container()}">
+        <div class="row">
+            <header class="span12">
+                <@dec.layout_header />
+            </header>
+        </div>
+        <#if (homepage!false)>
+            <@dec.homepageHeader />
+        </#if>
+
+		<#if searchHeaderEnabled!false>
+		</div>
+			<@wdec.searchHeader />
+            <div class="container">
+		</#if>
+
+        <@dec.subnav />
+            <!-- BEGIN-TDAR-CONTENT -->
+
+        <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
+            <!-- toolbar -->
+            <div class="row">
+            ${page.properties["div.toolbars"]}
+            </div>
+        </#if>
+
+
+
+        <#if errorWarningSectionVisible >
+            <div class="alert alert-error error-banner">
+                <#if stackTraces?has_content>
+                    <div class="error-codes pull-right">
+                        <strong><@s.text name="error.action_error_codes"/></strong>
+                        <#list stackTraces as code>
+                            <span class="error-code">${code}</span>
+                        </#list>
+                    </div>
+                </#if>
+                <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
+
+                <div>
+                    <@s.actionerror cssClass="action-errors" theme="simple" />
+                    <#if historicalFileErrors?has_content>
+                        <b><@s.text name="error.action_resource_edit_historical"/></b>
+                        <ul>
+                            <#list historicalFileErrors as fileError>
+                                <li>${fileError.first.filename} ${(fileError.second.message)!"Unknown Error"}
+                                    <#if fileError.second.errorCode?has_content>[${fileError.second.errorCode}]</#if></li>
+                            </#list>
+                        </ul>
+                    </#if>
+
+                    <@s.fielderror  cssClass="field-errors"  theme="simple"/>
+                    <br/>
+                    <#if moreInfoUrlKey?has_content>
+                        <@s.text name="error.action_more_info_url" />
+                        <a href="<@s.text value="${moreInfoUrlKey}"/>"><@s.text value="${moreInfoUrlKey}"/></a>
+                    </#if>
+                </div>
+            </div>
+        </#if>
+
+        <#if actionMessages?has_content || (page.properties["div.messages"])?has_content>
+            <div class="${bs.row()}">
+                <div class="span12">
+                    <@s.actionmessage />
+        ${(page.properties["div.messages"])!}
+                </div>
+            </div>
+        </#if>
+
+
+        <#assign part="" />
+        <#assign spanSize = 12/>
+        <#if  showLeftSidebar() || showRightSidebar() >
+            <#assign part="cols" />
+            <#assign spanSize = 9/>
+        <#elseif showLeftSidebar() && showRightSidebar() >
+            <#assign part="cols" />
+            <#assign spanSize = 6/>
+        </#if>
+        
+        
+        <#function showLeftSidebar>
+        	<#if (leftSidebar!false) && (page.properties["div.sidebar-left"]?has_content) >
+        	
+	        	<#return true />
+        	</#if>
+        	<#return false />
+        </#function>
+
+        <#function showRightSidebar>
+        	<#if (rightSidebar!false) && (page.properties["div.sidebar-right"]?has_content) >
+        	
+	        	<#return true />
+        	</#if>
+        	<#return false />
+        </#function>
+
+    <#--FIXME: need a better way to hint to layout that we are rendering search results, or perhaps just use a separate layout file  -->
+        <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
+
+        <#if page.properties["div.titlebar"]?has_content>
+        ${page.properties["div.titlebar"]}
+        </#if>
+
+        <section class="${bs.row()} ${part}">
+
+            <#if showLeftSidebar()>
+                <aside class="span3">
+                ${page.properties["div.sidebar-left"]}
+                </aside>
+            </#if>
+
+            <article class="span${spanSize} results" id="articleBody">
+            <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
+            <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
+            ${body}
+            </article>
+
+            <#if showRightSidebar() >
+                <aside class="span3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+                ${page.properties["div.sidebar-right"]}
+                </aside>
+            </#if>
+        </section>
+
+
+    </div>
+    
+    <footer>
+        <div class="container">
+            <#include "/${config.themeDir}/footer.dec" />
+            <div>
+                <p>
+                    <small>
+                        <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
+                        <#if authenticatedUser??>
+                            - <@s.text name="footer.logged_in_as"/>: <a
+                                href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.email}</a>
+                                <#if administrator>[administrator]<#else><#if editor>[editor]</#if></#if>
+                        </#if>
+                    </small>
+                </p>
+            </div>
+        </div>
+
+    </footer>
+
+    <#if useCDN>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/jquery.validate.min.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/additional-methods.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <#else>
+        <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
+        <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
+        <script src="${staticHost}/includes/bootstrap-2.32/js/bootstrap.js"></script>
+    </#if>
+
+
+    <@header.scripts ( webFilePreprocessingEnabled) />
+
+    <div id="ajaxIndicator" class="alert alert-info" style="display:none">
+        <strong class="statusLabel"></strong>
+        <span class="statusMessage"></span>
+    </div>
+
+    <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
+        <script type="text/javascript">
+            TDAR.loadScript('https://${config.jiraScriptLink}');
+        </script>
+    </#if>
+
+    <#import "/${config.themeDir}/settings.ftl" as settings />
+<script id="c3colors">
+ [<#list config.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
+</script>
+
+<#if page.properties["div.customIncludes"]?has_content>
+    ${page.properties["div.customIncludes"]}<#t>
+</#if>
+<script>
+    $(TDAR.main);
+</script>
+
+    <!-- BEGIN-TDAR-FOOTER -->
+    
+    <#include "/${config.themeDir}/sub-footer.dec" />
+
+</body>
+</html>
+</#if>
