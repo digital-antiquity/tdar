@@ -287,8 +287,8 @@
                         + " where res.project.id in (:projectIds) and res.status in (:statuses) "),
         @NamedQuery(
                 name = TdarNamedQueries.SPACE_BY_COLLECTION,
-                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.managedResources as res "
-                        + " where coll.id in (:collectionIds)) and res.status in (:statuses) "),
+                query = "select sum( res.spaceInBytesUsed) as len, sum(res.filesUsed), count(res) from Resource res where res.id in (select distinct res.id from ResourceCollection coll left join coll.parentIds parentId left join coll.managedResources as res "
+                        + " where coll.id in (:collectionIds) or parentId in (:collectionIds))  and res.status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FILE_DOWNLOAD_HISTORY,
                 query = "select ras FROM AggregateDownloadStatistic ras inner join ras.file as ref where ref.id in (:fileIds) and ras.aggregateDate between :start and :end and ras.count >= :minCount order by ras.aggregateDate desc"),
