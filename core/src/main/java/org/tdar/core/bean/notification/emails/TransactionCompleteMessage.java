@@ -2,11 +2,16 @@ package org.tdar.core.bean.notification.emails;
 
 import java.util.Arrays;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.utils.MessageHelper;
 
+@Entity
+@DiscriminatorValue("TRANSACTION_COMPLETE_ADMIN")
 public class TransactionCompleteMessage extends Email {
 
     
