@@ -98,6 +98,9 @@ public class Email extends AbstractPersistable {
     private Resource resource;
 
     @Transient
+    /**
+     * These are key value pairs that will be used inside the Freemarker templates.
+     */
     private Map<String, Object> map = new HashMap<>();
 
     @Transient
@@ -136,6 +139,19 @@ public class Email extends AbstractPersistable {
      */
     public Email addData(String key, Object value) {
         this.map.put(key, value);
+        return this;
+    }
+    
+    /**
+     * First null checks the value, and adds it to the data map if it's not null.
+     * @param key
+     * @param value
+     * @return
+     */
+    public Email addDataIfNotNull(String key, Object value){
+        if(value !=null){
+            addData(key, value);
+        }
         return this;
     }
 

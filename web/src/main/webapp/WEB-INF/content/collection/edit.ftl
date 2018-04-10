@@ -312,8 +312,8 @@
         TDAR.common.initEditPage(form);
         TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
         //TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
-        TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
-        TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE"});
+        TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_COLLECTION"});
+        TDAR.autocomplete.applyCollectionAutocomplete($("#txtAltParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_COLLECTION"});
         TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
         //remind users that adding a project does not also add the project's contents
 		$("#clearButton").click(function() {$('#fileUploadField').val('');return false;});

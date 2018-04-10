@@ -60,6 +60,7 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
             addActionError(e.getMessage() + " " + ExceptionUtils.getFullStackTrace(e));
             return INPUT;
         }
+        getLogger().debug("redirectPath: {}", redirectPath);
         return SUCCESS;
     }
 

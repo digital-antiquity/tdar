@@ -35,8 +35,8 @@
 
     <properties>
         <lucene.version>7.2.1</lucene.version>
-        <hibernate.version>5.2.15.Final</hibernate.version>
-        <spring.framework.version>5.0.4.RELEASE</spring.framework.version>
+        <hibernate.version>5.2.16.Final</hibernate.version>
+        <spring.framework.version>5.0.5.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>42.2.1</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
         <aws.java.version>1.11.286</aws.java.version>
@@ -70,7 +70,7 @@
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
-        <apache.cxf.version>3.1.14</apache.cxf.version>
+        <apache.cxf.version>3.2.4</apache.cxf.version>
         <poi.version>3.17</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
@@ -78,11 +78,11 @@
         <owlapi.version>5.1.0</owlapi.version>
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
-        <geotools.version>17.1</geotools.version>
+        <geotools.version>19.0</geotools.version>
         <tika.version>1.16</tika.version>
-        <rome.version>1.7.3</rome.version>
+        <rome.version>1.7.4</rome.version>
         <jackson.version>2.8.10</jackson.version>
-        <pdfbox.version>2.0.7</pdfbox.version>
+        <pdfbox.version>2.0.9</pdfbox.version>
         <bouncycastle.version>1.58</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
         <http-client.version>4.5.5</http-client.version>
@@ -101,12 +101,12 @@
         <commons-compress.version>1.14</commons-compress.version>
         <commons-cli.version>1.3</commons-cli.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <jetty.version>9.4.5.v20170502</jetty.version>
+        <jetty.version>9.4.9.v20180320</jetty.version>
         <struts2.version>2.5.16</struts2.version>
-        <jersey.version>2.25.1</jersey.version>
+        <jersey.version>2.26</jersey.version>
         <icu4j.version>58.2</icu4j.version>
         <htmlunit.version>2.29</htmlunit.version>
-        <selenium.version>3.10.0</selenium.version>
+        <selenium.version>3.11.0</selenium.version>
         <dbcp.version>2.2.0</dbcp.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
@@ -250,7 +250,7 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>2.10.0</version>
+                <version>2.11.0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -638,16 +638,25 @@
             <artifactId>xz</artifactId>
             <version>1.6</version>
         </dependency>
-    </dependencies>		
+        <dependency>
+           <groupId>org.glassfish</groupId>
+           <artifactId>javax.el</artifactId>
+           <version>3.0.1-b08</version>
+        </dependency>
+      </dependencies>		
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+           <groupId>org.glassfish</groupId>
+           <artifactId>javax.el</artifactId>
+           <version>3.0.1-b08</version>
+        </dependency>
         <dependency>
             <groupId>org.knowm.xchart</groupId>
             <artifactId>xchart</artifactId>
             <version>${xchart.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -864,14 +873,9 @@
             <version>3.2.0.Final</version>
         </dependency> -->
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.el</artifactId>
-            <version>3.0.1-b08</version>
-        </dependency>
-        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.4.1.Final</version>
+            <version>6.0.9.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jboss.logging</groupId>

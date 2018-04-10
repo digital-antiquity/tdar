@@ -222,7 +222,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
             account = new BillingAccount();
             account.setName("Generated account for " + user.getProperName());
             account.markUpdated(user);
-            account.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.EDIT_ACCOUNT));
+            account.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.USE_ACCOUNT));
             getDao().saveOrUpdate(account);
         }
         return account;
@@ -461,7 +461,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
                 owner = authenticatedUser;
             }
             account.setOwner(owner);
-            account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.EDIT_ACCOUNT));
+            account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.USE_ACCOUNT));
             account.setName("Default account for " + owner.getProperName());
         }
         return account;
@@ -486,7 +486,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
             }
 
             if (CollectionUtils.isEmpty(selectedAccount.getAuthorizedUsers())) {
-                selectedAccount.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.EDIT_ACCOUNT));
+                selectedAccount.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.USE_ACCOUNT));
             }
 
         } else {
@@ -588,9 +588,9 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
         }
 
         if (isTransient) {
-            AuthorizedUser au = new AuthorizedUser(authenticatedUser, authenticatedUser, Permissions.EDIT_ACCOUNT);
+            AuthorizedUser au = new AuthorizedUser(authenticatedUser, authenticatedUser, Permissions.ADMINISTER_ACCOUNT);
             if (account.getOwner() != null) {
-                au = new AuthorizedUser(account.getOwner(), account.getOwner(), Permissions.EDIT_ACCOUNT);
+                au = new AuthorizedUser(account.getOwner(), account.getOwner(), Permissions.ADMINISTER_ACCOUNT);
             }
             proxies.add(new UserRightsProxy(au));
             account.getAuthorizedUsers().add(au);

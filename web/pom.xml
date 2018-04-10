@@ -128,6 +128,10 @@
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>jetty-xml</artifactId>
+                    <groupId>org.eclipse.jetty</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

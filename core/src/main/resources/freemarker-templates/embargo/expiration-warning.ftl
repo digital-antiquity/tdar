@@ -7,7 +7,7 @@ At that time, the embargo will be automatically removed.
   
 <ul>
 <#list files as file>
-	<li><a href="${baseUrl}${file.informationResource.detailUrl}"> ${file.filename}:  ${file.informationResource.title} (${file.informationResource.id?c})</a></li>
+	<li><a href="${baseUrl}${file.informationResource.detailUrl}"> ${file.filename}:  ${file.informationResource.title}</a> (${file.informationResource.id?c})</li>
 </#list>
 </ul>
 </@mail.content>
