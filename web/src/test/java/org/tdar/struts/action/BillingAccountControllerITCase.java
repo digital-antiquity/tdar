@@ -186,7 +186,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         Long id = setupAccountWithUsers();
 
         BillingAccount account = genericService.find(BillingAccount.class, id);
-        assertEquals(4, account.getAuthorizedUsers().size());
+        assertEquals(3, account.getAuthorizedUsers().size());
         logger.debug("users: {}", account.getAuthorizedUsers());
         Boolean seenAdmin = false;
         for (AuthorizedUser au : account.getAuthorizedUsers()) {
@@ -198,7 +198,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
     }
 
     private Long setupAccountWithUsers() throws TdarActionException {
-        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class, getAdminUser());
         controller.prepare();
         controller.add();
         controller.setName("my test account");

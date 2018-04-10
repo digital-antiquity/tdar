@@ -148,7 +148,7 @@ public enum Permissions implements HasLabel, Localizable {
 
     public static Permissions getEditPermissionFor(HasAuthorizedUsers account) {
         if (account instanceof BillingAccount) {
-            return Permissions.USE_ACCOUNT;
+            return Permissions.ADMINISTER_ACCOUNT;
         }
         if (account instanceof DataIntegrationWorkflow) {
             return Permissions.EDIT_INTEGRATION;

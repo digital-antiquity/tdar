@@ -588,9 +588,9 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
         }
 
         if (isTransient) {
-            AuthorizedUser au = new AuthorizedUser(authenticatedUser, authenticatedUser, Permissions.USE_ACCOUNT);
+            AuthorizedUser au = new AuthorizedUser(authenticatedUser, authenticatedUser, Permissions.ADMINISTER_ACCOUNT);
             if (account.getOwner() != null) {
-                au = new AuthorizedUser(account.getOwner(), account.getOwner(), Permissions.USE_ACCOUNT);
+                au = new AuthorizedUser(account.getOwner(), account.getOwner(), Permissions.ADMINISTER_ACCOUNT);
             }
             proxies.add(new UserRightsProxy(au));
             account.getAuthorizedUsers().add(au);
