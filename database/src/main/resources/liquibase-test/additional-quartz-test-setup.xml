@@ -12,7 +12,7 @@
             <column name="integration_id" valueNumeric="1000"/>
         </insert>
         <insert tableName="authorized_user">
-            <column name="general_permission" value="EDIT_ACCOUNT"/>
+            <column name="general_permission" value="ADMINISTER_ACCOUNT"/>
             <column name="general_permission_int" valueNumeric="10000"/>
             <column name="user_id" valueNumeric="8094"/>
             <column name="creator_id" valueNumeric="8094"/>
