@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -65,6 +66,9 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             collection.setSortBy(SortOption.RESOURCE_TYPE);
             genericService.saveOrUpdate(collection);
             for (Resource r : resources) {
+                if (r == null) {
+                    continue;
+                }
                 collection.getManagedResources().add(r);
                 r.getManagedResourceCollections().add(collection);
                 genericService.saveOrUpdate(r);

@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -71,6 +72,7 @@ import com.google.common.collect.Sets;
  * @author Adam Brin
  */
 @Service("scheduledProcessService")
+@Profile("!oaipmh")
 public class ScheduledProcessServiceImpl implements SchedulingConfigurer, ApplicationContextAware, ScheduledProcessService {
 
     TdarConfiguration config = TdarConfiguration.getInstance();
@@ -100,9 +102,9 @@ public class ScheduledProcessServiceImpl implements SchedulingConfigurer, Applic
     @Override
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void cronCheckAuthService() {
-        if (authenticationService == null || authenticationService.getProvider() == null) {
+    	/*       if (authenticationService == null || authenticationService.getProvider() == null) {
             return;
-        }
+        }*/
         
         if (!authenticationService.getProvider().isConfigured()) {
             logger.error("Unconfigured provider: {}", authenticationService.getProvider());

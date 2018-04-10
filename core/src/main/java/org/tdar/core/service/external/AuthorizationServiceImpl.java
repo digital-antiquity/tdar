@@ -870,7 +870,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
 
         for (AuthorizedUser au : account.getAuthorizedUsers()) {
             logger.debug("au: {}", au);
-            if (au.getUser().equals(authenticatedUser) && (Permissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+            if (au.getUser().equals(authenticatedUser) && (Permissions.ADMINISTER_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
                 return true;
             }
         }
@@ -995,7 +995,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
 
         for (AuthorizedUser au : account.getAuthorizedUsers()) {
             logger.debug("au: {}", au);
-            if (au.getUser().equals(authenticatedUser) && (Permissions.EDIT_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+            if (au.getUser().equals(authenticatedUser) && (Permissions.USE_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
                 return true;
             }
         }

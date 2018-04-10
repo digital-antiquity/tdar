@@ -5,7 +5,7 @@ The following resources were added to ${siteAcronym} in the last week (${date?da
 
 <ul>
 <#list resources as resource><#if resource?has_content>
- <li> <a href="${baseUrl}${resource.detailUrl}">${resource.title!'no title'}</a> (${resource.resourceType!'unknown'}) 
+ <li> <a href="${siteUrl}${resource.detailUrl}">${resource.title!'no title'}</a> (${resource.resourceType!'unknown'}) 
      <#if ((resource.description)?length > 76)>${resource.description?substring(0,76)}...<#else>${resource.description!'[no description]'}</#if></li>
 
 

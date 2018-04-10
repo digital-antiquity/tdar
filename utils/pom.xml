@@ -58,12 +58,6 @@
             <version>1.5</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>2.2.4</version>
-        </dependency>
     </dependencies>
 
     <build>

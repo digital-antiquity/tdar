@@ -1,7 +1,9 @@
 package org.tdar.core.bean.notification;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
@@ -15,23 +17,33 @@ import org.tdar.core.bean.notification.emails.AdminNotificationMessage;
 import org.tdar.core.bean.notification.emails.AdminOverdrawnNotification;
 import org.tdar.core.bean.notification.emails.AdminQuarantineReviewMessage;
 import org.tdar.core.bean.notification.emails.AdminReportNewUsersMessage;
+import org.tdar.core.bean.notification.emails.ContactMessage;
+import org.tdar.core.bean.notification.emails.CorrectionSuggestionMessage;
+import org.tdar.core.bean.notification.emails.CustomMessage;
 import org.tdar.core.bean.notification.emails.EmbargoExpirationAdminNotification;
 import org.tdar.core.bean.notification.emails.EmbargoExpirationNotification;
 import org.tdar.core.bean.notification.emails.EmbargoExpirationWarningNotification;
 import org.tdar.core.bean.notification.emails.InviteAcceptedMessage;
 import org.tdar.core.bean.notification.emails.InviteMessage;
+import org.tdar.core.bean.notification.emails.MergeRequestMessage;
 import org.tdar.core.bean.notification.emails.MonthlyUserStatisticsMessage;
 import org.tdar.core.bean.notification.emails.NewUserWelcomeMessage;
 import org.tdar.core.bean.notification.emails.OverdrawnNotification;
+import org.tdar.core.bean.notification.emails.RequestAccessMessage;
 import org.tdar.core.bean.notification.emails.TestAwsMessage;
+import org.tdar.core.bean.notification.emails.TransactionCompleteMessage;
 import org.tdar.utils.MessageHelper;
 
 public enum EmailType implements Localizable, HasLabel {
-    INVITE("invite/invite.ftl", "test@tdar.org", InviteMessage.class),
+    
+    //Note: Setting Null for the email will cause the EmailServiceImpl 
+    //to use the default email address in TdarConfig
+    
+    INVITE("invite/invite.ftl", "no-reply@tdar.org", InviteMessage.class),
     INVITE_ACCEPTED("invite/invite-accepted.ftl", "no-reply@tdar.org", InviteAcceptedMessage.class),
-    NEW_USER_NOTIFY("email_new_users.ftl"),
+    //NEW_USER_NOTIFY("email_new_users.ftl"), -> Changed to ADMIN_NEW_USER_NOTIFY
     NEW_USER_WELCOME("email-welcome.ftl", "no-reply@tdar.org", NewUserWelcomeMessage.class),
-    TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl"),
+    TRANSACTION_COMPLETE_ADMIN("transaction-complete-admin.ftl",null, TransactionCompleteMessage.class),
 
     PERMISSION_REQUEST_ACCEPTED("email-form/access-request-granted.ftl", "no-reply@tdar.org", AccessRequestGrantedMessage.class),
     PERMISSION_REQUEST_REJECTED("email-form/access-request-rejected.ftl", "no-reply@tdar.org", AccessRequestRejectedMessage.class),
@@ -57,11 +69,11 @@ public enum EmailType implements Localizable, HasLabel {
     TEST_EMAIL("test-email.ftl", "no-reply@tdar.org", TestAwsMessage.class),
 
     // Refactored from EmailMessageType.
-    CONTACT("email-form/contact.ftl"),
-    REQUEST_ACCESS("email-form/access-request.ftl"),
-    SUGGEST_CORRECTION("email-form/correction.ftl"),
-    MERGE_PEOPLE("email-form/merge-people.ftl"),
-    CUSTOM("email-form/custom-request.ftl");
+    CONTACT("email-form/contact.ftl",null,ContactMessage.class),
+    REQUEST_ACCESS("email-form/access-request.ftl",null,RequestAccessMessage.class),
+    SUGGEST_CORRECTION("email-form/correction.ftl",null,CorrectionSuggestionMessage.class),//There's no references to this enum, or the template in any java class.
+    MERGE_REQUEST("email-form/merge-people.ftl", null, MergeRequestMessage.class), //There's no references to this enum, or the template in any java class.
+    CUSTOM_CONTACT("email-form/custom-request.ftl",null,CustomMessage.class);
 
     /**
      * a string representation of the .ftl template to use
@@ -83,6 +95,13 @@ public enum EmailType implements Localizable, HasLabel {
         this.setFromAddress(fromAddress);
     }
 
+    /**
+     * If a class is specified, then when the email is rendered, it will call the createSubject() method for that subclass.
+     * The email discriminator will also be stored in the database.
+     * @param template
+     * @param fromAddress
+     * @param emailClass
+     */
     private EmailType(String template, String fromAddress, Class<? extends Email> emailClass) {
         this(template, fromAddress);
         this.setEmailClass(emailClass);
@@ -92,9 +111,28 @@ public enum EmailType implements Localizable, HasLabel {
         return true;
     }
 
+    /**
+     * Some labels require that the LocaleKey is not the same as the subject. 
+     * This will append _label to those enum values 
+     * @return
+     */
+    private String getMessageKey(EmailType type){
+        switch(type){
+            case CONTACT:
+            case REQUEST_ACCESS:
+            case SUGGEST_CORRECTION:
+            case MERGE_REQUEST:
+            case CUSTOM_CONTACT:
+                return type.getLocaleKey().concat("_LABEL");
+            default:
+                return type.getLocaleKey();
+        }
+    }
+    
+    
     @Override
     public String getLabel() {
-        return MessageHelper.getMessage(getLocaleKey());
+        return MessageHelper.getMessage(getMessageKey(this));
     }
 
     @Override
@@ -107,8 +145,8 @@ public enum EmailType implements Localizable, HasLabel {
         for (EmailType type : valuesForUserSelection()) {
             switch (type) {
                 case REQUEST_ACCESS:
-                case CUSTOM:
-                case MERGE_PEOPLE:
+                case CUSTOM_CONTACT:
+                case MERGE_REQUEST:
                     break;
                 default:
                     types.add(type);
@@ -120,7 +158,7 @@ public enum EmailType implements Localizable, HasLabel {
     public static List<EmailType> valuesWithoutCustom() {
         ArrayList<EmailType> types = new ArrayList<EmailType>();
         for (EmailType type : valuesForUserSelection()) {
-            if (type != CUSTOM && type != MERGE_PEOPLE) {
+            if (type != CUSTOM_CONTACT && type != MERGE_REQUEST) {
                 types.add(type);
             }
         }
@@ -128,22 +166,13 @@ public enum EmailType implements Localizable, HasLabel {
     }
 
     public static List<EmailType> valuesForUserSelection() {
-        ArrayList<EmailType> types = new ArrayList<EmailType>();
-        for (EmailType type : values()) {
-            switch (type) {
-                case CONTACT:
-                case REQUEST_ACCESS:
-                case SUGGEST_CORRECTION:
-                case MERGE_PEOPLE:
-                case CUSTOM:
-                    types.add(type);
-                    break;
-                default:
-                    break;
-            }
-        }
-        return types;
-
+        return new ArrayList<EmailType>(Arrays.asList(
+                CONTACT,
+                REQUEST_ACCESS,
+                SUGGEST_CORRECTION,
+                MERGE_REQUEST,
+                CUSTOM_CONTACT
+        ));
     }
 
     public String getTemplateLocation() {
@@ -165,4 +194,5 @@ public enum EmailType implements Localizable, HasLabel {
     public void setFromAddress(String fromAddress) {
         this.fromAddress = fromAddress;
     }
+    
 }

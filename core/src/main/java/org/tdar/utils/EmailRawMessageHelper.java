@@ -28,7 +28,12 @@ public class EmailRawMessageHelper {
 
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
 
-        messageHelper.setTo(message.getTo());
+        if (message.getTo().contains(",") || message.getTo().contains(";")) {
+            messageHelper.setTo(message.getTo().split("[,;]"));
+        } else {
+            messageHelper.setTo(message.getTo());
+        }
+       
         messageHelper.setFrom(message.getFrom());
         messageHelper.setSubject(message.getSubject());
         messageHelper.setText(message.getMessage(), true);

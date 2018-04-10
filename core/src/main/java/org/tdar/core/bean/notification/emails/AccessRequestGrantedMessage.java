@@ -7,8 +7,12 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.utils.MessageHelper;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 @Entity
 @DiscriminatorValue("ACCESS_GRANTED")
@@ -28,7 +32,7 @@ public class AccessRequestGrantedMessage extends Email {
         if (expires != null) {
             until = " until " + new SimpleDateFormat(DATE_FORMAT).format(expires);
         }
-
+        
         return TdarConfiguration.getInstance().getSiteAcronym() + ": Access Granted to " + resource.getTitle() + until;
     }
 

@@ -55,8 +55,8 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     private List<Resource> resources = new ArrayList<>();
 
     private BillingAccountGroup accountGroup;
-    private List<TdarUser> authorizedMembers = new ArrayList<>();
-    private List<String> authorizedUsersFullNames = new ArrayList<String>();
+
+    private List<UserRightsProxy> proxies = new ArrayList<>();
     private Long accountGroupId;
     private String name;
     private Date expires = new DateTime().plusYears(1).toDate();
@@ -88,13 +88,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             getLogger().info("invoiceId {}", getInvoiceId());
             setSaveSuccessPath("billing");
             setupOwnerField();
-            List<UserRightsProxy> proxies = new ArrayList<>();
-            for (TdarUser user : authorizedMembers) {
-                proxies.add(new UserRightsProxy(new AuthorizedUser(null, user, Permissions.EDIT_ACCOUNT)));
-            }
-            // saveForController(BillingAccount account, String name, String description, Invoice invoice, Long invoiceId, TdarUser owner, TdarUser
-            // authenticatedUser)
-            accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), proxies);
+            accountService.saveForController(persistable, name, description, getInvoice(), invoiceId, owner, getAuthenticatedUser(), getProxies());
         } catch (Exception e) {
             getLogger().debug("{}", e, e);
             addActionErrorWithException("cannot save", e);
@@ -195,14 +189,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return new Person();
     }
 
-    @DoNotObfuscate(reason = "needs access to Email Address on view page")
-    public List<TdarUser> getAuthorizedMembers() {
-        return authorizedMembers;
-    }
-
-    public void setAuthorizedMembers(List<TdarUser> authorizedMembers) {
-        this.authorizedMembers = authorizedMembers;
-    }
 
     public boolean isBillingAdmin() {
         return authorizationService.isMember(getAuthenticatedUser(), TdarGroup.TDAR_BILLING_MANAGER);
@@ -240,16 +226,15 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     public String loadEditMetadata() throws TdarActionException {
         setOwner(getPersistable().getOwner());
         setupOwnerField();
+        getAccount().getAuthorizedUsers().forEach(au -> {
+            getProxies().add(new UserRightsProxy(au));
+        });
         return SUCCESS;
     }
 
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
-        getAccount().getAuthorizedUsers().forEach(au -> {
-            getAuthorizedMembers().add(au.getUser());
-            getAuthorizedUsersFullNames().add(au.getUser().getProperName());
-        });
     }
 
     public List<Status> getStatuses() {
@@ -289,12 +274,22 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         this.expires = expires;
     }
 
-    public List<String> getAuthorizedUsersFullNames() {
-        return authorizedUsersFullNames;
+    public List<Permissions> getAvailablePermissions() {
+        List<Permissions> permissions = Permissions.getAvailablePermissionsFor(getPersistableClass());
+        return permissions;
     }
 
-    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
-        this.authorizedUsersFullNames = authorizedUsersFullNames;
+    @DoNotObfuscate(reason = "needs access to Email Address on view page")
+    public List<UserRightsProxy> getProxies() {
+        return proxies;
+    }
+
+    public void setProxies(List<UserRightsProxy> proxies) {
+        this.proxies = proxies;
+    }
+
+    public UserRightsProxy getBlankProxy() {
+        return new UserRightsProxy();
     }
 
 }

@@ -175,12 +175,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>2.2.4</version>
-        </dependency>
         <!-- Servlet & Jsp -->
         <dependency>
             <groupId>javax.servlet</groupId>

@@ -89,7 +89,7 @@ public interface TestBillingAccountHelper {
 
     default Invoice initAccount(BillingAccount account, BillingActivity activity, TdarUser user) {
         account.markUpdated(user);
-        account.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.EDIT_ACCOUNT));
+        account.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.USE_ACCOUNT));
         Invoice invoice = setupInvoice(activity, user);
         account.getInvoices().add(invoice);
         return invoice;

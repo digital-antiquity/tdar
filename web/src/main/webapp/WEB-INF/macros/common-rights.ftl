@@ -61,7 +61,7 @@
 	</#macro>
 
 	<#--  render add user form for rights pages -->
-	<#macro addUsersForRights >
+	<#macro addUsersForRights  showDate=true>
 	
     <h3>Add / Modify User(s)</h3>
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
@@ -72,27 +72,29 @@
         <div class="span2">
          <b>Permissions</b>
         </div>
+        <#if showDate>
         <div class='span2'>
         <b>Remove access after</b>
         </div>
+        </#if>
                 <div class='span1'>
         </div>
 
     </div>
-            <#list proxies>
+            <#list proxies![]>
             <#items as proxy>
             	<#if proxy?? && proxy?has_content>
-                	<@_proxy proxy_index proxy/>
+                	<@_proxy proxy_index proxy showDate/>
                 </#if>
             </#items>
             <#else>
-                <@_proxy 0 blankProxy />
+                <@_proxy 0 blankProxy showDate/>
             </#list>
     </div>
 	</#macro>
 
 
-    <#macro _proxy proxy_index proxy>
+    <#macro _proxy proxy_index proxy showDate=true>
     
                 <div class="">
                         <div class=" control-group repeat-row" id="authorizedUsersRow_${proxy_index}_">
@@ -116,6 +118,7 @@
                                     <@s.select theme="tdar" cssClass="creator-rights-select span2" name="proxies[${proxy_index}].permission" emptyOption='false'
                                         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                                 </div>
+                                <#if showDate>
                                 <div class=" span2">
                                     <div class="input-append">
                                     <#local val=""/>
@@ -128,6 +131,7 @@
                                           <span class="add-on"><i class="icon-th"></i></span>
                                     </div>
                                 </div>
+                                </#if>
 
                                 <div class="span1">
                                     <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>

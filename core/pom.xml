@@ -35,7 +35,6 @@
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
-    
          <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
@@ -547,11 +546,11 @@
             <version>${poi.version}</version>
         </dependency>
 
-        <dependency>
+ <!--   <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
             <version>2.2.4</version>
-        </dependency>
+        </dependency>-->
         <!-- SPRING DEPENDENCIES (we're not listing them all individually, 
             but includes orm, jdbc, aop, tx, -->
         <dependency>

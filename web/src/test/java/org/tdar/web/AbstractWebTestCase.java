@@ -837,7 +837,8 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         List<String> users = Arrays.asList("editor user", "K. Selcuk Candan", "Keith Kintigh");
         List<Long> userIds = Arrays.asList(8067L, 8094L, 8389L);
         for (int i = 0; i < userIds.size(); i++) {
-            setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
+            setInput("proxies[" + i + "].id", Long.toString(userIds.get(i)));
+            setInput("proxies[" + i + "].permission", Permissions.ADMINISTER_ACCOUNT);
         }
         submitForm();
 

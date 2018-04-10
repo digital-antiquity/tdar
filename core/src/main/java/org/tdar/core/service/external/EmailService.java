@@ -33,8 +33,6 @@ public interface EmailService {
     String _VIEWS_BARCHART_PNG = "_views-barchart.png";
     String _DOWNLOADS_BARCHART_PNG = "_downloads-barchart.png";
     String _RESOURCE_PIECHART_PNG = "_resource-piechart.png";
-    String CUSTOM_NAME = "customName";
-    String DESCRIPTION_REQUEST = "descriptionRequest";
 
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
@@ -63,18 +61,11 @@ public interface EmailService {
      */
     void send(Email email);
 
-    /**
-     * Deprecated method. use construct email instead, since it generates HTML emails.
-     */
-    @Deprecated
-    Email constructEmail(Person from, HasEmail to, Resource resource, String subject, String messageBody,
-            EmailType type);
 
     /**
      * Deprecated method. use construct email instead, since it generates HTML emails.
      */
-    @Deprecated
-    Email constructEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
+    Email createAccessRequestEmail(Person from, HasEmail to, Resource resource, String subjectSuffix, String messageBody,
             EmailType type, Map<String, String[]> params);
 
     void changeEmailStatus(Status action, List<Email> emails);
