@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>17.0.0-QUARTZ</version>
+         <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
@@ -35,7 +35,6 @@
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
-    
          <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
@@ -489,11 +488,11 @@
             <artifactId>asm</artifactId>
             <version>${asm.version}</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-debug-all</artifactId>
             <version>${asm.version}</version>
-        </dependency>
+        </dependency> -->
 
         <!-- freemarker -->
         <dependency>
@@ -547,11 +546,11 @@
             <version>${poi.version}</version>
         </dependency>
 
-        <dependency>
+ <!--   <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
             <version>2.2.4</version>
-        </dependency>
+        </dependency>-->
         <!-- SPRING DEPENDENCIES (we're not listing them all individually, 
             but includes orm, jdbc, aop, tx, -->
         <dependency>
