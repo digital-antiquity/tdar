@@ -444,12 +444,11 @@ public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, I
         PaymentMethod paymentMethod = invoice.getPaymentMethod();
 
         switch (paymentMethod) {
-            case CHECK:
-                break;
             case CREDIT_CARD:
                 genericDao.saveOrUpdate(invoice);
                 finalizePayment(invoice, paymentMethod);
                 break;
+            case CHECK:
             case INVOICE:
             case MANUAL:
                 completeInvoice(invoice);

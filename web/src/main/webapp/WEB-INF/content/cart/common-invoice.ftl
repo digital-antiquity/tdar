@@ -94,6 +94,9 @@
     <div class="typeToggle invoice">
         <@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Invoice #" />
     </div>
+    <div class="typeToggle check">
+        <@s.textfield name="invoice.invoiceNumber" cssClass="input-xlarge" label="Check #" />
+    </div>
     <div class="typeToggle manual">
         <@s.textarea name="invoice.otherReason" cssClass="input-xlarge" label="Other Reason"  cols="80" rows="4" />
     </div>
