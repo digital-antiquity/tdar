@@ -70,6 +70,7 @@ public interface TestBillingControllerHelper {
         controller.setId(account.getId());
         controller.setName("test");
         controller.prepare();
+        controller.edit();
         boolean seen = false;
         controller.setServletRequest(getServletPostRequest());
         getGenericService().refresh(controller.getAccount());
