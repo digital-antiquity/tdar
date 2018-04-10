@@ -893,4 +893,10 @@ public class ResourceCollection extends AbstractPersistable
     public void setEditable(boolean editable) {
         this.editable = editable;
     }
+    
+    @Transient
+    @XmlTransient
+    public boolean isCollection() {
+        return true;
+    }
 }

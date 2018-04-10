@@ -1,5 +1,6 @@
 package org.tdar.web;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -80,6 +81,24 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage("Search");
         submitForm("Search");
         assertNoErrorTextPresent();
+    }
+
+    @Test
+    public void testCollectionSearch() {
+        gotoPage("/search/results?objectTypes=COLLECTION");
+//        logger.debug(getPageText());
+        assertNoErrorTextPresent();
+        assertTrue(getPageText().contains("COLLECTION"));
+        assertFalse(getPageText().contains("INTEGRATION"));
+    }
+
+    @Test
+    public void testIntegrationSearch() {
+        gotoPage("/search/results?objectTypes=INTEGRATION");
+        logger.debug(getPageText());
+        assertNoErrorTextPresent();
+        assertTrue(getPageText().contains("INTEGRATION"));
+        assertFalse(getPageText().contains("COLLECTION"));
     }
 
     @Test
