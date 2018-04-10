@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Test;
@@ -24,6 +25,7 @@ import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -200,9 +202,9 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         controller.prepare();
         controller.add();
         controller.setName("my test account");
-        controller.getAuthorizedMembers().add(new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.ADMINISTER_ACCOUNT));
-        controller.getAuthorizedMembers().add(new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.ADMINISTER_ACCOUNT));
-        controller.getAuthorizedMembers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.USE_ACCOUNT));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(), getAdminUser(), Permissions.ADMINISTER_ACCOUNT)));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.ADMINISTER_ACCOUNT)));
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.USE_ACCOUNT)));
         controller.setServletRequest(getServletPostRequest());
         // controller.validate();
         String save = controller.save();
@@ -220,9 +222,15 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         controller.prepare();
         int size = controller.getAccount().getAuthorizedUsers().size();
         controller.getAccount().getAuthorizedUsers().forEach(au -> {
-            controller.getAuthorizedMembers().add(new AuthorizedUser(getAdminUser(),au.getUser(), Permissions.ADMINISTER_ACCOUNT));
+            controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),au.getUser(), Permissions.ADMINISTER_ACCOUNT)));
         });
-        controller.getAuthorizedMembers().remove(getBillingUser());
+        Iterator<UserRightsProxy> iterator = controller.getProxies().iterator();
+        while (iterator.hasNext()) {
+            UserRightsProxy proxy = iterator.next();
+            if (proxy.getId().equals(getBillingAdminUserId())) {
+                iterator.remove();
+            }
+        }
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
         assertEquals(Action.SUCCESS, save);
