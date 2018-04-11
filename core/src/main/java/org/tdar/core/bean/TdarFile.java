@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.tdar.core.bean.resource.Resource;
@@ -32,12 +34,15 @@ public class TdarFile extends AbstractPersistable {
     
     @Column(length=FieldLength.FIELD_LENGTH_50, name="status")
     private ImportFileStatus status;
-    private List<String> fileIssues;
 
+//    private List<String> fileIssues;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
     private TdarFile parentFile;
 
-    private ResourceType targetFileType;
-    private Resource resource;
+//    private ResourceType targetFileType;
+//    private Resource resource;
     public String getFilename() {
         return filename;
     }
@@ -77,12 +82,12 @@ public class TdarFile extends AbstractPersistable {
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
-    public List<String> getFileIssues() {
-        return fileIssues;
-    }
-    public void setFileIssues(List<String> fileIssues) {
-        this.fileIssues = fileIssues;
-    }
+//    public List<String> getFileIssues() {
+//        return fileIssues;
+//    }
+//    public void setFileIssues(List<String> fileIssues) {
+//        this.fileIssues = fileIssues;
+//    }
     
     
 }
