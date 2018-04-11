@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.TdarFile;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -48,7 +48,7 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
     private Long parentId;
     private Long accountId;
     private BillingAccount account;
-    private TdarFile parent;
+    private TdarDir parent;
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
     private List<String> uploadFileFileName = new ArrayList<String>();
@@ -80,9 +80,9 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
             addActionError(getText("uploadController.no_files"));
         }
 
-        if (account == null && getTdarConfiguration().isPayPerIngestEnabled()) {
-            addActionError(getText("uploadController.no_valid_account"));
-        }
+//        if (account == null && getTdarConfiguration().isPayPerIngestEnabled()) {
+//            addActionError(getText("uploadController.no_valid_account"));
+//        }
 
         if (account != null && !getAuthorizationService().canEditAccount(getAuthenticatedUser(), account)) {
             addActionError(getText("uploadController.no_valid_account"));
@@ -107,7 +107,7 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
         }
 
         if (parentId != null) {
-            parent = getGenericService().find(TdarFile.class, parentId);
+            parent = getGenericService().find(TdarDir.class, parentId);
         }
         if (accountId != null) {
             account = getGenericService().find(BillingAccount.class, accountId);

@@ -2,6 +2,7 @@ package org.tdar.web.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -11,9 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.TdarFile;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -38,7 +40,7 @@ public class WebPersonalFilestoreService {
     }
 
     @Transactional(readOnly=false)
-    public List<String> store(TdarUser submitter, List<File> uploadFile, List<String> uploadFileFileName, List<String> uploadFileContentType, PersonalFilestoreTicket ticket, TextProvider provider, BillingAccount account, TdarFile dir) throws FileUploadException {
+    public List<String> store(TdarUser submitter, List<File> uploadFile, List<String> uploadFileFileName, List<String> uploadFileContentType, PersonalFilestoreTicket ticket, TextProvider provider, BillingAccount account, TdarDir dir) throws FileUploadException {
         List<String> hashCodes = new ArrayList<>();
         for (int i = 0; i < uploadFile.size(); i++) {
             File file = uploadFile.get(i);
@@ -60,6 +62,7 @@ public class WebPersonalFilestoreService {
                     tdarFile.setDisplayName(fileName);
                     tdarFile.setExtension(FilenameUtils.getExtension(fileName));
                     tdarFile.setFileSize(file.length());
+                    tdarFile.setDateCreated(new Date());
                     if (dir != null) {
                         tdarFile.setParentFile(dir);
                     }

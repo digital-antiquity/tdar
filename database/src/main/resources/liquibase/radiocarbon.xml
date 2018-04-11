@@ -29,5 +29,11 @@
             baseColumnNames="parent_id" baseTableName="files"
             referencedColumnNames="id" />
     </changeSet>
+    <changeSet id="radiocarbon-file-first-2" author="abrin">
+        <addColumn tableName="files">
+            <column name="md5" type="varchar(100)"/>
+            <column name="file_type" type="varchar(5)"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
