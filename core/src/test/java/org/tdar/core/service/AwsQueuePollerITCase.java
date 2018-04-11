@@ -15,6 +15,7 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.dao.EmailDao;
+import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.email.AwsQueuePollerService;
 import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.email.MockAwsQueuePollerServiceImpl;
@@ -29,11 +30,15 @@ public class AwsQueuePollerITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     EmailDao emailDao;
+    
+    @Autowired
+    private AwsEmailSender awsEmailService;
+
 
     @Test
     public void testUsingMockObject() {
         assertTrue("The mock object is being used", awsQueueSerivce instanceof MockAwsQueuePollerServiceImpl);
-        assertTrue("The email sending is being mocked", emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl);
+        assertTrue("The email sending is being mocked", awsEmailService instanceof MockAwsEmailSenderServiceImpl);
     }
 
     @Test

@@ -2,7 +2,7 @@
 <@mail.content>
 Dear ${authenticatedUser.firstName},<br />
 <br/>
-We have completed your resource export request.  You can download the requested files (listed below) here: ${url}.  This link will be valid for 24 hours.
+We have completed your resource export request.  You can download the requested files (listed below) here: <a href="${url}">${url}</a>.  This link will be valid for 24 hours.
 <br />
 
 <ul>

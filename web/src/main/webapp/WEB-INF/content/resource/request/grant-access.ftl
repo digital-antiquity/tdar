@@ -5,7 +5,7 @@
         <#assign label = "" />
         <#if type?has_content>
             <#assign label=type.label />
-            <#if type == 'CUSTOM'>
+            <#if type == 'CUSTOM_CONTACT'>
                 <#assign label = custom.name />
             </#if>
         </#if>
