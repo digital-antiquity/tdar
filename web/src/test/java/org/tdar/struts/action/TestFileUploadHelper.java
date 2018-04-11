@@ -36,7 +36,8 @@ import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts.action.upload.UploadController;
+import org.tdar.struts.action.upload.CreateFilestoreTicketAction;
+import org.tdar.struts.action.upload.UploadAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 
@@ -55,16 +56,16 @@ public interface TestFileUploadHelper {
             name_ = FilenameUtils.getName(name_);
         }
         logger_.info("name: {} path: {}", name_, path_);
-        UploadController controller = generateNewInitializedController(UploadController.class);
+        UploadAction controller = generateNewInitializedController(UploadAction.class);
         controller.setSessionData(getSessionData());
-        controller.grabTicket();
-        Long ticketId = controller.getPersonalFilestoreTicket().getId();
-        logger_.info("ticketId {}", ticketId);
-        controller = generateNewInitializedController(UploadController.class);
+//        controller.grabTicket();
+        controller = generateNewInitializedController(UploadAction.class);
         controller.setUploadFile(Arrays.asList(new File(path_ + name_)));
         controller.setUploadFileFileName(Arrays.asList(name_));
-        controller.setTicketId(ticketId);
+//        controller.setTicketId(ticketId);
         String upload = controller.upload();
+        Long ticketId = controller.getPersonalFilestoreTicket().getId();
+        logger_.info("ticketId {}", ticketId);
         assertEquals(Action.SUCCESS, upload);
         return ticketId;
     }
@@ -114,9 +115,9 @@ public interface TestFileUploadHelper {
 
     default Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles, PersonalFilestoreTicket ticket)
             throws FileNotFoundException {
-        UploadController uploadController;
+        UploadAction uploadController;
         Pair<PersonalFilestoreTicket, List<FileProxy>> toReturn = new Pair<PersonalFilestoreTicket, List<FileProxy>>(ticket, new ArrayList<FileProxy>());
-        uploadController = generateNewInitializedController(UploadController.class);
+        uploadController = generateNewInitializedController(UploadAction.class);
         assertNull(uploadController.getTicketId());
 
         uploadController.setTicketId(ticket.getId());
@@ -150,7 +151,7 @@ public interface TestFileUploadHelper {
     PersonalFilestoreService getFilestoreService();
 
     default PersonalFilestoreTicket grabTicket() {
-        UploadController uploadController = generateNewInitializedController(UploadController.class);
+        CreateFilestoreTicketAction uploadController = generateNewInitializedController(CreateFilestoreTicketAction.class);
         assertEquals(Action.SUCCESS, uploadController.grabTicket());
         return uploadController.getPersonalFilestoreTicket();
     }

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -18,16 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.core.service.SerializationService;
-import org.tdar.filestore.personal.PersonalFilestore;
-import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.core.bean.TdarFile;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.exception.FileUploadException;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
-import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonLookupFilter;
+import org.tdar.web.service.WebPersonalFilestoreService;
+
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 @SuppressWarnings("serial")
 @Namespace("/upload")
@@ -39,14 +39,16 @@ import org.tdar.utils.json.JsonLookupFilter;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
 })
 @HttpForbiddenErrorResponseOnly
-public class UploadController extends AbstractAuthenticatableAction {
+public class AbstractUploadController extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
     @Autowired
-    private transient PersonalFilestoreService filestoreService;
+    private transient WebPersonalFilestoreService filestoreService;
 
-    @Autowired
-    private transient SerializationService serializationService;
-
+    private PersonalFilestoreTicket ticket = null;
+    private Long parentId;
+    private Long accountId;
+    private BillingAccount account;
+    private TdarFile parent;
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
     private List<String> uploadFileFileName = new ArrayList<String>();
@@ -61,25 +63,38 @@ public class UploadController extends AbstractAuthenticatableAction {
     // indicates that client is not sending a ticket because the server should create a new ticket for this upload
     private boolean ticketRequested = false;
 
-    @Action(value = "index", results = { @Result(name = SUCCESS, location = "index.ftl") })
-    public String index() {
+    @Autowired
+    private WebPersonalFilestoreService personalFilestoreService;
 
-        // get a claimcheck that all uploads will use
-        // personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        return SUCCESS;
+    // @Action(value = "index", results = { @Result(name = SUCCESS, location = "index.ftl") })
+    // public String index() {
+    //
+    // // get a claimcheck that all uploads will use
+    // // personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
+    // return SUCCESS;
+    // }
+
+    @Override
+    public void validate() {
+        if (CollectionUtils.isEmpty(uploadFile)) {
+            addActionError(getText("uploadController.no_files"));
+        }
+
+        if (account == null && getTdarConfiguration().isPayPerIngestEnabled()) {
+            addActionError(getText("uploadController.no_valid_account"));
+        }
+
+        if (account != null && !getAuthorizationService().canEditAccount(getAuthenticatedUser(), account)) {
+            addActionError(getText("uploadController.no_valid_account"));
+        }
+
+        super.validate();
     }
 
-    @Action(value = "upload",
-            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
-            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
-                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "400" })
-            })
-    @PostOnly
-    public String upload() {
-        PersonalFilestoreTicket ticket = null;
-        getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
+    @Override
+    public void prepare() throws Exception {
         if (ticketRequested) {
-            grabTicket();
+            personalFilestoreTicket = personalFilestoreService.grabTicket(getAuthenticatedUser());
             ticketId = personalFilestoreTicket.getId();
             ticket = personalFilestoreTicket;
             getLogger().debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
@@ -91,92 +106,79 @@ public class UploadController extends AbstractAuthenticatableAction {
             }
         }
 
-        if (CollectionUtils.isEmpty(uploadFile)) {
-            addActionError(getText("uploadController.no_files"));
+        if (parentId != null) {
+            parent = getGenericService().find(TdarFile.class, parentId);
         }
-        List<String> hashCodes = new ArrayList<>();
-        if (CollectionUtils.isEmpty(getActionErrors())) {
-            TdarUser submitter = getAuthenticatedUser();
-            for (int i = 0; i < uploadFile.size(); i++) {
-                File file = uploadFile.get(i);
-                String fileName = uploadFileFileName.get(i);
-                // put upload in holding area to be retrieved later (maybe) by the informationResourceController
-                if ((file != null) && file.exists()) {
-                    String contentType = "";
-                    try {
-                        contentType = uploadFileContentType.get(i);
-                    } catch (Exception e) { /* OK, JUST USED FOR DEBUG */
-                    }
-                    Object[] out = { fileName, file.length(), contentType, ticketId };
-                    getLogger().debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
-                    PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
-                    try {
-                        PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
-                        hashCodes.add(store.getMd5());
-                    } catch (Exception e) {
-                        addActionErrorWithException(getText("uploadController.could_not_store"), e);
-                    }
-                }
-            }
+        if (accountId != null) {
+            account = getGenericService().find(BillingAccount.class, accountId);
         }
-        if (CollectionUtils.isEmpty(getActionErrors())) {
-            Map<String, Object> result = new HashMap<>();
-            ArrayList<HashMap<String, Object>> files = new ArrayList<HashMap<String, Object>>();
-            result.put("files", files);
-            for (int i = 0; i < uploadFileFileName.size(); i++) {
-                HashMap<String, Object> file = new HashMap<>();
-                files.add(file);
-                file.put("name", uploadFileFileName.get(i));
-                if (CollectionUtils.isNotEmpty(hashCodes)) {
-                    file.put("hashCode", hashCodes.get(i));
-                }
-                if (CollectionUtils.isNotEmpty(getUploadFileSize())) {
-                    file.put("size", getUploadFileSize().get(i));
-                }
-                if (CollectionUtils.isNotEmpty(getUploadFileContentType())) {
-                    file.put("type", getUploadFileContentType().get(i));
-                }
-                file.put("delete_type", "DELETE");
-            }
-            result.put("ticket", ticket);
-            this.resultObject = result;
-            this.jsonView = JsonLookupFilter.class;
+    }
 
-            return SUCCESS;
-        } else {
+    public String upload() {
+        getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
+
+        List<String> hashCodes = new ArrayList<>();
+        try {
+            hashCodes = filestoreService.store(getAuthenticatedUser(), uploadFile, uploadFileFileName, uploadFileContentType, personalFilestoreTicket, this,
+                    account, parent);
+        } catch (FileUploadException fue) {
+            addActionErrorWithException("uploadController.could_not_store", fue);
             buildJsonError();
             return ERROR;
         }
-    }
 
-    private Object resultObject;
-    private Class jsonView;
-
-    @Action(value = "grab-ticket", results = { @Result(name = SUCCESS, type = JSONRESULT)
-    })
-    public String grabTicket() {
-        personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-        this.resultObject = personalFilestoreTicket;
-        this.jsonView = JsonLookupFilter.class;
+        buildResultsOutput(hashCodes);
 
         return SUCCESS;
     }
+
+    private void buildResultsOutput(List<String> hashCodes) {
+        Map<String, Object> result = buildResults(hashCodes);
+        result.put("ticket", ticket);
+        this.setResultObject(result);
+        this.setJsonView(JsonLookupFilter.class);
+    }
+
+    private Map<String, Object> buildResults(List<String> hashCodes) {
+        Map<String, Object> result = new HashMap<>();
+        ArrayList<HashMap<String, Object>> files = new ArrayList<HashMap<String, Object>>();
+        result.put("files", files);
+        for (int i = 0; i < uploadFileFileName.size(); i++) {
+            HashMap<String, Object> file = new HashMap<>();
+            files.add(file);
+            file.put("name", uploadFileFileName.get(i));
+            if (CollectionUtils.isNotEmpty(hashCodes)) {
+                file.put("hashCode", hashCodes.get(i));
+            }
+            if (CollectionUtils.isNotEmpty(getUploadFileSize())) {
+                file.put("size", getUploadFileSize().get(i));
+            }
+            if (CollectionUtils.isNotEmpty(getUploadFileContentType())) {
+                file.put("type", getUploadFileContentType().get(i));
+            }
+            file.put("delete_type", "DELETE");
+        }
+        return result;
+    }
+
+    private Object resultObject;
+    private Class<? extends JacksonView> jsonView;
 
     public Object getResultObject() {
         return resultObject;
     }
 
-    public Class getJsonView() {
+    public Class<? extends JacksonView> getJsonView() {
         return jsonView;
     }
 
     // construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
-    private void buildJsonError() {
+    protected void buildJsonError() {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        this.resultObject = result;
+        this.setResultObject(result);
     }
 
     public List<File> getUploadFile() {
@@ -252,6 +254,30 @@ public class UploadController extends AbstractAuthenticatableAction {
 
     public void setTicketRequested(boolean ticketRequested) {
         this.ticketRequested = ticketRequested;
+    }
+
+    protected void setResultObject(Object resultObject) {
+        this.resultObject = resultObject;
+    }
+
+    protected void setJsonView(Class<? extends JacksonView> jsonView) {
+        this.jsonView = jsonView;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
 }

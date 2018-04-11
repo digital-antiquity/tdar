@@ -53,7 +53,7 @@ import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
-import org.tdar.struts.action.upload.UploadController;
+import org.tdar.struts.action.upload.UploadAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
@@ -685,13 +685,13 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         evictCache();
         genericService.synchronize();
 
-        UploadController uc = generateNewInitializedController(UploadController.class, newUser);
-        uc.grabTicket();
-        Long ticketId = uc.getPersonalFilestoreTicket().getId();
-        uc.setTicketId(ticketId);
+        UploadAction uc = generateNewInitializedController(UploadAction.class, newUser);
+//        uc.grabTicket();
+//        uc.setTicketId(ticketId);
         uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.upload();
+        Long ticketId = uc.getPersonalFilestoreTicket().getId();
 
         doc = genericService.find(Document.class, id);
         assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
