@@ -45,6 +45,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.SiteCodeExtractor;
+import org.tdar.utils.SpatialObfuscationUtil;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.WKTWriter;
@@ -356,7 +357,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         for (LatitudeLongitudeBox llb : resource.getActiveLatitudeLongitudeBoxes()) {
             if (llb.getObfuscatedNorth() == null || llb.getObfuscatedEast() == null) {
                 logger.error("LLB is null... shouldn't be for tDAR Id {}", resource.getId());
-                llb.obfuscateAll();
+                SpatialObfuscationUtil.obfuscate(llb);
             }
             Envelope env = new Envelope(llb.getObfuscatedWest(), llb.getObfuscatedEast(), llb.getObfuscatedSouth(),
                     llb.getObfuscatedNorth());
