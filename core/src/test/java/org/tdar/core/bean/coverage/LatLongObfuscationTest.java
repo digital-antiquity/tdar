@@ -22,16 +22,31 @@ public class LatLongObfuscationTest {
 
     @Test
     public void testNegLatLongWithSaltedResult() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg, smallNeg2, smallNeg2, smallNeg);
-        Double east = llb.getEast();
-        Double west = llb.getWest();
-        logger.debug("before: e:{} w:{}", east, west);
-        llb.obfuscate();
-        logger.debug(" after: {}", llb);
-        logger.debug("east: {} ; obs: {}" , east, llb.getObfuscatedEast());
-        logger.debug("west: {} ; obs: {}" , west, llb.getObfuscatedWest());
-        // double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE, true);
-        assertTrue("result:" + llb.getObfuscatedEast() + " < " + east, llb.getObfuscatedEast() < east);
+        int count = 10;
+        int valid = 0;
+        // with "random" there's some chance of this being less useful, thus... we do it a few times
+        while (count > 0) {
+
+            LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg, smallNeg2, smallNeg2, smallNeg);
+            Double east = llb.getEast();
+            Double west = llb.getWest();
+            logger.debug("before: e:{} w:{}", east, west);
+            llb.obfuscate();
+            logger.debug(" after: {}", llb);
+            logger.debug("east: {} ; obs: {}", east, llb.getObfuscatedEast());
+            logger.debug("west: {} ; obs: {}", west, llb.getObfuscatedWest());
+            // double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE, true);
+            logger.debug("result:" + llb.getObfuscatedEast() + " > " + east);
+            logger.debug("result:" + llb.getObfuscatedWest() + " < " + west);
+            if (llb.getObfuscatedEast() > east && llb.getObfuscatedWest() < west) {
+                valid++;
+            }
+            count--;
+        }
+        if (valid < 3) {
+            fail("issue with obfuscation, most of the randoms failed");
+        }
+
     }
 
     @SuppressWarnings("static-method")
