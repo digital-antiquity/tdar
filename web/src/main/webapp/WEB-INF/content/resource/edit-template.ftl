@@ -414,8 +414,6 @@
             </@edit.submit>
     </@s.form>
 
-<#-- include any JS templates -->
-    <@edit.asyncUploadTemplates />
 
 <#-- include footer on resource page -->
     <#if local_.footer?? && local_.footer?is_macro>
@@ -469,7 +467,7 @@ Auth Info
          };
         var form = $(props.formSelector)[0];
         TDAR.common.initEditPage(form, props);
-            
+        TDAR.vuejs.uploadWidget.main();            
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
         </#if>
