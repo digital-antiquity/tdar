@@ -12,7 +12,7 @@ ${from.properName}'s email address below if you need more information from them.
 </#if>
 </p>
 <p>
-<a href="${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}&type=CUSTOM">
+<a href="${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}&type=CUSTOM_CONTACT">
     Grant access to this resource
 </a>
 </p>
