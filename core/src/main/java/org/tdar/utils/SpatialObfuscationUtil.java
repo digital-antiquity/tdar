@@ -4,9 +4,10 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 
 public class SpatialObfuscationUtil {
 
-    public static void obfuscate(LatitudeLongitudeBox latitudeLongitudeBox) {
+    public static boolean obfuscate(LatitudeLongitudeBox latitudeLongitudeBox) {
         double absoluteLatLength = Math.abs(latitudeLongitudeBox.getNorth() - latitudeLongitudeBox.getSouth());
         double absoluteLongLength = Math.abs(latitudeLongitudeBox.getEast() - latitudeLongitudeBox.getWest());
+        boolean obfuscated = false;
         if (absoluteLatLength < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
             Double centerLatitude = latitudeLongitudeBox.getCenterLatitude();
             // x y random1 random2 random3 random4 distance
@@ -15,6 +16,7 @@ public class SpatialObfuscationUtil {
             double north1 = south1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
             latitudeLongitudeBox.setObfuscatedNorth(correctForMeridiansAndPoles(north1, true));
             latitudeLongitudeBox.setObfuscatedSouth(correctForMeridiansAndPoles(south1, true));
+            obfuscated = true;
         } else {
             latitudeLongitudeBox.setObfuscatedNorth(latitudeLongitudeBox.getNorth());
             latitudeLongitudeBox.setObfuscatedSouth(latitudeLongitudeBox.getSouth());
@@ -28,10 +30,12 @@ public class SpatialObfuscationUtil {
 
             latitudeLongitudeBox.setObfuscatedEast(correctForMeridiansAndPoles(east1, false));
             latitudeLongitudeBox.setObfuscatedWest(correctForMeridiansAndPoles(west1, false));
+            obfuscated = true;
         } else {
             latitudeLongitudeBox.setObfuscatedEast(latitudeLongitudeBox.getEast());
             latitudeLongitudeBox.setObfuscatedWest(latitudeLongitudeBox.getWest());
         }
+        return obfuscated;
     }
 
     public static double correctForMeridiansAndPoles(final double ret_, boolean latitude) {
