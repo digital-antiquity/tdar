@@ -698,6 +698,15 @@ h2 {
     background: #ddd;
 }
 
+
+.tableFormat tr.row_odd  td{
+    background: #ccc;
+}
+
+.tableFormat tr.row_odd  td{
+	background: white;
+}
+
 .cols .guide {
     background: #b6a07d !important;
 }
