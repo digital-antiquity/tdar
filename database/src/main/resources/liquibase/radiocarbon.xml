@@ -35,5 +35,22 @@
             <column name="file_type" type="varchar(5)"/>
         </addColumn>
     </changeSet>
+    <changeSet id="radiocarbon-file-first-3" author="abrin">
+        <addColumn tableName="files">
+            <column name="account_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_account" referencedTableName="pos_account"
+            baseColumnNames="account_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="uploader_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_uploader" referencedTableName="tdar_user"
+            baseColumnNames="uploader_id" baseTableName="files"
+            referencedColumnNames="id" />
+        
+    </changeSet>
 
 </databaseChangeLog>

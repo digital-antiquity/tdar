@@ -5,9 +5,13 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.TdarUser;
 
 @Entity
 @DiscriminatorValue(value = "FILE")
@@ -25,6 +29,11 @@ public class TdarFile extends AbstractFile {
     private ImportFileStatus status;
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "md5")
     private String md5;
+    
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private BillingAccount account;
+    
 
     public Long getFileSize() {
         return fileSize;
@@ -48,6 +57,14 @@ public class TdarFile extends AbstractFile {
 
     public void setMd5(String md5) {
         this.md5 = md5;
+    }
+
+    public BillingAccount getAccount() {
+        return account;
+    }
+
+    public void setAccount(BillingAccount account) {
+        this.account = account;
     }
 
 }

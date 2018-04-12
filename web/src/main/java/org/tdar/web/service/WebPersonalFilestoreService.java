@@ -18,7 +18,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.base.GenericDao;
-import org.tdar.core.event.TdarFileAddedEvent;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -68,14 +67,15 @@ public class WebPersonalFilestoreService {
                     tdarFile.setExtension(FilenameUtils.getExtension(fileName));
                     tdarFile.setFileSize(file.length());
                     tdarFile.setDateCreated(new Date());
+                    if (account != null) {
+                        tdarFile.setAccount(account);
+                    }
+                    tdarFile.setUploader(submitter);
                     if (dir != null) {
                         tdarFile.setParentFile(dir);
                     }
                     tdarFile.setMd5(store.getMd5());
                     genericDao.saveOrUpdate(tdarFile);
-                    if (dir != null) {
-                        publisher.publishEvent(new TdarFileAddedEvent(tdarFile.getId()));
-                    }
                     hashCodes.add(store.getMd5());
                 } catch (Exception e) {
                     throw new FileUploadException("uploadController.could_not_store", e);

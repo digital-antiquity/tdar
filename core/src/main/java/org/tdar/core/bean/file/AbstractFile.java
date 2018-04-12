@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.entity.TdarUser;
 
 @Entity()
 @Table(name = "files")
@@ -42,6 +43,10 @@ public abstract class AbstractFile extends AbstractPersistable {
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private TdarDir parentFile;
+
+    @ManyToOne
+    @JoinColumn(name = "uploader_id")
+    private TdarUser uploader;
 
     // private ResourceType targetFileType;
     // private Resource resource;
@@ -83,6 +88,14 @@ public abstract class AbstractFile extends AbstractPersistable {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public TdarUser getUploader() {
+        return uploader;
+    }
+
+    public void setUploader(TdarUser uploader) {
+        this.uploader = uploader;
     }
 
 }
