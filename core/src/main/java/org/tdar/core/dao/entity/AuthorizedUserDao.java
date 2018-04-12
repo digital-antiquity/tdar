@@ -80,16 +80,16 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         for (AuthorizedUser au : resource.getAuthorizedUsers()) {
             // if different person, skip
             if (!au.getUser().equals(person)) {
-                return false;
+                continue;
             }
 
             // if effective permissions are less
             if (permission.getEffectivePermissions() > au.getEffectiveGeneralPermission()) {
-                return false;
+                continue;
             }
             // if we have an expired user that hasn't been cleaned up
-            if (au.getDateExpires() != null && au.getDateExpires().after( new Date())) {
-                return false;
+            if (au.getDateExpires() != null && au.getDateExpires().after(new Date())) {
+                continue;
             }
             return true;
         }
