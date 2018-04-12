@@ -354,6 +354,50 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         });
     }
 
+    
+
+    @Test
+    @Rollback(false)
+    public void testDailyTimedAccessRevokingProcessForResource() {
+        Dataset dataset = createAndSaveNewDataset();
+        Date expires = DateTime.now().minusDays(2).toDate();
+        TdarUser user = createAndSaveNewUser();
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), user, Permissions.VIEW_ALL);
+        authorizedUser.setDateExpires(expires);
+        dataset.getAuthorizedUsers().add(authorizedUser);
+        genericService.saveOrUpdate(dataset);
+        genericService.saveOrUpdate(authorizedUser);
+        final Long eid = dataset.getId();
+        Long userId = user.getId();
+        user = null;
+        // genericService.saveOrUpdate(e)
+        // dataset.getResourceCollections().add(collection);
+        authorizedUser = null;
+        final int aus = dataset.getAuthorizedUsers().size();
+        dataset = null;
+        setVerifyTransactionCallback(new TransactionCallback<Image>() {
+            @Override
+            public Image doInTransaction(TransactionStatus status) {
+                scheduledProcessService.queue(DailyTimedAccessRevokingProcess.class);
+                scheduledProcessService.runNextScheduledProcessesInQueue();
+                // dtarp.execute();
+                // dtarp.cleanup();
+                Dataset ds = genericService.find(Dataset.class, eid);
+                logger.debug("{}", ds);
+                logger.debug("au: {}", ds.getAuthorizedUsers());
+//                assertEquals(aus, ds.getAuthorizedUsers().size());
+                for (AuthorizedUser au : ds.getAuthorizedUsers()) {
+                    assertNotEquals(userId, au.getUser().getId());
+                }
+                assertEquals(aus - 1, ds.getAuthorizedUsers().size());
+                ds.setStatus(Status.DELETED);
+                genericService.saveOrUpdate(ds);
+                genericService.delete(genericService.find(TdarUser.class, userId));
+                return null;
+            }
+        });
+    }
+
     private ResourceCollection createSharedCollection(Date date, Dataset dataset) {
         ResourceCollection collection = new ResourceCollection();
         collection.getManagedResources().add(dataset);

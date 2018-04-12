@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,9 +78,20 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
         }
 
         for (AuthorizedUser au : resource.getAuthorizedUsers()) {
-            if (au.getUser().equals(person) && permission.getEffectivePermissions() <= au.getEffectiveGeneralPermission()) {
-                return true;
+            // if different person, skip
+            if (!au.getUser().equals(person)) {
+                return false;
             }
+
+            // if effective permissions are less
+            if (permission.getEffectivePermissions() > au.getEffectiveGeneralPermission()) {
+                return false;
+            }
+            // if we have an expired user that hasn't been cleaned up
+            if (au.getDateExpires() != null && au.getDateExpires().after( new Date())) {
+                return false;
+            }
+            return true;
         }
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
