@@ -691,7 +691,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.upload();
-        Long ticketId = uc.getPersonalFilestoreTicket().getId();
+        Long ticketId = uc.getTicket().getId();
 
         doc = genericService.find(Document.class, id);
         assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,

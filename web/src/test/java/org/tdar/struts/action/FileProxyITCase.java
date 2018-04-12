@@ -236,7 +236,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
     }
 
     @Test
-    public void testImageWithUppercaseFilename() throws FileNotFoundException, TdarActionException {
+    public void testImageWithUppercaseFilename() throws Exception {
         PersonalFilestoreTicket ticket = grabTicket();
         FileProxy fileProxy = uploadFileAsync(new File(TEST_IMAGE_DIR, "GREYBOX.PNG"), ticket);
         ImageController controller = generateNewInitializedController(ImageController.class);

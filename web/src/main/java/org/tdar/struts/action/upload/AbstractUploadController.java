@@ -39,12 +39,12 @@ import com.opensymphony.xwork2.Validateable;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
 })
 @HttpForbiddenErrorResponseOnly
-public class AbstractUploadController extends AbstractAuthenticatableAction implements Preparable, Validateable {
+public abstract class AbstractUploadController extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
     @Autowired
     private transient WebPersonalFilestoreService filestoreService;
 
-    private PersonalFilestoreTicket ticket = null;
+    private PersonalFilestoreTicket ticket;
     private Long parentId;
     private Long accountId;
     private BillingAccount account;
@@ -52,7 +52,6 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
     private List<File> uploadFile = new ArrayList<File>();
     private List<String> uploadFileContentType = new ArrayList<String>();
     private List<String> uploadFileFileName = new ArrayList<String>();
-    private PersonalFilestoreTicket personalFilestoreTicket;
     private String callback;
     private Long informationResourceId;
     private int jsonContentLength;
@@ -94,14 +93,13 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
     @Override
     public void prepare() throws Exception {
         if (ticketRequested) {
-            personalFilestoreTicket = personalFilestoreService.grabTicket(getAuthenticatedUser());
-            ticketId = personalFilestoreTicket.getId();
-            ticket = personalFilestoreTicket;
-            getLogger().debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", ticket);
+            setTicket(personalFilestoreService.grabTicket(getAuthenticatedUser()));
+            ticketId = getTicket().getId();
+            getLogger().debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", getTicket());
         } else {
-            ticket = getGenericService().find(PersonalFilestoreTicket.class, ticketId);
-            getLogger().debug("UPLOAD CONTROLLER: upload request with ticket included: {}", ticket);
-            if (ticket == null) {
+            setTicket(getGenericService().find(PersonalFilestoreTicket.class, ticketId));
+            getLogger().debug("UPLOAD CONTROLLER: upload request with ticket included: {}", getTicket());
+            if (getTicket() == null) {
                 addActionError(getText("uploadController.require_valid_ticket"));
             }
         }
@@ -119,7 +117,7 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
 
         List<String> hashCodes = new ArrayList<>();
         try {
-            hashCodes = filestoreService.store(getAuthenticatedUser(), uploadFile, uploadFileFileName, uploadFileContentType, personalFilestoreTicket, this,
+            hashCodes = filestoreService.store(getAuthenticatedUser(), uploadFile, uploadFileFileName, uploadFileContentType, getTicket(), this,
                     account, parent);
         } catch (FileUploadException fue) {
             addActionErrorWithException("uploadController.could_not_store", fue);
@@ -134,7 +132,7 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
 
     private void buildResultsOutput(List<String> hashCodes) {
         Map<String, Object> result = buildResults(hashCodes);
-        result.put("ticket", ticket);
+        result.put("ticket", getTicket());
         this.setResultObject(result);
         this.setJsonView(JsonLookupFilter.class);
     }
@@ -203,10 +201,6 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
 
     public void setUploadFileFileName(List<String> uploadFileFileName) {
         this.uploadFileFileName = uploadFileFileName;
-    }
-
-    public PersonalFilestoreTicket getPersonalFilestoreTicket() {
-        return personalFilestoreTicket;
     }
 
     public Long getTicketId() {
@@ -278,6 +272,14 @@ public class AbstractUploadController extends AbstractAuthenticatableAction impl
 
     public void setParentId(Long parentId) {
         this.parentId = parentId;
+    }
+
+    public PersonalFilestoreTicket getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(PersonalFilestoreTicket ticket) {
+        this.ticket = ticket;
     }
 
 }

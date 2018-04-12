@@ -64,7 +64,7 @@ public interface TestFileUploadHelper {
         controller.setUploadFileFileName(Arrays.asList(name_));
 //        controller.setTicketId(ticketId);
         String upload = controller.upload();
-        Long ticketId = controller.getPersonalFilestoreTicket().getId();
+        Long ticketId = controller.getTicket().getId();
         logger_.info("ticketId {}", ticketId);
         assertEquals(Action.SUCCESS, upload);
         return ticketId;
@@ -105,16 +105,16 @@ public interface TestFileUploadHelper {
         return (C) controller.getResource();
     }
 
-    default FileProxy uploadFileAsync(File file, PersonalFilestoreTicket ticket) throws FileNotFoundException {
+    default FileProxy uploadFileAsync(File file, PersonalFilestoreTicket ticket) throws Exception {
         return uploadFilesAsync(Arrays.asList(file), ticket).getSecond().get(0);
     }
 
-    default Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles) throws FileNotFoundException {
+    default Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles) throws Exception {
         return uploadFilesAsync(uploadFiles, grabTicket());
     }
 
     default Pair<PersonalFilestoreTicket, List<FileProxy>> uploadFilesAsync(List<File> uploadFiles, PersonalFilestoreTicket ticket)
-            throws FileNotFoundException {
+            throws Exception {
         UploadAction uploadController;
         Pair<PersonalFilestoreTicket, List<FileProxy>> toReturn = new Pair<PersonalFilestoreTicket, List<FileProxy>>(ticket, new ArrayList<FileProxy>());
         uploadController = generateNewInitializedController(UploadAction.class);
@@ -130,7 +130,8 @@ public interface TestFileUploadHelper {
             fileProxy.setAction(FileAction.ADD);
             toReturn.getSecond().add(fileProxy);
         }
-
+        uploadController.prepare();
+        uploadController.validate();
         assertEquals(Action.SUCCESS, uploadController.upload());
         List<PersonalFilestoreFile> files = getFilestoreService().retrieveAllPersonalFilestoreFiles(uploadController.getTicketId());
         assertEquals("file count retrieved from personal filestore", uploadFiles.size(), files.size());

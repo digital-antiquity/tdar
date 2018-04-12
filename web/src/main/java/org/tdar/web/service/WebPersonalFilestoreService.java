@@ -57,8 +57,7 @@ public class WebPersonalFilestoreService {
                     contentType = contentTypes.get(i);
                 } catch (Exception e) { /* OK, JUST USED FOR DEBUG */
                 }
-                Object[] out = { fileName, file.length(), contentType, ticket.getId() };
-                logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", out);
+                logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", fileName, file, contentType, ticket.getId());
                 PersonalFilestore filestore = filestoreService.getPersonalFilestore(submitter);
                 try {
                     PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
