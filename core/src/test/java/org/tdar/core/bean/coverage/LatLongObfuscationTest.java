@@ -22,67 +22,59 @@ public class LatLongObfuscationTest {
 
     @Test
     public void testNegLatLongWithSaltedResult() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg, smallNeg2, smallNeg2, smallNeg);
-        Double east = llb.getEast();
-        Double west = llb.getWest();
-        logger.debug("before: e:{} w:{}", east, west);
-        llb.obfuscate();
-        logger.debug(" after: {}", llb);
-        logger.debug("east: {} ; obs: {}" , east, llb.getObfuscatedEast());
-        logger.debug("west: {} ; obs: {}" , west, llb.getObfuscatedWest());
-        // double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE, true);
-        assertTrue("result:" + llb.getObfuscatedEast() + " < " + east, llb.getObfuscatedEast() < east);
+        int count = 10;
+        int valid = 0;
+        // with "random" there's some chance of this being less useful, thus... we do it a few times
+        while (count > 0) {
+
+            LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg, smallNeg2, smallNeg2, smallNeg);
+            Double east = llb.getEast();
+            Double west = llb.getWest();
+            logger.debug("before: e:{} w:{}", east, west);
+            llb.obfuscate();
+            logger.debug(" after: {}", llb);
+            logger.debug("east: {} ; obs: {}", east, llb.getObfuscatedEast());
+            logger.debug("west: {} ; obs: {}", west, llb.getObfuscatedWest());
+            // double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE, true);
+            logger.debug("result:" + llb.getObfuscatedEast() + " > " + east);
+            logger.debug("result:" + llb.getObfuscatedWest() + " < " + west);
+            if (llb.getObfuscatedEast() > east && llb.getObfuscatedWest() < west) {
+                valid++;
+            }
+            count--;
+        }
+        if (valid < 3) {
+            fail("issue with obfuscation, most of the randoms failed");
+        }
+
     }
 
-    @SuppressWarnings("static-method")
     @Test
     public void testWrappingLong() {
-        int count = 10;
+        int count = 100;
         int valid = 0;
         // with "random" there's some chance of this being less useful, thus... we do it a few times
         while (count > 0) {
 
             double two = LatitudeLongitudeBox.MAX_LONGITUDE - (LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2);
             LatitudeLongitudeBox llb = new LatitudeLongitudeBox(two, smallNeg, two, smallNeg2);
-            logger.debug("before: {} - {}", llb.getWest(), llb.getEast());
+            Double east = llb.getEast();
+            Double west = llb.getWest();
+            logger.debug("before: {} - {}", west, east);
             llb.obfuscate();
             logger.debug(" after: {} - {}", llb.getObfuscatedWest(), llb.getObfuscatedEast());
-            if (llb.getObfuscatedWest() > llb.getObfuscatedEast() && llb.getObfuscatedEast() < 170d) {
+            if (llb.getObfuscatedWest() < east && (llb.getObfuscatedEast() > 179d || (llb.getObfuscatedEast() < -179d && llb.getObfuscatedEast() < east)) ) {
                 valid++;
             }
             // assertTrue("result:" + result + " > " + two, result < two);
             count--;
         }
 
-        if (valid < 3) {
-            fail("issue with obfuscation, most of the randoms failed");
+        if (valid < 75) {
+            fail(String.format("issue with obfuscation, most of the randoms failed : %s/%s", valid, 100));
         }
+        logger.debug("valid matches: {}", valid);
 
-    }
-
-    @SuppressWarnings("static-method")
-    @Test
-    public void testWrappingLong2() {
-        int count = 10;
-        int valid = 0;
-        // with "random" there's some chance of this being less useful, thus... we do it a few times
-        while (count > 0) {
-            double two = LatitudeLongitudeBox.MIN_LONGITUDE + (LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 2);
-            LatitudeLongitudeBox llb = new LatitudeLongitudeBox(two, smallNeg, two, smallNeg2);
-            logger.debug("before: {} - {}", llb.getWest(), llb.getEast());
-            llb.obfuscate();
-            logger.debug(" after: {} - {}", llb.getObfuscatedWest(), llb.getObfuscatedEast());
-            if (llb.getObfuscatedWest() > llb.getObfuscatedEast() && llb.getObfuscatedEast() < 170d) {
-                valid++;
-            }
-            count--;
-        }
-
-        if (valid < 3) {
-            fail("issue with obfuscation, most of the randoms failed");
-        }
-        // double result = LatitudeLongitudeBox.randomizeIfNeedBe(LatitudeLongitudeBox.MIN_LONGITUDE, two, LatitudeLongitudeBox.LONGITUDE, true);
-        // assertTrue("result:" + result + " < " + two, result > two);
     }
 
     @Test
