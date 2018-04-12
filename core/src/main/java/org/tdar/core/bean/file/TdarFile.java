@@ -13,8 +13,8 @@ import org.tdar.core.bean.ImportFileStatus;
 @DiscriminatorValue(value = "FILE")
 public class TdarFile extends AbstractFile {
 
-    private static final long serialVersionUID = 4135346326567855165L;
 
+    private static final long serialVersionUID = 8710509667556337547L;
     @Column(name = "file_size")
     private Long fileSize;
     @Column(length = 15)
