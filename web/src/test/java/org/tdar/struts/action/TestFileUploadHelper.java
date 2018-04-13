@@ -48,7 +48,7 @@ public interface TestFileUploadHelper {
 
     final Logger logger_ = LoggerFactory.getLogger(TestFileUploadHelper.class);
 
-    default Long uploadFile(String path, String name) {
+    default Long uploadFile(String path, String name) throws Exception {
         String path_ = path;
         String name_ = name;
         if (name_.contains("src/test/") || name_.contains("target/test-resources")) {
@@ -63,6 +63,10 @@ public interface TestFileUploadHelper {
         controller.setUploadFile(Arrays.asList(new File(path_ + name_)));
         controller.setUploadFileFileName(Arrays.asList(name_));
 //        controller.setTicketId(ticketId);
+        controller.setTicketRequested(true);
+        controller.prepare();
+        controller.validate();
+        
         String upload = controller.upload();
         Long ticketId = controller.getTicket().getId();
         logger_.info("ticketId {}", ticketId);
@@ -71,7 +75,7 @@ public interface TestFileUploadHelper {
     }
 
     @SuppressWarnings("unchecked")
-    default <C> C replaceFile(String uploadFile, String replaceFile, Class<C> cls, Long id) throws TdarActionException {
+    default <C> C replaceFile(String uploadFile, String replaceFile, Class<C> cls, Long id) throws Exception {
         AbstractInformationResourceController<?> controller = null;
         Long ticketId = -1L;
         if (cls.equals(Ontology.class)) {

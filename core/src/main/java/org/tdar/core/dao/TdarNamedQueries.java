@@ -179,6 +179,7 @@ public interface TdarNamedQueries {
     String QUERY_RIGHTS_EXPIRY_ACCOUNT = "query.expiry_account";
     String QUERY_RIGHTS_EXPIRY_WORKFLOW = "query.expiry_authuser_workflow";
     String FIND_EMAIL_BY_GUID = "query.find_email_by_guid";
+    String FIND_FILES_BY_STATUS = "find.files.by.status";
 
     // raw SQL/HQL queries
 
@@ -345,5 +346,6 @@ public interface TdarNamedQueries {
             + "left join collection_parents cp on c.id=cp.collection_id "
             + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
             + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:ownerId where au.user_id=:userId and au.resource_id is not null)";
+
 
 }

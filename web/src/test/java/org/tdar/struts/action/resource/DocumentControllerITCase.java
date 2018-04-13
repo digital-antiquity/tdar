@@ -728,7 +728,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     @SuppressWarnings("unused")
     @Test
     @Rollback
-    public void testDocumentReplaceWithInvalidfile() throws TdarActionException {
+    public void testDocumentReplaceWithInvalidfile() throws Exception {
         setIgnoreActionErrors(true);
         Document document = setupAndLoadResource(TestConstants.TEST_DOCUMENT, Document.class);
         Long documentId = document.getId();

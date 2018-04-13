@@ -551,7 +551,10 @@
                 query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.FIND_EMAIL_BY_GUID,
-                query = "from Email email where email.messageUuid=:guid")
+                query = "from Email email where email.messageUuid=:guid"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.FIND_FILES_BY_STATUS,
+                query = "from TdarFile file where file.status=:status")
 })
 package org.tdar.core.dao;
 
