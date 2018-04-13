@@ -557,7 +557,7 @@
                 query = "from TdarFile file where file.status in (:status)"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.LIST_FILES_FOR_DIR,
-                query = "from AbstractFile file where (file.parent is null or file.parent=:parent) and (:account is null or file.account=:account) and (:uploader is null or file.uploader=:uploader)")
+                query = "from AbstractFile file where (:parent is null or file.parent=:parent) and (:account is null or file.account=:account) and (:uploader is null or file.uploader=:uploader)")
 
 })
 package org.tdar.core.dao;

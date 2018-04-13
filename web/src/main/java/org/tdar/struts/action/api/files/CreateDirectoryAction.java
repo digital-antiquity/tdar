@@ -36,6 +36,7 @@ public class CreateDirectoryAction extends AbstractJsonApiAction {
     @Override
     public void prepare() throws Exception {
         super.prepare();
+        getLogger().debug("name: {} parentId: {} ", name, parentId);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             parent = getGenericService().find(TdarDir.class, parentId);
         }
