@@ -3,16 +3,23 @@ package org.tdar.core.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -77,6 +84,34 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         return personalFilestore;
     }
 
+    @Transactional(readOnly=false)
+    @Override
+    public void store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir) throws FileUploadException {
+        PersonalFilestore filestore = getPersonalFilestore(ticket);
+        try {
+            PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
+            TdarFile tdarFile = new TdarFile();
+            tdarFile.setFilename(store.getFile().getName());
+            tdarFile.setLocalPath(store.getFile().getPath());
+            tdarFile.setDisplayName(fileName);
+            tdarFile.setExtension(FilenameUtils.getExtension(fileName));
+            tdarFile.setFileSize(file.length());
+            tdarFile.setDateCreated(new Date());
+            if (account != null) {
+                tdarFile.setAccount(account);
+            }
+            tdarFile.setUploader(user);
+            if (dir != null) {
+                tdarFile.setParentFile(dir);
+            }
+            tdarFile.setMd5(store.getMd5());
+            tdarFile.setStatus(ImportFileStatus.UPLOADED);
+            genericDao.saveOrUpdate(tdarFile);
+        } catch (Exception e) {
+            throw new FileUploadException("uploadController.could_not_store", e);
+        }
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -125,14 +160,5 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         return getPersonalFilestore(ticket);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.PersonalFilestoreService#store(org.tdar.core.bean.PersonalFilestoreTicket, java.io.File, java.lang.String)
-     */
-    @Override
-    public synchronized PersonalFilestoreFile store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException {
-        return getPersonalFilestore(ticket.getSubmitter()).store(ticket, file, filename);
-    }
 
 }

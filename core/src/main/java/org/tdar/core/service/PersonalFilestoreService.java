@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.util.List;
 
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
@@ -77,8 +80,10 @@ public interface PersonalFilestoreService {
      * @param file
      * @param filename
      * @return
+     * @throws FileUploadException 
      * @throws IOException
      */
-    PersonalFilestoreFile store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException;
+    void store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir) throws FileUploadException;
+
 
 }

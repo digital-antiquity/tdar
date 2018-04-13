@@ -67,4 +67,12 @@ public class TdarFile extends AbstractFile {
         this.account = account;
     }
 
+    public ImportFileStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ImportFileStatus status) {
+        this.status = status;
+    }
+
 }
