@@ -7,11 +7,13 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @DiscriminatorValue(value = "FILE")
@@ -59,6 +61,8 @@ public class TdarFile extends AbstractFile {
         this.md5 = md5;
     }
 
+    @XmlElement(name = "accountRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public BillingAccount getAccount() {
         return account;
     }

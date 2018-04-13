@@ -13,10 +13,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity()
 @Table(name = "files")
@@ -42,7 +45,7 @@ public abstract class AbstractFile extends AbstractPersistable {
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private TdarDir parentFile;
+    private TdarDir parent;
 
     @ManyToOne
     @JoinColumn(name = "uploader_id")
@@ -74,12 +77,14 @@ public abstract class AbstractFile extends AbstractPersistable {
         this.localPath = localPath;
     }
 
-    public TdarDir getParentFile() {
-        return parentFile;
+    @XmlElement(name = "parentRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public TdarDir getParent() {
+        return parent;
     }
 
-    public void setParentFile(TdarDir parentFile) {
-        this.parentFile = parentFile;
+    public void setParent(TdarDir parentFile) {
+        this.parent = parentFile;
     }
 
     public Date getDateCreated() {
@@ -90,6 +95,8 @@ public abstract class AbstractFile extends AbstractPersistable {
         this.dateCreated = dateCreated;
     }
 
+    @XmlElement(name = "uploaderRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getUploader() {
         return uploader;
     }

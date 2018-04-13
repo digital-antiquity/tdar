@@ -23,7 +23,7 @@
 <div class="span2">
     <@dash.sidebar current="files" />
 </div>
-<div class="span10">
+<div class="span10" id="filesTool">
 
 <form class="form-horizontal">
 <div class="span4">
@@ -52,7 +52,7 @@
  <td colspan="3"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after 1 month.</td>
 </tr>
 <tr>
-
+{{ files }}
 </tr>
 </table>
 
@@ -71,7 +71,50 @@
 <script>
     $(document).ready(function () {
         TDAR.notifications.init();
+        
+        
+        
+        var app = new Vue({
+            el : "#filesTool",
+            data : {
+                url : "/api/file/listFiles",
+                validFormats : [],
+                ableToUpload : true,
+                parentId: undefined,
+                files : [],
+                path : "" 
+            },
+            computed : {
+                inputDisabled : function() {
+                    return !this.ableToUpload;
+                }
+            },
+            methods : {
+                loadFiles: function (parentId) {
+                var _app = this;
+                    $.get(this.url, {
+                    dataType:'jsonp',
+                    data: {"parentId": parentId}
+                    }).done(function(msg){
+                    console.log(msg);
+                    Vue.set(_app,"files", msg);
+                    });
+                }
+            },
+            mounted : function() {
+                // setup
+                if (this.ableToUpload == undefined || this.ableToUpload == false) {
+                    console.log('file upload disabled');
+                    return;
+                }
+                this.loadFiles(undefined);
+            }
+        });
     });
+    
+    
+    
+    
 </script>
 
 

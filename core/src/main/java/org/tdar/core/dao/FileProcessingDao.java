@@ -10,6 +10,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.ImportFileStatus;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.base.HibernateBase;
@@ -40,5 +43,13 @@ public class FileProcessingDao extends HibernateBase<TdarFile>{
         return resultList;
     }
 
+
+    public List<AbstractFile> listFilesFor(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.LIST_FILES_FOR_DIR);
+        query.setParameter("parent", parent);
+        query.setParameter("account", account);
+        query.setParameter("uploader", authenticatedUser);
+        return query.getResultList();
+    }
     
 }
