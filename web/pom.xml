@@ -362,6 +362,22 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <skip>${skipNode}</skip>
+                            <executable>npm</executable>
+                             <arguments>
+                                <argument>install</argument>
+                                <argument>yarn</argument>
+                                <argument> --cache-min 9999999</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-run-yarn</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
                             <executable>yarn</executable>
                         </configuration>
                         <goals>
