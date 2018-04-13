@@ -1,32 +1,21 @@
-package org.tdar.struts.action.upload;
+package org.tdar.struts.action.api.files;
+
+import java.io.IOException;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
-import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.convention.annotation.Results;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.struts_base.action.TdarActionSupport;
-import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
-import org.tdar.web.service.WebPersonalFilestoreService;
 
-@SuppressWarnings("serial")
-@Namespace("/upload")
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Results({
-        @Result(name = "exception", type = TdarActionSupport.HTTPHEADER, params = { "error", "500" }),
-        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
-})
-@HttpForbiddenErrorResponseOnly
 public class UploadAction extends AbstractUploadController {
 
+    private static final long serialVersionUID = 4637923657007222358L;
 
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
@@ -34,7 +23,7 @@ public class UploadAction extends AbstractUploadController {
                     @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "400" })
             })
     @PostOnly
-    public String upload() {
+    public String upload() throws IOException {
         return super.upload();
     }
 

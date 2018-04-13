@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,14 +31,14 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.struts.action.api.files.CreateFilestoreTicketAction;
+import org.tdar.struts.action.api.files.UploadAction;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
-import org.tdar.struts.action.upload.CreateFilestoreTicketAction;
-import org.tdar.struts.action.upload.UploadAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 
@@ -155,7 +156,7 @@ public interface TestFileUploadHelper {
 
     PersonalFilestoreService getFilestoreService();
 
-    default PersonalFilestoreTicket grabTicket() {
+    default PersonalFilestoreTicket grabTicket() throws IOException {
         CreateFilestoreTicketAction uploadController = generateNewInitializedController(CreateFilestoreTicketAction.class);
         assertEquals(Action.SUCCESS, uploadController.grabTicket());
         return uploadController.getPersonalFilestoreTicket();

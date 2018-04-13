@@ -1,6 +1,7 @@
-package org.tdar.struts.action.upload;
+package org.tdar.struts.action.api.files;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -9,38 +10,40 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.exception.FileUploadException;
-import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.web.service.WebPersonalFilestoreService;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
-@SuppressWarnings("serial")
-@Namespace("/upload")
-@Component
 @Scope("prototype")
 @ParentPackage("secured")
+@Namespaces(value = {
+        @Namespace("/upload"),
+        @Namespace("/api/file")
+})
 @Results({
         @Result(name = "exception", type = TdarActionSupport.HTTPHEADER, params = { "error", "500" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
 })
 @HttpForbiddenErrorResponseOnly
-public abstract class AbstractUploadController extends AbstractAuthenticatableAction implements Preparable, Validateable {
+public abstract class AbstractUploadController extends AbstractJsonApiAction implements Preparable, Validateable {
+
+    private static final long serialVersionUID = 4722870390488721324L;
 
     @Autowired
     private transient WebPersonalFilestoreService filestoreService;
@@ -113,7 +116,7 @@ public abstract class AbstractUploadController extends AbstractAuthenticatableAc
         }
     }
 
-    public String upload() {
+    public String upload() throws IOException {
         getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
 
         List<String> hashCodes = new ArrayList<>();
@@ -131,11 +134,10 @@ public abstract class AbstractUploadController extends AbstractAuthenticatableAc
         return SUCCESS;
     }
 
-    private void buildResultsOutput(List<String> hashCodes) {
+    private void buildResultsOutput(List<String> hashCodes) throws IOException {
         Map<String, Object> result = buildResults(hashCodes);
         result.put("ticket", getTicket());
-        this.setResultObject(result);
-        this.setJsonView(JsonLookupFilter.class);
+        setJsonObject(result, JsonLookupFilter.class);
     }
 
     private Map<String, Object> buildResults(List<String> hashCodes) {
@@ -160,24 +162,14 @@ public abstract class AbstractUploadController extends AbstractAuthenticatableAc
         return result;
     }
 
-    private Object resultObject;
-    private Class<? extends JacksonView> jsonView;
-
-    public Object getResultObject() {
-        return resultObject;
-    }
-
-    public Class<? extends JacksonView> getJsonView() {
-        return jsonView;
-    }
 
     // construct a json result expected by js client (currently dictated by jquery-blueimp-fileupload)
-    protected void buildJsonError() {
+    protected void buildJsonError() throws IOException {
         Map<String, Object> result = new LinkedHashMap<String, Object>();
         result.put("ticket", ticketId);
         result.put("errors", getActionErrors());
         getLogger().warn("upload request encountered actionErrors: {}", getActionErrors());
-        this.setResultObject(result);
+        setResultObject(result);
     }
 
     public List<File> getUploadFile() {
@@ -249,14 +241,6 @@ public abstract class AbstractUploadController extends AbstractAuthenticatableAc
 
     public void setTicketRequested(boolean ticketRequested) {
         this.ticketRequested = ticketRequested;
-    }
-
-    protected void setResultObject(Object resultObject) {
-        this.resultObject = resultObject;
-    }
-
-    protected void setJsonView(Class<? extends JacksonView> jsonView) {
-        this.jsonView = jsonView;
     }
 
     public Long getAccountId() {
