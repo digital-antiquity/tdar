@@ -554,7 +554,7 @@
                 query = "from Email email where email.messageUuid=:guid"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.FIND_FILES_BY_STATUS,
-                query = "from TdarFile file where file.status=:status")
+                query = "from TdarFile file where file.status in (:status)")
 })
 package org.tdar.core.dao;
 
