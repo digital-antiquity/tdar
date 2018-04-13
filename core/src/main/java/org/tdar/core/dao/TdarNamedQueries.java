@@ -189,10 +189,10 @@ public interface TdarNamedQueries {
             + " from resource r where  exists (select 1 from collection_resource cr join collection c on cr.collection_id =c.id and c.status='ACTIVE' "
             + "     left join authorized_user au on c.id=au.resource_collection_id left join collection_parents cp on c.id=cp.collection_id "
             + "     join collection c2 on cp.parent_id=c2.id join authorized_user au2 on c2.id=au2.resource_collection_id where"
-            + "          (au.user_id=:submitterId and au.general_permission_int > :effectivePermissions) or"
-            + "          (au2.user_id=:submitterId and au2.general_permission_int > :effectivePermissions))  "
+            + "          (au.user_id=:submitterId and au.general_permission_int > :effectivePermissions (au.date_expires is null or au.date_expires > now())) or"
+            + "          (au2.user_id=:submitterId and au2.general_permission_int > :effectivePermissions and (au2.date_expires is null or au2.date_expires > now())))  "
             + " or exists (select 1 from authorized_user au where r.id=au.resource_id and au.user_id=:submitterId "
-            + "     and au.general_permission_int > :effectivePermissions) "
+            + "     and au.general_permission_int > :effectivePermissions and (au.date_expires is null or au.date_expires > now()) ) "
             + " group by 1,2";
 
     String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
@@ -237,9 +237,10 @@ public interface TdarNamedQueries {
             + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.managedResources as colres where colres.id = res.id and rescol.status='ACTIVE' and "
             +
             " (TRUE=:admin or exists ( "
-            + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
+            + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission"
+            + " and (auth.dateExpires is null or auth.dateExpires > now()))) "
             + ") ) "
-            + " OR (TRUE=:admin or rau.user.id=:userId and rau.effectiveGeneralPermission > :effectivePermission)) ";
+            + " OR (TRUE=:admin or rau.user.id=:userId and rau.effectiveGeneralPermission > :effectivePermission) and (rau.dateExpires is null or rau.dateExpires > now())) ";
 
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
             + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
