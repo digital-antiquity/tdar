@@ -27,13 +27,6 @@ import org.tdar.web.service.WebPersonalFilestoreService;
 @HttpForbiddenErrorResponseOnly
 public class UploadAction extends AbstractUploadController {
 
-//    @Action(value = "index", results = { @Result(name = SUCCESS, location = "index.ftl") })
-//    public String index() {
-//
-//        // get a claimcheck that all uploads will use
-//        // personalFilestoreTicket = filestoreService.createPersonalFilestoreTicket(getAuthenticatedUser());
-//        return SUCCESS;
-//    }
 
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },

@@ -690,6 +690,8 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
 //        uc.setTicketId(ticketId);
         uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
+        uc.prepare();
+        uc.validate();
         uc.upload();
         Long ticketId = uc.getTicket().getId();
 

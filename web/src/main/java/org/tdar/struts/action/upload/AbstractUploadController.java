@@ -22,6 +22,7 @@ import org.tdar.core.exception.FileUploadException;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.web.service.WebPersonalFilestoreService;
@@ -92,7 +93,7 @@ public abstract class AbstractUploadController extends AbstractAuthenticatableAc
 
     @Override
     public void prepare() throws Exception {
-        if (ticketRequested) {
+        if (ticketRequested || PersistableUtils.isNullOrTransient(ticketId)) {
             setTicket(personalFilestoreService.grabTicket(getAuthenticatedUser()));
             ticketId = getTicket().getId();
             getLogger().debug("UPLOAD CONTROLLER: on-demand ticket requested: {}", getTicket());
