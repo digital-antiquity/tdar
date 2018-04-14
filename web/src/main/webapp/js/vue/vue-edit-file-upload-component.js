@@ -201,7 +201,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     return TDAR.vuejs.upload.validatePackage(this.files, this.requiredOptionalPairs);
                 },
                 validateAdd : function(file, replace) {
-                    return TDAR.vuejs.upload.validateAdd(file, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maximumNumberOfFiles , this.sideCarOnly  )
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maximumNumberOfFiles , this.sideCarOnly  )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
@@ -220,10 +220,14 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 },
                 fileUploadAdd : function(e, data) {
                     // add a file
+                    var _app = this;
                     console.log('fileUploadAdd:', e, data);
-                    this._disable();
+                    _app._disable();
                     var $upload = $('#fileupload');
-                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, this);
+                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, _app);
+                },
+                addFile: function(file) {
+                    this.files.push(file);
                 },
                 _disable: function() {
                     $(".submitButton, #fileAsyncUpload").prop("disabled", true);

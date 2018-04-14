@@ -175,7 +175,7 @@
                 },
                 validateAdd : function(file, replace) {
                 
-                    return TDAR.vuejs.upload.validateAdd(file, replace, ['doc','docx','pdf'], 0	, 100000 , false  )
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, ['doc','docx','pdf'], 0	, 100000 , false  )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file

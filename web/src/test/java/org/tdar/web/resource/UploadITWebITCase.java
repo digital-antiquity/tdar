@@ -18,7 +18,7 @@ public class UploadITWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     // Should return error json w/ error http code if no ticket in request
     public void sendFileWithNoTicket() {
         int status = uploadFileToPersonalFilestoreWithoutErrorCheck("", TestConstants.TEST_DOCUMENT);
-        Assert.assertNotSame("expecting an error code because we sent bogus ticket", HttpStatus.OK.value(), status);
+        Assert.assertSame("expecting no error code because we're creating a ticket on the fly", HttpStatus.OK.value(), status);
     }
 
     @Test

@@ -110,7 +110,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         return valid;
     }
 
-    var _validateAdd = function(file, replace, validFormats, currentNumberOfFiles, maxNumberOfFiles, sideCarOnly) {
+    var _validateAdd = function(file, files, replace, validFormats, currentNumberOfFiles, maxNumberOfFiles, sideCarOnly) {
         console.log("validating file:", file);
         // valdiate the file can be added to the resource/existing type
         var validExt = undefined;
@@ -125,7 +125,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         var fileName = file.name;
         validFormats.forEach(function(ext) {
             if (fileName.toLowerCase().indexOf(ext, fileName.length - ext.length) !== -1) {
-                validExt = ext
+                validExt = ext;
             }
         });
         if (validExt == undefined) {
@@ -167,10 +167,12 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         data.originalFiles.forEach(function(file) {
             if (_app.validateAdd(file)) {
                 validFiles.push(file);
+            } else {
+                console.log("INVALID FILE: ", JSON.stringify(file));
             }
         });
         // data.originalFiles = validFiles;
-        console.log(validFiles);
+        console.log("VALID FILES: ", JSON.stringify(validFiles));
 
         var extra = {
             uploadFile : validFiles
@@ -195,7 +197,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
                 xhr : jqXHR
             };
             if (file.dontCreate == undefined || file.dontCreate == false) {
-                _app.files.push(f);
+                _app.addFile(f);
             }
         });
         if (validFiles.length > 0) {
