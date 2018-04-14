@@ -378,7 +378,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <skip>${skipNode}</skip>
-                            <executable>yarn</executable>
+                            <executable>./node_modules/.bin/yarn</executable>
                         </configuration>
                         <goals>
                             <goal>exec</goal>
