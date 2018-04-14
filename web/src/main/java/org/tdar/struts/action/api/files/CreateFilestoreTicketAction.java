@@ -3,6 +3,8 @@ package org.tdar.struts.action.api.files;
 import java.io.IOException;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,10 @@ import org.tdar.web.service.WebPersonalFilestoreService;
 
 @SuppressWarnings("serial")
 @Component
+@Namespaces(value = {
+        @Namespace("/upload"),
+        @Namespace("/api/file")
+})
 @Scope("prototype")
 @ParentPackage("secured")
 public class CreateFilestoreTicketAction extends AbstractJsonApiAction implements HasJsonDocumentResult {
