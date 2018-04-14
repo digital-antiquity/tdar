@@ -115,6 +115,7 @@
         <js>/components/vue/dist/vue.js</js>
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
+        <js>/js/vue/vue-base-upload.js</js>
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/edit-collection.js</js>
 
