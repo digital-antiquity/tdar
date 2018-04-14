@@ -90,5 +90,9 @@ public interface PersonalFilestoreService {
 
     List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, TdarUser authenticatedUser);
 
+    void deleteFile(AbstractFile file, TdarUser authenticatedUser);
+
+    void moveFiles(List<AbstractFile> files, TdarDir dir, TdarUser authenticatedUser);
+
 
 }

@@ -96,11 +96,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         try {
             PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
             TdarFile tdarFile = new TdarFile();
-            tdarFile.setFilename(store.getFile().getName());
+            tdarFile.setInternalName(store.getFile().getName());
             tdarFile.setLocalPath(store.getFile().getPath());
-            tdarFile.setDisplayName(fileName);
+            tdarFile.setFilename(fileName);
             tdarFile.setExtension(FilenameUtils.getExtension(fileName));
-            tdarFile.setFileSize(file.length());
+            tdarFile.setSize(file.length());
             tdarFile.setDateCreated(new Date());
             if (account != null) {
                 tdarFile.setAccount(account);
@@ -169,8 +169,8 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Transactional(readOnly = false)
     public TdarDir createDirectory(TdarDir parent, String name, TdarUser authenticatedUser) {
         TdarDir dir = new TdarDir();
-        dir.setDisplayName(name);
         dir.setFilename(name);
+        dir.setInternalName(name);
         dir.setParent(parent);
         dir.setDateCreated(new Date());
         dir.setUploader(authenticatedUser);
@@ -182,6 +182,21 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Transactional(readOnly = true)
     public List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
         return fileProcessingDao.listFilesFor(parent, account, authenticatedUser);
+    }
+
+    @Override
+    @Transactional(readOnly=false)
+    public void deleteFile(AbstractFile file, TdarUser authenticatedUser) {
+        fileProcessingDao.delete(file);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void moveFiles(List<AbstractFile> files, TdarDir dir, TdarUser authenticatedUser) {
+        for (AbstractFile f : files) {
+            f.setParent(dir);
+            genericDao.saveOrUpdate(f);
+        }
     }
 
 }

@@ -96,7 +96,7 @@
 <template id="file-entry-template">
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}}</td>
-    <td> <span v-if="file.fileSize == undefined " class="link" @click="cd(file)">{{file.displayName}} </span> <span v-if="file.fileSize != undefined ">{{file.name }} {{ file.displayName }} </span> </td>
+    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)">{{file.filename}} </span> <span v-if="file.size != undefined ">{{file.filename }}  </span> </td>
     </tr>
 </template>
 
@@ -235,7 +235,7 @@
                     // update the progress of uploading a file
                     var _app = this;
                     if (data.files != undefined) {
-                        var active = __matching(data.files, _app.files, "displayName");
+                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "filename");
                         active.forEach(function(pair) {
                             var file = pair[0];
                             var fileContainer = pair[1];
@@ -309,7 +309,7 @@
                     // complete the add action
                     var _app = this;
                     this._enable();
-                    var active = __matching(data.result.files, _app.files, "filename");
+                    var active = TDAR.vuejs.upload._matching(data.result.files, _app.files, "filename");
                     if (!data.result.ticket) {
                         return;
                     }
@@ -364,12 +364,18 @@
                                 value : _app.ticketId
                             });
                         }
+                        if (_app.parentId != undefined) {
+                            data.push({
+                                name : "parentId",
+                                value : _app.parentId
+                            });
+                        }
                         console.log(data);
                         return data;
                     },
                     progressall : function(e, data) {
                         var progress = parseInt(data.loaded / data.total * 100, 10);
-                        _setProgress(progress);
+                        TDAR.vuejs.upload.setProgress(progress);
                     }
                 }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
                 var _app = this;
@@ -380,32 +386,6 @@
         });
     });
     
-        var __matching = function(arr1, arr2, name) {
-        var ret = new Array();
-        arr1.forEach(function(p1) {
-            arr2.forEach(function(p2) {
-                // console.log(p1[name], p2[name]);
-                if (p1[name] == p2[name]) {
-                    ret.push([ p1, p2 ]);
-                }
-            });
-        });
-        return ret;
-    }
-
-    var _setProgress = function(progress) {
-        $('#progress .progress-bar').css('width', progress + '%');
-        if (progress == 100) {
-            $("#uploadstatus").html("Complete");
-        } else if (progress < 1) {
-            $("#uploadstatus").html("");
-        } else {
-            $("#uploadstatus").html("Uploading...");            
-        }
-
-
-    }
-
     
     
     

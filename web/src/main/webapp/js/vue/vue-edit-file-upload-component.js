@@ -2,31 +2,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
     "use strict";
     var ERROR_TIMEOUT = 5000;
 
-    var __matching = function(arr1, arr2, name) {
-        var ret = new Array();
-        arr1.forEach(function(p1) {
-            arr2.forEach(function(p2) {
-                // console.log(p1[name], p2[name]);
-                if (p1[name] == p2[name]) {
-                    ret.push([ p1, p2 ]);
-                }
-            });
-        });
-        return ret;
-    }
-
-    var _setProgress = function(progress) {
-        $('#progress .progress-bar').css('width', progress + '%');
-        if (progress == 100) {
-            $("#uploadstatus").html("Complete");
-        } else if (progress < 1) {
-            $("#uploadstatus").html("");
-        } else {
-            $("#uploadstatus").html("Uploading...");            
-        }
-
-
-    }
 
     var _init = function(widgetId) {
 
@@ -137,7 +112,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     Vue.set(this.file, "replaceFile", undefined);
                     Vue.set(this.file, "filename", this.file.originalFileName);
                     Vue.set(this.file, "name", this.file.originalFileName);
-                    _setProgress(0);
+                    TDAR.vuejs.upload.setProgress(0);
                     Vue.set(this.file, "progress", undefined);
                     // $("#fileupload" + this.index).reset();
                 },
@@ -336,7 +311,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     // update the progress of uploading a file
                     var _app = this;
                     if (data.files != undefined) {
-                        var active = __matching(data.files, _app.files, "filename");
+                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "filename");
                         active.forEach(function(pair) {
                             var file = pair[0];
                             var fileContainer = pair[1];
@@ -410,7 +385,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     // complete the add action
                     var _app = this;
                     this._enable();
-                    var active = __matching(data.result.files, _app.files, "filename");
+                    var active = TDAR.vuejs.upload._matching(data.result.files, _app.files, "filename");
                     if (!data.result.ticket) {
                         return;
                     }
@@ -482,7 +457,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     },
                     progressall : function(e, data) {
                         var progress = parseInt(data.loaded / data.total * 100, 10);
-                        _setProgress(progress);
+                        TDAR.vuejs.upload.setProgress(progress);
                     }
                 }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
                 var _app = this;

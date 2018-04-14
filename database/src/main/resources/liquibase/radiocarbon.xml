@@ -52,5 +52,8 @@
             referencedColumnNames="id" />
         
     </changeSet>
+    <changeSet id="radiocarbon-file-first-4" author="abrin">
+        <renameColumn tableName="files" oldColumnName="filename" newColumnName="internal_name"/>
+    </changeSet>
 
 </databaseChangeLog>

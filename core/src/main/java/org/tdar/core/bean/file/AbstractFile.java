@@ -29,10 +29,10 @@ public abstract class AbstractFile extends AbstractPersistable {
 
     private static final long serialVersionUID = 8203692812833995820L;
 
-    @Column(length = FieldLength.FIELD_LENGTH_1024)
-    private String filename;
+    @Column(length = FieldLength.FIELD_LENGTH_1024, name="internal_name")
+    private String internalName;
     @Column(name = "display_name", length = FieldLength.FIELD_LENGTH_1024)
-    private String displayName;
+    private String filename;
 
     @Column(name = "local_path", length = FieldLength.FIELD_LENGTH_2048)
     private String localPath;
@@ -53,20 +53,20 @@ public abstract class AbstractFile extends AbstractPersistable {
 
     // private ResourceType targetFileType;
     // private Resource resource;
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public void setInternalName(String filename) {
+        this.internalName = filename;
+    }
+
     public String getFilename() {
         return filename;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setFilename(String displayName) {
+        this.filename = displayName;
     }
 
     public String getLocalPath() {

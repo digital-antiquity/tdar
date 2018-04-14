@@ -22,7 +22,7 @@ public class TdarFile extends AbstractFile {
 
     private static final long serialVersionUID = 8710509667556337547L;
     @Column(name = "file_size")
-    private Long fileSize;
+    private Long size;
     @Column(length = 15)
     private String extension;
     @Enumerated(EnumType.STRING)
@@ -37,12 +37,12 @@ public class TdarFile extends AbstractFile {
     private BillingAccount account;
     
 
-    public Long getFileSize() {
-        return fileSize;
+    public Long getSize() {
+        return size;
     }
 
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
+    public void setSize(Long fileSize) {
+        this.size = fileSize;
     }
 
     public String getExtension() {
