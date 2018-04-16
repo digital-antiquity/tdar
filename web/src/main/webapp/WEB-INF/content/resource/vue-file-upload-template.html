@@ -21,12 +21,14 @@
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label> <br> <br>
     <div id="fileUploadErrors" class="fileuploaderrors">
+        
         <ul v-for="(error,index) in errors" >
-            <ol> {{ error }} </ol>
+            <ol> <label :for="append('fue',index )">{{ error }}</label>
+                 <input type="text" :id="append('fue',index )" required="true" class="hidden required"  :title="error" /> </ol>
         </ul>
-        Valid: {{ valid }}
         <ul v-for="(error,index) in packageMessages" >
-            <ol class="validation-error"> {{ error }} </ol>
+        <ol><label :for="append('pm',index )"> {{ error }} </label>
+            <input type="text" :id="append('pm',index )" required="true"  class="hidden required validation-error"  :title="error" /> </ol>
         </ul>
 
     </div>

@@ -216,6 +216,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 addError : function(error) {
                   this.errors.push(error);  
                 },
+                append: function(a, b) {
+                  return a + "" + b;  
+                },
                 validateAdd : function(file, replace) {
                     return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maximumNumberOfFiles , this.sideCarOnly, this  )
                 },
