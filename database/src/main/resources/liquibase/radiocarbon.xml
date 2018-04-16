@@ -1,7 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="production,test" >
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+    context="production,test">
+    <changeSet id="radiocarbon-file-first-1" author="abrin">
+        <createTable tableName="files">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="filename" type="varchar(1024)" />
+            <column name="display_name" type="varchar(1024)" />
+            <column name="local_path" type="varchar(2048)" />
+            <column name="extension" type="varchar(15)" />
+            <column name="file_size" type="bigint" />
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type='bigint' />
+            <column name="width" type="int" />
+            <column name="height" type="int" />
+            <column name="status" type="varchar(50)" />
+        </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_file_parent" referencedTableName="files"
+            baseColumnNames="parent_id" baseTableName="files"
+            referencedColumnNames="id" />
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-2" author="abrin">
+        <addColumn tableName="files">
+            <column name="md5" type="varchar(100)"/>
+            <column name="file_type" type="varchar(5)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-3" author="abrin">
+        <addColumn tableName="files">
+            <column name="account_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_account" referencedTableName="pos_account"
+            baseColumnNames="account_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="uploader_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_uploader" referencedTableName="tdar_user"
+            baseColumnNames="uploader_id" baseTableName="files"
+            referencedColumnNames="id" />
+        
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-4" author="abrin">
+        <renameColumn tableName="files" oldColumnName="filename" newColumnName="internal_name"/>
+    </changeSet>
 
 </databaseChangeLog>

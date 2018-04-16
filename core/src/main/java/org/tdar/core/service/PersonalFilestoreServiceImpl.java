@@ -1,18 +1,26 @@
 package org.tdar.core.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -29,6 +37,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Autowired
     private GenericDao genericDao;
+
+    @Autowired
+    private FileProcessingDao fileProcessingDao;
 
     // FIXME: double check that won't leak memory
     private Map<TdarUser, PersonalFilestore> personalFilestoreCache = new WeakHashMap<TdarUser, PersonalFilestore>();
@@ -75,6 +86,35 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             personalFilestoreCache.put(submitter, personalFilestore);
         }
         return personalFilestore;
+    }
+
+    @Transactional(readOnly = false)
+    @Override
+    public void store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir)
+            throws FileUploadException {
+        PersonalFilestore filestore = getPersonalFilestore(ticket);
+        try {
+            PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
+            TdarFile tdarFile = new TdarFile();
+            tdarFile.setInternalName(store.getFile().getName());
+            tdarFile.setLocalPath(store.getFile().getPath());
+            tdarFile.setFilename(fileName);
+            tdarFile.setExtension(FilenameUtils.getExtension(fileName));
+            tdarFile.setSize(file.length());
+            tdarFile.setDateCreated(new Date());
+            if (account != null) {
+                tdarFile.setAccount(account);
+            }
+            tdarFile.setUploader(user);
+            if (dir != null) {
+                tdarFile.setParent(dir);
+            }
+            tdarFile.setMd5(store.getMd5());
+            tdarFile.setStatus(ImportFileStatus.UPLOADED);
+            genericDao.saveOrUpdate(tdarFile);
+        } catch (Exception e) {
+            throw new FileUploadException("uploadController.could_not_store", e);
+        }
     }
 
     /*
@@ -125,14 +165,38 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         return getPersonalFilestore(ticket);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.PersonalFilestoreService#store(org.tdar.core.bean.PersonalFilestoreTicket, java.io.File, java.lang.String)
-     */
     @Override
-    public synchronized PersonalFilestoreFile store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException {
-        return getPersonalFilestore(ticket.getSubmitter()).store(ticket, file, filename);
+    @Transactional(readOnly = false)
+    public TdarDir createDirectory(TdarDir parent, String name, TdarUser authenticatedUser) {
+        TdarDir dir = new TdarDir();
+        dir.setFilename(name);
+        dir.setInternalName(name);
+        dir.setParent(parent);
+        dir.setDateCreated(new Date());
+        dir.setUploader(authenticatedUser);
+        genericDao.saveOrUpdate(dir);
+        return dir;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
+        return fileProcessingDao.listFilesFor(parent, account, authenticatedUser);
+    }
+
+    @Override
+    @Transactional(readOnly=false)
+    public void deleteFile(AbstractFile file, TdarUser authenticatedUser) {
+        fileProcessingDao.delete(file);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void moveFiles(List<AbstractFile> files, TdarDir dir, TdarUser authenticatedUser) {
+        for (AbstractFile f : files) {
+            f.setParent(dir);
+            genericDao.saveOrUpdate(f);
+        }
     }
 
 }
