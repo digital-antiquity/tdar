@@ -64,7 +64,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     return "fileProxies[" + this.index + "].fileId";
                 },
                 filenameFieldName : function() {
-                    return "fileProxies[" + this.index + "].filename";
+                    return "fileProxies[" + this.index + "].name";
                 },
                 sequenceNumberFieldName : function() {
                     return "fileProxies[" + this.index + "].sequenceNumber";
@@ -112,7 +112,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log(this);
                     this.xhr.abort();
                     Vue.set(this.file, "replaceFile", undefined);
-                    Vue.set(this.file, "filename", this.originalFileName);
                     Vue.set(this.file, "name", this.originalFileName);
                     TDAR.vuejs.upload.setProgress(0);
                     Vue.set(this.file, "progress", undefined);
@@ -124,10 +123,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         return;
                     }
                     Vue.set(this, "previousReplaceState", this.file.action);
-                    if (this.file.filename != undefined) {
-                        Vue.set(this, "originalFileName", this.file.filename);
-                        Vue.set(this.file, "originalFileName", this.file.filename);
-                    }
                     if (this.file.name != undefined) {
                         Vue.set(this, "originalFileName", this.file.name);
                         Vue.set(this.file, "originalFileName", this.file.name);
@@ -136,13 +131,11 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
 
                     Vue.set(this.file, "action", "REPLACE");
                     
-                    var valid = this.$parent.validateAdd(files[0],true);
+                    var valid = this.$parent.validateAdd(files[0],this.file.name);
                     if (valid) {
-                        Vue.set(this.file, "replaceFile", files[0].filename);
-                        Vue.set(this.file, "filename", files[0].filename);
-                        Vue.set(this.file, "name", files[0].filename);
+                        Vue.set(this.file, "replaceFile", files[0].name);
+                        Vue.set(this.file, "name", files[0].name);
                         files[0].dontCreate = true;
-                        files[0].filename = files[0].name;
                         var xhr = $('#fileupload').fileupload('send', {
                             files : files
                         });
@@ -175,6 +168,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 validFormats : config.validFormats,
                 sideCarOnly : config.sideCarOnly,
                 maxNumberOfFiles : config.maxNumberOfFiles,
+                errors : [],
                 requiredOptionalPairs : config.requiredOptionalPairs,
                 ableToUpload : config.ableToUpload
             },
@@ -193,7 +187,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     files.forEach(function(f) {
                         if (f.action != 'DELETE') {
                             var partOfPair = false;
-                            var ext = "." + f.filename.split('.').pop().toLowerCase();
+                            var ext = "." + f.name.split('.').pop().toLowerCase();
                             for (var i = 0; i < _app.requiredOptionalPairs.length; i++) {
                                 var pair = _app.requiredOptionalPairs[i];
                                 if ($.inArray(ext, pair.optional) && files.length > 1) {
@@ -212,14 +206,17 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 validatePackage : function() {
                     return TDAR.vuejs.upload.validatePackage(this.files, this.requiredOptionalPairs);
                 },
+                addError : function(error) {
+                  this.errors.push(error);  
+                },
                 validateAdd : function(file, replace) {
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maximumNumberOfFiles , this.sideCarOnly  )
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maximumNumberOfFiles , this.sideCarOnly, this  )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
                     var _app = this;
                     if (data.files != undefined) {
-                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "filename");
+                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "name");
                         active.forEach(function(pair) {
                             var file = pair[0];
                             var fileContainer = pair[1];

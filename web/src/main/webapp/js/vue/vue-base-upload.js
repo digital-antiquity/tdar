@@ -1,6 +1,13 @@
 TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
     "use strict";
 
+    var __normalize = function(filename) {
+        console.log(filename);
+        var basename = filename.replace(/[^\w\-\.\+\_]/g, "-");
+        basename = basename.replace( "-.", ".");
+        return basename;
+    }
+    
     var __matching = function(arr1, arr2, name) {
         var ret = new Array();
         arr1.forEach(function(p1) {
@@ -27,7 +34,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
     }
 
     var _fileUploadAddDone = function(data, files, _app) {
-        var active = __matching(data.result.files, files, "filename");
+        var active = __matching(data.result.files, files, "name");
         if (!data.result.ticket) {
             return;
         }
@@ -65,7 +72,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         var pairs = new Array();
         // convert to a set
         files.forEach(function(file) {
-            var ext = file.filename.substring(file.filename.indexOf(".")).toLowerCase();
+            var ext = file.name.substring(file.name.indexOf(".")).toLowerCase();
             exts.push(ext);
             var seen = false;
             requiredOptionalPairs.forEach(function(pair) {
@@ -110,18 +117,13 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         return valid;
     }
 
-    var _validateAdd = function(file, files, replace, validFormats, currentNumberOfFiles, maxNumberOfFiles, sideCarOnly) {
+    var _validateAdd = function(file, files, replace, validFormats, currentNumberOfFiles, maxNumberOfFiles, sideCarOnly, errorListener) {
         console.log("validating file:", file);
         // valdiate the file can be added to the resource/existing type
         var validExt = undefined;
         // for valid extensions check if we match
 
         // make sure that we're ok when data is coming from Vue via the file object vs. the FileProxy
-        if (file.name == undefined && file.filename != undefined) {
-            file.name = file.filename;
-        } else {
-            file.filename = file.name;
-        }
         var fileName = file.name;
         validFormats.forEach(function(ext) {
             if (fileName.toLowerCase().indexOf(ext, fileName.length - ext.length) !== -1) {
@@ -130,22 +132,35 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         });
         if (validExt == undefined) {
             console.error("extension is not valid:", file, validFormats);
+            errorListener.addError("file extension is not valid for file " + file.name);
             return false;
         }
 
         
+        var normalName = __normalize(fileName);
+        console.log(normalName);
+        var dupFound = false;
         files.forEach(function(existing) {
             console.log(existing);
-           if (file.name == existing.name) {
-               console.log("duplicateFilename");
-               return false;
+           if (normalName == existing.name) {
+               console.log(replace, normalName);
+               if (replace != undefined && replace == normalName) {
+                   // ignore
+               } else {
+                   console.log("duplicateFilename");
+                   dupFound = true;
+               }
            } 
         });
-        
+        if (dupFound) {
+            errorListener.addError("file is a duplicate of " + file.name);
+            return false;
+        }
         // check number of files
 
-        if ((replace == false || replace == undefined) && currentNumberOfFiles >= maxNumberOfFiles) {
+        if (replace == undefined && currentNumberOfFiles >= maxNumberOfFiles) {
             console.error("too many files", maxNumberOfFiles);
+            errorListener.addError("you have exceeded the number of files you can add");
             return false;
         }
 
@@ -156,14 +171,15 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             if (files.length > 0) {
                 var validSidecar = true;
                 files.forEach(function(f) {
-                    console.log("base:", base, f.filename, fileName);
+                    console.log("base:", base, f.name, fileName);
                     // if we don't have the same basename, or the file is a dup
-                    if (f.filename.indexOf(base) != 0 || f.filename == fileName) {
+                    if (f.name.indexOf(base) != 0 || f.name == fileName) {
                         validSidecar = false;
                     }
                 });
                 if (!validSidecar) {
                     console.error("file is not valid sidecar", base);
+                    errorListener.addError("this file cannot be added to this record: " + file.name);
                     return false;
                 }
             }
@@ -190,12 +206,9 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
 
         validFiles.forEach(function(file) {
             var name = file.name;
-            if (name == undefined) {
-                name = file.filename;
-            }
+
             var f = {
                 test : true,
-                filename : name,
                 name : name,
                 size : file.size,
                 type : file.type,

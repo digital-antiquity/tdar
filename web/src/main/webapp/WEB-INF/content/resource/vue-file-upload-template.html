@@ -20,6 +20,11 @@
             files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label> <br> <br>
+    <div id="fileUploadErrors" class="fileuploaderrors">
+        <ul v-for="(error,index) in errors" >
+            <ol> {{ error }} </ol>
+        </ul>
+    </div>
     <!-- The global progress bar -->
     <div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"></div>
@@ -45,7 +50,7 @@ ${vueFilesFallback!'{{ files }}'}
                     <em class="replacement-text "></em>
                 </div>
                 <span class="name uneditable-input subtle inpux-xlarge"
-                    :title="file.filename">{{file.filename}}</span> <span
+                    :title="file.name">{{file.name}}</span> <span
                     class="help-inline"><i>{{file.size}}</i> (bytes)</span>
             </div>
         </div>
@@ -132,7 +137,7 @@ ${vueFilesFallback!'{{ files }}'}
             <input type="hidden" class="fileId" :name="fileIdFieldName"
                 :value="file.fileId"> <input type="hidden"
                 class="fileReplaceName" :name="filenameFieldName"
-                :value="file.filename"> <input type="hidden"
+                :value="file.name"> <input type="hidden"
                 class="fileSequenceNumber"
                 name="sequenceNumberFieldName" value="1">
         </div> <span class="hidden debug">file: {{file}}</span> </td>
@@ -147,11 +152,11 @@ ${vueFilesFallback!'{{ files }}'}
                 <#if (p.fileCreatedDate)?has_content>
                     <#assign fupval="p.fileCreatedDate?string['MM/dd/yyyy']" />
                 </#if>
-                ${p.filename} (id: ${(p.fileId!-1)?c} ; ${p.restriction} dateCreated: ${fupval!''} description: ${p.description!''})
+                ${p.name} (id: ${(p.fileId!-1)?c} ; ${p.restriction} dateCreated: ${fupval!''} description: ${p.description!''})
                 <input type="hidden" name="fileProxies[${p_index}].restriction" value="${p.restriction}"/>
                 <input type="hidden" name="fileProxies[${p_index}].fileCreatedDate" value="${fupval!''}"/>
                 <input type="hidden" name="fileProxies[${p_index}].description" value="${p.description!''}"/>
-                <input type="hidden" name="fileProxies[${p_index}].filename" value="${p.filename}"/>
+                <input type="hidden" name="fileProxies[${p_index}].name" value="${p.name}"/>
                 <input type="hidden" name="fileProxies[${p_index}].sequenceNumber" value="${p.sequenceNumber?c}"/>
                 <input type="hidden" name="fileProxies[${p_index}].action" value="${p.action}"/>
                 <input type="hidden" name="fileProxies[${p_index}].fileId" value="${(p.fileId!-1)?c}"/>

@@ -135,6 +135,7 @@
                 ableToUpload : true,
                 parentId: undefined,
                 files : [],
+                errors: [],
                 path : "" 
             },
             computed : {
@@ -189,6 +190,9 @@
                             _app.$forceUpdate();
                         });
                     }
+                },
+                addError : function(error) {
+                    this.errors.push(error);
                 },
                 fileUploadSubmit : function(e, data) {
                 },
