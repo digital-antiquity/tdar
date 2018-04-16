@@ -99,8 +99,13 @@ public abstract class AbstractFile extends AbstractPersistable {
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getUploader() {
         return uploader;
+
     }
 
+    public String getName() {
+        return this.filename;
+    }
+    
     public void setUploader(TdarUser uploader) {
         this.uploader = uploader;
     }

@@ -96,7 +96,7 @@
 <template id="file-entry-template">
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}}</td>
-    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)">{{file.filename}} </span> <span v-if="file.size != undefined ">{{file.filename }}  </span> </td>
+    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)">{{file.name}} </span> <span v-if="file.size != undefined ">{{file.name }}  </span> </td>
     </tr>
 </template>
 
@@ -182,7 +182,7 @@
                     // update the progress of uploading a file
                     var _app = this;
                     if (data.files != undefined) {
-                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "filename");
+                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "name");
                         active.forEach(function(pair) {
                             var file = pair[0];
                             var fileContainer = pair[1];

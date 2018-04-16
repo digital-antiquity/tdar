@@ -4,7 +4,7 @@
         <thead>
             <tr>
                 <th></th>
-                <th>action</th>
+                <th></th>
             </tr>
         </thead>
         <tbody v-if="files.length > 0" v-for="(file,index) in files">
@@ -24,6 +24,11 @@
         <ul v-for="(error,index) in errors" >
             <ol> {{ error }} </ol>
         </ul>
+        Valid: {{ valid }}
+        <ul v-for="(error,index) in packageMessages" >
+            <ol class="validation-error"> {{ error }} </ol>
+        </ul>
+
     </div>
     <!-- The global progress bar -->
     <div id="progress" class="progress">

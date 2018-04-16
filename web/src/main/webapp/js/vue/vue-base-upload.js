@@ -63,8 +63,8 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         
     }
     
-    var _validatePackage = function(files, requiredOptionalPairs) {
-        if (requiredOptionalPairs == undefined || requiredOptionalPairs.length == 0) {
+    var _validatePackage = function(files, requiredOptionalPairs, messageListener) {
+        if (requiredOptionalPairs == undefined || requiredOptionalPairs.length == 0 || files == undefined || files.length ==0) {
             return true;
         }
         console.log("computing overall validity");
@@ -72,19 +72,24 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         var pairs = new Array();
         // convert to a set
         files.forEach(function(file) {
-            var ext = file.name.substring(file.name.indexOf(".")).toLowerCase();
-            exts.push(ext);
-            var seen = false;
-            requiredOptionalPairs.forEach(function(pair) {
-                if (!seen && ($.inArray(ext, pair.required) > -1 || $.inArray(ext, pair.optional) > -1)) {
-                    pairs.push(pair);
-                    seen = true;
-                }
-            });
+            if (file.action != 'DELETE') {
+                var ext = file.name.substring(file.name.indexOf(".") ).toLowerCase();
+                exts.push(ext);
+                var seen = false;
+                requiredOptionalPairs.forEach(function(pair) {
+                    console.log(seen, ext, pair.required, pair.optional);
+                    if (!seen && ($.inArray(ext, pair.required) > -1 || $.inArray(ext, pair.optional) > -1)) {
+                        pairs.push(pair);
+                        seen = true;
+                    }
+                });
+            }
         });
+        messageListener.clearPackageMessages();
 
         if (pairs.length < 1) {
             console.error("we have requirements, but these files are too confusing");
+            messageListener.addPackageMessage("we have requirements, but these files are too confusing");
             return false;
         }
 
@@ -98,9 +103,20 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
                 // remove required
                 exts.forEach(function(ext) {
                     console.log($.inArray(ext, required), required, ext);
+                    // if we're in "required" then remove it
                     if ($.inArray(ext, required) > -1) {
                         required.splice($.inArray(ext, required), 1);
                     }
+                    
+                    // special cases for JPEG and TIFF
+                    if (ext == 'tiff' && $.inArray('tif', required) > -1) {
+                        required.splice($.inArray('tif', required), 1);
+                    }
+                    if (ext == 'jpeg' && $.inArray('jpeg', required) > -1) {
+                        required.splice($.inArray('jpeg', required), 1);
+                    }
+
+                    // if we're in "optional" then remove it
                     if ($.inArray(ext, optional) > -1) {
                         optional.splice($.inArray(ext, optional), 1);
                     }
@@ -109,6 +125,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
                 console.log("optional:", optional);
                 if (required.length > 0) {
                     console.error("required format(s) remain", required);
+                    messageListener.addPackageMessage("you must also upload files with the following extensions: " + required)
                 } else {
                     valid = true;
                 }
@@ -126,7 +143,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         // make sure that we're ok when data is coming from Vue via the file object vs. the FileProxy
         var fileName = file.name;
         validFormats.forEach(function(ext) {
-            if (fileName.toLowerCase().indexOf(ext, fileName.length - ext.length) !== -1) {
+            if (fileName.toLowerCase().indexOf(ext, fileName.length- ext.length) !== -1) {
                 validExt = ext;
             }
         });
@@ -142,7 +159,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         var dupFound = false;
         files.forEach(function(existing) {
             console.log(existing);
-           if (normalName == existing.name) {
+           if (normalName == existing.name && existing.action != 'DELETE') {
                console.log(replace, normalName);
                if (replace != undefined && replace == normalName) {
                    // ignore
@@ -172,9 +189,11 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
                 var validSidecar = true;
                 files.forEach(function(f) {
                     console.log("base:", base, f.name, fileName);
-                    // if we don't have the same basename, or the file is a dup
-                    if (f.name.indexOf(base) != 0 || f.name == fileName) {
-                        validSidecar = false;
+                    if (f.action != 'DELETE') {
+                        // if we don't have the same basename, or the file is a dup
+                        if (f.name.indexOf(base) != 0 || f.name == fileName) {
+                            validSidecar = false;
+                        }
                     }
                 });
                 if (!validSidecar) {
