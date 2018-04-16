@@ -50,7 +50,7 @@ public class FileProxyServiceImpl implements FileProxyService {
                 proxy.setAction(FileAction.NONE);
             }
             if (proxy.getAction().shouldExpectFileHandle()) {
-                hashQueue.push(proxy.getFilename(), proxy);
+                hashQueue.push(proxy.getName(), proxy);
             }
         }
         return hashQueue;
@@ -103,7 +103,7 @@ public class FileProxyServiceImpl implements FileProxyService {
             if (proxy == null) {
                 logger.debug("fileProxy[{}] is null - culling", iterator.previousIndex());
                 iterator.remove();
-            } else if (StringUtils.isEmpty(proxy.getFilename())) {
+            } else if (StringUtils.isEmpty(proxy.getName())) {
                 logger.debug("fileProxy[{}].fileName is blank - culling (value: {})", iterator.previousIndex(), proxy);
                 iterator.remove();
             }

@@ -202,7 +202,7 @@ public class ImportServiceImpl implements ImportService {
         Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
         if (CollectionUtils.isNotEmpty(proxies)) {
             for (FileProxy proxy : proxies) {
-                String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
+                String ext = FilenameUtils.getExtension(proxy.getName()).toLowerCase();
                 if (!extensionsForType.contains(ext)) {
                     throw new APIException("importService.invalid_file_type", Arrays.asList("\"" + ext + "\"", StringUtils.join(extensionsForType, ", ")),
                             StatusCode.FORBIDDEN);
