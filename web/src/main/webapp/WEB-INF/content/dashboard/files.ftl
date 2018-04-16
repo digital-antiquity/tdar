@@ -211,6 +211,9 @@
                     var _app = this;
                     this._enable();
                     return TDAR.vuejs.upload.fileUploadAddDone(data,_app.files, _app);
+                },
+                addFile: function(file) {
+                    this.files.push(file);
                 }
             },
             mounted : function() {

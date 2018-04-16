@@ -33,7 +33,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 return {
                     previousDeleteState : '',
                     xhr : undefined,
-                    previousReplaceState : ''
+                    previousReplaceState : '',
+                    originalFileName: ""
                 }
             },
             mounted : function() {
@@ -107,10 +108,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 undoReplace : function(e) {
                     Vue.set(this.file, "action", this.previousReplaceState);
                     console.log($("#fileupload" + this.index));
+                    console.log(this.originalFileName);
+                    console.log(this);
                     this.xhr.abort();
                     Vue.set(this.file, "replaceFile", undefined);
-                    Vue.set(this.file, "filename", this.file.originalFileName);
-                    Vue.set(this.file, "name", this.file.originalFileName);
+                    Vue.set(this.file, "filename", this.originalFileName);
+                    Vue.set(this.file, "name", this.originalFileName);
                     TDAR.vuejs.upload.setProgress(0);
                     Vue.set(this.file, "progress", undefined);
                     // $("#fileupload" + this.index).reset();
@@ -121,7 +124,16 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         return;
                     }
                     Vue.set(this, "previousReplaceState", this.file.action);
-                    Vue.set(this, "originalFileName", this.file.filename);
+                    if (this.file.filename != undefined) {
+                        Vue.set(this, "originalFileName", this.file.filename);
+                        Vue.set(this.file, "originalFileName", this.file.filename);
+                    }
+                    if (this.file.name != undefined) {
+                        Vue.set(this, "originalFileName", this.file.name);
+                        Vue.set(this.file, "originalFileName", this.file.name);
+                        
+                    }
+
                     Vue.set(this.file, "action", "REPLACE");
                     
                     var valid = this.$parent.validateAdd(files[0],true);

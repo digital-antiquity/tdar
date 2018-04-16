@@ -48,7 +48,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private Long originalFileVersionId = -1L;
     private File file;
     private Long size;
-    private String filename = "";
+    private String name = "";
     private VersionType versionType = VersionType.UPLOADED;
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
@@ -81,7 +81,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         // this.informationResourceFile = file;
         if (latestVersion != null) {
             this.originalFileVersionId = latestVersion.getId();
-            this.filename = latestVersion.getFilename();
+            this.name = latestVersion.getFilename();
             this.size = latestVersion.getFileLength();
         } else {
             logger.warn("No version number available for file {}", file);
@@ -93,7 +93,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public FileProxy(String filename, File file, VersionType versionType, FileAction action) {
-        this.filename = filename;
+        this.name = filename;
         this.file = file;
         this.versionType = versionType;
         this.action = action;
@@ -101,7 +101,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public FileProxy(String filename, VersionType versionType, FileAccessRestriction restriction) {
-        this.filename = filename;
+        this.name = filename;
         this.versionType = versionType;
         this.action = FileAction.ADD;
         this.restriction = restriction;
@@ -128,14 +128,14 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.fileId = fileId;
     }
 
-    public String getFilename() {
-        return filename;
+    public String getName() {
+        return name;
     }
 
-    public void setFilename(String filename) {
+    public void setName(String filename) {
         // strips out quotes
         // this.filename = filename.replaceAll("\"", "");
-        this.filename = filename;
+        this.name = filename;
     }
 
     public Long getOriginalFileVersionId() {
@@ -179,7 +179,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     @Override
     public String toString() {
         return String.format("%s %s (confidential:%s size:%d fileId:%d InputStream:%s sequence:%d date:%s @desc:%h)",
-                action, filename, restriction, size, fileId, file, sequenceNumber, fileCreatedDate, description);
+                action, name, restriction, size, fileId, file, sequenceNumber, fileCreatedDate, description);
     }
 
     public FileAccessRestriction getRestriction() {
@@ -248,8 +248,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     @Override
     public String getExtension() {
-        if (StringUtils.isNotBlank(filename) && filename.contains(".")) {
-            return FilenameUtils.getExtension(filename);
+        if (StringUtils.isNotBlank(name) && name.contains(".")) {
+            return FilenameUtils.getExtension(name);
         }
         return null;
     }

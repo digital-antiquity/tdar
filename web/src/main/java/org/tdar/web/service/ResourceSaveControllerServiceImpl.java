@@ -326,7 +326,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         } else {
             // process a new uploaded file (either ADD or REPLACE)
             setFileProxyAction(persistable, singleFileProxy);
-            singleFileProxy.setFilename(uploadedFilesFileNames.get(0));
+            singleFileProxy.setName(uploadedFilesFileNames.get(0));
             singleFileProxy.setFile(uploadedFiles.get(0));
             toProcess.add(singleFileProxy);
         }

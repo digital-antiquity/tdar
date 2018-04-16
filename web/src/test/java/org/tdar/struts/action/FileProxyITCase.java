@@ -149,7 +149,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
         controller.prepare();
         controller.edit();
         controller.getFileProxies().get(0).setAction(FileAction.DELETE);
-        String deletedFilename = controller.getFileProxies().get(0).getFilename();
+        String deletedFilename = controller.getFileProxies().get(0).getName();
         // replace the confidential file
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {
@@ -159,7 +159,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
         }
         replaceConfidentialFileProxy.setAction(FileAction.REPLACE);
         replaceConfidentialFileProxy.setRestriction(FileAccessRestriction.PUBLIC);
-        replaceConfidentialFileProxy.setFilename("pia-09-lame-1980.pdf");
+        replaceConfidentialFileProxy.setName("pia-09-lame-1980.pdf");
         Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TEST_DOCUMENT_DIR
                 + "pia-09-lame-1980.pdf")));
         controller.setTicketId(newProxyList.getFirst().getId());
@@ -213,7 +213,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
 
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {
-            if (proxy.getFilename().equals(a2pdf)) {
+            if (proxy.getName().equals(a2pdf)) {
                 replaceConfidentialFileProxy = proxy;
             }
         }

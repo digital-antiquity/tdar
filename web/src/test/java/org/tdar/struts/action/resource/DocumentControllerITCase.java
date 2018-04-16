@@ -709,7 +709,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         try {
             dc.edit();
             FileProxy fileProxy = new FileProxy();
-            fileProxy.setFilename(TestConstants.TEST_DOCUMENT_NAME);
+            fileProxy.setName(TestConstants.TEST_DOCUMENT_NAME);
             fileProxy.setAction(FileAction.ADD);
             fileProxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
             dc.getFileProxies().add(fileProxy);

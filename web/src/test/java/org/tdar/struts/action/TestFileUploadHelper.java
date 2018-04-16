@@ -97,8 +97,8 @@ public interface TestFileUploadHelper {
         controller.prepare();
         controller.edit();
         for (FileProxy proxy : controller.getFileProxies()) {
-            if (proxy.getFilename().equals(replaceFile)) {
-                proxy.setFilename(uploadFile);
+            if (proxy.getName().equals(replaceFile)) {
+                proxy.setName(uploadFile);
                 proxy.setAction(FileAction.REPLACE);
                 logger_.debug("replaceFile: Replacing {} with {}", replaceFile, uploadFile);
             }
@@ -130,7 +130,7 @@ public interface TestFileUploadHelper {
         for (File uploadedFile : uploadFiles) {
             uploadController.getUploadFileFileName().add(uploadedFile.getName());
             FileProxy fileProxy = new FileProxy();
-            fileProxy.setFilename(uploadedFile.getName());
+            fileProxy.setName(uploadedFile.getName());
             fileProxy.setFile(uploadedFile);
             fileProxy.setAction(FileAction.ADD);
             toReturn.getSecond().add(fileProxy);

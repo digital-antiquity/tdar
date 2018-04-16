@@ -46,7 +46,7 @@ ${vueFilesFallback!'{{ files }}'}
                 </div>
                 <span class="name uneditable-input subtle inpux-xlarge"
                     :title="file.filename">{{file.filename}}</span> <span
-                    class="help-inline">{{file.size}}</span>
+                    class="help-inline"><i>{{file.size}}</i> (bytes)</span>
             </div>
         </div>
         <div class="control-group">
@@ -96,7 +96,7 @@ ${vueFilesFallback!'{{ files }}'}
     <!--  only show replace when we have an originalFileVersionId (which means we round-tripped to the server) -->
     <span v-if="file.originalFileVersionId != undefined ">
     <label
-        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled" :for="fileuploadId"
+        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled" :for="fileuploadId" v-if="file.replaceFile == undefined"
         :id="wrapperId" style="width: 6em; text-align: left"> <i
             class="icon-refresh icon-white"> </i> <span>Replace</span> 
             <input :disabled="inputDisabled"
@@ -135,7 +135,7 @@ ${vueFilesFallback!'{{ files }}'}
                 :value="file.filename"> <input type="hidden"
                 class="fileSequenceNumber"
                 name="sequenceNumberFieldName" value="1">
-        </div> file: {{file}}</td>
+        </div> <span class="hidden debug">file: {{file}}</span> </td>
 </tr>
 </template>
 

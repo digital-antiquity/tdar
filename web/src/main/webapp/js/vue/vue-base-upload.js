@@ -133,6 +133,15 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             return false;
         }
 
+        
+        files.forEach(function(existing) {
+            console.log(existing);
+           if (file.name == existing.name) {
+               console.log("duplicateFilename");
+               return false;
+           } 
+        });
+        
         // check number of files
 
         if ((replace == false || replace == undefined) && currentNumberOfFiles >= maxNumberOfFiles) {
