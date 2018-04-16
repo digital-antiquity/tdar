@@ -53,10 +53,10 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
 
             window.console.log("--------------------bbb---------------------")
             var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
-            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}]});
+            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
-            result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
+            result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(false);
             expect(vapp.files).toHaveLength(1);
 
@@ -78,10 +78,10 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
 
             window.console.log("--------------------bbb---------------------")
             var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
-            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
+            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
-            result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
+            result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(2);
 
@@ -103,10 +103,10 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
 
             window.console.log("--------------------bbb---------------------")
             var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
-            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
+            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
-            result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'tast.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
+            result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'tast.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(false);
             expect(vapp.files).toHaveLength(1);
 
@@ -130,11 +130,11 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
 
             window.console.log("--------------------bbb---------------------")
             var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
-            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
+            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
 //            expect(vapp.validatePackage()).toBe(false);
-            result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
+            result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(2);
             expect(vapp.validatePackage()).toBe(true);
@@ -159,11 +159,11 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
 
             window.console.log("--------------------bbb---------------------")
             var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
-            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jgw',size:1000,type:'jgw/object',lastModified:-1}]});
+            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jgw/object',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
             expect(vapp.validatePackage()).toBe(false);
-            result = vapp.fileUploadAdd(undefined, {originalFiles:[{filename:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
+            result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(2);
             expect(vapp.validatePackage()).toBe(true);

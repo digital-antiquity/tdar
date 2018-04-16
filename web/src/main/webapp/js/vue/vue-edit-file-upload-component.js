@@ -207,10 +207,10 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 validatePackage : function() {
                     return TDAR.vuejs.upload.validatePackage(this.files, this.requiredOptionalPairs, this);
                 },
-                addPackageMessage(msg) {
+                addPackageMessage: function(msg) {
                     this.packageMessages.push(msg);  
                 },
-                clearPackageMessages() {
+                clearPackageMessages: function() {
                     this.packageMessages = [];  
                 },
                 addError : function(error) {
