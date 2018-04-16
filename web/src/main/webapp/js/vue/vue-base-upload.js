@@ -2,7 +2,6 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
     "use strict";
 
     var __normalize = function(filename) {
-        console.log(filename);
         var basename = filename.replace(/[^\w\-\.\+\_]/g, "-");
         basename = basename.replace( "-.", ".");
         return basename;
