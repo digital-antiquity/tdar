@@ -3,7 +3,7 @@
     <tdar:fileProxy>
         <tdar:action>REPLACE</tdar:action>
         <tdar:fileId>{{FILE_ID}}</tdar:fileId>
-        <tdar:filename>{{FILENAME}}</tdar:filename>
+        <tdar:name>{{FILENAME}}</tdar:name>
         <tdar:restriction>PUBLIC</tdar:restriction>
     </tdar:fileProxy>
 </tdar:fileProxies>

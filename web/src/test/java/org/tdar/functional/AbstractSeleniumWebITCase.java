@@ -337,6 +337,8 @@ public abstract class AbstractSeleniumWebITCase {
                         .build();
 
                 ChromeOptions copts = new ChromeOptions();
+//                copts.setCapability("pageLoadStrategy", "none");
+                
                 // copts.setExperimentalOption("autofill.enabled",false);
 
                 // turn off autocomplete: https://code.google.com/p/chromedriver/issues/detail?id=333
