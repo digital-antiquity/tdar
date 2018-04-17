@@ -670,7 +670,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
         createInput("hidden", "fileProxies[" + rowNum + "].action", action.name());
         createInput("hidden", "fileProxies[" + rowNum + "].fileId", Long.toString(fileId));
-        createInput("hidden", "fileProxies[" + rowNum + "].filename", FilenameUtils.getName(filename));
+        createInput("hidden", "fileProxies[" + rowNum + "].name", FilenameUtils.getName(filename));
         createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
 
     }

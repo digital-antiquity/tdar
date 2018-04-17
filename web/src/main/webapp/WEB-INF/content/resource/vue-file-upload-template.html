@@ -24,12 +24,12 @@
     <div id="fileUploadErrors" class="fileuploaderrors controls controls-row" v-if="valid == false">
         
         <ul v-for="(error,index) in errors" >
-            <ol> <label :for="append('fue',index )">{{ error }}</label>
-                 <input type="text" :id="append('fue',index )" required="true" class=" required hidden"  :title="error" /> </ol>
+            <li> <label :for="append('fue',index )">{{ error }}</label>
+                 <input type="text" :id="append('fue',index )" required="true" class=" required hidden"  :title="error" /> </li>
         </ul>
         <ul v-for="(error,index) in packageMessages" >
-        <ol><label :for="append('pm',index )"> {{ error }} </label>
-            <input type="text" :id="append('pm',index )" required="true"  class=" required hidden"  :title="error" /> </ol>
+        <li><label :for="append('pm',index )"> {{ error }} </label>
+            <input type="text" :id="append('pm',index )" required="true"  class=" required hidden"  :title="error" /> </li>
         </ul>
 
     </div>
