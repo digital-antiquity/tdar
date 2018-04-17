@@ -252,7 +252,9 @@ public abstract class AbstractSeleniumWebITCase {
 
         someTask = new KillSeleniumAfter();
         long timeDelay = 10; // You can specify 3 what
+
         someScheduler.schedule(someTask, timeDelay, TimeUnit.MINUTES);
+
 
     }
 
@@ -413,6 +415,11 @@ public abstract class AbstractSeleniumWebITCase {
         }
         if (someTask != null) {
             someTask.disable();
+            try {
+            someScheduler.shutdownNow();
+            } catch (Throwable t) {
+                logger.error(t.getMessage(),t,t);
+            }
         }
 
         if (quitBrowserBetweenTests) {
