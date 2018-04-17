@@ -2,7 +2,7 @@
   "name": "tDAR",
   "version": "18.0.0",
   "description": "The Digital Archaeological Record Web Application",
-   "private":true,
+  "private": true,
   "dependencies": {
     "angular": "git://github.com/angular/bower-angular.git#~1.2.0",
     "angular-modal-service": "git://github.com/dwmkerr/angular-modal-service.git#0.4.0",
@@ -36,7 +36,7 @@
     "svgxuse": "Keyamoon/svgxuse#~1.1.17",
     "vue": "vuejs/vue#^2.4.2",
     "vue-resource": "vuejs/vue-resource#^1.3.4",
-    "yarn": "^1.5.1"
+    "yarn": "^1.6.0"
   },
   "devDependencies": {
     "angular": "^1.5.7",
@@ -67,10 +67,10 @@
   },
   "scripts": {
     "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",
-    "start": "webpack --config webpack.config.js",
+    "start": "npm run webpack",
+    "webpack": "webpack -d --watch",
     "pretest": "echo node src/test/frontend/pretest.js",
-    "test": "karma start --no-single-run",
-    "postinstall": "node -e \"try { require('fs').symlinkSync(require('path').resolve('node_modules/@bower_components'), 'src/main/webapp/components', 'junction') } catch (e) { }\""
+    "test": "karma start --no-single-run"
   },
   "repository": {
     "type": "hg",
