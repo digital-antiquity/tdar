@@ -379,6 +379,10 @@
                         <configuration>
                             <skip>${skipNode}</skip>
                             <executable>./node_modules/.bin/yarn</executable>
+                            <arguments>
+                                <argument>install</argument>
+                                <argument>--modules-folder ./components</argument> 
+                            </arguments>
                         </configuration>
                         <goals>
                             <goal>exec</goal>
