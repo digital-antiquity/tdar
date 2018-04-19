@@ -243,7 +243,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log('fileUploadAdd:', e, data);
                     _app._disable();
                     var $upload = $('#fileupload');
-                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, _app);
+                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, _app, true);
                 },
                 addFile: function(file) {
                     this.files.push(file);

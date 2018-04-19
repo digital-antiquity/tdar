@@ -69,6 +69,8 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
     @Autowired
     private WebPersonalFilestoreService personalFilestoreService;
 
+    private boolean unfiled;
+
     // @Action(value = "index", results = { @Result(name = SUCCESS, location = "index.ftl") })
     // public String index() {
     //
@@ -108,10 +110,9 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
             }
         }
 
-        if (parentId != null) {
-            parent = getGenericService().find(TdarDir.class, parentId);
-        }
-        if (accountId != null) {
+        parent = filestoreService.findByParentId(parentId, isUnfiled(), getAuthenticatedUser());
+
+        if (PersistableUtils.isNotNullOrTransient(accountId)) {
             account = getGenericService().find(BillingAccount.class, accountId);
         }
     }
@@ -265,6 +266,14 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
 
     public void setTicket(PersonalFilestoreTicket ticket) {
         this.ticket = ticket;
+    }
+
+    public boolean isUnfiled() {
+        return unfiled;
+    }
+
+    public void setUnfiled(boolean unfiled) {
+        this.unfiled = unfiled;
     }
 
 }

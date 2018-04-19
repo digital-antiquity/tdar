@@ -94,5 +94,7 @@ public interface PersonalFilestoreService {
 
     void moveFiles(List<AbstractFile> files, TdarDir dir, TdarUser authenticatedUser);
 
+    TdarDir findUnfileDir(TdarUser authenticatedUser);
+
 
 }

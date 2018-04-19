@@ -199,4 +199,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public TdarDir findUnfileDir(TdarUser authenticatedUser) {
+        return fileProcessingDao.findUnfiledDirByName(authenticatedUser);
+        
+    }
+
 }

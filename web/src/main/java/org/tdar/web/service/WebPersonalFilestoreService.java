@@ -14,7 +14,9 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.exception.FileUploadException;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -25,6 +27,9 @@ public class WebPersonalFilestoreService {
 
     @Autowired
     private PersonalFilestoreService filestoreService;
+
+    @Autowired
+    private GenericService genericService;
 
     @Transactional(readOnly = false)
     public PersonalFilestoreTicket grabTicket(TdarUser authenticatedUser) {
@@ -50,5 +55,18 @@ public class WebPersonalFilestoreService {
             }
         }
         return hashCodes;
+    }
+
+    @Transactional(readOnly=false)
+    public TdarDir findByParentId(Long parentId, boolean unfiled, TdarUser authenticatedUser) {
+        if (PersistableUtils.isNotNullOrTransient(parentId)) {
+            return genericService.find(TdarDir.class, parentId);
+        }
+        
+        if (unfiled == true) {
+            filestoreService.findUnfileDir(authenticatedUser);
+        }
+        return null;
+        
     }
 }
