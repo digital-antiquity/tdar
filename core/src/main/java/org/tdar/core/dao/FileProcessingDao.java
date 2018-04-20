@@ -62,6 +62,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         try {
             Query<TdarDir> query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_DIR_BY_NAME);
             query.setParameter("name", TdarDir.UNFILED);
+            query.setParameter("account", null);
             query.setParameter("uploader", authenticatedUser);
             return query.getSingleResult();
         } catch (Exception e) {
