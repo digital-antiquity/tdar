@@ -243,7 +243,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log('fileUploadAdd:', e, data);
                     _app._disable();
                     var $upload = $('#fileupload');
-                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, _app, true);
+                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, _app);
                 },
                 addFile: function(file) {
                     this.files.push(file);
@@ -291,7 +291,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     singleFileUploads: false,
                     formData : function(form) {
                         // override formData
-                        var data = [];
+                        var data = [{name: "unfiled", value :true}];
                         if (_app.ticketId == undefined || _app.ticketId == -1) {
                             data.push({
                                 name : "ticketRequested",

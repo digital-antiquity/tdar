@@ -15,6 +15,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
@@ -100,7 +101,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected FileSaveWrapper fsw = new FileSaveWrapper();
     private String uploadSettings;
     private String vueFilesFallback;
-    
+
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
 
@@ -127,6 +128,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     private boolean hasFileProxyChanges = false;
+
+    @Autowired
+    private SerializationService serializationService;
+
+    private List<Long> fileIds;
+    private List<TdarFile> tdarFiles;
 
     @Autowired
     private ResourceEditControllerServiceImpl resourceEditControllerService;
@@ -268,9 +275,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
 
-    @Autowired
-    private SerializationService serializationService;
-
     @Override
     public String loadAddMetadata() {
         String retval = super.loadAddMetadata();
@@ -282,11 +286,9 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         return retval;
     }
 
-
     public Collection<RequiredOptionalPairs> getRequiredOptionalPairs() {
         return new ArrayList<>();
     }
-
 
     @Override
     public String loadEditMetadata() throws TdarActionException {
@@ -308,6 +310,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             if (!informationResourceFile.isDeleted()) {
                 fileProxies.add(new FileProxy(informationResourceFile));
             }
+        }
+
+        for (TdarFile file : getTdarFiles()) {
+            fileProxies.add(new FileProxy(file));
         }
     }
 
@@ -437,6 +443,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
+        setTdarFiles(getGenericService().findAll(TdarFile.class, fileIds));
         if (getPersistable() == null)
             return;
     }
@@ -607,12 +614,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setFileTextInput(String fileTextInput) {
         this.fileTextInput = fileTextInput;
     }
-    
 
     public String getUploadSettings() {
         return uploadSettings;
     }
-
 
     public String getFileUploadSettings() {
         initializeFileProxies();
@@ -647,5 +652,21 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setVueFilesFallback(String vueFilesFallback) {
         this.vueFilesFallback = vueFilesFallback;
+    }
+
+    public List<Long> getFileIds() {
+        return fileIds;
+    }
+
+    public void setFileIds(List<Long> fileIds) {
+        this.fileIds = fileIds;
+    }
+
+    public List<TdarFile> getTdarFiles() {
+        return tdarFiles;
+    }
+
+    public void setTdarFiles(List<TdarFile> tdarFiles) {
+        this.tdarFiles = tdarFiles;
     }
 }

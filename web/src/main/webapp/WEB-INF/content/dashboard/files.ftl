@@ -43,9 +43,11 @@
 <table class="table">
 <thead>
  <tr>
+    <th></th>
     <th>file</th>
+    <th>uploader</th>
     <th>status</th>
-    <th>action</th>
+    <th colspan="2">actions</th>
  </tr>
 </thead>
 <tr>
@@ -97,6 +99,15 @@
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}}</td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)">{{file.name}} </span> <span v-if="file.size != undefined ">{{file.name }}  </span> </td>
+    <td>{{file.uploaderRef}}</td>
+    <td> </td>
+    <td>
+        <a :href="fileLink"><i class="icon-pencil"></i>Create</a>
+    </td>
+    <td>
+        <a href="#" @click="moveUI()"><i class="icon-folder-open"></i> Move</a>
+        <a href="#" @click="deleteFile()"><i class="icon-trash"></i> Delete</a>
+    </td>
     </tr>
 </template>
 
@@ -117,9 +128,16 @@
             methods: {
                 cd : function(file) {
                     this.$parent.cd(file);
+                },
+                moveUI : function() {
+                },
+                deleteFile(){
                 }
             },
             computed: {
+                fileLink : function() {
+                	return "/document/add?fileIds=" + this.file.id; 
+                },
                 rowId : function() {
                     return "files-row-" + this.index;
                 }

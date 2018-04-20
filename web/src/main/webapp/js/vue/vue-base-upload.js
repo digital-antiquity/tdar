@@ -218,13 +218,8 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         console.log("VALID FILES: ", JSON.stringify(validFiles));
 
         var extra = {
-            uploadFile : validFiles,
-            unfiled : false
+            uploadFile : validFiles
         };
-        
-        if (unfiled != undefined) {
-            extra['unfiled'] = true;
-        }
         
         var jqXHR = $upload.fileupload('send', extra);
 

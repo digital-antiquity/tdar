@@ -59,12 +59,13 @@ public class WebPersonalFilestoreService {
 
     @Transactional(readOnly=false)
     public TdarDir findByParentId(Long parentId, boolean unfiled, TdarUser authenticatedUser) {
+        logger.debug("{} -- {}", parentId, unfiled);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             return genericService.find(TdarDir.class, parentId);
         }
         
         if (unfiled == true) {
-            filestoreService.findUnfileDir(authenticatedUser);
+            return filestoreService.findUnfileDir(authenticatedUser);
         }
         return null;
         

@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.HasExtension;
@@ -53,11 +54,10 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
     private String description;
-    @JsonFormat
-    (shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
     private Date fileCreatedDate;
     // used to help distinguish between user managed proxies and those that may have been created to work around an error
-//    private boolean createdByServer = false;
+    // private boolean createdByServer = false;
     @JsonIgnore
     private InformationResourceFile informationResourceFile;
     @JsonIgnore
@@ -107,6 +107,13 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.restriction = restriction;
     }
 
+    public FileProxy(TdarFile file2) {
+        this.name = file2.getName();
+        this.versionType = VersionType.UPLOADED;
+        this.action = FileAction.ADD;
+        this.restriction = FileAccessRestriction.PUBLIC;
+    }
+
     public FileAction getAction() {
         return action;
     }
@@ -147,7 +154,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public void setOriginalFileVersionId(String originalFileVersionId) {
-        if (StringUtils.isEmpty(originalFileVersionId)) {} else {
+        if (StringUtils.isEmpty(originalFileVersionId)) {
+        } else {
             this.originalFileVersionId = Long.parseLong(originalFileVersionId);
         }
     }
@@ -271,30 +279,30 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public Date getFileCreatedDate() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
-        //implicitly convert java.sql.Date to java.util.Date
+        // implicitly convert java.sql.Date to java.util.Date
         this.fileCreatedDate = new Date(fileCreatedDate.getTime());
         return fileCreatedDate;
     }
 
     public Integer getYear() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
         return new DateTime(fileCreatedDate.getTime()).getYear();
     }
 
     public Integer getMonth() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
         return new DateTime(fileCreatedDate.getTime()).getMonthOfYear();
     }
 
     public Integer getDay() {
-        if(fileCreatedDate == null) {
+        if (fileCreatedDate == null) {
             return null;
         }
         return new DateTime(fileCreatedDate.getTime()).getDayOfMonth();
