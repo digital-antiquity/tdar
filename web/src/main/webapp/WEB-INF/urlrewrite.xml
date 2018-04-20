@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE urlrewrite
+        PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"
+        "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
+<urlrewrite>
+    <rule>
+        <name>XML Namespace Document</name>
+        <note>
+            The XML namespace URI for tDAR is "http://www.tdar.org/namespace". This namespace URI should never change. The following rule redirects from the namespace
+            URI to a page where the namespace is currently documented. If location of the documentation changes, the &lt;to&gt; element below should be updated to follow it.
+        </note>
+        <from>/namespace</from>
+        <to type="temporary-redirect">https://docs.tdar.org/display/DEV/tDAR+XML+namespace
+        </to>
+    </rule>
+
+    <rule>
+        <name>deal with annoying fishing excursions...</name>
+        <from>^/(wp|wordpress|old|blog|wp-admin|signup)/?.*</from>
+        <to>/page-not-found</to>
+        <!-- this does not work in Tomcat for some reason <set status="404" 
+            /> -->
+    </rule>
+
+    <rule>
+        <from>^/register</from>
+        <to>/account/new</to>
+    </rule>
+
+    <rule>
+        <from>^/search/rss</from>
+        <to>/api/search/rss</to>
+    </rule>
+
+    <rule>
+        <from>^/filestore/?$</from>
+        <to type="redirect">/</to>
+    </rule>
+
+    <rule>
+        <name>unstrutsworthy download url</name>
+        <from>^/filestore/download/(\d+)\,(\d+)/(.+)</from>
+        <to type="redirect">/filestore/download/$1$2/$3</to>
+    </rule>
+
+    <rule>
+        <name>unstrutsworthy phishing</name>
+        <from>(.*)/(\.\.\.+|\*\*\*+)/(.*)</from>
+        <to type="redirect">/not-found</to>
+    </rule>
+
+    <rule>
+        <name>apple-continuity</name>
+        <from>^/\.well-known/apple-app-site-association</from>
+        <to type="redirect">/not-found</to>
+    </rule>
+
+    <rule>
+        <name>unstrutsworthy ontology url</name>
+        <note>If node name does not match allowed struts pattern, redirect to the parent ontology node. In addition, urlencode the invalid
+            node name and append it as a querystring so that ontology action can potentially lookup the node and redirect again</note>
+        <from>^/ontology/(\d+)/node/(.*[^a-zA-Z0-9_!/\-].*)$</from>
+        <to type="redirect">/ontology/$1?iri=${escape:utf8:$2}</to>
+    </rule>
+
+    <rule>
+        <name>unstrutsworthy keyword url</name>
+        <note>if keyword label does not match struts pattern, remove the label and redirect to /browse/keyword-type/1234 </note>
+        <from>^(\/browse\/[\w-]+\/\d+)\/(.*[^a-zA-Z0-9_!/\-].*)$</from>
+        <to type="redirect">$1</to>
+    </rule>
+
+    <rule>
+        <name>unstrutsworthy document url</name>
+        <note>if slug does not match struts pattern, remove the label and redirect to /browse/keyword-type/1234 </note>
+        <from>^/(?!.*wro)(\w+)/(\d+)/(.*[^a-zA-Z0-9_!/\-].*)$</from>
+        <to type="redirect">/$1/$2</to>
+    </rule>
+
+    <rule>
+        <from>^/admin/?$</from>
+        <to>/admin/internal</to>
+    </rule>
+
+    <rule>
+        <from>^/projects/list</from>
+        <to>/dashboard/dashboard</to>
+    </rule>
+
+    <!-- support old rewrite -->
+    <rule>
+        <from>^/year-(\d+)$</from>
+        <to type="temporary-redirect">/scholar/scholar?year=$1</to>
+    </rule>
+
+    <rule>
+        <from>^/browse/creators/(\d+)/rdf</from>
+        <to>/browse/creatorRdf?id=$1</to>
+    </rule>
+    <outbound-rule>
+        <from>^/browse/creatorRdf\?id=(\d+)$</from>
+        <to>/browse/creators/$1/rdf</to>
+    </outbound-rule>
+
+
+    <rule>
+        <from>^/search/search(.*)</from>
+        <to>/search/results$1</to>
+    </rule>
+
+	<!--  ACTIONS with periods are not allowed, so we must use URLRewrite to change the paths -->
+    <rule>
+        <from>^/opensearch.xml$</from>
+        <to>/opensearch</to>
+    </rule>
+    <rule>
+        <from>^/robots.txt$</from>
+        <to>/robots</to>
+    </rule>
+
+	<!--  cleanup for sitemaps -->
+
+    <rule>
+        <from>^/sitemap/(.+)(\.(gz|xml))$</from>
+        <to>/sitemap/sitemap?filename=$1$2</to>
+    </rule>
+
+    <rule>
+        <from>^/sitemap([^/]+)$</from>
+        <to>/sitemap/sitemap?filename=sitemap$1</to>
+    </rule>
+
+    <rule>
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)\t(\d+)$
+        </from>
+        <to>/$1/$2</to>
+        <!-- was &amp;$3 aat end -->
+    </rule>
+
+
+	<!--  The following rules are designed to TRUMP the Struts URL Routing - they allow an action to be placed after the ID, but not be treated as a SLUG -->
+    <rule>
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|share|listcollection|archive|geospatial)/([0-9]+)/(edit|mapping|rights)$
+        </from>
+        <to>/$1/$3?id=$2</to>
+        <!-- was &amp;$3 aat end -->
+    </rule>
+
+    <outbound-rule>
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|share|listcollection|archive|geospatial)/(rights|edit|mapping)\?id=([0-9]+)$
+        </from>
+        <to>/$1/$3/$2</to>
+    </outbound-rule>
+
+    <rule>
+        <from>^/entity/(person|user|institution)/([0-9]+)/(edit|address)$</from>
+        <to>/entity/$1/$3?id=$2</to>
+    </rule>
+    <outbound-rule>
+        <from>^/entity/(person|user|institution)/(edit|address)\?id=([0-9]+)$
+        </from>
+        <to>/entity/$1/$3/$2</to>
+    </outbound-rule>
+
+    <rule>
+        <from>^/ontology/([0-9+]+)/node/(.*)</from>
+        <to>/ontology_node/$1/node/$2</to>
+    </rule>
+    <outbound-rule>
+        <from>^/ontology_node/(.*)$</from>
+        <to>/ontology/$1</to>
+    </outbound-rule>
+
+
+	<!-- managing searches, or basic URLs that could be searches -->
+    <rule>
+        <from>^/search$</from>
+        <to>/search/basic</to>
+    </rule>
+    <rule>
+        <from>^/(search|advanced)/?$</from>
+        <to>/search/basic</to>
+    </rule>
+
+    <rule>
+        <from>^/account$</from>
+        <to>/account/new</to>
+    </rule>
+
+    <rule>
+        <from>^/workspace$</from>
+        <to>/workspace/list</to>
+    </rule>
+
+    <!-- http://stackoverflow.com/questions/962729/is-it-possible-to-disable-jsessionid-in-tomcat-servlet -->
+    <outbound-rule encodefirst="true">
+        <name>Strip URL Session ID's</name>
+        <from>^(.*?)(?:\;jsessionid=[^\?#]*)?(\?[^#]*)?(#.*)?$</from>
+        <to>$1$2$3</to>
+    </outbound-rule>
+
+</urlrewrite>

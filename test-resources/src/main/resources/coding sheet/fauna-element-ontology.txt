@@ -1,0 +1,330 @@
+Articulated Skeleton {description}
+	Articulated Skeleton Complete
+	Articulated Skeleton Nearly Complete (ASNC) {another description}
+	Articulated Skeleton Partial
+		Articulated Skeleton Anterior Portion
+		Articulated Skeleton Posterior Portion
+Head
+	Skull
+		Antler or Horncore
+			Antler
+			Horncore
+			Horn sheath
+		Basiooccipital
+		Bulla
+		Dentary
+		Frontal or Parietal
+			Frontal
+			Parietal
+		Hyoid
+		Interparietal
+		Lacrimal
+		Maxillary or Mandibular
+			Mandible
+			Maxilla
+		Nasal
+		Occipital
+			Occipital Condyle
+		Palatinal
+		Petrous
+		Premaxilla
+		Sphenoid
+		Squamous
+		Temporal
+		Vomer
+		Zygomaticus
+	Tooth
+		Incisor
+			I1
+				Lower I1
+				Upper I1
+			I2
+				Lower I2
+				Upper I2
+			I3
+				Lower I3
+				Upper I3
+			I4
+				Lower I4
+				Upper I4
+		Deciduous Incisor
+			i1
+				Lower i1
+				Upper i1
+			i2
+				Lower i2
+				Upper i2
+			i3
+				Lower i3
+				Upper i3
+			i4
+				Lower i4
+				Upper i4
+		Canine
+			Lower C
+			Upper C
+		Deciduous Canine
+			Lower c
+			Upper c
+		Molar or Premolar
+			Premolar
+				P1
+					Lower P1
+					Upper P1
+				P2
+					Lower P2
+					Upper P2
+				P3 or P4
+					P3
+						Lower P3
+						Upper P3
+					P4
+						Lower P4
+						Upper P4
+			Deciduous Premolar
+				dp1 (m1)
+					Lower dp1
+					Upper DP1
+				dp2 (m2)
+					Lower dp2
+					Upper dp2
+				dp3 (m3)
+					Lower dp3
+					Upper dp3
+				dp4 (m4)
+					Lower dp4
+					Upper dp4
+			Molar
+				M1 or M2
+					M1
+						Lower M1
+						Upper M1
+					M2
+						Lower M2
+						Upper M2
+				M3
+					Lower M3
+					Upper M3
+		Enamel Fragment
+		Root Fragment
+Axial
+	Baculum
+	Rib
+		Costal Cartilage
+	Sternum
+	Vertebra
+		Cervical Vertebra
+			Atlas
+			Axis
+		Thoracic Vertebra
+		Lumbar Vertebra
+		Sacrum
+		Caudal Vertebra
+		Vertebral Pad
+Appendicular
+	Forelimb
+		Clavicle
+		Humerus
+		Radius or Ulna
+			Radius or Radioulna
+			Ulna
+		Scapula
+	Hindlimb
+	Femur
+	Patella
+	Pelvis
+		Acetabulum
+		Ilium
+		Ischium
+		Pubis
+		Ilium w/ Acetabulum
+		Ischium w/ Acetabulum
+		Pubis w/ Acetabulum
+		Ilium & Ischium w/o Acetabulum
+		Ilium & Ischium w/ Acetabulum
+		Ilium & Pubis w/o Acetabulum
+		Ilium & Pubis w/ Acetabulum
+		Ischium & Pubis w/o Acetabulum
+		Ischium & Pubis w/ Acetabulum
+		Ilium, Ischium & Pubis w/o Acetabulum
+		Ilium, Ischium & Pubis w/ Acetabulum
+	Tibia or Fibula
+		Tibia or Tibiofibula or Tibiotarsus
+		Fibula
+Foot
+	Carpal or Tarsal
+		Carpal
+			Scaphoid (Carpal Radial)
+			Lunate (Intermediate)
+			Scaphoid & Lunate (Radial & Intermediate)
+			Triquetrum (Ulnar; Cuneiform)
+			Pisiform (Accessory)
+			Trapezium (1st Carpal)
+			Trapezoid (2nd Carpal)
+			Capitate (3rd Carpal)
+			Carpato-Trapezoid (2nd & 3rd Carpal)
+			Hamate (4th Carpal; Unciform)
+		Tarsal
+			Astragalus
+			Calcaneus
+			Cuboid (4th Tarsal)
+			Lateral Malleolus
+			Navicular (Central Tarsal)
+			Navicular & Cuboid (cubonavicular; Central & 4th Tarsal)
+			1st Cuneiform (1st Tarsal)
+			2nd Cuneiform (2nd Tarsal)
+			3rd Cuneiform (3rd Tarsal)
+			2nd & 3rd Cuneiform (2nd & 3rd Tarsal)
+	Metapodial
+		Metacarpal (Carpometacarpus)
+			1st Metacarpal
+			2nd Metacarpal
+			3rd Metacarpal
+			2nd & 3rd Metacarpal
+			4th Metacarpal
+			3rd & 4th Metacarpal
+			5th Metacarpal
+			Peripheral Metacarpal
+		Metatarsal (Tarsometatarsus)
+			1st Metatarsal
+			2nd Metatarsal
+			3rd Metatarsal
+			3rd & 4th Metatarsal
+			4th Metatarsal
+			5th Metatarsal
+			Peripheral Metatarsal
+		Peripheral Metapodial
+	Ossified Tendon
+	Phalanx
+		1st or 2nd Phalanx
+			1st Phalanx
+				Peripheral 1st Phalanx
+			2nd Phalanx
+				Peripheral 2nd Phalanx
+		3rd Phalanx
+			Peripheral 3rd Phalanx
+		Vestigial Phalanx (dew claw)
+		Vestigial Hoof Core
+	Sesamoid
+Amphibian Additional {Amphibian & Reptile Element Additional}
+Carapace or Plastron
+	Carapace
+	Costal
+	Entoplastron
+	Epiplastron
+	Epural
+	Hyoplastron
+	Hypoplastron
+	Neural
+	Nuchal
+	Peripheral
+	Plastron
+	Pygal
+	Suprapygal
+	Xiphiplstron
+Amphibian Ectopterygoid {Amphibian & Reptile}
+Episternum
+Amphibian Jugal {Amphibian & Reptile}
+Mesosternum
+Omosternum
+Amphibian Prootic {Amphibian & Reptile}
+Pterygoid
+Amphibian Quadrate {Amphibian}
+Quadratojugal
+Squamossal
+Urostyle
+Xiphisternum
+Bird Additional {Bird Element Additional}
+Beak
+Coracoid
+Eggshell
+Furculum
+Bird Jugal {Bird}
+Lumbosacral vertebrae
+Orbital ring
+Pollex
+Pygostyle
+Bird Quadrate {Bird}
+Scapholunar
+Synsacrum
+Tracheal Cartilage
+Wing Phalanges
+	Digit 1
+	Digit 2
+		1st Phalanx Digit 2
+		2nd Phalanx Digit 2
+	Digit 3
+Fish Additional {Fish Element Additional}
+Alisphenoid
+Angular
+Articular
+Basihyal
+Basipterigium
+Ceratohyal
+Ceratobranchial
+Cleithrum
+Fish Ectopterygoid {Fish}
+Endocranium (neurocranium)
+Epihyal
+Epiotic
+Ethmoid
+Fin
+	Anal Fin
+	Caudal Fin
+	Fin Ray
+	Fin Spine
+	Pectoral Fin
+	Ventral Fin
+Hyomandibular
+Hypohyal
+Interhyal
+Interhaemal Spine
+Interopercular
+Lachrymal
+Opercular
+Opisthotic
+Otolith
+Metapterygoid
+Parasphenoid
+Pharyngeal Bone
+Postcleithrum
+Posttemporal
+Precaudal
+Preopercular
+Proatlas
+Fish Prootic {Fish}
+Pterotic
+Pterygiophore
+Quadrate {Fish}
+Radial
+Ray
+	Branchiostegal Ray
+	Dorsal Ray/Spine
+Scale
+Scute
+	Dorsal Scute
+	Lateral Scute
+	Ventral Scute
+Sphenotic
+Subopercular
+Suborbital
+Supracleithrum
+Supratemporal
+Supraoccipital
+Symplectic
+Urohyal
+Fish Vertebra {Fish}
+	Abdominal Anterior Vertebra {Fish}
+	Abdominal Posterior Vertebra {Fish}
+	Penultimate Vertebrae {Fish}
+	Ultimate Vertebrae {Fish}
+	Weberian Vertebra {Fish}
+Mollusc {Mollusc Elements}
+Hinge plate
+Umbo
+Other shell
+{Unidentified Element}
+Unidentified Element
+	Long Bone fragment
+	Spongy bone
+Not Recorded
