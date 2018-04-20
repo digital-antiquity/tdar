@@ -32,11 +32,6 @@ public class TdarFile extends AbstractFile {
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "md5")
     private String md5;
     
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    private BillingAccount account;
-    
-
     public Long getSize() {
         return size;
     }
@@ -59,16 +54,6 @@ public class TdarFile extends AbstractFile {
 
     public void setMd5(String md5) {
         this.md5 = md5;
-    }
-
-    @XmlElement(name = "accountRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public BillingAccount getAccount() {
-        return account;
-    }
-
-    public void setAccount(BillingAccount account) {
-        this.account = account;
     }
 
     public ImportFileStatus getStatus() {

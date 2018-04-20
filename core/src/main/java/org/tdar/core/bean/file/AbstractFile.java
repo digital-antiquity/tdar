@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -36,6 +37,11 @@ public abstract class AbstractFile extends AbstractPersistable {
 
     @Column(name = "local_path", length = FieldLength.FIELD_LENGTH_2048)
     private String localPath;
+    
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private BillingAccount account;
+
 
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -108,6 +114,17 @@ public abstract class AbstractFile extends AbstractPersistable {
     
     public void setUploader(TdarUser uploader) {
         this.uploader = uploader;
+    }
+
+
+    @XmlElement(name = "accountRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public BillingAccount getAccount() {
+        return account;
+    }
+
+    public void setAccount(BillingAccount account) {
+        this.account = account;
     }
 
 }
