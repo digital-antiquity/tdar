@@ -27,6 +27,7 @@ public enum SortOption {
     DATE(Resource.class, "Date", false),
     DATE_REVERSE(Resource.class, "Date (Most Recent)", true),
     DATE_UPDATED(Resource.class, "Date Updated", false),
+    DATE_CREATED(Resource.class, "Date Created", false),
     DATE_UPDATED_REVERSE(Resource.class, "Date Updated (Most Recent)", true),
     RESOURCE_TYPE(Resource.class, "Resource Type"),
     LABEL(Keyword.class, "Label"),
