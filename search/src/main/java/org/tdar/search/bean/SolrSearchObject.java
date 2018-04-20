@@ -190,6 +190,8 @@ public class SolrSearchObject<I extends Indexable> {
             case DATE:
             case DATE_REVERSE:
                 return QueryFieldNames.DATE;
+            case DATE_CREATED:
+                return QueryFieldNames.DATE_CREATED;
             case DATE_UPDATED:
             case DATE_UPDATED_REVERSE:
                 return QueryFieldNames.DATE_UPDATED;
