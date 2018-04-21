@@ -142,12 +142,10 @@ ${vueFilesFallback!'{{ files }}'}
         <div class="fileProxyFields">
             <input type="hidden" v-model="file.action"
                 class="fileAction" :name="actionFieldName" value="NONE">
-            <input type="hidden" class="fileId" :name="fileIdFieldName"
-                :value="file.fileId"> <input type="hidden"
-                class="fileReplaceName" :name="filenameFieldName"
-                :value="file.name"> <input type="hidden"
-                class="fileSequenceNumber"
-                name="sequenceNumberFieldName" value="1">
+                <input type="hidden" class="fileId" :name="fileIdFieldName" :value="file.fileId"> 
+                <input type="hidden" class="tdarFileId" :name="tdarFileIdFieldName" :value="file.tdarFileId"> 
+                <input type="hidden" class="fileReplaceName" :name="filenameFieldName" :value="file.name"> 
+                <input type="hidden" class="fileSequenceNumber" name="sequenceNumberFieldName" value="1">
         </div> <span class="hidden debug">file: {{file}}</span> </td>
 </tr>
 </template>

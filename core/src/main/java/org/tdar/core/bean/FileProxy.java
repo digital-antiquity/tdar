@@ -46,6 +46,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     private FileAction action = FileAction.NONE;
     private Long fileId = -1L;
+    private Long tdarFileId = -1L;
     private Long originalFileVersionId = -1L;
     private File file;
     private Long size;
@@ -112,6 +113,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.versionType = VersionType.UPLOADED;
         this.action = FileAction.ADD;
         this.restriction = FileAccessRestriction.PUBLIC;
+        this.tdarFileId = file2.getId();
     }
 
     public FileAction getAction() {
@@ -323,5 +325,13 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
             return true;
         }
         return false;
+    }
+
+    public Long getTdarFileId() {
+        return tdarFileId;
+    }
+
+    public void setTdarFileId(Long tdarFileId) {
+        this.tdarFileId = tdarFileId;
     }
 }

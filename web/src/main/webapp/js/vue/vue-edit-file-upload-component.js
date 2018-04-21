@@ -63,6 +63,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 fileIdFieldName : function() {
                     return "fileProxies[" + this.index + "].fileId";
                 },
+                tdarFileIdFieldName : function() {
+                    return "fileProxies[" + this.index + "].tdarFileId";
+                },
                 filenameFieldName : function() {
                     return "fileProxies[" + this.index + "].name";
                 },

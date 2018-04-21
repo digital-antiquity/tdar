@@ -30,18 +30,17 @@ public abstract class AbstractFile extends AbstractPersistable {
 
     private static final long serialVersionUID = 8203692812833995820L;
 
-    @Column(length = FieldLength.FIELD_LENGTH_1024, name="internal_name")
+    @Column(length = FieldLength.FIELD_LENGTH_1024, name = "internal_name")
     private String internalName;
     @Column(name = "display_name", length = FieldLength.FIELD_LENGTH_1024)
     private String filename;
 
     @Column(name = "local_path", length = FieldLength.FIELD_LENGTH_2048)
     private String localPath;
-    
+
     @ManyToOne
     @JoinColumn(name = "account_id")
     private BillingAccount account;
-
 
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -105,17 +104,22 @@ public abstract class AbstractFile extends AbstractPersistable {
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getUploader() {
         return uploader;
+    }
 
+    public String getUploaderName() {
+        if (uploader != null) {
+            return uploader.getProperName();
+        }
+        return null;
     }
 
     public String getName() {
         return this.filename;
     }
-    
+
     public void setUploader(TdarUser uploader) {
         this.uploader = uploader;
     }
-
 
     @XmlElement(name = "accountRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)

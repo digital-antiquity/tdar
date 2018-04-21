@@ -3,6 +3,7 @@ package org.tdar.core.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -14,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.utils.HashQueue;
 
@@ -32,6 +35,8 @@ public class FileProxyServiceImpl implements FileProxyService {
 
     @Autowired
     private PersonalFilestoreService filestoreService;
+    @Autowired
+    private GenericDao genericDao;
 
     /*
      * (non-Javadoc)
@@ -62,10 +67,26 @@ public class FileProxyServiceImpl implements FileProxyService {
      * @see org.tdar.core.service.FileProxyService#reconcilePersonalFilestoreFilesAndFileProxies(java.util.List, java.lang.Long)
      */
     @Override
-    public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(List<FileProxy> fileProxies, Long ticketId) {
-        cullInvalidProxies(fileProxies);
+    public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(List<FileProxy> fileProxies_, Long ticketId) {
+        
+        
+        
+        cullInvalidProxies(fileProxies_);
         List<PersonalFilestoreFile> pendingFiles = filestoreService.retrieveAllPersonalFilestoreFiles(ticketId);
-        ArrayList<FileProxy> finalProxyList = new ArrayList<FileProxy>(fileProxies);
+        ArrayList<FileProxy> finalProxyList = new ArrayList<FileProxy>(fileProxies_);
+        ArrayList<FileProxy> fileProxies = new ArrayList<FileProxy>(fileProxies_);
+        Iterator<FileProxy> iterator = fileProxies.iterator();
+        // if we have a tdarFile, remove it from the proxy list we're going to reconcile below
+        while (iterator.hasNext()) {
+            FileProxy proxy = iterator.next();
+            if (proxy.getTdarFileId() != null) {
+                TdarFile file = genericDao.find(TdarFile.class, proxy.getTdarFileId());
+                if (file != null) {
+                    proxy.setFile(new File(file.getLocalPath()));
+                    iterator.remove();
+                }
+            }
+        }
 
         // subset of proxy list, hashed into queues.
         HashQueue<String, FileProxy> proxiesNeedingFiles = buildProxyQueue(fileProxies);
