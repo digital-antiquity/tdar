@@ -65,7 +65,22 @@
         <css>/components/c3/c3.min.css</css>
         <js>/components/leaflet-control-geocoder/dist/Control.Geocoder.js</js>
         <css>/components/leaflet-control-geocoder/dist/Control.Geocoder.css</css>
-        
+        <js>/js/tdar.core.js</js>
+        <js>/js/tdar.datepicker.js</js>
+        <js>/js/tdar.moreinfo.js</js>
+        <js>/js/tdar.upload.js</js>
+        <js>/js/tdar.jquery-upload-validation.js</js>
+        <js>/js/tdar.common.js</js>
+        <js>/js/tdar.bulk.js</js>
+        <js>/js/tdar.repeatrow.js</js>
+        <js>/js/tdar.autocomplete.js</js>
+        <!-- <js>/js/tdar.select2-autocomplete.js</js> -->
+        <!-- <css>/css/tdar.select2.css</css>         -->
+        <js>/js/tdar.c3graphsupport.js</js>
+        <js>/js/tdar.c3graph.js</js>
+        <js>/js/tdar.validate.js</js>
+        <js>/js/tdar.messages_en.js</js>
+        <js>/js/tdar.d3tree.js</js>
         <css>/css/tdar.homepage.css</css>
         <css>/css/tdar.d3tree.css</css>
         <css>/css/tdar.c3graph.css</css>
@@ -76,15 +91,36 @@
         <css>/css/tdar.datatables.css</css>
         <css>/css/tdar.searchresults.css</css>
         <css>/css/tdar.invoice.css</css>
-        
-
+        <js>/js/tdar.datatable.js</js>
+        <js>/js/tdar.dataset-metadata.js</js>
+        <js>/js/tdar.ontology-mapping.js</js>
+        <js>/js/tdar.sensorydata.js</js>
+        <js>/js/tdar.notifications.js</js>
+        <js>/js/tdar.advanced-search.js</js>
+        <js>/js/tdar.authority-management.js</js>
+        <js>/js/tdar.auth.js</js>
+        <js>/js/tdar.inheritance.js</js>
+        <js>/js/tdar.download.js</js>
+        <js>/js/tdar.pricing.js</js>
+        <js>/js/tdar.contexthelp.js</js>
+        <js>/js/tdar.menu.js</js>
+        <js>/js/tdar.formValidateExtensions.js</js>
+        <js>/includes/bindWithDelay.js</js>
+        <js>/js/maps/tdar.worldmap.js</js>
+        <js>/js/tdar.bookmark.js</js>
+        <js>/js/maps/tdar.leaflet.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
 
         <!--Selectize  -->        
         <js>/components/selectize/dist/js/standalone/selectize.js</js>
         <css>/components/selectize/dist/css/selectize.css</css>
+
+
         <js>/components/vue/dist/vue.js</js>
+        <js>/js/vue/vue-selectize.js</js>
+        <js>/js/vue/view-collection-widget.js</js>
+        <js>/js/vue/edit-collection.js</js>
 
 
     </group>
