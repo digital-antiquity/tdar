@@ -16,7 +16,7 @@ function showMessage(id){
         console.log("there's no iframe for "+id);
         var container = $("#email-"+id+" .email-container");
         console.log(container);
-        container.html("<iframe src='/admin/emailContent/"+id+"' seamless='seamless' frameborder='0' sandbox='allow-popup'></iframe>"); 
+        container.html("<iframe src='/admin/emailContent/"+id+"' seamless='seamless' frameborder='0' sandbox='allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts'></iframe>"); 
     }
     
     $("#email-"+id).toggleClass('hidden');
@@ -59,7 +59,7 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
     <th>Subject</th>
 </tr>
 </thead>
-    <#list emailsToReview?sort_by("id") as email>
+    <#list emailsToReview?sort_by("id")?reverse as email>
         <tr>
             <td><label for="cb${email.id?c}">${email.id?c}&nbsp; <input type="checkbox" name="ids" value="${email.id?c}"  id="cb${email.id?c}" /></label> </td>
             <td>${email.to!''}</td>
@@ -87,9 +87,8 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
 
 <hr />
 
-
     <h3>All Emails</h3>
-    <table class="tableFormat table">
+    <table class="tableFormat table" style="border:1px solid #eee;">
     <thead>
     <tr>
         <th>Id</th>
@@ -102,7 +101,7 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
     </tr>
     </thead>
     <#list emails as email>
-        <tr>
+        <tr class='row_${email?item_parity}'>
             <td>${email.id?c} </td>
             <td>${email.to!''}</td>
             <td>${email.from!''}</td>
@@ -116,6 +115,14 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
                 </div>
             </td>
         </tr>
+        <#if email.status=='BOUNCED'>
+            <tr  class='row_${email?item_parity}'>
+                <td colspan='7' style="color:#c74534">
+                   ${email.errorMessage}                 
+                </td>            
+            </tr>
+        </#if>
+        
         <tr id="email-${email.id?c}" class="hidden">
             <td colspan=7  style="background-color:white;border:1px solid #eee;">
                 <div class="email-container">

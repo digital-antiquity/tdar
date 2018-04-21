@@ -60,4 +60,6 @@ public interface WebScheduledProcessService {
      */
     void cronGenerateWeeklyStats();
 
+    void cronDailyAccessRevocationNotices();
+
 }
