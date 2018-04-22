@@ -1,5 +1,7 @@
 package org.tdar.core.bean.file;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -7,18 +9,20 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
-import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @DiscriminatorValue(value = "FILE")
 public class TdarFile extends AbstractFile {
-
 
     private static final long serialVersionUID = 8710509667556337547L;
     @Column(name = "file_size")
@@ -31,7 +35,27 @@ public class TdarFile extends AbstractFile {
     private ImportFileStatus status;
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "md5")
     private String md5;
-    
+
+    @Column(name = "date_reviewed", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateReviewed;
+
+    @ManyToOne
+    @JoinColumn(name = "reviewer_id")
+    private TdarUser reviewedBy;
+
+    @Column(name = "date_curated", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateCurated;
+
+    @ManyToOne
+    @JoinColumn(name = "curator_id")
+    private TdarUser curatedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "resource_id")
+    private InformationResource resource;
+
     public Long getSize() {
         return size;
     }
@@ -62,6 +86,80 @@ public class TdarFile extends AbstractFile {
 
     public void setStatus(ImportFileStatus status) {
         this.status = status;
+    }
+
+    public Date getDateReviewed() {
+        return dateReviewed;
+    }
+
+    public void setDateReviewed(Date dateReviewed) {
+        this.dateReviewed = dateReviewed;
+    }
+
+    @XmlElement(name = "resourceRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public InformationResource getResource() {
+        return resource;
+    }
+    
+    public String getResourceUrl() {
+        if (resource != null) {
+            return resource.getAbsoluteUrl();
+        }
+        return null;
+    }
+
+    public Long getResourceId() {
+        if (resource != null) {
+            return resource.getId();
+        }
+        return null;
+    }
+
+    public void setResource(InformationResource resource) {
+        this.resource = resource;
+    }
+
+    @XmlElement(name = "curatorRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public TdarUser getCuratedBy() {
+        return curatedBy;
+    }
+
+    public void setCuratedBy(TdarUser curatedBy) {
+        this.curatedBy = curatedBy;
+    }
+
+    public Date getDateCurated() {
+        return dateCurated;
+    }
+
+    public void setDateCurated(Date dateCurated) {
+        this.dateCurated = dateCurated;
+    }
+
+    @XmlElement(name = "revewerRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public TdarUser getReviewedBy() {
+        return reviewedBy;
+    }
+
+    public void setReviewedBy(TdarUser reviewedBy) {
+        this.reviewedBy = reviewedBy;
+    }
+
+    public String getReviewedByName() {
+        if (reviewedBy != null) {
+            return reviewedBy.getProperName();
+        }
+        return null;
+    }
+
+    public String getCuratedByName() {
+        if (curatedBy != null) {
+            return curatedBy.getProperName();
+        }
+        return null;
     }
 
 }

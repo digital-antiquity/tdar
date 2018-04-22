@@ -40,7 +40,7 @@
 <input type="search" class="search input" placeholder="search"/>
 </div>
 
-<table class="table">
+<table class="table" id="filesTable">
 <thead>
  <tr>
     <th></th>
@@ -56,7 +56,7 @@
         <tbody v-for="(file,index) in files">
             <tr v-if="index == 0 && parentId != undefined">
             <td></td>
-            <td> <span class="link" @click="cd()">.. </span>  </td>
+            <td> <span class="link" @click="cd()"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
             <tr class="template-download fade existing-file in"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload"></tr>
@@ -64,7 +64,7 @@
         <tbody v-if="files.length == 0 && parentId != undefined">
         <tr>
             <td></td>
-            <td> <span class="link" @click="cd()">.. </span>  </td>
+            <td> <span class="link" @click="cd()"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
         </tbody>
 </table>
@@ -98,15 +98,17 @@
 <template id="file-entry-template">
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}}</td>
-    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)">{{file.name}} </span> <span v-if="file.size != undefined ">{{file.name }}  </span> </td>
-    <td>{{file.uploaderRef}}</td>
+    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> <span v-if="file.size != undefined ">{{file.name }}  </span> </td>
+    <td>{{file.uploaderName}} {{formatDate(file.dateCreated)}}</td>
+    <td>{{file.curatedName}} {{file.curatedDate}}</td>
+    <td>{{file.reviewedName}} {{file.reviewedDate}}</td>
     <td> </td>
     <td>
-        <a :href="fileLink"><i class="icon-pencil"></i>Create</a>
     </td>
     <td>
-        <a href="#" @click="moveUI()"><i class="icon-folder-open"></i> Move</a>
-        <a href="#" @click="deleteFile()"><i class="icon-trash"></i> Delete</a>
+        <a :href="fileLink"><i class="icon-pencil"></i></a>
+        <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
+        <a href="#" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
     </tr>
 </template>
@@ -128,6 +130,9 @@
             methods: {
                 cd : function(file) {
                     this.$parent.cd(file);
+                },
+                formatDate: function(date) {
+              	  return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: 'numeric'}); //new Date.parse(date).format('MM/DD/YYYY hh:mm');
                 },
                 moveUI : function() {
                 },
@@ -250,6 +255,7 @@
                     url : this.url,
                     dataType : 'json',
                     paramName : "uploadFile",
+                    dropZone: "#filesTool",
                     // required to ensure that we don't send two files separately and not use the same ticket
                     singleFileUploads: false,
                     formData : function(form) {

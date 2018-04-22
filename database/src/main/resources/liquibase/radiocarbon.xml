@@ -55,5 +55,40 @@
     <changeSet id="radiocarbon-file-first-4" author="abrin">
         <renameColumn tableName="files" oldColumnName="filename" newColumnName="internal_name"/>
     </changeSet>
+    <changeSet id="radiocarbon-file-first-5" author="abrin">
+        <addColumn tableName="files">
+            <column name="resource_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_resource" referencedTableName="resource"
+            baseColumnNames="resource_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="curator_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_curator" referencedTableName="tdar_user"
+            baseColumnNames="curator_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="reviewer_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_reviewer" referencedTableName="tdar_user"
+            baseColumnNames="reviewer_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="date_reviewed" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+            
+        <addColumn tableName="files">
+            <column name="date_curated" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        
+    </changeSet>
 
 </databaseChangeLog>

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
@@ -67,7 +68,7 @@ public class FileProxyServiceImpl implements FileProxyService {
      * @see org.tdar.core.service.FileProxyService#reconcilePersonalFilestoreFilesAndFileProxies(java.util.List, java.lang.Long)
      */
     @Override
-    public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(List<FileProxy> fileProxies_, Long ticketId) {
+    public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(InformationResource ir, List<FileProxy> fileProxies_, Long ticketId) {
         
         
         
@@ -83,6 +84,8 @@ public class FileProxyServiceImpl implements FileProxyService {
                 TdarFile file = genericDao.find(TdarFile.class, proxy.getTdarFileId());
                 if (file != null) {
                     proxy.setFile(new File(file.getLocalPath()));
+                    file.setResource(ir);
+                    file.setAccount(ir.getAccount());
                     iterator.remove();
                 }
             }

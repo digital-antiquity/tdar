@@ -42,16 +42,16 @@ public abstract class AbstractFile extends AbstractPersistable {
     @JoinColumn(name = "account_id")
     private BillingAccount account;
 
-    @Column(name = "date_created", nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
-
     // private List<String> fileIssues;
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private TdarDir parent;
 
+    @Column(name = "date_created", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateCreated;
+    
     @ManyToOne
     @JoinColumn(name = "uploader_id")
     private TdarUser uploader;

@@ -254,20 +254,20 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
         if (textInputFileProxy != null) {
             fileProxiesToProcess.add(textInputFileProxy);
-        } else
+        } else {
 
-        // 2. async uploads for Image or Document or ...
-        if (multipleFileUploadEnabled) {
-            fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
-
-        } else
-        // 3. single file upload (dataset|coding sheet|ontology)
-        // there could be an incoming file payload, or just a metadata change.
-        {
-            logger.debug("uploaded: {} {}", files, filenames);
-            fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess, auth.getItem(), filenames, files, fileProxies);
+            // 2. async uploads for Image or Document or ...
+            if (multipleFileUploadEnabled) {
+                fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(auth.getItem(), fileProxies, ticketId);
+    
+            } else
+            // 3. single file upload (dataset|coding sheet|ontology)
+            // there could be an incoming file payload, or just a metadata change.
+            {
+                logger.debug("uploaded: {} {}", files, filenames);
+                fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess, auth.getItem(), filenames, files, fileProxies);
+            }
         }
-
         return fileProxiesToProcess;
     }
 

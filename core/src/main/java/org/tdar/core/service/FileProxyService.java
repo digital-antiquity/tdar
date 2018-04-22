@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.utils.HashQueue;
 
 public interface FileProxyService {
@@ -27,7 +28,7 @@ public interface FileProxyService {
      * @param ticketId
      * @return
      */
-    ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(List<FileProxy> fileProxies, Long ticketId);
+    ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(InformationResource ir, List<FileProxy> fileProxies, Long ticketId);
 
     /**
      * return a list of fileProxies, culling null and invalid instances
