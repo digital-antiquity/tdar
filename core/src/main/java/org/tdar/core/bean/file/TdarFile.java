@@ -56,6 +56,10 @@ public class TdarFile extends AbstractFile {
     @JoinColumn(name = "resource_id")
     private InformationResource resource;
 
+    @ManyToOne
+    @JoinColumn(name = "part_of_id")
+    private TdarFile partOf;
+
     public Long getSize() {
         return size;
     }
@@ -160,6 +164,17 @@ public class TdarFile extends AbstractFile {
             return curatedBy.getProperName();
         }
         return null;
+    }
+
+    
+    @XmlElement(name = "partRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public TdarFile getPartOf() {
+        return partOf;
+    }
+
+    public void setPartOf(TdarFile partOf) {
+        this.partOf = partOf;
     }
 
 }

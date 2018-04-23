@@ -90,5 +90,14 @@
         </addColumn>
         
     </changeSet>
+    <changeSet id="radiocarbon-file-first-6" author="abrin">
+        <addColumn tableName="files">
+            <column name="part_of_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_part" referencedTableName="files"
+            baseColumnNames="part_of_id" baseTableName="files"
+            referencedColumnNames="id" />
+</changeSet>
 
 </databaseChangeLog>
