@@ -103,10 +103,10 @@
     <td>{{file.curatedName}} {{file.curatedDate}}</td>
     <td>{{file.reviewedName}} {{file.reviewedDate}}</td>
     <td> </td>
-    <td>
+    <td><a :href="file.resourceUrl">{{file.resourceId }}</a> 
     </td>
     <td>
-        <a :href="fileLink"><i class="icon-pencil"></i></a>
+        <a :href="fileLink" v-if="file.resourceId == undefined"><i class="icon-pencil"></i></a>
         <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
         <a href="#" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>

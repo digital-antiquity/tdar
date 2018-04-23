@@ -176,5 +176,10 @@ public class TdarFile extends AbstractFile {
     public void setPartOf(TdarFile partOf) {
         this.partOf = partOf;
     }
+    
+    /**
+     * Must upload
+     * do not curate
+     */
 
 }
