@@ -81,7 +81,7 @@
         <geotools.version>19.0</geotools.version>
         <tika.version>1.16</tika.version>
         <rome.version>1.7.4</rome.version>
-        <jackson.version>2.8.10</jackson.version>
+        <jackson.version>2.9.5</jackson.version>
         <pdfbox.version>2.0.9</pdfbox.version>
         <bouncycastle.version>1.58</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
