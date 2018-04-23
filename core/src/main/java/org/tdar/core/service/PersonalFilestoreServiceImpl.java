@@ -16,6 +16,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.FileProcessingDao;
@@ -167,8 +168,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = false)
-    public TdarDir createDirectory(TdarDir parent, String name, TdarUser authenticatedUser) {
+    public TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) {
         TdarDir dir = new TdarDir();
+        dir.setAccount(account);
         dir.setFilename(name);
         dir.setInternalName(name);
         dir.setParent(parent);
@@ -185,7 +187,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     }
 
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void deleteFile(AbstractFile file, TdarUser authenticatedUser) {
         fileProcessingDao.delete(file);
     }
@@ -203,7 +205,44 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Transactional(readOnly = false)
     public TdarDir findUnfileDir(TdarUser authenticatedUser) {
         return fileProcessingDao.findUnfiledDirByName(authenticatedUser);
-        
+
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public void editMetadata(TdarFile file, String note, boolean needsOcr, boolean curate,TdarUser user) {
+        file.setNote(note);
+        file.setCurated(curate);
+        file.setRequiresOcr(needsOcr);
+        genericDao.saveOrUpdate(file);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void markCurated(List<TdarFile> files, TdarUser user) {
+        for (TdarFile file : files) {
+            file.setCuratedBy(user);
+            file.setDateCurated(new Date());
+            genericDao.saveOrUpdate(file);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void markReviewed(List<TdarFile> files, TdarUser user) {
+        for (TdarFile file : files) {
+            file.setReviewedBy(user);
+            file.setDateReviewed(new Date());
+            genericDao.saveOrUpdate(file);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly=false)
+    public void addComment(AbstractFile file, String comment, TdarUser authenticatedUser) {
+        FileComment comm = new FileComment(authenticatedUser,comment);
+        file.getComments().add(comm);
+        genericDao.saveOrUpdate(file);
+        genericDao.saveOrUpdate(comm);
+    }
 }

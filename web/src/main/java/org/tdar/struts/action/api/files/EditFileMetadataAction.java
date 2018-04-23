@@ -9,7 +9,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -19,12 +19,12 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public class DeleteFileAction extends AbstractJsonApiAction {
+public class EditFileMetadataAction extends AbstractHasFileAction<TdarFile>{
 
-
-    private static final long serialVersionUID = -7706315527740653556L;
-    private Long fileId;
-    private AbstractFile file;
+    private static final long serialVersionUID = -3146064278797351637L;
+    private String note;
+    private boolean needsOcr;
+    private boolean curate;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
@@ -32,27 +32,42 @@ public class DeleteFileAction extends AbstractJsonApiAction {
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        if (fileId != null) {
-            file = getGenericService().find(AbstractFile.class, fileId);
-        }
     }
 
     @Override
     public void validate() {
         super.validate();
-        if (file == null) {
-            addActionError("deleteFileAction.no_file");
-        }
     }
 
-    @Action(value = "delete",
+    @Action(value = "editMetadata",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.deleteFile(file, getAuthenticatedUser());
-        setResultObject(true);
+        personalFilestoreService.editMetadata(getFile(), note, needsOcr, curate, getAuthenticatedUser());
+        setResultObject(getFile());
         return SUCCESS;
+    }
+
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public boolean isNeedsOcr() {
+        return needsOcr;
+    }
+
+    public void setNeedsOcr(boolean needsOcr) {
+        this.needsOcr = needsOcr;
+    }
+
+    public boolean isCurate() {
+        return curate;
+    }
+
+    public void setCurate(boolean curate) {
+        this.curate = curate;
     }
 
 }

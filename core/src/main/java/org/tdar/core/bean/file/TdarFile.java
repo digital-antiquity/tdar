@@ -1,14 +1,20 @@
 package org.tdar.core.bean.file;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
@@ -40,6 +46,16 @@ public class TdarFile extends AbstractFile {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateReviewed;
 
+    @Column(name="requires_ocr", nullable=true)
+    private Boolean requiresOcr;
+
+    @Column(name="curate", nullable=true)
+    private Boolean curated = true;
+    
+    @Column(length = FieldLength.FIELD_LENGTH_100, name = "note")
+    private String note;
+    
+    
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private TdarUser reviewedBy;
@@ -176,10 +192,29 @@ public class TdarFile extends AbstractFile {
     public void setPartOf(TdarFile partOf) {
         this.partOf = partOf;
     }
-    
-    /**
-     * Must upload
-     * do not curate
-     */
 
+    public Boolean getRequiresOcr() {
+        return requiresOcr;
+    }
+
+    public void setRequiresOcr(Boolean requiresOcr) {
+        this.requiresOcr = requiresOcr;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public Boolean getCurated() {
+        return curated;
+    }
+
+    public void setCurated(Boolean curated) {
+        this.curated = curated;
+    }
+    
 }

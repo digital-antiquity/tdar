@@ -7,10 +7,10 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
@@ -29,6 +29,8 @@ public class CreateDirectoryAction extends AbstractJsonApiAction {
     private Long parentId;
     private TdarDir parent;
     private String name;
+    private Long accountId;
+    private BillingAccount account;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
@@ -39,6 +41,9 @@ public class CreateDirectoryAction extends AbstractJsonApiAction {
         getLogger().debug("name: {} parentId: {} ", name, parentId);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             parent = getGenericService().find(TdarDir.class, parentId);
+        }
+        if (PersistableUtils.isNotNullOrTransient(accountId)) {
+            account = getGenericService().find(BillingAccount.class, accountId);
         }
     }
 
@@ -51,14 +56,11 @@ public class CreateDirectoryAction extends AbstractJsonApiAction {
     }
 
     @Action(value = "mkdir",
-            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
-            results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
-                    @Result(name = ERROR, type = JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "400" })
-            })
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        TdarDir directory = personalFilestoreService.createDirectory(parent, name, getAuthenticatedUser());
+        TdarDir directory = personalFilestoreService.createDirectory(parent, name, account, getAuthenticatedUser());
         setResultObject(directory);
         return SUCCESS;
     }
@@ -85,6 +87,22 @@ public class CreateDirectoryAction extends AbstractJsonApiAction {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public BillingAccount getAccount() {
+        return account;
+    }
+
+    public void setAccount(BillingAccount account) {
+        this.account = account;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
 }

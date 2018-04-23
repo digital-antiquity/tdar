@@ -1,15 +1,21 @@
 package org.tdar.core.bean.file;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -42,7 +48,10 @@ public abstract class AbstractFile extends AbstractPersistable {
     @JoinColumn(name = "account_id")
     private BillingAccount account;
 
-    // private List<String> fileIssues;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OrderBy("dateCreated ASC")
+    @JoinColumn(nullable = false, updatable = false, name = "file_id")
+    private List<FileComment> comments = new ArrayList<FileComment>();
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
@@ -131,4 +140,13 @@ public abstract class AbstractFile extends AbstractPersistable {
         this.account = account;
     }
 
+    public List<FileComment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<FileComment> comments) {
+        this.comments = comments;
+    }
+
+    
 }

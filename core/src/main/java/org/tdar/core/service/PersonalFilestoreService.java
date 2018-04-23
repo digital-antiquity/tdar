@@ -9,6 +9,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -81,12 +82,12 @@ public interface PersonalFilestoreService {
      * @param file
      * @param filename
      * @return
-     * @throws FileUploadException 
+     * @throws FileUploadException
      * @throws IOException
      */
     void store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir) throws FileUploadException;
 
-    TdarDir createDirectory(TdarDir parent, String name, TdarUser authenticatedUser);
+    TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser);
 
     List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, TdarUser authenticatedUser);
 
@@ -96,5 +97,12 @@ public interface PersonalFilestoreService {
 
     TdarDir findUnfileDir(TdarUser authenticatedUser);
 
+    void editMetadata(TdarFile file, String note, boolean needsOcr, boolean curate, TdarUser authenticatedUser);
+
+    void markCurated(List<TdarFile> files, TdarUser authenticatedUser);
+
+    void markReviewed(List<TdarFile> files, TdarUser user);
+
+    void addComment(AbstractFile file, String comment, TdarUser authenticatedUser);
 
 }

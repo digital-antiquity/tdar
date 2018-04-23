@@ -31,50 +31,54 @@
     </changeSet>
     <changeSet id="radiocarbon-file-first-2" author="abrin">
         <addColumn tableName="files">
-            <column name="md5" type="varchar(100)"/>
-            <column name="file_type" type="varchar(5)"/>
+            <column name="md5" type="varchar(100)" />
+            <column name="file_type" type="varchar(5)" />
         </addColumn>
     </changeSet>
     <changeSet id="radiocarbon-file-first-3" author="abrin">
         <addColumn tableName="files">
-            <column name="account_id" type="bigint"/>
+            <column name="account_id" type="bigint" />
         </addColumn>
         <addForeignKeyConstraint
-            constraintName="fk_file_account" referencedTableName="pos_account"
+            constraintName="fk_file_account"
+            referencedTableName="pos_account"
             baseColumnNames="account_id" baseTableName="files"
             referencedColumnNames="id" />
         <addColumn tableName="files">
-            <column name="uploader_id" type="bigint"/>
+            <column name="uploader_id" type="bigint" />
         </addColumn>
         <addForeignKeyConstraint
-            constraintName="fk_file_uploader" referencedTableName="tdar_user"
+            constraintName="fk_file_uploader"
+            referencedTableName="tdar_user"
             baseColumnNames="uploader_id" baseTableName="files"
             referencedColumnNames="id" />
-        
+
     </changeSet>
     <changeSet id="radiocarbon-file-first-4" author="abrin">
-        <renameColumn tableName="files" oldColumnName="filename" newColumnName="internal_name"/>
+        <renameColumn tableName="files"
+            oldColumnName="filename" newColumnName="internal_name" />
     </changeSet>
     <changeSet id="radiocarbon-file-first-5" author="abrin">
         <addColumn tableName="files">
-            <column name="resource_id" type="bigint"/>
+            <column name="resource_id" type="bigint" />
         </addColumn>
         <addForeignKeyConstraint
-            constraintName="fk_file_resource" referencedTableName="resource"
-            baseColumnNames="resource_id" baseTableName="files"
-            referencedColumnNames="id" />
+            constraintName="fk_file_resource"
+            referencedTableName="resource" baseColumnNames="resource_id"
+            baseTableName="files" referencedColumnNames="id" />
         <addColumn tableName="files">
-            <column name="curator_id" type="bigint"/>
+            <column name="curator_id" type="bigint" />
         </addColumn>
         <addForeignKeyConstraint
-            constraintName="fk_file_curator" referencedTableName="tdar_user"
-            baseColumnNames="curator_id" baseTableName="files"
-            referencedColumnNames="id" />
+            constraintName="fk_file_curator"
+            referencedTableName="tdar_user" baseColumnNames="curator_id"
+            baseTableName="files" referencedColumnNames="id" />
         <addColumn tableName="files">
-            <column name="reviewer_id" type="bigint"/>
+            <column name="reviewer_id" type="bigint" />
         </addColumn>
         <addForeignKeyConstraint
-            constraintName="fk_file_reviewer" referencedTableName="tdar_user"
+            constraintName="fk_file_reviewer"
+            referencedTableName="tdar_user"
             baseColumnNames="reviewer_id" baseTableName="files"
             referencedColumnNames="id" />
         <addColumn tableName="files">
@@ -82,22 +86,55 @@
                 <constraints nullable="true" />
             </column>
         </addColumn>
-            
+
         <addColumn tableName="files">
             <column name="date_curated" type="timestamp">
                 <constraints nullable="true" />
             </column>
         </addColumn>
-        
+
     </changeSet>
     <changeSet id="radiocarbon-file-first-6" author="abrin">
         <addColumn tableName="files">
-            <column name="part_of_id" type="bigint"/>
+            <column name="part_of_id" type="bigint" />
         </addColumn>
         <addForeignKeyConstraint
             constraintName="fk_file_part" referencedTableName="files"
             baseColumnNames="part_of_id" baseTableName="files"
             referencedColumnNames="id" />
-</changeSet>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-7" author="abrin">
+        <addColumn tableName="files">
+            <column name="requires_ocr" type="boolean"
+                defaultValueBoolean="false" />
+        </addColumn>
+        <addColumn tableName="files">
+            <column name="note" type="varchar(100)"
+                defaultValueBoolean="false" />
+        </addColumn>
+
+        <createTable tableName="file_comment">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="comment" type="varchar(2048)" />
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="file_id" type='bigint' />
+        </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_comment_file" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="file_comment"
+            referencedColumnNames="id" />
+
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-8" author="abrin">
+        <addColumn tableName="files">
+            <column name="curate" type="boolean"
+                defaultValueBoolean="true" />
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

@@ -9,9 +9,8 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
@@ -19,12 +18,9 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public class DeleteFileAction extends AbstractJsonApiAction {
+public class MarkCuratedAction extends AbstractHasFilesAction<TdarFile> {
 
-
-    private static final long serialVersionUID = -7706315527740653556L;
-    private Long fileId;
-    private AbstractFile file;
+    private static final long serialVersionUID = 2293024839469850302L;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
@@ -32,26 +28,23 @@ public class DeleteFileAction extends AbstractJsonApiAction {
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        if (fileId != null) {
-            file = getGenericService().find(AbstractFile.class, fileId);
+        for (Long id : getIds()) {
+            getFiles().add(getGenericService().find(TdarFile.class, id));
         }
     }
 
     @Override
     public void validate() {
         super.validate();
-        if (file == null) {
-            addActionError("deleteFileAction.no_file");
-        }
     }
 
-    @Action(value = "delete",
+    @Action(value = "markCurated",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.deleteFile(file, getAuthenticatedUser());
-        setResultObject(true);
+        personalFilestoreService.markCurated(getFiles(), getAuthenticatedUser());
+        setResultObject(getFiles());
         return SUCCESS;
     }
 

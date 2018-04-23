@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
@@ -19,12 +18,11 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public class DeleteFileAction extends AbstractJsonApiAction {
+public class AddFileCommentAction extends AbstractHasFileAction<AbstractFile>{
 
+    private static final long serialVersionUID = 3366561187632570405L;
 
-    private static final long serialVersionUID = -7706315527740653556L;
-    private Long fileId;
-    private AbstractFile file;
+    private String comment;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
@@ -32,27 +30,29 @@ public class DeleteFileAction extends AbstractJsonApiAction {
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        if (fileId != null) {
-            file = getGenericService().find(AbstractFile.class, fileId);
-        }
     }
 
     @Override
     public void validate() {
         super.validate();
-        if (file == null) {
-            addActionError("deleteFileAction.no_file");
-        }
     }
 
-    @Action(value = "delete",
+    @Action(value = "editMetadata",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.deleteFile(file, getAuthenticatedUser());
-        setResultObject(true);
+        personalFilestoreService.addComment(getFile(), comment, getAuthenticatedUser());
+        setResultObject(getFile());
         return SUCCESS;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
 }
