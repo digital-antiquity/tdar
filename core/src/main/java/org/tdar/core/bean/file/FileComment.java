@@ -9,10 +9,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name = "file_comment")
@@ -56,6 +59,16 @@ public class FileComment extends AbstractPersistable {
         this.dateCreated = dateCreated;
     }
 
+
+    public String getCommentorName() {
+        if (commentor != null) {
+            return commentor.getProperName();
+        }
+        return null;
+    }
+
+    @XmlElement(name = "uploaderRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getCommentor() {
         return commentor;
     }

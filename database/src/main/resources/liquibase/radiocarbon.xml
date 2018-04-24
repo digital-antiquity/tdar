@@ -136,5 +136,14 @@
                 defaultValueBoolean="true" />
         </addColumn>
     </changeSet>
+    <changeSet id="radiocarbon-file-first-9" author="abrin">
+        <addColumn tableName="file_comment">
+            <column name="commentor_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_comment_commentor" referencedTableName="tdar_user"
+            baseColumnNames="commentor_id" baseTableName="file_comment"
+            referencedColumnNames="id" />
+    </changeSet>
 
 </databaseChangeLog>
