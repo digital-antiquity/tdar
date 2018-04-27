@@ -12,17 +12,18 @@ import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 
+import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
+
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public abstract class AbstractHasFilesAction<C extends AbstractFile> extends AbstractJsonApiAction {
+public abstract class AbstractHasFilesAction<C extends AbstractFile> extends AbstractJsonApiAction implements Validateable, Preparable {
 
     private static final long serialVersionUID = -6840830466386793366L;
     private List<Long> ids = new ArrayList<>();
     private List<C> files = new ArrayList<>();
-    @Autowired
-    private PersonalFilestoreService personalFilestoreService;
 
     @Override
     public void prepare() throws Exception {
@@ -30,6 +31,8 @@ public abstract class AbstractHasFilesAction<C extends AbstractFile> extends Abs
         for (Long id : ids) {
             files.add((C)getGenericService().find(AbstractFile.class, id));
         }
+        
+        getLogger().debug("ids: {} ; files:{}",ids,files);
     }
 
     @Override

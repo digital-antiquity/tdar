@@ -29,16 +29,6 @@ public class EditFileMetadataAction extends AbstractHasFileAction<TdarFile>{
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    @Override
-    public void prepare() throws Exception {
-        super.prepare();
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-    }
-
     @Action(value = "editMetadata",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly

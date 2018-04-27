@@ -25,19 +25,6 @@ public class MarkCuratedAction extends AbstractHasFilesAction<TdarFile> {
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    @Override
-    public void prepare() throws Exception {
-        super.prepare();
-        for (Long id : getIds()) {
-            getFiles().add(getGenericService().find(TdarFile.class, id));
-        }
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-    }
-
     @Action(value = "markCurated",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly

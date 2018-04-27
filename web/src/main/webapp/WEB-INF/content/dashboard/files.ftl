@@ -45,7 +45,9 @@
  <tr>
     <th></th>
     <th>file</th>
-    <th>uploader</th>
+    <th>upload</th>
+    <th>curate</th>
+    <th>review</th>
     <th>status</th>
     <th colspan="2">actions</th>
  </tr>
@@ -94,19 +96,30 @@
 
 
 </div>
+<!-- 
+    <th></th>
+    <th>file</th>
+    <th>upload</th>
+    <th>curate</th>
+    <th>review</th>
+    <th>status</th>
+    <th colspan="2">actions</th>
+
+-->
 
 <template id="file-entry-template">
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}}</td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> <span v-if="file.size != undefined ">{{file.name }}  </span> </td>
     <td>{{file.uploaderName}} {{formatDate(file.dateCreated)}}</td>
-    <td>{{file.curatedName}} {{file.curatedDate}}</td>
-    <td>{{file.reviewedName}} {{file.reviewedDate}}</td>
+    <td>{{file.curatedByName}} {{formatDate(file.dateCurated)}} <i v-if="file.curatedByName == undefined && file.size != undefined" @click="markCurated()" class="icon-thumbs-up"></i></td>
+    <td>{{file.reviewedByName}} {{formatDate(file.dateReviewed)}}<i v-if="file.reviewedByName == undefined && file.size != undefined && file.dateCurated != undefined" @click="markReviewed()" class="icon-thumbs-up"></i></td>
     <td> </td>
     <td><a :href="file.resourceUrl">{{file.resourceId }}</a> 
     </td>
     <td>
-        <a :href="fileLink" v-if="file.resourceId == undefined"><i class="icon-pencil"></i></a>
+        <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
+        <i  class="icon-comment"></i>
         <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
         <a href="#" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
@@ -131,7 +144,33 @@
                 cd : function(file) {
                     this.$parent.cd(file);
                 },
+                markCurated: function() {
+	                var id = this.file.id;
+	                var _file= this.file;
+					$.post("/api/file/markCurated", {"ids[0]": id}).done(function(files){
+    					var file= files[0];
+	                    console.log(file);
+                        _file.dateCurated = file.dateCurated;
+                        _file.curatedByName= file.curatedByName;
+                    });
+
+                },
+                markReviewed: function() {
+	                var id = this.file.id;
+	                var _file= this.file;
+
+					$.post("/api/file/markReviewed", {"ids[0]": id}).done(function(files){
+					var file= files[0];
+                    console.log(file);
+                        _file.dateReviewed = file.dateReviewed;
+                        _file.reviewedByName= file.reviewedByName;
+                    });
+
+                },
                 formatDate: function(date) {
+                if (date == undefined ) {
+                return "";
+                }
               	  return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: 'numeric'}); //new Date.parse(date).format('MM/DD/YYYY hh:mm');
                 },
                 moveUI : function() {

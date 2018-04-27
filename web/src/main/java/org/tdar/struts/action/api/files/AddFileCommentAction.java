@@ -27,17 +27,7 @@ public class AddFileCommentAction extends AbstractHasFileAction<AbstractFile>{
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    @Override
-    public void prepare() throws Exception {
-        super.prepare();
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-    }
-
-    @Action(value = "editMetadata",
+    @Action(value = "addComment",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
