@@ -32,3 +32,13 @@ import './vue/edit-collection';
 import './../includes/bindWithDelay';
 import './maps/tdar.worldmap';
 import './maps/tdar.leaflet';
+
+import './data-integration/app';
+import './data-integration/ng-IntegrationController';
+import './data-integration/ng-IntegrationModel';
+import './data-integration/ng-IntegrationModalDialogController';
+import './data-integration/ng-IntegrationDataService';
+import './data-integration/ng-custom-directives';
+import './data-integration/ng-IntegrationCustomFilters';
+import './data-integration/ng-IntegrationValidationService';
+import './data-integration/ng-DatatableDirective';
