@@ -26,16 +26,7 @@
 <div class="span10" id="filesTool">
 
 <form class="form-horizontal">
-<div class="span4">
-<div class="control-group">
-  <label class="control-label" for="inputInfo">Select Billing Account</label>
-  <div class="controls">
-    <select name="account" id="account">
-        <option>Veterans Curation Program</option>
-    </select>
-  </div>
-</div>
-</div>
+		<@s.select name="account"  id="accountId"   listValue='name' listKey='id'   list=accounts cssClass="span4" dynamicAttributes={"@change":"loadFiles()"}/>
 <div class="span4">
 <input type="search" class="search input" placeholder="search"/>
 </div>
@@ -82,6 +73,15 @@
     </div>
 
      <br> <br>
+     <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">
+        
+        <ul v-for="(error,index) in errors" >
+            <li> <label :for="append('fue',index )">{{ error }}</label>
+                 <input type="text" :id="append('fue',index )" required="true" class=" required hidden"  :title="error" /> </li>
+        </ul>
+
+    </div>
+
     <!-- The global progress bar -->
     <div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"></div>
@@ -208,7 +208,13 @@
             methods : {
                 loadFiles: function (parentId, path) {
                     var _app = this;
-                    $.get(this.listUrl, {"parentId": parentId}, {
+                    var accountId = undefined;
+                    var $acc = $("#accountId");
+                    if ($acc.length > 0) {
+                       accountId = $acc.val();
+                    }
+                    
+                    $.get(this.listUrl, {"parentId": parentId, "accountId":accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         console.log(msg);

@@ -1,6 +1,6 @@
 package org.tdar.struts.action.dashboard;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -10,8 +10,10 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.notification.UserNotification;
-import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 import com.opensymphony.xwork2.Preparable;
@@ -33,16 +35,12 @@ public class FilleListAction extends AbstractAuthenticatableAction implements Pr
 
     private static final long serialVersionUID = -224826703370233994L;
 
+    @Autowired
+    private transient BillingAccountService accountService;
+
     private List<UserNotification> currentNotifications;
-
-    @Override
-    public void validate() {
-        // if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
-        // addActionError(getText("dashboardController.user_must_login"));
-        // }
-        // super.validate();
-    }
-
+    private List<BillingAccount> accounts = new ArrayList<>();
+    
     @Override
     @Action(value = "files", results = { @Result(name = SUCCESS, location = "files.ftl") })
     public String execute() {
@@ -52,7 +50,8 @@ public class FilleListAction extends AbstractAuthenticatableAction implements Pr
 
     @Override
     public void prepare() {
-        // setupBookmarks();
+        getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
+
     }
 
     public List<UserNotification> getCurrentNotifications() {
@@ -61,6 +60,14 @@ public class FilleListAction extends AbstractAuthenticatableAction implements Pr
 
     public void setCurrentNotifications(List<UserNotification> currentNotifications) {
         this.currentNotifications = currentNotifications;
+    }
+
+    public List<BillingAccount> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<BillingAccount> accounts) {
+        this.accounts = accounts;
     }
 
 }
