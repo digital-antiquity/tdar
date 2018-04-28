@@ -19,6 +19,8 @@ const CSS = [
      './src/main/webapp/css/tdar.sprites.css',
      './src/main/webapp/css/tdar.worldmap.css'
 ];
+//I created these mappings because the copier would only create the last directory. 
+//This can be parsed out better later, but 🤷‍♂️
 
 const MODULES  = [
 {name:'bootstrap-datepicker-eyecon',path:'./node_modules/bootstrap-datepicker-eyecon/'},

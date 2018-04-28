@@ -30,7 +30,6 @@
     "leaflet-dist": "git://github.com/vperron/leaflet-dist.git#0.7.x",
     "leaflet-draw": "Leaflet/Leaflet.draw#0.4.9",
     "microplugin": "brianreavis/microplugin.js#0.0.x",
-    "mini-css-extract-plugin": "^0.4.0",
     "npm": "^6.0.0",
     "phantomjs-prebuilt": "^2.1.16",
     "qs": "ljharb/qs#6.5.1",
@@ -62,6 +61,7 @@
     "karma-jasmine-jquery": "^0.1.1",
     "karma-junit-reporter": "^1.1.0",
     "karma-phantomjs-launcher": "^1.0.1",
+    "mini-css-extract-plugin": "^0.4.0",
     "moxios": "0.4.0",
     "phantomjs": "^2.1.7",
     "webpack": "^4.6.0",
@@ -72,8 +72,8 @@
   },
   "scripts": {
     "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",
-    "start": "npm run webpack",
-    "webpack": "webpack -d --watch",
+    "build": "npm run webpack",
+    "webpack": "webpack -d",
     "pretest": "echo node src/test/frontend/pretest.js",
     "test": "karma start --no-single-run"
   },

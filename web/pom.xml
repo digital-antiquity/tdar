@@ -364,9 +364,9 @@
                             <skip>${skipNode}</skip>
                             <executable>npm</executable>
                              <arguments>
-                                <argument>install</argument>
+                                <argument>i</argument>
                                 <argument>yarn</argument>
-                                <argument> --cache-min 9999999</argument>
+                                <argument>--save --cache-min 9999999</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -381,6 +381,7 @@
                             <executable>./node_modules/.bin/yarn</executable>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--force</argument>
                                 <!-- >argument>- -modules-folder</argument>
                                 <argument>./src/main/webapp/components</argument-->
                             </arguments>
@@ -389,6 +390,25 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
+                    
+                    <execution>
+                        <id>exec-run-webpack</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>./node_modules/.bin/yarn</executable>
+                            <arguments>
+                                <argument>build</argument>
+                                <!-- >argument>- -modules-folder</argument>
+                                <argument>./src/main/webapp/components</argument-->
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    
+                    
                 </executions>
             </plugin>
             <!-- plugin>
