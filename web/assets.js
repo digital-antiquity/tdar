@@ -46,7 +46,8 @@ const MODULES  = [
 {name:'qs/dist',path:'./node_modules/qs/dist'},
 {name:'selectize/dist',path:'./node_modules/selectize/dist'},
 {name:'svgxuse',path:'./node_modules/svgxuse'},
-{name:'vue/dist',path:'./node_modules/vue/dist'}
+{name:'vue/dist',path:'./node_modules/vue/dist'},
+{name:'axios/dist',path:'./node_modules/axios/dist'}
 ]
 
 
