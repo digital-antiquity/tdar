@@ -129,6 +129,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
                 publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
             }
         }
+        sendNotifications();
     }
 
     private void evaluateAuthorizedUsersForCollection(HasAuthorizedUsers persistable, DateTime now, String name, List<AuthorizedUser> toRemove,

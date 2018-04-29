@@ -495,7 +495,7 @@ public class SearchParameters {
                 K keyword = (K) type.getKeywordClass().newInstance();
                 if (value instanceof Keyword) {
                     keyword = (K) value;
-                } else if (StringUtils.isNotBlank(value.toString()) && StringUtils.isNumeric(value.toString())) {
+                } else if (StringUtils.isNotBlank(value.toString()) && StringUtils.isNumeric(value.toString()) && KeywordType.TEMPORAL_KEYWORD != type) {
                     Long id = Long.valueOf(value.toString());
                     if ((id != null) && (id > -1)) {
                         keyword.setId(id);
