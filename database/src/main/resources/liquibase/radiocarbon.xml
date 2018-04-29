@@ -1,7 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="production,test" >
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+    context="production,test">
+    <changeSet id="radiocarbon-dataset-search-1"
+        author="abrin">
+
+        <createTable tableName="page">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="name" type="varchar(512)">
+                <constraints nullable="false" />
+            </column>
+            <column name="status" type="varchar(50)" />
+            <column name="creator_id" type="bigint">
+                <constraints referencedTableName="tdar_user"
+                    nullable="false" />
+            </column>
+            <column name="updator_id" type="bigint">
+                <constraints referencedTableName="tdar_user" />
+            </column>
+            <column name="date_created" valueComputed="now()">
+                <constraints nullable="false" />
+            </column>
+            <column name="date_updated" valueComputed="now()" />
+        </createTable>
+
+        <createTable tableName="page_block">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="html" type="text" />
+            <column name="sequence_number" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="block_type" type="varchar(50)" />
+            <column name="page_id" type="bigint">
+                <constraints referencedTableName="page" />
+            </column>
+        </createTable>
+    </changeSet>
 
 </databaseChangeLog>
