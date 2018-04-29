@@ -171,12 +171,13 @@
     </@s.form>
 </div>
 
-<h3>Users who can charge to this account</h3>
+<h3>Who can use this account</h3>
 <table class="tableFormat table table-bordered">
     <#list account.authorizedUsers as member>
         <tr>
             <td><a href="<@s.url value="/browse/creators/${member.user.id?c}"/>">${member.user.properName}</a></td>
             <td>${member.user.email!""}</td>
+            <td>${member.generalPermission.label}</td>
         </tr>
     </#list>
 </table>

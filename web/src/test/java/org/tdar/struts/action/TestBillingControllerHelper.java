@@ -100,7 +100,7 @@ public interface TestBillingControllerHelper {
         BillingAccount account = new BillingAccount("my account");
         account.setDescription("this is an account for : " + owner.getProperName());
         account.setOwner(owner);
-        account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.EDIT_ACCOUNT));
+        account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.USE_ACCOUNT));
         account.markUpdated(owner);
         getGenericService().saveOrUpdate(account);
         return account;

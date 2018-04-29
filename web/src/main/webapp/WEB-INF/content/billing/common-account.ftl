@@ -1,3 +1,7 @@
+<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
+<#import "/WEB-INF/macros/common-rights.ftl" as rights>
+
 <#escape _untrusted as _untrusted?html>
 
     <#macro accountInfoForm hideUsers=false>
@@ -11,8 +15,8 @@
             </#if>
         </#if>
         <#if !hideUsers>
-        <h3>Who can charge to this account </h3>
-            <@edit.listMemberUsers />
+
+		<@rights.addUsersForRights showDate=false />
         </#if>
         <@edit.submit fileReminder=false />
 
