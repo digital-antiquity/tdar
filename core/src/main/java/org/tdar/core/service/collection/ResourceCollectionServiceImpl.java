@@ -21,6 +21,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1124,6 +1125,7 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         getDao().saveOrUpdate(revision);
         c.markUpdated(authenticatedUser);
         userRightsProxyService.handleInvites(authenticatedUser, invites, c);
+        c.markUpdated(authenticatedUser);
         saveOrUpdate(c);
         publisher.publishEvent(new TdarEvent(c, EventType.CREATE_OR_UPDATE));
     }
@@ -1186,6 +1188,8 @@ public class ResourceCollectionServiceImpl extends ServiceInterface.TypedDaoBase
         saveAuthorizedUsersForResource(resource, authorizedUsers, true, authenticatedUser);
 
         userRightsProxyService.handleInvites(authenticatedUser, invites, resource);
+        resource.markUpdated(authenticatedUser);
+        getDao().saveOrUpdate(resource);
     }
 
     /*
