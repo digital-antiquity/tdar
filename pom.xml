@@ -83,7 +83,7 @@
         <rome.version>1.7.3</rome.version>
         <jackson.version>2.8.10</jackson.version>
         <pdfbox.version>2.0.7</pdfbox.version>
-        <bouncycastle.version>1.58</bouncycastle.version>        
+        <bouncycastle.version>1.58</bouncycastle.version>
         <http-components.version>4.4.9</http-components.version>
         <http-client.version>4.5.5</http-client.version>
         <jackcess.version>2.1.10</jackcess.version>

@@ -1,4 +1,4 @@
-<#import "email-macro.ftl" as mail /> 
+<#import "../email-macro.ftl" as mail /> 
 
 <@mail.content>
 Dear TDAR Admin,
