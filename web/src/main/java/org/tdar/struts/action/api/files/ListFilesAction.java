@@ -7,7 +7,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -27,6 +26,7 @@ public class ListFilesAction extends AbstractJsonApiAction {
     private static final long serialVersionUID = -3758560269825040925L;
     private Long accountId;
     private Long parentId;
+    private String term;
 
     private TdarDir parent;
     private BillingAccount account;
@@ -48,7 +48,7 @@ public class ListFilesAction extends AbstractJsonApiAction {
     @Action(value = "listFiles",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     public String execute() throws IOException {
-        List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, getAuthenticatedUser());
+        List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, term , getAuthenticatedUser());
         setResultObject(files);
         return SUCCESS;
     }

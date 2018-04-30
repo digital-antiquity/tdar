@@ -193,7 +193,7 @@
             data : {
                 listUrl : "/api/file/listFiles",
                 url : "/api/file/upload",
-                validFormats : ['doc','pdf'],
+                validFormats : ['doc','pdf','docx','png','tif','tiff','jpg','jpeg'],
                 ableToUpload : true,
                 parentId: undefined,
                 files : [],
@@ -244,7 +244,7 @@
                 },
                 validateAdd : function(file, replace) {
                 
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, ['doc','docx','pdf'], 0	, 100000 , false  )
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, ['doc','docx','pdf'], 0	, 100000 , false ,this )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
@@ -261,6 +261,9 @@
                 },
                 addError : function(error) {
                     this.errors.push(error);
+                },
+                append: function(a, b) {
+                  return a + "" + b;  
                 },
                 fileUploadSubmit : function(e, data) {
                 },
@@ -323,6 +326,10 @@
                                 value : _app.parentId
                             });
                         }
+                        data.push({
+                            name : "accountId",
+                            value : $("#accountId").val()
+                        });
                         console.log(data);
                         return data;
                     },

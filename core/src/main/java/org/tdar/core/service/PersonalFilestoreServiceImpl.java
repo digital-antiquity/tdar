@@ -182,8 +182,8 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
-        return fileProcessingDao.listFilesFor(parent, account, authenticatedUser);
+    public List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser) {
+        return fileProcessingDao.listFilesFor(parent, account, term, authenticatedUser);
     }
 
     @Override

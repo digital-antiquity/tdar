@@ -89,7 +89,7 @@ public interface PersonalFilestoreService {
 
     TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser);
 
-    List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, TdarUser authenticatedUser);
+    List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser);
 
     void deleteFile(AbstractFile file, TdarUser authenticatedUser);
 
