@@ -558,6 +558,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional(readOnly=false)
     public Email generateUserStatisticsEmail(TdarUser user, BillingAccount billingAccount) {
         logger.debug("Starting sending statistics email to {}", user);
 
@@ -608,6 +609,7 @@ public class EmailServiceImpl implements EmailService {
      * @return AwsEmail a new instance
      */
     @Override
+    @Transactional(readOnly=true)
     public Email createMessage(EmailType emailType, String to) {
         Email email = null;
         if (emailType.getEmailClass() != null) {
@@ -634,6 +636,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void renderAndUpdateEmailContent(Email message) {
         String templateName = null;
         try {
@@ -649,6 +652,7 @@ public class EmailServiceImpl implements EmailService {
      * Forces the message to re-render dynamically created subject line.
      */
     @Override
+    @Transactional(readOnly=true)
     public void updateEmailSubject(Email message) {
         message.setSubject(message.createSubjectLine());
     }
@@ -659,6 +663,7 @@ public class EmailServiceImpl implements EmailService {
      * via AWS.
      */
     @Override
+    @Transactional(readOnly=false)
     public SendRawEmailResult renderAndSendMessage(Email message) throws MessagingException, IOException {
         updateEmailSubject(message);
         renderAndUpdateEmailContent(message);
@@ -666,6 +671,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional(readOnly=false)
     public Email renderAndQueueMessage(Email message) {
         updateEmailSubject(message);
         renderAndUpdateEmailContent(message);
@@ -674,12 +680,14 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional(readOnly=false)
     public SendRawEmailResult sendAwsHtmlMessage(Email message) throws MessagingException, IOException {
         logger.debug("Sending Multi-part email via AWS", message.getTo());
         return awsEmailService.sendMultiPartMessage(message);
     }
 
     @Override
+    @Transactional(readOnly=false)
     public void markMessageAsBounced(String messageGuid, String errorMessage) {
         List<Email> emails = emailDao.findEmailByGuid(messageGuid);
         logger.debug("Found {} emails", emails.size());
@@ -689,35 +697,23 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional(readOnly=false)
     public void markMessageAsBounced(Email email, String errorMessage) {
         logger.debug("Marking email {} as bounced", email);
         email.setStatus(Status.BOUNCED);
         email.setErrorMessage(errorMessage);
         genericDao.saveOrUpdate(email);
     }
-
-    public AwsEmailSender getAwsEmailService() {
-        return awsEmailService;
-    }
-
+    
     public void setAwsEmailService(AwsEmailSender awsEmailService) {
         this.awsEmailService = awsEmailService;
-    }
-
-    public EmailStatisticsHelper getEmailStatsHelper() {
-        return emailStatsHelper;
     }
 
     public void setEmailStatsHelper(EmailStatisticsHelper emailStatsHelper) {
         this.emailStatsHelper = emailStatsHelper;
     }
 
-    public StatsChartGenerator getChartGenerator() {
-        return chartGenerator;
-    }
-
     public void setChartGenerator(StatsChartGenerator chartGenerator) {
         this.chartGenerator = chartGenerator;
     }
-
 }

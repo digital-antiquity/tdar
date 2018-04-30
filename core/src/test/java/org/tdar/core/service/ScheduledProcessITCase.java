@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
@@ -69,6 +70,9 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
     @Autowired
     // private ScheduledProcessService scheduledProcessService;
     private static final int MOCK_NUMBER_OF_IDS = 2000;
+
+    @Autowired
+    private AwsEmailSender awsEmailService;
 
     private class MockScheduledProcess extends AbstractScheduledBatchProcess<Dataset> {
 
@@ -248,7 +252,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
         scheduledProcessService.runNextScheduledProcessesInQueue();
         scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
-        List<Email> messages = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages();
+        List<Email> messages = ((MockAwsEmailSenderServiceImpl) awsEmailService).getMessages();
         logger.debug("Messages are {}", messages);
         Email received = messages.get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
@@ -345,6 +349,50 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase implemen
                 rcn.setStatus(Status.DELETED);
                 genericService.saveOrUpdate(rcn);
                 genericService.saveOrUpdate(rce);
+                return null;
+            }
+        });
+    }
+
+    
+
+    @Test
+    @Rollback(false)
+    public void testDailyTimedAccessRevokingProcessForResource() {
+        Dataset dataset = createAndSaveNewDataset();
+        Date expires = DateTime.now().minusDays(2).toDate();
+        TdarUser user = createAndSaveNewUser();
+        AuthorizedUser authorizedUser = new AuthorizedUser(getAdminUser(), user, Permissions.VIEW_ALL);
+        authorizedUser.setDateExpires(expires);
+        dataset.getAuthorizedUsers().add(authorizedUser);
+        genericService.saveOrUpdate(dataset);
+        genericService.saveOrUpdate(authorizedUser);
+        final Long eid = dataset.getId();
+        Long userId = user.getId();
+        user = null;
+        // genericService.saveOrUpdate(e)
+        // dataset.getResourceCollections().add(collection);
+        authorizedUser = null;
+        final int aus = dataset.getAuthorizedUsers().size();
+        dataset = null;
+        setVerifyTransactionCallback(new TransactionCallback<Image>() {
+            @Override
+            public Image doInTransaction(TransactionStatus status) {
+                scheduledProcessService.queue(DailyTimedAccessRevokingProcess.class);
+                scheduledProcessService.runNextScheduledProcessesInQueue();
+                // dtarp.execute();
+                // dtarp.cleanup();
+                Dataset ds = genericService.find(Dataset.class, eid);
+                logger.debug("{}", ds);
+                logger.debug("au: {}", ds.getAuthorizedUsers());
+//                assertEquals(aus, ds.getAuthorizedUsers().size());
+                for (AuthorizedUser au : ds.getAuthorizedUsers()) {
+                    assertNotEquals(userId, au.getUser().getId());
+                }
+                assertEquals(aus - 1, ds.getAuthorizedUsers().size());
+                ds.setStatus(Status.DELETED);
+                genericService.saveOrUpdate(ds);
+                genericService.delete(genericService.find(TdarUser.class, userId));
                 return null;
             }
         });

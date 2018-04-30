@@ -118,8 +118,39 @@ public class ResourceSearchSortITCase extends AbstractResourceSearchITCase {
         }
         reindex();
 
-        setSortThenCheckFirstResult("sorting by datecreated asc", SortOption.DATE, p.getId(), alphaId);
-        setSortThenCheckFirstResult("sorting by datecreated desc", SortOption.DATE_REVERSE, p.getId(), omegaId);
+        setSortThenCheckFirstResult("sorting by date asc", SortOption.DATE, p.getId(), alphaId);
+        setSortThenCheckFirstResult("sorting by date desc", SortOption.DATE_REVERSE, p.getId(), omegaId);
+    }
+
+
+    @Test
+    @Rollback
+    public void testSortFieldDateCreated() throws ParseException, SearchException, SearchIndexException, IOException {
+        Long alphaId = -1L;
+        Long omegaId = -1L;
+        Project p = new Project();
+        p.setTitle("test project");
+        p.setDescription("test description");
+        p.markUpdated(getUser());
+        List<Integer> dateList = Arrays.asList(new Integer[] { 1, 2, 3, 4, 5, 19, 39 });
+        genericService.save(p);
+        for (Integer date : dateList) {
+            Document doc = new Document();
+            doc.markUpdated(getUser());
+            doc.setDate(date);
+            doc.setTitle("hello" + date);
+            doc.setDescription(doc.getTitle());
+            doc.setProject(p);
+            genericService.save(doc);
+            if (alphaId == -1) {
+                logger.debug("setting id for doc:{}", doc.getId());
+                alphaId = doc.getId();
+            }
+            omegaId = doc.getId();
+        }
+        reindex();
+
+        setSortThenCheckFirstResult("sorting by date asc", SortOption.DATE_CREATED, p.getId(), alphaId);
     }
 
 }

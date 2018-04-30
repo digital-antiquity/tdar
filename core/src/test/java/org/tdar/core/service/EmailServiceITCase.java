@@ -19,6 +19,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -34,6 +35,7 @@ import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
+import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.utils.EmailRawMessageHelper;
 import org.tdar.utils.MessageHelper;
@@ -42,6 +44,8 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {
 
+    @Autowired
+    private AwsEmailSender awsEmailService;
     
     @Test
     public void testEnumLabelsAndLocalesExist(){
@@ -61,7 +65,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testUsingMockAwsObject() {
-        assertTrue("The object is an AWS mock", emailService.getAwsEmailService() instanceof MockAwsEmailSenderServiceImpl);
+        assertTrue("The object is an AWS mock", awsEmailService instanceof MockAwsEmailSenderServiceImpl);
     }
 
     @Test
@@ -219,7 +223,7 @@ public class EmailServiceITCase extends AbstractIntegrationTestCase {
         email.setSubject("test");
         emailService.queueWithFreemarkerTemplate("test-email.ftl", map, email);
         sendEmailProcess.execute();
-        assertTrue("expecting a mail in in the inbox", ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().size() > 0);
+        assertTrue("expecting a mail in in the inbox", ((MockAwsEmailSenderServiceImpl) awsEmailService).getMessages().size() > 0);
     }
 
     @Test

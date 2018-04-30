@@ -32,8 +32,8 @@ public class SendEmailProcess extends AbstractScheduledBatchProcess<Email> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private AwsEmailSender awsEmailService;
+//    @Autowired
+//    private AwsEmailSender awsEmailService;
 
     @Autowired
     @Qualifier("genericDao")

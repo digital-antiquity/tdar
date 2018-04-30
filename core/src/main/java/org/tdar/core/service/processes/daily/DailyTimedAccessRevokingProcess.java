@@ -25,6 +25,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
@@ -102,7 +104,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
         Collection<HasAuthorizedUsers> toProcess = resourceCollectionDao.findExpiringUsers(now.toDate());
         logger.debug("{}", toProcess);
         for (HasAuthorizedUsers persistable : toProcess) {
-            String name = getCollectionName(persistable);
+            String name = getName(persistable);
             List<AuthorizedUser> toRemove = new ArrayList<>();
             StringBuilder sb = new StringBuilder();
             evaluateAuthorizedUsersForCollection(persistable, now, name, toRemove, sb);
@@ -111,15 +113,23 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
                 persistable.getAuthorizedUsers().removeAll(toRemove);
 
                 genericDao.saveOrUpdate(persistable);
-                genericDao.delete(persistable);
+//                genericDao.delete(persistable);
                 TdarUser user = genericDao.find(TdarUser.class, TdarConfiguration.getInstance().getAdminUserId());
-                CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), (ResourceCollection) persistable, user, RevisionLogType.EDIT);
-                crl.setResourceCollection((ResourceCollection) persistable);
-                genericDao.saveOrUpdate(crl);
+                if (persistable instanceof ResourceCollection) {
+                    CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), (ResourceCollection) persistable, user, RevisionLogType.EDIT);
+                    crl.setResourceCollection((ResourceCollection) persistable);
+                    genericDao.saveOrUpdate(crl);
+                }
+                if (persistable instanceof Resource) {
+                    ResourceRevisionLog crl = new ResourceRevisionLog(sb.toString(), (Resource) persistable, user, RevisionLogType.EDIT);
+                    crl.setResource((Resource) persistable);
+                    genericDao.saveOrUpdate(crl);
+                }
                 logger.debug("result: {}", persistable.getAuthorizedUsers());
                 publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
             }
         }
+        sendNotifications();
     }
 
     private void evaluateAuthorizedUsersForCollection(HasAuthorizedUsers persistable, DateTime now, String name, List<AuthorizedUser> toRemove,
@@ -141,7 +151,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
         }
     }
 
-    private String getCollectionName(HasAuthorizedUsers persistable) {
+    private String getName(HasAuthorizedUsers persistable) {
         String name = "No name";
         if (persistable instanceof HasName) {
             name = String.format("%s (%s)", ((HasName) persistable).getName(), persistable.getId());

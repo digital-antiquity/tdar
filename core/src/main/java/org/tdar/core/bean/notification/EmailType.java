@@ -3,7 +3,6 @@ package org.tdar.core.bean.notification;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
@@ -30,6 +29,7 @@ import org.tdar.core.bean.notification.emails.MonthlyUserStatisticsMessage;
 import org.tdar.core.bean.notification.emails.NewUserWelcomeMessage;
 import org.tdar.core.bean.notification.emails.OverdrawnNotification;
 import org.tdar.core.bean.notification.emails.RequestAccessMessage;
+import org.tdar.core.bean.notification.emails.ResourceExportRequestMessage;
 import org.tdar.core.bean.notification.emails.TestAwsMessage;
 import org.tdar.core.bean.notification.emails.TransactionCompleteMessage;
 import org.tdar.utils.MessageHelper;
@@ -50,7 +50,7 @@ public enum EmailType implements Localizable, HasLabel {
     PERMISSION_REQUEST_CUSTOM("email-form/custom-accept.ftl", "no-reply@tdar.org", AccessRequestCustomMessage.class),
 
     OVERDRAWN_NOTIFICATION("overdrawn-user.ftl", null, OverdrawnNotification.class),
-    RESOURCE_EXPORT("resource-export-email.ftl"),
+    RESOURCE_EXPORT("resource-export-email.ftl", null, ResourceExportRequestMessage.class),
 
     ADMIN_NOTIFICATION("auth-report.ftl", null, AdminNotificationMessage.class),
     ADMIN_OVERDRAWN_NOTIFICATION("overdrawn-admin.ftl", null, AdminOverdrawnNotification.class),
@@ -86,15 +86,6 @@ public enum EmailType implements Localizable, HasLabel {
 
     private Class<? extends Email> emailClass;
 
-    private EmailType(String template) {
-        this.templateLocation = template;
-    }
-
-    private EmailType(String template, String fromAddress) {
-        this(template);
-        this.setFromAddress(fromAddress);
-    }
-
     /**
      * If a class is specified, then when the email is rendered, it will call the createSubject() method for that subclass.
      * The email discriminator will also be stored in the database.
@@ -103,7 +94,8 @@ public enum EmailType implements Localizable, HasLabel {
      * @param emailClass
      */
     private EmailType(String template, String fromAddress, Class<? extends Email> emailClass) {
-        this(template, fromAddress);
+        this.templateLocation = template;
+        this.fromAddress = fromAddress;
         this.setEmailClass(emailClass);
     }
 

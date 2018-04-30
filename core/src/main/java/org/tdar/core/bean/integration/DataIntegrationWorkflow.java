@@ -218,4 +218,7 @@ public class DataIntegrationWorkflow extends AbstractPersistable
         this.editable = editable;
     }
 
+    public boolean isIntegration() {
+        return true;
+    }
 }

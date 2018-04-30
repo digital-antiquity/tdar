@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.email.MockAwsEmailSenderServiceImpl;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DoiProcess;
@@ -29,6 +30,9 @@ import org.tdar.utils.Pair;
  * @author Adam Brin
  */
 public class DOIServiceITCase extends AbstractIntegrationTestCase {
+
+    @Autowired
+    private AwsEmailSender awsEmailService;
 
     @Autowired
     private ResourceService resourceService;
@@ -103,7 +107,7 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(updated_.size() > 0);
         assertTrue(deleted_.size() > 0);
         sendEmailProcess.execute();
-        Email received = ((MockAwsEmailSenderServiceImpl) emailService.getAwsEmailService()).getMessages().get(0);
+        Email received = ((MockAwsEmailSenderServiceImpl) awsEmailService).getMessages().get(0);
         assertTrue(received.getSubject().contains(DoiProcess.SUBJECT));
         assertTrue(received.getMessage().contains("DOI Daily"));
         assertEquals(received.getFrom(), emailService.getFromEmail());

@@ -18,7 +18,7 @@
                  <#list emailTypes>
                  	<#items as type_>
                  		<#assign label = type_.label />
-                 		<#if type_ == 'CUSTOM'>
+                 		<#if type_ == 'CUSTOM_CONTACT'>
                  			<#assign label = custom.name />
                  		</#if>
                  		<label class="radio inline" for="metadataForm_type${type_}">

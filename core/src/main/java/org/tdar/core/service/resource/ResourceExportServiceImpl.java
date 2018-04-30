@@ -302,6 +302,7 @@ public class ResourceExportServiceImpl implements ResourceExportService {
     public void sendEmail(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
         String url = String.format("%s/export/download?filename=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
         Email email = emailService.createMessage(EmailType.RESOURCE_EXPORT, authenticatedUser.getEmail());
+        emailService.updateEmailSubject(email);
         email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
         email.addData("resources", resourceExportProxy);
         email.addData("file", resourceExportProxy.getFilename());

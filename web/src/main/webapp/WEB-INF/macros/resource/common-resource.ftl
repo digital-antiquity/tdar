@@ -66,11 +66,12 @@ Common macros used in multiple contexts
     <#macro cartouche persistable useDocumentType=false>
         <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
     <span class="cartouche">
+    <#local type=""/>
     <#if persistable.resourceType?has_content>
         <#local type>svg-icons_icon-${persistable.resourceType?lower_case}</#local>
-    <#elseif persistable.topLevel?has_content><#t>
+    <#elseif persistable.collection?has_content><#t>
         <#local type>svg-icons_collection</#local>
-    <#else><#t>
+    <#elseif persistable.integration?has_content><#t>
         <#local type>svg-icons_integration</#local>
     </#if>
     <svg class="svgicon white svg-cartouche"><use xlink:href="/images/svg/symbol-defs.svg#${type}"></use></svg>
@@ -88,8 +89,8 @@ Common macros used in multiple contexts
     <#macro upperPersistableTypeLabel persistable>
         <#if persistable.resourceType?has_content><#t>
         ${persistable.resourceType?replace("_", " ")?upper_case} <#t>
-        <#elseif persistable.topLevel?has_content><#t>
-        COLLECTION <#else> <#t>
+        <#elseif persistable.collection?has_content><#t>
+        COLLECTION <#elseif persistable.integration?has_content> <#t>
         INTEGRATION<#t>
         </#if>
     </#macro>
