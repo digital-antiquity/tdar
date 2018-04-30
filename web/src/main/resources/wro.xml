@@ -117,7 +117,7 @@
         <css>/components/selectize/dist/css/selectize.css</css>
 
 
-        <js>/components/vue/dist/vue.js</js>
+        <js>/components/vue/dist/vue.min.js</js>
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
         <js>/js/vue/edit-collection.js</js>
