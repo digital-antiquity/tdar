@@ -40,7 +40,8 @@ public enum Permissions implements HasLabel, Localizable {
             ResourceCollection.class),
     ADMINISTER_COLLECTION(5000,
             ResourceCollection.class),
-    EDIT_ACCOUNT(10000, BillingAccount.class),
+    ADMINISTER_ACCOUNT(20000, BillingAccount.class),
+    USE_ACCOUNT(10000, BillingAccount.class),
     EDIT_INTEGRATION(2000, DataIntegrationWorkflow.class);
 
     private Integer effectivePermissions;
@@ -112,7 +113,7 @@ public enum Permissions implements HasLabel, Localizable {
         permissions.remove(Permissions.ADMINISTER_COLLECTION);
         permissions.remove(Permissions.ADD_TO_COLLECTION);
         permissions.remove(Permissions.REMOVE_FROM_COLLECTION);
-        permissions.remove(Permissions.EDIT_ACCOUNT);
+        permissions.remove(Permissions.USE_ACCOUNT);
         permissions.remove(Permissions.EDIT_INTEGRATION);
         return permissions;
     }
@@ -147,7 +148,7 @@ public enum Permissions implements HasLabel, Localizable {
 
     public static Permissions getEditPermissionFor(HasAuthorizedUsers account) {
         if (account instanceof BillingAccount) {
-            return Permissions.EDIT_ACCOUNT;
+            return Permissions.ADMINISTER_ACCOUNT;
         }
         if (account instanceof DataIntegrationWorkflow) {
             return Permissions.EDIT_INTEGRATION;

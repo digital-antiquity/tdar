@@ -1496,7 +1496,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <#if user??>
                         <div class="controls-row repeat-row" id="userrow_${user_index}_">
                             <div class="span6">
-                                <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false/>
+                                <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false includeRights=true />
                             </div>
                             <div class="span1">
                                 <@nav.clearDeleteButton id="user${user_index}"  />

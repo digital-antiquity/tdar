@@ -50,7 +50,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
         accountWithPermissions.setOwner(p2);
         accountWithPermissions.markUpdated(getUser());
         accountWithPermissions.setStatus(Status.ACTIVE);
-        accountWithPermissions.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), p, Permissions.EDIT_ACCOUNT));
+        accountWithPermissions.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), p, Permissions.USE_ACCOUNT));
         genericService.saveOrUpdate(accountWithPermissions);
 
         List<BillingAccount> accountsForUser = accountService.listAvailableAccountsForUser(p);
@@ -70,7 +70,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
         group.markUpdated(getBasicUser());
         BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
         BillingAccount accountForPerson2 = setupAccountForPerson(createAndSaveNewUser());
-        accountForPerson2.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.EDIT_ACCOUNT));
+        accountForPerson2.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.USE_ACCOUNT));
         group.getAccounts().add(accountForPerson);
         group.getAccounts().add(accountForPerson2);
         genericService.saveOrUpdate(group);
@@ -152,7 +152,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
         group.markUpdated(getBasicUser());
         BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
         BillingAccount accountForPerson2 = setupAccountForPerson(getBasicUser());
-        accountForPerson2.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.EDIT_ACCOUNT));
+        accountForPerson2.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), getBasicUser(), Permissions.USE_ACCOUNT));
         TdarUser person = createAndSaveNewUser();
         group.getAuthorizedMembers().add(person);
         group.getAccounts().add(accountForPerson);
