@@ -54,8 +54,12 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             } else {
                 fileContainer.status = 'error';
             }
-            fileContainer.xhr = undefined;
-            fileContainer.error = file.error;
+            console.log(file,fileContainer);
+            Vue.set(fileContainer, "dateCreated", file.dateCreated);
+            Vue.set(fileContainer , "createdByName" , file.createdByName);
+            Vue.set(fileContainer, "uploaderInitials", file.uploaderInitials);
+            Vue.set(fileContainer, "xhr" , undefined);
+            Vue.set(fileContainer, "error" ,file.error);
         });
         console.log(data.status, data.textStatus);
 

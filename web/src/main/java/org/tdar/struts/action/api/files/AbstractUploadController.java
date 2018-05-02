@@ -3,6 +3,7 @@ package org.tdar.struts.action.api.files;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -159,6 +160,11 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
                 file.put("type", getUploadFileContentType().get(i));
             }
             file.put("delete_type", "DELETE");
+            file.put("dateCreated", new Date());
+            file.put("uploaderName",getAuthenticatedUser().getProperName());
+            file.put("uploaderId",getAuthenticatedUser().getId());
+            file.put("uploaderInitials",getAuthenticatedUser().getInitials());
+            file.put("accountId", accountId);
         }
         return result;
     }

@@ -216,7 +216,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             name : "accountId",
                             value : $("#accountId").val()
                         });
-                        console.log(data);
+//                        console.log(data);
                         return data;
                     },
                     progressall : function(e, data) {
