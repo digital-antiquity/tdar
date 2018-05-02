@@ -158,6 +158,7 @@ public class Resource implements Persistable,
         DeHydratable, XmlLoggable, Slugable, Editable, HasAuthorizedUsers {
 
     public static final String RESOURCE_COLLECTIONS = "resourceCollections";
+    public static final String MANAGED_RESOURCE_COLLECTIONS = "managedResourceCollections";
 
     private static final long serialVersionUID = -230400285817185637L;
 
@@ -182,6 +183,7 @@ public class Resource implements Persistable,
     @Transient
     private transient Long transientAccessCount;
     protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
+
 
     public Resource() {
     }
