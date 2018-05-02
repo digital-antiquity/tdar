@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.List;
 
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -87,7 +88,7 @@ public interface PersonalFilestoreService {
      */
     void store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir) throws FileUploadException;
 
-    TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser);
+    TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) throws FileAlreadyExistsException;
 
     List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser);
 

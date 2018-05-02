@@ -122,6 +122,13 @@ public abstract class AbstractFile extends AbstractPersistable {
         return null;
     }
 
+    public String getUploaderInitials() {
+        if (uploader != null) {
+            return uploader.getInitials();
+        }
+        return null;
+    }
+
     public String getName() {
         return this.filename;
     }

@@ -359,4 +359,12 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
         }
     }
 
+
+    public String getInitials() {
+        String inits = "";
+        for (String s : StringUtils.split(getProperName(), " ")) {
+            inits += s.substring(0,1);
+        }
+        return inits.toUpperCase();
+    }
 }

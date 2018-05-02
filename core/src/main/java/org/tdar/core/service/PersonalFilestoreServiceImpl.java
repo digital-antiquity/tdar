@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -168,7 +170,13 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = false)
-    public TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) {
+    public TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) throws FileAlreadyExistsException {
+        List<AbstractFile> listFiles = listFiles(parent, account, null, authenticatedUser);
+        for (AbstractFile f : listFiles) {
+            if (f instanceof TdarDir && StringUtils.equalsIgnoreCase(f.getName(), name)) {
+                throw new FileAlreadyExistsException(name);
+            }
+        }
         TdarDir dir = new TdarDir();
         dir.setAccount(account);
         dir.setFilename(name);

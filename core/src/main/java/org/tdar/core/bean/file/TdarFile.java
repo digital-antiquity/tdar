@@ -175,9 +175,23 @@ public class TdarFile extends AbstractFile {
         return null;
     }
 
+    public String getReviewedByInitials() {
+        if (reviewedBy != null) {
+            return reviewedBy.getInitials();
+        }
+        return null;
+    }
+
     public String getCuratedByName() {
         if (curatedBy != null) {
             return curatedBy.getProperName();
+        }
+        return null;
+    }
+
+    public String getCuratedByInitials() {
+        if (curatedBy != null) {
+            return curatedBy.getInitials();
         }
         return null;
     }

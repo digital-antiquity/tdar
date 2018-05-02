@@ -467,7 +467,7 @@ Auth Info
          };
         var form = $(props.formSelector)[0];
         TDAR.common.initEditPage(form, props);
-        TDAR.vuejs.uploadWidget.main();            
+        TDAR.vuejs.uploadWidget.main();
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
         </#if>
