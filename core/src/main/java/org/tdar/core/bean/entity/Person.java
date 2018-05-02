@@ -360,8 +360,12 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     }
 
 
+    @Transient
     public String getInitials() {
         String inits = "";
+        if (StringUtils.isBlank(getProperName() )) {
+            return null;
+        }
         for (String s : StringUtils.split(getProperName(), " ")) {
             inits += s.substring(0,1);
         }

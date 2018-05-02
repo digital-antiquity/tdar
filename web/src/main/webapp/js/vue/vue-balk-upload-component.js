@@ -48,7 +48,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 moveUI : function() {
                 },
-                deleteFile(){
+                deleteFile: function(){
+                    this.$parent.deleteFile(file);
                 }
             },
             computed: {
@@ -60,7 +61,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 }
             }
         });
-        console.log("a");
+
         var app = new Vue({
             el : appId,
             data : {
@@ -95,6 +96,18 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                     Vue.set(this, "parentId", parentId);
                     Vue.set(this, "path", path);
+                },
+                deleteFile: function(file) {
+                    var id = file.id;
+                    var _file= file;
+                    $.post("/api/file/deleteFile", {"id": id}).done(function(files){
+                        console.log(file);
+                        var index = $.inArray(file, this.files);
+                        if (index != -1) {
+                            this.files.splice(index, 1);
+                        }
+                    });
+
                 },
                 mkdir: function() {
                   var dir = this.dir;
