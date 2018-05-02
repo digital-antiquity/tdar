@@ -681,7 +681,7 @@
                          </execution>
                        </executions>
                      </plugin>
-                    <plugin>
+<!--                    <plugin>
                         <groupId>ro.isdc.wro4j</groupId>
                         <artifactId>wro4j-maven-plugin</artifactId>
                         <version>${wro4j.version}</version>
@@ -704,9 +704,9 @@
                         </configuration>
                     </plugin>
                     <plugin>
-                        <!-- this is to put an extra copy where other things 
+                        <!- this is to put an extra copy where other things 
                             like the tDAR website can deal with it. JS doesn't change that often so, 
-                            it should be okay -->
+                            it should be okay ->
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${antrun.version}</version>
                         <executions>
@@ -728,7 +728,7 @@
                             </execution>
                         </executions>
                     </plugin>
-
+-->
                 </plugins>
             </build>
         </profile>
