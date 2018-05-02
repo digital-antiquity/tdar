@@ -1,8 +1,6 @@
 <#import "common.ftl" as common>
 <#macro scripts combine=false>
     <script type="text/javascript" src="/components/axios/dist/axios.min.js"></script>
-    <script type="text/javascript" src="/components/bundle.js"></script>
-    
     <#if combine>
     <script type="text/javascript" src="${staticHost}${wroTempDirName}/${wroProfile}.js"></script>
     <#else>
@@ -10,6 +8,8 @@
         <script type="text/javascript" src="${staticHost}${src}?buildId=${common.tdarBuildId}"></script>
         </#list>
     </#if>
+    
+        <script type="text/javascript" src="/components/bundle.js"></script>
 </#macro>
 
 <#macro outdatedBrowserWarning>
