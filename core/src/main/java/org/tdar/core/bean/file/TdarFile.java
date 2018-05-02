@@ -46,16 +46,31 @@ public class TdarFile extends AbstractFile {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateReviewed;
 
-    @Column(name="requires_ocr", nullable=true)
+    @Column(name = "requires_ocr", nullable = true)
     private Boolean requiresOcr;
 
-    @Column(name="curate", nullable=true)
+    @Column(name = "curate", nullable = true)
     private Boolean curated = true;
-    
+
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "note")
     private String note;
-    
-    
+
+    @Column(name = "date_student_reviewed", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateStudentReviewed;
+
+    @Column(name = "date_external_reviewed", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateExternalReviewed;
+
+    @ManyToOne
+    @JoinColumn(name = "student_reviewer_id")
+    private TdarUser studentReviewedBy;
+
+    @ManyToOne
+    @JoinColumn(name = "external_reviewer_id")
+    private TdarUser externalReviewedBy;
+
     @ManyToOne
     @JoinColumn(name = "reviewer_id")
     private TdarUser reviewedBy;
@@ -121,7 +136,7 @@ public class TdarFile extends AbstractFile {
     public InformationResource getResource() {
         return resource;
     }
-    
+
     public String getResourceUrl() {
         if (resource != null) {
             return resource.getAbsoluteUrl();
@@ -182,6 +197,34 @@ public class TdarFile extends AbstractFile {
         return null;
     }
 
+    public String getStudentReviewedByName() {
+        if (studentReviewedBy != null) {
+            return studentReviewedBy.getProperName();
+        }
+        return null;
+    }
+
+    public String getExternalReviewedByName() {
+        if (externalReviewedBy != null) {
+            return externalReviewedBy.getProperName();
+        }
+        return null;
+    }
+
+    public String getStudentReviewedByInitials() {
+        if (studentReviewedBy != null) {
+            return studentReviewedBy.getInitials();
+        }
+        return null;
+    }
+
+    public String getExternalReviewedByInitials() {
+        if (externalReviewedBy != null) {
+            return externalReviewedBy.getInitials();
+        }
+        return null;
+    }
+
     public String getCuratedByName() {
         if (curatedBy != null) {
             return curatedBy.getProperName();
@@ -196,7 +239,6 @@ public class TdarFile extends AbstractFile {
         return null;
     }
 
-    
     @XmlElement(name = "partRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarFile getPartOf() {
@@ -230,5 +272,21 @@ public class TdarFile extends AbstractFile {
     public void setCurated(Boolean curated) {
         this.curated = curated;
     }
-    
+
+    public TdarUser getExternalReviewedBy() {
+        return externalReviewedBy;
+    }
+
+    public void setExternalReviewedBy(TdarUser externalReviewedBy) {
+        this.externalReviewedBy = externalReviewedBy;
+    }
+
+    public TdarUser getStudentReviewedBy() {
+        return studentReviewedBy;
+    }
+
+    public void setStudentReviewedBy(TdarUser studentReviewedBy) {
+        this.studentReviewedBy = studentReviewedBy;
+    }
+
 }

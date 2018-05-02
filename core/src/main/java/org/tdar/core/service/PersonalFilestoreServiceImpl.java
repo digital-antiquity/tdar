@@ -97,6 +97,16 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             throws FileUploadException {
         PersonalFilestore filestore = getPersonalFilestore(ticket);
         try {
+            // if we're not unfiled then require uniqueness
+            if (!dir.getName().equals(TdarDir.UNFILED)) {
+                List<AbstractFile> listFiles = listFiles(dir, account, null, user);
+                for (AbstractFile f : listFiles) {
+                    if (StringUtils.equalsIgnoreCase(f.getName(), fileName)) {
+                        throw new FileAlreadyExistsException(fileName);
+                    }
+                }
+                
+            }
             PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
             TdarFile tdarFile = new TdarFile();
             tdarFile.setInternalName(store.getFile().getName());
