@@ -445,6 +445,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void prepare() throws TdarActionException {
         super.prepare();
         setTdarFiles(getGenericService().findAll(TdarFile.class, fileIds));
+        for (TdarFile file : getTdarFiles()) {
+            if (file.getAccount() != null) {
+                setAccountId(file.getAccount().getId());
+            }
+        }
         if (getPersistable() == null)
             return;
     }
