@@ -69,7 +69,7 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
             setContentType("text/html");
         }
 
-        setInputStream(new ByteArrayInputStream(email.getMessage().replace("<img src=\"cid:logo\" />", "<img src='/images/tdar-email-logo.png'>").getBytes()));
+        setInputStream(new ByteArrayInputStream(email.getMessage().replace("<img src=\"cid:logo\" />", "<img src='/images/tdar-email-logo.png'>").replace("<a ", "<a target='_top' ").getBytes()));
         return SUCCESS;
     }
 
