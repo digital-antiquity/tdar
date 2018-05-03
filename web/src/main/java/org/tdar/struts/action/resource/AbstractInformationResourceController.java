@@ -173,6 +173,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(),
                 isEditor());
+        fsw.setAccountId(getAccountId());
         resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
         setHasFileProxyChanges(fsw.isFileProxyChanges());
         // super.save(document);

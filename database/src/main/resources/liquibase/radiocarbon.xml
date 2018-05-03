@@ -145,5 +145,35 @@
             baseColumnNames="commentor_id" baseTableName="file_comment"
             referencedColumnNames="id" />
     </changeSet>
+    <changeSet id="radiocarbon-file-first-10" author="abrin">
+        <addColumn tableName="files">
+            <column name="student_reviewer_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_student_reviewer"
+            referencedTableName="tdar_user"
+            baseColumnNames="student_reviewer_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="external_reviewer_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_external_reviewer"
+            referencedTableName="tdar_user"
+            baseColumnNames="external_reviewer_id" baseTableName="files"
+            referencedColumnNames="id" />
+            
+        <addColumn tableName="files">
+            <column name="date_student_reviewed" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="files">
+            <column name="date_external_reviewed" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+    </changeSet>
 
 </databaseChangeLog>

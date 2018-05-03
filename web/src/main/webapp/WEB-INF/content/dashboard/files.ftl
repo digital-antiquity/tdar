@@ -110,7 +110,8 @@
 <template id="file-entry-template">
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}}</td>
-    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> <span v-if="file.size != undefined ">{{file.name }}  </span> </td>
+    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
+    	 <span v-if="file.size != undefined "><a href="#">{{file.name }}</a>  </span> </td>
     <td>{{file.uploaderInitials}} {{formatDate(file.dateCreated)}}</td>
     <td>{{file.curatedByInitials}} {{formatDate(file.dateCurated)}} <i v-if="file.curatedByName == undefined && file.size != undefined" @click="markCurated()" class="icon-thumbs-up"></i></td>
     <td>{{file.reviewedByInitials}} {{formatDate(file.dateReviewed)}}<i v-if="file.reviewedByName == undefined && file.size != undefined && file.dateCurated != undefined" @click="markReviewed()" class="icon-thumbs-up"></i></td>
