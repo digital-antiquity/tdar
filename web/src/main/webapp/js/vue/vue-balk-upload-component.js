@@ -56,6 +56,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 fileLink : function() {
                     return "/document/add?fileIds=" + this.file.id; 
                 },
+                downloadUrl : function() {
+                    return "/files/download/" + this.file.id; 
+                },
                 rowId : function() {
                     return "files-row-" + this.index;
                 }

@@ -306,6 +306,11 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                                 value : _app.ticketId
                             });
                         }
+                        data.push({
+                            name : "unfiled",
+                            value : "true"
+                        });
+
                         console.log(data);
                         return data;
                     },

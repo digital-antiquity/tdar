@@ -111,6 +111,9 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
             }
         }
 
+//        if (PersistableUtils.isNullOrTransient(parentId )) {
+//            setUnfiled(true);
+//        }
         parent = filestoreService.findByParentId(parentId, isUnfiled(), getAuthenticatedUser());
 
         if (PersistableUtils.isNotNullOrTransient(accountId)) {

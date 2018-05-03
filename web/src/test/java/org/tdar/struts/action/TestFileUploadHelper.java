@@ -60,11 +60,12 @@ public interface TestFileUploadHelper {
         UploadAction controller = generateNewInitializedController(UploadAction.class);
         controller.setSessionData(getSessionData());
 //        controller.grabTicket();
-        controller = generateNewInitializedController(UploadAction.class);
+//        controller = generateNewInitializedController(UploadAction.class);
         controller.setUploadFile(Arrays.asList(new File(path_ + name_)));
         controller.setUploadFileFileName(Arrays.asList(name_));
 //        controller.setTicketId(ticketId);
         controller.setTicketRequested(true);
+        controller.setUnfiled(true);
         controller.prepare();
         controller.validate();
         
