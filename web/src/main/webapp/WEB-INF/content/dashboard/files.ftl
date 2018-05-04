@@ -37,28 +37,25 @@
     <th></th>
     <th>file</th>
     <th>upload</th>
-    <th>curate</th>
-    <th>review</th>
+    <th v-if="fullService">curate</th>
+    <th v-if="fullService && studentReviewed">student review</th>
+    <th v-if="fullService"><span v-if="studentReviewed">staff </span> review</th>
+    <th v-if="fullService && externalReviewed">external review</th>
     <th>status</th>
     <th colspan="2">actions</th>
  </tr>
 </thead>
 <tr>
- <td colspan="3"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after 1 month.</td>
+ <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after 1 month.</td>
 </tr>
-        <tbody v-for="(file,index) in files">
-            <tr v-if="index == 0 && parentId != undefined">
+        <tbody >
+	        <tr v-if="parentId != undefined">
             <td></td>
             <td> <span class="link" @click="cd()"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
-            <tr class="template-download fade existing-file in"
-                is="fileEntry" :index="index" :file="file" :editable="ableToUpload"></tr>
-        </tbody>
-        <tbody v-if="files.length == 0 && parentId != undefined">
-        <tr>
-            <td></td>
-            <td> <span class="link" @click="cd()"><i class="icon-folder-close"></i> .. </span>  </td>
-            </tr>
+            <tr class="template-download fade existing-file in" v-for="(file,index) in files"
+                is="fileEntry" :index="index" :file="file" :editable="ableToUpload" 
+                :fullservice="fullService" :studentreviewed="studentReviewed" :externalreviewed="externalReviewed"></tr>
         </tbody>
 </table>
 
@@ -113,9 +110,14 @@
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
     	 <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  </span> </td>
     <td>{{file.uploaderInitials}} {{formatDate(file.dateCreated)}}</td>
-    <td>{{file.curatedByInitials}} {{formatDate(file.dateCurated)}} <i v-if="file.curatedByName == undefined && file.size != undefined" @click="markCurated()" class="icon-thumbs-up"></i></td>
-    <td>{{file.reviewedByInitials}} {{formatDate(file.dateReviewed)}}<i v-if="file.reviewedByName == undefined && file.size != undefined && file.dateCurated != undefined" @click="markReviewed()" class="icon-thumbs-up"></i></td>
-    <td> </td>
+    <td v-if="fullservice">
+    {{file.curatedByInitials}} {{formatDate(file.dateCurated)}} <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
+    <i v-if="canCurate" @click="wontCurated()" class="icon-thumbs-down"></i>
+    </td>
+    <td v-if="fullservice && studentreviewed">{{file.studentReviewedByInitials}} {{formatDate(file.dateStudentReviewed)}}<i v-if="canStudentReview" @click="markStudentReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice">{{file.reviewedByInitials}} {{formatDate(file.dateReviewed)}}<i v-if="canReview" @click="markReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice && externalreviewed">{{file.externalReviewedByInitials}} {{formatDate(file.dateExternalReviewed)}}<i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
+    <td>  <input name="type" value="" v-model="file.note" /> </td>
     <td><a :href="file.resourceUrl">{{file.resourceId }}</a> 
     </td>
     <td>

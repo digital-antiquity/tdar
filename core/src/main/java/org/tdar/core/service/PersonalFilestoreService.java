@@ -9,6 +9,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.exception.FileUploadException;
@@ -100,9 +101,7 @@ public interface PersonalFilestoreService {
 
     void editMetadata(TdarFile file, String note, boolean needsOcr, boolean curate, TdarUser authenticatedUser);
 
-    void markCurated(List<TdarFile> files, TdarUser authenticatedUser);
-
-    void markReviewed(List<TdarFile> files, TdarUser user);
+    void mark(List<TdarFile> files, Mark mark, TdarUser authenticatedUser);
 
     void addComment(AbstractFile file, String comment, TdarUser authenticatedUser);
 

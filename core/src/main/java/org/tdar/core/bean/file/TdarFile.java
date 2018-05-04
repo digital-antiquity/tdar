@@ -289,4 +289,20 @@ public class TdarFile extends AbstractFile {
         this.studentReviewedBy = studentReviewedBy;
     }
 
+    public Date getDateStudentReviewed() {
+        return dateStudentReviewed;
+    }
+
+    public void setDateStudentReviewed(Date dateStudentReviewed) {
+        this.dateStudentReviewed = dateStudentReviewed;
+    }
+
+    public Date getDateExternalReviewed() {
+        return dateExternalReviewed;
+    }
+
+    public void setDateExternalReviewed(Date dateExternalReviewed) {
+        this.dateExternalReviewed = dateExternalReviewed;
+    }
+
 }

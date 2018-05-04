@@ -4,7 +4,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     var _init = function(appId) {
         Vue.component('fileEntry', {
             template : "#file-entry-template",
-            props : [ "file", "index", "editable" ],
+            props : [ "file", "index", "editable" , "studentreviewed", "externalreviewed", "fullservice"],
             data : function() {
                 return {
                     previousDeleteState : '',
@@ -16,27 +16,41 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 cd : function(file) {
                     this.$parent.cd(file);
                 },
-                markCurated: function() {
+                _mark: function(role) {
                     var id = this.file.id;
                     var _file= this.file;
-                    $.post("/api/file/markCurated", {"ids[0]": id}).done(function(files){
-                        var file= files[0];
-                        _file.dateCurated = file.dateCurated;
-                        _file.curatedByName= file.curatedByName;
+                    var ret = {};
+                    $.post("/api/file/mark", {"ids[0]": id,"role":role}).done(function(files){
+                        ret = files[0];
                     });
-
+                    return ret;
+                },
+                markStudentCurated: function() {
+                    var ret = this._mark("STUDENT_CURATED");
+                    Vue.set(file, "dateStudentReviewed", ret.dateReviewed);
+                    Vue.set(file, "studentReviewedByName", ret.studentReviewedByName);
+                    Vue.set(file, "studentReviewedByInitials", ret.studentReviewedByInitials);
                 },
                 markReviewed: function() {
-                    var id = this.file.id;
-                    var _file= this.file;
-
-                    $.post("/api/file/markReviewed", {"ids[0]": id}).done(function(files){
-                    var file= files[0];
-                    console.log(file);
-                        _file.dateReviewed = file.dateReviewed;
-                        _file.reviewedByName= file.reviewedByName;
-                    });
-
+                    var ret = this._mark("REVIEWED");
+                    Vue.set(file, "dateReviewed", ret.dateReviewed);
+                    Vue.set(file, "reviewedByName", ret.reviewedByName);
+                    Vue.set(file, "reviewedByInitials", ret.reviewedByInitials);
+                },
+                markCurated: function() {
+                    var ret = this._mark("CURATED");
+                    Vue.set(file, "dateCurated", ret.dateCurated);
+                    Vue.set(file, "curatedByName", ret.curatedByName);
+                    Vue.set(file, "curatedByInitials", ret.curatedByInitials);
+                },
+                wontCurate: function() {
+                    
+                },
+                markExternalReviewed: function() {
+                    var ret = this._mark("EXTERNAL_REVIEWED");
+                    Vue.set(file, "dateExternalReviewed", ret.dateExternalReviewed);
+                    Vue.set(file, "externalReviewedByName", ret.rxternalReviewedByName);
+                    Vue.set(file, "externalReviewedByInitials", ret.externalReviewedByInitials);
                 },
                 formatDate: function(date) {
                 if (date == undefined ) {
@@ -61,10 +75,54 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 rowId : function() {
                     return "files-row-" + this.index;
-                }
+                },
+                canStudentReview: function () {
+                    if (this.dateStudentReviewed != undefined) {
+                        return false;
+                    }
+
+                    if (this.studentReviewed && this.dateCurated != undefined) {
+                        return true;
+                    }
+                    return false;
+                },
+                canCurate: function () {
+                    if (this.dateCurated != undefined) {
+                        return false;
+                    }
+                    if (this.file.resourceId != undefined) {
+                        return true;
+                    }
+                    return false;
+                },
+                canReview: function () {
+                    if (this.dateReviewed != undefined) {
+                        return false;
+                    }
+                    if (this.studentReviewed && this.file.dateStudentReviewed != undefined || 
+                            this.studentReviewed == false && this.dateCurated != undefined) {
+                        return true;
+                    }
+                    return false;
+                },
+                canExternalReview: function () {
+                    if (this.dateExternalReviewed != undefined) {
+                        return false;
+                    }
+                    if (this.externalReviewed && this.file.dateReviewed != undefined) {
+                        return true;
+                    }
+                    return false;
+                },
+                
             }
         });
 
+        var config = {
+                fullService : true,
+                studentReviewed : false,
+                externalReviewed : true
+        };
         var app = new Vue({
             el : appId,
             data : {
@@ -73,6 +131,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 validFormats : ['doc','pdf','docx','png','tif','tiff','jpg','jpeg'],
                 ableToUpload : true,
                 parentId: undefined,
+                studentReviewed: config.studentReviewed,
+                fullService: config.fullService,
+                externalReviewed: config.externalReviewed,
                 files : [],
                 errors: [],
                 path : "" 
@@ -94,7 +155,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     $.get(this.listUrl, {"parentId": parentId, "accountId":accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
-                        console.log(msg);
                         Vue.set(_app,"files", msg);
                     });
                     Vue.set(this, "parentId", parentId);

@@ -19,6 +19,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.FileComment;
+import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.FileProcessingDao;
@@ -237,20 +238,26 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = false)
-    public void markCurated(List<TdarFile> files, TdarUser user) {
+    public void mark(List<TdarFile> files, Mark action, TdarUser user) {
         for (TdarFile file : files) {
-            file.setCuratedBy(user);
-            file.setDateCurated(new Date());
-            genericDao.saveOrUpdate(file);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public void markReviewed(List<TdarFile> files, TdarUser user) {
-        for (TdarFile file : files) {
-            file.setReviewedBy(user);
-            file.setDateReviewed(new Date());
+            switch (action) {
+                case CURATED:
+                    file.setCuratedBy(user);
+                    file.setDateCurated(new Date());
+                    break;
+                case EXTERNAL_REVIEWED:
+                    file.setExternalReviewedBy(user);
+                    file.setDateExternalReviewed(new Date());
+                    break;
+                case REVIEWED:
+                    file.setReviewedBy(user);
+                    file.setDateReviewed(new Date());
+                    break;
+                case STUDENT_REVIEWED:
+                    file.setStudentReviewedBy(user);
+                    file.setDateStudentReviewed(new Date());
+                    break;
+            }
             genericDao.saveOrUpdate(file);
         }
     }
