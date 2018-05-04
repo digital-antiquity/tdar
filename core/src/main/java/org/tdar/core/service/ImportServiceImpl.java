@@ -603,12 +603,12 @@ public class ImportServiceImpl implements ImportService {
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
             if (collection instanceof ResourceCollection) {
                 logger.debug("field:: {} , {}", fieldName, collection);
-                if (StringUtils.equals(Resource.RESOURCE_COLLECTIONS, fieldName)) {
+                if (StringUtils.equals(Resource.RESOURCE_COLLECTIONS, fieldName) || StringUtils.equals(Resource.MANAGED_RESOURCE_COLLECTIONS, fieldName)) {
                     resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getManagedResourceCollections()),
                             authenticatedUser, true,
                             ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection) collection, CollectionResourceSection.MANAGED);
                 } else {
-                    resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getManagedResourceCollections()),
+                    resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getUnmanagedResourceCollections()),
                             authenticatedUser, true,
                             ErrorHandling.VALIDATE_WITH_EXCEPTION, (ResourceCollection) collection, CollectionResourceSection.UNMANAGED);
 
