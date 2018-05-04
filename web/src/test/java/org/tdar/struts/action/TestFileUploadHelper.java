@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.pdfbox.pdmodel.encryption.PublicKeyProtectionPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FileProxy;
@@ -137,6 +138,7 @@ public interface TestFileUploadHelper {
             toReturn.getSecond().add(fileProxy);
         }
         uploadController.prepare();
+        uploadController.setUnfiled(true);
         uploadController.validate();
         assertEquals(Action.SUCCESS, uploadController.upload());
         List<PersonalFilestoreFile> files = getFilestoreService().retrieveAllPersonalFilestoreFiles(uploadController.getTicketId());

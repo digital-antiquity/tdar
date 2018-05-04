@@ -691,6 +691,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
             List<NameValuePair> parms = new ArrayList<NameValuePair>();
             parms.add(nameValuePair("ticketId", ticketId));
+            parms.add(nameValuePair("unfiled", "true"));
             File file = null;
             if (path != null) {
                 file = new File(path);
