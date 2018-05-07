@@ -43,12 +43,14 @@
         <!-- LICENSE: MIT -->
         <js>/includes/jquery.tabby-0.12.js</js>
         <!-- LICENSE:CC Attribution 3.0 Unported -->
+        <js>/js/latLongUtil-1.0.js</js>
         <js>/components/leaflet/dist/leaflet.js</js>
         <js>/components/leaflet-choropleth/dist/choropleth.js</js>
         
         <js>/components/es6-promise/es6-promise.js</js>
         <js>/components/es6-promise/es6-promise.auto.js</js>
         <!-- <js>/components/axios/dist/axios.js</js> -->
+        <js>/components/axios/dist/axios.min.js</js>
         <js>/components/qs/dist/qs.js</js>
         <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
         <js>/includes/Leaflet.Sleep.js</js>
@@ -84,11 +86,11 @@
 
 
         <js>/components/vue/dist/vue.min.js</js>
+        <js>/components/bundle.js</js>
         
 
     </group>
     <group name="ng-integrate">
-
         <css>/css/tdar-integration.css</css>
 
 <!--          <js minimize="false">https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js</js> -->

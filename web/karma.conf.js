@@ -35,8 +35,8 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                'node_modules/es6-promise/dist/es6-promise.js',
-                'node_modules/es6-promise/dist/es6-promise.auto.js',
+                'node_modules/es6-promise/es6-promise.js',
+                'node_modules/es6-promise/es6-promise.auto.js',
                 'node_modules/vue/dist/vue.js',
                 'node_modules/axios/dist/axios.js',
                 'node_modules/moxios/dist/moxios.js',

@@ -1,6 +1,5 @@
 <#import "common.ftl" as common>
 <#macro scripts combine=false>
-    <script type="text/javascript" src="/components/axios/dist/axios.min.js"></script>
     <#if combine>
     <script type="text/javascript" src="${staticHost}${wroTempDirName}/${wroProfile}.js"></script>
     <#else>

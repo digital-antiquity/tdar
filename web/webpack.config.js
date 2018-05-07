@@ -21,11 +21,26 @@ const nodeModules = Assets[1].map(asset => {
     });
     
 module.exports = {
-  entry: './src/main/webapp/js/index.js',
+  entry: {
+      bundle: './src/main/webapp/js/index.js',
+      angular : [ 
+         './src/main/webapp/js/data-integration/app',
+         './src/main/webapp/js/data-integration/ng-IntegrationController',
+         './src/main/webapp/js/data-integration/ng-IntegrationModel',
+         './src/main/webapp/js/data-integration/ng-IntegrationModalDialogController',
+         './src/main/webapp/js/data-integration/ng-IntegrationDataService',
+         './src/main/webapp/js/data-integration/ng-custom-directives',
+         './src/main/webapp/js/data-integration/ng-IntegrationCustomFilters',
+         './src/main/webapp/js/data-integration/ng-IntegrationValidationService',
+         './src/main/webapp/js/data-integration/ng-DatatableDirective'
+     ]
+  },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, './src/main/webapp/components')
   },
+  
+  
   optimization: {
       splitChunks: {
         cacheGroups: {

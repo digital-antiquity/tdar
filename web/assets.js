@@ -25,6 +25,7 @@ const CSS = [
 const MODULES  = [
 {name:'bootstrap-datepicker-eyecon',path:'./node_modules/bootstrap-datepicker-eyecon/'},
 {name:'c3',path:'./node_modules/c3'},
+{name:'jquery/dist',path:'./node_modules/jquery/dist'},
 {name:'jquery-file-upload',path:'./node_modules/jquery-file-upload/'},
 {name:'jquery.treeview',path:'./node_modules/jquery.treeview/'},
 {name:'leaflet-cluster/dist',path:'./node_modules/leaflet-cluster/dist'},
