@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.StatisticsService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -22,6 +24,9 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @HttpsOnly
+@Results(value= {
+        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
+})
 public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 7216945559477749480L;

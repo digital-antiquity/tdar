@@ -45,7 +45,11 @@ public class ScholarController extends AbstractLookupController<Resource> {
     })
     public String execute() throws SearchException, IOException {
         setRecordsPerPage(250);
+        try {
         setResults(resourceSearchService.findByTdarYear(year, this, this).getResults());
+        } catch (Throwable t) {
+            addActionErrorWithException(t.getMessage(), t);
+        }
         return SUCCESS;
     }
 
