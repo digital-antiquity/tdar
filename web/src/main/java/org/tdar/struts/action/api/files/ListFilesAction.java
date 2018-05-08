@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.dao.FileOrder;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.PersistableUtils;
@@ -27,7 +28,7 @@ public class ListFilesAction extends AbstractJsonApiAction {
     private Long accountId;
     private Long parentId;
     private String term;
-
+    private FileOrder sortBy;
     private TdarDir parent;
     private BillingAccount account;
 
@@ -83,6 +84,14 @@ public class ListFilesAction extends AbstractJsonApiAction {
 
     public void setAccount(BillingAccount account) {
         this.account = account;
+    }
+
+    public FileOrder getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(FileOrder sortBy) {
+        this.sortBy = sortBy;
     }
 
 }
