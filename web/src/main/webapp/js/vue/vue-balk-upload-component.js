@@ -2,6 +2,19 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     "use strict";
 
     var _init = function(appId) {
+        Vue.component("pentry", {
+            template:"#part-entry-template",
+            props: ['date','initials','name', 'url'],
+            data: function() {return {}},
+            methods: {
+                formatDate: function(date) {
+                    if (date == undefined ) {
+                    return "";
+                    }
+                      return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
+                    }
+            }
+        });
         Vue.component('fileEntry', {
             template : "#file-entry-template",
             props : [ "file", "index", "editable" , "studentreviewed", "externalreviewed", "fullservice"],
@@ -9,8 +22,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 return {
                     previousDeleteState : '',
                     xhr : undefined,
+                    initialNote: "",
                     previousReplaceState : ''
                 }
+            },
+            mounted: function() {
+                Vue.set(this, 'initialNote', this.file.note);
             },
             methods: {
                 cd : function(file) {
@@ -46,9 +63,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 _editMetadata: function (note, ocr, curate) {
                     var id = this.file.id;
                     var _file= this.file;
+                    var _app = this;
                     var ret = {};
                     $.post("/api/file/editMetadata", {"id": id,"note":note, "needOcr":ocr, "curate":curate}).done(function(file){
                         ret = file;
+                        Vue.set(_app,"initialNote",file.note);
                     });
 
                 },
@@ -64,12 +83,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     Vue.set(this.file, "externalReviewedByName", ret.rxternalReviewedByName);
                     Vue.set(this.file, "externalReviewedByInitials", ret.externalReviewedByInitials);
                 },
-                formatDate: function(date) {
-                if (date == undefined ) {
-                return "";
-                }
-                  return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
-                },
                 moveUI : function() {
                 },
                 deleteFile: function(){
@@ -77,6 +90,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 }
             },
             computed: {
+                noteChanged: function() {
+                  if (this.file.note == this.initialNote) {
+                      return false;
+                  }
+                  return true;
+                },
                 fileLink : function() {
                     return "/document/add?fileIds=" + this.file.id; 
                 },
