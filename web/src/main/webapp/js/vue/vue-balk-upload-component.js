@@ -27,38 +27,48 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 markStudentCurated: function() {
                     var ret = this._mark("STUDENT_CURATED");
-                    Vue.set(file, "dateStudentReviewed", ret.dateReviewed);
-                    Vue.set(file, "studentReviewedByName", ret.studentReviewedByName);
-                    Vue.set(file, "studentReviewedByInitials", ret.studentReviewedByInitials);
+                    Vue.set(this.file, "dateStudentReviewed", ret.dateReviewed);
+                    Vue.set(this.file, "studentReviewedByName", ret.studentReviewedByName);
+                    Vue.set(this.file, "studentReviewedByInitials", ret.studentReviewedByInitials);
                 },
                 markReviewed: function() {
                     var ret = this._mark("REVIEWED");
-                    Vue.set(file, "dateReviewed", ret.dateReviewed);
-                    Vue.set(file, "reviewedByName", ret.reviewedByName);
-                    Vue.set(file, "reviewedByInitials", ret.reviewedByInitials);
+                    Vue.set(this.file, "dateReviewed", ret.dateReviewed);
+                    Vue.set(this.file, "reviewedByName", ret.reviewedByName);
+                    Vue.set(this.file, "reviewedByInitials", ret.reviewedByInitials);
                 },
                 markCurated: function() {
                     var ret = this._mark("CURATED");
-                    Vue.set(file, "dateCurated", ret.dateCurated);
-                    Vue.set(file, "curatedByName", ret.curatedByName);
-                    Vue.set(file, "curatedByInitials", ret.curatedByInitials);
+                    Vue.set(this.file, "dateCurated", ret.dateCurated);
+                    Vue.set(this.file, "curatedByName", ret.curatedByName);
+                    Vue.set(this.file, "curatedByInitials", ret.curatedByInitials);
+                },
+                _editMetadata: function (note, ocr, curate) {
+                    var id = this.file.id;
+                    var _file= this.file;
+                    var ret = {};
+                    $.post("/api/file/editMetadata", {"id": id,"note":note, "needOcr":ocr, "curate":curate}).done(function(file){
+                        ret = file;
+                    });
+
                 },
                 wontCurate: function() {
-                    
+                    this._editMetadata(this.file.note, this.file.needsOcr, false);
+                },
+                updateNote: function() {
+                    this._editMetadata(this.file.note, this.file.needsOcr, this.file.curated);
                 },
                 markExternalReviewed: function() {
                     var ret = this._mark("EXTERNAL_REVIEWED");
-                    Vue.set(file, "dateExternalReviewed", ret.dateExternalReviewed);
-                    Vue.set(file, "externalReviewedByName", ret.rxternalReviewedByName);
-                    Vue.set(file, "externalReviewedByInitials", ret.externalReviewedByInitials);
+                    Vue.set(this.file, "dateExternalReviewed", ret.dateExternalReviewed);
+                    Vue.set(this.file, "externalReviewedByName", ret.rxternalReviewedByName);
+                    Vue.set(this.file, "externalReviewedByInitials", ret.externalReviewedByInitials);
                 },
                 formatDate: function(date) {
                 if (date == undefined ) {
                 return "";
                 }
-                  return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: 'numeric'}); // new
-                                                                                                                        // Date.parse(date).format('MM/DD/YYYY
-                                                                                                                        // hh:mm');
+                  return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
                 },
                 moveUI : function() {
                 },
@@ -77,17 +87,17 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return "files-row-" + this.index;
                 },
                 canStudentReview: function () {
-                    if (this.dateStudentReviewed != undefined) {
+                    if (this.file.dateStudentReviewed != undefined) {
                         return false;
                     }
 
-                    if (this.studentReviewed && this.dateCurated != undefined) {
+                    if (this.file.studentReviewed && this.file.dateCurated != undefined) {
                         return true;
                     }
                     return false;
                 },
                 canCurate: function () {
-                    if (this.dateCurated != undefined) {
+                    if (this.file.dateCurated != undefined) {
                         return false;
                     }
                     if (this.file.resourceId != undefined) {
@@ -95,18 +105,31 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     }
                     return false;
                 },
+                cannotCurate: function() {
+                    if (this.file.size == 0 || this.file.size == undefined) {
+                        return true;
+                    }
+                    
+                    if (this.file.dateCurated == undefined ) {
+                        if (this.file.curated != undefined && this.file.curated == false) {
+                            return true;
+                        }
+                        return false;
+                    }
+                    return true;
+                },
                 canReview: function () {
-                    if (this.dateReviewed != undefined) {
+                    if (this.file.dateReviewed != undefined) {
                         return false;
                     }
                     if (this.studentReviewed && this.file.dateStudentReviewed != undefined || 
-                            this.studentReviewed == false && this.dateCurated != undefined) {
+                            this.studentReviewed != true && this.file.dateCurated != undefined) {
                         return true;
                     }
                     return false;
                 },
                 canExternalReview: function () {
-                    if (this.dateExternalReviewed != undefined) {
+                    if (this.file.dateExternalReviewed != undefined) {
                         return false;
                     }
                     if (this.externalReviewed && this.file.dateReviewed != undefined) {
@@ -178,6 +201,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": $("#dirName").val() , accountId: $("#accountId").val()}
                     ).done(function(msg) {
                         _app.files.push(msg);
+                        $("#dirName").clear();
                     });
                 },
                 cd : function(file) {

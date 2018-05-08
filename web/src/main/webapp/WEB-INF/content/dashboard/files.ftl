@@ -12,6 +12,17 @@
     <title>${authenticatedUser.properName}'s Dashboard</title>
     <meta name="lastModifiedDate" content="$Date$"/>
 
+<style>
+.initials {
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  padding: 6px;
+  //background: #fff;
+  border: 1px solid #AAA;
+  text-align: center;
+}
+</style>
 </head>
 
 
@@ -109,14 +120,20 @@
     <td>{{ 1 + index}}</td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
     	 <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  </span> </td>
-    <td>{{file.uploaderInitials}} {{formatDate(file.dateCreated)}}</td>
-    <td v-if="fullservice">
-    {{file.curatedByInitials}} {{formatDate(file.dateCurated)}} <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
-    <i v-if="canCurate" @click="wontCurated()" class="icon-thumbs-down"></i>
+    <td>
+        <span class='initials' v-if="file.uploaderInitials != undefined">{{file.uploaderInitials}}</span> <span class="date">{{formatDate(file.dateCreated)}}</span></td>
+    <td v-if="fullservice && (file.wontCurate == undefined || file.wontCurate == true)">
+    <span class='initials' v-if="file.curatedByInitials != undefined">{{file.curatedByInitials}}</span> <span class='date'>{{formatDate(file.dateCurated)}}</span> 
+        <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
+        <i v-if="!cannotCurate" @click="wontCurate()" class="icon-thumbs-down"></i>
     </td>
-    <td v-if="fullservice && studentreviewed">{{file.studentReviewedByInitials}} {{formatDate(file.dateStudentReviewed)}}<i v-if="canStudentReview" @click="markStudentReviewed()" class="icon-thumbs-up"></i></td>
-    <td v-if="fullservice">{{file.reviewedByInitials}} {{formatDate(file.dateReviewed)}}<i v-if="canReview" @click="markReviewed()" class="icon-thumbs-up"></i></td>
-    <td v-if="fullservice && externalreviewed">{{file.externalReviewedByInitials}} {{formatDate(file.dateExternalReviewed)}}<i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice && studentreviewed"> <span class='initials' v-if="file.studentReviewedByInitials != undefined">{{file.studentReviewedByInitials}}</span> <span class='date'> {{formatDate(file.dateStudentReviewed)}}</span>
+        <i v-if="canStudentReview" @click="markStudentReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice">
+    <span class='initials' v-if="file.reviewedByInitials != undefined">{{file.reviewedByInitials}}</span> <span class='date'> {{formatDate(file.dateReviewed)}}</span>
+        <i v-if="canReview" @click="markReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice && externalreviewed"><span class='initials' v-if="file.externalReviewedByInitials != undefined">{{file.externalReviewedByInitials}}</span> <span class='date'> {{formatDate(file.dateExternalReviewed)}}</span>
+        <i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
     <td>  <input name="type" value="" v-model="file.note" /> </td>
     <td><a :href="file.resourceUrl">{{file.resourceId }}</a> 
     </td>
