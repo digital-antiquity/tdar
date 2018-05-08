@@ -10,6 +10,7 @@ import java.util.WeakHashMap;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +100,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         PersonalFilestore filestore = getPersonalFilestore(ticket);
         try {
             // if we're not unfiled then require uniqueness
-            if (!dir.getName().equals(TdarDir.UNFILED)) {
+            if (dir == null || !StringUtils.equals(dir.getName(),TdarDir.UNFILED)) {
                 List<AbstractFile> listFiles = listFiles(dir, account, null, user);
                 for (AbstractFile f : listFiles) {
                     if (StringUtils.equalsIgnoreCase(f.getName(), fileName)) {

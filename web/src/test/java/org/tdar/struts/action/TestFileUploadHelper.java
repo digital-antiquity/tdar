@@ -137,8 +137,8 @@ public interface TestFileUploadHelper {
             fileProxy.setAction(FileAction.ADD);
             toReturn.getSecond().add(fileProxy);
         }
-        uploadController.prepare();
         uploadController.setUnfiled(true);
+        uploadController.prepare();
         uploadController.validate();
         assertEquals(Action.SUCCESS, uploadController.upload());
         List<PersonalFilestoreFile> files = getFilestoreService().retrieveAllPersonalFilestoreFiles(uploadController.getTicketId());
