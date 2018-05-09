@@ -56,6 +56,10 @@ core/src/main/resources/rebel.xml
 web/src/main/resources/rebel.xml
 docker/docker
 docker/postgres
+web/src/main/webapp/components/angular.js
+web/src/main/webapp/components/jquery/dist/jquery.js
+web/src/main/webapp/components/jquery/dist/jquery.min.js
+web/src/main/webapp/components/jquery/dist/jquery.min.map
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 webservice/([^\/]+)/build/.*
