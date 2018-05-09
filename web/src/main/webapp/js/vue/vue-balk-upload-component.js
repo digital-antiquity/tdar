@@ -24,6 +24,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 assignComment: function() {
                     
                 }
+            },
+            computed: {
+                commentClass: function() {
+                    if (this.comment.type == undefined) {
+                        return "comment";
+                    }
+                    return this.comment.type + " comment";
+                }
             }
         });
 
@@ -44,7 +52,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 return {
                     previousDeleteState : '',
                     xhr : undefined,
-                    initialNote: "",
+                    initialNote: undefined,
                     previousReplaceState : ''
                 }
             },
@@ -55,32 +63,30 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 cd : function(file) {
                     this.$parent.cd(file);
                 },
-                _mark: function(role) {
+                _mark: function(role, date, name, initials) {
                     var id = this.file.id;
                     var _file= this.file;
                     var ret = {};
                     $.post("/api/file/mark", {"ids[0]": id,"role":role}).done(function(files){
                         ret = files[0];
+                        console.log(ret);
+                        Vue.set(_file, date, ret[date]);
+                        Vue.set(_file, name, ret[name]);
+                        Vue.set(_file, initials, ret[initials]);
                     });
                     return ret;
                 },
+                markCurated: function() {
+                    var ret = this._mark("CURATED","dateCurated", "curatedByName", "curatedByInitials");
+                },
                 markStudentCurated: function() {
-                    var ret = this._mark("STUDENT_CURATED");
-                    Vue.set(this.file, "dateStudentReviewed", ret.dateReviewed);
-                    Vue.set(this.file, "studentReviewedByName", ret.studentReviewedByName);
-                    Vue.set(this.file, "studentReviewedByInitials", ret.studentReviewedByInitials);
+                    var ret = this._mark("STUDENT_CURATED", "dateStudentReviewed", "studentReviewedByName", "studentReviewedByInitials");
                 },
                 markReviewed: function() {
-                    var ret = this._mark("REVIEWED");
-                    Vue.set(this.file, "dateReviewed", ret.dateReviewed);
-                    Vue.set(this.file, "reviewedByName", ret.reviewedByName);
-                    Vue.set(this.file, "reviewedByInitials", ret.reviewedByInitials);
+                    var ret = this._mark("REVIEWED", "dateReviewed", "reviewedByName","reviewedByInitials");
                 },
-                markCurated: function() {
-                    var ret = this._mark("CURATED");
-                    Vue.set(this.file, "dateCurated", ret.dateCurated);
-                    Vue.set(this.file, "curatedByName", ret.curatedByName);
-                    Vue.set(this.file, "curatedByInitials", ret.curatedByInitials);
+                markExternalReviewed: function() {
+                    var ret = this._mark("EXTERNAL_REVIEWED", "dateExternalReviewed", "externalReviewedByName", "externalReviewedByInitials");
                 },
                 _editMetadata: function (note, ocr, curate) {
                     var id = this.file.id;
@@ -99,14 +105,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 updateNote: function() {
                     this._editMetadata(this.file.note, this.file.needsOcr, this.file.curated);
                 },
-                markExternalReviewed: function() {
-                    var ret = this._mark("EXTERNAL_REVIEWED");
-                    Vue.set(this.file, "dateExternalReviewed", ret.dateExternalReviewed);
-                    Vue.set(this.file, "externalReviewedByName", ret.rxternalReviewedByName);
-                    Vue.set(this.file, "externalReviewedByInitials", ret.externalReviewedByInitials);
-                },
                 showComments: function() {
-                    console.log('hi');
                     this.$parent.showComments(this.file);
                 },
                 moveUI : function() {
@@ -119,7 +118,15 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             computed: {
                 noteChanged: function() {
-                  if (this.file.note == this.initialNote) {
+                    var _note = this.file.note;
+                    if (_note == undefined || _note == '') {
+                        _note = undefined;
+                    }
+                    var note = this.initialNote;
+                    if (note == undefined || note == '') {
+                        note = undefined;
+                    }
+                  if (note == _note) {
                       return false;
                   }
                   return true;
@@ -240,6 +247,25 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     $.get('/api/file/comment/list', {"id": file.id}, {
                         dataType:'jsonp'
                     }).done(function(msg){
+                        msg.push({comment:'uploaded', dateCreated: file.dateCreated, commentorName: file.uploaderName, commentorInitials: file.uploaderInitials, type:'internal'});
+                        if (file.dateCurated != undefined) {
+                            msg.push({comment:'curated', dateCreated: file.dateCurated, commentorName: file.curatedByName, commentorInitials: file.curatedByInitials, type:'internal'});
+                        }
+                        if (file.dateReviewed != undefined) {
+                            msg.push({comment:'reviewed', dateCreated: file.dateReviewed, commentorName: file.reviewedByName, commentorInitials: file.reviewedByInitials, type:'internal'});
+                        }
+                        if (file.dateStudentReviewed != undefined) {
+                            msg.push({comment:'student reviewed', dateCreated: file.dateStudentReviewed, commentorName: file.studentReviewedByName, commentorInitials: file.studentReviewedByInitials, type:'internal'});
+                        }
+                        if (file.dateExternalReviewed != undefined) {
+                            msg.push({comment:'external reviewed', dateCreated: file.dateExternalReviewed , commentorName: file.externalReviewedByName, commentorInitials: file.externalReviewedByInitials, type:'internal'});
+                        }
+
+                        msg.sort(function(a,b){
+                            // Turn your strings into dates, and then subtract them
+                            // to get a value that is either negative, positive, or zero.
+                            return new Date(a.dateCreated) - new Date(b.dateCreated);
+                          });
                         Vue.set(_app,"comments", msg);
                     });
                     

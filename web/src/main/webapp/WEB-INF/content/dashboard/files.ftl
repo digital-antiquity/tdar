@@ -23,6 +23,11 @@
   text-align: center;
 }
 
+.internal {
+    border:1px solid #AAA !important;
+    color: #999 !important;
+
+}
 .comment {
     border:1px solid #AAA;
     padding:10px;
@@ -109,10 +114,10 @@
 	    <h3 v-if="commentFile != undefined">Comments for {{commentFile.name}}</h3>
 	  </div>
 	  <div class="modal-body">
-	    <ul>
-	            <li class="template-comment-entry fade existing-file in" v-for="(comment,index) in comments"
-	                is="comment" :index="index" :comment="comment"></li>
-	    </ul>
+	    <div>
+	            <div  v-for="(comment,index) in comments"
+	                is="comment" :index="index" :comment="comment"></div>
+	    </div>
 	    <textarea name="comment" v-model="comment"></textarea>
 	    <span  class="link" @click="addComment()">add comment</span>
 	  </div>
@@ -148,7 +153,7 @@
 
 
 <template  id="comment-entry-template">
-    <div class="comment">
+    <div :class="commentClass">
 	<pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
 {{comment.comment}} </div>
 </template>
@@ -160,7 +165,7 @@
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
     	 <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  </span> </td>
     <td>
-        <pentry :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
+        <pentry v-if="file.size != undefined" :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
                 
         </td>
     <td v-if="fullservice && (file.wontCurate == undefined || file.wontCurate == true)">
@@ -182,9 +187,9 @@
     </td>
     <td>
         <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
-        <a href="#"  @click="showComments()"><i class="icon-comment"></i><span class="label"v-if="file.comments.length > 0">{{file.comments.length}}</span></a>
+        <a href="#"  @click="showComments()"><i class="icon-comment"></i><span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
         <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
-        <a href="#" @click="deleteFile()"><i class="icon-trash"></i></a>
+        <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
     </tr>
 </template>
