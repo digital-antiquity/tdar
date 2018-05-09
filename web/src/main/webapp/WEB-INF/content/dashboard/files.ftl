@@ -22,6 +22,12 @@
   border: 1px solid #AAA;
   text-align: center;
 }
+
+.comment {
+    border:1px solid #AAA;
+    padding:10px;
+    margin:10px;
+}
 </style>
 </head>
 
@@ -142,9 +148,9 @@
 
 
 <template  id="comment-entry-template">
-<li>
+    <div class="comment">
 	<pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
-{{comment.comment}} </li>
+{{comment.comment}} </div>
 </template>
 
 
