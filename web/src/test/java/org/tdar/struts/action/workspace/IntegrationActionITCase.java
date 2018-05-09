@@ -28,6 +28,25 @@ public class IntegrationActionITCase extends AbstractWorkspaceActionITCase {
         assertTrue("should have seen authorization exception", seen);
         assertFalse("should not be able to edit", controller.authorize());
     }
+    
+    @Test
+    @Rollback
+    public void testDeleteIntegration()  {
+        DeleteIntegrationAction controller = generateNewInitializedController(DeleteIntegrationAction.class, getBasicUser());
+        DataIntegrationWorkflow workflow = setupHiddenWorkflow();
+        controller.setId(workflow.getId());
+        controller.setDelete(controller.DELETE);
+        controller.setServletRequest(getServletPostRequest());
+        String execute = null;
+        try {
+            controller.prepare();
+            controller.validate();
+            execute = controller.delete();
+        } catch (Exception e) {
+            logger.error("exception",e,e);
+        }
+        assertEquals(controller.SUCCESS, execute);
+    }
 
     @Test
     @Rollback
