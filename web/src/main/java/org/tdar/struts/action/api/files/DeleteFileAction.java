@@ -19,38 +19,21 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public class DeleteFileAction extends AbstractJsonApiAction {
+public class DeleteFileAction extends AbstractHasFileAction<AbstractFile> {
 
 
     private static final long serialVersionUID = -7706315527740653556L;
-    private Long fileId;
-    private AbstractFile file;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    @Override
-    public void prepare() throws Exception {
-        super.prepare();
-        if (fileId != null) {
-            file = getGenericService().find(AbstractFile.class, fileId);
-        }
-    }
-
-    @Override
-    public void validate() {
-        super.validate();
-        if (file == null) {
-            addActionError("deleteFileAction.no_file");
-        }
-    }
 
     @Action(value = "delete",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.deleteFile(file, getAuthenticatedUser());
+        personalFilestoreService.deleteFile(getFile(), getAuthenticatedUser());
         setResultObject(true);
         return SUCCESS;
     }

@@ -262,11 +262,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     console.log('delete file!');
                     var id = file.id;
                     var _file= file;
-                    $.post("/api/file/deleteFile", {"id": id}).done(function(files){
+                    var _app = this;
+                    $.post("/api/file/delete", {"id": id}).done(function(file){
                         console.log(file);
-                        var index = $.inArray(file, this.files);
+                        var index = $.inArray(_file, _app.files);
                         if (index != -1) {
-                            this.files.splice(index, 1);
+                            _app.splice(index, 1);
                         }
                     });
 

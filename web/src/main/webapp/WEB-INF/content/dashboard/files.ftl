@@ -176,7 +176,7 @@
     </td>
     <td>
         <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
-        <a href="#"  @click="showComments()"><i class="icon-comment"></i></a>
+        <a href="#"  @click="showComments()"><i class="icon-comment"></i><span class="label"v-if="file.comments.length > 0">{{file.comments.length}}</span></a>
         <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
         <a href="#" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
