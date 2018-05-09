@@ -1,18 +1,40 @@
 TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     "use strict";
 
+    var _formatDate = function(date) {
+        if (date == undefined ) {
+            return "";
+        }
+      return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
+    }
+    
     var _init = function(appId) {
+
+        Vue.component("comment", {
+            template:"#comment-entry-template",
+            props: ["comment"],
+            data: function() {return {}},
+            methods: {
+                formatDate: function(date) {
+                    return _formatDate(date);
+                },
+                resolveComment: function() {
+                    
+                },
+                assignComment: function() {
+                    
+                }
+            }
+        });
+
         Vue.component("pentry", {
             template:"#part-entry-template",
             props: ['date','initials','name', 'url'],
             data: function() {return {}},
             methods: {
                 formatDate: function(date) {
-                    if (date == undefined ) {
-                    return "";
-                    }
-                      return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
-                    }
+                    return _formatDate(date);
+                }
             }
         });
         Vue.component('fileEntry', {
@@ -83,10 +105,16 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     Vue.set(this.file, "externalReviewedByName", ret.rxternalReviewedByName);
                     Vue.set(this.file, "externalReviewedByInitials", ret.externalReviewedByInitials);
                 },
+                showComments: function() {
+                    console.log('hi');
+                    this.$parent.showComments(this.file);
+                },
                 moveUI : function() {
+                    console.log('move');
                 },
                 deleteFile: function(){
-                    this.$parent.deleteFile(file);
+                    console.log('delete');
+                    this.$parent.deleteFile(this.file);
                 }
             },
             computed: {
@@ -168,7 +196,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         var app = new Vue({
             el : appId,
             data : {
-                listUrl : "/api/file/listFiles",
+                listUrl : "/api/file/list",
                 url : "/api/file/upload",
                 validFormats : ['doc','pdf','docx','png','tif','tiff','jpg','jpeg'],
                 ableToUpload : true,
@@ -178,6 +206,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 externalReviewed: config.externalReviewed,
                 files : [],
                 errors: [],
+                comment: "",
+                comments: [],
+                commentFile:undefined,
                 path : "" 
             },
             computed : {
@@ -202,7 +233,33 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     Vue.set(this, "parentId", parentId);
                     Vue.set(this, "path", path);
                 },
+                showComments: function(file) {
+                    var _app = this;
+                    Vue.set(_app,"commentFile",file);
+                    console.log(this.commentFile);
+                    $.get('/api/file/comment/list', {"id": file.id}, {
+                        dataType:'jsonp'
+                    }).done(function(msg){
+                        Vue.set(_app,"comments", msg);
+                    });
+                    
+                    $("#comments-template-modal").modal('show');
+                },
+                addComment: function() {
+                    console.log('add comment', this.comment);
+                    var _app = this;
+                    if (this.comment == undefined || this.comment == '') {
+                        return;
+                    }
+                    $.post("/api/file/comment/add", {"id": this.commentFile.id,"comment": this.comment}, {
+                        dataType:'jsonp'
+                    }).done(function(msg){
+                        _app.comments.push(msg);
+                        Vue.set(_app,"comment","");
+                    });
+                },
                 deleteFile: function(file) {
+                    console.log('delete file!');
                     var id = file.id;
                     var _file= file;
                     $.post("/api/file/deleteFile", {"id": id}).done(function(files){

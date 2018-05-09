@@ -265,10 +265,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly=false)
-    public void addComment(AbstractFile file, String comment, TdarUser authenticatedUser) {
+    public FileComment addComment(AbstractFile file, String comment, TdarUser authenticatedUser) {
         FileComment comm = new FileComment(authenticatedUser,comment);
         file.getComments().add(comm);
         genericDao.saveOrUpdate(file);
         genericDao.saveOrUpdate(comm);
+        return comm;
     }
 }

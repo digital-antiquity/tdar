@@ -97,6 +97,24 @@
     <div id="uploadstatus"></div>
 
 
+    	<div class="modal hide fade" id="comments-template-modal">
+	  <div class="modal-header">
+	    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	    <h3 v-if="commentFile != undefined">Comments for {{commentFile.name}}</h3>
+	  </div>
+	  <div class="modal-body">
+	    <ul>
+	            <li class="template-comment-entry fade existing-file in" v-for="(comment,index) in comments"
+	                is="comment" :index="index" :comment="comment"></li>
+	    </ul>
+	    <textarea name="comment" v-model="comment"></textarea>
+	    <span  class="link" @click="addComment()">add comment</span>
+	  </div>
+	  <div class="modal-footer">
+	    <a href="#" data-dismiss="modal" class="btn">Close</a>
+	  </div>
+	</div>
+
     </div>
 </div>
 
@@ -121,6 +139,15 @@
         <span class="date">{{formatDate(date)}}</span>
     </span>
 </template>
+
+
+<template  id="comment-entry-template">
+<li>
+	<pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
+{{comment.comment}} </li>
+</template>
+
+
 <template id="file-entry-template">
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}}</td>
@@ -149,12 +176,13 @@
     </td>
     <td>
         <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
-        <i  class="icon-comment"></i>
+        <a href="#"  @click="showComments()"><i class="icon-comment"></i></a>
         <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
         <a href="#" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
     </tr>
 </template>
+
 
 <script>
 $(document).ready(function() {

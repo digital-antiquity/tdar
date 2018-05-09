@@ -9,6 +9,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
@@ -103,6 +104,6 @@ public interface PersonalFilestoreService {
 
     void mark(List<TdarFile> files, Mark mark, TdarUser authenticatedUser);
 
-    void addComment(AbstractFile file, String comment, TdarUser authenticatedUser);
+    FileComment addComment(AbstractFile file, String comment, TdarUser authenticatedUser);
 
 }

@@ -46,7 +46,7 @@ public class ListFilesAction extends AbstractJsonApiAction {
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    @Action(value = "listFiles",
+    @Action(value = "list",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     public String execute() throws IOException {
         List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, term , getAuthenticatedUser());

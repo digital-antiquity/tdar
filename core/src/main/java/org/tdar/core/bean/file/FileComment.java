@@ -76,4 +76,12 @@ public class FileComment extends AbstractPersistable {
     public void setCommentor(TdarUser commentor) {
         this.commentor = commentor;
     }
+
+
+    public String getCommentorInitials() {
+        if (commentor != null) {
+            return commentor.getInitials();
+        }
+        return null;
+    }
 }
