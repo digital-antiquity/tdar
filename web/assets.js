@@ -2,7 +2,6 @@
 //WebpackCopyModule 
 
 const CSS = [
-    
      './src/main/webapp/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css',
      './src/main/webapp/css/famfamfam.css',
      './src/main/webapp/css/tdar-bootstrap.css',
@@ -19,6 +18,7 @@ const CSS = [
      './src/main/webapp/css/tdar.sprites.css',
      './src/main/webapp/css/tdar.worldmap.css'
 ];
+
 //I created these mappings because the copier would only create the last directory. 
 //This can be parsed out better later, but 🤷‍♂️
 
@@ -48,7 +48,9 @@ const MODULES  = [
 {name:'selectize/dist',path:'./node_modules/selectize/dist'},
 {name:'svgxuse',path:'./node_modules/svgxuse'},
 {name:'vue/dist',path:'./node_modules/vue/dist'},
-{name:'axios/dist',path:'./node_modules/axios/dist'}
+{name:'axios/dist',path:'./node_modules/axios/dist'},
+{name:'angular',path:'./node_modules/angular'}
+{name:'angular-modal-service/dst',path:'./node_modules/angular-modal-service/dst'}
 ]
 
 
