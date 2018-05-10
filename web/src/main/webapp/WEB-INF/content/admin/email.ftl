@@ -117,7 +117,7 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
         </tr>
         <#if email.status=='BOUNCED'>
             <tr  class='row_${email?item_parity}'>
-                <td colspan='7' style="color:#c74534">
+                <td colspan='7' style="color:#7a1501">
                    ${email.errorMessage}                 
                 </td>            
             </tr>
