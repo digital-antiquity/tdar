@@ -877,6 +877,30 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         return false;
 
     }
+    
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.tdar.core.service.external.AuthorizationService#canEditAccount(org.tdar.core.bean.entity.TdarUser, org.tdar.core.bean.billing.BillingAccount)
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public boolean canChargeAccount(TdarUser authenticatedUser, BillingAccount account) {
+        logger.debug("can charge account: {} ({})", account, authenticatedUser);
+        if (can(InternalTdarRights.EDIT_BILLING_INFO, authenticatedUser)) {
+            return true;
+        }
+
+        for (AuthorizedUser au : account.getAuthorizedUsers()) {
+            logger.debug("au: {}", au);
+            if (au.getUser().equals(authenticatedUser) && (Permissions.USE_ACCOUNT.ordinal() - 1) < au.getEffectiveGeneralPermission()) {
+                return true;
+            }
+        }
+        return false;
+
+    }
 
     /*
      * (non-Javadoc)
