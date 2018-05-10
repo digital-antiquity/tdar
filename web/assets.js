@@ -49,7 +49,7 @@ const MODULES  = [
 {name:'svgxuse',path:'./node_modules/svgxuse'},
 {name:'vue/dist',path:'./node_modules/vue/dist'},
 {name:'axios/dist',path:'./node_modules/axios/dist'},
-{name:'angular',path:'./node_modules/angular'}
+{name:'angular',path:'./node_modules/angular'},
 {name:'angular-modal-service/dst',path:'./node_modules/angular-modal-service/dst'}
 ]
 
