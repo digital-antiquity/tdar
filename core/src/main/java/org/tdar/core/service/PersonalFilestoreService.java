@@ -106,4 +106,6 @@ public interface PersonalFilestoreService {
 
     FileComment addComment(AbstractFile file, String comment, TdarUser authenticatedUser);
 
+    FileComment resolveComment(AbstractFile file, FileComment comment, TdarUser authenticatedUser);
+
 }

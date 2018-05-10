@@ -272,4 +272,14 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         genericDao.saveOrUpdate(comm);
         return comm;
     }
+
+    @Override
+    @Transactional(readOnly=false)
+    public FileComment resolveComment(AbstractFile file, FileComment comment, TdarUser authenticatedUser) {
+        comment.setResolved(true);
+        comment.setDateResolved(new Date());
+        comment.setResolver(authenticatedUser);
+        genericDao.saveOrUpdate(comment);
+        return comment;
+    }
 }

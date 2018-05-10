@@ -141,7 +141,8 @@
             <column name="commentor_id" type="bigint" />
         </addColumn>
         <addForeignKeyConstraint
-            constraintName="fk_comment_commentor" referencedTableName="tdar_user"
+            constraintName="fk_comment_commentor"
+            referencedTableName="tdar_user"
             baseColumnNames="commentor_id" baseTableName="file_comment"
             referencedColumnNames="id" />
     </changeSet>
@@ -162,18 +163,67 @@
             referencedTableName="tdar_user"
             baseColumnNames="external_reviewer_id" baseTableName="files"
             referencedColumnNames="id" />
-            
+
         <addColumn tableName="files">
             <column name="date_student_reviewed" type="timestamp">
                 <constraints nullable="true" />
             </column>
         </addColumn>
         <addColumn tableName="files">
-            <column name="date_external_reviewed" type="timestamp">
+            <column name="date_external_reviewed"
+                type="timestamp">
                 <constraints nullable="true" />
             </column>
         </addColumn>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-11" author="abrin">
 
+        <addColumn tableName="pos_account">
+            <column name="external_review" type="boolean"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="pos_account">
+            <column name="student_review" type="boolean"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="pos_account">
+            <column name="full_service" type="boolean"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <sql>
+            update pos_account set full_service=false,
+            student_review=false,
+            external_review=false;
+        </sql>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-12" author="abrin">
+        <addColumn tableName="file_comment">
+            <column type="boolean" name="resolved"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <addColumn tableName="file_comment">
+            <column name="resolver_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_comment_resolver"
+            referencedTableName="tdar_user"
+            baseColumnNames="resolver_id" baseTableName="file_comment"
+            referencedColumnNames="id" />
+        <addColumn tableName="file_comment">
+            <column name="date_resolved" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <sql>update file_comment set resolved=false</sql>
     </changeSet>
 
 </databaseChangeLog>

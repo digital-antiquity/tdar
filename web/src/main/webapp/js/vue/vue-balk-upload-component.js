@@ -12,14 +12,30 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
 
         Vue.component("comment", {
             template:"#comment-entry-template",
-            props: ["comment"],
-            data: function() {return {}},
+            props: ["comment", "fileid"],
+            data: function() {return {
+                resolved :false
+            }},
+            mounted: function() {
+                Vue.set(this,"resolved", this.comment.resolved);
+            },
             methods: {
                 formatDate: function(date) {
                     return _formatDate(date);
                 },
                 resolveComment: function() {
-                    
+                    var _comment = this.comment;
+                    console.log(_comment);
+                    var _app = this;
+                    var fileId = this.fileid;
+                    console.log(_comment.id, fileId);
+                    $.post("/api/file/comment/resolve", {"id": fileId,"commentId":_comment.id}).done(function(comments){
+                        Vue.set(_comment, "resolver", comments.resolver);
+                        Vue.set(_comment, "dateResolved", comments.dateResolved);
+                        Vue.set(_comment, "resolved", true);
+                        Vue.set(_app, "resolved", true);
+                    });
+
                 },
                 assignComment: function() {
                     
@@ -215,12 +231,23 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 errors: [],
                 comment: "",
                 comments: [],
+                search: "",
                 commentFile:undefined,
                 path : "" 
             },
             computed : {
                 inputDisabled : function() {
                     return !this.ableToUpload;
+                }
+            },
+            watch: {
+                search: function(after, before) {
+                    console.log(before, after);
+                    if (after == undefined || after == "") {
+                        this.loadFiles(this.parentId, this.path);
+                    } else {
+                        this.searchFiles(after);
+                    }
                 }
             },
             methods : {
@@ -239,6 +266,21 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                     Vue.set(this, "parentId", parentId);
                     Vue.set(this, "path", path);
+                },
+                searchFiles: function (search) {
+                    var _app = this;
+                    var accountId = undefined;
+                    var $acc = $("#accountId");
+                    if ($acc.length > 0) {
+                       accountId = $acc.val();
+                    }
+                    console.log(search);
+                    $.get(this.listUrl, {"terms":search}, {
+                        dataType:'jsonp'
+                    }).done(function(msg){
+                        console.log(msg);
+                        Vue.set(_app,"files", msg);
+                    });
                 },
                 showComments: function(file) {
                     var _app = this;

@@ -36,9 +36,20 @@ public class FileComment extends AbstractPersistable {
     @JoinColumn(name = "commentor_id")
     private TdarUser commentor;
 
+    @ManyToOne
+    @JoinColumn(name = "resolver_id")
+    private TdarUser resolver;
+
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated = new Date();
+
+    @Column(name = "date_resolved", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateResolved = new Date();
+
+    @Column(name = "resolved", nullable = false, columnDefinition = "boolean default false")
+    private Boolean resolved = false;
 
     @Column(name = "comment", length = FieldLength.FIELD_LENGTH_2048)
     private String comment;
@@ -59,7 +70,6 @@ public class FileComment extends AbstractPersistable {
         this.dateCreated = dateCreated;
     }
 
-
     public String getCommentorName() {
         if (commentor != null) {
             return commentor.getProperName();
@@ -77,11 +87,35 @@ public class FileComment extends AbstractPersistable {
         this.commentor = commentor;
     }
 
-
     public String getCommentorInitials() {
         if (commentor != null) {
             return commentor.getInitials();
         }
         return null;
     }
+
+    public TdarUser getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(TdarUser resolver) {
+        this.resolver = resolver;
+    }
+
+    public Date getDateResolved() {
+        return dateResolved;
+    }
+
+    public void setDateResolved(Date dateResolved) {
+        this.dateResolved = dateResolved;
+    }
+
+    public Boolean getResolved() {
+        return resolved;
+    }
+
+    public void setResolved(Boolean resolved) {
+        this.resolved = resolved;
+    }
+
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.ImportFileStatus;
@@ -54,6 +55,11 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
             query.setParameter("topLevel", false);
         }
         query.setParameter("account", account);
+        if (StringUtils.isBlank(term)) {
+            query.setParameter("term", null);
+        } else {
+            query.setParameter("term", term.toLowerCase());
+        }
         query.setParameter("uploader", authenticatedUser);
         return query.getResultList();
     }

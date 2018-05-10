@@ -50,7 +50,7 @@
 <form class="form-horizontal">
 		<@s.select name="account"  id="accountId"   listValue='name' listKey='id'   list=accounts cssClass="span4" dynamicAttributes={"@change":"loadFiles()"}/>
 <div class="span4">
-<input type="search" class="search input" placeholder="search"/>
+<input type="search" class="search input" placeholder="search" v-model="search" />
 </div>
 
 <table class="table" id="filesTable">
@@ -115,7 +115,7 @@
 	  </div>
 	  <div class="modal-body">
 	    <div>
-	            <div  v-for="(comment,index) in comments"
+	            <div  v-for="(comment,index) in comments" :fileid="commentFile.id"
 	                is="comment" :index="index" :comment="comment"></div>
 	    </div>
 	    <textarea name="comment" v-model="comment"></textarea>
@@ -155,7 +155,12 @@
 <template  id="comment-entry-template">
     <div :class="commentClass">
 	<pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
-{{comment.comment}} </div>
+{{comment.comment}} 
+   <span v-if="comment.resolved != undefined">
+	    <span v-if="comment.resolved == false"><input type="checkbox" @click="resolveComment()"/> resolve</span>
+		<i v-if="comment.resolved">{{comment.resolver.properName}} {{comment.dateResolved}}</i>
+	</span>	
+	</div>
 </template>
 
 

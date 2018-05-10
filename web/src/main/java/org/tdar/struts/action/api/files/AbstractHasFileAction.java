@@ -22,9 +22,6 @@ public abstract class AbstractHasFileAction<C extends AbstractFile> extends Abst
     private Long id;
     private C file;
 
-    @Autowired
-    private PersonalFilestoreService personalFilestoreService;
-
     @Override
     public void prepare() throws Exception {
         super.prepare();

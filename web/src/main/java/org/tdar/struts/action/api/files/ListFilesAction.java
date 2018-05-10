@@ -49,7 +49,7 @@ public class ListFilesAction extends AbstractJsonApiAction {
     @Action(value = "list",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     public String execute() throws IOException {
-        List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, term , getAuthenticatedUser());
+        List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, getTerm() , getAuthenticatedUser());
         setResultObject(files);
         return SUCCESS;
     }
@@ -92,6 +92,14 @@ public class ListFilesAction extends AbstractJsonApiAction {
 
     public void setSortBy(FileOrder sortBy) {
         this.sortBy = sortBy;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public void setTerm(String term) {
+        this.term = term;
     }
 
 }
