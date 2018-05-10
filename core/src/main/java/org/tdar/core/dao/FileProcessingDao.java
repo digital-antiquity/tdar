@@ -58,7 +58,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         if (StringUtils.isBlank(term)) {
             query.setParameter("term", null);
         } else {
-            query.setParameter("term", term.toLowerCase());
+            query.setParameter("term", "%" + term.toLowerCase() + "%");
         }
         query.setParameter("uploader", authenticatedUser);
         return query.getResultList();

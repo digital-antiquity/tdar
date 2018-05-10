@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -90,6 +91,15 @@ public class TdarFile extends AbstractFile {
     @ManyToOne
     @JoinColumn(name = "part_of_id")
     private TdarFile partOf;
+
+    public TdarFile() {}
+    
+    public TdarFile(String string, TdarUser tdarUser, BillingAccount act) {
+        this.setFilename(string);
+        this.setUploader(tdarUser);
+        this.setAccount(act);
+        this.setDateCreated(new Date());
+    }
 
     public Long getSize() {
         return size;
