@@ -47,7 +47,11 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
 
     public List<AbstractFile> listFilesFor(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.LIST_FILES_FOR_DIR);
-        if (parent == null) {
+        if (parent == null && StringUtils.isNotBlank(term)) {
+            query.setParameter("topLevel", true);
+            query.setParameter("parentId", -1L);
+
+        } else if (parent == null){
             query.setParameter("topLevel", true);
             query.setParameter("parentId", -1L);
         } else {

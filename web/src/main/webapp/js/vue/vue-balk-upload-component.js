@@ -275,7 +275,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                        accountId = $acc.val();
                     }
                     console.log(search);
-                    $.get(this.listUrl, {"terms":search}, {
+                    $.get(this.listUrl, {"term":search, "accountId":accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         console.log(msg);

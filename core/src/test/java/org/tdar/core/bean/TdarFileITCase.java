@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Status;
@@ -44,13 +46,22 @@ public class TdarFileITCase extends AbstractIntegrationTestCase {
         act.setName("test");
         act.markUpdated(getAdminUser());
         genericService.saveOrUpdate(act);
+        // setup two files with similar names
         TdarFile file = new TdarFile("atest.pdf", getAdminUser(), act);
         TdarFile file2 = new TdarFile("test.pdf", getAdminUser(), act);
+        // and a third file in a directory
+        TdarDir dir = new TdarDir();
+        dir.setFilename("cookie jar");
+        dir.setDateCreated(new Date());
+        dir.setUploader(getAdminUser());
+        dir.setAccount(act);
+        genericService.saveOrUpdate(dir);
         TdarFile file3 = new TdarFile("cookies.pdf", getAdminUser(), act);
         genericService.saveOrUpdate(file);
         genericService.saveOrUpdate(file2);
+        file3.setParent(dir);
         genericService.saveOrUpdate(file3);
-        List<AbstractFile> list = fileProcessingDao.listFilesFor(null, null, "test", getAdminUser());
+        List<AbstractFile> list = fileProcessingDao.listFilesFor(null, act, "test", getAdminUser());
         for (AbstractFile f : list) {
             logger.debug("{} - {}", f.getName(), f);
         }

@@ -558,7 +558,7 @@
                 query = "from TdarFile file where file.status in (:status)"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.LIST_FILES_FOR_DIR,
-                query = "from AbstractFile file where (:topLevel is true and file.parent is null or file.parent.id=:parentId) "
+                query = "from AbstractFile file where (:topLevel is true and file.parent is null or file.parent.id=:parentId or :term is not null) "
                         + "and (:account is null or file.account=:account) "
                         + "and (:term is null or lower(file.filename) like :term  )"
                         + "and (:uploader is null or :account is null or file.uploader=:uploader)"),
