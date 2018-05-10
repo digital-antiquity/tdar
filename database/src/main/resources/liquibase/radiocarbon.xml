@@ -225,5 +225,16 @@
         </addColumn>
         <sql>update file_comment set resolved=false</sql>
     </changeSet>
-
+    <changeSet id="radiocarbon-file-first-13" author="abrin">
+        <addColumn tableName="pos_account">
+            <column name="file_exipry_days" type="int"
+                defaultValueNumeric="60">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <sql>update pos_account set file_exipry_days=60</sql>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-14" author="abrin">
+    <renameColumn tableName="pos_account" oldColumnName="file_exipry_days" newColumnName="file_expiry_days"/>
+    </changeSet>
 </databaseChangeLog>

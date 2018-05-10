@@ -48,9 +48,17 @@
 <div class="span10" id="filesTool">
 
 <form class="form-horizontal">
-		<@s.select name="account"  id="accountId"   listValue='name' listKey='id'   list=accounts cssClass="span4" dynamicAttributes={"@change":"loadFiles()"}/>
-<div class="span4">
-<input type="search" class="search input" placeholder="search" v-model="search" />
+<div class="row">
+    <div class="span6">
+    <label>Account:
+        <select name="account" id="accountId" v-model="accountId">
+                <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
+        </select>
+    </label>
+    </div>
+    <div class="span4">
+        <input type="search" class="search input pull-right" placeholder="search" v-model="search" />
+    </div>
 </div>
 
 <table class="table" id="filesTable">
@@ -68,7 +76,7 @@
  </tr>
 </thead>
 <tr>
- <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after 1 month.</td>
+ <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</td>
 </tr>
         <tbody >
 	        <tr v-if="parentId != undefined">
@@ -140,7 +148,7 @@
     <th>curate</th>
     <th>review</th>
     <th>status</th>
-    <th colspan="2">actions</th>
+    <th colspan="5">actions</th>
 
 -->
 
@@ -156,9 +164,9 @@
     <div :class="commentClass">
 	<pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
 {{comment.comment}} 
-   <span v-if="comment.resolved != undefined">
+   <span v-if="comment.resolved != undefined" class="pull-right">
 	    <span v-if="comment.resolved == false"><input type="checkbox" @click="resolveComment()"/> resolve</span>
-		<i v-if="comment.resolved">{{comment.resolver.properName}} {{comment.dateResolved}}</i>
+		<i v-if="comment.resolved">{{comment.resolverName}} {{comment.dateResolved}}</i>
 	</span>	
 	</div>
 </template>
@@ -187,18 +195,27 @@
     <td v-if="fullservice && externalreviewed">
        <pentry :initials="file.externalReviewedByInitials" :date="file.dateExternalReviewed" :name="file.externalReviewedByName" ></pentry> 
         <i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
-    <td>  <input name="type" value="" v-model="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
+    <td v-if="fullservice">  <input name="type" value="" v-model="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
     <td><a :href="file.resourceUrl">{{file.resourceId }}</a> 
     </td>
     <td>
         <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
-        <a href="#"  @click="showComments()"><i class="icon-comment"></i><span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
+    </td><td nowrap>
+        <a href="#" v-if="fullservice" @click="showComments()"><i class="icon-comment"></i>
+        <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
+    </td><td>
         <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
+    </td><td>
         <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
     </tr>
 </template>
 
+<#noescape>
+<script id="accountJson" type="application/json">
+${accountJson}
+</script>
+</#noescape>
 
 <script>
 $(document).ready(function() {

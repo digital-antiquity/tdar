@@ -136,22 +136,28 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     private transient Long totalSpaceInBytes = 0L;
 
     @Column(name = "files_used")
-    @JsonView({JsonAccountFilter.class })
     private Long filesUsed = 0L;
+    
     @Column(name = "space_used")
-    @JsonView({JsonAccountFilter.class })
     private Long spaceUsedInBytes = 0L;
+
     @Column(name = "resources_used")
-    @JsonView({JsonAccountFilter.class })
     private Long resourcesUsed = 0L;
     
+    @Column(name = "file_expiry_days", nullable=false)
+    @JsonView({JsonAccountFilter.class })
+    private Integer daysFilesExpireAfter = 60;
+    
     @Column(name = "full_service", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
     private Boolean fullService = false;
     
     @Column(name = "student_review", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
     private Boolean studentReview = false;
     
     @Column(name = "external_review", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
     private Boolean externalReview = false;
 
     public BillingAccount() {
@@ -541,6 +547,14 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
 
     public void setExternalReview(Boolean externalReview) {
         this.externalReview = externalReview;
+    }
+
+    public Integer getDaysFilesExpireAfter() {
+        return daysFilesExpireAfter;
+    }
+
+    public void setDaysFilesExpireAfter(Integer daysFilesExpireAfter) {
+        this.daysFilesExpireAfter = daysFilesExpireAfter;
     }
 
 }

@@ -30,7 +30,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     var fileId = this.fileid;
                     console.log(_comment.id, fileId);
                     $.post("/api/file/comment/resolve", {"id": fileId,"commentId":_comment.id}).done(function(comments){
-                        Vue.set(_comment, "resolver", comments.resolver);
+                        Vue.set(_comment, "resolverName", comments.resolverName);
+                        Vue.set(_comment, "resolverInitals", comments.resolverInitials);
                         Vue.set(_comment, "dateResolved", comments.dateResolved);
                         Vue.set(_comment, "resolved", true);
                         Vue.set(_app, "resolved", true);
@@ -214,19 +215,24 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         var config = {
                 fullService : true,
                 studentReviewed : false,
-                externalReviewed : true
+                externalReviewed : true,
+                validFormats: ['doc','pdf','docx','png','tif','tiff','jpg','jpeg'],
+                accounts: JSON.parse($("#accountJson").text())
         };
         var app = new Vue({
             el : appId,
             data : {
                 listUrl : "/api/file/list",
                 url : "/api/file/upload",
-                validFormats : ['doc','pdf','docx','png','tif','tiff','jpg','jpeg'],
+                validFormats : config.validForamts,
                 ableToUpload : true,
                 parentId: undefined,
-                studentReviewed: config.studentReviewed,
-                fullService: config.fullService,
-                externalReviewed: config.externalReviewed,
+                studentReviewed: false,
+                externalReviewed: false,
+                daysFilesExpireAfter: 60,
+                fullService: false,
+                accounts: config.accounts,
+                accountId: undefined,
                 files : [],
                 errors: [],
                 comment: "",
@@ -248,18 +254,29 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     } else {
                         this.searchFiles(after);
                     }
+                },
+                accountId: function(after,before) {
+                    this.switchAccount(after);
                 }
             },
             methods : {
+                switchAccount: function(accountId) {
+                    this.loadFiles(undefined,undefined);
+                    Vue.set(this,"commentFile",undefined);
+                    var _app = this;
+                    this.accounts.forEach(function(account){
+                        console.log(account);
+                        if (account.id == accountId) {
+                            Vue.set(_app,"fullService",account.fullService);
+                            Vue.set(_app,"daysFilesExpireAfter",account.daysFilesExpireAfter);
+                            Vue.set(_app,"studentReviewed",account.studentReviewed);
+                            Vue.set(_app,"externalReviewed",account.externalReviewed);
+                        }
+                    });
+                 },
                 loadFiles: function (parentId, path) {
                     var _app = this;
-                    var accountId = undefined;
-                    var $acc = $("#accountId");
-                    if ($acc.length > 0) {
-                       accountId = $acc.val();
-                    }
-                    
-                    $.get(this.listUrl, {"parentId": parentId, "accountId":accountId}, {
+                    $.get(this.listUrl, {"parentId": parentId, "accountId":_app.accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         Vue.set(_app,"files", msg);
@@ -269,13 +286,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 searchFiles: function (search) {
                     var _app = this;
-                    var accountId = undefined;
-                    var $acc = $("#accountId");
-                    if ($acc.length > 0) {
-                       accountId = $acc.val();
-                    }
                     console.log(search);
-                    $.get(this.listUrl, {"term":search, "accountId":accountId}, {
+                    $.get(this.listUrl, {"term":search, "accountId":_app.accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         console.log(msg);
@@ -301,6 +313,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                         if (file.dateExternalReviewed != undefined) {
                             msg.push({comment:'external reviewed', dateCreated: file.dateExternalReviewed , commentorName: file.externalReviewedByName, commentorInitials: file.externalReviewedByInitials, type:'internal'});
+                        }
+
+                        if (file.resourceId != undefined) {
+                            msg.push({comment:'tDAR Resource Created id:' + file.resourceId, dateCreated: file.dateResourceCreated , commentorName: file.resourceCreatedByName, commentorInitials: file.resourceCreatedByInitials, type:'internal'});
                         }
 
                         msg.sort(function(a,b){
@@ -343,7 +359,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 mkdir: function() {
                   var dir = this.dir;
                   var _app = this;
-                  $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": $("#dirName").val() , accountId: $("#accountId").val()}
+                  $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": $("#dirName").val() , accountId: _app.accountId}
                     ).done(function(msg) {
                         _app.files.push(msg);
                         $("#dirName").clear();
@@ -411,12 +427,13 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             mounted : function() {
                 // setup
+                this.accountId = this.accounts[0].id;
                 if (this.ableToUpload == undefined || this.ableToUpload == false) {
                     console.log('file upload disabled');
                     return;
                 }
                 this.loadFiles(undefined,"/");
-                                var _app = this;
+                var _app = this;
                 var up = $('#fileupload').fileupload({
                     url : this.url,
                     dataType : 'json',
@@ -446,7 +463,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                         data.push({
                             name : "accountId",
-                            value : $("#accountId").val()
+                            value : _app.accountId
                         });
 //                        console.log(data);
                         return data;

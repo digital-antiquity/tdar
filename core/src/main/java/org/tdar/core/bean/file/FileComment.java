@@ -77,7 +77,7 @@ public class FileComment extends AbstractPersistable {
         return null;
     }
 
-    @XmlElement(name = "uploaderRef")
+    @XmlElement(name = "commentorRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getCommentor() {
         return commentor;
@@ -94,6 +94,8 @@ public class FileComment extends AbstractPersistable {
         return null;
     }
 
+    @XmlElement(name = "resolverRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getResolver() {
         return resolver;
     }
@@ -116,6 +118,20 @@ public class FileComment extends AbstractPersistable {
 
     public void setResolved(Boolean resolved) {
         this.resolved = resolved;
+    }
+
+    public String getResolverInitials() {
+        if (resolver != null) {
+            return resolver.getInitials();
+        }
+        return null;
+    }
+
+    public String getResolverName() {
+        if (resolver != null) {
+            return resolver.getProperName();
+        }
+        return null;
     }
 
 }

@@ -1,20 +1,15 @@
 package org.tdar.core.bean.file;
 
-import java.util.ArrayList;
+import java.beans.Transient;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
@@ -92,8 +87,9 @@ public class TdarFile extends AbstractFile {
     @JoinColumn(name = "part_of_id")
     private TdarFile partOf;
 
-    public TdarFile() {}
-    
+    public TdarFile() {
+    }
+
     public TdarFile(String string, TdarUser tdarUser, BillingAccount act) {
         this.setFilename(string);
         this.setUploader(tdarUser);
@@ -283,6 +279,8 @@ public class TdarFile extends AbstractFile {
         this.curated = curated;
     }
 
+    @XmlElement(name = "externalReviewedByRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getExternalReviewedBy() {
         return externalReviewedBy;
     }
@@ -291,6 +289,8 @@ public class TdarFile extends AbstractFile {
         this.externalReviewedBy = externalReviewedBy;
     }
 
+    @XmlElement(name = "studentReviewedByRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getStudentReviewedBy() {
         return studentReviewedBy;
     }
@@ -309,6 +309,30 @@ public class TdarFile extends AbstractFile {
 
     public Date getDateExternalReviewed() {
         return dateExternalReviewed;
+    }
+
+    @Transient
+    public Date getDateResourceCreated() {
+        if (getResource() == null) {
+            return null;
+        }
+        return getResource().getDateCreated();
+    }
+
+    @Transient
+    public String getResourceCreatedByName() {
+        if (getResource() == null) {
+            return null;
+        }
+        return getResource().getUploader().getProperName();
+    }
+
+    @Transient
+    public String getResourceCreatedByInitials() {
+        if (getResource() == null) {
+            return null;
+        }
+        return getResource().getUploader().getInitials();
     }
 
     public void setDateExternalReviewed(Date dateExternalReviewed) {
