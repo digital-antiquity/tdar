@@ -3,6 +3,7 @@ package org.tdar.struts.action.dashboard;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -13,9 +14,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.notification.UserNotification;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.json.JsonAccountFilter;
 
@@ -34,7 +37,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/dashboard")
 @Component
 @Scope("prototype")
-public class FilleListAction extends AbstractAuthenticatableAction implements Preparable {
+public class FileListAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -224826703370233994L;
 
@@ -44,10 +47,17 @@ public class FilleListAction extends AbstractAuthenticatableAction implements Pr
     @Autowired
     private transient SerializationService serializationService;
 
+    @Autowired
+    private transient FileAnalyzer analyzer;
+
     private List<UserNotification> currentNotifications;
     private List<BillingAccount> accounts = new ArrayList<>();
 
     private String accountJson;
+
+    private Set<String> extensions;
+
+    private String validFormats;
     
     @Override
     @Action(value = "files", results = { @Result(name = SUCCESS, location = "files.ftl") })
@@ -60,7 +70,9 @@ public class FilleListAction extends AbstractAuthenticatableAction implements Pr
     public void prepare() throws IOException {
         getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
         setAccountJson(serializationService.convertToFilteredJson(accounts, JsonAccountFilter.class));
-    }
+        setExtensions(analyzer.getExtensionsForTypes(ResourceType.activeValues().toArray(new ResourceType[0])));
+        setValidFormats(serializationService.convertToJson(extensions));
+        }
 
     public List<UserNotification> getCurrentNotifications() {
         return currentNotifications;
@@ -84,6 +96,22 @@ public class FilleListAction extends AbstractAuthenticatableAction implements Pr
 
     public void setAccountJson(String accountJson) {
         this.accountJson = accountJson;
+    }
+
+    public Set<String> getExtensions() {
+        return extensions;
+    }
+
+    public void setExtensions(Set<String> extensions) {
+        this.extensions = extensions;
+    }
+
+    public String getValidFormats() {
+        return validFormats;
+    }
+
+    public void setValidFormats(String validFormats) {
+        this.validFormats = validFormats;
     }
 
 }

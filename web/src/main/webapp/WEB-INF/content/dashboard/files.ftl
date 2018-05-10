@@ -215,6 +215,10 @@
 <script id="accountJson" type="application/json">
 ${accountJson}
 </script>
+
+<script id="validFormats" type="application/json">
+${validFormats}
+</script>
 </#noescape>
 
 <script>

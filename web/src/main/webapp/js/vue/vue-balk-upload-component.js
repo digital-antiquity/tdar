@@ -216,7 +216,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 fullService : true,
                 studentReviewed : false,
                 externalReviewed : true,
-                validFormats: ['doc','pdf','docx','png','tif','tiff','jpg','jpeg'],
+                validFormats: JSON.parse($("#validFormats").text()),
                 accounts: JSON.parse($("#accountJson").text())
         };
         var app = new Vue({
@@ -265,7 +265,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     Vue.set(this,"commentFile",undefined);
                     var _app = this;
                     this.accounts.forEach(function(account){
-                        console.log(account);
                         if (account.id == accountId) {
                             Vue.set(_app,"fullService",account.fullService);
                             Vue.set(_app,"daysFilesExpireAfter",account.daysFilesExpireAfter);
