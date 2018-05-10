@@ -17,6 +17,9 @@ public class IntegrationActionITCase extends AbstractWorkspaceActionITCase {
     public void testIntegrationViewInvalid() throws TdarActionException {
         AngularIntegrationAction controller = generateNewInitializedController(AngularIntegrationAction.class, getBasicUser());
         DataIntegrationWorkflow workflow = setupHiddenWorkflow();
+        workflow.getAuthorizedUsers().clear();
+        genericService.save(workflow);
+        genericService.synchronize();
         controller.setId(workflow.getId());
         boolean seen = false;
         try {
@@ -69,6 +72,7 @@ public class IntegrationActionITCase extends AbstractWorkspaceActionITCase {
     }
 
     @Rollback
+    @Test
     public void testIntegrationViewPublicValid() throws TdarActionException {
         AngularIntegrationAction controller = generateNewInitializedController(AngularIntegrationAction.class, getBasicUser());
         DataIntegrationWorkflow workflow = setupPublicWorkflow();
