@@ -24,6 +24,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -154,7 +155,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
     private String getName(HasAuthorizedUsers persistable) {
         String name = "No name";
         if (persistable instanceof HasName) {
-            name = String.format("%s (%s)", ((HasName) persistable).getName(), persistable.getId());
+            name = String.format("<a href=\"%s%s\">%s/a> (%s)", config.getBaseSecureUrl(), ((Addressable)persistable).getDetailUrl(), ((HasName) persistable).getName(), persistable.getId());
         }
         return name;
     }

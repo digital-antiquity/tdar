@@ -1074,4 +1074,19 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         return RightsResolver.evaluate(authorizedUserDao.checkSelfEscalation(actor, resource, rights, null));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean canDelete(DataIntegrationWorkflow persistable, TdarUser authenticatedUser) {
+        if (isEditor(authenticatedUser)) {
+            return true;
+        }
+
+        for (AuthorizedUser user : persistable.getAuthorizedUsers()) {
+            if (Objects.equals(authenticatedUser, user.getUser())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

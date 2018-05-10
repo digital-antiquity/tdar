@@ -25,6 +25,9 @@ public abstract class AbstractWorkspaceActionITCase extends AbstractControllerIT
 
     private DataIntegrationWorkflow setup() {
         DataIntegrationWorkflow workflow = new DataIntegrationWorkflow();
+        workflow.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBasicUser(), Permissions.EDIT_INTEGRATION));
+        workflow.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getAdminUser(), Permissions.EDIT_INTEGRATION));
+        workflow.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), getBillingUser(), Permissions.EDIT_INTEGRATION));
         workflow.setSubmitter(getAdminUser());
         workflow.markUpdated(getAdminUser());
         workflow.setJsonData("{}");

@@ -17,6 +17,9 @@ public class IntegrationActionITCase extends AbstractWorkspaceActionITCase {
     public void testIntegrationViewInvalid() throws TdarActionException {
         AngularIntegrationAction controller = generateNewInitializedController(AngularIntegrationAction.class, getBasicUser());
         DataIntegrationWorkflow workflow = setupHiddenWorkflow();
+        workflow.getAuthorizedUsers().clear();
+        genericService.save(workflow);
+        genericService.synchronize();
         controller.setId(workflow.getId());
         boolean seen = false;
         try {
@@ -27,6 +30,25 @@ public class IntegrationActionITCase extends AbstractWorkspaceActionITCase {
         }
         assertTrue("should have seen authorization exception", seen);
         assertFalse("should not be able to edit", controller.authorize());
+    }
+    
+    @Test
+    @Rollback
+    public void testDeleteIntegration()  {
+        DeleteIntegrationAction controller = generateNewInitializedController(DeleteIntegrationAction.class, getBasicUser());
+        DataIntegrationWorkflow workflow = setupHiddenWorkflow();
+        controller.setId(workflow.getId());
+        controller.setDelete(controller.DELETE);
+        controller.setServletRequest(getServletPostRequest());
+        String execute = null;
+        try {
+            controller.prepare();
+            controller.validate();
+            execute = controller.delete();
+        } catch (Exception e) {
+            logger.error("exception",e,e);
+        }
+        assertEquals(controller.SUCCESS, execute);
     }
 
     @Test
@@ -50,6 +72,7 @@ public class IntegrationActionITCase extends AbstractWorkspaceActionITCase {
     }
 
     @Rollback
+    @Test
     public void testIntegrationViewPublicValid() throws TdarActionException {
         AngularIntegrationAction controller = generateNewInitializedController(AngularIntegrationAction.class, getBasicUser());
         DataIntegrationWorkflow workflow = setupPublicWorkflow();
