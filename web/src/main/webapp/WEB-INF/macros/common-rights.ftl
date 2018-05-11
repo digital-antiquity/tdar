@@ -249,7 +249,7 @@ $(function() {
                     <td>
                         <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                     </td>
-                    <td colspan=5>n/a</td>
+                    <td colspan=8>n/a</td>
                 </tr>                    
             </#if>
             </#if>

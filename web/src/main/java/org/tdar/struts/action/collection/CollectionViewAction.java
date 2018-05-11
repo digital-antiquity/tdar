@@ -498,6 +498,12 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
                     throw e;
                 }
             }
+            
+            // if we have no results, hide the keyword section entirely
+            if (getTotalRecords() < 1) {
+                setKeywordSectionVisible(false);
+            }
+            
             for (Resource r : getResults()) {
                 if (isManaged(r)) {
                     getPermissionsCache().getManagedResources().add(r.getId());
