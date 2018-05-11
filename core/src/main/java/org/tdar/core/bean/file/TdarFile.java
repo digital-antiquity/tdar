@@ -311,7 +311,6 @@ public class TdarFile extends AbstractFile {
         return dateExternalReviewed;
     }
 
-    @Transient
     public Date getDateResourceCreated() {
         if (getResource() == null) {
             return null;
@@ -319,7 +318,6 @@ public class TdarFile extends AbstractFile {
         return getResource().getDateCreated();
     }
 
-    @Transient
     public String getResourceCreatedByName() {
         if (getResource() == null) {
             return null;
@@ -327,7 +325,6 @@ public class TdarFile extends AbstractFile {
         return getResource().getUploader().getProperName();
     }
 
-    @Transient
     public String getResourceCreatedByInitials() {
         if (getResource() == null) {
             return null;
