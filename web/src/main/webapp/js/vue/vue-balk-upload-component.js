@@ -149,7 +149,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   return true;
                 },
                 fileLink : function() {
-                    return "/document/add?fileIds=" + this.file.id; 
+                    return "/resource/createRecordFromFiles?fileIds=" + this.file.id; 
                 },
                 downloadUrl : function() {
                     return "/file/download/" + this.file.id; 
@@ -219,12 +219,13 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 validFormats: JSON.parse($("#validFormats").text()),
                 accounts: JSON.parse($("#accountJson").text())
         };
+
         var app = new Vue({
             el : appId,
             data : {
                 listUrl : "/api/file/list",
                 url : "/api/file/upload",
-                validFormats : config.validForamts,
+                validFormats : config.validFormats,
                 ableToUpload : true,
                 parentId: undefined,
                 studentReviewed: false,
@@ -376,8 +377,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.loadFiles(id, displayName);
                 },
                 validateAdd : function(file, replace) {
-                
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, ['doc','docx','pdf'], 0 , 100000 , false ,this )
+                console.log(this.validFormats);
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, 0 , 100000 , false ,this )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file

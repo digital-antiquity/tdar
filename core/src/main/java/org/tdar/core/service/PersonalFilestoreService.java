@@ -13,6 +13,7 @@ import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -88,7 +89,7 @@ public interface PersonalFilestoreService {
      * @throws FileUploadException
      * @throws IOException
      */
-    void store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir) throws FileUploadException;
+    TdarFile store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir) throws FileUploadException;
 
     TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) throws FileAlreadyExistsException;
 
@@ -104,8 +105,13 @@ public interface PersonalFilestoreService {
 
     void mark(List<TdarFile> files, Mark mark, TdarUser authenticatedUser);
 
+    void unMark(List<TdarFile> files, Mark role, TdarUser authenticatedUser);
+
     FileComment addComment(AbstractFile file, String comment, TdarUser authenticatedUser);
 
     FileComment resolveComment(AbstractFile file, FileComment comment, TdarUser authenticatedUser);
+
+    ResourceType getResourceTypeForFiles(TdarFile files);
+
 
 }

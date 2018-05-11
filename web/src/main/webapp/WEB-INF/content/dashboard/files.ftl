@@ -135,22 +135,8 @@
 	</div>
 
     </div>
-</div>
-
-</div>
 
 
-</div>
-<!-- 
-    <th></th>
-    <th>file</th>
-    <th>upload</th>
-    <th>curate</th>
-    <th>review</th>
-    <th>status</th>
-    <th colspan="5">actions</th>
-
--->
 
 <template id="part-entry-template">
     <span>
@@ -210,6 +196,9 @@
     </td>
     </tr>
 </template>
+</div>
+
+</div>
 
 <#noescape>
 <script id="accountJson" type="application/json">

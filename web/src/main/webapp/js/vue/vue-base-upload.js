@@ -56,6 +56,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             }
             console.log(file,fileContainer);
             Vue.set(fileContainer, "dateCreated", file.dateCreated);
+            Vue.set(fileContainer, "id", file.id );
             Vue.set(fileContainer , "createdByName" , file.createdByName);
             Vue.set(fileContainer, "uploaderInitials", file.uploaderInitials);
             Vue.set(fileContainer, "xhr" , undefined);

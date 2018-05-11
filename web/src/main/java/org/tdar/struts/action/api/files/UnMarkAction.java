@@ -9,6 +9,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -18,45 +19,37 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public class EditFileMetadataAction extends AbstractHasFileAction<TdarFile>{
+public class UnMarkAction extends AbstractHasFilesAction<TdarFile> {
 
-    private static final long serialVersionUID = -3146064278797351637L;
-    private String note;
-    private boolean needsOcr;
-    private boolean curate;
-
+    private static final long serialVersionUID = 1347580143532124718L;
+    private Mark role;
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    @Action(value = "editMetadata",
+    @Override
+    public void prepare() throws Exception {
+        super.prepare();
+        if (role == null) {
+            addActionError("markAction.no_role");
+        }
+    }
+    
+    @Action(value = "mark",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.editMetadata(getFile(), note, needsOcr, curate, getAuthenticatedUser());
-        setResultObject(getFile());
+        personalFilestoreService.unMark(getFiles(), role, getAuthenticatedUser());
+        setResultObject(getFiles());
         return SUCCESS;
     }
 
-
-    public void setNote(String note) {
-        this.note = note;
+    public Mark getRole() {
+        return role;
     }
 
-    public boolean isNeedsOcr() {
-        return needsOcr;
-    }
-
-    public void setNeedsOcr(boolean needsOcr) {
-        this.needsOcr = needsOcr;
-    }
-
-    public boolean isCurate() {
-        return curate;
-    }
-
-    public void setCurate(boolean curate) {
-        this.curate = curate;
+    public void setRole(Mark action) {
+        this.role = action;
     }
 
 }

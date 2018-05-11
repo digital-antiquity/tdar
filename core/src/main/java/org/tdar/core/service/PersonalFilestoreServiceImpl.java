@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -23,9 +24,11 @@ import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
+import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -45,6 +48,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Autowired
     private FileProcessingDao fileProcessingDao;
+    
+    @Autowired
+    private FileAnalyzer analyzer;
 
     // FIXME: double check that won't leak memory
     private Map<TdarUser, PersonalFilestore> personalFilestoreCache = new WeakHashMap<TdarUser, PersonalFilestore>();
@@ -95,7 +101,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Transactional(readOnly = false)
     @Override
-    public void store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir)
+    public TdarFile store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir)
             throws FileUploadException {
         PersonalFilestore filestore = getPersonalFilestore(ticket);
         try {
@@ -127,6 +133,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             tdarFile.setMd5(store.getMd5());
             tdarFile.setStatus(ImportFileStatus.UPLOADED);
             genericDao.saveOrUpdate(tdarFile);
+            return tdarFile;
         } catch (Exception e) {
             throw new FileUploadException("uploadController.could_not_store", e);
         }
@@ -264,6 +271,32 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     }
 
     @Override
+    @Transactional(readOnly = false)
+    public void unMark(List<TdarFile> files, Mark action, TdarUser user) {
+        for (TdarFile file : files) {
+            switch (action) {
+                case CURATED:
+                    file.setCuratedBy(null);
+                    file.setDateCurated(null);
+                    break;
+                case EXTERNAL_REVIEWED:
+                    file.setExternalReviewedBy(null);
+                    file.setDateExternalReviewed(null);
+                    break;
+                case REVIEWED:
+                    file.setReviewedBy(null);
+                    file.setDateReviewed(null);
+                    break;
+                case STUDENT_REVIEWED:
+                    file.setStudentReviewedBy(null);
+                    file.setDateStudentReviewed(null);
+                    break;
+            }
+            genericDao.saveOrUpdate(file);
+        }
+    }
+
+    @Override
     @Transactional(readOnly=false)
     public FileComment addComment(AbstractFile file, String comment, TdarUser authenticatedUser) {
         FileComment comm = new FileComment(authenticatedUser,comment);
@@ -281,5 +314,21 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         comment.setResolver(authenticatedUser);
         genericDao.saveOrUpdate(comment);
         return comment;
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public ResourceType getResourceTypeForFiles(TdarFile files) {
+        // THIS IS A TEMPORARY FIX UNTIL WE HAVE BETTER LOGIC FOR DETERMINING TYPE 
+        List<ResourceType> types = new ArrayList<>(ResourceType.activeValues());
+        types.remove(ResourceType.CODING_SHEET);
+//        types.remove(ResourceType.GEOSPATIAL);
+        ResourceType resourceType = analyzer.suggestTypeForFileName(files.getName(), types.toArray(new ResourceType[0]));
+        if (resourceType == ResourceType.GEOSPATIAL && 
+                (files.getExtension().equalsIgnoreCase("jpg") || files.getExtension().equalsIgnoreCase("tif"))) {
+            //FIXME: need better logic here
+            resourceType = ResourceType.IMAGE;
+        }
+        return resourceType;
     }
 }

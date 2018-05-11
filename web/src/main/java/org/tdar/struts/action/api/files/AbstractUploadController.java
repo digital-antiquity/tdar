@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -20,6 +22,7 @@ import org.springframework.context.annotation.Scope;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -124,7 +127,7 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
     public String upload() throws IOException {
         getLogger().info("UPLOAD CONTROLLER: called with " + uploadFile.size() + " tkt:" + ticketId);
 
-        List<String> hashCodes = new ArrayList<>();
+        List<TdarFile> hashCodes = new ArrayList<>();
         try {
             hashCodes = filestoreService.store(getAuthenticatedUser(), uploadFile, uploadFileFileName, uploadFileContentType, getTicket(), this,
                     account, parent);
@@ -139,31 +142,25 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
         return SUCCESS;
     }
 
-    private void buildResultsOutput(List<String> hashCodes) throws IOException {
+    private void buildResultsOutput(List<TdarFile> hashCodes) throws IOException {
         Map<String, Object> result = buildResults(hashCodes);
         result.put("ticket", getTicket());
         setJsonObject(result, JsonLookupFilter.class);
     }
 
-    private Map<String, Object> buildResults(List<String> hashCodes) {
+    private Map<String, Object> buildResults(List<TdarFile> hashCodes) {
         Map<String, Object> result = new HashMap<>();
         ArrayList<HashMap<String, Object>> files = new ArrayList<HashMap<String, Object>>();
         result.put("files", files);
-        for (int i = 0; i < uploadFileFileName.size(); i++) {
+        for (TdarFile f : hashCodes) {
             HashMap<String, Object> file = new HashMap<>();
             files.add(file);
-            file.put("name", uploadFileFileName.get(i));
-            if (CollectionUtils.isNotEmpty(hashCodes)) {
-                file.put("hashCode", hashCodes.get(i));
-            }
-            if (CollectionUtils.isNotEmpty(getUploadFileSize())) {
-                file.put("size", getUploadFileSize().get(i));
-            }
-            if (CollectionUtils.isNotEmpty(getUploadFileContentType())) {
-                file.put("type", getUploadFileContentType().get(i));
-            }
+            file.put("name", f.getFilename());
+            file.put("hashCode", f.getMd5());
+            file.put("size", f.getSize());
             file.put("delete_type", "DELETE");
             file.put("dateCreated", new Date());
+            file.put("id", f.getId());
             file.put("uploaderName",getAuthenticatedUser().getProperName());
             file.put("uploaderId",getAuthenticatedUser().getId());
             file.put("uploaderInitials",getAuthenticatedUser().getInitials());

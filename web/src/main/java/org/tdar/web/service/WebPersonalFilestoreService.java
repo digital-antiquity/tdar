@@ -2,7 +2,11 @@ package org.tdar.web.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +17,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -37,9 +42,9 @@ public class WebPersonalFilestoreService {
     }
 
     @Transactional(readOnly = false)
-    public List<String> store(TdarUser submitter, List<File> files, List<String> fileNames, List<String> contentTypes, PersonalFilestoreTicket ticket,
+    public List<TdarFile> store(TdarUser submitter, List<File> files, List<String> fileNames, List<String> contentTypes, PersonalFilestoreTicket ticket,
             TextProvider provider, BillingAccount account, TdarDir dir) throws FileUploadException {
-        List<String> hashCodes = new ArrayList<>();
+        List<TdarFile> hashCodes = new ArrayList<>();
         for (int i = 0; i < files.size(); i++) {
             File file = files.get(i);
             String fileName = fileNames.get(i);
@@ -50,8 +55,8 @@ public class WebPersonalFilestoreService {
                     contentType = contentTypes.get(i);
                 }
                 logger.debug("UPLOAD CONTROLLER: processing file: {} ({}) , contentType: {} , tkt: {}", fileName, file, contentType, ticket.getId());
-                filestoreService.store(ticket, file, fileName, account, submitter, dir);
-
+                TdarFile store = filestoreService.store(ticket, file, fileName, account, submitter, dir);
+                hashCodes.add(store);
             }
         }
         return hashCodes;
