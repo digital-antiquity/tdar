@@ -34,7 +34,7 @@ public class UnMarkAction extends AbstractHasFilesAction<TdarFile> {
         }
     }
     
-    @Action(value = "mark",
+    @Action(value = "unmark",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession

@@ -40,7 +40,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             template:"#comment-entry-template",
             props: ["comment", "fileid"],
             data: function() {return {
-                resolved :false
+                resolved :false,
+                undoAction: undefined
             }},
             mounted: function() {
                 Vue.set(this,"resolved", this.comment.resolved);
@@ -62,7 +63,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         Vue.set(_comment, "resolved", true);
                         Vue.set(_app, "resolved", true);
                     });
-
+                },
+                undo: function() {
+                  this.$parent.unmark(this.undoAction, this.$parent.commentFile);
                 },
                 assignComment: function() {
                     
@@ -104,7 +107,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             methods: {
                 cd : function(file) {
-                    this.$parent.cd(file);
+                        this.$parent.cd(file);
                 },
                 _mark: function(role, date, name, initials) {
                     var id = this.file.id;
@@ -327,6 +330,19 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         Vue.set(_app,"files", msg);
                     });
                 },
+                unmark: function(role, file) {
+                    var id = file.id;
+                    var _file= file;
+                    var ret = {};
+                    $.post("/api/file/unmark", {"ids[0]": id,"role":role}).done(function(files){
+                        ret = files[0];
+                        console.log(ret);
+                        Vue.set(_file, date, ret[date]);
+                        Vue.set(_file, name, ret[name]);
+                        Vue.set(_file, initials, ret[initials]);
+                    });
+                    return ret;
+                },
                 showComments: function(file) {
                     var _app = this;
                     Vue.set(_app,"commentFile",file);
@@ -336,16 +352,16 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     }).done(function(msg){
                         msg.push({comment:'uploaded', dateCreated: file.dateCreated, commentorName: file.uploaderName, commentorInitials: file.uploaderInitials, type:'internal'});
                         if (file.dateCurated != undefined) {
-                            msg.push({comment:'curated', dateCreated: file.dateCurated, commentorName: file.curatedByName, commentorInitials: file.curatedByInitials, type:'internal'});
+                            msg.push({comment:'curated', undoAction:"CURATED", dateCreated: file.dateCurated, commentorName: file.curatedByName, commentorInitials: file.curatedByInitials, type:'internal'});
                         }
                         if (file.dateReviewed != undefined) {
-                            msg.push({comment:'reviewed', dateCreated: file.dateReviewed, commentorName: file.reviewedByName, commentorInitials: file.reviewedByInitials, type:'internal'});
+                            msg.push({comment:'reviewed',undoAction:"REVIEWED", dateCreated: file.dateReviewed, commentorName: file.reviewedByName, commentorInitials: file.reviewedByInitials, type:'internal'});
                         }
                         if (file.dateStudentReviewed != undefined) {
-                            msg.push({comment:'student reviewed', dateCreated: file.dateStudentReviewed, commentorName: file.studentReviewedByName, commentorInitials: file.studentReviewedByInitials, type:'internal'});
+                            msg.push({comment:'student reviewed', undoAction:"STUDENT_REVIEWED", dateCreated: file.dateStudentReviewed, commentorName: file.studentReviewedByName, commentorInitials: file.studentReviewedByInitials, type:'internal'});
                         }
                         if (file.dateExternalReviewed != undefined) {
-                            msg.push({comment:'external reviewed', dateCreated: file.dateExternalReviewed , commentorName: file.externalReviewedByName, commentorInitials: file.externalReviewedByInitials, type:'internal'});
+                            msg.push({comment:'external reviewed', undoAction:"EXTERNAL_REVIEWED", dateCreated: file.dateExternalReviewed , commentorName: file.externalReviewedByName, commentorInitials: file.externalReviewedByInitials, type:'internal'});
                         }
 
                         if (file.resourceId != undefined) {
@@ -358,9 +374,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             return new Date(a.dateCreated) - new Date(b.dateCreated);
                           });
                         Vue.set(_app,"comments", msg);
+                        $("#comments-template-modal").modal('show');
                     });
                     
-                    $("#comments-template-modal").modal('show');
                 },
                 addComment: function() {
                     console.log('add comment', this.comment);

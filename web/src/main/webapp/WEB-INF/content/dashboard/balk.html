@@ -89,7 +89,7 @@
     </div>
 
 
-    <!--  COMMENT MODAL -->
+    <!--  MOVE MODAL -->
     <div class="modal hide fade" id="move-template-modal">
       <div class="modal-header">
         <button type="button" class="close"  @click="cancelMove()" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -123,7 +123,6 @@
     </li>
 </template>
 
-
 <template id="part-entry-template">
     <span>
         <span class='initials' v-if="initials != undefined">{{initials}}</span>
@@ -137,9 +136,15 @@
     <pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
 {{comment.comment}} 
    <span v-if="comment.resolved != undefined" class="pull-right">
-        <span v-if="comment.resolved == false"><input type="checkbox" @click="resolveComment()"/> resolve</span>
+        <label v-if="comment.resolved == false"  @click="resolveComment()"><input type="checkbox" @click="resolveComment()"/> resolve</label>
         <i v-if="comment.resolved">{{comment.resolverName}} {{comment.dateResolved}}</i>
     </span> 
+
+   <span v-if="comment.undoAction != undefined" class="pull-right">
+        <label  @click="undo()"><input type="checkbox" @click="undo()"/> undo</label></span>
+        <i v-if="comment.resolved">{{comment.resolverName}} {{comment.dateResolved}}</i>
+    </span> 
+
     </div>
 </template>
 
