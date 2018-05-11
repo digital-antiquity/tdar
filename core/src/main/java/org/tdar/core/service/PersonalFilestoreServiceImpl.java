@@ -214,6 +214,12 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<TdarDir> listDirectories(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
+        return fileProcessingDao.listDirectoriesFor(parent, account, authenticatedUser);
+    }
+
+    @Override
     @Transactional(readOnly = false)
     public void deleteFile(AbstractFile file, TdarUser authenticatedUser) {
         fileProcessingDao.delete(file);

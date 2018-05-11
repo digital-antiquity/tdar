@@ -93,8 +93,10 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
 //            addActionError(getText("uploadController.no_valid_account"));
 //        }
 
-        if (account != null && !getAuthorizationService().canEditAccount(getAuthenticatedUser(), account)) {
-            addActionError(getText("uploadController.no_valid_account"));
+        if (account != null) {
+            if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), account)) {
+                addActionError("not.allowed");
+            }
         }
 
         super.validate();

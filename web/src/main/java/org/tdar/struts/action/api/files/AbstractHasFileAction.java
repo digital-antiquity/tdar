@@ -29,6 +29,11 @@ public abstract class AbstractHasFileAction<C extends AbstractFile> extends Abst
         if (getFile() == null) {
             addActionError("moveFileAction.not_all_files_valid");
         }
+        
+        if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), file.getAccount())) {
+            addActionError("not.allowed");
+        }
+
     }
 
     public Long getId() {

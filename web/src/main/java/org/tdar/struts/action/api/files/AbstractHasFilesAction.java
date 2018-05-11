@@ -27,10 +27,10 @@ public abstract class AbstractHasFilesAction<C extends AbstractFile> extends Abs
     public void prepare() throws Exception {
         super.prepare();
         for (Long id : ids) {
-            files.add((C)getGenericService().find(AbstractFile.class, id));
+            files.add((C) getGenericService().find(AbstractFile.class, id));
         }
-        
-        getLogger().debug("ids: {} ; files:{}",ids,files);
+
+        getLogger().debug("ids: {} ; files:{}", ids, files);
     }
 
     @Override
@@ -39,6 +39,14 @@ public abstract class AbstractHasFilesAction<C extends AbstractFile> extends Abs
         if (files.size() != ids.size()) {
             addActionError("moveFileAction.not_all_files_valid");
         }
+
+        for (C f : files) {
+            if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), f.getAccount())) {
+                addActionError("not.allowed");
+                break;
+            }
+        }
+
     }
 
     public List<Long> getIds() {
@@ -56,7 +64,5 @@ public abstract class AbstractHasFilesAction<C extends AbstractFile> extends Abs
     public void setFiles(List<C> files) {
         this.files = files;
     }
-
-    
 
 }

@@ -51,7 +51,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
             query.setParameter("topLevel", true);
             query.setParameter("parentId", -1L);
 
-        } else if (parent == null){
+        } else if (parent == null) {
             query.setParameter("topLevel", true);
             query.setParameter("parentId", -1L);
         } else {
@@ -84,6 +84,19 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
             saveOrUpdate(dir);
             return dir;
         }
+    }
+
+    public List<TdarDir> listDirectoriesFor(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.LIST_DIR);
+        if (parent == null) {
+            query.setParameter("topLevel", true);
+            query.setParameter("parentId", -1L);
+        } else {
+            query.setParameter("parentId", parent.getId());
+            query.setParameter("topLevel", false);
+        }
+        query.setParameter("account", account);
+        return query.getResultList();
     }
 
 }

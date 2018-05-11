@@ -113,5 +113,6 @@ public interface PersonalFilestoreService {
 
     ResourceType getResourceTypeForFiles(TdarFile files);
 
+    List<TdarDir> listDirectories(TdarDir parent, BillingAccount account, TdarUser authenticatedUser);
 
 }

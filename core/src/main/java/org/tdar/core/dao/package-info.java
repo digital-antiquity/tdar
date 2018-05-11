@@ -563,6 +563,10 @@
                         + "and (:term is null or lower(file.filename) like :term  )"
                         + "and (:uploader is null or :account is null or file.uploader=:uploader)"),
         @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.LIST_DIR,
+                query = "from TdarDir file where (:topLevel is true or :parentId is not null and file.parent.id=:parentId) "
+                        + "and (file.account=:account) "),
+        @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.FIND_DIR_BY_NAME,
                 query = "from TdarDir file where file.filename =:name and (:account is null or file.account=:account) and (:uploader is null or file.uploader=:uploader)")
 

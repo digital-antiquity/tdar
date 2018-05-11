@@ -10,6 +10,32 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     
     var _init = function(appId) {
 
+        Vue.component("dir", {
+            template:"#move-entry-template",
+            props: ["dir", "index"],
+            data: function() {return {
+            }},
+            mounted: function() {
+            },
+            methods: {
+                moveSelectedFilesTo: function(dir) {
+                    this.$parent.moveSelectedFilesTo(dir);
+                }
+            },
+            computed: {
+            }
+        });
+
+        Vue.component("pentry", {
+            template:"#part-entry-template",
+            props: ['date','initials','name', 'url'],
+            data: function() {return {}},
+            methods: {
+                formatDate: function(date) {
+                    return _formatDate(date);
+                }
+            }
+        });
         Vue.component("comment", {
             template:"#comment-entry-template",
             props: ["comment", "fileid"],
@@ -127,6 +153,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 moveUI : function() {
                     console.log('move');
+                    this.$parent.moveUI(this.file);
                 },
                 deleteFile: function(){
                     console.log('delete');
@@ -238,6 +265,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 errors: [],
                 comment: "",
                 comments: [],
+                dirTree: [],
+                selectedFiles: [],
+                dirStack: [],
                 search: "",
                 commentFile:undefined,
                 path : "" 
@@ -262,8 +292,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             methods : {
                 switchAccount: function(accountId) {
-                    this.loadFiles(undefined,undefined);
                     Vue.set(this,"commentFile",undefined);
+                    Vue.set(this,"dirTree",[]);
+                    Vue.set(this,"dirStack",[]);
+                    Vue.set(this,"selectedFiles",[]);
+                    this.loadFiles(undefined,undefined);
                     var _app = this;
                     this.accounts.forEach(function(account){
                         if (account.id == accountId) {
@@ -362,7 +395,59 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": $("#dirName").val() , accountId: _app.accountId}
                     ).done(function(msg) {
                         _app.files.push(msg);
-                        $("#dirName").clear();
+                        $("#dirName").val("");
+                    });
+                },
+                moveUI: function(file) {
+                    var _app = this;
+                    _app.selectedFiles.push(file);
+                  var dirs = this.listDirs(function(){
+                      console.log(_app.dirTree);
+                      $("#move-template-modal").modal('show');
+                  });
+                },
+                moveSelectedFilesTo: function(dir) {
+                    this.moveFiles(this.selectedFiles, dir);
+                },
+                moveFiles: function(files, dir) {
+                    var _app = this;
+                    $.post("/api/file/move", {"toId": dir.id, "ids[0]": files[0].id}
+                      ).done(function(msg) {
+                          _app.cancelMove();
+                          _app.loadFiles(_app.parentId, _app.path);
+                      });
+
+                },
+                cancelMove: function() {
+                    $("#move-template-modal").modal('hide');
+                    Vue.set(this, "dirTree", []);
+                    Vue.set(this, "selectedFiles", []);
+                },
+                listDirs: function(callback) {
+                    var _app = this;
+                   $.get("/api/file/listDirs", {accountId: _app.accountId}
+                    ).done(function(dirs) {
+                        var rootDirs = [];
+                        var dirMap = {};
+                        // create parent map
+                        dirs.forEach(function(dir) {
+                            dirMap[dir.id] = dir; 
+                        });
+                        dirs.forEach(function(dir) {
+                            if (dir.parentRef != undefined) {
+                                var parent = dirMap[dir.parentRef.replace("TdarDir:","")];
+                                if (parent.children == undefined) {
+                                    parent.children = [];
+                                }
+                                parent.children.push(dir);
+                            } else {
+                                rootDirs.push(dir);
+                            }
+                         });
+                        Vue.set(_app, "dirTree", rootDirs);
+                        console.log(_app.dirTree);
+                        callback(rootDirs);
+                        return rootDirs;
                     });
                 },
                 cd : function(file) {

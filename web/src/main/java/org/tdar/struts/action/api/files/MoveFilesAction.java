@@ -31,8 +31,8 @@ public class MoveFilesAction extends AbstractHasFilesAction<AbstractFile> {
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        if (toId != null) {
-            dir = getGenericService().find(TdarDir.class, toId);
+        if (getToId() != null) {
+            setDir(getGenericService().find(TdarDir.class, getToId()));
         }
     }
 
@@ -46,9 +46,25 @@ public class MoveFilesAction extends AbstractHasFilesAction<AbstractFile> {
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.moveFiles(getFiles(), dir, getAuthenticatedUser());
+        personalFilestoreService.moveFiles(getFiles(), getDir(), getAuthenticatedUser());
         setResultObject(true);
         return SUCCESS;
+    }
+
+    public Long getToId() {
+        return toId;
+    }
+
+    public void setToId(Long toId) {
+        this.toId = toId;
+    }
+
+    public TdarDir getDir() {
+        return dir;
+    }
+
+    public void setDir(TdarDir dir) {
+        this.dir = dir;
     }
 
 }

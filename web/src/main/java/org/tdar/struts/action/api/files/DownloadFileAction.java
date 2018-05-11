@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -30,14 +29,13 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/file")
 @Component
 @Scope("prototype")
-public class DownloadFileAction extends AbstractAuthenticatableAction implements Preparable {
+public class DownloadFileAction extends AbstractHasFileAction<TdarFile> implements Preparable {
 
     private static final long serialVersionUID = -8260354072890503475L;
 
     @Autowired
     private transient PersonalFilestoreService filestoreService;
 
-    private Long id;
 
     private String filename;
     private String contentType;
@@ -61,18 +59,17 @@ public class DownloadFileAction extends AbstractAuthenticatableAction implements
 
     @Override
     public void prepare() throws Exception {
-        TdarFile tFile = getGenericService().find(TdarFile.class, id);
-
-        if (!isEditor() && !getAuthorizationService().canEditAccount(getAuthenticatedUser(), tFile.getAccount()) &&
-                !Objects.equal(tFile.getUploader(), getActionErrors())) {
+        super.prepare();
+        if (!isEditor() && !getAuthorizationService().canEditAccount(getAuthenticatedUser(), getFile().getAccount()) &&
+                !Objects.equal(getFile().getUploader(), getActionErrors())) {
             addActionError("downloadFileAction.cannot_downlood");
         }
 
         try {
-            File file = new File(tFile.getLocalPath());
+            File file = new File(getFile().getLocalPath());
             inputStream = new FileInputStream(file);
             contentLength = file.length();
-            filename = tFile.getName();
+            filename = getFile().getName();
             // contentType = tFile.con
 
         } catch (Exception exception) {
@@ -86,14 +83,6 @@ public class DownloadFileAction extends AbstractAuthenticatableAction implements
 
     public void setFilestoreService(PersonalFilestoreService filestoreService) {
         this.filestoreService = filestoreService;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFilename() {

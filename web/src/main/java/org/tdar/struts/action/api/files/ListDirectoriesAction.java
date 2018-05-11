@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.dao.FileOrder;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -22,12 +21,11 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public class ListFilesAction extends AbstractJsonApiAction {
+public class ListDirectoriesAction extends AbstractJsonApiAction {
 
-    private static final long serialVersionUID = 1669249413621107561L;
+    private static final long serialVersionUID = -3758560269825040925L;
     private Long accountId;
     private Long parentId;
-    private String term;
     private FileOrder sortBy;
     private TdarDir parent;
     private BillingAccount account;
@@ -41,15 +39,23 @@ public class ListFilesAction extends AbstractJsonApiAction {
         if (PersistableUtils.isNotNullOrTransient(accountId)) {
             account = getGenericService().find(BillingAccount.class, accountId);
         }
+        
     }
 
+    
+    @Override
+    public void validate() {
+        super.validate();
+        if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), getAccount())) {
+            addActionError("not.allowed");
+        }
+    }
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    @Action(value = "list",
-            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
+    @Action(value = "listDirs")
     public String execute() throws IOException {
-        List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, getTerm() , getAuthenticatedUser());
+        List<TdarDir> files = personalFilestoreService.listDirectories(parent, account, getAuthenticatedUser());
         setResultObject(files);
         return SUCCESS;
     }
@@ -92,14 +98,6 @@ public class ListFilesAction extends AbstractJsonApiAction {
 
     public void setSortBy(FileOrder sortBy) {
         this.sortBy = sortBy;
-    }
-
-    public String getTerm() {
-        return term;
-    }
-
-    public void setTerm(String term) {
-        this.term = term;
     }
 
 }

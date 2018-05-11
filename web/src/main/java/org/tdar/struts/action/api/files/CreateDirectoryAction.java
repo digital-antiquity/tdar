@@ -45,6 +45,10 @@ public class CreateDirectoryAction extends AbstractJsonApiAction {
         if (PersistableUtils.isNotNullOrTransient(accountId)) {
             account = getGenericService().find(BillingAccount.class, accountId);
         }
+        if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), getAccount())) {
+            addActionError("not.allowed");
+        }
+
     }
 
     @Override
