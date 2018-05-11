@@ -125,8 +125,8 @@
 
 <template id="part-entry-template">
     <span>
-        <span class='initials' v-if="initials != undefined">{{initials}}</span>
-        <span class="date">{{formatDate(date)}}</span>
+        <span class='initials' :title="name" :alt="name" v-if="initials != undefined">{{initials}}</span>
+        <span class="date" :title="formatLongDate(date)" :alt="formatLongDate(date)">{{formatDate(date)}}</span>
     </span>
 </template>
 
@@ -137,12 +137,12 @@
 {{comment.comment}} 
    <span v-if="comment.resolved != undefined" class="pull-right">
         <label v-if="comment.resolved == false"  @click="resolveComment()"><input type="checkbox" @click="resolveComment()"/> resolve</label>
-        <i v-if="comment.resolved">{{comment.resolverName}} {{comment.dateResolved}}</i>
+        <i v-if="comment.resolved" :alt="comment.resolverName" :title="comment.resolverName">resolved {{formatDate(comment.dateResolved)}}</i>
     </span> 
 
    <span v-if="comment.undoAction != undefined" class="pull-right">
         <label  @click="undo()"><input type="checkbox" @click="undo()"/> undo</label></span>
-        <i v-if="comment.resolved">{{comment.resolverName}} {{comment.dateResolved}}</i>
+
     </span> 
 
     </div>

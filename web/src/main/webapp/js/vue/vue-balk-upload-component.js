@@ -7,7 +7,15 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         }
       return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
     }
-    
+
+    var _formatLongDate = function(date) {
+        if (date == undefined ) {
+            return "";
+        }
+      return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: 'numeric',
+          hour:'2-digit', minute:'2-digit'});
+    }
+
     var _init = function(appId) {
 
         Vue.component("dir", {
@@ -33,6 +41,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             methods: {
                 formatDate: function(date) {
                     return _formatDate(date);
+                },
+                formatLongDate: function(date) {
+                    return _formatLongDate(date);
                 }
             }
         });
@@ -49,6 +60,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             methods: {
                 formatDate: function(date) {
                     return _formatDate(date);
+                },
+                formatLongDate: function(date) {
+                    return _formatLongDate(date);
                 },
                 resolveComment: function() {
                     var _comment = this.comment;
@@ -88,6 +102,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             methods: {
                 formatDate: function(date) {
                     return _formatDate(date);
+                },
+                formatLongDate: function(date) {
+                    return _formatLongDate(date);
                 }
             }
         });
@@ -159,8 +176,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.$parent.moveUI(this.file);
                 },
                 deleteFile: function(){
-                    console.log('delete');
-                    this.$parent.deleteFile(this.file);
+                    if (confirm("Are you sure you want to delete: "+this.file.filename+"?")) {
+                        console.log('delete');
+                        this.$parent.deleteFile(this.file);
+                    } else {
+                    }
+
                 }
             },
             computed: {
