@@ -32,6 +32,9 @@ public class WorkspaceActionITCase extends AbstractWorkspaceActionITCase {
     @Rollback
     public void testBasicUserHiddenIntegration() {
         DataIntegrationWorkflow workflow = setupHiddenWorkflow();
+        workflow.getAuthorizedUsers().clear();
+        genericService.saveOrUpdate(workflow);
+        genericService.synchronize();
         WorkspaceAction action = generateNewInitializedController(WorkspaceAction.class, getBasicUser());
         action.execute();
         assertFalse("list doesn't include hidden workflow", action.getWorkflows().contains(workflow));

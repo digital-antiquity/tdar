@@ -37,7 +37,7 @@ public class DeleteIntegrationAction extends AbstractDeleteAction<DataIntegratio
 
     @Override
     protected boolean canDelete() {
-        return (Objects.equals(getAuthenticatedUser(), workflow.getSubmitter()));
+        return getAuthorizationService().canDelete(getPersistable(), getAuthenticatedUser());
     }
 
     @Override

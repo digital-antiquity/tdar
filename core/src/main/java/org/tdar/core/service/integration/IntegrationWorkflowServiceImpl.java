@@ -137,6 +137,7 @@ public class IntegrationWorkflowServiceImpl extends ServiceInterface.TypedDaoBas
     @Override
     @Transactional(readOnly = false)
     public void deleteForController(TextProvider provider, DataIntegrationWorkflow persistable, TdarUser authenticatedUser) {
+        getDao().delete(persistable.getAuthorizedUsers());
         getDao().delete(persistable);
     }
 
