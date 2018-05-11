@@ -298,7 +298,7 @@ TDAR.common = function (TDAR, fileupload) {
 
         $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
         	console.debug("Applying collection autocomplete to ",$(this));
-            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_SHARE"});
+            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
         });
 
         // prevent "enter" from submitting

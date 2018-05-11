@@ -161,7 +161,17 @@ public class AwsQueuePollerServiceImpl implements AwsQueuePollerService {
      */
     @Override
     public String getBounce(Message message) {
-        return ((JSONObject) getMessageJson(message).get("bounce")).toJSONString();
+        JSONObject bounce = ((JSONObject) getMessageJson(message).get("bounce"));
+        JSONArray recipients = (JSONArray) bounce.get("bouncedRecipients");
+        JSONObject recipient = (JSONObject) recipients.get(0);
+        String errorString = "";
+        
+        if(recipient.containsKey("diagnosticCode")){
+         errorString = (String) recipient.get("diagnosticCode")+"  ";   
+        }
+        
+        errorString += bounce.toJSONString();
+        return errorString; 
     }
 
     /*
