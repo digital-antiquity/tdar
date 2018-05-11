@@ -18,6 +18,9 @@ public class WorkspaceSettingsActionITCase extends AbstractWorkspaceActionITCase
     public void testIntegrationSettingsInvalid() {
         IntegrationSettingsController controller = generateNewInitializedController(IntegrationSettingsController.class, getBasicUser());
         DataIntegrationWorkflow workflow = setupHiddenWorkflow();
+        workflow.getAuthorizedUsers().clear();
+        genericService.saveOrUpdate(workflow);
+        genericService.synchronize();
         controller.setId(workflow.getId());
         boolean seen = false;
         try {
