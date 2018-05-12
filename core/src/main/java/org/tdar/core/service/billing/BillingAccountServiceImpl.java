@@ -461,7 +461,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
                 owner = authenticatedUser;
             }
             account.setOwner(owner);
-            account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.ADMINISTER_AACCOUNT));
+            account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.ADMINISTER_ACCOUNT));
             account.setName("Default account for " + owner.getProperName());
         }
         return account;
