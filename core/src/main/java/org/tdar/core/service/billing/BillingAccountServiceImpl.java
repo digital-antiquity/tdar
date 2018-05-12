@@ -222,7 +222,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
             account = new BillingAccount();
             account.setName("Generated account for " + user.getProperName());
             account.markUpdated(user);
-            account.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.USE_ACCOUNT));
+            account.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.ADMINISTER_ACCOUNT));
             getDao().saveOrUpdate(account);
         }
         return account;
@@ -461,7 +461,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
                 owner = authenticatedUser;
             }
             account.setOwner(owner);
-            account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.USE_ACCOUNT));
+            account.getAuthorizedUsers().add(new AuthorizedUser(owner, owner, Permissions.ADMINISTER_AACCOUNT));
             account.setName("Default account for " + owner.getProperName());
         }
         return account;
@@ -486,7 +486,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
             }
 
             if (CollectionUtils.isEmpty(selectedAccount.getAuthorizedUsers())) {
-                selectedAccount.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.USE_ACCOUNT));
+                selectedAccount.getAuthorizedUsers().add(new AuthorizedUser(user, user, Permissions.ADMINISTER_ACCOUNT));
             }
 
         } else {
