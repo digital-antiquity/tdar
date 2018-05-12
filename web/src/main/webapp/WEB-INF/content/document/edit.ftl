@@ -19,7 +19,7 @@
 
     <#macro citationInformationToggle>
         <div data-tiplabel="Document Type" data-tooltipcontent="Select the document type. Appropriate citation fields will be displayed below." class="doctype">
-            <@s.radio name='document.documentType' emptyOption='false' listValue="label"
+            <@s.radio name='document.documentType' emptyOption='false' listValue="label" inline=true
             list='%{documentTypes}' label="Document Type"  />
         </div>
 

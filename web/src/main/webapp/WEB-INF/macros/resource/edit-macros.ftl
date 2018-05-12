@@ -310,8 +310,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited sectionId='#allMaterialInformation' />
 		<div id="allMaterialInformation">
 	        <div id="divMaterialInformation">
-	            <@s.checkboxlist theme="bootstrap" name='approvedMaterialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
-	            spanClass="span2" numColumns="3" />
+	            <@s.checkboxlist name='approvedMaterialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
+	            spanClass="col-sm" numColumns="3" />
     	    </div>
 
             <@keywordRows "Other" uncontrolledMaterialKeywords 'uncontrolledMaterialKeywords' "MaterialKeyword" />
@@ -355,8 +355,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited sectionId='#divInvestigationInformation' />
         <div id="divInvestigationInformation">
 
-            <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="span3"
-            theme="bootstrap"        label="Select Type(s)" listTitle="definition" />
+            <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="col-sm"
+                 label="Select Type(s)" listTitle="definition" />
         </div>
     </div>
         <@helptext.investigationType />
