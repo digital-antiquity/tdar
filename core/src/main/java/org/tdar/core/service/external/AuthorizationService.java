@@ -254,4 +254,8 @@ public interface AuthorizationService {
 
     boolean canModifyPermissions(TdarUser authenticatedUser, Resource persistable);
 
+    boolean canDelete(DataIntegrationWorkflow persistable, TdarUser authenticatedUser);
+
+    boolean canChargeAccount(TdarUser authenticatedUser, BillingAccount account);
+
 }
