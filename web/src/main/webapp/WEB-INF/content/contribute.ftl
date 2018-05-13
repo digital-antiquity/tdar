@@ -193,7 +193,7 @@ color: #7d7a77;
 </div>
 <script>
     $(document).ready(function () {
-        TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
+        TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/api/cart/quote"/>");
 });
 
 </script>
