@@ -84,7 +84,8 @@ public class IndexAction extends AbstractAuthenticatableAction {
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
         featuredResources.forEach(r -> {
             if (r.getFirstLatitudeLongitudeBox() != null) {
-                r.getFirstLatitudeLongitudeBox().obfuscateAll();
+                getGenericService().markReadOnly(r.getFirstActiveLatitudeLongitudeBox());
+                r.getFirstLatitudeLongitudeBox().obfuscate();
             }
         });
         try {
