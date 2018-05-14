@@ -31,6 +31,7 @@ import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.utils.PaginationHelper;
+import org.tdar.utils.json.JacksonView;
 
 /**
  * @author Adam Brin
@@ -74,7 +75,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     SerializationService serializationService;
 
     private Map<String, Object> result = new HashMap<>();
-    private Class filter;
+    private Class<? extends JacksonView> filter;
     private List<I> results = Collections.emptyList();
 
     public String getCallback() {
@@ -324,7 +325,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
-    public void jsonifyResult(Class<?> filter) {
+    public void jsonifyResult(Class<?  extends JacksonView> filter) {
         prepareResult();
         this.setFilter(filter);
     }
@@ -333,7 +334,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         return getResult();
     }
 
-    public Class getJsonView() {
+    public Class<? extends JacksonView> getJsonView() {
         return getFilter();
     }
 
@@ -431,11 +432,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
         return null;
     }
 
-    public Class getFilter() {
+    public Class<? extends JacksonView> getFilter() {
         return filter;
     }
 
-    public void setFilter(Class filter) {
+    public void setFilter(Class<?  extends JacksonView> filter) {
         this.filter = filter;
     }
 

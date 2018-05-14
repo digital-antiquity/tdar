@@ -50,10 +50,10 @@ import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.junit.IgnoreActionErrors;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TestFileUploadHelper;
+import org.tdar.struts.action.api.files.UploadAction;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
-import org.tdar.struts.action.upload.UploadController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
@@ -685,13 +685,15 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         evictCache();
         genericService.synchronize();
 
-        UploadController uc = generateNewInitializedController(UploadController.class, newUser);
-        uc.grabTicket();
-        Long ticketId = uc.getPersonalFilestoreTicket().getId();
-        uc.setTicketId(ticketId);
+        UploadAction uc = generateNewInitializedController(UploadAction.class, newUser);
+//        uc.grabTicket();
+//        uc.setTicketId(ticketId);
         uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
+        uc.prepare();
+        uc.validate();
         uc.upload();
+        Long ticketId = uc.getTicket().getId();
 
         doc = genericService.find(Document.class, id);
         assertFalse(authenticationAndAuthorizationService.canDo(newUser, doc,
@@ -707,7 +709,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         try {
             dc.edit();
             FileProxy fileProxy = new FileProxy();
-            fileProxy.setFilename(TestConstants.TEST_DOCUMENT_NAME);
+            fileProxy.setName(TestConstants.TEST_DOCUMENT_NAME);
             fileProxy.setAction(FileAction.ADD);
             fileProxy.setRestriction(FileAccessRestriction.CONFIDENTIAL);
             dc.getFileProxies().add(fileProxy);
@@ -728,7 +730,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     @SuppressWarnings("unused")
     @Test
     @Rollback
-    public void testDocumentReplaceWithInvalidfile() throws TdarActionException {
+    public void testDocumentReplaceWithInvalidfile() throws Exception {
         setIgnoreActionErrors(true);
         Document document = setupAndLoadResource(TestConstants.TEST_DOCUMENT, Document.class);
         Long documentId = document.getId();

@@ -3,6 +3,7 @@ package org.tdar.core.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -14,7 +15,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.dao.base.GenericDao;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.utils.HashQueue;
 
@@ -32,6 +37,8 @@ public class FileProxyServiceImpl implements FileProxyService {
 
     @Autowired
     private PersonalFilestoreService filestoreService;
+    @Autowired
+    private GenericDao genericDao;
 
     /*
      * (non-Javadoc)
@@ -50,7 +57,7 @@ public class FileProxyServiceImpl implements FileProxyService {
                 proxy.setAction(FileAction.NONE);
             }
             if (proxy.getAction().shouldExpectFileHandle()) {
-                hashQueue.push(proxy.getFilename(), proxy);
+                hashQueue.push(proxy.getName(), proxy);
             }
         }
         return hashQueue;
@@ -62,10 +69,28 @@ public class FileProxyServiceImpl implements FileProxyService {
      * @see org.tdar.core.service.FileProxyService#reconcilePersonalFilestoreFilesAndFileProxies(java.util.List, java.lang.Long)
      */
     @Override
-    public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(List<FileProxy> fileProxies, Long ticketId) {
-        cullInvalidProxies(fileProxies);
+    public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(InformationResource ir, Long accountId, List<FileProxy> fileProxies_, Long ticketId) {
+        
+        BillingAccount account = genericDao.find(BillingAccount.class, accountId);
+        
+        cullInvalidProxies(fileProxies_);
         List<PersonalFilestoreFile> pendingFiles = filestoreService.retrieveAllPersonalFilestoreFiles(ticketId);
-        ArrayList<FileProxy> finalProxyList = new ArrayList<FileProxy>(fileProxies);
+        ArrayList<FileProxy> finalProxyList = new ArrayList<FileProxy>(fileProxies_);
+        ArrayList<FileProxy> fileProxies = new ArrayList<FileProxy>(fileProxies_);
+        Iterator<FileProxy> iterator = fileProxies.iterator();
+        // if we have a tdarFile, remove it from the proxy list we're going to reconcile below
+        while (iterator.hasNext()) {
+            FileProxy proxy = iterator.next();
+            if (proxy.getTdarFileId() != null) {
+                TdarFile file = genericDao.find(TdarFile.class, proxy.getTdarFileId());
+                if (file != null) {
+                    proxy.setFile(new File(file.getLocalPath()));
+                    file.setResource(ir);
+                    file.setAccount(account);
+                    iterator.remove();
+                }
+            }
+        }
 
         // subset of proxy list, hashed into queues.
         HashQueue<String, FileProxy> proxiesNeedingFiles = buildProxyQueue(fileProxies);
@@ -103,7 +128,7 @@ public class FileProxyServiceImpl implements FileProxyService {
             if (proxy == null) {
                 logger.debug("fileProxy[{}] is null - culling", iterator.previousIndex());
                 iterator.remove();
-            } else if (StringUtils.isEmpty(proxy.getFilename())) {
+            } else if (StringUtils.isEmpty(proxy.getName())) {
                 logger.debug("fileProxy[{}].fileName is blank - culling (value: {})", iterator.previousIndex(), proxy);
                 iterator.remove();
             }

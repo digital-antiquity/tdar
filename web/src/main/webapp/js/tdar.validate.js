@@ -149,35 +149,35 @@ TDAR.validate = (function($, ctx) {
             });
         }
 
-        var fileValidator;
-        if ($form.data("multiple-upload")) {
-            fileValidator = new TDAR.fileupload.FileuploadValidator($form);
-            fileValidator.addRule("nodupes");
-    
-            //fixme: (TDAR-4722) prohibit file replacements on 'add' pages. Due to bug, UI may display 'replace' option even when it shouldn't.
-            // Until bug is fixed, we use this additional workaround to prevent the user from submitting if the UI allowed an invalid replacement.
-            var path = window.location.pathname
-            if(path.length && path.match(/(document|dataset|image).add$/)) {
-                fileValidator.addRule("noreplacements");
-            }
-    
-            TDAR.fileupload.validator = fileValidator;
-        }
+//        var fileValidator;
+//        if ($form.data("multiple-upload")) {
+//            fileValidator = new TDAR.fileupload.FileuploadValidator($form);
+//            fileValidator.addRule("nodupes");
+//    
+//            //fixme: (TDAR-4722) prohibit file replacements on 'add' pages. Due to bug, UI may display 'replace' option even when it shouldn't.
+//            // Until bug is fixed, we use this additional workaround to prevent the user from submitting if the UI allowed an invalid replacement.
+//            var path = window.location.pathname
+//            if(path.length && path.match(/(document|dataset|image).add$/)) {
+//                fileValidator.addRule("noreplacements");
+//            }
+//    
+//            TDAR.fileupload.validator = fileValidator;
+//        }
         
         
-        if ($form.data("datatable")) {
-            if (fileValidator) {
-                TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
-            } else {
-                console.error("no file validator defined");
-            }
-        }
-        
-        
-        var _type = $form.data("type");
-        if (_type == 'GEOSPATIAL') {
-            TDAR.fileupload.addGisValidation(fileValidator);
-        }
+//        if ($form.data("datatable")) {
+//            if (fileValidator) {
+//                TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+//            } else {
+//                console.error("no file validator defined");
+//            }
+//        }
+//        
+//        
+//        var _type = $form.data("type");
+//        if (_type == 'GEOSPATIAL') {
+//            TDAR.fileupload.addGisValidation(fileValidator);
+//        }
         
 
         if (!$form.data("multiple-upload") && ($form.data("total-files") == 0 || $form.data("total-files") > 0)) {

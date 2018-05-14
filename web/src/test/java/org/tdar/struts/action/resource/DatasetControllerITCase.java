@@ -246,7 +246,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceSame() throws TdarActionException {
+    public void testDatasetReplaceSame() throws Exception {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class, dataset.getId());
     }
@@ -259,7 +259,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
      * 
      * @throws TdarActionException
      */
-    public void testDatasetReplaceLegacy() throws TdarActionException {
+    public void testDatasetReplaceLegacy() throws Exception {
         Dataset dataset = setupAndLoadResource(PUNDO_FAUNAL_REMAINS_XLS, Dataset.class);
         DataTable table = dataset.getDataTables().iterator().next();
         final Long id = dataset.getId();
@@ -287,6 +287,9 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
                     el = null;
                     assertEquals(elId, elid2);
                 } catch (TdarActionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
@@ -357,7 +360,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentExcel() throws TdarActionException, FileNotFoundException {
+    public void testDatasetReplaceDifferentExcel() throws Exception {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());
@@ -372,7 +375,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentColTypes() throws TdarActionException {
+    public void testDatasetReplaceDifferentColTypes() throws Exception {
         Dataset dataset = setupAndLoadResource("dataset_with_floats.xls", Dataset.class);
         String filename = "dataset_with_floats_to_varchar.xls";
         assertEquals(DataTableColumnType.DOUBLE, dataset.getDataTables().iterator().next().getColumnByName("col2floats").getColumnDataType());
@@ -385,7 +388,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
 
     @Test
     @Rollback
-    public void testDatasetReplaceDifferentMdb() throws TdarActionException, FileNotFoundException {
+    public void testDatasetReplaceDifferentMdb() throws Exception {
         Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
         controller.setId(dataset.getId());

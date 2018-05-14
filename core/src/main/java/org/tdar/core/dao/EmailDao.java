@@ -20,7 +20,7 @@ public class EmailDao extends HibernateBase<Email> {
     @SuppressWarnings("unchecked")
     public List<Email> findEmailByGuid(String guid) {
         logger.debug("Searching for messages with guid {} ", guid);
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_EMAIL_BY_GUID);
+        Query<Email> query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_EMAIL_BY_GUID);
         query.setParameter("guid", guid);
         return query.getResultList();
     }
