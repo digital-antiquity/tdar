@@ -1,6 +1,13 @@
 TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     "use strict";
 
+    /**
+     * this tool handles the file-first upload management
+     */
+    
+    /** format the data to a yy/mm/dd
+     * 
+     */
     var _formatDate = function(date) {
         if (date == undefined ) {
             return "";
@@ -8,6 +15,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
       return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
     }
 
+    /**
+     * format date with time
+     */
     var _formatLongDate = function(date) {
         if (date == undefined ) {
             return "";
@@ -18,6 +28,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
 
     var _init = function(appId) {
 
+        /**
+         * list a directory for the "move interface"
+         */
         Vue.component("dir", {
             template:"#move-entry-template",
             props: ["dir", "index"],
@@ -34,6 +47,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             }
         });
 
+        /**
+         * List a "Person" (Initial and URL)
+         */
         Vue.component("pentry", {
             template:"#part-entry-template",
             props: ['date','initials','name', 'url'],
@@ -47,6 +63,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 }
             }
         });
+        
+        /**
+         * Display a comment
+         */
         Vue.component("comment", {
             template:"#comment-entry-template",
             props: ["comment", "fileid"],
@@ -65,6 +85,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return _formatLongDate(date);
                 },
                 resolveComment: function() {
+                    // mark comment resolved on server and update the data locally
                     var _comment = this.comment;
                     console.log(_comment);
                     var _app = this;
@@ -87,6 +108,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             computed: {
                 commentClass: function() {
+                    // comment.type is manually defined as "internal" for "fake" comments created for actions
+                    // like record created, reviewed, etc.
                     if (this.comment.type == undefined) {
                         return "comment";
                     }
@@ -95,19 +118,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             }
         });
 
-        Vue.component("pentry", {
-            template:"#part-entry-template",
-            props: ['date','initials','name', 'url'],
-            data: function() {return {}},
-            methods: {
-                formatDate: function(date) {
-                    return _formatDate(date);
-                },
-                formatLongDate: function(date) {
-                    return _formatLongDate(date);
-                }
-            }
-        });
+        /**
+         * A "row" in the file tool for 1 entry
+         */
         Vue.component('fileEntry', {
             template : "#file-entry-template",
             props : [ "file", "index", "editable" , "studentreviewed", "externalreviewed", "fullservice"],
@@ -127,6 +140,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         this.$parent.cd(file);
                 },
                 _mark: function(role, date, name, initials) {
+                    /**
+                     * mark a file as reviewed or curated based on role
+                     */
                     var id = this.file.id;
                     var _file= this.file;
                     var ret = {};
@@ -152,6 +168,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     var ret = this._mark("EXTERNAL_REVIEWED", "dateExternalReviewed", "externalReviewedByName", "externalReviewedByInitials");
                 },
                 _editMetadata: function (note, ocr, curate) {
+                    /**
+                     * for OCR, note, and curation, there is no "mark" so we send the metadata directly
+                     */
                     var id = this.file.id;
                     var _file= this.file;
                     var _app = this;
@@ -169,23 +188,25 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this._editMetadata(this.file.note, this.file.needsOcr, this.file.curated);
                 },
                 showComments: function() {
+                    // load the comments and show the comment modal
                     this.$parent.showComments(this.file);
                 },
                 moveUI : function() {
-                    console.log('move');
+                    // load the move modal
                     this.$parent.moveUI(this.file);
                 },
                 deleteFile: function(){
+                    // delet the file
                     if (confirm("Are you sure you want to delete: "+this.file.filename+"?")) {
                         console.log('delete');
                         this.$parent.deleteFile(this.file);
-                    } else {
-                    }
+                    } 
 
                 }
             },
             computed: {
                 noteChanged: function() {
+                    // watch the note property and show a "save" button when there are differenes
                     var _note = this.file.note;
                     if (_note == undefined || _note == '') {
                         _note = undefined;
@@ -200,25 +221,30 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   return true;
                 },
                 fileLink : function() {
+                    // compute the link to create a record from the file
                     return "/resource/createRecordFromFiles?fileIds=" + this.file.id; 
                 },
                 downloadUrl : function() {
+                    // downlaod URL for a file
                     return "/file/download/" + this.file.id; 
                 },
                 rowId : function() {
                     return "files-row-" + this.index;
                 },
                 canStudentReview: function () {
+                    // if student hasn't reviewed
                     if (this.file.dateStudentReviewed != undefined) {
                         return false;
                     }
 
+                    // and it's been curated and the account supports student review...
                     if (this.file.studentReviewed && this.file.dateCurated != undefined) {
                         return true;
                     }
                     return false;
                 },
                 canCurate: function () {
+                    // if it hasn't been curated and we have a resource id, then yes
                     if (this.file.dateCurated != undefined) {
                         return false;
                     }
@@ -228,6 +254,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return false;
                 },
                 cannotCurate: function() {
+                    // if we're a dir, curated is false (not undefined)  
                     if (this.file.size == 0 || this.file.size == undefined) {
                         return true;
                     }
@@ -241,6 +268,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return true;
                 },
                 canReview: function () {
+                    // either (a) done student review, or curated
                     if (this.file.dateReviewed != undefined) {
                         return false;
                     }
@@ -251,6 +279,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return false;
                 },
                 canExternalReview: function () {
+                    // if externally reviewed and has gone through normal review
                     if (this.file.dateExternalReviewed != undefined) {
                         return false;
                     }
@@ -263,6 +292,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             }
         });
 
+        /** config for widget
+         * 
+         */
         var config = {
                 fullService : true,
                 studentReviewed : false,
@@ -271,11 +303,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 accounts: JSON.parse($("#accountJson").text())
         };
 
+        /**
+         * the main app
+         */
         var app = new Vue({
             el : appId,
             data : {
-                listUrl : "/api/file/list",
-                url : "/api/file/upload",
                 validFormats : config.validFormats,
                 ableToUpload : true,
                 parentId: undefined,
@@ -303,6 +336,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             watch: {
                 search: function(after, before) {
+                   // when the search variable changes, then send the search to the server 
                     console.log(before, after);
                     if (after == undefined || after == "") {
                         this.loadFiles(this.parentId, this.path);
@@ -311,17 +345,21 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     }
                 },
                 accountId: function(after,before) {
+                    // watch the account id and change account
                     this.switchAccount(after);
                 }
             },
             methods : {
                 switchAccount: function(accountId) {
+                    // reset the dir tree, and other state variables
                     Vue.set(this,"commentFile",undefined);
                     Vue.set(this,"dirTree",[]);
                     Vue.set(this,"dirStack",[]);
                     Vue.set(this,"selectedFiles",[]);
                     this.loadFiles(undefined,undefined);
                     var _app = this;
+
+                    // load state for accounts from properties  
                     this.accounts.forEach(function(account){
                         if (account.id == accountId) {
                             Vue.set(_app,"fullService",account.fullService);
@@ -332,8 +370,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                  },
                 loadFiles: function (parentId, path) {
+                    // load all of the files for the dir and account
                     var _app = this;
-                    $.get(this.listUrl, {"parentId": parentId, "accountId":_app.accountId}, {
+                    $.get("/api/file/list", {"parentId": parentId, "accountId":_app.accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         Vue.set(_app,"files", msg);
@@ -342,9 +381,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     Vue.set(this, "path", path);
                 },
                 searchFiles: function (search) {
+                    // send a search
                     var _app = this;
                     console.log(search);
-                    $.get(this.listUrl, {"term":search, "accountId":_app.accountId}, {
+                    $.get("/api/file/list", {"term":search, "accountId":_app.accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         console.log(msg);
@@ -352,6 +392,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                 },
                 unmark: function(role, file) {
+                    // undo the mark action (curated, reviewed, etc.)
                     var id = file.id;
                     var _file= file;
                     var ret = {};
@@ -365,6 +406,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return ret;
                 },
                 showComments: function(file) {
+                    // show the comments modal, and load it with some "fabricated" comments that are actually "mark" actions
                     var _app = this;
                     Vue.set(_app,"commentFile",file);
                     console.log(this.commentFile);
@@ -389,6 +431,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             msg.push({comment:'tDAR Resource Created id:' + file.resourceId, dateCreated: file.dateResourceCreated , commentorName: file.resourceCreatedByName, commentorInitials: file.resourceCreatedByInitials, type:'internal'});
                         }
 
+                        // sort by date ascending
                         msg.sort(function(a,b){
                             // Turn your strings into dates, and then subtract them
                             // to get a value that is either negative, positive, or zero.
@@ -400,6 +443,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     
                 },
                 addComment: function() {
+                    // add a comment to a file
                     console.log('add comment', this.comment);
                     var _app = this;
                     if (this.comment == undefined || this.comment == '') {
@@ -413,6 +457,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                 },
                 deleteFile: function(file) {
+                    // delete a file (not including UI, so we assume the user has been asked)
                     console.log('delete file!');
                     var id = file.id;
                     var _file= file;
@@ -427,6 +472,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
 
                 },
                 mkdir: function() {
+                    // create a directory
                   var dir = this.dir;
                   var _app = this;
                   $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": $("#dirName").val() , accountId: _app.accountId}
@@ -436,6 +482,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                 },
                 moveUI: function(file) {
+                    // show the move UI
                     var _app = this;
                     _app.selectedFiles.push(file);
                   var dirs = this.listDirs(function(){
@@ -444,9 +491,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   });
                 },
                 moveSelectedFilesTo: function(dir) {
+                    // called by UI 
                     this.moveFiles(this.selectedFiles, dir);
                 },
                 moveFiles: function(files, dir) {
+                    // move selected files to directory
                     var _app = this;
                     $.post("/api/file/move", {"toId": dir.id, "ids[0]": files[0].id}
                       ).done(function(msg) {
@@ -456,11 +505,13 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
 
                 },
                 cancelMove: function() {
+                    // close modal
                     $("#move-template-modal").modal('hide');
                     Vue.set(this, "dirTree", []);
                     Vue.set(this, "selectedFiles", []);
                 },
                 listDirs: function(callback) {
+                    // list all directories for an account (used by move UI)
                     var _app = this;
                    $.get("/api/file/listDirs", {accountId: _app.accountId}
                     ).done(function(dirs) {
@@ -488,6 +539,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                 },
                 cd : function(file) {
+                    // move into a directory
                     console.log(JSON.stringify(file));
                     var id = undefined;
                     var displayName = "";
@@ -499,8 +551,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.loadFiles(id, displayName);
                 },
                 validateAdd : function(file, replace) {
-                console.log(this.validFormats);
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, 0 , 100000 , false ,this )
+                    // validate a file that's been added
+                    console.log(this.validFormats);
+                        return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, 0 , 100000 , false ,this )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
@@ -557,7 +610,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 this.loadFiles(undefined,"/");
                 var _app = this;
                 var up = $('#fileupload').fileupload({
-                    url : this.url,
+                    url : "/api/file/upload",
                     dataType : 'json',
                     paramName : "uploadFile",
                     dropZone: "#filesTool",
