@@ -31,10 +31,13 @@
 <tr>
  <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</td>
 </tr>
+<tr>
+ <td colspan="20"><span v-for="(dir, index) in dirStack">/ {{dir.filename}} </span></td>
+</tr>
         <tbody >
             <tr v-if="parentId != undefined">
             <td></td>
-            <td> <span class="link" @click="cd()"><i class="icon-folder-close"></i> .. </span>  </td>
+            <td> <span class="link" @click="cdUp()"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
             <tr class="template-download fade existing-file in" v-for="(file,index) in files"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload" 
@@ -177,10 +180,12 @@
     </td>
     <td>
         <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
-    </td><td nowrap>
-        <a href="#" v-if="fullservice" @click="showComments()"><i class="icon-comment"></i>
+    </td>
+    <td nowrap v-if="fullservice">
+        <a href="#"  @click="showComments()"><i class="icon-comment"></i>
         <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
-    </td><td>
+    </td>
+    <td>
         <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
     </td><td>
         <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>

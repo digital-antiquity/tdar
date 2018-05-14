@@ -312,6 +312,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 validFormats : config.validFormats,
                 ableToUpload : true,
                 parentId: undefined,
+                parent: undefined,
                 studentReviewed: false,
                 externalReviewed: false,
                 daysFilesExpireAfter: 60,
@@ -368,6 +369,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             Vue.set(_app,"externalReviewed",account.externalReviewed);
                         }
                     });
+                 },
+                 parentDir() {
+                     if (this.dirStack.length > 1) {
+                         return this.dirStack[this.dirStack.length -2];
+                     }
+                     return undefined;
                  },
                 loadFiles: function (parentId, path) {
                     // load all of the files for the dir and account
@@ -538,7 +545,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         return rootDirs;
                     });
                 },
-                cd : function(file) {
+                cdUp: function() {
+                    var parent = this.parentDir();
+                    this.dirStack.splice(-1, 1);
+                    this.cd(parent, true);
+                },
+                cd : function(file, up) {
                     // move into a directory
                     console.log(JSON.stringify(file));
                     var id = undefined;
@@ -548,6 +560,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         displayName = file.displayName;
                     }
                     console.log(id, displayName);
+                    if (up == undefined || up == false) {
+                        this.dirStack.push(file);
+                    }
                     this.loadFiles(id, displayName);
                 },
                 validateAdd : function(file, replace) {
