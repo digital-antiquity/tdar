@@ -466,7 +466,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         console.log(file);
                         var index = $.inArray(_file, _app.files);
                         if (index != -1) {
-                            _app.splice(index, 1);
+                            _app.files.splice(index, 1);
                         }
                     });
 
