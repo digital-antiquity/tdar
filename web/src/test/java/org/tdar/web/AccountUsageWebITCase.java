@@ -138,6 +138,9 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         setInput("proxies[5].permission",Permissions.USE_ACCOUNT);
         submitForm();
         logger.debug(getPageText());
+        assertTextPresentInPage("test user");
+        assertTextPresentInPage("Charge to Billing Account");
+//        assertTextPresentInPage("test user  test@tdar.org   Charge to Billing Account");
     }
 
     @Test
