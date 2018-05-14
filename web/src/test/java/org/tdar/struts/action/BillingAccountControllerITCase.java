@@ -135,6 +135,29 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccount account = genericService.find(BillingAccount.class, accountId);
         assertTrue(account.getInvoices().contains(invoice));
     }
+    
+
+    @Test
+    @Rollback
+    public void testAddingUser() throws TdarActionException {
+        Long accountId = createAccount(getBasicUser(), genericService).getId();
+        Invoice invoice = createTrivialInvoice();
+        TdarUser newUser = createAndSaveNewUser();
+        genericService.saveOrUpdate(invoice);
+        genericService.synchronize();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class, getBasicUser());
+        controller.setInvoiceId(invoice.getId());
+        controller.setId(accountId);
+        controller.prepare();
+        controller.edit();
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getUser(), newUser, Permissions.USE_ACCOUNT)));
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        assertEquals(Action.SUCCESS, save);
+        BillingAccount account = genericService.find(BillingAccount.class, accountId);
+        assertTrue(account.getInvoices().contains(invoice));
+        assertEquals(account.getAuthorizedUsers().size(), 2);
+    }
 
     @Test
     @Rollback
