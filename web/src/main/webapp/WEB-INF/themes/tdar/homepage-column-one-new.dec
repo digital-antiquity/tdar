@@ -1,0 +1,71 @@
+<div class="row">
+    <div class="span4 bucket">
+        <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
+
+        <h3>Access &amp; Use</h3>
+
+        <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
+
+        <p>
+            <a href="http://www.tdar.org/why-tdar/data-access/" class="button">Learn More</a>
+        </p>
+    </div>
+    <div class="span4 bucket">
+        <img src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
+
+        <h3>Preserve</h3>
+
+        <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
+
+        <p>
+            <a href="http://www.tdar.org/why-tdar/preservation/" class="button">Learn More</a>
+        </p>
+    </div>
+    <div class="span4 bucket">
+        <img src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
+
+        <h3>Upload</h3>
+
+        <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
+
+        <p>
+            <a href="http://www.tdar.org/why-tdar/contribute/" class="button">Learn More</a>
+        </p>
+    </div>
+</div>
+<div class="row">
+<div class="span4 bucket">
+                <img src="${staticHost}/images/r4/icn-uses.png" alt="Who Uses tDAR" title="Who Uses tDAR" />
+
+                <h3>Who Uses tDAR</h3>
+
+                <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.
+</p>
+
+                <p>
+                    <a href="https://www.tdar.org/why-tdar/who-uses-tdar/" class="button">Learn More</a>
+                </p>
+
+            </div>
+
+<div class="span4 bucket">
+                <img src="${staticHost}/images/r4/icn-gears.png" alt="Plans / Services" title="Plans / Services" />
+
+
+                <h3>Plans &amp; Services</h3>
+                <p style="min-height:4em">Pricing for uploads and other services.</p>
+
+                <p>
+                    <a href="/cart/add" class="button">Learn More</a>
+                </p>
+</div><div class="span4 bucket">
+                <img src="${staticHost}/images/r4/icn-heart.png" alt="Donate" title="Donate" />
+
+                <h3>Donate</h3>
+                <p style="min-height:4em">tDAR is a not-for profit repository.</p>
+
+                <p>
+                    <a href="https://www.tdar.org/donate/" class="button">Learn More</a>
+                </p>
+</div>
+</div>
