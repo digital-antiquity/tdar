@@ -256,6 +256,32 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         }
         controller.setServletRequest(getServletPostRequest());
         String save = controller.save();
+        assertNotEquals(Action.SUCCESS, save);
+        assertNotEquals(controller.getActionErrors().size(), 0);
+        ignoreActionErrors(true);
+    }
+    
+
+    @Test
+    @Rollback
+    public void testRemovingUsersFromAccountValid() throws TdarActionException {
+        Long id = setupAccountWithUsers();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class, getAdminUser());
+        controller.setId(id);
+        controller.prepare();
+        int size = controller.getAccount().getAuthorizedUsers().size()- 1;
+        controller.getAccount().getAuthorizedUsers().forEach(au -> {
+            controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),au.getUser(), Permissions.ADMINISTER_ACCOUNT)));
+        });
+        Iterator<UserRightsProxy> iterator = controller.getProxies().iterator();
+        while (iterator.hasNext()) {
+            UserRightsProxy proxy = iterator.next();
+            if (proxy.getId().equals(getBillingAdminUserId())) {
+                iterator.remove();
+            }
+        }
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
         assertEquals(Action.SUCCESS, save);
         BillingAccount account = genericService.find(BillingAccount.class, id);
         // no change because of admin user
