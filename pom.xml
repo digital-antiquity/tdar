@@ -243,6 +243,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>1.8.0</version>
+            </dependency>
+            <dependency>
                 <groupId>net.sf.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
                 <version>${ehcache.version}</version>
@@ -845,7 +850,7 @@
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.3.1.Final</version>
+            <version>3.3.2.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
