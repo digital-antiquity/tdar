@@ -370,7 +370,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                     });
                  },
-                 parentDir() {
+                 parentDir: function() {
                      if (this.dirStack.length > 1) {
                          return this.dirStack[this.dirStack.length -2];
                      }
