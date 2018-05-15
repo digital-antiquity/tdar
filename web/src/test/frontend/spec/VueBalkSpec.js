@@ -31,8 +31,8 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             // set some IDs
             // apply the fixxture
             
-            var extra = "<script id='validFormats'>['tif','pdf','doc']</script>" + 
-            "<script id='accountJson'>[]</script>";
+            var extra = "<script id='validFormats'>"+JSON.stringify(["tif","pdf","doc"])+"</script>" + 
+            "<script id='accountJson'>"+JSON.stringify([{name:"full service", id:1, fullService:true, studentReview:true}, {name:"normal", id:2, fullService:false}])+"</script>";
             
             fixture = fixture.replace("<script id=\"insert\"></script>",extra);
             var fix = jasmine.getFixtures().set(fixture);
@@ -46,17 +46,17 @@ describe("BalkSpec.js: fileupload suite - root", function(){
 
         it("check valid file extension", function() {
             var conf = getBaseConfig();
-            conf.validFormats.push('.tif');
-            conf.validFormats.push('.jpg');
-            conf.validFormats.push('.tiff');
             setConfig(conf);            
             jasmine.Ajax.stubRequest('/upload/upload').andReturn({
                 "responseText": 'success'
               });
             var vapp = TDAR.vuejs.balk.init("#filesTool");
-//            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}]});
-//            expect(result).toBe(true);
-//            expect(vapp.files).toHaveLength(1);
+             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
+            expect(result).toBe(false);
+            expect(vapp.files).toHaveLength(0);
+            var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.tif',size:1000,type:'tif/image',lastModified:-1}]});
+            expect(result).toBe(true);
+            expect(vapp.files).toHaveLength(1);
 //            result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jpg/image',lastModified:-1}]});
 //            expect(result).toBe(false);
 //            expect(vapp.files).toHaveLength(1);

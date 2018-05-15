@@ -669,6 +669,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         .bind('fileuploadprogress', _app.updateFileProgress);
             }
         });
+        return app;
     };
     
     return {
