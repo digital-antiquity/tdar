@@ -31,6 +31,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.utils.SpatialObfuscationUtil;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -135,7 +136,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     public Double getObfuscatedCenterLatitude() {
         if (getObfuscatedEast() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return getCenterLat(getObfuscatedNorth(), getObfuscatedSouth());
     }
@@ -146,7 +147,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     public Double getObfuscatedCenterLongitude() {
         if (getObfuscatedEast() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return getCenterLong(getObfuscatedWest(), getObfuscatedEast());
     }
@@ -237,89 +238,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     /**
-     * This randomize function is used when displaying lat/longs on a map. It is
-     * passed the max and the min lat or long and then uses a salt to randomize.
-     * The salt here is approx 1 miles. If the distance between num1 and num2 is
-     * less than 1 miles, then this should expand the box by 1 miles + some random
-     * 1 mile quantity.
-     * 
-     * If larger than the "salt" then don't do anything for that "side"
-     * 
-     * NOTE: the box should always be bigger than the original.
-     * 
-     * http://www.movable-type.co.uk/scripts/html
-     */
-    protected static Double randomizeIfNeedBe(final Double num1, final Double num2, int type, boolean isMin) {
-        if ((num1 == null) && (num2 == null)) {
-            return null;
-        }
-
-        Random r = new Random();
-        double salt = ONE_MILE_IN_DEGREE_MINUTES;
-        double add = 0;
-
-        Double numOne = ObjectUtils.firstNonNull(num1, num2);
-
-        if (num1 == null) {
-            throw new TdarRecoverableRuntimeException("latLong.one_null");
-        }
-        // if we call setMin setMax etc.. serially, we can get a null pointer exception as num2 is not yet set...
-        Double numTwo = ObjectUtils.firstNonNull(num2, numOne + salt / 2d);
-        if (Math.abs(numOne.doubleValue() - numTwo.doubleValue()) <= salt) {
-            add += salt / 2d;
-        } else {
-            return numOne;
-        }
-
-        if (numOne < numTwo) { // -5 < -3
-            add *= -1d;
-            salt *= -1d;
-        } else {
-            // If two points are the same, we want to always scoot the maximum long/lat higher, and the minimum long/lat lower, such that the minimum distance
-            // exceeds the salt distance.
-            if (numOne.equals(numTwo) && isMin) {
-                add *= -1d;
-                salt *= -1d;
-            }
-        }
-        // -5 - .05 - .02
-        double ret = numOne.doubleValue() + add + salt * r.nextDouble();
-        if (type == LONGITUDE) {
-            if (ret > MAX_LONGITUDE)
-                ret -= 360d;
-            if (ret < MIN_LONGITUDE)
-                ret += 360d;
-        }
-
-        // NOTE: Ideally, this should do something different, but in reality, how
-        // many archaeological sites are really going to be in this area???
-        if (type == LATITUDE) {
-            if (Math.abs(ret) > MAX_LATITUDE)
-                ret = MAX_LATITUDE;
-        }
-
-        return new Double(ret);
-    }
-
-    /**
-     * Puts all the logic around the returning of obfuscated values vs actual values into one place.
-     * 
-     * @param obfuscatedValue
-     * @param actualValue
-     * @return either the obfuscated value or the actual value passed in, depending on the setting of the isOkayToShowExactLocation switch
-     */
-    private Double getProtectedResult(final Double obfuscatedValue, final Double actualValue) {
-        Double result = obfuscatedValue;
-        if (isOkayToShowExactLocation) {
-            result = actualValue;
-        }
-        if (!Objects.equals(actualValue, obfuscatedValue)) {
-            setObfuscatedObjectDifferent(true);
-        }
-        return result;
-    }
-
-    /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
@@ -384,12 +302,13 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         north = maximumLatitude;
     }
 
-    public void obfuscateAll() {
+    private void updateObfuscatedValues() {
         if (north != null && south != null) {
             List<Double> dbls = Arrays.asList(north, south, east, west);
             int hashCode = dbls.hashCode();
             if (hash != hashCode) {
                 hash = hashCode;
+
                 if (isOkayToShowExactLocation) {
                     obfuscatedNorth = north;
                     obfuscatedWest = west;
@@ -398,10 +317,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
                     return;
                 }
 
-                obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
-                obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
-                obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
-                obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
+                obfuscatedObjectDifferent = SpatialObfuscationUtil.obfuscate(this);
             }
         }
     }
@@ -527,28 +443,28 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     public double getObfuscatedAbsoluteLatLength() {
         if (getObfuscatedNorth() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return Math.abs(getObfuscatedNorth() - getObfuscatedSouth());
     }
 
     public double getObfuscatedAbsoluteLongLength() {
         if (getObfuscatedEast() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return Math.abs(getObfuscatedEast() - getObfuscatedWest());
     }
 
     public double getAbsoluteLatLength() {
         if (getObfuscatedNorth() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return Math.abs(getObfuscatedNorth() - getObfuscatedSouth());
     }
 
     public double getAbsoluteLongLength() {
         if (getObfuscatedEast() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return Math.abs(getObfuscatedEast() - getObfuscatedWest());
     }
@@ -562,14 +478,14 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      */
     public boolean crossesDateline() {
         if (getObfuscatedEast() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return LatitudeLongitudeBox.crossesDateline(getObfuscatedWest(), getObfuscatedEast());
     }
 
     public boolean crossesPrimeMeridian() {
         if (getObfuscatedEast() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
         return LatitudeLongitudeBox.crossesPrimeMeridian(getObfuscatedWest(), getObfuscatedEast());
     }
@@ -630,7 +546,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         obfuscatedObjectDifferent = false;
         logger.trace("obfuscating latLong");
         if (getObfuscatedNorth() == null) {
-            obfuscateAll();
+            updateObfuscatedValues();
         }
 
         Double val = getObfuscatedNorth();
