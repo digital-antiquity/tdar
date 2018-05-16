@@ -176,7 +176,7 @@ public class BulkUploadServiceImpl implements BulkUploadService {
                     continue;
                 }
 
-                String fileName = fileProxy.getFilename();
+                String fileName = fileProxy.getName();
 
                 logger.info("inspecting ... {}", fileName);
                 count++;
@@ -201,7 +201,7 @@ public class BulkUploadServiceImpl implements BulkUploadService {
                 informationResource = importService.bringObjectOntoSession(informationResource, authenticatedUser, Arrays.asList(fileProxy), null, false);
                 genericDao.saveOrUpdate(informationResource);
                 informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
-                asyncUpdateReceiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileProxy.getFilename()));
+                asyncUpdateReceiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileProxy.getName()));
                 resources.add(informationResource);
             } catch (Exception e) {
                 logger.warn("something happend  while creating file", e);

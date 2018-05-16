@@ -176,7 +176,7 @@ public class FileProxyWrapper {
      */
     public InformationResourceFileVersion createVersionMetadataAndStore(FileProxy proxy) throws IOException {
         InformationResourceFile irFile = proxy.getInformationResourceFile();
-        String originalFilename = proxy.getFilename();
+        String originalFilename = proxy.getName();
         String filename = BaseFilestore.sanitizeFilename(originalFilename);
         File file = proxy.getFile();
         if ((file == null) || !file.exists()) {
@@ -305,14 +305,14 @@ public class FileProxyWrapper {
                             proxy.setAction(FileAction.NONE);
                         }
                     } else {
-                        throw new TdarRecoverableRuntimeException("abstractInformationResourceService.bad_proxy", Arrays.asList(proxy.getFilename(),
+                        throw new TdarRecoverableRuntimeException("abstractInformationResourceService.bad_proxy", Arrays.asList(proxy.getName(),
                                 proxy.getAction(), proxy.getFileId()));
                     }
                 }
             }
 
             if (proxy.getAction() == FileAction.REPLACE || proxy.getAction() == FileAction.ADD) {
-                irFile.setFilename(proxy.getFilename());
+                irFile.setFilename(proxy.getName());
             }
 
             proxy.setInformationResourceFile(irFile);

@@ -552,7 +552,24 @@
                 query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.FIND_EMAIL_BY_GUID,
-                query = "from Email email where email.messageUuid=:guid")
+                query = "from Email email where email.messageUuid=:guid"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.FIND_FILES_BY_STATUS,
+                query = "from TdarFile file where file.status in (:status)"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.LIST_FILES_FOR_DIR,
+                query = "from AbstractFile file where (:topLevel is true and file.parent is null or file.parent.id=:parentId or :term is not null) "
+                        + "and (:account is null or file.account=:account) "
+                        + "and (:term is null or lower(file.filename) like :term  )"
+                        + "and (:uploader is null or :account is null or file.uploader=:uploader)"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.LIST_DIR,
+                query = "from TdarDir file where (:topLevel is true or :parentId is not null and file.parent.id=:parentId) "
+                        + "and (file.account=:account) "),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.FIND_DIR_BY_NAME,
+                query = "from TdarDir file where file.filename =:name and (:account is null or file.account=:account) and (:uploader is null or file.uploader=:uploader)")
+
 })
 package org.tdar.core.dao;
 

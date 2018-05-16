@@ -31,7 +31,7 @@ public class FileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
         find("#resourceDescription").val("this is a test");
 
         // selenium will not operate on elements it cannot 'see', so we need to unhide the actual file upload input
-        WebElement fileInput = find("#fileAsyncUpload").first();
+        WebElement fileInput = find("#fileupload").first();
         fileInput.sendKeys(path);
 
         // once the upload is complete the delete button will appear.

@@ -186,7 +186,7 @@ public class APIController extends AbstractApiController {
             String name = uploadFileFileName.get(i);
             File file = uploadFile.get(i);
             for (FileProxy proxy : fileProxies) {
-                if (Objects.equals(proxy.getFilename(), name)) {
+                if (Objects.equals(proxy.getName(), name)) {
                     getLogger().debug("{} -- {}", proxy, name);
                     proxy.setFile(file);
                     seen = true;

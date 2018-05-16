@@ -226,13 +226,13 @@ TDAR.common = function (TDAR, fileupload) {
             //init fileupload
             var id = $('input[name=id]').val();
             if (props.ableToUpload && props.multipleUpload) {
-                TDAR.fileupload.registerUpload({
-                    informationResourceId: id,
-                    acceptFileTypes: props.acceptFileTypes,
-                    formSelector: props.formSelector,
-                    inputSelector: '#fileAsyncUpload',
-                    fileuploadSelector: '#divFileUpload'
-                });
+//                TDAR.fileupload.registerUpload({
+//                    informationResourceId: id,
+//                    acceptFileTypes: props.acceptFileTypes,
+//                    formSelector: props.formSelector,
+//                    inputSelector: '#fileAsyncUpload',
+//                    fileuploadSelector: '#divFileUpload'
+//                });
 
             }
         }

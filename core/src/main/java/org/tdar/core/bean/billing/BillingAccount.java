@@ -48,6 +48,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonAccountFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -71,6 +74,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
 
     @Length(max = FieldLength.FIELD_LENGTH_255, min = 1)
     @NotNull
+    @JsonView({JsonAccountFilter.class })
     private String name;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -133,10 +137,28 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
 
     @Column(name = "files_used")
     private Long filesUsed = 0L;
+    
     @Column(name = "space_used")
     private Long spaceUsedInBytes = 0L;
+
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
+    
+    @Column(name = "file_expiry_days", nullable=false)
+    @JsonView({JsonAccountFilter.class })
+    private Integer daysFilesExpireAfter = 60;
+    
+    @Column(name = "full_service", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
+    private Boolean fullService = false;
+    
+    @Column(name = "student_review", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
+    private Boolean studentReview = false;
+    
+    @Column(name = "external_review", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
+    private Boolean externalReview = false;
 
     public BillingAccount() {
     }
@@ -501,6 +523,38 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @Override
     public boolean isValid() {
         return StringUtils.isNotBlank(name);
+    }
+
+    public Boolean getFullService() {
+        return fullService;
+    }
+
+    public void setFullService(Boolean fullService) {
+        this.fullService = fullService;
+    }
+
+    public Boolean getStudentReview() {
+        return studentReview;
+    }
+
+    public void setStudentReview(Boolean studentReview) {
+        this.studentReview = studentReview;
+    }
+
+    public Boolean getExternalReview() {
+        return externalReview;
+    }
+
+    public void setExternalReview(Boolean externalReview) {
+        this.externalReview = externalReview;
+    }
+
+    public Integer getDaysFilesExpireAfter() {
+        return daysFilesExpireAfter;
+    }
+
+    public void setDaysFilesExpireAfter(Integer daysFilesExpireAfter) {
+        this.daysFilesExpireAfter = daysFilesExpireAfter;
     }
 
 }

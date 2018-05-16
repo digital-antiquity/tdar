@@ -31,7 +31,7 @@ public class DataTableViewRowITCase extends AbstractAdminControllerITCase {
         controller = generateNewInitializedController(RowViewAction.class);
     }
 
-    private void prepareValidData() throws TdarActionException {
+    private void prepareValidData() throws Exception {
         dataset = setupAndLoadResource(TEST_DATASET, Dataset.class);
         assertNotNull(dataset);
         DataTable dataTable = dataset.getDataTables().iterator().next();

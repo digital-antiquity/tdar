@@ -41,20 +41,20 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
 
     private static final String PATH = TestConstants.TEST_ROOT_DIR;
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls) throws TdarActionException {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls) throws Exception {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, -1L);
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) throws TdarActionException {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis) throws Exception {
         return setupAndLoadResource(filename, cls, permis, -1L);
     }
 
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) throws TdarActionException {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, Long id) throws Exception {
         return setupAndLoadResource(filename, cls, FileAccessRestriction.PUBLIC, id);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) throws TdarActionException {
+    public <C> C setupAndLoadResource(String filename, Class<C> cls, FileAccessRestriction permis, Long id) throws Exception {
 
         AbstractInformationResourceController controller = null;
         Long ticketId = -1L;

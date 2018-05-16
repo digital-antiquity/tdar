@@ -15,6 +15,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.notification.EmailType;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
@@ -31,6 +32,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.geospatial.GeospatialController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
@@ -96,6 +99,8 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private String fileInputMethod;
     private String fileTextInput;
     protected FileSaveWrapper fsw = new FileSaveWrapper();
+    private String uploadSettings;
+    private String vueFilesFallback;
 
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
@@ -123,6 +128,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     private boolean hasFileProxyChanges = false;
+
+    @Autowired
+    private SerializationService serializationService;
+
+    private List<Long> fileIds;
+    private List<TdarFile> tdarFiles;
 
     @Autowired
     private ResourceEditControllerServiceImpl resourceEditControllerService;
@@ -162,6 +173,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
         AuthWrapper<InformationResource> authWrapper = new AuthWrapper<InformationResource>(getResource(), isAuthenticated(), getAuthenticatedUser(),
                 isEditor());
+        fsw.setAccountId(getAccountId());
         resourceSaveControllerService.setupFileProxiesForSave(proxy, authWrapper, fsw, this);
         setHasFileProxyChanges(fsw.isFileProxyChanges());
         // super.save(document);
@@ -264,9 +276,6 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
 
-    @Autowired
-    private SerializationService serializationService;
-
     @Override
     public String loadAddMetadata() {
         String retval = super.loadAddMetadata();
@@ -276,6 +285,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         Object proj = projectService.getProjectAsJson(obsProj, getAuthenticatedUser(), null);
         json = serializationService.convertFilteredJsonForStream(proj, JsonProjectLookupFilter.class, null);
         return retval;
+    }
+
+    public Collection<RequiredOptionalPairs> getRequiredOptionalPairs() {
+        return new ArrayList<>();
     }
 
     @Override
@@ -298,6 +311,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             if (!informationResourceFile.isDeleted()) {
                 fileProxies.add(new FileProxy(informationResourceFile));
             }
+        }
+
+        for (TdarFile file : getTdarFiles()) {
+            fileProxies.add(new FileProxy(file));
         }
     }
 
@@ -427,6 +444,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
+        setTdarFiles(getGenericService().findAll(TdarFile.class, fileIds));
+        for (TdarFile file : getTdarFiles()) {
+            if (file.getAccount() != null) {
+                setAccountId(file.getAccount().getId());
+            }
+        }
         if (getPersistable() == null)
             return;
     }
@@ -596,5 +619,60 @@ public abstract class AbstractInformationResourceController<R extends Informatio
 
     public void setFileTextInput(String fileTextInput) {
         this.fileTextInput = fileTextInput;
+    }
+
+    public String getUploadSettings() {
+        return uploadSettings;
+    }
+
+    public String getFileUploadSettings() {
+        initializeFileProxies();
+        FileUploadSettings settings = new FileUploadSettings();
+        settings.setAbleToUpload(isAbleToUploadFiles());
+        if (this instanceof DatasetController) {
+            settings.setDataTableEnabled(true);
+        }
+        if (this instanceof GeospatialController) {
+            settings.setSideCarOnly(true);
+        }
+        getLogger().debug("proxies: {} ({})", fileProxies, fileProxies.size());
+        settings.getFiles().addAll(fileProxies);
+        settings.setMultipleUpload(isMultipleFileUploadEnabled());
+        settings.setMaxNumberOfFiles(getMaxUploadFilesPerRecord());
+        settings.setResourceId(getId());
+        settings.setTicketId(getTicketId());
+        settings.setUserId(getAuthenticatedUser().getId());
+        settings.getValidFormats().addAll(getValidFileExtensions());
+        settings.getRequiredOptionalPairs().addAll(getRequiredOptionalPairs());
+        try {
+            return serializationService.convertToJson(settings);
+        } catch (Throwable t) {
+            getLogger().error("{}", t, t);
+            return "{}";
+        }
+    }
+
+    public String getVueFilesFallback() {
+        return vueFilesFallback;
+    }
+
+    public void setVueFilesFallback(String vueFilesFallback) {
+        this.vueFilesFallback = vueFilesFallback;
+    }
+
+    public List<Long> getFileIds() {
+        return fileIds;
+    }
+
+    public void setFileIds(List<Long> fileIds) {
+        this.fileIds = fileIds;
+    }
+
+    public List<TdarFile> getTdarFiles() {
+        return tdarFiles;
+    }
+
+    public void setTdarFiles(List<TdarFile> tdarFiles) {
+        this.tdarFiles = tdarFiles;
     }
 }
