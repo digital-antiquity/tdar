@@ -20,6 +20,7 @@ import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
@@ -323,6 +324,13 @@ public class TdarFile extends AbstractFile {
             return null;
         }
         return getResource().getUploader().getProperName();
+    }
+
+    public Status getResourceStatus() {
+        if (getResource() == null) {
+            return null;
+        }
+        return getResource().getStatus();
     }
 
     public String getResourceCreatedByInitials() {

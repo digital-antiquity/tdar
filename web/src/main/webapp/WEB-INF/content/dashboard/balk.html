@@ -20,6 +20,8 @@
     <th></th>
     <th>file</th>
     <th>upload</th>
+    <th>note</th>
+    <th></th>
     <th v-if="fullService">curate</th>
     <th v-if="fullService && studentReviewed">student review</th>
     <th v-if="fullService"><span v-if="studentReviewed">staff </span> review</th>
@@ -161,7 +163,12 @@
         <pentry v-if="file.size != undefined" :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
                 
         </td>
-    <td v-if="fullservice && (file.wontCurate == undefined || file.wontCurate == true)">
+    <td v-if="fullservice">  <input name="type" value="" v-model="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
+    <td>
+        <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
+    </td>
+
+    <td v-if="fullservice && (file.curate == undefined || file.curate == true)">
         <pentry :initials="file.curatedByInitials" :date="file.dateCurated" :name="file.curatedByName" ></pentry> 
         <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
         <i v-if="!cannotCurate" @click="wontCurate()" class="icon-thumbs-down"></i>
@@ -175,11 +182,7 @@
     <td v-if="fullservice && externalreviewed">
        <pentry :initials="file.externalReviewedByInitials" :date="file.dateExternalReviewed" :name="file.externalReviewedByName" ></pentry> 
         <i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
-    <td v-if="fullservice">  <input name="type" value="" v-model="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
-    <td><a :href="file.resourceUrl">{{file.resourceId }}</a> 
-    </td>
-    <td>
-        <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
+    <td><a :href="file.resourceUrl">{{file.resourceId }} {{file.resourceStatus}} </a> 
     </td>
     <td nowrap v-if="fullservice">
         <a href="#"  @click="showComments()"><i class="icon-comment"></i>

@@ -72,7 +72,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             props: ["comment", "fileid"],
             data: function() {return {
                 resolved :false,
-                undoAction: undefined
             }},
             mounted: function() {
                 Vue.set(this,"resolved", this.comment.resolved);
@@ -100,7 +99,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                 },
                 undo: function() {
-                  this.$parent.unmark(this.undoAction, this.$parent.commentFile);
+                  this.$parent.unmark(this.comment.undoAction, this.$parent.commentFile);
                 },
                 assignComment: function() {
                     
