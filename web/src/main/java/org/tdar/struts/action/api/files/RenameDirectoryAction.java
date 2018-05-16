@@ -2,7 +2,7 @@ package org.tdar.struts.action.api.files;
 
 import java.io.IOException;
 
-import org.apache.http.auth.AUTH;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -11,49 +11,65 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/api/file")
-public class MoveFilesToAccountAction extends AbstractHasFilesAction<AbstractFile> {
+public class RenameDirectoryAction extends AbstractHasFileAction<TdarDir>{
 
-    private static final long serialVersionUID = 5163531363907929404L;
-    private Long toAccountId;
+    private static final long serialVersionUID = 7688622418020400216L;
+    private String name;
     private BillingAccount account;
+    private Long accountId;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
+    
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        if (getToAccountId() != null) {
-            setAccount(getGenericService().find(BillingAccount.class, getToAccountId()));
+        if (PersistableUtils.isNotNullOrTransient(accountId)) {
+            account = getGenericService().find(BillingAccount.class, accountId);
         }
-    }
 
+    }
+    
     @Override
     public void validate() {
         super.validate();
-        if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), getAccount())) {
-            addActionError("not.allowed");
+        if (StringUtils.isBlank(name)) {
+            addActionError("dir.missing");
         }
-    }
+        if (PersistableUtils.isNotNullOrTransient(accountId)) {
+            account = getGenericService().find(BillingAccount.class, accountId);
+        }
 
-    @Action(value = "moveToAccount",
+    }
+    
+    @Action(value = "renameDir",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.moveFilesBetweenAccounts(getFiles(), getAccount(), getAuthenticatedUser());
-        setResultObject(true);
+        personalFilestoreService.renameDirectory(getFile(), getAccount(),  name, getAuthenticatedUser());
+        setResultObject(getFile());
         return SUCCESS;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public BillingAccount getAccount() {
@@ -64,12 +80,5 @@ public class MoveFilesToAccountAction extends AbstractHasFilesAction<AbstractFil
         this.account = account;
     }
 
-    public Long getToAccountId() {
-        return toAccountId;
-    }
-
-    public void setToAccountId(Long toAccountId) {
-        this.toAccountId = toAccountId;
-    }
 
 }

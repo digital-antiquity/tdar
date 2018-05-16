@@ -346,4 +346,19 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         }
         genericDao.saveOrUpdate(files);
     }
+    
+    @Override
+    @Transactional(readOnly=false)
+    public void renameDirectory(TdarDir file, BillingAccount account, String name, TdarUser authenticatedUser) throws FileAlreadyExistsException {
+        List<AbstractFile> listFiles = listFiles(file.getParent(), account, null, authenticatedUser);
+        for (AbstractFile f : listFiles) {
+            if (f instanceof TdarDir && StringUtils.equalsIgnoreCase(f.getName(), name)) {
+                throw new FileAlreadyExistsException(name);
+            }
+        }
+        file.setInternalName(name);
+        file.setFilename(name);
+        genericDao.saveOrUpdate(file);
+        
+    }
 }

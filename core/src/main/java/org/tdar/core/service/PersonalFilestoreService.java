@@ -117,4 +117,6 @@ public interface PersonalFilestoreService {
 
     void moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser);
 
+    void renameDirectory(TdarDir file, BillingAccount account, String name, TdarUser authenticatedUser) throws FileAlreadyExistsException;
+
 }
