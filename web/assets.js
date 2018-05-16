@@ -1,6 +1,5 @@
-//This file specifies which resources should be copied. It gets read from the 
-//WebpackCopyModule 
-
+//This file specifies which resources should be copied. It gets read from the WebpackCopyModule 
+//This returns two arrays: one first CSS files that and the second for node module directories that need to be copied. 
 const CSS = [
      './src/main/webapp/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css',
      './src/main/webapp/css/famfamfam.css',

@@ -3,14 +3,18 @@ const path = require('path');
 //const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+
+//Assets is a list of files that were previously Bower-managed dependencies.
+//They need to be copied into the webapp/components directory so they can be served in the WAR file. 
 const Assets = require('./assets');
 
+//This will parse out
 const cssFiles = Assets[0].map(asset => {
     return {
         from: path.resolve(__dirname, `./${asset}`),
         to: path.resolve(__dirname, './src/main/webapp/components/')
       };
-    });
+});
 
 const nodeModules = Assets[1].map(asset => {
     return {
@@ -18,11 +22,14 @@ const nodeModules = Assets[1].map(asset => {
         to: path.resolve(__dirname, `./src/main/webapp/components/${asset.name}`),
         toType: 'dir'
       };
-    });
+});
     
 module.exports = {
   entry: {
+      //This is the main bundle entry point. All of the tdar components are listed in here and will be bundled as one file.
       bundle: './src/main/webapp/js/index.js',
+      
+      //All of the angular integration files will be bundled into a separate file. 
       angular : [ 
          './src/main/webapp/js/data-integration/app',
          './src/main/webapp/js/data-integration/ng-IntegrationController',
@@ -35,12 +42,14 @@ module.exports = {
          './src/main/webapp/js/data-integration/ng-DatatableDirective'
      ]
   },
+  
+  //One one output entry can be specified. The [name] will be replaced with what the name of the entry point was. 
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, './src/main/webapp/components')
   },
   
-  
+  //This is supposed to be for the CSS files that get bundled to be loaded into one file. 
   optimization: {
       splitChunks: {
         cacheGroups: {
@@ -52,7 +61,8 @@ module.exports = {
           }
         }
       }
-    },
+  },
+  
   module: {
       rules: [
           {
@@ -64,6 +74,8 @@ module.exports = {
           }
         ]
     },
+    
+    //This plugin forces the files defined in the Assets.js file to be copied to their destination. 
     plugins: [
         new CopyWebpackPlugin(
                 cssFiles 
