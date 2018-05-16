@@ -115,4 +115,6 @@ public interface PersonalFilestoreService {
 
     List<TdarDir> listDirectories(TdarDir parent, BillingAccount account, TdarUser authenticatedUser);
 
+    void moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser);
+
 }

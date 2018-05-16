@@ -48,7 +48,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Autowired
     private FileProcessingDao fileProcessingDao;
-    
+
     @Autowired
     private FileAnalyzer analyzer;
 
@@ -106,14 +106,14 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         PersonalFilestore filestore = getPersonalFilestore(ticket);
         try {
             // if we're not unfiled then require uniqueness
-            if (dir == null || !StringUtils.equals(dir.getName(),TdarDir.UNFILED)) {
+            if (dir == null || !StringUtils.equals(dir.getName(), TdarDir.UNFILED)) {
                 List<AbstractFile> listFiles = listFiles(dir, account, null, user);
                 for (AbstractFile f : listFiles) {
                     if (StringUtils.equalsIgnoreCase(f.getName(), fileName)) {
                         throw new FileAlreadyExistsException(fileName);
                     }
                 }
-                
+
             }
             PersonalFilestoreFile store = filestore.store(ticket, file, fileName);
             TdarFile tdarFile = new TdarFile();
@@ -243,7 +243,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = false)
-    public void editMetadata(TdarFile file, String note, boolean needsOcr, boolean curate,TdarUser user) {
+    public void editMetadata(TdarFile file, String note, boolean needsOcr, boolean curate, TdarUser user) {
         file.setNote(note);
         file.setCurated(curate);
         file.setRequiresOcr(needsOcr);
@@ -303,9 +303,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     }
 
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public FileComment addComment(AbstractFile file, String comment, TdarUser authenticatedUser) {
-        FileComment comm = new FileComment(authenticatedUser,comment);
+        FileComment comm = new FileComment(authenticatedUser, comment);
         file.getComments().add(comm);
         genericDao.saveOrUpdate(file);
         genericDao.saveOrUpdate(comm);
@@ -313,7 +313,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     }
 
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public FileComment resolveComment(AbstractFile file, FileComment comment, TdarUser authenticatedUser) {
         comment.setResolved(true);
         comment.setDateResolved(new Date());
@@ -323,18 +323,27 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     }
 
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public ResourceType getResourceTypeForFiles(TdarFile files) {
-        // THIS IS A TEMPORARY FIX UNTIL WE HAVE BETTER LOGIC FOR DETERMINING TYPE 
+        // THIS IS A TEMPORARY FIX UNTIL WE HAVE BETTER LOGIC FOR DETERMINING TYPE
         List<ResourceType> types = new ArrayList<>(ResourceType.activeValues());
         types.remove(ResourceType.CODING_SHEET);
-//        types.remove(ResourceType.GEOSPATIAL);
+        // types.remove(ResourceType.GEOSPATIAL);
         ResourceType resourceType = analyzer.suggestTypeForFileName(files.getName(), types.toArray(new ResourceType[0]));
-        if (resourceType == ResourceType.GEOSPATIAL && 
+        if (resourceType == ResourceType.GEOSPATIAL &&
                 (files.getExtension().equalsIgnoreCase("jpg") || files.getExtension().equalsIgnoreCase("tif"))) {
-            //FIXME: need better logic here
+            // FIXME: need better logic here
             resourceType = ResourceType.IMAGE;
         }
         return resourceType;
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser) {
+        for (AbstractFile f : files) {
+            f.setAccount(account);
+        }
+        genericDao.saveOrUpdate(files);
     }
 }

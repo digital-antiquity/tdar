@@ -1,12 +1,15 @@
 package org.tdar.struts.action.api.files;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 
@@ -40,8 +43,12 @@ public abstract class AbstractHasFilesAction<C extends AbstractFile> extends Abs
             addActionError("moveFileAction.not_all_files_valid");
         }
 
+        Set<BillingAccount> accounts = new HashSet<>();
         for (C f : files) {
-            if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), f.getAccount())) {
+            accounts.add(f.getAccount());
+        }
+        for (BillingAccount act : accounts) {
+            if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), act)) {
                 addActionError("not.allowed");
                 break;
             }
