@@ -54,10 +54,10 @@
             </div>
 
             <div class="control-group">
-                <label class="control-label">Enable Student Review (if full service)</label>
+                <label class="control-label">Enable Initial Review phase (if full service)</label>
 
                 <div class="controls">
-                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="account.studentReview"
+                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="account.initialReview"
                                                                             value="true" <@commonr.checkedif account.studentReview true /> />Yes</label>
                     <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="account.studentReview"
                                                                              value="false" <@commonr.checkedif account.studentReview false /> />No</label>
