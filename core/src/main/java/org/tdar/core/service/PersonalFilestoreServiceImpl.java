@@ -267,9 +267,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
                     file.setReviewedBy(user);
                     file.setDateReviewed(new Date());
                     break;
-                case STUDENT_REVIEWED:
-                    file.setStudentReviewedBy(user);
-                    file.setDateStudentReviewed(new Date());
+                case INITIAL_REVIEWED:
+                    file.setInitialReviewedBy(user);
+                    file.setDateInitialReviewed(new Date());
                     break;
             }
             genericDao.saveOrUpdate(file);
@@ -293,9 +293,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
                     file.setReviewedBy(null);
                     file.setDateReviewed(null);
                     break;
-                case STUDENT_REVIEWED:
-                    file.setStudentReviewedBy(null);
-                    file.setDateStudentReviewed(null);
+                case INITIAL_REVIEWED:
+                    file.setInitialReviewedBy(null);
+                    file.setDateInitialReviewed(null);
                     break;
             }
             genericDao.saveOrUpdate(file);

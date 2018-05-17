@@ -99,7 +99,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                 },
                 undo: function() {
-                  this.$parent.unmark(this.comment.undoAction, this.$parent.commentFile);
+                  this.$parent.unmark(this.comment.undoAction, this.comment.name, this.comment.initial, this.comment.date, this.$parent.commentFile);
                 },
                 assignComment: function() {
                     
@@ -122,7 +122,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
          */
         Vue.component('fileEntry', {
             template : "#file-entry-template",
-            props : [ "file", "index", "editable" , "studentreviewed", "externalreviewed", "fullservice"],
+            props : [ "file", "index", "editable" , "initialreviewed", "externalreviewed", "fullservice"],
             data : function() {
                 return {
                     previousDeleteState : '',
@@ -157,8 +157,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 markCurated: function() {
                     var ret = this._mark("CURATED","dateCurated", "curatedByName", "curatedByInitials");
                 },
-                markStudentCurated: function() {
-                    var ret = this._mark("STUDENT_CURATED", "dateStudentReviewed", "studentReviewedByName", "studentReviewedByInitials");
+                markInitialCurated: function() {
+                    var ret = this._mark("INITIAL_CURATED", "dateInitialReviewed", "initialReviewedByName", "initialReviewedByInitials");
                 },
                 markReviewed: function() {
                     var ret = this._mark("REVIEWED", "dateReviewed", "reviewedByName","reviewedByInitials");
@@ -230,14 +230,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 rowId : function() {
                     return "files-row-" + this.index;
                 },
-                canStudentReview: function () {
-                    // if student hasn't reviewed
-                    if (this.file.dateStudentReviewed != undefined) {
+                canInitialReview: function () {
+                    // if initial hasn't reviewed
+                    if (this.file.dateInitialReviewed != undefined) {
                         return false;
                     }
 
-                    // and it's been curated and the account supports student review...
-                    if (this.file.studentReviewed && this.file.dateCurated != undefined) {
+                    // and it's been curated and the account supports  review...
+                    if (this.file.initialReviewed && this.file.dateCurated != undefined) {
                         return true;
                     }
                     return false;
@@ -267,12 +267,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return true;
                 },
                 canReview: function () {
-                    // either (a) done student review, or curated
+                    // either (a) done  review, or curated
                     if (this.file.dateReviewed != undefined) {
                         return false;
                     }
-                    if (this.studentReviewed && this.file.dateStudentReviewed != undefined || 
-                            this.studentReviewed != true && this.file.dateCurated != undefined) {
+                    if (this.initialReviewed && this.file.dateInitialReviewed != undefined || 
+                            this.initialReviewed != true && this.file.dateCurated != undefined) {
                         return true;
                     }
                     return false;
@@ -296,7 +296,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
          */
         var config = {
                 fullService : true,
-                studentReviewed : false,
+                initialReviewed : false,
                 externalReviewed : true,
                 validFormats: JSON.parse($("#validFormats").text()),
                 accounts: JSON.parse($("#accountJson").text())
@@ -312,7 +312,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 ableToUpload : true,
                 parentId: undefined,
                 parent: undefined,
-                studentReviewed: false,
+                initialReviewed: false,
                 externalReviewed: false,
                 daysFilesExpireAfter: 60,
                 fullService: false,
@@ -364,7 +364,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         if (account.id == accountId) {
                             Vue.set(_app,"fullService",account.fullService);
                             Vue.set(_app,"daysFilesExpireAfter",account.daysFilesExpireAfter);
-                            Vue.set(_app,"studentReviewed",account.studentReviewed);
+                            Vue.set(_app,"initialReviewed",account.initialReviewed);
                             Vue.set(_app,"externalReviewed",account.externalReviewed);
                         }
                     });
@@ -397,7 +397,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         Vue.set(_app,"files", msg);
                     });
                 },
-                unmark: function(role, file) {
+                unmark: function(role, name , initial, date,  file) {
                     // undo the mark action (curated, reviewed, etc.)
                     var id = file.id;
                     var _file= file;
@@ -405,9 +405,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     $.post("/api/file/unmark", {"ids[0]": id,"role":role}).done(function(files){
                         ret = files[0];
                         console.log(ret);
-                        Vue.set(_file, date, ret[date]);
-                        Vue.set(_file, name, ret[name]);
-                        Vue.set(_file, initials, ret[initials]);
+                        Vue.set(_file, date, undefined);
+                        Vue.set(_file, name, undefined);
+                        Vue.set(_file, initial, undefined);
                     });
                     return ret;
                 },
@@ -421,16 +421,16 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     }).done(function(msg){
                         msg.push({comment:'uploaded', dateCreated: file.dateCreated, commentorName: file.uploaderName, commentorInitials: file.uploaderInitials, type:'internal'});
                         if (file.dateCurated != undefined) {
-                            msg.push({comment:'curated', undoAction:"CURATED", dateCreated: file.dateCurated, commentorName: file.curatedByName, commentorInitials: file.curatedByInitials, type:'internal'});
+                            msg.push({comment:'curated', undoAction:"CURATED", initial: 'curatedByInitials', date:'dateCurated', name:'curatedBy', dateCreated: file.dateCurated, commentorName: file.curatedByName, commentorInitials: file.curatedByInitials, type:'internal'});
                         }
                         if (file.dateReviewed != undefined) {
-                            msg.push({comment:'reviewed',undoAction:"REVIEWED", dateCreated: file.dateReviewed, commentorName: file.reviewedByName, commentorInitials: file.reviewedByInitials, type:'internal'});
+                            msg.push({comment:'reviewed',undoAction:"REVIEWED", initial: 'reviewedByInitials', date:'dateReviewed', name:'reviewedBy', dateCreated: file.dateReviewed, commentorName: file.reviewedByName, commentorInitials: file.reviewedByInitials, type:'internal'});
                         }
-                        if (file.dateStudentReviewed != undefined) {
-                            msg.push({comment:'student reviewed', undoAction:"STUDENT_REVIEWED", dateCreated: file.dateStudentReviewed, commentorName: file.studentReviewedByName, commentorInitials: file.studentReviewedByInitials, type:'internal'});
+                        if (file.dateInitialReviewed != undefined) {
+                            msg.push({comment:'initiial reviewed', undoAction:"INITIAL_REVIEWED", initial: 'initialReviewedByInitials', date:'dateInitialReviewed', name:'initialReviewedBy', dateCreated: file.dateInitialReviewed, commentorName: file.initialReviewedByName, commentorInitials: file.initialReviewedByInitials, type:'internal'});
                         }
                         if (file.dateExternalReviewed != undefined) {
-                            msg.push({comment:'external reviewed', undoAction:"EXTERNAL_REVIEWED", dateCreated: file.dateExternalReviewed , commentorName: file.externalReviewedByName, commentorInitials: file.externalReviewedByInitials, type:'internal'});
+                            msg.push({comment:'external reviewed', undoAction:"EXTERNAL_REVIEWED",initial: 'externalReviewedByInitials', date:'dateExternalReviewed', name:'externalReviewedBy', dateCreated: file.dateExternalReviewed , commentorName: file.externalReviewedByName, commentorInitials: file.externalReviewedByInitials, type:'internal'});
                         }
 
                         if (file.resourceId != undefined) {

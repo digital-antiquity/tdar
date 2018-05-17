@@ -52,17 +52,17 @@ public class TdarFile extends AbstractFile {
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "note")
     private String note;
 
-    @Column(name = "date_student_reviewed", nullable = false)
+    @Column(name = "date_initial_reviewed", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateStudentReviewed;
+    private Date dateInitialReviewed;
 
     @Column(name = "date_external_reviewed", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateExternalReviewed;
 
     @ManyToOne
-    @JoinColumn(name = "student_reviewer_id")
-    private TdarUser studentReviewedBy;
+    @JoinColumn(name = "initial_reviewer_id")
+    private TdarUser initialReviewedBy;
 
     @ManyToOne
     @JoinColumn(name = "external_reviewer_id")
@@ -146,7 +146,7 @@ public class TdarFile extends AbstractFile {
 
     public String getResourceUrl() {
         if (resource != null) {
-            return resource.getAbsoluteUrl();
+            return "/" + resource.getAbsoluteUrl();
         }
         return null;
     }
@@ -204,9 +204,9 @@ public class TdarFile extends AbstractFile {
         return null;
     }
 
-    public String getStudentReviewedByName() {
-        if (studentReviewedBy != null) {
-            return studentReviewedBy.getProperName();
+    public String getInitialReviewedByName() {
+        if (initialReviewedBy != null) {
+            return initialReviewedBy.getProperName();
         }
         return null;
     }
@@ -218,9 +218,9 @@ public class TdarFile extends AbstractFile {
         return null;
     }
 
-    public String getStudentReviewedByInitials() {
-        if (studentReviewedBy != null) {
-            return studentReviewedBy.getInitials();
+    public String getInitialReviewedByInitials() {
+        if (initialReviewedBy != null) {
+            return initialReviewedBy.getInitials();
         }
         return null;
     }
@@ -290,22 +290,22 @@ public class TdarFile extends AbstractFile {
         this.externalReviewedBy = externalReviewedBy;
     }
 
-    @XmlElement(name = "studentReviewedByRef")
+    @XmlElement(name = "initialReviewedByRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public TdarUser getStudentReviewedBy() {
-        return studentReviewedBy;
+    public TdarUser getInitialReviewedBy() {
+        return initialReviewedBy;
     }
 
-    public void setStudentReviewedBy(TdarUser studentReviewedBy) {
-        this.studentReviewedBy = studentReviewedBy;
+    public void setInitialReviewedBy(TdarUser initialReviewedBy) {
+        this.initialReviewedBy = initialReviewedBy;
     }
 
-    public Date getDateStudentReviewed() {
-        return dateStudentReviewed;
+    public Date getDateInitialReviewed() {
+        return dateInitialReviewed;
     }
 
-    public void setDateStudentReviewed(Date dateStudentReviewed) {
-        this.dateStudentReviewed = dateStudentReviewed;
+    public void setDateInitialReviewed(Date dateInitialReviewed) {
+        this.dateInitialReviewed = dateInitialReviewed;
     }
 
     public Date getDateExternalReviewed() {

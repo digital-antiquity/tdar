@@ -237,4 +237,8 @@
     <changeSet id="radiocarbon-file-first-14" author="abrin">
     <renameColumn tableName="pos_account" oldColumnName="file_exipry_days" newColumnName="file_expiry_days"/>
     </changeSet>
+    <changeSet id="radiocarbon-file-first-15" author="abrin">
+    <renameColumn tableName="files" oldColumnName="date_student_reviewed" newColumnName="date_initial_reviewed"/>
+    <renameColumn tableName="files" oldColumnName="student_reviewer_id" newColumnName="initial_reviewer_id"/>
+    </changeSet>
 </databaseChangeLog>

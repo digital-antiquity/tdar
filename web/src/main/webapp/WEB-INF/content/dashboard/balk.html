@@ -23,8 +23,8 @@
     <th>note</th>
     <th></th>
     <th v-if="fullService">curate</th>
-    <th v-if="fullService && studentReviewed">student review</th>
-    <th v-if="fullService"><span v-if="studentReviewed">staff </span> review</th>
+    <th v-if="fullService && initialReviewed">initial review</th>
+    <th v-if="fullService"><span v-if="initialReviewed">staff </span> review</th>
     <th v-if="fullService && externalReviewed">external review</th>
     <th>status</th>
     <th colspan="2">actions</th>
@@ -34,7 +34,7 @@
  <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</td>
 </tr>
 <tr>
- <td colspan="20"><span v-for="(dir, index) in dirStack">/ {{dir.filename}} </span></td>
+ <td colspan="20"><span v-for="(dir, index) in dirStack">/ {{dir.filename}} </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
 </tr>
         <tbody >
             <tr v-if="parentId != undefined">
@@ -43,7 +43,7 @@
             </tr>
             <tr class="template-download fade existing-file in" v-for="(file,index) in files"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload" 
-                :fullservice="fullService" :studentreviewed="studentReviewed" :externalreviewed="externalReviewed"></tr>
+                :fullservice="fullService" :initialreviewed="initialReviewed" :externalreviewed="externalReviewed"></tr>
         </tbody>
 </table>
 
@@ -55,6 +55,7 @@
     <div class="input-append">
     <input class="span2" id="dirName" name="dirName" type="text">
     <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
+    <!--  <button class="btn" type="button" id="move" @click="mkdir">Move Files</button> -->
     </div>
 
      <br> <br>
@@ -173,16 +174,16 @@
         <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
         <i v-if="!cannotCurate" @click="wontCurate()" class="icon-thumbs-down"></i>
     </td>
-    <td v-if="fullservice && studentreviewed"> 
-        <pentry :initials="file.studentReviewedByInitials" :date="file.dateStudentReviewed" :name="file.studentReviewedByName" ></pentry> 
-        <i v-if="canStudentReview" @click="markStudentReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice && initialReviewed"> 
+        <pentry :initials="file.initialReviewedByInitials" :date="file.dateInitialReviewed" :name="file.initialReviewedByName" ></pentry> 
+        <i v-if="canStudentReview" @click="markinitialReviewed()" class="icon-thumbs-up"></i></td>
     <td v-if="fullservice">
        <pentry :initials="file.reviewedByInitials" :date="file.dateReviewed" :name="file.reviewedByName" ></pentry> 
         <i v-if="canReview" @click="markReviewed()" class="icon-thumbs-up"></i></td>
     <td v-if="fullservice && externalreviewed">
        <pentry :initials="file.externalReviewedByInitials" :date="file.dateExternalReviewed" :name="file.externalReviewedByName" ></pentry> 
         <i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
-    <td><a :href="file.resourceUrl">{{file.resourceId }} {{file.resourceStatus}} </a> 
+    <td><a :href="file.resourceUrl">{{file.resourceId }}</a> {{file.resourceStatus}}  
     </td>
     <td nowrap v-if="fullservice">
         <a href="#"  @click="showComments()"><i class="icon-comment"></i>
