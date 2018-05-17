@@ -18,11 +18,11 @@
 <thead>
  <tr>
     <th></th>
-    <th>file</th>
-    <th>upload</th>
-    <th>note</th>
+    <th>File Name</th>
+    <th>Added</th>
+    <th>Note</th>
     <th></th>
-    <th v-if="fullService">curate</th>
+    <th v-if="fullService">Curate</th>
     <th v-if="fullService && initialReviewed">initial review</th>
     <th v-if="fullService"><span v-if="initialReviewed">staff </span> review</th>
     <th v-if="fullService && externalReviewed">external review</th>
@@ -164,7 +164,7 @@
         <pentry v-if="file.size != undefined" :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
                 
         </td>
-    <td v-if="fullservice">  <input name="type" value="" v-model="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
+    <td v-if="fullservice">  <input type="text" name="filenote" v-model="file.note" :value="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
     <td>
         <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
     </td>
@@ -174,7 +174,7 @@
         <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
         <i v-if="!cannotCurate" @click="wontCurate()" class="icon-thumbs-down"></i>
     </td>
-    <td v-if="fullservice && initialReviewed"> 
+    <td v-if="fullservice && initialreviewed"> 
         <pentry :initials="file.initialReviewedByInitials" :date="file.dateInitialReviewed" :name="file.initialReviewedByName" ></pentry> 
         <i v-if="canStudentReview" @click="markinitialReviewed()" class="icon-thumbs-up"></i></td>
     <td v-if="fullservice">

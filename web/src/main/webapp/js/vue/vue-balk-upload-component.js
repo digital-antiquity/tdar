@@ -177,6 +177,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     var _file= this.file;
                     var _app = this;
                     var ret = {};
+                    console.log("_editMetaadata", note,ocr,curate);
                     $.post("/api/file/editMetadata", {"id": id,"note":note, "needOcr":ocr, "curate":curate}).done(function(file){
                         ret = file;
                         Vue.set(_app,"initialNote",file.note);
@@ -210,12 +211,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 noteChanged: function() {
                     // watch the note property and show a "save" button when there are differenes
                     var _note = this.file.note;
-                    if (_note == undefined || _note == '') {
-                        _note = undefined;
-                    }
                     var note = this.initialNote;
-                    if (note == undefined || note == '') {
-                        note = undefined;
+                    console.log(this.file.id, _note, note);
+                    if ((_note == undefined || _note == '') && (note == undefined || note == '')) {
+                        return false;
                     }
                   if (note == _note) {
                       return false;
@@ -349,7 +348,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     
                     var ext = "";
                     this.selectedFiles.forEach(function(file){
-                        var _ext = file.extension;
+                        var _ext = "BAD";
+                        if (file != undefined && file.extension != undefined) {
+                            _ext = file.extension;
+                        }
                         if (_ext == undefined || _ext == '') {
                             ext = "BAD";
                         }
