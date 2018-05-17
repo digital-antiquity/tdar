@@ -154,6 +154,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                     return ret;
                 },
+                select: function() {
+                    this.$parent.toggleSelect(this.file.selected, this.file);
+                },
                 markCurated: function() {
                     var ret = this._mark("CURATED","dateCurated", "curatedByName", "curatedByInitials");
                 },
@@ -332,7 +335,37 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             computed : {
                 inputDisabled : function() {
                     return !this.ableToUpload;
+                },
+                cannotMoveSelected: function() {
+                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
+                        return true;
+                    }
+                    return false;
+                },
+                cannotCreateRecordfromSelected: function() {
+                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
+                        return true;
+                    }
+                    
+                    var ext = "";
+                    this.selectedFiles.forEach(function(file){
+                        var _ext = file.extension;
+                        if (_ext == undefined || _ext == '') {
+                            ext = "BAD";
+                        }
+                        
+                        if (ext == '' || ext == _ext) {
+                            ext = _ext;
+                        } else {
+                            ext = "BAD";
+                        }
+                    });
+                    if (ext == "BAD") {
+                        return true;
+                    }
+                    return false;
                 }
+
             },
             watch: {
                 search: function(after, before) {
@@ -410,6 +443,30 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         Vue.set(_file, initial, undefined);
                     });
                     return ret;
+                },
+                toggleSelect: function(existing, incoming) {
+                    var id = incoming.id;
+                    console.log("toggle select", existing, id);
+                    var seen = false;
+                    var indexToRemove = -1;
+                    for (var i =0; i < this.selectedFiles.length; i++) {
+                        if (id == this.selectedFiles[i].id) {
+                            seen = true;
+                            indexToRemove = i;
+                        }
+                    }
+                    
+                    if (existing == true) { // add
+                        if (seen == false)  {
+                            this.selectedFiles.push(incoming);
+                            incoming.selected = true;
+                        }
+                    } else { // remove
+                        if (indexToRemove > -1) {
+                            var ret = this.selectedFiles.splice(indexToRemove,1);
+                            ret.selected = false;
+                        }
+                    }
                 },
                 showComments: function(file) {
                     // show the comments modal, and load it with some "fabricated" comments that are actually "mark" actions
@@ -514,6 +571,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     // close modal
                     $("#move-template-modal").modal('hide');
                     Vue.set(this, "dirTree", []);
+                    this.selectedFiles.forEach(function(file) {
+                        if (file != undefined && file.selected != undefined) {
+                            file.selected = false;
+                        }
+                    });
                     Vue.set(this, "selectedFiles", []);
                 },
                 listDirs: function(callback) {

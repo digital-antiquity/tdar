@@ -55,9 +55,9 @@
     <div class="input-append">
     <input class="span2" id="dirName" name="dirName" type="text">
     <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
-    <!--  <button class="btn" type="button" id="move" @click="mkdir">Move Files</button> -->
+    <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
+    <button class="btn" type="button" id="create" @click="createFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button> 
     </div>
-
      <br> <br>
      <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">
         
@@ -157,7 +157,7 @@
 
 <template id="file-entry-template">
 <tr v-bind:id="rowId">
-    <td>{{ 1 + index}}</td>
+    <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
          <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  </span> </td>
     <td>
@@ -190,7 +190,6 @@
         <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
     </td>
     <td>
-        <a href="#" @click="moveUI()"><i class="icon-folder-open"></i></a>
     </td><td>
         <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
