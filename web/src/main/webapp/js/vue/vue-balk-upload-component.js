@@ -331,6 +331,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 inputDisabled : function() {
                     return !this.ableToUpload;
                 },
+                upOneId: function() {
+                  if (this.dirStack.length < 2) {
+                      return undefined;
+                  }
+                  return this.dirStack[this.dirStack.length -2].id;
+                },
                 cannotMoveSelected: function() {
                     if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
                         return true;
@@ -554,6 +560,16 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                       $("#move-template-modal").modal('show');
                   });
                 },
+                createRecordFromSelected: function() {
+                    this.createRecordFromFiles(this.selectedFiles);
+                },
+                createRecordFromFiles: function(files) {
+                    var data = this._expandIds({},files);
+                    $.get("/resource/createRecordFromFiles", data
+                      ).done(function(msg) {
+                      });
+                },
+
                 moveSelectedFilesTo: function(dir) {
                     // called by UI 
                     this.moveFiles(this.selectedFiles, dir);
@@ -629,9 +645,23 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         return rootDirs;
                     });
                 },
-                cdUp: function() {
-                    var parent = this.parentDir();
-                    this.dirStack.splice(-1, 1);
+                cdUp: function(parentId) {
+                    if (parentId == undefined) {
+                        this.dirStack.splice(0, 100);
+                        this.cd(undefined, true);
+                        return;
+                    }
+                    var index = -1;
+                    var parent = undefined;
+                    for (var i = 0; i < this.dirStack.length; i++) {
+                        if (this.dirStack[i].id == parentId) {
+                            index = i;
+                            parent = this.dirStack[i];
+                        }
+                    }
+//                    console.log(parent, index, this.dirStack);
+                    if (parent == undefined ) {return;}
+                    this.dirStack.splice(index + 1, 100);
                     this.cd(parent, true);
                 },
                 cd : function(file, up) {

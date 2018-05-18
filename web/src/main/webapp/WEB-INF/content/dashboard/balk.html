@@ -34,12 +34,12 @@
  <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</td>
 </tr>
 <tr>
- <td colspan="20"><span v-for="(dir, index) in dirStack">/ {{dir.filename}} </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
+ <td colspan="20"><span class="link" @click="cdUp(undefined)">/ </span><span v-for="(dir, index) in dirStack"><span v-if="index != 0"> / </span> <span class="link" @click="cdUp(dir.id)">{{dir.filename}}</span> </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
 </tr>
         <tbody >
             <tr v-if="parentId != undefined">
             <td></td>
-            <td> <span class="link" @click="cdUp()"><i class="icon-folder-close"></i> .. </span>  </td>
+            <td> <span class="link" @click="cdUp(upOneId)"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
             <tr class="template-download fade existing-file in" v-for="(file,index) in files"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload" 
@@ -47,6 +47,7 @@
         </tbody>
 </table>
 
+<div class="">
     <label class="btn btn-success fileinput-button" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
         class="glyphicon glyphicon-plus"></i> <span>Upload 
             files...</span> <!-- The file input field used as target for the file upload widget -->
@@ -55,10 +56,14 @@
     <div class="input-append">
     <input class="span2" id="dirName" name="dirName" type="text">
     <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
-    <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
-    <button class="btn" type="button" id="create" @click="createFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button> 
-    <span class="label">{{selectedFiles.length}}</span>
     </div>
+    <div class="btn-group">
+        <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
+        <button class="btn" type="button" id="create" @click="createFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button> 
+    </div>
+    </div>
+    <span class="label"> {{selectedFiles.length}} </span>
+    <ul v-for="(file,index) in selectedFiles"><li>{{file.filename}}</li></ul>
      <br> <br>
      <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">
         
