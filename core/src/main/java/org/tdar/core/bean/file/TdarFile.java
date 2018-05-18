@@ -268,6 +268,10 @@ public class TdarFile extends AbstractFile {
         return note;
     }
 
+    public String getInitialNote() {
+        return note;
+    }
+
     public void setNote(String note) {
         this.note = note;
     }

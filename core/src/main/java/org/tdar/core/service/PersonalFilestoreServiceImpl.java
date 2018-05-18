@@ -342,6 +342,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Transactional(readOnly = false)
     public void moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser) {
         for (AbstractFile f : files) {
+            // fix recursive move
+            if (f instanceof TdarDir) {
+                List<AbstractFile> listFiles = listFiles((TdarDir)f, account, null, authenticatedUser);
+                moveFilesBetweenAccounts(listFiles, account, authenticatedUser);
+            }
             f.setAccount(account);
         }
         genericDao.saveOrUpdate(files);

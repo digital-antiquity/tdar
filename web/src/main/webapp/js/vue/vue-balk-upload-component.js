@@ -127,12 +127,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 return {
                     previousDeleteState : '',
                     xhr : undefined,
-                    initialNote: undefined,
                     previousReplaceState : ''
                 }
             },
             mounted: function() {
-                Vue.set(this, 'initialNote', this.file.note);
             },
             methods: {
                 cd : function(file) {
@@ -180,7 +178,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     console.log("_editMetaadata", note,ocr,curate);
                     $.post("/api/file/editMetadata", {"id": id,"note":note, "needOcr":ocr, "curate":curate}).done(function(file){
                         ret = file;
-                        Vue.set(_app,"initialNote",file.note);
+                        Vue.set(_app.file,"initialNote",file.note);
+                        Vue.set(_file,"initialNote",file.note);
                     });
 
                 },
@@ -193,10 +192,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 showComments: function() {
                     // load the comments and show the comment modal
                     this.$parent.showComments(this.file);
-                },
-                moveUI : function() {
-                    // load the move modal
-                    this.$parent.moveUI(this.file);
                 },
                 deleteFile: function(){
                     // delet the file
@@ -211,7 +206,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 noteChanged: function() {
                     // watch the note property and show a "save" button when there are differenes
                     var _note = this.file.note;
-                    var note = this.initialNote;
+                    var note = this.file.initialNote;
                     console.log(this.file.id, _note, note);
                     if ((_note == undefined || _note == '') && (note == undefined || note == '')) {
                         return false;
@@ -320,6 +315,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 fullService: false,
                 accounts: config.accounts,
                 accountId: undefined,
+                moveAccountId: undefined,
                 files : [],
                 errors: [],
                 comment: "",
@@ -382,6 +378,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 accountId: function(after,before) {
                     // watch the account id and change account
                     this.switchAccount(after);
+                },
+                moveAccountId: function(after,before) {
+                    this.moveSelectedFilesToAccount(after);
                 }
             },
             methods : {
@@ -389,6 +388,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     // reset the dir tree, and other state variables
                     Vue.set(this,"commentFile",undefined);
                     Vue.set(this,"dirTree",[]);
+                    Vue.set(this,"moveAccountId",undefined);
                     Vue.set(this,"dirStack",[]);
                     Vue.set(this,"selectedFiles",[]);
                     this.loadFiles(undefined,undefined);
@@ -546,10 +546,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         $("#dirName").val("");
                     });
                 },
-                moveUI: function(file) {
+                moveUI: function() {
                     // show the move UI
                     var _app = this;
-                    _app.selectedFiles.push(file);
                   var dirs = this.listDirs(function(){
                       console.log(_app.dirTree);
                       $("#move-template-modal").modal('show');
@@ -562,7 +561,29 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 moveFiles: function(files, dir) {
                     // move selected files to directory
                     var _app = this;
-                    $.post("/api/file/move", {"toId": dir.id, "ids[0]": files[0].id}
+                    var data = this._expandIds({"toId": dir.id},files);
+                    $.post("/api/file/move", data
+                      ).done(function(msg) {
+                          _app.cancelMove();
+                          _app.loadFiles(_app.parentId, _app.path);
+                      });
+
+                },
+                _expandIds: function(data, files) {
+                  for (var i=0; i < files.length; i++) {
+                      data['ids['+i+']'] = files[i].id;
+                  }
+                  return data;
+                },
+                moveSelectedFilesToAccount: function(accountId) {
+                    // called by UI 
+                    this.moveFilesToAccount(this.selectedFiles, accountId);
+                },
+                moveFilesToAccount: function(files, accountId) {
+                    // move selected files to directory
+                    var _app = this;
+                    var data = this._expandIds({"toAccountId": accountId},files);
+                    $.post("/api/file/moveToAccount", data
                       ).done(function(msg) {
                           _app.cancelMove();
                           _app.loadFiles(_app.parentId, _app.path);

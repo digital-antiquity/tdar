@@ -57,6 +57,7 @@
     <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
     <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
     <button class="btn" type="button" id="create" @click="createFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button> 
+    <span class="label">{{selectedFiles.length}}</span>
     </div>
      <br> <br>
      <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">
@@ -103,10 +104,17 @@
       </div>
       <div class="modal-body">
         <div>
-        <p>Click on a folder to move files into that directory</p>
+        <p>Click on a folder to move files into that directory:
             <ul v-if="dirTree != undefined && dirTree.length > 0" class="unstyled">
             <li  v-for="(dir,index) in dirTree" is="dir" :index="index" :dir="dir"></li>
             </ul>
+        </p>
+            
+         <p v-if="this.accounts.length > 1">Or, select an account to move files there</p>
+            <select name="account" v-model="moveAccountId">
+                    <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
+            </select>
+         
         </div>
       </div>
       <div class="modal-footer">
