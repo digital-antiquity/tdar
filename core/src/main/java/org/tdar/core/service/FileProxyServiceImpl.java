@@ -130,8 +130,8 @@ public class FileProxyServiceImpl implements FileProxyService {
                     if (CollectionUtils.isNotEmpty(file.getParts())) {
                         primary.add(file);
                     }
+                    all.add(file);
                 }
-                all.add(file);
             }
         }
 
@@ -141,7 +141,8 @@ public class FileProxyServiceImpl implements FileProxyService {
         
         TdarFile master = null;
         if (primary.isEmpty() && !all.isEmpty()) {
-            if (all.get(0).getExtension().equals("xml")) {
+            logger.debug("{} ; {}", all, all.get(0)); 
+            if (StringUtils.equals(all.get(0).getExtension(),"xml")) {
                 //FIXME: as we improve our file grouping logic for GIS and other types, we will need to improve this logic
                 // so that the primary is the right file
             }
