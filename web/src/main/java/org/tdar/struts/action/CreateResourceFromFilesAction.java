@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.PersonalFilestoreService;
-import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;

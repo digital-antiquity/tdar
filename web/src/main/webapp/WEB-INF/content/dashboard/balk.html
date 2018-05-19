@@ -31,9 +31,6 @@
  </tr>
 </thead>
 <tr>
- <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</td>
-</tr>
-<tr>
  <td colspan="20"><span class="link" @click="cdUp(undefined)">/ </span><span v-for="(dir, index) in dirStack"><span v-if="index != 0"> / </span> <span class="link" @click="cdUp(dir.id)">{{dir.filename}}</span> </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
 </tr>
         <tbody >
@@ -44,6 +41,9 @@
             <tr class="template-download fade existing-file in" v-for="(file,index) in files"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload" 
                 :fullservice="fullService" :initialreviewed="initialReviewed" :externalreviewed="externalReviewed"></tr>
+<tr>
+ <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</td>
+</tr>
         </tbody>
 </table>
 
@@ -55,14 +55,14 @@
     </label>
     <div class="input-append">
     <input class="span2" id="dirName" name="dirName" type="text">
-    <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
+        <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
     </div>
     <div class="btn-group">
         <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
         <button class="btn" type="button" id="create" @click="createFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button> 
     </div>
-    </div>
     <span class="label"> {{selectedFiles.length}} </span>
+    </div>
     <ul v-for="(file,index) in selectedFiles"><li>{{file.filename}}</li></ul>
      <br> <br>
      <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">

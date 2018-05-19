@@ -337,17 +337,19 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   }
                   return this.dirStack[this.dirStack.length -2].id;
                 },
-                cannotMoveSelected: function() {
-                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
+                _cannotSelect: function() {
+                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0 || this.selectedFiles.length > MAX_SELECTED_FILES) {
                         return true;
                     }
                     return false;
                 },
+                cannotMoveSelected: function() {
+                    return this._cannotSelect();
+                },
                 cannotCreateRecordfromSelected: function() {
-                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
+                    if (this._cannotSelect()) {
                         return true;
                     }
-                    
                     var ext = "";
                     this.selectedFiles.forEach(function(file){
                         var _ext = "BAD";

@@ -3,9 +3,11 @@ package org.tdar.core.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import javax.persistence.Transient;
 
@@ -77,20 +79,7 @@ public class FileProxyServiceImpl implements FileProxyService {
         List<PersonalFilestoreFile> pendingFiles = filestoreService.retrieveAllPersonalFilestoreFiles(ticketId);
         ArrayList<FileProxy> finalProxyList = new ArrayList<FileProxy>(fileProxies_);
         ArrayList<FileProxy> fileProxies = new ArrayList<FileProxy>(fileProxies_);
-        Iterator<FileProxy> iterator = fileProxies.iterator();
-        // if we have a tdarFile, remove it from the proxy list we're going to reconcile below
-        while (iterator.hasNext()) {
-            FileProxy proxy = iterator.next();
-            if (proxy.getTdarFileId() != null) {
-                TdarFile file = genericDao.find(TdarFile.class, proxy.getTdarFileId());
-                if (file != null) {
-                    proxy.setFile(new File(file.getLocalPath()));
-                    file.setResource(ir);
-                    file.setAccount(account);
-                    iterator.remove();
-                }
-            }
-        }
+        cleanupFiles(fileProxies, ir, account);
 
         // subset of proxy list, hashed into queues.
         HashQueue<String, FileProxy> proxiesNeedingFiles = buildProxyQueue(fileProxies);
@@ -112,6 +101,61 @@ public class FileProxyServiceImpl implements FileProxyService {
         }
         Collections.sort(finalProxyList);
         return finalProxyList;
+    }
+
+    /**
+     * 1. setup and reconcile files
+     * 2. group files together around one master file (useful for GIS files, or groups of files on a resource
+     * 
+     * @param fileProxies
+     * @param ir
+     * @param account
+     */
+    private void cleanupFiles(ArrayList<FileProxy> fileProxies, InformationResource ir, BillingAccount account) {
+        Iterator<FileProxy> iterator = fileProxies.iterator();
+        
+        Set<TdarFile> primary =  new HashSet<>();
+        List<TdarFile> all =  new ArrayList<>();
+        // if we have a tdarFile, remove it from the proxy list we're going to reconcile below
+        while (iterator.hasNext()) {
+            FileProxy proxy = iterator.next();
+            if (proxy.getTdarFileId() != null) {
+                TdarFile file = genericDao.find(TdarFile.class, proxy.getTdarFileId());
+                if (file != null) {
+                    proxy.setFile(new File(file.getLocalPath()));
+                    file.setResource(ir);
+                    file.setAccount(account);
+                    iterator.remove();
+                    if (file.getPartOf() != null) {
+                        primary.add(file.getPartOf());
+                    }
+                }
+                all.add(file);
+            }
+        }
+
+        if (all.isEmpty() && primary.isEmpty()) {
+            return;
+        }
+        
+        TdarFile master = null;
+        if (primary.isEmpty() && !all.isEmpty()) {
+            if (all.get(0).getExtension().equals("xml")) {
+                //FIXME: as we improve our file grouping logic for GIS and other types, we will need to improve this logic
+                // so that the primary is the right file
+            }
+            master = all.remove(0);
+        }
+        if (!primary.isEmpty()) {
+            master = primary.iterator().next();
+        }
+        
+        for (TdarFile file : all)  {
+            if (file != master) {
+                file.setPartOf(master);
+            }
+        }
+        
     }
 
     /*
