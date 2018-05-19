@@ -23,8 +23,10 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -241,7 +243,8 @@ public class BulkUploadServiceImpl implements BulkUploadService {
             collection.markUpdated(submitter);
             collection.setSystemManaged(true);
             genericDao.saveOrUpdate(collection);
-
+            collection.getAuthorizedUsers().add(new AuthorizedUser(submitter, submitter, Permissions.ADMINISTER_COLLECTION));
+            genericDao.saveOrUpdate(collection);
             for (Resource resource : resources) {
                 receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
                 String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",
