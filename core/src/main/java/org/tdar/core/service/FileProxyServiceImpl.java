@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.Transient;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,8 +127,8 @@ public class FileProxyServiceImpl implements FileProxyService {
                     file.setResource(ir);
                     file.setAccount(account);
                     iterator.remove();
-                    if (file.getPartOf() != null) {
-                        primary.add(file.getPartOf());
+                    if (CollectionUtils.isNotEmpty(file.getParts())) {
+                        primary.add(file);
                     }
                 }
                 all.add(file);
@@ -152,9 +153,13 @@ public class FileProxyServiceImpl implements FileProxyService {
         
         for (TdarFile file : all)  {
             if (file != master) {
-                file.setPartOf(master);
+                master.getParts().add(file);
+                master.getParts().addAll(file.getParts());
+                file.getParts().clear();
             }
         }
+        genericDao.saveOrUpdate(all);
+        genericDao.saveOrUpdate(master);
         
     }
 

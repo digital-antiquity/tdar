@@ -172,7 +172,7 @@
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
-         <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  </span> </td>
+         <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label">{{file.parts.length}}</span> </span> </td>
     <td>
         <pentry v-if="file.size != undefined" :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
                 

@@ -1,6 +1,7 @@
 TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     "use strict";
 
+    var MAX_SELECTED_FILES = 50;
     /**
      * this tool handles the file-first upload management
      */
@@ -344,10 +345,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return false;
                 },
                 cannotMoveSelected: function() {
-                    return this._cannotSelect();
+                    return this._cannotSelect;
                 },
                 cannotCreateRecordfromSelected: function() {
-                    if (this._cannotSelect()) {
+                    if (this._cannotSelect) {
                         return true;
                     }
                     var ext = "";
@@ -668,14 +669,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 cd : function(file, up) {
                     // move into a directory
-                    console.log(JSON.stringify(file));
+//                    console.log(JSON.stringify(file));
                     var id = undefined;
                     var displayName = "";
                     if (file != undefined) {
                         id = file.id;
                         displayName = file.displayName;
                     }
-                    console.log(id, displayName);
+//                    console.log(id, displayName);
                     if (up == undefined || up == false) {
                         this.dirStack.push(file);
                     }

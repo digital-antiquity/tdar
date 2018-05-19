@@ -1,7 +1,8 @@
 package org.tdar.core.bean.file;
 
-import java.beans.Transient;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -10,6 +11,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
@@ -84,9 +86,13 @@ public class TdarFile extends AbstractFile {
     @JoinColumn(name = "resource_id")
     private InformationResource resource;
 
-    @ManyToOne
-    @JoinColumn(name = "part_of_id")
-    private TdarFile partOf;
+//    @ManyToOne
+//    @JoinColumn(name = "part_of_id")
+//    private TdarFile partOf;
+    
+    @OneToMany(orphanRemoval=true)
+    @JoinColumn(nullable = false, updatable = false, name = "part_of_id")
+    private List<TdarFile> parts = new ArrayList<>();
 
     public TdarFile() {
     }
@@ -246,16 +252,6 @@ public class TdarFile extends AbstractFile {
         return null;
     }
 
-    @XmlElement(name = "partRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public TdarFile getPartOf() {
-        return partOf;
-    }
-
-    public void setPartOf(TdarFile partOf) {
-        this.partOf = partOf;
-    }
-
     public Boolean getRequiresOcr() {
         return requiresOcr;
     }
@@ -346,6 +342,14 @@ public class TdarFile extends AbstractFile {
 
     public void setDateExternalReviewed(Date dateExternalReviewed) {
         this.dateExternalReviewed = dateExternalReviewed;
+    }
+
+    public List<TdarFile> getParts() {
+        return parts;
+    }
+
+    public void setParts(List<TdarFile> parts) {
+        this.parts = parts;
     }
 
 }
