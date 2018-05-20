@@ -40,11 +40,23 @@ public class CreateResourceFromFilesAction extends AbstractAuthenticatableAction
         files = getGenericService().findAll(TdarFile.class, fileIds);
         setType(personalFilestooreService.getResourceTypeForFiles(files.get(0)));
     }
+    
+    public String getFilesPart() {
+        StringBuilder sb = new StringBuilder();
+        for (TdarFile file : files) {
+            if (sb.length() != 0) {
+                sb.append("&");
+            }
+            sb.append("fileIds=");
+            sb.append(file.getId());
+        }
+        return sb.toString();
+    }
 
     @Override
     @Action(value = "createRecordFromFiles",
     results = {
-            @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/${type.urlNamespace}/add?fileIds=${fileIds[0]}")
+            @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/${type.urlNamespace}/add?${filesPart}")
     })
     public String execute() throws Exception {
         getLogger().debug("{} | {} -- {}", fileIds, files, type);

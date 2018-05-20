@@ -354,11 +354,18 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     var ext = "";
                     this.selectedFiles.forEach(function(file){
                         var _ext = "BAD";
+                        
+                        if (file.resourceId != undefined) {
+                            ext = "BAD";
+                            return;
+                        }
+                        
                         if (file != undefined && file.extension != undefined) {
-                            _ext = file.extension;
+                            _ext = file.extension.toLowerCase();
                         }
                         if (_ext == undefined || _ext == '') {
                             ext = "BAD";
+                            return;
                         }
                         
                         if (ext == '' || ext == _ext) {
@@ -457,7 +464,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 toggleSelect: function(existing, incoming) {
                     var id = incoming.id;
-                    console.log("toggle select", existing, id);
+//                    console.log("toggle select", existing, id);
                     var seen = false;
                     var indexToRemove = -1;
                     for (var i =0; i < this.selectedFiles.length; i++) {
@@ -567,10 +574,13 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.createRecordFromFiles(this.selectedFiles);
                 },
                 createRecordFromFiles: function(files) {
-                    var data = this._expandIds({},files);
-                    $.get("/resource/createRecordFromFiles", data
-                      ).done(function(msg) {
-                      });
+                    //var data = this._expandIds({},files);
+                    var url = "/resource/createRecordFromFiles?";
+                    files.forEach(function(file){
+                        url = url +  "&fileIds=" + file.id; 
+                    });
+                    console.log(files, url);
+                    window.location.href = url;
                 },
 
                 moveSelectedFilesTo: function(dir) {
