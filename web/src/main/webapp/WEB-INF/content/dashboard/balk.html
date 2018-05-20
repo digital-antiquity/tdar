@@ -20,14 +20,14 @@
     <th></th>
     <th>File Name</th>
     <th>Added</th>
-    <th>Note</th>
+    <th v-if="fullService">Note</th>
     <th></th>
     <th v-if="fullService">Curate</th>
     <th v-if="fullService && initialReviewed">initial review</th>
     <th v-if="fullService"><span v-if="initialReviewed">staff </span> review</th>
     <th v-if="fullService && externalReviewed">external review</th>
     <th>status</th>
-    <th colspan="2">actions</th>
+    <th colspan="2"></th>
  </tr>
 </thead>
 <tr>
@@ -61,9 +61,8 @@
         <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
         <button class="btn" type="button" id="create" @click="createRecordFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button> 
     </div>
-    <span class="label"> {{selectedFiles.length}} </span>
+    <span class="label" data-toggle="tooltip" data-placement="top" :title="selectedFileNames"> {{selectedFiles.length}} </span>
     </div>
-    <ul v-for="(file,index) in selectedFiles"><li>{{file.name}}</li></ul>
      <br> <br>
      <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">
         
@@ -172,7 +171,10 @@
 <tr v-bind:id="rowId">
     <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
-         <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label">{{1+file.parts.length}}</span> </span> </td>
+         <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label" 
+         data-toggle="tooltip" data-placement="top" :title="partNames"
+         
+         >{{1+file.parts.length}}</span> </span> </td>
     <td>
         <pentry v-if="file.size != undefined" :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
                 
@@ -203,7 +205,6 @@
         <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
     </td>
     <td>
-    </td><td>
         <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
     </tr>

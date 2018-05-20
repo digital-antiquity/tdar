@@ -196,7 +196,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 deleteFile: function(){
                     // delet the file
-                    if (confirm("Are you sure you want to delete: "+this.file.filename+"?")) {
+                    if (confirm("Are you sure you want to delete: "+this.file.name+"?")) {
                         console.log('delete');
                         this.$parent.deleteFile(this.file);
                     } 
@@ -204,11 +204,22 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 }
             },
             computed: {
+                partNames: function() {
+                    var ret = "";
+                    if (this.file.parts == undefined || this.file.parts.length == 0) {
+                        return "";
+                    }
+                    ret = this.file.name;
+                    for (var i =0; i < this.file.parts.length; i++) {
+                        ret = ret + "; " + this.file.parts[i].name;
+                    }
+                    return ret;
+                },
                 noteChanged: function() {
                     // watch the note property and show a "save" button when there are differenes
                     var _note = this.file.note;
                     var note = this.file.initialNote;
-                    console.log(this.file.id, _note, note);
+//                    console.log(this.file.id, _note, note);
                     if ((_note == undefined || _note == '') && (note == undefined || note == '')) {
                         return false;
                     }
@@ -346,6 +357,21 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 cannotMoveSelected: function() {
                     return this._cannotSelect;
+                },
+                selectedFileNames: function() {
+                    var ret = "";
+                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
+                        return "";
+                    }
+                    
+                    for (var i =0; i < this.selectedFiles.length; i++) {
+                        if (i > 0) {
+                            ret = ret + "; ";
+                        }
+                        ret = ret + this.selectedFiles[i].name;
+                    }
+
+                    return ret;
                 },
                 cannotCreateRecordfromSelected: function() {
                     if (this._cannotSelect) {
