@@ -162,11 +162,10 @@ public class FileProxyServiceImpl implements FileProxyService {
                 master.getParts().add(file);
                 master.getParts().addAll(file.getParts());
                 file.getParts().clear();
+                genericDao.saveOrUpdate(master);
             }
         }
         logger.debug("parts: {}", master.getParts());
-        genericDao.saveOrUpdate(all);
-        genericDao.saveOrUpdate(master);
         
     }
 

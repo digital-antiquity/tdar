@@ -89,7 +89,7 @@ public class TdarFile extends AbstractFile {
     private InformationResource resource;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(nullable = false, updatable = false, name = "part_of_id")
+    @JoinColumn(nullable = false, updatable = true, name = "part_of_id")
     private List<TdarFile> parts = new ArrayList<>();
 
     public TdarFile() {
@@ -350,4 +350,8 @@ public class TdarFile extends AbstractFile {
         this.parts = parts;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s (%s)", getName(), getId());
+    }
 }

@@ -52,6 +52,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
@@ -111,12 +113,12 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         assertEquals(TdarActionSupport.SUCCESS, save);
         final Long documentId = controller.getDocument().getId();
         final List<Long> fileIds_ = new ArrayList<>(fileIds);
-        
+
         setVerifyTransactionCallback(new TransactionCallback<Document>() {
-            
+
             @Override
             public Document doInTransaction(TransactionStatus status) {
-                
+
                 List<TdarFile> files = genericService.findAll(TdarFile.class, fileIds_);
                 assertEquals(2, fileIds_.size());
                 logger.debug("file ids: {}", fileIds_);
@@ -133,7 +135,14 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
                 assertNotNull(parent);
                 assertNotNull(child);
                 assertTrue(parent.getParts().contains(child));
-                genericService.forceDelete(genericService.find(Document.class, documentId));
+                Document document = genericService.find(Document.class, documentId);
+                for (InformationResourceFile file : document.getInformationResourceFiles()) {
+                    for (InformationResourceFileVersion v : file.getInformationResourceFileVersions()) {
+                        genericService.forceDelete(v);
+                    }
+                    genericService.forceDelete(file);
+                }
+                genericService.forceDelete(document);
                 for (TdarFile file : files) {
                     genericService.forceDelete(file);
                 }
