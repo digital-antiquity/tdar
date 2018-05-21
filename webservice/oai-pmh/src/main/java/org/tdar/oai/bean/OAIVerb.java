@@ -44,7 +44,7 @@ public enum OAIVerb {
      * @param verb
      *            the verb to set
      */
-    public void setVerb(String verb) {
+    private void setVerb(String verb) {
         this.verb = verb;
     }
 

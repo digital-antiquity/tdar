@@ -175,7 +175,7 @@ public enum EmailType implements Localizable, HasLabel {
         return emailClass;
     }
 
-    public void setEmailClass(Class<? extends Email> emailClass) {
+    private void setEmailClass(Class<? extends Email> emailClass) {
         this.emailClass = emailClass;
     }
 
@@ -183,7 +183,7 @@ public enum EmailType implements Localizable, HasLabel {
         return fromAddress;
     }
 
-    public void setFromAddress(String fromAddress) {
+    private void setFromAddress(String fromAddress) {
         this.fromAddress = fromAddress;
     }
     

@@ -24,7 +24,7 @@ public enum ProjectionModel {
         return projections;
     }
 
-    public void setProjections(List<String> projections) {
+    private void setProjections(List<String> projections) {
         this.projections = projections;
     }
 

@@ -123,7 +123,7 @@ public enum Permissions implements HasLabel, Localizable {
         return contexts;
     }
 
-    public void setContexts(List<Class<? extends Persistable>> contexts) {
+    private void setContexts(List<Class<? extends Persistable>> contexts) {
         this.contexts = contexts;
     }
 

@@ -22,7 +22,7 @@ public enum SpatialTables {
         return tableName;
     }
 
-    public void setTableName(String tableName) {
+    private void setTableName(String tableName) {
         this.tableName = tableName;
     }
 
@@ -30,7 +30,7 @@ public enum SpatialTables {
         return columns;
     }
 
-    public void setColumns(String[] columns) {
+    private void setColumns(String[] columns) {
         this.columns = columns;
     }
 

@@ -20,7 +20,7 @@ public enum CoverageType implements HasLabel {
         setLabel(label);
     }
 
-    public void setLabel(String label) {
+    private void setLabel(String label) {
         this.label = label;
     }
 

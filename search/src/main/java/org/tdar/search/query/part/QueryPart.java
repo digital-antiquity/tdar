@@ -15,7 +15,7 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public interface QueryPart<T> {
 
-    String[] LUCENE_RESERVED_WORDS = { "AND", "OR", "NOT", "TO" };
+    static final String[] LUCENE_RESERVED_WORDS = { "AND", "OR", "NOT", "TO" };
 
     /**
      * Generate and return the Lucene/SOLR query String

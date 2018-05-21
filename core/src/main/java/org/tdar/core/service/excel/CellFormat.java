@@ -25,7 +25,7 @@ public class CellFormat {
             return bold;
         }
 
-        public void setBold(boolean bold) {
+        private void setBold(boolean bold) {
             this.bold = bold;
         }
     }

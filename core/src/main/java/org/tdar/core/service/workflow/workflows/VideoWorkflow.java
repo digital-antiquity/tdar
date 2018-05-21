@@ -34,7 +34,7 @@ public class VideoWorkflow extends BaseWorkflow {
      * <p>
      * We need to be able to extract a thumbnail
      */
-    public static final Collection<String> VIDEO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "mpg", "mpeg", "mp4", "mj2", "mjp2" });
+    static final Collection<String> VIDEO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "mpg", "mpeg", "mp4", "mj2", "mjp2" });
 
     public VideoWorkflow() {
         for (String extension : VIDEO_EXTENSIONS_SUPPORTED) {
