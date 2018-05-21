@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -86,11 +88,7 @@ public class TdarFile extends AbstractFile {
     @JoinColumn(name = "resource_id")
     private InformationResource resource;
 
-//    @ManyToOne
-//    @JoinColumn(name = "part_of_id")
-//    private TdarFile partOf;
-    
-    @OneToMany(orphanRemoval=true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "part_of_id")
     private List<TdarFile> parts = new ArrayList<>();
 

@@ -151,6 +151,8 @@ public class FileProxyServiceImpl implements FileProxyService {
         if (!primary.isEmpty()) {
             master = primary.iterator().next();
         }
+        logger.debug("all: {}", all);
+        logger.debug("master: {}", master);
         
         for (TdarFile file : all)  {
             if (file != master) {
@@ -159,6 +161,7 @@ public class FileProxyServiceImpl implements FileProxyService {
                 file.getParts().clear();
             }
         }
+        logger.debug("parts: {}", master.getParts());
         genericDao.saveOrUpdate(all);
         genericDao.saveOrUpdate(master);
         
