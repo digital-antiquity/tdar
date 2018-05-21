@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.TdarFile;
@@ -72,6 +73,7 @@ public class FileProxyServiceImpl implements FileProxyService {
      * @see org.tdar.core.service.FileProxyService#reconcilePersonalFilestoreFilesAndFileProxies(java.util.List, java.lang.Long)
      */
     @Override
+    @Transactional(readOnly=false)
     public ArrayList<FileProxy> reconcilePersonalFilestoreFilesAndFileProxies(InformationResource ir, Long accountId, List<FileProxy> fileProxies_, Long ticketId) {
         
         BillingAccount account = genericDao.find(BillingAccount.class, accountId);
