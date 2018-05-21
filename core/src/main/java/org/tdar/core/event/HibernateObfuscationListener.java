@@ -7,6 +7,7 @@ import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.utils.SpatialObfuscationUtil;
 
 public class HibernateObfuscationListener extends EmptyInterceptor implements SaveOrUpdateEventListener {
 
@@ -19,7 +20,7 @@ public class HibernateObfuscationListener extends EmptyInterceptor implements Sa
     public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
         if (event.getEntity() instanceof LatitudeLongitudeBox) {
             LatitudeLongitudeBox entity = (LatitudeLongitudeBox) event.getEntity();
-            entity.obfuscateAll();
+            SpatialObfuscationUtil.obfuscate(entity);
         }
     }
 
