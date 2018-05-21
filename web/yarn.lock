@@ -1139,9 +1139,13 @@ blueimp-canvas-to-blob@>=2.0.6, "blueimp-canvas-to-blob@git://github.com/blueimp
   version "3.14.0"
   resolved "git://github.com/blueimp/JavaScript-Canvas-to-Blob.git#9f3deb2e710d39c72a988559609d9dc9a319de0b"
 
-blueimp-load-image@>=1.7.3, "blueimp-load-image@git://github.com/blueimp/JavaScript-Load-Image.git#>=1.7.3":
+blueimp-load-image@>=1.7.3:
   version "2.19.0"
   resolved "git://github.com/blueimp/JavaScript-Load-Image.git#5660ef0f68a34352f4574351ab86f3ecf82240f2"
+
+blueimp-load-image@^2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/blueimp-load-image/-/blueimp-load-image-2.19.0.tgz#b61eeac0063f371c710fdb78aebbc4d7d34f8e2e"
 
 blueimp-tmpl@>=2.2.1, "blueimp-tmpl@git://github.com/blueimp/JavaScript-Templates.git#>=2.2.1":
   version "3.11.0"
@@ -3234,6 +3238,13 @@ figures@^2.0.0:
   dependencies:
     escape-string-regexp "^1.0.5"
 
+file-loader@^1.1.11:
+  version "1.1.11"
+  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-1.1.11.tgz#6fe886449b0f2a936e43cabaac0cdbfb369506f8"
+  dependencies:
+    loader-utils "^1.0.2"
+    schema-utils "^0.4.5"
+
 filename-regex@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"
@@ -4621,6 +4632,10 @@ is-promise@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-2.1.0.tgz#79a2a9ece7f096e80f36d2b2f3bc16c1ff4bf3fa"
 
+is-promise@~1, is-promise@~1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-1.0.1.tgz#31573761c057e33c2e91aab9e96da08cefbe76e5"
+
 is-property@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-property/-/is-property-1.0.2.tgz#57fe1c4e48474edd65b09911f26b1cd4095dda84"
@@ -5070,9 +5085,22 @@ latest-version@^3.0.0:
   dependencies:
     package-json "^4.0.0"
 
+lazify@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lazify/-/lazify-1.0.0.tgz#b55de94fcc6aaf7f213f66ae7e0b4bd3d568f602"
+  dependencies:
+    is-promise "~1.0.0"
+    lazy-promise "~1.0.0"
+
 lazy-cache@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/lazy-cache/-/lazy-cache-1.0.4.tgz#a1d78fc3a50474cb80845d3b3b6e1da49a446e8e"
+
+lazy-promise@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lazy-promise/-/lazy-promise-1.0.0.tgz#e2018d5f25e95de53f5fe1f5c7d3bda880cb8bb0"
+  dependencies:
+    promise "~2.0.0"
 
 lazy-property@~1.0.0:
   version "1.0.0"
@@ -5208,6 +5236,14 @@ listr@^0.13.0:
     rxjs "^5.4.2"
     stream-to-observable "^0.2.0"
     strip-ansi "^3.0.1"
+
+load-image@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/load-image/-/load-image-1.0.0.tgz#fce6fbe971c9c75f6b489c5d69f9dd9fefab856c"
+  dependencies:
+    is-promise "~1.0.0"
+    lazify "~1.0.0"
+    promise "~3.0.1"
 
 load-json-file@^1.0.0:
   version "1.1.0"
@@ -7241,6 +7277,16 @@ promise-retry@^1.1.1:
   dependencies:
     err-code "^1.0.0"
     retry "^0.10.0"
+
+promise@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/promise/-/promise-2.0.0.tgz#46648aa9d605af5d2e70c3024bf59436da02b80e"
+  dependencies:
+    is-promise "~1"
+
+promise@~3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/promise/-/promise-3.0.1.tgz#552433a82f2f73f9fffd94228b7b98b2c7843e0e"
 
 promptly@0.2.0:
   version "0.2.0"

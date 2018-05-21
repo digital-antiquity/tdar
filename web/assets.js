@@ -1,26 +1,10 @@
 //This file specifies which resources should be copied. It gets read from the WebpackCopyModule 
-//This returns two arrays: one first CSS files that and the second for node module directories that need to be copied. 
-const CSS = [
-     './src/main/webapp/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css',
-     './src/main/webapp/css/famfamfam.css',
-     './src/main/webapp/css/tdar-bootstrap.css',
-     './src/main/webapp/css/tdar-svg.css',
-     './src/main/webapp/css/tdar.c3graph.css',
-     './src/main/webapp/css/tdar.d3tree.css',
-     './src/main/webapp/css/tdar.dashboard.css',
-     './src/main/webapp/css/tdar.datatablemapping.css',
-     './src/main/webapp/css/tdar.datatables.css',
-     './src/main/webapp/css/tdar.homepage.css',
-     './src/main/webapp/css/tdar.invoice.css',
-     './src/main/webapp/css/tdar.leaflet.css',
-     './src/main/webapp/css/tdar.searchresults.css',
-     './src/main/webapp/css/tdar.sprites.css',
-     './src/main/webapp/css/tdar.worldmap.css'
+//These are individual files that will be copied to src/main/webapp/components. 
+const FILES = [
+
 ];
 
-//I created these mappings because the copier would only create the last directory. 
-//This can be parsed out better later, but 🤷‍♂️
-
+//These are modules that will be copied to src/main/webapp/components.
 const MODULES  = [
 {name:'bootstrap-datepicker-eyecon',path:'./node_modules/bootstrap-datepicker-eyecon/'},
 {name:'c3',path:'./node_modules/c3'},
@@ -53,4 +37,4 @@ const MODULES  = [
 ]
 
 
-module.exports = [CSS, MODULES];
+module.exports = [FILES, MODULES];

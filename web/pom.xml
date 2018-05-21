@@ -349,6 +349,24 @@
                 </executions>
             </plugin>
             <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <version>1.0.0</version>
+              <executions>
+                <execution>
+                  <phase>validate</phase>
+                  <goals>
+                    <goal>read-project-properties</goal>
+                  </goals>
+                  <configuration>
+                    <files>
+                      <file>target/hg.properties</file>
+                    </files>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-version}</version>
@@ -399,8 +417,7 @@
                             <executable>./node_modules/.bin/yarn</executable>
                             <arguments>
                                 <argument>build</argument>
-                                <!-- >argument>- -modules-folder</argument>
-                                <argument>./src/main/webapp/components</argument-->
+                                <argument>--env.hg.version=${hg.version}</argument>
                             </arguments>
                         </configuration>
                         <goals>
