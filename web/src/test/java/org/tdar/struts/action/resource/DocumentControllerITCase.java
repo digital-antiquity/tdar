@@ -5,23 +5,31 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.TestBillingAccountHelper;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -31,6 +39,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -43,6 +52,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -57,16 +67,79 @@ import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.TestConfiguration;
 
 import com.opensymphony.xwork2.Action;
 
-public class DocumentControllerITCase extends AbstractControllerITCase implements TestFileUploadHelper {
+public class DocumentControllerITCase extends AbstractControllerITCase implements TestFileUploadHelper, TestBillingAccountHelper {
 
     public DocumentController initControllerFields() throws TdarActionException {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.setProjectId(TestConstants.PARENT_PROJECT_ID);
         return controller;
+    }
+
+    @Test
+    @Rollback(false)
+    public void testTdarFilesLoadedAndLinked() throws FileNotFoundException, TdarActionException {
+        List<Long> fileIds = new ArrayList<>();
+        BillingAccount account = setupAccountForPerson(getBasicUser());
+        for (File file_ : Arrays.asList(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME),
+                TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME_SMALL))) {
+            TdarFile file = new TdarFile();
+            file.setDateCreated(new Date());
+            file.setAccount(account);
+            file.setUploader(getBasicUser());
+            file.setExtension("pdf");
+            file.setFilename(file_.getName());
+            file.setLocalPath(file_.getPath());
+            file.setInternalName(file_.getName());
+            genericService.saveOrUpdate(file);
+            fileIds.add(file.getId());
+        }
+        DocumentController controller = generateNewInitializedController(DocumentController.class, getBasicUser());
+        controller.setFileIds(fileIds);
+        controller.prepare();
+        controller.add();
+        controller.getFileUploadSettings();
+        controller.getResource().setTitle("test");
+        controller.getResource().setDescription("test");
+        assertEquals(account.getId(), controller.getAccountId());
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        assertEquals(TdarActionSupport.SUCCESS, save);
+        final Long documentId = controller.getDocument().getId();
+        final List<Long> fileIds_ = new ArrayList<>(fileIds);
+        
+        setVerifyTransactionCallback(new TransactionCallback<Document>() {
+            
+            @Override
+            public Document doInTransaction(TransactionStatus status) {
+                
+                List<TdarFile> files = genericService.findAll(TdarFile.class, fileIds_);
+                assertEquals(2, fileIds_.size());
+                logger.debug("file ids: {}", fileIds_);
+                TdarFile parent = null;
+                TdarFile child = null;
+                for (TdarFile f : files) {
+                    logger.debug("{} -- {} [{}]", f.getName(), f.getParts().size(), f.getParts());
+                    if (CollectionUtils.isNotEmpty(f.getParts())) {
+                        parent = f;
+                    } else {
+                        child = f;
+                    }
+                }
+                assertNotNull(parent);
+                assertNotNull(child);
+                assertTrue(parent.getParts().contains(child));
+                genericService.forceDelete(genericService.find(Document.class, documentId));
+                for (TdarFile file : files) {
+                    genericService.forceDelete(file);
+                }
+                return null;
+            }
+        });
     }
 
     @Test
@@ -686,8 +759,8 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
         genericService.synchronize();
 
         UploadAction uc = generateNewInitializedController(UploadAction.class, newUser);
-//        uc.grabTicket();
-//        uc.setTicketId(ticketId);
+        // uc.grabTicket();
+        // uc.setTicketId(ticketId);
         uc.getUploadFile().add(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME));
         uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
         uc.prepare();
