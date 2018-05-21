@@ -719,6 +719,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("contributor.url", "http://www.tdar.org/about/policies/contributors-agreement/");
     }
 
+    public String getPrivacyPolicyUrl() {
+        return assistant.getStringProperty("privacy.url", "http://www.tdar.org/about/policies/privacy-policy/");
+    }
+
     public String getTosUrl() {
         return assistant.getStringProperty("tos.url", "http://www.tdar.org/about/policies/terms-of-use/");
     }
