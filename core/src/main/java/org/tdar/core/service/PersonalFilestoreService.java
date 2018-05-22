@@ -9,6 +9,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.CurationState;
 import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
@@ -101,7 +102,7 @@ public interface PersonalFilestoreService {
 
     TdarDir findUnfileDir(TdarUser authenticatedUser);
 
-    void editMetadata(TdarFile file, String note, boolean needsOcr, boolean curate, TdarUser authenticatedUser);
+    void editMetadata(TdarFile file, String note, boolean needsOcr, CurationState curate, TdarUser authenticatedUser);
 
     void mark(List<TdarFile> files, Mark mark, TdarUser authenticatedUser);
 

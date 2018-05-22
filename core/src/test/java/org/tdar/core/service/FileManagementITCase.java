@@ -20,6 +20,7 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.TestBillingAccountHelper;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.CurationState;
 import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
@@ -143,16 +144,16 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         genericService.saveOrUpdate(file);
         assertEquals(null, file.getNote());
         assertEquals(false, file.getRequiresOcr());
-        assertEquals(true, file.getCurated());
+        assertEquals(CurationState.CHOOSE, file.getCuration());
         String note = "test note";
-        pfs.editMetadata(file, note, true, false, getAdminUser());
+        pfs.editMetadata(file, note, true, CurationState.WILL_CURATE, getAdminUser());
         Long fileId = file.getId();
         file = null;
         genericService.synchronize();
         file = genericService.find(TdarFile.class, fileId);
         assertEquals(note, file.getNote());
         assertEquals(true, file.getRequiresOcr());
-        assertEquals(false, file.getCurated());
+        assertEquals(CurationState.WILL_CURATE, file.getCuration());
     }
 
     @Test

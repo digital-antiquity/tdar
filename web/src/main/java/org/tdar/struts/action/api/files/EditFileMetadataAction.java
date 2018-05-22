@@ -9,6 +9,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.file.CurationState;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
@@ -23,7 +24,7 @@ public class EditFileMetadataAction extends AbstractHasFileAction<TdarFile>{
     private static final long serialVersionUID = -3146064278797351637L;
     private String note;
     private boolean needsOcr;
-    private boolean curate;
+    private CurationState curate;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
@@ -33,7 +34,7 @@ public class EditFileMetadataAction extends AbstractHasFileAction<TdarFile>{
     @PostOnly
     @WriteableSession
     public String execute() throws IOException {
-        personalFilestoreService.editMetadata(getFile(), note, needsOcr, curate, getAuthenticatedUser());
+        personalFilestoreService.editMetadata(getFile(), note, needsOcr, getCurate(), getAuthenticatedUser());
         setResultObject(getFile());
         return SUCCESS;
     }
@@ -51,11 +52,12 @@ public class EditFileMetadataAction extends AbstractHasFileAction<TdarFile>{
         this.needsOcr = needsOcr;
     }
 
-    public boolean isCurate() {
+    public CurationState getCurate() {
         return curate;
     }
 
-    public void setCurate(boolean curate) {
+
+    public void setCurate(CurationState curate) {
         this.curate = curate;
     }
 

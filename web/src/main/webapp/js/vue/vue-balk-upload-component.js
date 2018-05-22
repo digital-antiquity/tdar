@@ -100,7 +100,15 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                 },
                 undo: function() {
-                  this.$parent.unmark(this.comment.undoAction, this.comment.name, this.comment.initial, this.comment.date, this.$parent.commentFile);
+                    if (this.comment.undoAction == 'UNDO_WONT_CURATE') {
+                        var file = this.$parent.commentFile;
+                        $.post("/api/file/editMetadata", {"id": file.id,"note":file.note, "needOcr":file.requiresOcr, "curate":"CHOOSE"}).done(function(_file){
+                            Vue.set(file,"curation",_file.curation);
+//                            Vue.set(file,"curation",file.curation);
+                        });
+                    } else {
+                        this.$parent.unmark(this.comment.undoAction, this.comment.name, this.comment.initial, this.comment.date, this.$parent.commentFile);
+                    }
                 },
                 assignComment: function() {
                     
@@ -180,15 +188,17 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     $.post("/api/file/editMetadata", {"id": id,"note":note, "needOcr":ocr, "curate":curate}).done(function(file){
                         ret = file;
                         Vue.set(_app.file,"initialNote",file.note);
+                        Vue.set(_app.file,"curation",file.curation);
+                        Vue.set(_app.file,"requiresOcr",file.requiresOcr);
                         Vue.set(_file,"initialNote",file.note);
                     });
 
                 },
                 wontCurate: function() {
-                    this._editMetadata(this.file.note, this.file.needsOcr, false);
+                    this._editMetadata(this.file.note, this.file.needsOcr, "WONT_CURATE");
                 },
                 updateNote: function() {
-                    this._editMetadata(this.file.note, this.file.needsOcr, this.file.curated);
+                    this._editMetadata(this.file.note, this.file.needsOcr, this.file.curation);
                 },
                 showComments: function() {
                     // load the comments and show the comment modal
@@ -256,6 +266,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     if (this.file.dateCurated != undefined) {
                         return false;
                     }
+                    if (this.file.curation == "WONT_CURATE") {
+                        return false;
+                    } 
                     if (this.file.resourceId != undefined) {
                         return true;
                     }
@@ -267,10 +280,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         return true;
                     }
                     
+                    if (this.file.curation == "WONT_CURATE") {
+                        return true;
+                    }
+
                     if (this.file.dateCurated == undefined ) {
-                        if (this.file.curated != undefined && this.file.curated == false) {
-                            return true;
-                        }
                         return false;
                     }
                     return true;
@@ -532,6 +546,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                         if (file.dateExternalReviewed != undefined) {
                             msg.push({comment:'external reviewed', undoAction:"EXTERNAL_REVIEWED",initial: 'externalReviewedByInitials', date:'dateExternalReviewed', name:'externalReviewedBy', dateCreated: file.dateExternalReviewed , commentorName: file.externalReviewedByName, commentorInitials: file.externalReviewedByInitials, type:'internal'});
+                        }
+
+                        if (file.curation == "WONT_CURATE") {
+                            msg.push({comment:'declined curation', undoAction:"UNDO_WONT_CURATE", type:'internal'});
                         }
 
                         if (file.resourceId != undefined) {

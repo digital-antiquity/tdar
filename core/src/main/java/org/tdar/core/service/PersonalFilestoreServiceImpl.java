@@ -22,6 +22,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.CurationState;
 import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
@@ -247,9 +248,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = false)
-    public void editMetadata(TdarFile file, String note, boolean needsOcr, boolean curate, TdarUser user) {
+    public void editMetadata(TdarFile file, String note, boolean needsOcr, CurationState curate, TdarUser user) {
         file.setNote(note);
-        file.setCurated(curate);
+        file.setCuration(curate);
         file.setRequiresOcr(needsOcr);
         genericDao.saveOrUpdate(file);
     }

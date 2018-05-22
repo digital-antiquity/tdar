@@ -37,8 +37,8 @@ public class TdarFile extends AbstractFile {
     private Long size;
     @Column(length = 15)
     private String extension;
-    @Enumerated(EnumType.STRING)
 
+    @Enumerated(EnumType.STRING)
     @Column(length = FieldLength.FIELD_LENGTH_50, name = "status")
     private ImportFileStatus status;
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "md5")
@@ -51,8 +51,9 @@ public class TdarFile extends AbstractFile {
     @Column(name = "requires_ocr", nullable = true)
     private Boolean requiresOcr = false;
 
-    @Column(name = "curate", nullable = true)
-    private Boolean curated = true;
+    @Column(name = "curation_state", nullable = true)
+    @Enumerated(EnumType.STRING)
+    private CurationState curation;
 
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "note")
     private String note;
@@ -279,14 +280,6 @@ public class TdarFile extends AbstractFile {
         this.note = note;
     }
 
-    public Boolean getCurated() {
-        return curated;
-    }
-
-    public void setCurated(Boolean curated) {
-        this.curated = curated;
-    }
-
     @XmlElement(name = "externalReviewedByRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getExternalReviewedBy() {
@@ -362,5 +355,13 @@ public class TdarFile extends AbstractFile {
     @Override
     public String toString() {
         return String.format("%s (%s)", getName(), getId());
+    }
+
+    public CurationState getCuration() {
+        return curation;
+    }
+
+    public void setCuration(CurationState curation) {
+        this.curation = curation;
     }
 }
