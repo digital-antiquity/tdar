@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.atlas.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,8 @@ import org.tdar.filestore.personal.PersonalFilestoreFile;
 @Service
 public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    
     @Autowired
     private GenericDao genericDao;
 
@@ -340,16 +344,27 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = false)
-    public void moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser) {
-        for (AbstractFile f : files) {
-            // fix recursive move
-            if (f instanceof TdarDir) {
-                List<AbstractFile> listFiles = listFiles((TdarDir)f, account, null, authenticatedUser);
-                moveFilesBetweenAccounts(listFiles, account, authenticatedUser);
+    public List<AbstractFile> moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser) {
+        
+        List<AbstractFile> allFiles = new ArrayList<>();
+        List<AbstractFile> toProcess = new ArrayList<>(files);
+        // for each of the initial files, set the parent to NULL because we're not moving the "dir"
+        files.forEach(f -> {
+            f.setParent(null);
+        });
+        while (CollectionUtils.isNotEmpty(toProcess)) {
+            AbstractFile file = toProcess.remove(0);
+            logger.debug("moving {} to {}", file, account);
+            if (file instanceof TdarDir) {
+                List<AbstractFile> listFiles = listFiles((TdarDir)file, file.getAccount(), null, authenticatedUser);
+                logger.debug("subdir {} ", listFiles);
+                toProcess.addAll(listFiles);
             }
-            f.setAccount(account);
+            file.setAccount(account);
+            allFiles.add(file);
         }
-        genericDao.saveOrUpdate(files);
+        genericDao.saveOrUpdate(allFiles);
+        return allFiles;
     }
     
     @Override

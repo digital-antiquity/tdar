@@ -45,7 +45,7 @@ public abstract class AbstractFile extends AbstractPersistable {
     private String localPath;
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", updatable = true)
     private BillingAccount account;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

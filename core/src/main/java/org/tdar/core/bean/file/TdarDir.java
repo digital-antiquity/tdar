@@ -26,7 +26,7 @@ public class TdarDir extends AbstractFile {
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", getName(), getId());
+        return String.format("%s/ (%s)", getName(), getId());
     }
 
 }

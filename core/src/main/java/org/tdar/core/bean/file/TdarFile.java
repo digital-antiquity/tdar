@@ -49,7 +49,7 @@ public class TdarFile extends AbstractFile {
     private Date dateReviewed;
 
     @Column(name = "requires_ocr", nullable = true)
-    private Boolean requiresOcr;
+    private Boolean requiresOcr = false;
 
     @Column(name = "curate", nullable = true)
     private Boolean curated = true;
