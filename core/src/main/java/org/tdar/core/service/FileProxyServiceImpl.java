@@ -142,6 +142,12 @@ public class FileProxyServiceImpl implements FileProxyService {
             return;
         }
         
+        reconcilePrimaryFile(primary, all);
+        
+    }
+
+    
+    private void reconcilePrimaryFile(Set<TdarFile> primary, List<TdarFile> all) {
         TdarFile master = null;
         if (primary.isEmpty() && !all.isEmpty()) {
             logger.debug("{} ; {}", all, all.get(0)); 
@@ -166,7 +172,6 @@ public class FileProxyServiceImpl implements FileProxyService {
             }
         }
         logger.debug("parts: {}", master.getParts());
-        
     }
 
     /*
