@@ -7,7 +7,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 // Assets is a list of files that were previously Bower-managed dependencies.
 // They need to be copied into the webapp/components directory so they can be served in the WAR file.
 const Assets = require('./assets');
-const staticAssets = require('./src/main/webapp/js/webpack/static-assets.js');
 
 // This will parse out
 const cssFiles = Assets[0].map(asset => {
@@ -33,7 +32,7 @@ module.exports = {
       // All of the angular integration files will be bundled into a separate file.
       angular : './src/main/webapp/js/webpack/angular-assets',
      
-     staticAssets: staticAssets
+     staticAssets: './static-assets.js'
   },
   
   // One one output entry can be specified. The [name] will be replaced with what the name of the entry point was.
@@ -58,10 +57,7 @@ module.exports = {
   
   module: {
       rules: [
-          {
-              test: /jquery-file-upload/,
-              loader: 'imports?jQuery=jquery,$=jquery,this=>window'
-          },
+         
           {
               test: /\.css$/,
               use: [
