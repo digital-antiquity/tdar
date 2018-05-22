@@ -112,7 +112,7 @@
 
 
         <js>/components/vue/dist/vue.js</js>
-<!--         <js>/components/vue-router/dist/vue-router.js</js> -->
+        <js>/components/vue-router/dist/vue-router.js</js> 
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
         <js>/js/vue/vue-base-upload.js</js>
