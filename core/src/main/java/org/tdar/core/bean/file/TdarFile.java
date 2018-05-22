@@ -1,5 +1,6 @@
 package org.tdar.core.bean.file;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -100,6 +101,14 @@ public class TdarFile extends AbstractFile {
         this.setUploader(tdarUser);
         this.setAccount(act);
         this.setDateCreated(new Date());
+    }
+
+    public TdarFile(File file, TdarUser basicUser, BillingAccount act) {
+        setFilename(file.getName());
+        setLocalPath(file.getAbsolutePath());
+        setUploader(basicUser);
+        setAccount(act);
+        setDateCreated(new Date());
     }
 
     public Long getSize() {

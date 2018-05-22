@@ -87,6 +87,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
     public void testTdarFilesLoadedAndLinked() throws FileNotFoundException, TdarActionException {
         List<Long> fileIds = new ArrayList<>();
         BillingAccount account = setupAccountForPerson(getBasicUser());
+        final Long accountId = account.getId();
         for (File file_ : Arrays.asList(TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME),
                 TestConstants.getFile(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME_SMALL))) {
             TdarFile file = new TdarFile();
@@ -146,6 +147,7 @@ public class DocumentControllerITCase extends AbstractControllerITCase implement
                 for (TdarFile file : files) {
                     genericService.forceDelete(file);
                 }
+                genericService.forceDelete(genericService.find(BillingAccount.class, accountId));
                 return null;
             }
         });
