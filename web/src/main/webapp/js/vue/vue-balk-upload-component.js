@@ -1,6 +1,17 @@
 TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     "use strict";
 
+    var _app;
+    var _pp;
+    
+    var _getApp = function () {
+        return _app;
+    }
+
+    var _getPp = function () {
+        return _pp;
+    }
+
     var MAX_SELECTED_FILES = 50;
     /**
      * this tool handles the file-first upload management
@@ -909,11 +920,15 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             router:router
           }).$mount(appId);
 
+        _app = app;
+        _pp = pp;
         return app;
     };
     
     return {
         init : _init,
+        getApp: _getApp,
+        getPp: _getPp,
         main : function() {
             var appId = "#filesTool";
             if ($(appId).length == 1) {

@@ -16,6 +16,22 @@ function buildFilesFromWro(profile) {
     return files;
 }
 
+var specFiles = "src/test/frontend/spec/**/*.js";
+
+console.log("*************************************** ");
+console.log("**** to run a single test.         **** ");
+console.log("**** karma start -- VueBalkSpec.js ****")
+console.log("**** or          -- Vue            ****")
+console.log("*************************************** ");
+
+
+var last = process.argv[process.argv.length-1];
+if (last != 'start' && last != 'run') {
+    if (!last.endsWith(".js")) {
+        last = last + "*";
+    }
+    specFiles = "src/test/frontend/spec/**/*" + last;
+}
 
 
 module.exports = function(config) {
@@ -55,7 +71,7 @@ module.exports = function(config) {
             wroFiles,
             [
                 // specs
-                "src/test/frontend/spec/**/*.js",
+                specFiles,
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
