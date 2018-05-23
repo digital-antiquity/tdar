@@ -51,7 +51,8 @@ describe("BalkSpec.js: fileupload suite - root", function(){
                 "responseText": 'success'
               });
             var vapp = TDAR.vuejs.balk.init("#filesTool");
-             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
+            expect(vapp == undefined).toBe(false);
+             var result = vapp.fileUploadAdd({}, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(false);
             expect(vapp.files).toHaveLength(0);
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.tif',size:1000,type:'tif/image',lastModified:-1}]});

@@ -325,12 +325,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 accounts: JSON.parse($("#accountJson").text())
         };
 
+        
         /**
          * the main app
          */
-        var app = new Vue({
-            el : appId,
-            data : {
+        var app = Vue.component("balk",{
+            template : '#balk',
+            data : function() {
+                return {
                 validFormats : config.validFormats,
                 ableToUpload : true,
                 parentId: undefined,
@@ -351,7 +353,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 dirStack: [],
                 search: "",
                 commentFile:undefined,
-                path : "" 
+                path : "" }
             },
             computed : {
                 inputDisabled : function() {
@@ -437,10 +439,66 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 moveAccountId: function(after,before) {
                     this.moveSelectedFilesToAccount(after);
+                },
+                '$route': function(to, from) {
+                    console.log(">>> changed route to: ", to);
+//                    console.log(to.params.accountId , this.accountId);
+                    var _path = this.fullPath().substring(1);
+                    if (to.params.accountId != this.accountId) {
+                        Vue.set(this,"accountId", to.params.accountId);
+                        this.switchAccount(to.params.accountId);
+                        _path = undefined;
+                    }
+                    
+//                    console.log(_path, to.params.dir, _path == to.params.dir);
+                    if (to.params.dir != _path) {
+                        var _app = this;
+                        var dirName = to.params.dir;
+                        if (dirName != undefined && dirName.lastIndexOf("/") != -1) {
+                            dirName = dirName.substring(dirName.lastIndexOf("/") +1)
+                        }
+                        $.get("/api/file/listDirs", {accountId: _app.accountId}).done(function(dirs) {
+                             // create parent map
+                            var match = undefined;
+                            var dirMap = {};
+                             dirs.forEach(function(dir) {
+                                 dirMap[dir.id] = dir;
+                                 if (dir.name == dirName) {
+                                     match = dir;
+                                 } 
+                             });
+                             var stack = [];
+                             // get all parent directories and rebuild dirStack
+                             if (match != undefined) {
+                                 var d = match;
+                                 while (d.parentRef != undefined) {
+                                     var p = dirMap[d.parentRef.replace("TdarDir:","")];
+                                     stack.unshift(p);
+                                     d = p;
+                                 }
+                                 }
+                             Vue.set(_app,"dirStack", stack);
+                             console.log("redirecting to : ", match, stack);
+                             _app.cd(match, false);
+                             return;
+                        });
+//                        this.switchAccount(to.params.accountId);
+                    }
+
                 }
             },
             methods : {
+                fullPath: function() {
+                    var ret = "";
+                    this.dirStack.forEach(function(d){
+                        if (d != undefined) {
+                            ret = ret + "/" + d.name; 
+                        }
+                    });
+                    return ret;
+                },
                 switchAccount: function(accountId) {
+                    router.push({ path: '/' + accountId })
                     // reset the dir tree, and other state variables
                     Vue.set(this,"commentFile",undefined);
                     Vue.set(this,"dirTree",[]);
@@ -468,6 +526,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                  },
                 loadFiles: function (parentId, path) {
                     // load all of the files for the dir and account
+                    router.push({ path: '/' + this.accountId  + this.fullPath()})
                     var _app = this;
                     $.get("/api/file/list", {"parentId": parentId, "accountId":_app.accountId}, {
                         dataType:'jsonp'
@@ -677,8 +736,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 listDirs: function(callback) {
                     // list all directories for an account (used by move UI)
                     var _app = this;
-                   $.get("/api/file/listDirs", {accountId: _app.accountId}
-                    ).done(function(dirs) {
+                   $.get("/api/file/listDirs", {accountId: _app.accountId}).done(function(dirs) {
                         var rootDirs = [];
                         var dirMap = {};
                         // create parent map
@@ -731,7 +789,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         displayName = file.displayName;
                     }
 //                    console.log(id, displayName);
-                    if (up == undefined || up == false) {
+                    if ((up == undefined || up == false) && file != undefined) {
                         this.dirStack.push(file);
                     }
                     this.loadFiles(id, displayName);
@@ -840,6 +898,17 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         .bind('fileuploadprogress', _app.updateFileProgress);
             }
         });
+        
+        var router = new VueRouter({
+            routes: [
+                { path: '/:accountId(\\d+)/:dir*', component: app },
+              ]
+        });
+
+        var pp = new Vue({
+            router:router
+          }).$mount(appId);
+
         return app;
     };
     

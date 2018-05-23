@@ -1,5 +1,11 @@
 <div class="span10" id="filesTool">
 
+    <balk />
+
+</div>
+
+
+<template id="balk">
 <form class="form-horizontal">
 <div class="row">
     <div class="span6">
@@ -31,7 +37,7 @@
  </tr>
 </thead>
 <tr>
- <td colspan="20"><span class="link" @click="cdUp(undefined)">/ </span><span v-for="(dir, index) in dirStack"><span v-if="index != 0"> / </span> <span class="link" @click="cdUp(dir.id)">{{dir.filename}}</span> </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
+ <td colspan="20"><span class="link" @click="cdUp(undefined)">/ </span><span v-for="(dir, index) in dirStack"><span v-if="index != 0"> / </span> <span class="link" @click="cdUp(dir.id)">{{dir.name}}</span> </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
 </tr>
         <tbody >
             <tr v-if="parentId != undefined">
@@ -128,12 +134,14 @@
 
 
 </div>
+</form>
 
+</template>
 <template  id="move-entry-template">
     <li>
         <i  v-if="dir.children != undefined && dir.children.length > 0" class="icon-folder-open"></i>
         <i  v-if="dir.children == undefined || dir.children.length == 0" class="icon-folder-close"></i>
-    <a href="#" @click="moveSelectedFilesTo(dir)">{{dir.filename}}</a>
+    <a href="#" @click="moveSelectedFilesTo(dir)">{{dir.name}}</a>
         <ul v-if="dir.children != undefined && dir.children.length > 0" style="list-style:none;"> 
             <li  v-for="(dir,index) in dir.children" is="dir" :index="index" :dir="dir"></li>
         </ul>
@@ -210,6 +218,4 @@
     </tr>
 </template>
 
-</form>
 <script id="insert"></script>
-</div>

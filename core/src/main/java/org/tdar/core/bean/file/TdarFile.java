@@ -53,7 +53,7 @@ public class TdarFile extends AbstractFile {
 
     @Column(name = "curation_state", nullable = true)
     @Enumerated(EnumType.STRING)
-    private CurationState curation;
+    private CurationState curation = CurationState.CHOOSE;
 
     @Column(length = FieldLength.FIELD_LENGTH_100, name = "note")
     private String note;
