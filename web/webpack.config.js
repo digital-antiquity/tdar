@@ -79,9 +79,9 @@ module.exports = {
         new CopyWebpackPlugin(
                 cssFiles 
           ),
-          new CopyWebpackPlugin(
-                 nodeModules 
-            ),
-            new MiniCssExtractPlugin()
+        new CopyWebpackPlugin(
+             nodeModules 
+        ),
+        new MiniCssExtractPlugin()
     ]
 };

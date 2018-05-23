@@ -391,6 +391,7 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
+                    
                     <execution>
                         <id>exec-run-yarn</id>
                         <phase>generate-sources</phase>
@@ -408,7 +409,6 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
-                    
                     <execution>
                         <id>exec-run-webpack</id>
                         <phase>generate-sources</phase>
@@ -417,15 +417,12 @@
                             <executable>./node_modules/.bin/yarn</executable>
                             <arguments>
                                 <argument>build</argument>
-                                <argument>--env.hg.version=${hg.version}</argument>
                             </arguments>
                         </configuration>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                     </execution>
-                    
-                    
                 </executions>
             </plugin>
             <!-- plugin>
