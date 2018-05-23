@@ -43,7 +43,7 @@ public enum RelationType implements Localizable {
         return prefix;
     }
 
-    public void setPrefix(String prefix) {
+    private void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
@@ -51,7 +51,7 @@ public enum RelationType implements Localizable {
         return uri;
     }
 
-    public void setUri(String uri) {
+    private void setUri(String uri) {
         this.uri = uri;
     }
 

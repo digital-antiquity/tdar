@@ -51,7 +51,7 @@ public enum OAIMetadataFormat {
      * @param namespace
      *            the XML namespace URI
      */
-    public void setNamespace(String namespace) {
+    private void setNamespace(String namespace) {
         this.namespace = namespace;
     }
 
@@ -66,7 +66,7 @@ public enum OAIMetadataFormat {
      * @param schemaLocation
      *            the XML schema location
      */
-    public void setSchemaLocation(String schemaLocation) {
+    private void setSchemaLocation(String schemaLocation) {
         this.schemaLocation = schemaLocation;
     }
 
@@ -81,7 +81,7 @@ public enum OAIMetadataFormat {
      * @param prefix
      *            the prefix to set
      */
-    public void setPrefix(String prefix) {
+    private void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 

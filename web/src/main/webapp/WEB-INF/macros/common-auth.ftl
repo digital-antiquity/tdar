@@ -137,7 +137,7 @@
                         and wish to add ${siteAcronym} content.
                     </label>
 	<br/>
-                <span class="help-block">Review our <a href="${config.privacyPolicyUrl}">privacy policy</a></span>.
+                <span class="help-block">Review our <a href="${config.privacyPolicyUrl}">privacy policy</a>.</span>
                     
                 </div>
             </div>

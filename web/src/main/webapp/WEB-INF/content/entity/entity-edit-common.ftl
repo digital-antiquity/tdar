@@ -195,7 +195,7 @@
             </#if>
 	<br/>
 	<br/>
-            <span class="help-block">Review our <a href="${config.privacyPolicyUrl}">privacy policy</a></span>.
+            <span class="help-block">Review our <a href="${config.privacyPolicyUrl}">privacy policy</a>.</span>
 	<br/>
 
             <@edit.submit "Save" false />

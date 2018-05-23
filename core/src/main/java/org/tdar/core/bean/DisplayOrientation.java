@@ -33,7 +33,7 @@ public enum DisplayOrientation implements HasLabel, Localizable {
         return MessageHelper.formatLocalizableKey(this);
     }
 
-    public void setLabel(String label) {
+    private void setLabel(String label) {
         this.label = label;
     }
 
