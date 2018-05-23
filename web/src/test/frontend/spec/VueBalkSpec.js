@@ -50,7 +50,9 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             jasmine.Ajax.stubRequest('/upload/upload').andReturn({
                 "responseText": 'success'
               });
-            var vapp = TDAR.vuejs.balk.init("#filesTool");
+            var __vapp = TDAR.vuejs.balk.init("#filesTool");
+            var Constructor = Vue.extend(__vapp);
+            var vapp = new Constructor().$mount();
             expect(vapp == undefined).toBe(false);
              var result = vapp.fileUploadAdd({}, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(false);
