@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -52,6 +54,8 @@ public class UserNotificationController extends AbstractAuthenticatableAction im
     private String allMessageTypesJson;
     private InputStream resultJson;
 
+    private int startRecord = 0;
+    private int recordsPerPage = 500;
     // incoming notification fields
     private Long id;
     private UserNotification notification;
@@ -76,7 +80,18 @@ public class UserNotificationController extends AbstractAuthenticatableAction im
             @Action("index")
     })
     public String execute() {
-        allNotifications = userNotificationService.findAll(this);
+        
+        List<UserNotification> notifications = userNotificationService.findAll(this);
+        if (notifications.size() < startRecord) {
+            int max = notifications.size();
+            if (max > startRecord + recordsPerPage) {
+                max = startRecord + recordsPerPage;
+            }
+            
+            for (int i = startRecord; i < max; i++) {
+                allNotifications.add(notifications.get(i));
+            }
+        }
         notificationsJson = serializationService.convertFilteredJsonForStream(allNotifications, null, null);
         allMessageTypesJson = serializationService.convertFilteredJsonForStream(UserNotificationType.values(), null, null);
         return SUCCESS;
@@ -179,6 +194,22 @@ public class UserNotificationController extends AbstractAuthenticatableAction im
 
     public InputStream getResultJson() {
         return resultJson;
+    }
+
+    public int getRecordsPerPage() {
+        return recordsPerPage;
+    }
+
+    public void setRecordsPerPage(int recordsPerPage) {
+        this.recordsPerPage = recordsPerPage;
+    }
+
+    public int getStartRecord() {
+        return startRecord;
+    }
+
+    public void setStartRecord(int startRecord) {
+        this.startRecord = startRecord;
     }
 
 }

@@ -2,15 +2,15 @@ package org.tdar.struts.action;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tdar.struts.action.upload.UploadController;
+import org.tdar.struts.action.api.files.UploadAction;
 
 public class UploadControllerITCase extends AbstractAdminControllerITCase {
 
-    UploadController controller;
+    UploadAction controller;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(UploadController.class);
+        controller = generateNewInitializedController(UploadAction.class);
     }
 
     @Test

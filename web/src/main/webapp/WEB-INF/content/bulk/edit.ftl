@@ -42,16 +42,4 @@
     </div>
     </#macro>
 
-    <#macro footer>
-
-    <table style="display:none;visibility:hidden" id="queuedFileTemplate">
-        <@edit._fileProxyRow />
-    </table>
-    </#macro>
-
-    <#macro localJavascript>
-    $(document).ready(function() {
-	    $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
-    });
-    </#macro>
 </#escape>

@@ -32,6 +32,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.excel.ExcelWorkbookWriter;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
@@ -233,4 +234,8 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
         return contentLength;
     }
 
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return ProjectionModel.HIBERNATE_DEFAULT;
+    }
 }

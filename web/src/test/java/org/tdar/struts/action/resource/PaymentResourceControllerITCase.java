@@ -304,7 +304,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         return pair;
     }
 
-    private void extracted(String title, BillingAccount expectedAccount) throws TdarActionException, FileNotFoundException {
+    private void extracted(String title, BillingAccount expectedAccount) throws Exception {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
         d.setStatus(Status.DRAFT);

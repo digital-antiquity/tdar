@@ -1,6 +1,6 @@
 {
   "name": "tDAR",
-  "version": "17.0.0",
+  "version": "18.0.0",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
@@ -385,9 +385,9 @@
       }
     },
     "bower": {
-      "version": "1.7.10",
-      "resolved": "https://registry.npmjs.org/bower/-/bower-1.7.10.tgz",
-      "integrity": "sha1-5RtI6iwHpElEgdBMCBIyhEusjvI="
+      "version": "1.8.4",
+      "resolved": "https://registry.npmjs.org/bower/-/bower-1.8.4.tgz",
+      "integrity": "sha1-54dqB23rgTf30GUl3F6MZtuC8oo="
     },
     "bower-config": {
       "version": "0.5.3",
@@ -3836,7 +3836,7 @@
       "integrity": "sha1-icG3VP6kElsfiTghOSwRuc5ddFY=",
       "dev": true,
       "requires": {
-        "bower": "1.7.10",
+        "bower": "1.8.4",
         "bower-installer": "git://github.com/bessdsv/bower-installer.git#7f9cece1e6fada50f44dc0851e1d85815cd1b4a7"
       }
     },

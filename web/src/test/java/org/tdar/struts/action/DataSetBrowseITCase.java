@@ -46,7 +46,7 @@ public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testBrowse() throws IOException, TdarActionException {
+    public void testBrowse() throws Exception {
         // load datasets
         Dataset dataset = setupAndLoadResource(DOUBLE_DATASET, Dataset.class);
         assertNotNull(dataset);
@@ -98,7 +98,7 @@ public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testSearch() throws IOException, TdarActionException {
+    public void testSearch() throws Exception {
         // load datasets
         Dataset dataset = setupAndLoadResource(TEXT_DATASET, Dataset.class);
         assertNotNull(dataset);
@@ -124,8 +124,7 @@ public class DataSetBrowseITCase extends AbstractAdminControllerITCase {
     @Test
     @Rollback
     // FIXME: am I supposed to be empty?
-    public void testTranslate() throws IOException, TdarActionException, IllegalAccessException, InstantiationException, InvocationTargetException,
-            NoSuchMethodException {
+    public void testTranslate() throws Exception {
         // load datasets
         Dataset dataset = setupAndLoadResource(SRC_TEST_EMPTY_ACCDB, Dataset.class);
         DatasetController controller = generateNewInitializedController(DatasetController.class);
