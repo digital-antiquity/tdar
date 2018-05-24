@@ -2,7 +2,8 @@ const path = require('path');
 
 // const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require("webpack");
 
 // Assets is a list of files that were previously Bower-managed dependencies.
 // They need to be copied into the webapp/components directory so they can be served in the WAR file.
@@ -76,6 +77,10 @@ module.exports = {
     
     // This plugin forces the files defined in the Assets.js file to be copied to their destination.
     plugins: [
+        new webpack.ProvidePlugin({
+            $: "jquery",
+            jQuery: "jquery"
+        }),
         new CopyWebpackPlugin(
                 cssFiles 
           ),

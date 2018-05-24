@@ -44,11 +44,10 @@
     import 'jquery.treeview/jquery.treeview.js';
      
      /* LICENSE: MIT /GPL 2.0 */
-     import 'blueimp-tmpl/js/tmpl.js';
      import 'bootstrap-datepicker-eyecon/css/datepicker.css';
      import 'bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js';
      
-    
+    /**
      //Used this fix from https://stackoverflow.com/questions/44187714/import-blueimp-jquery-file-upload-in-webpack/48236429
      require('script-loader!blueimp-file-upload/js/vendor/jquery.ui.widget.js');
      require('script-loader!blueimp-tmpl/js/tmpl.js');
@@ -61,7 +60,7 @@
      require('script-loader!blueimp-file-upload/js/jquery.fileupload-audio.js');
      require('script-loader!blueimp-file-upload/js/jquery.fileupload-video.js');
      require('script-loader!blueimp-file-upload/js/jquery.fileupload-validate.js');
-     require('script-loader!blueimp-file-upload/js/jquery.fileupload-ui.js');
+     require('script-loader!blueimp-file-upload/js/jquery.fileupload-ui.js');*/
      
      /* LICENSE: MIT */
      import './src/main/webapp/includes/jquery.populate.js';

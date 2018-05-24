@@ -409,6 +409,7 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
+                    
                     <execution>
                         <id>exec-run-webpack</id>
                         <phase>generate-sources</phase>
@@ -423,6 +424,8 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
+                    
+                    
                 </executions>
             </plugin>
             <!-- plugin>

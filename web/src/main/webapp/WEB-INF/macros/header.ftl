@@ -1,14 +1,16 @@
 <#import "common.ftl" as common>
 <#macro scripts combine=false>
-    <#if combine>
-    <script type="text/javascript" src="${staticHost}${wroTempDirName}/${wroProfile}.js"></script>
-    <#else>
-        <#list javascriptFiles as src>
-        <script type="text/javascript" src="${staticHost}${src}?buildId=${common.tdarBuildId}"></script>
-        </#list>
-    </#if>
-    
-        <script type="text/javascript" src="/components/bundle.js"></script>
+<script type="text/javascript" src="/components/staticAssets.js"></script>
+<script type="text/javascript" src="/components/blueimp-tmpl/js/tmpl.js"></script>
+<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-process.js"></script>
+<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
+<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-ui.js"></script>
+
+<script type="text/javascript" src="/components/bundle.js"></script>
+<script type="text/javascript" src="/js/tdar.jquery-upload-validation.js"></script>
+<script type="text/javascript" src="/js/tdar.messages_en.js"></script>
 </#macro>
 
 <#macro outdatedBrowserWarning>

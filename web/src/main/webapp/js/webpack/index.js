@@ -3,10 +3,10 @@
 import './../latLongUtil-1.0';
 
 import './../tdar.core';
+import './../tdar.common';
 import './../tdar.datepicker';
 import './../tdar.moreinfo';
 import './../tdar.upload';
-import './../tdar.jquery-upload-validation';
 import './../tdar.common';
 import './../tdar.bulk';
 import './../tdar.repeatrow';
@@ -14,7 +14,6 @@ import './../tdar.autocomplete';
 import './../tdar.c3graphsupport';
 import './../tdar.c3graph';
 import './../tdar.validate';
-import './../tdar.messages_en';
 import './../tdar.d3tree';
 
 import './../tdar.datatable';

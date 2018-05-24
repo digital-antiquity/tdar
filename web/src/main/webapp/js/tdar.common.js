@@ -1,3 +1,4 @@
+ tmpl = require('script-loader!blueimp-tmpl/js/tmpl.js')
 /*
  * $Id$
  * 
