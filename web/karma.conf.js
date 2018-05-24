@@ -24,13 +24,14 @@ console.log("**** karma start -- VueBalkSpec.js ****")
 console.log("**** or          -- Vue            ****")
 console.log("*************************************** ");
 
-
-var last = process.argv[process.argv.length-1];
-if (last != 'start' && last != 'run') {
-    if (!last.endsWith(".js")) {
-        last = last + "*";
+if (process.argv != undefined  && process.argv.length > 0) {
+    var last = process.argv[process.argv.length-1];
+    if (last != 'start' && last != 'run' && last != 'true') {
+        if (!last.endsWith(".js")) {
+            last = last + "*";
+        }
+        specFiles = "src/test/frontend/spec/**/*" + last;
     }
-    specFiles = "src/test/frontend/spec/**/*" + last;
 }
 
 
