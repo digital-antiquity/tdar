@@ -135,6 +135,29 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccount account = genericService.find(BillingAccount.class, accountId);
         assertTrue(account.getInvoices().contains(invoice));
     }
+    
+
+    @Test
+    @Rollback
+    public void testAddingUser() throws TdarActionException {
+        Long accountId = createAccount(getBasicUser(), genericService).getId();
+        Invoice invoice = createTrivialInvoice();
+        TdarUser newUser = createAndSaveNewUser();
+        genericService.saveOrUpdate(invoice);
+        genericService.synchronize();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class, getBasicUser());
+        controller.setInvoiceId(invoice.getId());
+        controller.setId(accountId);
+        controller.prepare();
+        controller.edit();
+        controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getUser(), newUser, Permissions.USE_ACCOUNT)));
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        assertEquals(Action.SUCCESS, save);
+        BillingAccount account = genericService.find(BillingAccount.class, accountId);
+        assertTrue(account.getInvoices().contains(invoice));
+        assertEquals(account.getAuthorizedUsers().size(), 2);
+    }
 
     @Test
     @Rollback
@@ -221,6 +244,32 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         controller.setId(id);
         controller.prepare();
         int size = controller.getAccount().getAuthorizedUsers().size();
+        controller.getAccount().getAuthorizedUsers().forEach(au -> {
+            controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),au.getUser(), Permissions.ADMINISTER_ACCOUNT)));
+        });
+        Iterator<UserRightsProxy> iterator = controller.getProxies().iterator();
+        while (iterator.hasNext()) {
+            UserRightsProxy proxy = iterator.next();
+            if (proxy.getId().equals(getBillingAdminUserId())) {
+                iterator.remove();
+            }
+        }
+        controller.setServletRequest(getServletPostRequest());
+        String save = controller.save();
+        assertNotEquals(Action.SUCCESS, save);
+        assertNotEquals(controller.getActionErrors().size(), 0);
+        ignoreActionErrors(true);
+    }
+    
+
+    @Test
+    @Rollback
+    public void testRemovingUsersFromAccountValid() throws TdarActionException {
+        Long id = setupAccountWithUsers();
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class, getAdminUser());
+        controller.setId(id);
+        controller.prepare();
+        int size = controller.getAccount().getAuthorizedUsers().size()- 1;
         controller.getAccount().getAuthorizedUsers().forEach(au -> {
             controller.getProxies().add(new UserRightsProxy(new AuthorizedUser(getAdminUser(),au.getUser(), Permissions.ADMINISTER_ACCOUNT)));
         });

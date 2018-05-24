@@ -124,7 +124,7 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
         return publisherLocationName;
     }
 
-    public void setPublisherLocationName(String publisherLocationName) {
+    private void setPublisherLocationName(String publisherLocationName) {
         this.publisherLocationName = publisherLocationName;
     }
 
@@ -135,7 +135,7 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
         return publisherName;
     }
 
-    public void setPublisherName(String publisherName) {
+    private void setPublisherName(String publisherName) {
         this.publisherName = publisherName;
     }
 
@@ -143,7 +143,7 @@ public enum DocumentType implements HasLabel, Localizable, PluralLocalizable {
         return schema;
     }
 
-    public void setSchema(String schema) {
+    private void setSchema(String schema) {
         this.schema = schema;
     }
 }

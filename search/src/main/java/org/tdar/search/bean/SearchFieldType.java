@@ -163,7 +163,7 @@ public enum SearchFieldType implements HasLabel, Localizable {
         return associatedClass;
     }
 
-    public void setAssociatedClass(Class<?> associatedClass) {
+    private void setAssociatedClass(Class<?> associatedClass) {
         this.associatedClass = associatedClass;
     }
 

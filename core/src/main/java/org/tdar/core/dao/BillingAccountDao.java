@@ -153,10 +153,10 @@ public class BillingAccountDao extends HibernateBase<BillingAccount> {
         for (Object objs : query.getResultList()) {
             Object[] obj = (Object[]) objs;
             if (obj[0] != null) {
-                totalFiles = ((Long) obj[0]).longValue();
+                totalFiles = ((Number) obj[0]).longValue();
             }
             if (obj[1] != null) {
-                totalSpaceInBytes = ((Long) obj[1]).longValue();
+                totalSpaceInBytes = ((Number) obj[1]).longValue();
             }
         }
         for (Coupon coupon : account.getCoupons()) {

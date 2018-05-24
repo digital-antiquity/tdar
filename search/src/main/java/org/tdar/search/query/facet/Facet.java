@@ -12,8 +12,6 @@ public class Facet implements Serializable {
     private String detailUrl;
     private Class<?> className;
 
-    public Object getCount;
-
     public Facet() {
     }
 
