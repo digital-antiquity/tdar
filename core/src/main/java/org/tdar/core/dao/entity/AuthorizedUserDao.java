@@ -88,7 +88,8 @@ public class AuthorizedUserDao extends HibernateBase<AuthorizedUser> {
                 continue;
             }
             // if we have an expired user that hasn't been cleaned up
-            if (au.getDateExpires() != null && au.getDateExpires().after(new Date())) {
+            if (au.getDateExpires() != null && au.getDateExpires().before(new Date())) {
+            getLogger().debug("expires: {} ; {}", au.getDateExpires() , au.getDateExpires().before(new Date()));
                 continue;
             }
             return true;

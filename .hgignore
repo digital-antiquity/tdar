@@ -56,6 +56,7 @@ core/src/main/resources/rebel.xml
 web/src/main/resources/rebel.xml
 docker/docker
 docker/postgres
+web/src/main/webapp/webpack
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 webservice/([^\/]+)/build/.*
