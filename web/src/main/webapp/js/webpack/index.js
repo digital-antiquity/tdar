@@ -1,16 +1,26 @@
 //These are all of the components that we have written.
 //They will be bundled together into one file. 
-import './../latLongUtil-1.0';
-
 import './../tdar.core';
-import TDAR from './../tdar.core';
-window.TDAR = TDAR;
+// import TDAR from './../tdar.core';
+// window.TDAR = TDAR;
+console.log("hi");
+import 'jquery';
+import $ from 'jquery/dist/jquery';
+window.jQuery = $;
+window.$ = $;
+import 'leaflet/dist/leaflet';
+import 'leaflet-draw/dist/leaflet.draw';
+import 'leaflet-choropleth/dist/choropleth.js';
+import 'd3/d3';
+import c3 from 'c3/c3';
+window.c3 = c3;
+// import 'c3/c3.min.css';
+
 
 import './../tdar.common';
 import './../tdar.datepicker';
 import './../tdar.moreinfo';
 import './../tdar.upload';
-import './../tdar.common';
 import './../tdar.bulk';
 import './../tdar.repeatrow';
 import './../tdar.autocomplete';
@@ -32,20 +42,22 @@ import './../tdar.download';
 import './../tdar.pricing';
 import './../tdar.contexthelp';
 import './../tdar.menu';
-
-import './../tdar.formValidateExtensions';
-import './../tdar.jquery-upload-validation';
-import './../tdar.messages_en';
+//
+// import './../tdar.formValidateExtensions';
+// import './../tdar.jquery-upload-validation';
+// import './../tdar.messages_en';
 import './../../includes/bindWithDelay';
 import './../tdar.bookmark';
 import './../maps/tdar.leaflet';
 import './../maps/tdar.worldmap';
 
+
 // import worldmap from './../maps/tdar.worldmap';
 // TDAR.worldmap = worldmap;
+//
+// import './../vue/vue-selectize';
+// import './../vue/view-collection-widget';
+// import './../vue/edit-collection';
 
-import './../vue/vue-selectize';
-import './../vue/view-collection-widget';
-import './../vue/edit-collection';
 
-
+TDAR.main();

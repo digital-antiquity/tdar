@@ -94,7 +94,8 @@ module.exports = {
             jQuery: "jquery",
             'window.$': 'jquery',
             'window.jQuery': 'jquery',
-            d3:"d3"
+            d3:"d3",
+            c3:"c3"
         }),
         new CopyWebpackPlugin(
                 cssFiles 

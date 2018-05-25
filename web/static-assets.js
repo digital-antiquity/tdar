@@ -101,8 +101,8 @@
      
      /* LICENSE:CC Attribution 3.0 Unported */
      import './src/main/webapp/js/latLongUtil-1.0.js';
-     import 'leaflet/dist/leaflet.js';
-     import 'leaflet-choropleth/dist/choropleth.js';
+     // import 'leaflet/dist/leaflet';
+     // import 'leaflet-choropleth/dist/choropleth.js';
      
      import 'es6-promise/es6-promise.js';
      import 'es6-promise/es6-promise.auto.js';
