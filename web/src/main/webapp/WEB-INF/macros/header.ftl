@@ -8,9 +8,7 @@
 <script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
 <script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-ui.js"></script>
 
-<script type="text/javascript" src="/components/bundle.js"></script>
-<script type="text/javascript" src="/js/tdar.jquery-upload-validation.js"></script>
-<script type="text/javascript" src="/js/tdar.messages_en.js"></script>
+
 </#macro>
 
 <#macro outdatedBrowserWarning>

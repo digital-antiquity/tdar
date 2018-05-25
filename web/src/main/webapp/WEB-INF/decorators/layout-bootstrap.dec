@@ -11,6 +11,7 @@
 <!-- README - UPDATE BOWER.JSON in lockstep -->
 <#global jquery_version="1.11.3">
 <#global jquery_ui_version="1.11.4">
+
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.15.1" >
 <#assign pageType ="view">
@@ -64,13 +65,9 @@
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
-    <#if useCDN>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/${jquery_version}/jquery.min.js"></script>
-    <#else>
-        <script src="${staticHost}/includes/jquery-${jquery_version}.min.js"></script>
-    </#if>
+    <script src="/webpack/staticAssets.js"></script>
+<script type="text/javascript" src="/webpack/bundle.js"></script>
     
-    <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}.custom/jquery-ui.min.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
     <#include "/${config.themeDir}/head.dec" />
     <#if whiteLabelCollection??>  
@@ -284,15 +281,6 @@ ${head}
 
     </footer>
 
-    <#if useCDN>
-        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/jquery.validate.min.js"></script>
-        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/additional-methods.min.js"></script>
-        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <#else>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
-        <script src="${staticHost}/includes/bootstrap-2.32/js/bootstrap.js"></script>
-    </#if>
 
 
     <@header.scripts ( webFilePreprocessingEnabled) />

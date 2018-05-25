@@ -12,7 +12,37 @@
      * './src/main/webapp/css/tdar.leaflet.css'; './src/main/webapp/css/tdar.searchresults.css'; './src/main/webapp/css/tdar.sprites.css';
      * './src/main/webapp/css/tdar.worldmap.css';
      **********************************************************************************************************************************************************/
-          
+    import 'jquery';
+    import $ from 'jquery/dist/jquery';
+    window.jQuery = $;
+    window.$ = $;
+    //alert($);
+    console.log("I'm a silly entry point");
+    $(document).ready(function(){
+        $("#text").html("test");
+        console.log($("#text"));
+    
+    });
+    console.log($("#text"));
+    
+    import "jquery-validation/dist/jquery.validate";
+    require('expose-loader?$.fn.validate!jquery-validation');
+    require('expose-loader?$.validator!jquery-validation');
+    import "jquery-validation/dist/additional-methods";
+    import "bootstrap-2.3.2/js/bootstrap-affix.js";
+    import "bootstrap-2.3.2/js/bootstrap-alert.js";
+    import "bootstrap-2.3.2/js/bootstrap-button.js";
+    import "bootstrap-2.3.2/js/bootstrap-carousel.js";
+    import "bootstrap-2.3.2/js/bootstrap-collapse.js";
+    import "bootstrap-2.3.2/js/bootstrap-dropdown.js";
+    import "bootstrap-2.3.2/js/bootstrap-modal.js";
+    import "bootstrap-2.3.2/js/bootstrap-popover.js";
+    import "bootstrap-2.3.2/js/bootstrap-scrollspy.js";
+    import "bootstrap-2.3.2/js/bootstrap-tab.js";
+    import "bootstrap-2.3.2/js/bootstrap-tooltip.js";
+    import "bootstrap-2.3.2/js/bootstrap-transition.js";
+    import "bootstrap-2.3.2/js/bootstrap-typeahead.js";
+    import './src/main/webapp/includes/jquery-ui-1.11.4.custom/jquery-ui.min.js';
     import './src/main/webapp/css/tdar-bootstrap.css';
     import './src/main/webapp/css/tdar.dashboard.css';
     import './src/main/webapp/css/famfamfam.css';
@@ -47,7 +77,6 @@
      import 'bootstrap-datepicker-eyecon/css/datepicker.css';
      import 'bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js';
      
-    /**
      //Used this fix from https://stackoverflow.com/questions/44187714/import-blueimp-jquery-file-upload-in-webpack/48236429
      require('script-loader!blueimp-file-upload/js/vendor/jquery.ui.widget.js');
      require('script-loader!blueimp-tmpl/js/tmpl.js');
@@ -60,7 +89,9 @@
      require('script-loader!blueimp-file-upload/js/jquery.fileupload-audio.js');
      require('script-loader!blueimp-file-upload/js/jquery.fileupload-video.js');
      require('script-loader!blueimp-file-upload/js/jquery.fileupload-validate.js');
-     require('script-loader!blueimp-file-upload/js/jquery.fileupload-ui.js');*/
+     require('script-loader!blueimp-file-upload/js/jquery.fileupload-ui.js');
+    /**
+     */
      
      /* LICENSE: MIT */
      import './src/main/webapp/includes/jquery.populate.js';

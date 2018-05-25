@@ -13,14 +13,14 @@ const Assets = require('./assets');
 const cssFiles = Assets[0].map(asset => {
     return {
         from: path.resolve(__dirname, `./${asset}`),
-        to: path.resolve(__dirname, './src/main/webapp/components/')
+        to: path.resolve(__dirname, './src/main/webpack/assets/')
       };
 });
 
 const nodeModules = Assets[1].map(asset => {
     return {
         from: path.resolve(__dirname, `./${asset.path}`),
-        to: path.resolve(__dirname, `./src/main/webapp/components/${asset.name}`),
+        to: path.resolve(__dirname, `./src/main/webapp/webpack/${asset.name}`),
         toType: 'dir'
       };
 });
@@ -39,19 +39,26 @@ module.exports = {
   // One one output entry can be specified. The [name] will be replaced with what the name of the entry point was.
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, './src/main/webapp/components')
+    path: path.resolve(__dirname, './src/main/webapp/webpack/')
   },
   
   // This is supposed to be for the CSS files that get bundled to be loaded into one file.
   optimization: {
       splitChunks: {
         cacheGroups: {
+            // default: false,
+            // commons: {
+            //   test: /[\\/]node_modules[\\/]/,
+            //   name: 'vendor_app',
+            //   chunks: 'all',
+            //   minChunks: 2
+            // },
           styles: {
             name: 'styles',
             test: /\.css$/,
             chunks: 'all',
             enforce: true
-          }
+          },
         }
       }
   },
@@ -71,6 +78,11 @@ module.exports = {
                use: [
                  'file-loader'
                ]
+         },
+         {
+               test: require.resolve('jquery-validation'),
+               loader: 'imports-loader',
+               query: 'jQuery=jquery,$=jquery',
          }
         ]
     },
@@ -79,7 +91,10 @@ module.exports = {
     plugins: [
         new webpack.ProvidePlugin({
             $: "jquery",
-            jQuery: "jquery"
+            jQuery: "jquery",
+            'window.$': 'jquery',
+            'window.jQuery': 'jquery',
+            d3:"d3"
         }),
         new CopyWebpackPlugin(
                 cssFiles 

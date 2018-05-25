@@ -3,6 +3,9 @@
 import './../latLongUtil-1.0';
 
 import './../tdar.core';
+import TDAR from './../tdar.core';
+window.TDAR = TDAR;
+
 import './../tdar.common';
 import './../tdar.datepicker';
 import './../tdar.moreinfo';
@@ -29,12 +32,20 @@ import './../tdar.download';
 import './../tdar.pricing';
 import './../tdar.contexthelp';
 import './../tdar.menu';
+
 import './../tdar.formValidateExtensions';
+import './../tdar.jquery-upload-validation';
+import './../tdar.messages_en';
 import './../../includes/bindWithDelay';
-import './../maps/tdar.worldmap';
 import './../tdar.bookmark';
 import './../maps/tdar.leaflet';
+import './../maps/tdar.worldmap';
+
+// import worldmap from './../maps/tdar.worldmap';
+// TDAR.worldmap = worldmap;
 
 import './../vue/vue-selectize';
 import './../vue/view-collection-widget';
 import './../vue/edit-collection';
+
+

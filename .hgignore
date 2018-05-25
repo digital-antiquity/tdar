@@ -49,6 +49,7 @@ core/ANDPersistentIdentifierClient.log
 search/ANDPersistentIdentifierClient.log
 web/.tern-project
 web/phantomjsdriver.log
+web/src/main/webapp/webpack
 .springBeans
 *.diff
 
