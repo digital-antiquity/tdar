@@ -12,19 +12,19 @@
      * './src/main/webapp/css/tdar.leaflet.css'; './src/main/webapp/css/tdar.searchresults.css'; './src/main/webapp/css/tdar.sprites.css';
      * './src/main/webapp/css/tdar.worldmap.css';
      **********************************************************************************************************************************************************/
-    import 'jquery';
-    import $ from 'jquery/dist/jquery';
-    window.jQuery = $;
-    window.$ = $;
-    //alert($);
-    console.log("I'm a silly entry point");
-    $(document).ready(function(){
-        $("#text").html("test");
-        console.log($("#text"));
-    
-    });
-    console.log($("#text"));
-    
+//    import 'jquery';
+//    import $ from 'jquery/dist/jquery';
+//    window.jQuery = $;
+//    window.$ = $;
+//    //alert($);
+//    console.log("I'm a silly entry point");
+//    $(document).ready(function(){
+//        $("#text").html("test");
+//        console.log($("#text"));
+//    
+//    });
+//    console.log($("#text"));
+//    
     import "jquery-validation/dist/jquery.validate";
     require('expose-loader?$.fn.validate!jquery-validation');
     require('expose-loader?$.validator!jquery-validation');
@@ -119,8 +119,8 @@
      import 'leaflet-cluster/dist/leaflet.markercluster.js';
      import 'leaflet-cluster/dist/MarkerCluster.css';
      import 'leaflet-cluster/dist/MarkerCluster.Default.css';
-     import 'd3/d3.min.js';
-     import 'c3/c3.min.js';
+//     import 'd3/d3.min.js';
+//     import 'c3/c3.min.js';
      import 'c3/c3.min.css';
      import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
      import 'leaflet-control-geocoder/dist/Control.Geocoder.css';

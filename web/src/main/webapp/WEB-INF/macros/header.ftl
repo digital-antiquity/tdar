@@ -1,13 +1,14 @@
 <#import "common.ftl" as common>
 <#macro scripts combine=false>
-<script type="text/javascript" src="/components/staticAssets.js"></script>
-<script type="text/javascript" src="/components/blueimp-tmpl/js/tmpl.js"></script>
-<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.iframe-transport.js"></script>
-<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload.js"></script>
-<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-process.js"></script>
-<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
-<script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-ui.js"></script>
-
+<script type="text/javascript" src="/webpack/staticAssets.js"></script>
+<!--
+<script type="text/javascript" src="/webpack/blueimp-tmpl/js/tmpl.js"></script>
+<script type="text/javascript" src="/webpack/jquery-file-upload/js/jquery.iframe-transport.js"></script>
+<script type="text/javascript" src="/webpack/jquery-file-upload/js/jquery.fileupload.js"></script>
+<script type="text/javascript" src="/webpack/jquery-file-upload/js/jquery.fileupload-process.js"></script>
+<script type="text/javascript" src="/webpack/jquery-file-upload/js/jquery.fileupload-validate.js"></script>
+<script type="text/javascript" src="/webpack/jquery-file-upload/js/jquery.fileupload-ui.js"></script>
+-->
 
 </#macro>
 
