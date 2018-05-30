@@ -5,7 +5,88 @@
 </div>
 
 
-<template id="balk">
+<script type="text/x-template"   id="move-entry-template">
+    <li>
+        <i  v-if="dir.children != undefined && dir.children.length > 0" class="icon-folder-open"></i>
+        <i  v-if="dir.children == undefined || dir.children.length == 0" class="icon-folder-close"></i>
+    <a href="#" @click="moveSelectedFilesTo(dir)">{{dir.name}}</a>
+        <ul v-if="dir.children != undefined && dir.children.length > 0" style="list-style:none;"> 
+            <li  v-for="(dir,index) in dir.children" is="dir" :index="index" :dir="dir"></li>
+        </ul>
+    
+    </li>
+</script>
+
+<script type="text/x-template"  id="part-entry-template">
+    <span>
+        <span class='initials' :title="name" :alt="name" v-if="initials != undefined">{{initials}}</span>
+        <span class="date" :title="formatLongDate(date)" :alt="formatLongDate(date)">{{formatDate(date)}}</span>
+    </span>
+</script>
+
+
+<script type="text/x-template"   id="comment-entry-template">
+    <div :class="commentClass">
+    <pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
+{{comment.comment}} 
+   <span v-if="comment.resolved != undefined" class="pull-right">
+        <label v-if="comment.resolved == false"  @click="resolveComment()"><input type="checkbox" @click="resolveComment()"/> resolve</label>
+        <i v-if="comment.resolved" :alt="comment.resolverName" :title="comment.resolverName">resolved {{formatDate(comment.dateResolved)}}</i>
+    </span> 
+
+   <span v-if="comment.undoAction != undefined" class="pull-right">
+        <label  @click="undo()"><input type="checkbox" @click="undo()"/> undo</label></span>
+
+    </span> 
+
+    </div>
+</script>
+
+
+<script type="text/x-template" id="file-entry-template">
+<tr v-bind:id="rowId">
+    <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
+    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
+         <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label" 
+         data-toggle="tooltip" data-placement="top" :title="partNames"
+         
+         >{{1+file.parts.length}}</span> </span> </td>
+    <td>
+        <pentry v-if="file.size != undefined" :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
+                
+        </td>
+    <td v-if="fullservice">  <input type="text" name="filenote" v-model="file.note" :value="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
+    <td>
+        <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
+    </td>
+
+    <td v-if="fullservice && (file.curate == undefined || file.curate == true)">
+        <pentry :initials="file.curatedByInitials" :date="file.dateCurated" :name="file.curatedByName" ></pentry> 
+        <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
+        <i v-if="!cannotCurate" @click="wontCurate()" class="icon-thumbs-down"></i>
+    </td>
+    <td v-if="fullservice && initialreviewed"> 
+        <pentry :initials="file.initialReviewedByInitials" :date="file.dateInitialReviewed" :name="file.initialReviewedByName" ></pentry> 
+        <i v-if="canStudentReview" @click="markinitialReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice">
+       <pentry :initials="file.reviewedByInitials" :date="file.dateReviewed" :name="file.reviewedByName" ></pentry> 
+        <i v-if="canReview" @click="markReviewed()" class="icon-thumbs-up"></i></td>
+    <td v-if="fullservice && externalreviewed">
+       <pentry :initials="file.externalReviewedByInitials" :date="file.dateExternalReviewed" :name="file.externalReviewedByName" ></pentry> 
+        <i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
+    <td><a :href="file.resourceUrl">{{file.resourceId }}</a> {{file.resourceStatus}}  
+    </td>
+    <td nowrap v-if="fullservice">
+        <a href="#"  @click="showComments()"><i class="icon-comment"></i>
+        <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
+    </td>
+    <td>
+        <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
+    </td>
+    </tr>
+</script>
+
+<script type="text/x-template"  id="balk-template">
 <form class="form-horizontal">
 <div class="row">
     <div class="span6">
@@ -48,7 +129,7 @@
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload" 
                 :fullservice="fullService" :initialreviewed="initialReviewed" :externalreviewed="externalReviewed"></tr>
 <tr>
- <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</td>
+ <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</p></td>
 </tr>
         </tbody>
 </table>
@@ -136,86 +217,6 @@
 </div>
 </form>
 
-</template>
-<template  id="move-entry-template">
-    <li>
-        <i  v-if="dir.children != undefined && dir.children.length > 0" class="icon-folder-open"></i>
-        <i  v-if="dir.children == undefined || dir.children.length == 0" class="icon-folder-close"></i>
-    <a href="#" @click="moveSelectedFilesTo(dir)">{{dir.name}}</a>
-        <ul v-if="dir.children != undefined && dir.children.length > 0" style="list-style:none;"> 
-            <li  v-for="(dir,index) in dir.children" is="dir" :index="index" :dir="dir"></li>
-        </ul>
-    
-    </li>
-</template>
-
-<template id="part-entry-template">
-    <span>
-        <span class='initials' :title="name" :alt="name" v-if="initials != undefined">{{initials}}</span>
-        <span class="date" :title="formatLongDate(date)" :alt="formatLongDate(date)">{{formatDate(date)}}</span>
-    </span>
-</template>
-
-
-<template  id="comment-entry-template">
-    <div :class="commentClass">
-    <pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
-{{comment.comment}} 
-   <span v-if="comment.resolved != undefined" class="pull-right">
-        <label v-if="comment.resolved == false"  @click="resolveComment()"><input type="checkbox" @click="resolveComment()"/> resolve</label>
-        <i v-if="comment.resolved" :alt="comment.resolverName" :title="comment.resolverName">resolved {{formatDate(comment.dateResolved)}}</i>
-    </span> 
-
-   <span v-if="comment.undoAction != undefined" class="pull-right">
-        <label  @click="undo()"><input type="checkbox" @click="undo()"/> undo</label></span>
-
-    </span> 
-
-    </div>
-</template>
-
-
-<template id="file-entry-template">
-<tr v-bind:id="rowId">
-    <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
-    <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
-         <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label" 
-         data-toggle="tooltip" data-placement="top" :title="partNames"
-         
-         >{{1+file.parts.length}}</span> </span> </td>
-    <td>
-        <pentry v-if="file.size != undefined" :initials="file.uploaderInitials" :date="file.dateCreated" :name="file.uploaderName" ></pentry> 
-                
-        </td>
-    <td v-if="fullservice">  <input type="text" name="filenote" v-model="file.note" :value="file.note" /> <span class="link" v-if="noteChanged" @click="updateNote()">save</span> </td>
-    <td>
-        <a :href="fileLink" v-if="file.resourceId == undefined && file.size != undefined"><i class="icon-pencil"></i></a>
-    </td>
-
-    <td v-if="fullservice && (file.curate == undefined || file.curate == true)">
-        <pentry :initials="file.curatedByInitials" :date="file.dateCurated" :name="file.curatedByName" ></pentry> 
-        <i v-if="canCurate" @click="markCurated()" class="icon-thumbs-up"></i>
-        <i v-if="!cannotCurate" @click="wontCurate()" class="icon-thumbs-down"></i>
-    </td>
-    <td v-if="fullservice && initialreviewed"> 
-        <pentry :initials="file.initialReviewedByInitials" :date="file.dateInitialReviewed" :name="file.initialReviewedByName" ></pentry> 
-        <i v-if="canStudentReview" @click="markinitialReviewed()" class="icon-thumbs-up"></i></td>
-    <td v-if="fullservice">
-       <pentry :initials="file.reviewedByInitials" :date="file.dateReviewed" :name="file.reviewedByName" ></pentry> 
-        <i v-if="canReview" @click="markReviewed()" class="icon-thumbs-up"></i></td>
-    <td v-if="fullservice && externalreviewed">
-       <pentry :initials="file.externalReviewedByInitials" :date="file.dateExternalReviewed" :name="file.externalReviewedByName" ></pentry> 
-        <i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
-    <td><a :href="file.resourceUrl">{{file.resourceId }}</a> {{file.resourceStatus}}  
-    </td>
-    <td nowrap v-if="fullservice">
-        <a href="#"  @click="showComments()"><i class="icon-comment"></i>
-        <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
-    </td>
-    <td>
-        <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
-    </td>
-    </tr>
-</template>
+</script>
 
 <script id="insert"></script>

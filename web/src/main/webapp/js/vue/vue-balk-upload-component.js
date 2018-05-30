@@ -341,7 +341,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
          * the main app
          */
         var app = Vue.component("balk",{
-            template : '#balk',
+            template : '#balk-template',
             data : function() {
                 return {
                 validFormats : config.validFormats,
@@ -542,6 +542,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     $.get("/api/file/list", {"parentId": parentId, "accountId":_app.accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
+                        console.log('LIST FILES:',JSON.stringify(msg));
                         Vue.set(_app,"files", msg);
                     });
                     Vue.set(this, "parentId", parentId);
@@ -554,7 +555,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     $.get("/api/file/list", {"term":search, "accountId":_app.accountId}, {
                         dataType:'jsonp'
                     }).done(function(msg){
-                        console.log(msg);
+                        console.log('SEARCH FILES:',JSON.stringify(msg));
                         Vue.set(_app,"files", msg);
                     });
                 },
