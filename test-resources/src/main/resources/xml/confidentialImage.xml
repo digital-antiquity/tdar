@@ -25,7 +25,7 @@
     <tdar:fileProxies>
         <tdar:fileProxy>
             <tdar:action>ADD</tdar:action>
-            <tdar:filename>5127663428_42ef7f4463_b.jpg</tdar:filename>
+            <tdar:name>5127663428_42ef7f4463_b.jpg</tdar:name>
             <tdar:restriction>CONFIDENTIAL</tdar:restriction>
         </tdar:fileProxy>
     </tdar:fileProxies>
