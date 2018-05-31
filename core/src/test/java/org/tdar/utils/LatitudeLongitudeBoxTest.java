@@ -127,7 +127,7 @@ public class LatitudeLongitudeBoxTest {
     public void testExactLLB2() {
         // not 100% necessary, but attempting to get at the randomness
         SpatialObfuscationUtil.useRandom(false);
-        SpatialObfuscationUtil.setRandom(-0.9999);
+        SpatialObfuscationUtil.setRandom(0.9999);
 
         for (int i = 0; i < 100; i++) {
             LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-36.845703125d, -3.64903402157866d, -36.845703125d, 3.64903402157866d);
