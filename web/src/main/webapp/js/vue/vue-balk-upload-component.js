@@ -20,22 +20,34 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     /** format the data to a yy/mm/dd
      * 
      */
-    var _formatDate = function(date) {
-        if (date == undefined ) {
+    var _formatDate = function(date_) {
+        if (date_ == undefined ) {
             return "";
         }
-      return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: '2-digit'});
+        
+        var date = new Date(date_);
+        return (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear().toString().substring(2);
     }
 
     /**
      * format date with time
      */
-    var _formatLongDate = function(date) {
-        if (date == undefined ) {
+    var _formatLongDate = function(date_) {
+        if (date_ == undefined ) {
             return "";
         }
-      return new Date(date).toLocaleString(['en-US'], {month: '2-digit', day: '2-digit', year: 'numeric',
-          hour:'2-digit', minute:'2-digit'});
+
+        var date = new Date(date_);
+        var ampm = "AM";
+        if (date.getHours() > 12) {
+            ampm = "PM";
+        }
+        
+        var min = date.getMinutes();
+        if (min < 10) {
+            min = "0" + min.toString();
+        }
+        return (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear() + ", " + (date.getHours() % 12) + ":" + min + " " + ampm;
     }
 
     var _init = function(appId) {
@@ -86,7 +98,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 resolved :false,
             }},
             mounted: function() {
-                Vue.set(this,"resolved", this.comment.resolved);
+                if (this.comment != undefined) {
+                    Vue.set(this,"resolved", this.comment.resolved);
+                }
             },
             methods: {
                 formatDate: function(date) {
@@ -217,10 +231,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         this.$emit('deletefile', this.file);
                     } 
 
-                }
-            },
-            computed: {
-                partNames: function() {
+                },
+                _partNames: function() {
                     var ret = "";
                     if (this.file.parts == undefined || this.file.parts.length == 0) {
                         return "";
@@ -231,7 +243,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     }
                     return ret;
                 },
-                noteChanged: function() {
+                _noteChanged: function() {
                     // watch the note property and show a "save" button when there are differenes
                     var _note = this.file.note;
                     var note = this.file.initialNote;
@@ -243,6 +255,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                       return false;
                   }
                   return true;
+                }
+            },
+            computed: {
+                partNames: function() {
+                    return this._partNames();
+                },
+                noteChanged: function() {
+                    return this._noteChanged();
                 },
                 fileLink : function() {
                     // compute the link to create a record from the file
@@ -689,7 +709,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     // create a directory
                   var dir = this.dir;
                   var _app = this;
-                  $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": $("#dirName").val() , accountId: _app.accountId}
+                  var dirName = $("#dirName").val() ;
+                  if (dirName == undefined || dirName == '') {
+                      return;
+                  }
+                  
+                  $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": dirName, accountId: _app.accountId}
                     ).done(function(msg) {
                         _app.files.push(msg);
                         $("#dirName").val("");
@@ -704,7 +729,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   });
                 },
                 createRecordFromSelected: function() {
-                    this.createRecordFromFiles(this.selectedFiles);
+                    window.location.href = this._createRecordFromFiles(this.selectedFiles);
+                },
+                _createRecordFromSelected: function() {
+                    return this.createRecordFromFiles(this.selectedFiles);
                 },
                 createRecordFromFiles: function(files) {
                     //var data = this._expandIds({},files);
@@ -713,7 +741,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         url = url +  "&fileIds=" + file.id; 
                     });
                     console.log(files, url);
-                    window.location.href = url;
+                    return url;
                 },
 
                 moveSelectedFilesTo: function(dir) {
@@ -956,6 +984,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         init : _init,
         getApp: _getApp,
         getPp: _getPp,
+        formatDate : _formatDate,
+        formatLongDate : _formatLongDate, 
         main : function() {
             var appId = "#filesTool";
             if ($(appId).length == 1) {

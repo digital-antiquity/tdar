@@ -6,7 +6,7 @@
 
 
 <script type="text/x-template"   id="move-entry-template">
-    <li>
+    <li v-if="dir != undefined">
         <i  v-if="dir.children != undefined && dir.children.length > 0" class="icon-folder-open"></i>
         <i  v-if="dir.children == undefined || dir.children.length == 0" class="icon-folder-close"></i>
     <a  @click="moveSelectedFilesTo(dir)">{{dir.name}}</a>
@@ -19,14 +19,14 @@
 
 <script type="text/x-template"  id="part-entry-template">
     <span>
-        <span class='initials' :title="name" :alt="name" v-if="initials != undefined">{{initials}}</span>
-        <span class="date" :title="formatLongDate(date)" :alt="formatLongDate(date)">{{formatDate(date)}}</span>
+        <span v-if="initials != undefined && name != undefined" class='initials' :title="name" :alt="name">{{initials}}</span>
+        <span  v-if="date != undefined" class="date" :title="formatLongDate(date)" :alt="formatLongDate(date)">{{formatDate(date)}}</span>
     </span>
 </script>
 
 
 <script type="text/x-template"   id="comment-entry-template">
-    <div :class="commentClass">
+    <div :class="commentClass" v-if="comment != undefined">
     <pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
 {{comment.comment}} 
    <span v-if="comment.resolved != undefined" class="pull-right">
