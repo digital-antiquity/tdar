@@ -157,7 +157,7 @@ describe("BalkSpec.js: fileupload suite - root", function(){
                 {id:2, name:'test.tif',size:1000,type:'tif/image',lastModified:-1, extension:'tif', selected:false},
                 {id:3, name:'test2.tif',size:1000,type:'tif/image',lastModified:-1, extension:'tif', selected:false}
                 ];
-            
+            console.log("el:"  ,_fix);
             vapp.selectedFiles = vapp.files;
             expect(vapp.selectedFiles).toHaveLength(2);
             

@@ -44,7 +44,7 @@
 
 
 <script type="text/x-template" id="file-entry-template">
-<tr v-bind:id="rowId">
+<tr v-bind:id="rowId" v-if="file != undefined">
     <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
          <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label" 
@@ -118,12 +118,12 @@
  </tr>
 </thead>
 <tr>
- <td colspan="20"><span class="link" @click="cdUp(undefined)">/ </span><span v-for="(dir, index) in dirStack"><span v-if="index != 0"> / </span> <span class="link" @click="cdUp(dir.id)">{{dir.name}}</span> </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
+ <td colspan="20"><span class="link" @click="cd(undefined)">/ </span><span v-for="(dir, index) in dirStack"><span v-if="index != 0"> / </span> <span class="link" @click="cd(dir)">{{dir.name}}</span> </span><span class="pull-right" v-if="dirStack.length > 0">(rename)</span></td>
 </tr>
         <tbody >
             <tr v-if="parentId != undefined">
             <td></td>
-            <td> <span class="link" @click="cdUp(upOneId)"><i class="icon-folder-close"></i> .. </span>  </td>
+            <td> <span class="link" @click="cd(upOne)"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
             <tr class="template-download fade existing-file in" v-for="(file,index) in files"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload"

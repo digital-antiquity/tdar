@@ -43,7 +43,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         /**
          * list a directory for the "move interface"
          */
-        Vue.component("dir", {
+        var _dir = Vue.component("dir", {
             template:"#move-entry-template",
             props: ["dir", "index"],
             data: function() {return {
@@ -62,7 +62,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         /**
          * List a "Person" (Initial and URL)
          */
-        Vue.component("pentry", {
+        var _pentry = Vue.component("pentry", {
             template:"#part-entry-template",
             props: ['date','initials','name', 'url'],
             data: function() {return {}},
@@ -79,7 +79,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         /**
          * Display a comment
          */
-        Vue.component("comment", {
+        var _comments = Vue.component("comment", {
             template:"#comment-entry-template",
             props: ["comment", "fileid"],
             data: function() {return {
@@ -144,7 +144,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 }
             },
             mounted: function() {
-                console.log("mounted file entry:", this.file);
+//                console.trace("mounted file entry:", this.file);
             },
             methods: {
                 cd : function(file) {
@@ -365,11 +365,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 inputDisabled : function() {
                     return !this.ableToUpload;
                 },
-                upOneId: function() {
+                upOne: function() {
                   if (this.dirStack.length < 2) {
                       return undefined;
                   }
-                  return this.dirStack[this.dirStack.length -2].id;
+                  return this.dirStack[this.dirStack.length -2];
                 },
                 cannotMoveSelected: function() {
                     return this._cannotSelect();
@@ -790,38 +790,38 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         return rootDirs;
                     });
                 },
-                cdUp: function(parentId) {
-                    if (parentId == undefined) {
-                        this.dirStack.splice(0, 100);
-                        this.cd(undefined, true);
-                        return;
-                    }
-                    var index = -1;
-                    var parent = undefined;
-                    for (var i = 0; i < this.dirStack.length; i++) {
-                        if (this.dirStack[i].id == parentId) {
-                            index = i;
-                            parent = this.dirStack[i];
-                        }
-                    }
-//                    console.log(parent, index, this.dirStack);
-                    if (parent == undefined ) {return;}
-                    this.dirStack.splice(index + 1, 100);
-                    this.cd(parent, true);
-                },
                 cd : function(file, up) {
                     // move into a directory
-//                    console.log(JSON.stringify(file));
+                    console.log("cd to: " + JSON.stringify(file));
                     var id = undefined;
                     var displayName = "";
                     if (file != undefined) {
                         id = file.id;
                         displayName = file.displayName;
                     }
-//                    console.log(id, displayName);
-                    if ((up == undefined || up == false) && file != undefined) {
+
+                    // handle traversal up the dir hierarchy
+                    var upIndex = -1;
+                    var parent = undefined;
+                    for (var i = 0; i < this.dirStack.length; i++) {
+                        if (this.dirStack[i].id == id) {
+                            upIndex = i;
+                            parent = this.dirStack[i];
+                        }
+                    }
+
+                    //manage the dirStack
+                    if (parent != undefined) {
+                        // if we have a parent in the stack, strip up to it
+                        this.dirStack.splice(upIndex + 1, 100);
+                    } else if (file == undefined) {
+                        // if we have no parent, clear the stack
+                        this.dirStack.splice(0,100);
+                    } else if (file != undefined) {
+                        // otherwise step inward
                         this.dirStack.push(file);
                     }
+
                     this.loadFiles(id, displayName);
                 },
                 validateAdd : function(file, replace) {
@@ -914,7 +914,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             name : "accountId",
                             value : _app.accountId
                         });
-//                        console.log(data);
                         return data;
                     },
                     progressall : function(e, data) {
@@ -941,11 +940,15 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
 
         _app = app;
         _pp = pp;
+        // we return everything for testing
         return {
             'router' : router,
             'app' : pp,
             'balk' : _app,
-            'files' : _files
+            'files' : _files,
+            'pentry': _pentry,
+            'dir'   : _dir,
+            'comments': _comments
         };
     };
     
