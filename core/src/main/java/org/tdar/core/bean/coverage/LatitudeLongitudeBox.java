@@ -3,7 +3,6 @@ package org.tdar.core.bean.coverage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -29,7 +28,6 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.SpatialObfuscationUtil;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -412,7 +410,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     // this logic assumes no span greater than 180°, and that zero-length span is invalid.
-    boolean isValidLongitudeSpan(double min, double max_) {
+    public boolean isValidLongitudeSpan(double min, double max_) {
         double max = max_;
         if (Objects.equals(min, max)) {
             return true;

@@ -1,10 +1,14 @@
-package org.tdar.core.bean.coverage;
+package org.tdar.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.service.processes.upgradeTasks.SetupBillingAccountsProcess;
 
 /**
  * @author Adam Brin
@@ -20,8 +24,20 @@ public class LatLongObfuscationTest {
     public final double smallPos = 35.000d;
     public final double smallPos2 = 35.0050d;
 
+    @BeforeClass
+    public static void setup() {
+    }
+
+    @BeforeClass
+    public static void teardown() {
+    }
+    
+    
     @Test
     public void testNegLatLongWithSaltedResult() {
+        logger.debug("****** TEST testNegLatLongWithSaltedResult *******");
+        SpatialObfuscationUtil.useRandom(false);
+        SpatialObfuscationUtil.setRandom(-0.9999);
         int count = 10;
         int valid = 0;
         // with "random" there's some chance of this being less useful, thus... we do it a few times
@@ -43,6 +59,8 @@ public class LatLongObfuscationTest {
             }
             count--;
         }
+        SpatialObfuscationUtil.setRandom(null);
+        SpatialObfuscationUtil.useRandom(true);
         if (valid < 3) {
             fail("issue with obfuscation, most of the randoms failed");
         }
@@ -51,6 +69,10 @@ public class LatLongObfuscationTest {
 
     @Test
     public void testWrappingLong() {
+        logger.debug("****** TEST testWrappingLong *******");
+        SpatialObfuscationUtil.useRandom(false);
+        SpatialObfuscationUtil.setRandom(-0.9999);
+
         int count = 100;
         int valid = 0;
         // with "random" there's some chance of this being less useful, thus... we do it a few times
@@ -63,12 +85,15 @@ public class LatLongObfuscationTest {
             logger.debug("before: {} - {}", west, east);
             llb.obfuscate();
             logger.debug(" after: {} - {}", llb.getObfuscatedWest(), llb.getObfuscatedEast());
-            if (llb.getObfuscatedWest() < east && (llb.getObfuscatedEast() > 179d || (llb.getObfuscatedEast() < -179d && llb.getObfuscatedEast() < east)) ) {
+            if (llb.getObfuscatedWest() < east && (llb.getObfuscatedEast() > 179d || (llb.getObfuscatedEast() < -179d && llb.getObfuscatedEast() < east))) {
                 valid++;
             }
             // assertTrue("result:" + result + " > " + two, result < two);
             count--;
         }
+
+        SpatialObfuscationUtil.setRandom(null);
+        SpatialObfuscationUtil.useRandom(true);
 
         if (valid < 75) {
             fail(String.format("issue with obfuscation, most of the randoms failed : %s/%s", valid, 100));
@@ -79,6 +104,8 @@ public class LatLongObfuscationTest {
 
     @Test
     public void testLatLongWithoutSaltedResult2() {
+        logger.debug("****** TEST testLatLongWithoutSaltedResult2 *******");
+
         // double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallPos, smallNeg, LatitudeLongitudeBox.LONGITUDE, true);
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallPos + 1, smallNeg - 1, smallPos, smallNeg2);
         logger.debug("before: {} - {}", llb.getWest(), llb.getEast());
