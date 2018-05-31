@@ -9,9 +9,9 @@
     <li>
         <i  v-if="dir.children != undefined && dir.children.length > 0" class="icon-folder-open"></i>
         <i  v-if="dir.children == undefined || dir.children.length == 0" class="icon-folder-close"></i>
-    <a href="#" @click="moveSelectedFilesTo(dir)">{{dir.name}}</a>
+    <a  @click="moveSelectedFilesTo(dir)">{{dir.name}}</a>
         <ul v-if="dir.children != undefined && dir.children.length > 0" style="list-style:none;"> 
-            <li  v-for="(dir,index) in dir.children" is="dir" :index="index" :dir="dir"></li>
+            <li  v-for="(dir,index) in dir.children" is="dir" :index="index" :dir="dir"  @moveselectedfilestodir="moveSelectedFilesTo($event)"></li>
         </ul>
     
     </li>
@@ -77,11 +77,11 @@
     <td><a :href="file.resourceUrl">{{file.resourceId }}</a> {{file.resourceStatus}}  
     </td>
     <td nowrap v-if="fullservice">
-        <a href="#"  @click="showComments()"><i class="icon-comment"></i>
+        <a @click="showComments()"><i class="icon-comment"></i>
         <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
     </td>
     <td>
-        <a href="#" v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
+        <a v-if="file.resourceId == undefined && file.size != undefined" @click="deleteFile()"><i class="icon-trash"></i></a>
     </td>
     </tr>
 </script>
@@ -126,7 +126,9 @@
             <td> <span class="link" @click="cdUp(upOneId)"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
             <tr class="template-download fade existing-file in" v-for="(file,index) in files"
-                is="fileEntry" :index="index" :file="file" :editable="ableToUpload" 
+                is="fileEntry" :index="index" :file="file" :editable="ableToUpload"
+				 @cd="cd($event)" @toggleselect="toggleSelect($event)"
+				 @showcomments="showComments($event)"  @deletefile="deleteFile($event)"  
                 :fullservice="fullService" :initialreviewed="initialReviewed" :externalreviewed="externalReviewed"></tr>
 <tr>
  <td colspan="20"><p style='text-align:center;font-weight:bold'>Note: files in this space expire after {{daysFilesExpireAfter}} days.</p></td>
@@ -176,6 +178,7 @@
       <div class="modal-body">
         <div>
                 <div  v-for="(comment,index) in comments" :fileid="commentFile.id"
+					@unmark="unMarkComment($event)" @uncurate="unCurate($event)"
                     is="comment" :index="index" :comment="comment"></div>
         </div>
         <textarea name="comment" v-model="comment"></textarea>
@@ -197,7 +200,7 @@
         <div>
         <p>Click on a folder to move files into that directory:
             <ul v-if="dirTree != undefined && dirTree.length > 0" class="unstyled">
-            <li  v-for="(dir,index) in dirTree" is="dir" :index="index" :dir="dir"></li>
+            <li  v-for="(dir,index) in dirTree" is="dir" :index="index" @moveselectedfilestodir="moveSelectedFilesTo($event)"  :dir="dir"></li>
             </ul>
         </p>
             
@@ -209,7 +212,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <a href="#" data-dismiss="modal" @click="cancelMove()" class="btn">Cancel</a>
+        <a  data-dismiss="modal" @click="cancelMove()" class="btn">Cancel</a>
       </div>
     </div>
 

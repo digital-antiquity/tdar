@@ -52,7 +52,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             methods: {
                 moveSelectedFilesTo: function(dir) {
-                    this.$parent.moveSelectedFilesTo(dir);
+                    this.$emit("moveselectedfilestodir", dir);
                 }
             },
             computed: {
@@ -112,13 +112,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 undo: function() {
                     if (this.comment.undoAction == 'UNDO_WONT_CURATE') {
-                        var file = this.$parent.commentFile;
-                        $.post("/api/file/editMetadata", {"id": file.id,"note":file.note, "needOcr":file.requiresOcr, "curate":"CHOOSE"}).done(function(_file){
-                            Vue.set(file,"curation",_file.curation);
-//                            Vue.set(file,"curation",file.curation);
-                        });
+                        this.$emit("uncurate");
                     } else {
-                        this.$parent.unmark(this.comment.undoAction, this.comment.name, this.comment.initial, this.comment.date, this.$parent.commentFile);
+                        this.$emit("unmark",this.comment);
                     }
                 },
                 assignComment: function() {
@@ -140,21 +136,19 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         /**
          * A "row" in the file tool for 1 entry
          */
-        Vue.component('fileEntry', {
+        var _files = Vue.component('fileEntry', {
             template : "#file-entry-template",
             props : [ "file", "index", "editable" , "initialreviewed", "externalreviewed", "fullservice"],
             data : function() {
                 return {
-                    previousDeleteState : '',
-                    xhr : undefined,
-                    previousReplaceState : ''
                 }
             },
             mounted: function() {
+                console.log("mounted file entry:", this.file);
             },
             methods: {
                 cd : function(file) {
-                        this.$parent.cd(file);
+                    this.$emit('cd',file);
                 },
                 _mark: function(role, date, name, initials) {
                     /**
@@ -173,7 +167,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return ret;
                 },
                 select: function() {
-                    this.$parent.toggleSelect(this.file.selected, this.file);
+                    this.$emit('toggleselect', [this.file.selected, this.file]);
                 },
                 markCurated: function() {
                     var ret = this._mark("CURATED","dateCurated", "curatedByName", "curatedByInitials");
@@ -213,13 +207,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 showComments: function() {
                     // load the comments and show the comment modal
-                    this.$parent.showComments(this.file);
+                    this.$emit('showcomments',this.file);
+
                 },
                 deleteFile: function(){
                     // delet the file
                     if (confirm("Are you sure you want to delete: "+this.file.name+"?")) {
                         console.log('delete');
-                        this.$parent.deleteFile(this.file);
+                        this.$emit('deletefile', this.file);
                     } 
 
                 }
@@ -376,61 +371,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   }
                   return this.dirStack[this.dirStack.length -2].id;
                 },
-                _cannotSelect: function() {
-                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0 || this.selectedFiles.length > MAX_SELECTED_FILES) {
-                        return true;
-                    }
-                    return false;
-                },
                 cannotMoveSelected: function() {
-                    return this._cannotSelect;
+                    return this._cannotSelect();
                 },
                 selectedFileNames: function() {
-                    var ret = "";
-                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
-                        return "";
-                    }
-                    
-                    for (var i =0; i < this.selectedFiles.length; i++) {
-                        if (i > 0) {
-                            ret = ret + "; ";
-                        }
-                        ret = ret + this.selectedFiles[i].name;
-                    }
-
-                    return ret;
+                    return this._selectedFileNames();
                 },
                 cannotCreateRecordfromSelected: function() {
-                    if (this._cannotSelect) {
-                        return true;
-                    }
-                    var ext = "";
-                    this.selectedFiles.forEach(function(file){
-                        var _ext = "BAD";
-                        
-                        if (file.resourceId != undefined) {
-                            ext = "BAD";
-                            return;
-                        }
-                        
-                        if (file != undefined && file.extension != undefined) {
-                            _ext = file.extension.toLowerCase();
-                        }
-                        if (_ext == undefined || _ext == '') {
-                            ext = "BAD";
-                            return;
-                        }
-                        
-                        if (ext == '' || ext == _ext) {
-                            ext = _ext;
-                        } else {
-                            ext = "BAD";
-                        }
-                    });
-                    if (ext == "BAD") {
-                        return true;
-                    }
-                    return false;
+                    return  this._cannotCreateRecordFromSelected();
                 }
 
             },
@@ -452,53 +400,115 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.moveSelectedFilesToAccount(after);
                 },
                 '$route': function(to, from) {
-                    console.log(">>> changed route to: ", to);
-//                    console.log(to.params.accountId , this.accountId);
-                    var _path = this.fullPath().substring(1);
-                    if (to.params.accountId != this.accountId) {
-                        Vue.set(this,"accountId", to.params.accountId);
-                        this.switchAccount(to.params.accountId);
-                        _path = undefined;
-                    }
-                    
-//                    console.log(_path, to.params.dir, _path == to.params.dir);
-                    if (to.params.dir != _path) {
-                        var _app = this;
-                        var dirName = to.params.dir;
-                        if (dirName != undefined && dirName.lastIndexOf("/") != -1) {
-                            dirName = dirName.substring(dirName.lastIndexOf("/") +1)
-                        }
-                        $.get("/api/file/listDirs", {accountId: _app.accountId}).done(function(dirs) {
-                             // create parent map
-                            var match = undefined;
-                            var dirMap = {};
-                             dirs.forEach(function(dir) {
-                                 dirMap[dir.id] = dir;
-                                 if (dir.name == dirName) {
-                                     match = dir;
-                                 } 
-                             });
-                             var stack = [];
-                             // get all parent directories and rebuild dirStack
-                             if (match != undefined) {
-                                 var d = match;
-                                 while (d.parentRef != undefined) {
-                                     var p = dirMap[d.parentRef.replace("TdarDir:","")];
-                                     stack.unshift(p);
-                                     d = p;
-                                 }
-                                 }
-                             Vue.set(_app,"dirStack", stack);
-                             console.log("redirecting to : ", match, stack);
-                             _app.cd(match, false);
-                             return;
-                        });
-//                        this.switchAccount(to.params.accountId);
-                    }
-
+                        this._routeAccounts(to, from);
                 }
             },
             methods : {
+                _routeAccounts: function(to, from) {
+                    console.log(">>> changed route to: ", to);
+//                  console.log(to.params.accountId , this.accountId);
+                  var _path = this.fullPath().substring(1);
+                  if (to.params.accountId != this.accountId) {
+                      Vue.set(this,"accountId", to.params.accountId);
+                      this.switchAccount(to.params.accountId);
+                      _path = undefined;
+                  }
+                  
+//                  console.log(_path, to.params.dir, _path == to.params.dir);
+                  if (to.params.dir != _path) {
+                      var _app = this;
+                      var dirName = to.params.dir;
+                      if (dirName != undefined && dirName.lastIndexOf("/") != -1) {
+                          dirName = dirName.substring(dirName.lastIndexOf("/") +1)
+                      }
+                      $.get("/api/file/listDirs", {accountId: _app.accountId}).done(function(dirs) {
+                           // create parent map
+                          var match = undefined;
+                          var dirMap = {};
+                           dirs.forEach(function(dir) {
+                               dirMap[dir.id] = dir;
+                               if (dir.name == dirName) {
+                                   match = dir;
+                               } 
+                           });
+                           var stack = [];
+                           // get all parent directories and rebuild dirStack
+                           if (match != undefined) {
+                               var d = match;
+                               while (d.parentRef != undefined) {
+                                   var p = dirMap[d.parentRef.replace("TdarDir:","")];
+                                   stack.unshift(p);
+                                   d = p;
+                               }
+                               }
+                           Vue.set(_app,"dirStack", stack);
+                           console.log("redirecting to : ", match, stack);
+                           _app.cd(match, false);
+                           return;
+                      });
+                   }
+                },
+                unCurate: function() {
+                    var file = this.commentFile;
+                    $.post("/api/file/editMetadata", {"id": file.id,"note":file.note, "needOcr":file.requiresOcr, "curate":"CHOOSE"}).done(function(_file){
+                        Vue.set(file,"curation",_file.curation);
+//                        Vue.set(file,"curation",file.curation);
+                    });
+                },
+                unMarkComment: function(comment) {
+                    this.unmark(comment.undoAction, comment.name, comment.initial, comment.date, this.commentFile);
+                },
+                
+                _cannotCreateRecordFromSelected: function() {
+                    if (this._cannotSelect()) {
+                        return true;
+                    }
+                    var ext = "";
+                    this.selectedFiles.forEach(function(file){
+                        var _ext = "BAD";
+                        
+                        if (file.resourceId != undefined) {
+                            ext = "BAD";
+                            console.trace("file has tDAR ID", file.resourceId);
+                            return;
+                        }
+                        
+                        if (file != undefined && file.extension != undefined) {
+                            _ext = file.extension.toLowerCase();
+                        }
+                        if (_ext == undefined || _ext == '') {
+                            ext = "BAD";
+                            console.trace("file has bad extension", file);
+                            return;
+                        }
+                        
+                        if (ext == '' || ext == _ext) {
+                            ext = _ext;
+                        } else {
+                            ext = "BAD";
+                        }
+                    });
+                    if (ext == "BAD") {
+                        console.trace("cannot create");
+                        return true;
+                    }
+                    return false;
+                },
+                _selectedFileNames: function() {
+                    var ret = "";
+                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0) {
+                        return "";
+                    }
+                    
+                    for (var i =0; i < this.selectedFiles.length; i++) {
+                        if (i > 0) {
+                            ret = ret + "; ";
+                        }
+                        ret = ret + this.selectedFiles[i].name;
+                    }
+
+                    return ret;
+                },
                 fullPath: function() {
                     var ret = "";
                     this.dirStack.forEach(function(d){
@@ -507,6 +517,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                     });
                     return ret;
+                },
+                _cannotSelect: function() {
+                    if (this.selectedFiles == undefined || this.selectedFiles.length == 0 || this.selectedFiles.length > MAX_SELECTED_FILES) {
+                        return true;
+                    }
+                    return false;
                 },
                 switchAccount: function(accountId) {
                     router.push({ path: '/' + accountId })
@@ -573,8 +589,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                     return ret;
                 },
-                toggleSelect: function(existing, incoming) {
-                    var id = incoming.id;
+                toggleSelect: function(data) {
+                    var toggle = data[0];
+                    var file = data[1];
+                    var id = file.id;
 //                    console.log("toggle select", existing, id);
                     var seen = false;
                     var indexToRemove = -1;
@@ -585,10 +603,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                     }
                     
-                    if (existing == true) { // add
+                    if (toggle == true) { // add
                         if (seen == false)  {
-                            this.selectedFiles.push(incoming);
-                            incoming.selected = true;
+                            this.selectedFiles.push(file);
+                            file.selected = true;
                         }
                     } else { // remove
                         if (indexToRemove > -1) {
@@ -923,7 +941,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
 
         _app = app;
         _pp = pp;
-        return app;
+        return {
+            'router' : router,
+            'app' : pp,
+            'balk' : _app,
+            'files' : _files
+        };
     };
     
     return {
