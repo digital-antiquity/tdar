@@ -7,6 +7,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
 
         // //https://github.com/blueimp/jQuery-File-Upload/wiki/API
 
+        var DELETE = 'DELETE';
+        
         var config = {
             files : [],
             url : TDAR.uri('upload/upload'),
@@ -26,7 +28,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             console.log($($(widgetId).data('config')).text());
             $.extend(config, JSON.parse($($(widgetId).data('config')).text()));
         }
-        Vue.component('fpart', {
+        var _fpart = Vue.component('fpart', {
             template : "#fpart-template",
             props : [ "file", "index", "editable" ],
             data : function() {
@@ -89,22 +91,22 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             methods : {
                 updateCreatedDate : function(date) {
                     Vue.set(this.file, 'fileCreatedDate', date);
-                    _app.markModified();
+                    this._markModified();
                 },
-                markModified : function() {
+                _markModified : function() {
                     if (this.file.action == 'NONE' || this.file.action == undefined) {
                         Vue.set(this.file, "action", "MODIFY_METADATA");
                     }
                 },
                 deleteFile : function() {
-                    if (this.file.action == 'DELETE') {
+                    if (this.file.action == DELETE) {
                         return;
                     }
                     Vue.set(this, "previousDeleteState", this.file.action);
-                    Vue.set(this.file, "action", "DELETE");
+                    Vue.set(this.file, "action", DELETE);
                 },
                 unDeleteFile : function() {
-                    if (this.file.action == 'DELETE') {
+                    if (this.file.action == DELETE) {
                         Vue.set(this.file, "action", this.previousDeleteState);
                     }
                 },
@@ -113,7 +115,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log($("#fileupload" + this.index));
                     console.log(this.originalFileName);
                     console.log(this);
-                    this.xhr.abort();
+                    if (this.xhr != undefined && this.xhr.abort) {
+                        this.xhr.abort();
+                    }
                     Vue.set(this.file, "replaceFile", undefined);
                     Vue.set(this.file, "name", this.originalFileName);
                     TDAR.vuejs.upload.setProgress(0);
@@ -149,13 +153,13 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             },
             watch : {
                 "file.description" : function(val, old) {
-                    this.markModified();
+                    this._markModified();
                 },
                 "file.fileCreatedDate" : function(val, old) {
-                    this.markModified();
+                    this._markModified();
                 },
                 "file.restriction" : function(val, old) {
-                    this.markModified();
+                    this._markModified();
                 }
             }
         });
@@ -189,7 +193,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     var _app = this;
                     var currentNumberOfFiles = 0;
                     files.forEach(function(f) {
-                        if (f.action != 'DELETE') {
+                        if (f.action != DELETE) {
                             var partOfPair = false;
                             var ext = "." + f.name.split('.').pop().toLowerCase();
                             for (var i = 0; i < _app.requiredOptionalPairs.length; i++) {
@@ -336,6 +340,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 // .bind('fileuploadchunkalways', function (e, data) {/* ... */});
             }
         });
+//        return {"app" : app,"fpart" : _fpart};
         return app;
     }
 

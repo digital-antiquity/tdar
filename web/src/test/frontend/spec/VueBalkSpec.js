@@ -307,6 +307,27 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             vapp.$destroy();
         });
 
+        it("uploads progress", function() {
+            var conf = getBaseConfig();
+            setConfig(conf);
+
+            var vapp = initController();
+
+            Vue.nextTick(function() {
+                vapp.updateFileProgress({}, {files: [{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}], loaded:40, total:100});
+                console.log("ALERT:");
+                vapp.$destroy();
+            });
+        });
+
+        it("cds root", function() {
+            var conf = getBaseConfig();
+            setConfig(conf);
+
+            var vapp = initController();
+            vapp.cd(undefined);
+        });
+
         
         it("handles unmark", function() {
             var conf = getBaseConfig();
@@ -456,6 +477,25 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             vapp.$destroy();
         });
 
+
+        it("cancels move", function() {
+            var conf = getBaseConfig();
+            setConfig(conf);
+            
+            var vapp = initController();
+            vapp.files = [
+                {id:2, name:'test.tif',size:1000,type:'tif/image',lastModified:-1, extension:'tif', selected:false},
+                {id:3, name:'test2.tif',size:1000,type:'tif/image',lastModified:-1, extension:'tif', selected:false}
+                ];
+            
+            vapp.selectedFiles = vapp.files;
+            vapp.cancelMove();
+            expect(vapp.selectedFiles.length).toBe(0);
+
+            vapp.$destroy();
+        });
+
+        
         
         it("moves files to account", function() {
             var conf = getBaseConfig();
@@ -506,7 +546,95 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             setConfig(conf);
 
             var vapp = initFileComponent();
-// vapp.select();
+            // vapp.select();
+            vapp.$destroy();
+        });
+
+        
+        it("workflow progression", function() {
+            var conf = getBaseConfig();
+            setConfig(conf);
+
+            var vapp = initFileComponent();
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(false);
+            expect(vapp._cannotCurate()).toBe(false);
+            expect(vapp._canReview()).toBe(false);
+            expect(vapp._canExternalReview()).toBe(false);
+
+            // assign resourceId
+            vapp.file.resourceId=123;
+
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(true);
+            expect(vapp._cannotCurate()).toBe(false);
+            expect(vapp._canReview()).toBe(false);
+            expect(vapp._canExternalReview()).toBe(false);
+
+            // assign resourceId
+            vapp.file.resourceId = 123;
+
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(true);
+            expect(vapp._cannotCurate()).toBe(false);
+            expect(vapp._canReview()).toBe(false);
+            expect(vapp._canExternalReview()).toBe(false);
+
+            // test that you cannot curate
+            vapp.file.curation = "WONT_CURATE";
+
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(false);
+            expect(vapp._cannotCurate()).toBe(true);
+            expect(vapp._canReview()).toBe(false);
+            expect(vapp._canExternalReview()).toBe(false);
+
+            // test that you can review
+            vapp.file.curation = "CURATE";
+            vapp.file.dateCurated = new Date();
+            
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(false);
+            expect(vapp._cannotCurate()).toBe(true);
+            expect(vapp._canReview()).toBe(true);
+            expect(vapp._canExternalReview()).toBe(false);
+            
+            // test that you can inital review
+            vapp.initialReviewed = true;
+            expect(vapp._canInitialReview()).toBe(true);
+            expect(vapp._canCurate()).toBe(false);
+            expect(vapp._cannotCurate()).toBe(true);
+            expect(vapp._canReview()).toBe(false);
+            expect(vapp._canExternalReview()).toBe(false);
+            
+            // test that you can review
+            vapp.initialReviewed = true;
+            vapp.externalReviewed = true;
+            vapp.file.dateInitialReviewed = new Date();
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(false);
+            expect(vapp._cannotCurate()).toBe(true);
+            expect(vapp._canReview()).toBe(true);
+            expect(vapp._canExternalReview()).toBe(false);
+
+            // test that you can review
+            vapp.file.dateInitialReviewed = new Date();
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(false);
+            expect(vapp._cannotCurate()).toBe(true);
+            expect(vapp._canReview()).toBe(true);
+            expect(vapp._canExternalReview()).toBe(false);
+
+            // test that you can review
+            vapp.file.dateReviewed = new Date();
+            expect(vapp._canInitialReview()).toBe(false);
+            expect(vapp._canCurate()).toBe(false);
+            expect(vapp._cannotCurate()).toBe(true);
+            expect(vapp._canReview()).toBe(false);
+            expect(vapp._canExternalReview()).toBe(true);
+
+            
+            // vapp.select();
             vapp.$destroy();
         });
 

@@ -41,7 +41,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             console.log("no ticket in results");
         } else {
             var ticket = data.result.ticket;
-            console.log("ticket received: %s", JSON.stringify(ticket));
+            console.log("ticket received:", JSON.stringify(ticket));
             Vue.set(_app, "ticketId", data.result.ticket.id);
             $("#ticketId").val(data.result.ticket.id);
         }
@@ -54,7 +54,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             } else {
                 fileContainer.status = 'error';
             }
-            console.log(file,fileContainer);
+            console.log("file<-->container",file,fileContainer);
             Vue.set(fileContainer, "dateCreated", file.dateCreated);
             Vue.set(fileContainer, "id", file.id );
             Vue.set(fileContainer , "createdByName" , file.createdByName);
@@ -62,7 +62,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             Vue.set(fileContainer, "xhr" , undefined);
             Vue.set(fileContainer, "error" ,file.error);
         });
-        console.log(data.status, data.textStatus);
+        console.log("status-->",data.status, data.textStatus);
 
         
     }
@@ -143,9 +143,12 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         // valdiate the file can be added to the resource/existing type
         var validExt = undefined;
         // for valid extensions check if we match
-
+        if (file.name == undefined && file.filename != undefined) {
+            file.name = file.filename; 
+        }
         // make sure that we're ok when data is coming from Vue via the file object vs. the FileProxy
         var fileName = file.name;
+
         validFormats.forEach(function(ext) {
             if (fileName.toLowerCase().indexOf(ext, fileName.length- ext.length) !== -1) {
                 validExt = ext;
