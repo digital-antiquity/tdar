@@ -1,5 +1,8 @@
+TDAR.worldmap ={};
+
 TDAR.worldmap = (function(console, $, ctx) {
     "use strict";
+
     var _PLURAL = "_PLURAL";
     var hlayer;
     var geodata = {};
