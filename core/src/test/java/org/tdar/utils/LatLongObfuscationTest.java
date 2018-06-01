@@ -2,7 +2,6 @@ package org.tdar.utils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,10 +46,10 @@ public class LatLongObfuscationTest {
         _testNegativeLatLongWithSalt();
 
         // NOTE: THESE FAIL... why???
-//        SpatialObfuscationUtil.setRandom(0.1);
-//        _testNegativeLatLongWithSalt();
-//        SpatialObfuscationUtil.setRandom(0.9);
-//        _testNegativeLatLongWithSalt();
+        SpatialObfuscationUtil.setRandom(0.1);
+        _testNegativeLatLongWithSalt();
+        SpatialObfuscationUtil.setRandom(0.9);
+        _testNegativeLatLongWithSalt();
 
         SpatialObfuscationUtil.setRandom(null);
         SpatialObfuscationUtil.useRandom(true);

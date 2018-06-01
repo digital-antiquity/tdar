@@ -4,6 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 
+/**
+ * This class is the basis of our Obfuscation Algorithm and is used to calculate a 1 mile bounding box (max) around the box
+ * 
+ * @author abrin
+ *
+ */
 public class SpatialObfuscationUtil {
 
     private static final transient Logger logger = LoggerFactory.getLogger(SpatialObfuscationUtil.class);
@@ -17,29 +23,47 @@ public class SpatialObfuscationUtil {
      * @param random
      */
 
-    
     public static boolean obfuscate(LatitudeLongitudeBox latitudeLongitudeBox) {
+        // get the width and height of the LLB
         double absoluteLatLength = Math.abs(latitudeLongitudeBox.getNorth() - latitudeLongitudeBox.getSouth());
         double absoluteLongLength = Math.abs(latitudeLongitudeBox.getEast() - latitudeLongitudeBox.getWest());
         boolean obfuscated = false;
+
+        // if the Latitude is > 1 mile, don't obfuscate it
         if (absoluteLatLength < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
+
+            // get the center
             Double centerLatitude = latitudeLongitudeBox.getCenterLatitude();
+
+            // compute the southern corner as: (center latitude - 1 mile) + (random * 1 mile)
+            // this should be something less than 1 mile
+
             // x y random1 random2 random3 random4 distance
             double south1 = centerLatitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
                     + getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
+
+            // north is then south plus 1 mile
             double north1 = south1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
+
+            // set the values
             latitudeLongitudeBox.setObfuscatedNorth(correctForMeridiansAndPoles(north1, true));
             latitudeLongitudeBox.setObfuscatedSouth(correctForMeridiansAndPoles(south1, true));
             obfuscated = true;
         } else {
+            // otherwise obfuscated values are set to current values because we don't need to obfuscate
             latitudeLongitudeBox.setObfuscatedNorth(latitudeLongitudeBox.getNorth());
             latitudeLongitudeBox.setObfuscatedSouth(latitudeLongitudeBox.getSouth());
         }
 
         if (absoluteLongLength < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
+            // get the center longitude
             Double centerLongitude = latitudeLongitudeBox.getCenterLongitude();
+
+            // west is center (longitude - 1 mile ) + random * 1 mile
             double west1 = centerLongitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
                     + getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
+
+            // east is 1 mile plus west
             double east1 = west1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
 
             latitudeLongitudeBox.setObfuscatedEast(correctForMeridiansAndPoles(east1, false));
@@ -84,6 +108,7 @@ public class SpatialObfuscationUtil {
 
     /**
      * pockage protected for testing
+     * 
      * @param random
      */
     protected static void setRandom(Double random) {
@@ -92,10 +117,11 @@ public class SpatialObfuscationUtil {
 
     /**
      * pockage protected for testing
+     * 
      * @param random
      */
     protected static void useRandom(boolean random) {
         SpatialObfuscationUtil.useRandom = random;
     }
-    
+
 }
