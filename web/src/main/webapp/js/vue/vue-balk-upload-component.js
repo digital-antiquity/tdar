@@ -758,7 +758,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   });
                 },
                 createRecordFromSelected: function() {
-                    window.location.href = this._createRecordFromFiles(this.selectedFiles);
+                    window.location.href = this._createRecordFromSelected();
                 },
                 _createRecordFromSelected: function() {
                     return this.createRecordFromFiles(this.selectedFiles);
