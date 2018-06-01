@@ -59,8 +59,10 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             Vue.set(fileContainer, "id", file.id );
             Vue.set(fileContainer , "createdByName" , file.createdByName);
             Vue.set(fileContainer, "uploaderInitials", file.uploaderInitials);
+            Vue.set(fileContainer, "uploaderName", file.uploaderName);
             Vue.set(fileContainer, "xhr" , undefined);
             Vue.set(fileContainer, "error" ,file.error);
+            Vue.set(fileContainer, "extension" , file.extension);
         });
         console.log("status-->",data.status, data.textStatus);
 

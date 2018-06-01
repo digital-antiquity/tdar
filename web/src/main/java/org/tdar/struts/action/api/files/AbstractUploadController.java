@@ -165,6 +165,7 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
             file.put("id", f.getId());
             file.put("uploaderName",getAuthenticatedUser().getProperName());
             file.put("uploaderId",getAuthenticatedUser().getId());
+            file.put("extension",f.getExtension());
             file.put("uploaderInitials",getAuthenticatedUser().getInitials());
             file.put("accountId", accountId);
         }

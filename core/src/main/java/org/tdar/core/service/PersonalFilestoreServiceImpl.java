@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
@@ -226,7 +228,15 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = false)
-    public void deleteFile(AbstractFile file, TdarUser authenticatedUser) {
+    public void deleteFile(AbstractFile file, TdarUser authenticatedUser) throws FileUploadException {
+        if (file instanceof TdarFile) {
+            fileProcessingDao.delete(((TdarFile) file).getParts());
+        }
+        if (file instanceof TdarDir) {
+            if (CollectionUtils.isNotEmpty(listFiles((TdarDir)file, file.getAccount(), null, authenticatedUser))) {
+                throw new FileUploadException("personalFilestoreService.directory.not_empty");
+            }
+        }
         fileProcessingDao.delete(file);
     }
 
@@ -235,6 +245,12 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     public void moveFiles(List<AbstractFile> files, TdarDir dir, TdarUser authenticatedUser) {
         for (AbstractFile f : files) {
             f.setParent(dir);
+            if (f instanceof TdarFile) {
+                for (TdarFile part : ((TdarFile) f).getParts()) {
+                    part.setParent(dir);
+                    genericDao.saveOrUpdate(part);
+                }
+            }
             genericDao.saveOrUpdate(f);
         }
     }
@@ -360,6 +376,13 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
                 List<AbstractFile> listFiles = listFiles((TdarDir)file, file.getAccount(), null, authenticatedUser);
                 logger.debug("subdir {} ", listFiles);
                 toProcess.addAll(listFiles);
+            }
+            
+            if (file instanceof TdarFile) {
+                for (TdarFile part : ((TdarFile) file).getParts()) {
+                    part.setAccount(account);
+                    allFiles.add(part);
+                }
             }
             file.setAccount(account);
             allFiles.add(file);

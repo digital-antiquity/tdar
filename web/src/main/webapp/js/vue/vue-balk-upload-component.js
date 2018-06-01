@@ -530,7 +530,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             console.trace("file has bad extension", file);
                             return;
                         }
-                        
+                        console.log("ext:", _ext, ext);
                         if (ext == '' || ext == _ext) {
                             ext = _ext;
                         } else {

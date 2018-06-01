@@ -96,7 +96,7 @@ public interface PersonalFilestoreService {
 
     List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser);
 
-    void deleteFile(AbstractFile file, TdarUser authenticatedUser);
+    void deleteFile(AbstractFile file, TdarUser authenticatedUser) throws FileUploadException;
 
     void moveFiles(List<AbstractFile> files, TdarDir dir, TdarUser authenticatedUser);
 

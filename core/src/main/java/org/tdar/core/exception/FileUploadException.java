@@ -16,4 +16,8 @@ public class FileUploadException extends I18nException {
         super(msg, e);
     }
 
+    public FileUploadException(String msg) {
+        super(msg);
+    }
+
 }
