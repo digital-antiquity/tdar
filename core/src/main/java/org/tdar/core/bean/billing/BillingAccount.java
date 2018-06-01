@@ -81,6 +81,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @JsonView({JsonAccountFilter.class })
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     private Status status = Status.ACTIVE;
 
@@ -313,6 +314,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         return totalSpaceInBytes;
     }
 
+    @JsonView({JsonAccountFilter.class })
     public Long getAvailableNumberOfFiles() {
         Long totalFiles = getTotalNumberOfFiles();
         return totalFiles - getFilesUsed();
@@ -324,6 +326,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         return totalSpace - getSpaceUsedInBytes();
     }
 
+    @JsonView({JsonAccountFilter.class })
     public Long getAvailableSpaceInMb() {
         return MathUtils.divideByRoundDown(getAvailableSpaceInBytes(), (double) MathUtils.ONE_MB);
     }
@@ -343,6 +346,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         setModifiedBy(p);
     }
 
+    @JsonView({JsonAccountFilter.class })
     public TdarUser getOwner() {
         return owner;
     }
@@ -454,6 +458,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     }
 
     @Override
+    @JsonView({JsonAccountFilter.class })
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
