@@ -470,6 +470,30 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     } 
                     this.loadFiles(this.parentId, this.path, sort);
                 },
+                showRename: function() {
+                    $("#renamePlaceholder").hide();
+                    $("#renamePart").toggleClass("hidden");
+                },
+                renameDir: function() {
+                    var pid = this.parentId;
+                    var name = $("#rename").val();
+                    var _app = this;
+                    $.post("/api/file/renameDir", {"id": pid,"name":name, "accountId": this.accountId}).done(function(_file){
+                        _app.dirStack.forEach(function(dir){
+                            if (pid == dir.id) {
+                                dir.name = name;
+                                Vue.set(dir, "name", name);
+                                Vue.set(dir, "filename", name);
+                            }
+                        });
+                    });
+                    this.cancelRename();
+                },
+                cancelRename: function() {
+                    $("#rename").val("");
+                    $("#renamePlaceholder").show();
+                    $("#renamePart").toggleClass("hidden");
+                },
                 _routeAccounts: function(to, from) {
                     console.log(">>> changed route to: ", to);
 //                  console.log(to.params.accountId , this.accountId);
