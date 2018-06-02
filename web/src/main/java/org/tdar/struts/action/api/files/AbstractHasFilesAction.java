@@ -48,7 +48,7 @@ public abstract class AbstractHasFilesAction<C extends AbstractFile> extends Abs
             accounts.add(f.getAccount());
         }
         for (BillingAccount act : accounts) {
-            if (getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), act)) {
+            if (act == null || getAuthorizationService().cannotChargeAccount(getAuthenticatedUser(), act)) {
                 addActionError("not.allowed");
                 break;
             }

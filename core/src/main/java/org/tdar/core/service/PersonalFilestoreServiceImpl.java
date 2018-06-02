@@ -28,6 +28,7 @@ import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.dao.DirSummary;
 import org.tdar.core.dao.FileOrder;
 import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.base.GenericDao;
@@ -404,4 +405,20 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         genericDao.saveOrUpdate(file);
         
     }
+    
+    @Override
+    @Transactional(readOnly=true)
+    public DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser) {
+        return fileProcessingDao.summerizeByAccount(account, date, authenticatedUser);
+        
+    }
+    
+    @Override
+    @Transactional(readOnly=true)
+    public List<TdarFile> recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
+        return fileProcessingDao.recentByAccount(account, date, dir, authenticatedUser);
+        
+    }
+    
+    
 }

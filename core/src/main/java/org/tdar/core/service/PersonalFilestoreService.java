@@ -3,6 +3,7 @@ package org.tdar.core.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.Date;
 import java.util.List;
 
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -15,6 +16,7 @@ import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.dao.DirSummary;
 import org.tdar.core.dao.FileOrder;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.PersonalFileType;
@@ -120,5 +122,9 @@ public interface PersonalFilestoreService {
     List<AbstractFile> moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser);
 
     void renameDirectory(TdarDir file, BillingAccount account, String name, TdarUser authenticatedUser) throws FileAlreadyExistsException;
+
+    DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser);
+
+    List<TdarFile> recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser);
 
 }

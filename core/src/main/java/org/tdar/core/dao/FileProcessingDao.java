@@ -107,4 +107,37 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         return query.getResultList();
     }
 
+    public DirSummary summerizeByAccount(BillingAccount account, Date date, TdarUser authenticatedUser) {
+        // Note: these methods are not recursive, and users will probably expect them to be, that is, that the parent directory summarizes all children the way down...
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.SUMMARIZE_BY_ACCOUNT);
+        if (date == null) {
+            query.setParameter("date", null);
+        } else {
+            query.setParameter("date", date);
+        }
+        query.setParameter("account", account);
+        DirSummary summary = new DirSummary();
+        for (Object[] row : (List<Object[]>)query.getResultList()) {
+            summary.addPart(row);
+        }
+        return summary;
+    }
+
+    public List<TdarFile> recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
+        // Note: these methods are not recursive, and users will probably expect them to be, that is, that the parent directory summarizes all children the way down...
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.BY_ACCOUNT_RECENT);
+        if (date == null) {
+            query.setParameter("date", null);
+        } else {
+            query.setParameter("date", date);
+        }
+        if (dir == null) {
+            query.setParameter("dir", null);
+        } else {
+            query.setParameter("dir", dir);
+        }
+        query.setParameter("account", account);
+        return query.getResultList();
+    }
+
 }

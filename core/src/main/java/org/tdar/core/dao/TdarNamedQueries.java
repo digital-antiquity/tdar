@@ -183,6 +183,8 @@ public interface TdarNamedQueries {
     String LIST_FILES_FOR_DIR = "find.files_for_dir";
     String FIND_DIR_BY_NAME = "find.by_dir_name";
     String LIST_DIR = "find.dir_by_dir";
+    String SUMMARIZE_BY_ACCOUNT = "files.report_by_account";
+    String BY_ACCOUNT_RECENT = "files.report_by_account_date";
     
     // raw SQL/HQL queries
 
