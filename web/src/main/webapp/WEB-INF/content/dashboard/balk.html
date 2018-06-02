@@ -44,7 +44,7 @@
 
 
 <script type="text/x-template" id="file-entry-template">
-<tr v-bind:id="rowId" v-if="file != undefined">
+<tr v-bind:id="rowId" v-if="file != undefined" :class="curationStatus">
     <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
          <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label" 
@@ -90,11 +90,12 @@
 <form class="form-horizontal">
 <div class="row">
     <div class="span6">
-    <label>Account:
+    <label  style="display:inline">Account:
         <select name="account" id="accountId" v-model="accountId">
                 <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
         </select>
     </label>
+	<a :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
     </div>
     <div class="span4">
         <input type="search" class="search input pull-right" placeholder="search" v-model="search" />

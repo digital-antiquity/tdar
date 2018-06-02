@@ -15,6 +15,7 @@ import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.dao.FileOrder;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -94,7 +95,7 @@ public interface PersonalFilestoreService {
 
     TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) throws FileAlreadyExistsException;
 
-    List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser);
+    List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, FileOrder sortBy, TdarUser authenticatedUser);
 
     void deleteFile(AbstractFile file, TdarUser authenticatedUser) throws FileUploadException;
 

@@ -1,7 +1,5 @@
 package org.tdar.core.service;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
@@ -30,6 +28,7 @@ import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.dao.FileOrder;
 import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
@@ -114,7 +113,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         try {
             // if we're not unfiled then require uniqueness
             if (dir == null || !StringUtils.equals(dir.getName(), TdarDir.UNFILED)) {
-                List<AbstractFile> listFiles = listFiles(dir, account, null, user);
+                List<AbstractFile> listFiles = listFiles(dir, account, null,  null, user);
                 for (AbstractFile f : listFiles) {
                     if (StringUtils.equalsIgnoreCase(f.getName(), fileName)) {
                         throw new FileAlreadyExistsException(fileName);
@@ -197,7 +196,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Override
     @Transactional(readOnly = false)
     public TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) throws FileAlreadyExistsException {
-        List<AbstractFile> listFiles = listFiles(parent, account, null, authenticatedUser);
+        List<AbstractFile> listFiles = listFiles(parent, account, null, null, authenticatedUser);
         for (AbstractFile f : listFiles) {
             if (f instanceof TdarDir && StringUtils.equalsIgnoreCase(f.getName(), name)) {
                 throw new FileAlreadyExistsException(name);
@@ -216,8 +215,8 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser) {
-        return fileProcessingDao.listFilesFor(parent, account, term, authenticatedUser);
+    public List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, FileOrder sort, TdarUser authenticatedUser) {
+        return fileProcessingDao.listFilesFor(parent, account, term, sort, authenticatedUser);
     }
 
     @Override
@@ -233,7 +232,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             fileProcessingDao.delete(((TdarFile) file).getParts());
         }
         if (file instanceof TdarDir) {
-            if (CollectionUtils.isNotEmpty(listFiles((TdarDir)file, file.getAccount(), null, authenticatedUser))) {
+            if (CollectionUtils.isNotEmpty(listFiles((TdarDir)file, file.getAccount(), null, null, authenticatedUser))) {
                 throw new FileUploadException("personalFilestoreService.directory.not_empty");
             }
         }
@@ -373,7 +372,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             AbstractFile file = toProcess.remove(0);
             logger.debug("moving {} to {}", file, account);
             if (file instanceof TdarDir) {
-                List<AbstractFile> listFiles = listFiles((TdarDir)file, file.getAccount(), null, authenticatedUser);
+                List<AbstractFile> listFiles = listFiles((TdarDir)file, file.getAccount(), null, null, authenticatedUser);
                 logger.debug("subdir {} ", listFiles);
                 toProcess.addAll(listFiles);
             }
@@ -394,7 +393,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Override
     @Transactional(readOnly=false)
     public void renameDirectory(TdarDir file, BillingAccount account, String name, TdarUser authenticatedUser) throws FileAlreadyExistsException {
-        List<AbstractFile> listFiles = listFiles(file.getParent(), account, null, authenticatedUser);
+        List<AbstractFile> listFiles = listFiles(file.getParent(), account, null, null, authenticatedUser);
         for (AbstractFile f : listFiles) {
             if (f instanceof TdarDir && StringUtils.equalsIgnoreCase(f.getName(), name)) {
                 throw new FileAlreadyExistsException(name);

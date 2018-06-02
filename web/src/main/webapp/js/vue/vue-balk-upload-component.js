@@ -339,6 +339,16 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 noteChanged: function() {
                     return this._noteChanged();
                 },
+                curationStatus: function() {
+                    var cls = "odd ";
+                    if (this.index % 2 == 0) {
+                       cls = "even ";
+                    }
+                    if (this.file.curation == WONT_CURATE) {
+                        cls = cls + " strikethrough";
+                    }
+                    return cls;
+                },
                 fileLink : function() {
                     // compute the link to create a record from the file
                     return "/resource/createRecordFromFiles?fileIds=" + this.file.id; 
@@ -396,6 +406,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 externalReviewed: false,
                 daysFilesExpireAfter: 60,
                 fullService: false,
+                selectedAccount: undefined,
                 accounts: config.accounts,
                 accountId: undefined,
                 moveAccountId: undefined,
@@ -591,6 +602,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             Vue.set(_app,"daysFilesExpireAfter",account.daysFilesExpireAfter);
                             Vue.set(_app,"initialReviewed",account.initialReviewed);
                             Vue.set(_app,"externalReviewed",account.externalReviewed);
+                            Vue.set(_app,"selectedAccount", account);
                         }
                     });
                  },
@@ -600,11 +612,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                      }
                      return undefined;
                  },
-                loadFiles: function (parentId, path) {
+                loadFiles: function (parentId, path, sortBy) {
                     // load all of the files for the dir and account
                     router.push({ path: '/' + this.accountId  + this.fullPath()})
                     var _app = this;
-                    $.get("/api/file/list", {"parentId": parentId, "accountId":_app.accountId}, {
+                    $.get("/api/file/list", {"parentId": parentId, "accountId":_app.accountId, "sortBy": sortBy}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         console.log('LIST FILES:',JSON.stringify(msg));
@@ -617,7 +629,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     // send a search
                     var _app = this;
                     console.log(search);
-                    $.get("/api/file/list", {"term":search, "accountId":_app.accountId}, {
+                    $.get("/api/file/list", {"term":search, "accountId":_app.accountId, "sortBy": sortBy}, {
                         dataType:'jsonp'
                     }).done(function(msg){
                         console.log('SEARCH FILES:',JSON.stringify(msg));

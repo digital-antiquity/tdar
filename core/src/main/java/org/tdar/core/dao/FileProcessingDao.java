@@ -45,7 +45,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         return resultList;
     }
 
-    public List<AbstractFile> listFilesFor(TdarDir parent, BillingAccount account, String term, TdarUser authenticatedUser) {
+    public List<AbstractFile> listFilesFor(TdarDir parent, BillingAccount account, String term, FileOrder sort, TdarUser authenticatedUser) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.LIST_FILES_FOR_DIR);
         if (parent == null && StringUtils.isNotBlank(term)) {
             query.setParameter("topLevel", true);
@@ -69,7 +69,11 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         } else {
             query.setParameter("uploader", null);
         }
-        return query.getResultList();
+        List<AbstractFile> list = new ArrayList<>(query.getResultList());
+        if (sort != null) {
+            sort.sort(list, sort);
+        }
+        return list;
     }
 
     public TdarDir findUnfiledDirByName(TdarUser authenticatedUser) {
