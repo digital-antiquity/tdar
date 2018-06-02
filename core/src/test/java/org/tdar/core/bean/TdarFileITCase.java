@@ -61,14 +61,14 @@ public class TdarFileITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(file2);
         file3.setParent(dir);
         genericService.saveOrUpdate(file3);
-        List<AbstractFile> list = fileProcessingDao.listFilesFor(null, act, "test", getAdminUser());
+        List<AbstractFile> list = fileProcessingDao.listFilesFor(null, act, "test", null, getAdminUser());
         for (AbstractFile f : list) {
             logger.debug("{} - {}", f.getName(), f);
         }
         assertFalse(list.contains(file3));
         assertTrue(list.contains(file));
         assertTrue(list.contains(file2));
-        list = fileProcessingDao.listFilesFor(null, null, "ook", getAdminUser());
+        list = fileProcessingDao.listFilesFor(null, null, "ook", null, getAdminUser());
         for (AbstractFile f : list) {
             logger.debug("{} - {}", f.getName(), f);
         }

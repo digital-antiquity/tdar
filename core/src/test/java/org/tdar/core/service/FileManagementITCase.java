@@ -70,25 +70,25 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         BillingAccount act2 = setupAccountForPerson(getBasicUser());
         setupSomeFilesAndDirs(act, act2);
         genericService.synchronize();
-        List<AbstractFile> listFiles = pfs.listFiles(null, act, null, getBasicUser());
+        List<AbstractFile> listFiles = pfs.listFiles(null, act, null,null,  getBasicUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
         assertEquals(4, listFiles.size());
 
-        listFiles = pfs.listFiles(null, act, null, getAdminUser());
+        listFiles = pfs.listFiles(null, act, null,null,  getAdminUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
         assertEquals(4, listFiles.size());
 
-        listFiles = pfs.listFiles(null, act2, null, getAdminUser());
+        listFiles = pfs.listFiles(null, act2, null,null,  getAdminUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
         assertEquals(1, listFiles.size());
 
-        listFiles = pfs.listFiles(null, act2, null, getBasicUser());
+        listFiles = pfs.listFiles(null, act2, null,null,  getBasicUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
@@ -103,13 +103,13 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         BillingAccount act2 = setupAccountForPerson(getBasicUser());
         setupSomeFilesAndDirs(act, act2);
         genericService.synchronize();
-        List<AbstractFile> listFiles = pfs.listFiles(null, act, "Pundo", getBasicUser());
+        List<AbstractFile> listFiles = pfs.listFiles(null, act, "Pundo", null, getBasicUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
         assertEquals(1, listFiles.size());
 
-        listFiles = pfs.listFiles(null, act, "untitled", getAdminUser());
+        listFiles = pfs.listFiles(null, act, "untitled", null, getAdminUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
@@ -245,7 +245,7 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
 
         pfs.moveFilesBetweenAccounts(pdf, act2, getAdminUser());
 
-        List<AbstractFile> listFiles = pfs.listFiles(null, act2, null, getAdminUser());
+        List<AbstractFile> listFiles = pfs.listFiles(null, act2, null, null, getAdminUser());
         assertEquals(3, listFiles.size());
 
     }
@@ -272,7 +272,7 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         moved = null;
         files = null;
         genericService.synchronize();
-        List<AbstractFile> listFiles = pfs.listFiles(null, act2, null, getAdminUser());
+        List<AbstractFile> listFiles = pfs.listFiles(null, act2, null,null,  getAdminUser());
         logger.debug("{}", listFiles);
         // dir and initial file
         assertEquals(2, listFiles.size());
@@ -344,13 +344,13 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         }
 
         genericService.synchronize();
-        List<AbstractFile> listFiles = pfs.listFiles(dir, act, null, getBasicUser());
+        List<AbstractFile> listFiles = pfs.listFiles(dir, act, null,null,  getBasicUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
         assertEquals(2, listFiles.size());
 
-        listFiles = pfs.listFiles(dir, act, null, getAdminUser());
+        listFiles = pfs.listFiles(dir, act, null, null, getAdminUser());
         for (AbstractFile af : listFiles) {
             logger.debug("{}", af);
         }
