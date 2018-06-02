@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.exception.FileUploadException;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
@@ -31,7 +32,7 @@ public class DeleteFileAction extends AbstractHasFileAction<AbstractFile> {
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     @PostOnly
     @WriteableSession
-    public String execute() throws IOException {
+    public String execute() throws IOException, FileUploadException {
         personalFilestoreService.deleteFile(getFile(), getAuthenticatedUser());
         setResultObject(true);
         return SUCCESS;
