@@ -34,7 +34,10 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             // apply the fixxture
             
             var extra = "<script id='validFormats'>"+JSON.stringify(["tif","pdf","doc"])+"</script>" + 
-            "<script id='accountJson'>"+JSON.stringify([{name:"full service", id:1, fullService:true, initialReview:true}, {name:"normal", id:2, fullService:false}])+"</script>";
+            "<script id='accountJson'>"+JSON.stringify([
+                    {name:"full service", id:1, fullService:true, initialReview:true, detailUrl:'/account/1'},
+                    {name:"normal", id:2, fullService:false, detailUrl:'/account/1'}
+                    ])+"</script>";
             
             fixture = fixture.replace('<script id="insert"></script>',extra);
             _fix = jasmine.getFixtures().set(fixture);
@@ -57,6 +60,8 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             var vapp = new Constructor().$mount();
             expect(vapp == undefined).toBe(false);
             expect(_fix == undefined).toBe(false);
+            vapp.selectedAccount = vapp.accounts[0];
+            vapp.accountId = vapp.selectedAccount.id;
             // return the constructed component so we can execute methods on it
             jasmine.Ajax.stubRequest('/upload/upload').andReturn({
                 "responseText": 'success'

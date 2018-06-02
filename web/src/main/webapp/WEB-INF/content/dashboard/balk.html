@@ -95,7 +95,7 @@
                 <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
         </select>
     </label>
-	<a :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
+	<a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
     </div>
     <div class="span4">
         <input type="search" class="search input pull-right" placeholder="search" v-model="search" />
