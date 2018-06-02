@@ -464,6 +464,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 }
             },
             methods : {
+                sortBy: function(sort) {
+                    if (this.search != undefined && this.search != '') {
+                        this.searchFiles(this.search, sort);
+                    } 
+                    this.loadFiles(this.parentId, this.path, sort);
+                },
                 _routeAccounts: function(to, from) {
                     console.log(">>> changed route to: ", to);
 //                  console.log(to.params.accountId , this.accountId);
@@ -625,7 +631,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     Vue.set(this, "parentId", parentId);
                     Vue.set(this, "path", path);
                 },
-                searchFiles: function (search) {
+                searchFiles: function (search, sortBy) {
                     // send a search
                     var _app = this;
                     console.log(search);

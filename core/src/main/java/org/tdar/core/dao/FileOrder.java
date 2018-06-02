@@ -11,6 +11,7 @@ import org.tdar.core.bean.file.TdarFile;
 
 public enum FileOrder {
     FILENAME,
+    NOTE,
     DATE_UPLOADED,
     DATE_CURATED,
     DATE_EXTERNAL_REVIEWED,
@@ -27,12 +28,18 @@ public enum FileOrder {
                 Collections.sort(list, new DateComparator(sort));
                 break;
             case FILENAME:
-                Collections.sort(list, new FilenameComparator());
+            case NOTE:
+                Collections.sort(list, new TextComparator(sort));
                 break;
         }
     }
 
-    public static class FilenameComparator implements Comparator<AbstractFile> {
+    public static class TextComparator implements Comparator<AbstractFile> {
+        private FileOrder order;
+
+        public TextComparator(FileOrder order) {
+            this.order = order;
+        }
 
         @Override
         public int compare(AbstractFile o1, AbstractFile o2) {
@@ -45,8 +52,8 @@ public enum FileOrder {
             if (o2 == null) {
                 return 1;
             }
-            String t1 = o1.getName();
-            String t2 = o2.getName();
+            String t1 = getPart(o1,order);
+            String t2 = getPart(o2, order);
 
             if (t1 == null ^ t2 == null) {
                 return (t1 == null) ? -1 : 1;
@@ -61,6 +68,26 @@ public enum FileOrder {
             }
 
             return t1.compareTo(t2);
+        }
+        
+        private String getPart(AbstractFile o1, FileOrder order2) {
+            if (o1 == null) {
+                return null;
+            }
+            if (order2 == FileOrder.FILENAME) {
+                return o1.getFilename();
+            }
+
+            if (o1 instanceof TdarFile) {
+                TdarFile f = (TdarFile) o1;
+                switch (order2) {
+                    case NOTE:
+                        return f.getNote();
+                    case FILENAME:
+                        return f.getFilename();
+                }
+            }
+            return null;
         }
     }
 

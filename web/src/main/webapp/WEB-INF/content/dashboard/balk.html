@@ -106,14 +106,14 @@
 <thead>
  <tr>
     <th></th>
-    <th>File Name</th>
-    <th>Added</th>
-    <th v-if="fullService">Note</th>
+    <th><span @click="sortBy('FILENAME')">File Name</span></th>
+    <th><span @click="sortBy('DATE_UPLOADED')">Added</span></th>
+    <th v-if="fullService"><span @click="sortBy('NOTE')">Note</span></th>
     <th></th>
-    <th v-if="fullService">Curate</th>
-    <th v-if="fullService && initialReviewed">initial review</th>
-    <th v-if="fullService"><span v-if="initialReviewed">staff </span> review</th>
-    <th v-if="fullService && externalReviewed">external review</th>
+    <th v-if="fullService"><span @click="sortBy('DATE_CURATED')">Curate</span></th>
+    <th v-if="fullService && initialReviewed"><span @click="sortBy('DATE_INITIAL_REVIEWED')">Initial Review</span></th>
+    <th v-if="fullService"><span @click="sortBy('DATE_REVIEWED')"><span v-if="initialReviewed">Staff </span> Review</span></th>
+    <th v-if="fullService && externalReviewed"><span @click="sortBy('DATE_EXTERNAL_REVIEWED')">External Review</span></th>
     <th>status</th>
     <th colspan="2"></th>
  </tr>
