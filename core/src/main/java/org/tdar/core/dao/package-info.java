@@ -569,15 +569,16 @@
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.FIND_DIR_BY_NAME,
                 query = "from TdarDir file where file.filename =:name and (:account is null or file.account=:account) and (:uploader is null or file.uploader=:uploader)"),
-        @NamedQuery(
+        @NamedQuery( 
                 name = org.tdar.core.dao.TdarNamedQueries.SUMMARIZE_BY_ACCOUNT,
-                query = "select f.parent, count(*), count(f.resource) as resource_id, count(f.dateCurated) as curated, count(f.dateInitialReviewed) as initial_reviewed , "
-                        + "count(f.dateReviewed) as reviewed , count(f.dateExternalReviewed) as external_revieewd from TdarFile f where part_of_id is null and account_id=:accountId and (:date is null or "
-                        + "(:date < f.dateCreated or :date < f.dateCurated or :date < f.dateInitialReviewed or :date < f.dateReviewed or :date < f.dateExternalReviewed)"
-                        + ") group by (f.parent)"),
+                query = "select f.parentId, count(*), count(f.resourceId) as resource_id, count(f.dateCurated) as curated, count(f.dateInitialReviewed) as initial_reviewed , "
+                        + "count(f.dateReviewed) as reviewed , count(f.dateExternalReviewed) as external_revieewd from TdarFile f where f.partOfId is null and f.account.id=:accountId "
+                        + "and (cast(:date as date) is null "
+                        + " or (:date < f.dateCreated or :date < f.dateCurated or :date < f.dateInitialReviewed or :date < f.dateReviewed or :date < f.dateExternalReviewed)"
+                        + ") group by f.parentId"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.BY_ACCOUNT_RECENT,
-                query = "from TdarFile f where part_of_id is null and account_id=:accountId and (:date is null or "
+                query = "from TdarFile f where part_of_id is null and account_id=:accountId and (cast(:date as date) is null or "
                         + "(:date < f.dateCreated or :date < f.dateCurated or :date < f.dateInitialReviewed or :date < f.dateReviewed or :date < f.dateExternalReviewed)"
                         + ") and (:dir is null or :dir = f.parent) ")
 

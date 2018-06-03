@@ -64,6 +64,10 @@ public abstract class AbstractFile extends AbstractPersistable {
     @ManyToOne
     @JoinColumn(name = "uploader_id")
     private TdarUser uploader;
+    
+    @Column(name="parent_id", updatable= false, insertable=false)
+    private Long parentId;
+
 
     // private ResourceType targetFileType;
     // private Resource resource;
@@ -153,6 +157,14 @@ public abstract class AbstractFile extends AbstractPersistable {
 
     public void setComments(List<FileComment> comments) {
         this.comments = comments;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     

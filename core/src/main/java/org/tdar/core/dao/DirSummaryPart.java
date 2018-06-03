@@ -8,6 +8,7 @@ public class DirSummaryPart implements Serializable {
 
     private static final long serialVersionUID = 7076404625739185355L;
     TdarDir parent;
+    private Long parentId;
     Integer resource = 0;
     Integer curated = 0;
     Integer initialReviewed = 0;
@@ -15,7 +16,12 @@ public class DirSummaryPart implements Serializable {
     Integer externalReviewed = 0;
     
     public DirSummaryPart(Object[] row) {
-        this.parent = (TdarDir) row[0];
+        if (row == null) {
+            return;
+        }
+        if (row[0] != null) {
+            this.parentId = ((Number) row[0]).longValue();
+        }
         this.resource += getIntValue(row[1]);
         this.curated += getIntValue(row[2]);
         this.initialReviewed += getIntValue(row[3]);
@@ -79,6 +85,14 @@ public class DirSummaryPart implements Serializable {
 
     public void setExternalReviewed(Integer externalReviewed) {
         this.externalReviewed = externalReviewed;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
     
 }

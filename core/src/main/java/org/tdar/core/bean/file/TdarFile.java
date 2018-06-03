@@ -94,6 +94,12 @@ public class TdarFile extends AbstractFile {
     @JoinColumn(nullable = false, updatable = true, name = "part_of_id")
     private List<TdarFile> parts = new ArrayList<>();
 
+    @Column(name="part_of_id", updatable= false, insertable=false)
+    private Long partOfId;
+
+    @Column(name="resource_id", updatable= false, insertable=false)
+    private Long resourceId;
+    
     public TdarFile() {
     }
 
@@ -363,5 +369,13 @@ public class TdarFile extends AbstractFile {
 
     public void setCuration(CurationState curation) {
         this.curation = curation;
+    }
+
+    public Long getPartOfId() {
+        return partOfId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
     }
 }

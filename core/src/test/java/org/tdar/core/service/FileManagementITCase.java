@@ -3,6 +3,7 @@ package org.tdar.core.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
-
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -25,6 +26,7 @@ import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.dao.DirSummary;
 
 
 public class FileManagementITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
@@ -356,4 +358,30 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         }
         assertEquals(2, listFiles.size());
     }
+    
+    @Test
+    @Rollback
+    public void testRecentFiles() throws FileNotFoundException {
+        BillingAccount act = setupAccountForPerson(getBasicUser());
+        List<AbstractFile> files = setupSomeFilesAndDirs(act, act);
+        
+        genericService.synchronize();
+        List<TdarFile> recentByAccount = pfs.recentByAccount(act, DateTime.now().minusWeeks(1).toDate(), null, getAdminUser());
+        assertTrue(files.containsAll(recentByAccount));
+    }
+
+    @Test
+    @Rollback
+    public void testSummaryFiles() throws FileNotFoundException {
+        BillingAccount act = setupAccountForPerson(getBasicUser());
+        List<AbstractFile> files = setupSomeFilesAndDirs(act, act);
+        
+        genericService.synchronize();
+        DirSummary summary = pfs.summarizeAccountBy(act, null, getAdminUser());
+        logger.debug(String.format("total: %s, %s, %s, %s, %s",summary.getCurated(), summary.getResource(), summary.getInitialReviewed(), summary.getReviewed(),  summary.getExternalReviewed()));
+        summary.getParts().forEach(sum -> {
+            logger.debug(String.format("%s: %s, %s, %s, %s, %s", sum.getParent() ,sum.getCurated(), sum.getResource(), sum.getInitialReviewed(), sum.getReviewed(), sum.getExternalReviewed()));
+        });
+    }
+
 }

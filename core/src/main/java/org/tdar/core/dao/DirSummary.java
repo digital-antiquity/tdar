@@ -22,12 +22,14 @@ public class DirSummary extends DirSummaryPart implements Serializable {
 
     private List<DirSummaryPart> parts = new ArrayList<>();
     
-    public void addPart(Object[] row) {
+    public DirSummaryPart addPart(Object[] row) {
         DirSummaryPart part = new DirSummaryPart(row);
         setCurated(getCurated() + part.getCurated());
         setResource(getResource() + part.getResource());
         setExternalReviewed(getExternalReviewed() + part.getExternalReviewed());
         setInitialReviewed(getInitialReviewed() + part.getInitialReviewed());
         setReviewed(getReviewed() + part.getReviewed());
+        parts.add(part);
+        return part;
     }
 }
