@@ -380,7 +380,7 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         DirSummary summary = pfs.summarizeAccountBy(act, null, getAdminUser());
         logger.debug(String.format("total: %s, %s, %s, %s, %s",summary.getCurated(), summary.getResource(), summary.getInitialReviewed(), summary.getReviewed(),  summary.getExternalReviewed()));
         summary.getParts().forEach(sum -> {
-            logger.debug(String.format("%s: %s, %s, %s, %s, %s", sum.getParent() ,sum.getCurated(), sum.getResource(), sum.getInitialReviewed(), sum.getReviewed(), sum.getExternalReviewed()));
+            logger.debug(String.format("%s: %s, %s, %s, %s, %s", sum.getDir() ,sum.getCurated(), sum.getResource(), sum.getInitialReviewed(), sum.getReviewed(), sum.getExternalReviewed()));
         });
     }
 

@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.Query;
@@ -23,6 +25,8 @@ import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.utils.PersistableUtils;
+
+import thredds.inventory.partition.DirectoryPartition;
 
 @Component
 public class FileProcessingDao extends HibernateBase<TdarFile> {
@@ -126,10 +130,29 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         query.setParameter("accountId", account.getId());
         DirSummary summary = new DirSummary();
         List<Object[]> resultList = (List<Object[]>) query.getResultList();
-        logger.debug("{}", resultList);
+
         List<TdarDir> dirs = listDirectoriesFor(null, account, authenticatedUser);
-        Map<Long, Set<Long>> parentMap = new HashMap<>();
         Map<Long, TdarDir> dirIdMaps = PersistableUtils.createIdMap(dirs);
+        Map<Long, Set<Long>> dirChildMap = new HashMap<>();
+        Set<Long> topLevel = new HashSet<>();
+        
+        buildChildMapAndTopLevelNodes(dirs, dirChildMap, topLevel);
+
+        //setup each dirSummaryPart
+        Map<Long, DirSummaryPart> parentPartMap = new HashMap<>();
+        for (Object[] row : resultList) {
+            DirSummaryPart part = summary.addPart(row);
+            part.setDir(dirIdMaps.get(part.getId()));
+            part.setDirPath(buildDirTree(part));
+            parentPartMap.put(part.getId(), part);
+        }
+        
+        
+        summarizeChildren(dirChildMap, topLevel, parentPartMap);
+        return summary;
+    }
+
+    private void buildChildMapAndTopLevelNodes(List<TdarDir> dirs, Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel) {
         for (TdarDir dir : dirs) {
             if (dir.getParentId() == null) {
                 continue;
@@ -137,17 +160,57 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
             TdarDir dir_ = dir;
             while (dir_ != null) {
                 Long parentId = dir_.getParentId();
-                Set<Long> list = parentMap.getOrDefault(parentId, new HashSet<>());
-                list.add(dir.getId());
-                parentMap.put(parentId, list);
+                Set<Long> children = dirChildMap.getOrDefault(parentId, new HashSet<>());
+                children.add(dir_.getId());
+                dirChildMap.put(parentId, children);
+                
+                if (dir_.getParent() == null) {
+                    topLevel.add(dir_.getId());
+                }
                 dir_ = dir_.getParent();
             }
         }
-        for (Object[] row : resultList) {
-            DirSummaryPart part = summary.addPart(row);
-            part.setParent(dirIdMaps.get(part.getParentId()));
+    }
+
+    /**
+     * Recursively summarize all children from top down so we don't double count 
+     * @param dirChildMap
+     * @param topLevel
+     * @param parentPartMap
+     */
+    private void summarizeChildren(Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel, Map<Long, DirSummaryPart> parentPartMap) {
+        for (Long id : topLevel) {
+            Set<Long> working = new HashSet<>(dirChildMap.get(id));
+            Set<Long> allChildren = new HashSet<>(working);
+            while (!working.isEmpty()) {
+                Iterator<Long> iterator = working.iterator();
+                Long next = iterator.next();
+                iterator.remove();
+                
+                Set<Long> nextChild = dirChildMap.get(next);
+                working.addAll(nextChild);
+                allChildren.addAll(nextChild);
+            }
+            DirSummaryPart part = parentPartMap.get(id);
+            part.addAll(allChildren, parentPartMap);
+            if (CollectionUtils.isNotEmpty(dirChildMap.get(id) )) {
+                summarizeChildren(dirChildMap, dirChildMap.get(id), parentPartMap);
+            }
         }
-        return summary;
+    }
+
+    private String buildDirTree(DirSummaryPart part) {
+        TdarDir parent = part.getDir();
+        if (parent == null) {
+            return "/";
+        }
+        StringBuilder path = new StringBuilder();
+        TdarDir d = parent;
+        while (d != null) {
+            path.insert(0, "/" + d.getName());
+            d = d.getParent();
+        }
+        return path.toString();
     }
 
     public List<TdarFile> recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {

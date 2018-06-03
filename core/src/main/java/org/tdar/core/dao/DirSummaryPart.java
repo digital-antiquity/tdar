@@ -1,32 +1,42 @@
 package org.tdar.core.dao;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.tdar.core.bean.file.TdarDir;
 
 public class DirSummaryPart implements Serializable {
 
     private static final long serialVersionUID = 7076404625739185355L;
-    TdarDir parent;
-    private Long parentId;
+    TdarDir dir;
+    private Long id;
     Integer resource = 0;
     Integer curated = 0;
     Integer initialReviewed = 0;
     Integer reviewed = 0;
     Integer externalReviewed = 0;
+    private String dirPath;
+    private Set<Long> children = new HashSet<>();
     
     public DirSummaryPart(Object[] row) {
         if (row == null) {
             return;
         }
         if (row[0] != null) {
-            this.parentId = ((Number) row[0]).longValue();
+            this.id = ((Number) row[0]).longValue();
         }
-        this.resource += getIntValue(row[1]);
-        this.curated += getIntValue(row[2]);
-        this.initialReviewed += getIntValue(row[3]);
-        this.reviewed += getIntValue(row[4]);
-        this.externalReviewed += getIntValue(row[5]);
+        this.add(getIntValue(row[1]), getIntValue(row[2]), getIntValue(row[3]), getIntValue(row[4]),getIntValue(row[5]));
+    }
+
+    private void add(Integer resource, Integer curated, Integer initialReviewed, Integer reviewed, Integer externalReviewed) {
+        this.resource += getIntValue(resource);
+        this.curated += getIntValue(curated);
+        this.initialReviewed += getIntValue(initialReviewed);
+        this.reviewed += getIntValue(reviewed);
+        this.externalReviewed += getIntValue(externalReviewed);
+        
     }
 
     private Integer getIntValue(Object object) {
@@ -39,12 +49,12 @@ public class DirSummaryPart implements Serializable {
         return 0;
     }
 
-    public TdarDir getParent() {
-        return parent;
+    public TdarDir getDir() {
+        return dir;
     }
 
-    public void setParent(TdarDir parent) {
-        this.parent = parent;
+    public void setDir(TdarDir parent) {
+        this.dir = parent;
     }
 
     public Integer getResource() {
@@ -87,12 +97,35 @@ public class DirSummaryPart implements Serializable {
         this.externalReviewed = externalReviewed;
     }
 
-    public Long getParentId() {
-        return parentId;
+    public Long getId() {
+        return id;
     }
 
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
+    public void setId(Long parentId) {
+        this.id = parentId;
+    }
+
+    public String getDirPath() {
+        return dirPath;
+    }
+
+    public void setDirPath(String dirPath) {
+        this.dirPath = dirPath;
+    }
+
+    public Set<Long> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<Long> children) {
+        this.children = children;
+    }
+
+    public void addAll(Set<Long> allChildren, Map<Long, DirSummaryPart> parentPartMap) {
+        for (Long cid : allChildren) {
+            DirSummaryPart part = parentPartMap.get(cid);
+            add(part.getResource(), part.getCurated(),part.getInitialReviewed(), part.getReviewed(), part.getExternalReviewed());
+        }
     }
     
 }
