@@ -1,35 +1,20 @@
 package org.tdar.core.bean;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
-import org.tdar.core.bean.entity.Creator.CreatorType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.FileProcessingDao;
-import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.PersonalFilestoreService;
 
 public class TdarFileITCase extends AbstractIntegrationTestCase {
 

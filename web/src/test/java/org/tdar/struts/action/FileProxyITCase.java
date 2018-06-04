@@ -18,7 +18,6 @@ import static org.tdar.TestConstants.TEST_DOCUMENT_DIR;
 import static org.tdar.TestConstants.TEST_IMAGE_DIR;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +36,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 
 /**
