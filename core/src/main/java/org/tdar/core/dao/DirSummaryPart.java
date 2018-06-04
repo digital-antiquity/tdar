@@ -3,10 +3,17 @@ package org.tdar.core.dao;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.file.TdarDir;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+@JsonAutoDetect
 public class DirSummaryPart implements Serializable {
 
     private static final long serialVersionUID = 7076404625739185355L;
@@ -19,7 +26,7 @@ public class DirSummaryPart implements Serializable {
     Integer externalReviewed = 0;
     private String dirPath;
     private Set<Long> children = new HashSet<>();
-    
+
     public DirSummaryPart(Object[] row) {
         if (row == null) {
             return;
@@ -27,7 +34,7 @@ public class DirSummaryPart implements Serializable {
         if (row[0] != null) {
             this.id = ((Number) row[0]).longValue();
         }
-        this.add(getIntValue(row[1]), getIntValue(row[2]), getIntValue(row[3]), getIntValue(row[4]),getIntValue(row[5]));
+        this.add(getIntValue(row[1]), getIntValue(row[2]), getIntValue(row[3]), getIntValue(row[4]), getIntValue(row[5]));
     }
 
     private void add(Integer resource, Integer curated, Integer initialReviewed, Integer reviewed, Integer externalReviewed) {
@@ -36,7 +43,7 @@ public class DirSummaryPart implements Serializable {
         this.initialReviewed += getIntValue(initialReviewed);
         this.reviewed += getIntValue(reviewed);
         this.externalReviewed += getIntValue(externalReviewed);
-        
+
     }
 
     private Integer getIntValue(Object object) {
@@ -124,8 +131,26 @@ public class DirSummaryPart implements Serializable {
     public void addAll(Set<Long> allChildren, Map<Long, DirSummaryPart> parentPartMap) {
         for (Long cid : allChildren) {
             DirSummaryPart part = parentPartMap.get(cid);
-            add(part.getResource(), part.getCurated(),part.getInitialReviewed(), part.getReviewed(), part.getExternalReviewed());
+            add(part.getResource(), part.getCurated(), part.getInitialReviewed(), part.getReviewed(), part.getExternalReviewed());
         }
     }
+
     
+    @Override
+    public boolean equals(Object obj) {
+        return Objects.equals(this.id, ((DirSummaryPart)obj).getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        // since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
+        if (id == null) {
+            LoggerFactory.getLogger(Persistable.class).trace("0 b/c 'a' is null");
+            return System.identityHashCode(this);
+        }
+        HashCodeBuilder builder = new HashCodeBuilder(23, 37);
+        builder.append(id);
+        int hashCode = builder.toHashCode();
+        return hashCode;
+    }
 }

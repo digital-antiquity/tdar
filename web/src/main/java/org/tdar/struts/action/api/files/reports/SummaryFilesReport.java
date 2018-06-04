@@ -1,8 +1,6 @@
 package org.tdar.struts.action.api.files.reports;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -13,7 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.file.TdarDir;
-import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.dao.DirSummary;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 
@@ -33,7 +31,7 @@ public class SummaryFilesReport extends AbstractJsonApiAction {
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    private List<TdarFile> files = new ArrayList<>();
+    private DirSummary summary;
 
     @Override
     public void prepare() throws Exception {
@@ -56,10 +54,10 @@ public class SummaryFilesReport extends AbstractJsonApiAction {
     }
 
     @Override
-    @Action("recentFiles")
+    @Action("summary")
     public String execute() throws Exception {
-        files = personalFilestoreService.recentByAccount(account, date, parent, getAuthenticatedUser());
-        setResultObject(files);
+        summary = personalFilestoreService.summarizeAccountBy(account, date, getAuthenticatedUser());
+        setResultObject(summary);
         return super.execute();
     }
 
@@ -103,11 +101,11 @@ public class SummaryFilesReport extends AbstractJsonApiAction {
         this.date = date;
     }
 
-    public List<TdarFile> getFiles() {
-        return files;
+    public DirSummary getSummary() {
+        return summary;
     }
 
-    public void setFiles(List<TdarFile> files) {
-        this.files = files;
+    public void setSummary(DirSummary summary) {
+        this.summary = summary;
     }
 }

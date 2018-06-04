@@ -1,0 +1,102 @@
+
+
+<div class="span10" id="filesReports">
+<div class="row">
+    <div class="span6">
+    <label  style="display:inline">Account:
+        <select name="account" id="accountId" v-model="accountId">
+                <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
+        </select>
+    </label>
+    <a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
+    </div>
+</div>
+
+<hr>
+Need to show a summary of what's been done, not just which files were changed..
+<table class="table"  v-if="recent != undefined">
+<tr>
+<th>Recently Changed Files</th>
+</tr>
+<tr v-for="(file, index) in recent">
+<td>{{file.name}}</td>
+</tr>
+</table>
+<hr>
+<table class="table" v-if="summary != undefined">
+    <thead>
+        <tr>
+            <th>Directory</th>
+            <th>Resources</th>
+            <th>Curated</th>
+            <th>Initial Reviewed</th>
+            <th>Reviewed</th>
+            <th>External Reviewed</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><b>Total:</b></td>
+            <td>{{summary.resource}}</td>
+            <td>{{summary.curated}}</td>
+            <td>{{summary.initialReviewed}}</td>
+            <td>{{summary.reviewed}}</td>
+            <td>{{summary.externalReviewed}}</td>
+        </tr>
+        <tr v-for="(dir,index) in summary.parts" >
+            <td>{{dir.dirPath}}</td>
+            <td>{{dir.resource}}</td>
+            <td>{{dir.curated}}</td>
+            <td>{{dir.initialReviewed}}</td>
+            <td>{{dir.reviewed}}</td>
+            <td>{{dir.externalReviewed}}</td>
+        </tr>
+        
+    </tbody>
+</table>
+<hr>
+
+</div>
+<script>
+
+$(document).ready(function(){
+    var app2 = new Vue({
+        el : "#filesReports",
+        data : {
+            summary: undefined,
+             recent: undefined,
+             accountId: undefined,
+             selectedAccount: undefined,             
+             accounts: []
+        },
+        watch: {
+            accountId: function(after, before) {
+                this.loadData(after);
+                this.loadRecentData(after);
+                
+            }
+        },
+        methods: {
+            loadData: function(id) {
+                var _app = this;
+                $.get("/api/file/reports/summary", {accountId: id}).done(function(sum) {
+                    Vue.set(_app,"summary",sum);
+                });
+            },
+            loadRecentData: function(id) {
+                var _app = this;
+                $.get("/api/file/reports/recentFiles", {accountId: id}).done(function(sum) {
+                    Vue.set(_app,"recent",sum);
+                });
+            }
+        },
+        mounted: function() {
+            Vue.set(this,"accounts", JSON.parse($("#accountJson").text()));
+        }
+   });
+    
+});
+
+</script>
+
+<script id="insert"></script>

@@ -38,14 +38,15 @@
 
 
 <div id="titlebar" parse="true">
-    <h1>Dashboard &raquo; <span class="red">My Scratch Space</span></h1>
+    <h1>Dashboard &raquo; <span class="red">Reports</span></h1>
 
 </div>
 <div class="row">
 <div class="span2">
     <@dash.sidebar current="files" />
 </div>
-<#include "balk.html" />
+
+<#include "balk-reports.html" />
 </div>
 
 <#noescape>
@@ -53,17 +54,7 @@
 ${accountJson}
 </script>
 
-<script id="validFormats" type="application/json">
-${validFormats}
-</script>
 </#noescape>
-
-<script>
-$(document).ready(function() {
-    TDAR.vuejs.balk.main();
-});    
-</script>
-
 
 
 </#escape>
