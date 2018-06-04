@@ -131,6 +131,9 @@ public class DirSummaryPart implements Serializable {
     public void addAll(Set<Long> allChildren, Map<Long, DirSummaryPart> parentPartMap) {
         for (Long cid : allChildren) {
             DirSummaryPart part = parentPartMap.get(cid);
+            if (part == null) {
+                continue;
+            }
             add(part.getResource(), part.getCurated(), part.getInitialReviewed(), part.getReviewed(), part.getExternalReviewed());
         }
     }
