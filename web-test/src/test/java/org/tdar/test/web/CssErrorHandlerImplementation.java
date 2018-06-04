@@ -4,11 +4,12 @@ import static org.junit.Assert.fail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.css.sac.CSSException;
-import org.w3c.css.sac.CSSParseException;
-import org.w3c.css.sac.ErrorHandler;
 
-public class CssErrorHandlerImplementation implements ErrorHandler {
+import com.gargoylesoftware.css.parser.CSSErrorHandler;
+import com.gargoylesoftware.css.parser.CSSException;
+import com.gargoylesoftware.css.parser.CSSParseException;
+
+public class CssErrorHandlerImplementation implements CSSErrorHandler {
     private String baseUrl;
 
     transient Logger logger = LoggerFactory.getLogger(getClass());
