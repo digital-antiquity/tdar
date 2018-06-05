@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -368,7 +369,7 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         List<AbstractFile> files = setupSomeFilesAndDirs(act, act);
         
         genericService.synchronize();
-        RecentFileSummary recentByAccount = pfs.recentByAccount(act, DateTime.now().minusWeeks(1).toDate(), null, getAdminUser());
+        RecentFileSummary recentByAccount = pfs.recentByAccount(act, DateTime.now().minusWeeks(1).toDate(), new Date(), null, getAdminUser());
         assertTrue(files.containsAll(recentByAccount.getFiles()));
     }
 

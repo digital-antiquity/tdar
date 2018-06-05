@@ -578,10 +578,11 @@
                         + ") group by f.parentId"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.BY_ACCOUNT_RECENT,
-                query = "from TdarFile f where part_of_id is null and account_id=:accountId and (cast(:date as date) is null or "
-                        + "(:date < f.dateCreated or :date < f.dateCurated or :date < f.dateInitialReviewed or :date < f.dateReviewed or :date < f.dateExternalReviewed)"
+                query = "from TdarFile f where part_of_id is null and account_id=:accountId and (cast(:dateStart as date) is null or " + 
+                        "(:dateStart < f.dateCreated or :dateStart < f.dateCurated or :dateStart < f.dateInitialReviewed or :dateStart < f.dateReviewed or :dateStart < f.dateExternalReviewed)"
+                        + ")  AND  (cast(:dateEnd as date) is null or "
+                        + "(:dateEnd < f.dateCreated or :dateEnd < f.dateCurated or :dateEnd < f.dateInitialReviewed or :dateEnd < f.dateReviewed or :dateEnd < f.dateExternalReviewed)"
                         + ") and (:dir is null or :dir = f.parent) ")
-
 })
 package org.tdar.core.dao;
 

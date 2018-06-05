@@ -27,7 +27,8 @@ public class RecentFilesReport extends AbstractJsonApiAction {
     private Long parentId;
     private Long accountId;
     private BillingAccount account;
-    private Date dateSearch = DateTime.now().minusDays(7).toDate();
+    private Date dateStart = DateTime.now().minusDays(7).toDate();
+    private Date dateEnd = DateTime.now().minusDays(7).toDate();
     private TdarUser user;
     private Long userId;
 
@@ -62,7 +63,7 @@ public class RecentFilesReport extends AbstractJsonApiAction {
     @Override
     @Action("recentFiles")
     public String execute() throws Exception {
-        report = personalFilestoreService.recentByAccount(account, dateSearch, parent, user);
+        report = personalFilestoreService.recentByAccount(account, dateStart, dateEnd, parent, user);
         setResultObject(report);
         return super.execute();
     }
@@ -123,11 +124,20 @@ public class RecentFilesReport extends AbstractJsonApiAction {
         this.user = user;
     }
 
-    public Date getDateSearch() {
-        return dateSearch;
+    public Date getDateStart() {
+        return dateStart;
     }
 
-    public void setDateSearch(Date dateSearch) {
-        this.dateSearch = dateSearch;
+    public void setDateStart(Date dateStart) {
+        this.dateStart = dateStart;
     }
+
+    public Date getDateEnd() {
+        return dateEnd;
+    }
+
+    public void setDateEnd(Date dateEnd) {
+        this.dateEnd = dateEnd;
+    }
+
 }

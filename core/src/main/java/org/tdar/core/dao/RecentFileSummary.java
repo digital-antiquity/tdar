@@ -31,35 +31,37 @@ public class RecentFileSummary implements Serializable {
     private TdarUser person;
     private Date startDate;
     private Map<Long, Map<String, Object>> userMap = new HashMap<>();
+    private Date endDate;
 
-    public RecentFileSummary(List<TdarFile> files, Date startDate, TdarUser person) {
+    public RecentFileSummary(List<TdarFile> files, Date startDate, Date endDate, TdarUser person) {
 
+        this.setEndDate(endDate);
         this.setStartDate(startDate);
         this.setPerson(person);
         this.setFiles(files);
         for (TdarFile f : files) {
             addToUserMap(f);
-            incrementCounters(startDate, person, f);
+            incrementCounters(person, f);
         }
     }
 
-    private void incrementCounters(Date startDate, TdarUser person, TdarFile f) {
-        if (before(startDate, f.getDateCreated()) && checkPerson(person, f.getUploader())) {
+    private void incrementCounters(TdarUser person, TdarFile f) {
+        if (between(f.getDateCreated()) && checkPerson(person, f.getUploader())) {
             created++;
         }
-        if (before(startDate, f.getDateResourceCreated()) && checkPerson(person, f.getResource().getSubmitter())) {
+        if (between(f.getDateResourceCreated()) && checkPerson(person, f.getResource().getSubmitter())) {
             resource++;
         }
-        if (before(startDate, f.getDateCurated()) && checkPerson(person, f.getCuratedBy())) {
+        if (between(f.getDateCurated()) && checkPerson(person, f.getCuratedBy())) {
             curated++;
         }
-        if (before(startDate, f.getDateInitialReviewed()) && checkPerson(person, f.getInitialReviewedBy())) {
+        if (between(f.getDateInitialReviewed()) && checkPerson(person, f.getInitialReviewedBy())) {
             initialReviewed++;
         }
-        if (before(startDate, f.getDateReviewed()) && checkPerson(person, f.getReviewedBy())) {
+        if (between(f.getDateReviewed()) && checkPerson(person, f.getReviewedBy())) {
             reviewed++;
         }
-        if (before(startDate, f.getDateExternalReviewed()) && checkPerson(person, f.getExternalReviewedBy())) {
+        if (between(f.getDateExternalReviewed()) && checkPerson(person, f.getExternalReviewedBy())) {
             externalReviewed++;
         }
     }
@@ -99,7 +101,7 @@ public class RecentFileSummary implements Serializable {
 
     }
 
-    private boolean before(Date startDate, Date date) {
+    private boolean between(Date date) {
         if (startDate == null) {
             return true;
         }
@@ -109,6 +111,9 @@ public class RecentFileSummary implements Serializable {
         }
 
         if (startDate.before(date)) {
+            if (endDate != null && endDate.after(date)) {
+                return false;
+            }
             return true;
         }
         return false;
@@ -203,6 +208,14 @@ public class RecentFileSummary implements Serializable {
 
     public void setUserMap(Map<Long, Map<String, Object>> userMap) {
         this.userMap = userMap;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
 }

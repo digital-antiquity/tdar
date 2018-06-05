@@ -444,8 +444,8 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     
     @Override
     @Transactional(readOnly=true)
-    public RecentFileSummary recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
-        return fileProcessingDao.recentByAccount(account, date, dir, authenticatedUser);
+    public RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd, TdarDir dir, TdarUser authenticatedUser) {
+        return fileProcessingDao.recentByAccount(account, dateStart, dateEnd, dir, authenticatedUser);
         
     }
     

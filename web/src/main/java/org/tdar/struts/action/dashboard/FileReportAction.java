@@ -41,7 +41,6 @@ public class FileReportAction extends AbstractAuthenticatableAction implements P
 
     private List<UserNotification> currentNotifications;
     private Set<BillingAccount> accounts = new HashSet<>();
-    private Set<TdarUser> users = new HashSet<>(); 
     private String accountJson;
     private String userJson;
 

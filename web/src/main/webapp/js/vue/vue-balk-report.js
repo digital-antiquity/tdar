@@ -8,7 +8,8 @@ TDAR.vuejs.balkreport = (function(console, $, ctx, Vue) {
             data : {
                 summary: undefined,
                  recent: undefined,
-                 dateSearch: undefined,
+                 dateStart: undefined,
+                 dateEnd: undefined,
                  accountId: undefined,
                  selectedAccount: undefined,
                  userId: undefined,
@@ -20,34 +21,35 @@ TDAR.vuejs.balkreport = (function(console, $, ctx, Vue) {
                     this.loadRecentData();
                     Vue.set(this,"userId", undefined);
                 },
-                dateSearch: function(after, before) {
-                    this.loadData();
+                dateStart: function(after, before) {
+                    this.loadRecentData();
+                },
+                dateEnd: function(after, before) {
                     this.loadRecentData();
                 },
                 userId: function(after, before) {
-                    this.loadData();
                     this.loadRecentData();
                 }
             },
             methods: {
                 yesNo: function(date) {
-                    if (date == undefined || this.dateSearch == undefined) {
+                    if (dateEnd == undefined || this.dateStart == undefined) {
                         return '';
                     }
-                    if (new Date(this.dateSearch) < new Date(date)) {
+                    if (new Date(this.dateStart) < new Date(dateEnd)) {
                         return true;
                     }
                     return '';
                 },
                 loadData: function() {
                     var _app = this;
-                    $.get("/api/file/reports/summary", {accountId: this.accountId, dateSearch: this.dateSearch}).done(function(sum) {
+                    $.get("/api/file/reports/summary", {accountId: this.accountId}).done(function(sum) {
                         Vue.set(_app,"summary",sum);
                     });
                 },
                 loadRecentData: function(id) {
                     var _app = this;
-                    $.get("/api/file/reports/recentFiles", {accountId: this.accountId, dateSearch: this.dateSearch, userId: this.userId}).done(function(sum) {
+                    $.get("/api/file/reports/recentFiles", {accountId: this.accountId, dateStart: this.dateStart, dateEnd: this.dateEnd, userId: this.userId}).done(function(sum) {
                         Vue.set(_app,"recent",sum);
                     });
                 }
@@ -57,12 +59,14 @@ TDAR.vuejs.balkreport = (function(console, $, ctx, Vue) {
                 Vue.set(this,"accounts", JSON.parse($("#accountJson").text()));
                 var date = new Date();
                 date.setDate(date.getDate() - 7);
-                Vue.set(this, "dateSearch", (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear().toString().substring(2));
+                Vue.set(this, "dateStart", (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear().toString().substring(2));
+                date = new Date();
+                Vue.set(this, "dateEnd", (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear().toString().substring(2));
                 var _app = this;
-                var picker = $("#dateSearch").datepicker({autoclose:true, format: "mm/dd/yyyy"}).on('changeDate', function(ev){
+                var picker = $(".placeholdered").datepicker({autoclose:true, format: "mm/dd/yyyy"}).on('changeDate', function(ev){
                     var $target = $(ev.target);
                     console.log('target', $target, $target.val());
-                    Vue.set(_app,'dateSearch',$target.val());
+                    Vue.set(_app,$target.attr('id'),$target.val());
                     $target.datepicker('hide');
                 });
 
