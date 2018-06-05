@@ -64,7 +64,10 @@
   <div class="tab-pane" id="recent">
 
 <div v-if='recent != undefined'>
-
+        <select name="userId" id="userId" v-model="userId">
+                <option>All Users</option>
+                <option v-for="(option, index) in recent.userMap" v-bind:value="option.id"> {{ option.name }} </option>
+        </select>
 </div>
 <table class="table"  v-if="recent != undefined && recent.files != undefined">
 <tr>

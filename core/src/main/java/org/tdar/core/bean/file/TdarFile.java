@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
@@ -94,12 +96,12 @@ public class TdarFile extends AbstractFile {
     @JoinColumn(nullable = false, updatable = true, name = "part_of_id")
     private List<TdarFile> parts = new ArrayList<>();
 
-    @Column(name="part_of_id", updatable= false, insertable=false)
+    @Column(name = "part_of_id", updatable = false, insertable = false)
     private Long partOfId;
 
-    @Column(name="resource_id", updatable= false, insertable=false)
+    @Column(name = "resource_id", updatable = false, insertable = false)
     private Long resourceId;
-    
+
     public TdarFile() {
     }
 
@@ -377,5 +379,12 @@ public class TdarFile extends AbstractFile {
 
     public void setResourceId(Long resourceId) {
         this.resourceId = resourceId;
+    }
+
+    public TdarUser getResourceCreatedBy() {
+        if (getResource() == null) {
+            return null;
+        }
+        return getResource().getSubmitter();
     }
 }

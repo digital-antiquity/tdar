@@ -2,7 +2,9 @@ package org.tdar.core.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.TdarFile;
@@ -28,6 +30,7 @@ public class RecentFileSummary implements Serializable {
     private List<TdarFile> files;
     private TdarUser person;
     private Date startDate;
+    private Map<Long, Map<String, Object>> userMap = new HashMap<>();
 
     public RecentFileSummary(List<TdarFile> files, Date startDate, TdarUser person) {
 
@@ -35,25 +38,65 @@ public class RecentFileSummary implements Serializable {
         this.setPerson(person);
         this.setFiles(files);
         for (TdarFile f : files) {
-            if (before(startDate, f.getDateCreated()) && checkPerson(person, f.getUploader())) {
-                created++;
-            }
-            if (before(startDate, f.getDateResourceCreated()) && checkPerson(person, f.getResource().getSubmitter())) {
-                resource++;
-            }
-            if (before(startDate, f.getDateCurated()) && checkPerson(person, f.getCuratedBy())) {
-                curated++;
-            }
-            if (before(startDate, f.getDateInitialReviewed()) && checkPerson(person, f.getInitialReviewedBy())) {
-                initialReviewed++;
-            }
-            if (before(startDate, f.getDateReviewed()) && checkPerson(person, f.getReviewedBy())) {
-                reviewed++;
-            }
-            if (before(startDate, f.getDateExternalReviewed()) && checkPerson(person, f.getExternalReviewedBy())) {
-                externalReviewed++;
-            }
+            addToUserMap(f);
+            incrementCounters(startDate, person, f);
         }
+    }
+
+    private void incrementCounters(Date startDate, TdarUser person, TdarFile f) {
+        if (before(startDate, f.getDateCreated()) && checkPerson(person, f.getUploader())) {
+            created++;
+        }
+        if (before(startDate, f.getDateResourceCreated()) && checkPerson(person, f.getResource().getSubmitter())) {
+            resource++;
+        }
+        if (before(startDate, f.getDateCurated()) && checkPerson(person, f.getCuratedBy())) {
+            curated++;
+        }
+        if (before(startDate, f.getDateInitialReviewed()) && checkPerson(person, f.getInitialReviewedBy())) {
+            initialReviewed++;
+        }
+        if (before(startDate, f.getDateReviewed()) && checkPerson(person, f.getReviewedBy())) {
+            reviewed++;
+        }
+        if (before(startDate, f.getDateExternalReviewed()) && checkPerson(person, f.getExternalReviewedBy())) {
+            externalReviewed++;
+        }
+    }
+
+    private void addToUserMap(TdarFile f) {
+        if (f.getUploader() != null) {
+            addToUserMap(f.getUploader().getId(), f.getUploaderName());
+        }
+        if (f.getReviewedBy() != null) {
+            addToUserMap(f.getReviewedBy().getId(), f.getUploaderName());
+        }
+        if (f.getResourceCreatedBy() != null) {
+            addToUserMap(f.getResourceCreatedBy().getId(), f.getResourceCreatedByName());
+        }
+
+        if (f.getCuratedBy() != null) {
+            addToUserMap(f.getCuratedBy().getId(), f.getCuratedByName());
+        }
+
+        if (f.getInitialReviewedBy() != null) {
+            addToUserMap(f.getInitialReviewedBy().getId(), f.getInitialReviewedByName());
+        }
+
+        if (f.getExternalReviewedBy() != null) {
+            addToUserMap(f.getExternalReviewedBy().getId(), f.getExternalReviewedByName());
+        }
+    }
+
+    private void addToUserMap(Long id, String name) {
+        if (getUserMap().containsKey(id)) {
+            return;
+        }
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("name", name);
+        getUserMap().put(id, map);
+
     }
 
     private boolean before(Date startDate, Date date) {
@@ -152,6 +195,14 @@ public class RecentFileSummary implements Serializable {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public Map<Long, Map<String, Object>> getUserMap() {
+        return userMap;
+    }
+
+    public void setUserMap(Map<Long, Map<String, Object>> userMap) {
+        this.userMap = userMap;
     }
 
 }

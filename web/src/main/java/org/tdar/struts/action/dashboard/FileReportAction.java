@@ -2,7 +2,9 @@ package org.tdar.struts.action.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.SerializationService;
@@ -37,9 +40,10 @@ public class FileReportAction extends AbstractAuthenticatableAction implements P
     private transient SerializationService serializationService;
 
     private List<UserNotification> currentNotifications;
-    private List<BillingAccount> accounts = new ArrayList<>();
-
+    private Set<BillingAccount> accounts = new HashSet<>();
+    private Set<TdarUser> users = new HashSet<>(); 
     private String accountJson;
+    private String userJson;
 
 
     
@@ -53,7 +57,8 @@ public class FileReportAction extends AbstractAuthenticatableAction implements P
     @Override
     public void prepare() throws IOException {
         getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
-        setAccountJson(serializationService.convertToFilteredJson(accounts, JsonAccountFilter.class));
+        setAccountJson(serializationService.convertToFilteredJson(getAccounts(), JsonAccountFilter.class));
+//        users.addAll(acc)
         }
 
     public List<UserNotification> getCurrentNotifications() {
@@ -64,20 +69,28 @@ public class FileReportAction extends AbstractAuthenticatableAction implements P
         this.currentNotifications = currentNotifications;
     }
 
-    public List<BillingAccount> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(List<BillingAccount> accounts) {
-        this.accounts = accounts;
-    }
-
     public String getAccountJson() {
         return accountJson;
     }
 
     public void setAccountJson(String accountJson) {
         this.accountJson = accountJson;
+    }
+
+    public String getUserJson() {
+        return userJson;
+    }
+
+    public void setUserJson(String userJson) {
+        this.userJson = userJson;
+    }
+
+    public Set<BillingAccount> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(Set<BillingAccount> accounts) {
+        this.accounts = accounts;
     }
 
 }

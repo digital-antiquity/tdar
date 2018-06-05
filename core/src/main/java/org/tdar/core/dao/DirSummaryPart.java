@@ -19,6 +19,7 @@ public class DirSummaryPart implements Serializable {
     private static final long serialVersionUID = 7076404625739185355L;
     TdarDir dir;
     private Long id;
+    Integer added = 0;
     Integer resource = 0;
     Integer curated = 0;
     Integer initialReviewed = 0;
@@ -38,6 +39,7 @@ public class DirSummaryPart implements Serializable {
     }
 
     private void add(Integer resource, Integer curated, Integer initialReviewed, Integer reviewed, Integer externalReviewed) {
+        this.added++;
         this.resource += getIntValue(resource);
         this.curated += getIntValue(curated);
         this.initialReviewed += getIntValue(initialReviewed);
@@ -106,6 +108,10 @@ public class DirSummaryPart implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public Integer getAdded() {
+        return added;
     }
 
     public void setId(Long parentId) {

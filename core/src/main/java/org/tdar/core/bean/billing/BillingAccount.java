@@ -23,6 +23,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
@@ -347,6 +348,8 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     }
 
     @JsonView({JsonAccountFilter.class })
+    @XmlAttribute(name = "ownerRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getOwner() {
         return owner;
     }
@@ -512,6 +515,10 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         return status == Status.FLAGGED;
     }
 
+    
+    @JsonView({JsonAccountFilter.class })
+    @XmlElementWrapper(name = "authorizedUsers")
+    @XmlElement(name = "authorizedUser")
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }

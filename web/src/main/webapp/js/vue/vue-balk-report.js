@@ -10,15 +10,21 @@ TDAR.vuejs.balkreport = (function(console, $, ctx, Vue) {
                  recent: undefined,
                  dateSearch: undefined,
                  accountId: undefined,
-                 selectedAccount: undefined,             
+                 selectedAccount: undefined,
+                 userId: undefined,
                  accounts: []
             },
             watch: {
                 accountId: function(after, before) {
                     this.loadData();
                     this.loadRecentData();
+                    Vue.set(this,"userId", undefined);
                 },
                 dateSearch: function(after, before) {
+                    this.loadData();
+                    this.loadRecentData();
+                },
+                userId: function(after, before) {
                     this.loadData();
                     this.loadRecentData();
                 }
@@ -41,7 +47,7 @@ TDAR.vuejs.balkreport = (function(console, $, ctx, Vue) {
                 },
                 loadRecentData: function(id) {
                     var _app = this;
-                    $.get("/api/file/reports/recentFiles", {accountId: this.accountId, dateSearch: this.dateSearch}).done(function(sum) {
+                    $.get("/api/file/reports/recentFiles", {accountId: this.accountId, dateSearch: this.dateSearch, userId: this.userId}).done(function(sum) {
                         Vue.set(_app,"recent",sum);
                     });
                 }
