@@ -114,6 +114,10 @@ public class DirSummaryPart implements Serializable {
         return added;
     }
 
+    public void setAdded(Integer added) {
+        this.added = added;
+    }
+
     public void setId(Long parentId) {
         this.id = parentId;
     }

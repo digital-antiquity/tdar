@@ -27,6 +27,7 @@ public class DirSummary extends DirSummaryPart implements Serializable {
     
     public DirSummaryPart addPart(Object[] row) {
         DirSummaryPart part = new DirSummaryPart(row);
+        setAdded(getAdded() + part.getAdded());
         setCurated(getCurated() + part.getCurated());
         setResource(getResource() + part.getResource());
         setExternalReviewed(getExternalReviewed() + part.getExternalReviewed());

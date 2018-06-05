@@ -32,6 +32,7 @@
     <thead>
         <tr>
             <th>Directory</th>
+            <th>Added</th>
             <th>Resources</th>
             <th>Curated</th>
             <th>Initial Reviewed</th>
@@ -42,6 +43,7 @@
     <tbody>
         <tr>
             <td><b>Total:</b></td>
+            <td>{{summary.added}}</td>
             <td>{{summary.resource}}</td>
             <td>{{summary.curated}}</td>
             <td>{{summary.initialReviewed}}</td>
@@ -50,6 +52,7 @@
         </tr>
         <tr v-for="(dir,index) in summary.parts" >
             <td>{{dir.dirPath}}</td>
+            <td>{{dir.added}}</td>
             <td>{{dir.resource}}</td>
             <td>{{dir.curated}}</td>
             <td>{{dir.initialReviewed}}</td>
