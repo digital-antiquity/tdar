@@ -56,5 +56,10 @@ ${accountJson}
 
 </#noescape>
 
+<script>
+$(document).ready(function() {
+    TDAR.vuejs.balkreport.main();
+});    
+</script>
 
 </#escape>

@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.DirSummary;
 import org.tdar.core.dao.FileOrder;
 import org.tdar.core.dao.FileProcessingDao;
+import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.FileAnalyzer;
@@ -415,7 +416,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     
     @Override
     @Transactional(readOnly=true)
-    public List<TdarFile> recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
+    public RecentFileSummary recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
         return fileProcessingDao.recentByAccount(account, date, dir, authenticatedUser);
         
     }

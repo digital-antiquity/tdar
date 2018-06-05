@@ -1,8 +1,6 @@
 package org.tdar.struts.action.api.files.reports;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -12,8 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.TdarDir;
-import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 
@@ -28,18 +27,23 @@ public class RecentFilesReport extends AbstractJsonApiAction {
     private Long parentId;
     private Long accountId;
     private BillingAccount account;
-    private Date date = DateTime.now().minusDays(7).toDate();
+    private Date dateSearch = DateTime.now().minusDays(7).toDate();
+    private TdarUser user;
+    private Long userId;
 
     @Autowired
     private PersonalFilestoreService personalFilestoreService;
 
-    private List<TdarFile> files = new ArrayList<>();
+    private RecentFileSummary report;
 
     @Override
     public void prepare() throws Exception {
         super.prepare();
         if (parentId != null) {
             parent = getGenericService().find(TdarDir.class, parentId);
+        }
+        if (userId != null) {
+            user = getGenericService().find(TdarUser.class, userId);
         }
         if (accountId != null) {
             account = getGenericService().find(BillingAccount.class, accountId);
@@ -58,8 +62,8 @@ public class RecentFilesReport extends AbstractJsonApiAction {
     @Override
     @Action("recentFiles")
     public String execute() throws Exception {
-        files = personalFilestoreService.recentByAccount(account, date, parent, getAuthenticatedUser());
-        setResultObject(files);
+        report = personalFilestoreService.recentByAccount(account, dateSearch, parent, user);
+        setResultObject(report);
         return super.execute();
     }
 
@@ -95,19 +99,35 @@ public class RecentFilesReport extends AbstractJsonApiAction {
         this.account = account;
     }
 
-    public Date getDate() {
-        return date;
+    public RecentFileSummary getReport() {
+        return report;
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setReport(RecentFileSummary report) {
+        this.report = report;
     }
 
-    public List<TdarFile> getFiles() {
-        return files;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setFiles(List<TdarFile> files) {
-        this.files = files;
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public TdarUser getUser() {
+        return user;
+    }
+
+    public void setUser(TdarUser user) {
+        this.user = user;
+    }
+
+    public Date getDateSearch() {
+        return dateSearch;
+    }
+
+    public void setDateSearch(Date dateSearch) {
+        this.dateSearch = dateSearch;
     }
 }

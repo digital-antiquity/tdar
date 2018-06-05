@@ -228,7 +228,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         return path.toString();
     }
 
-    public List<TdarFile> recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
+    public RecentFileSummary recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
         // Note: these methods are not recursive, and users will probably expect them to be, that is, that the parent directory summarizes all children the way
         // down...
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.BY_ACCOUNT_RECENT);
@@ -243,7 +243,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
             query.setParameter("dir", dir);
         }
         query.setParameter("accountId", account.getId());
-        return query.getResultList();
+        return new RecentFileSummary(query.getResultList(), date, authenticatedUser);
     }
 
 }

@@ -18,6 +18,7 @@ import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.DirSummary;
 import org.tdar.core.dao.FileOrder;
+import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -125,6 +126,6 @@ public interface PersonalFilestoreService {
 
     DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser);
 
-    List<TdarFile> recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser);
+    RecentFileSummary recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser);
 
 }

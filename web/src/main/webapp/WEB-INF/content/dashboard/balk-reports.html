@@ -10,19 +10,24 @@
     </label>
     <a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
     </div>
+    <div class="span4">
+        <div class="input-append" >
+            <label for="dateSearch" style="display:inline">From:
+            <input v-model="dateSearch" type="text" name="dateSearch" id="dateSearch" class="placeholdered " data-date-format="mm/dd/yy" placeholder="mm/dd/yy">
+            <span class="add-on"><i class="icon-th"></i></span>
+            </label>
+        </div>
+    </div>
 </div>
 
-<hr>
-Need to show a summary of what's been done, not just which files were changed..
-<table class="table"  v-if="recent != undefined">
-<tr>
-<th>Recently Changed Files</th>
-</tr>
-<tr v-for="(file, index) in recent">
-<td>{{file.name}}</td>
-</tr>
-</table>
-<hr>
+
+<ul class="nav nav-tabs" id="myTab">
+  <li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
+  <li><a href="#recent" data-toggle="tab">Recent Changes</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="summary">
 <table class="table" v-if="summary != undefined">
     <thead>
         <tr>
@@ -54,49 +59,50 @@ Need to show a summary of what's been done, not just which files were changed..
         
     </tbody>
 </table>
-<hr>
+  
+  </div>
+  <div class="tab-pane" id="recent">
+
+<div v-if='recent != undefined'>
 
 </div>
-<script>
+<table class="table"  v-if="recent != undefined && recent.files != undefined">
+<tr>
+<th>Recently Changed Files</th>
+<th>Added</th>
+<th>Resource Created</th>
+<th>Curated</th>
+<th>Initial Reviewed</th>
+<th>Reviewed</th>
+<th>External Reviewed</th>
+</tr>
+<tr>    
+    <th>Total:{{recent.files.length}}</th>
+    <th>{{recent.created}}</th>
+    <th>{{recent.resource}}</th>
+    <th>{{recent.curated}}</th>
+    <th>{{recent.initialReviewed}}</th>
+    <th>{{recent.reviewed}}</th>
+    <th>{{recent.externalReviewed}}</th>
 
-$(document).ready(function(){
-    var app2 = new Vue({
-        el : "#filesReports",
-        data : {
-            summary: undefined,
-             recent: undefined,
-             accountId: undefined,
-             selectedAccount: undefined,             
-             accounts: []
-        },
-        watch: {
-            accountId: function(after, before) {
-                this.loadData(after);
-                this.loadRecentData(after);
-                
-            }
-        },
-        methods: {
-            loadData: function(id) {
-                var _app = this;
-                $.get("/api/file/reports/summary", {accountId: id}).done(function(sum) {
-                    Vue.set(_app,"summary",sum);
-                });
-            },
-            loadRecentData: function(id) {
-                var _app = this;
-                $.get("/api/file/reports/recentFiles", {accountId: id}).done(function(sum) {
-                    Vue.set(_app,"recent",sum);
-                });
-            }
-        },
-        mounted: function() {
-            Vue.set(this,"accounts", JSON.parse($("#accountJson").text()));
-        }
-   });
-    
-});
+</tr>
+<tr v-for="(file, index) in recent.files">
+<td>{{file.name}}</td>
+<td><span v-if="yesNo(file.dateCreated)"><i class="icon-check"></i></span></td>
+<td><span v-if="yesNo(file.dateResourceCreated)"><i class="icon-check"></i></span></td>
+<td><span v-if="yesNo(file.dateCurated)"><i class="icon-check"></i></span></td>
+<td><span v-if="yesNo(file.dateInitialReviewed)"><i class="icon-check"></i></span></td>
+<td><span v-if="yesNo(file.dateReviewed)"><i class="icon-check"></i></span></td>
+<td><span v-if="yesNo(file.dateExternalReviewed)"><i class="icon-check"></i></span></td>
+<td></td>
+</tr>
+</table>
+  
+  
+  </div>
+</div>
+ 
 
-</script>
+</div>
 
 <script id="insert"></script>

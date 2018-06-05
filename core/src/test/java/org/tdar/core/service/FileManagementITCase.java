@@ -28,6 +28,7 @@ import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.DirSummary;
+import org.tdar.core.dao.RecentFileSummary;
 
 
 public class FileManagementITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
@@ -367,8 +368,8 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         List<AbstractFile> files = setupSomeFilesAndDirs(act, act);
         
         genericService.synchronize();
-        List<TdarFile> recentByAccount = pfs.recentByAccount(act, DateTime.now().minusWeeks(1).toDate(), null, getAdminUser());
-        assertTrue(files.containsAll(recentByAccount));
+        RecentFileSummary recentByAccount = pfs.recentByAccount(act, DateTime.now().minusWeeks(1).toDate(), null, getAdminUser());
+        assertTrue(files.containsAll(recentByAccount.getFiles()));
     }
 
     @Test
