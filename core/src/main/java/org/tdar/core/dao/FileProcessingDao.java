@@ -116,7 +116,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         return query.getResultList();
     }
 
-    public DirSummary summerizeByAccount(BillingAccount account, Date date, TdarUser authenticatedUser) {
+    public List<Object[]> summerizeByAccount(BillingAccount account, Date date, TdarUser authenticatedUser) {
         // Note: these methods are not recursive, and users will probably expect them to be, that is, that the parent directory summarizes all children the way
         // down...
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.SUMMARIZE_BY_ACCOUNT);
@@ -126,107 +126,9 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
             query.setParameter("date", date);
         }
         query.setParameter("accountId", account.getId());
-        DirSummary summary = new DirSummary();
-        List<Object[]> resultList = (List<Object[]>) query.getResultList();
-
-        List<TdarDir> dirs = listDirectoriesFor(null, account, authenticatedUser);
-        Map<Long, TdarDir> dirIdMap = PersistableUtils.createIdMap(dirs);
-        Map<Long, Set<Long>> dirChildMap = new HashMap<>();
-        Set<Long> topLevel = new HashSet<>();
-
-        buildChildMapAndTopLevelNodes(dirs, dirChildMap, topLevel);
-
-        // setup each dirSummaryPart
-        Map<Long, DirSummaryPart> partMap = new HashMap<>();
-        for (Object[] row : resultList) {
-            DirSummaryPart part = summary.addPart(row);
-            setupPart(dirIdMap, partMap, part);
-        }
-        // there may be parts that are mid-level directories that are empty, we don't add them, but they should be in the parts array 
-        summary.getParts().addAll(partMap.values());
-
-        summarizeChildren(dirChildMap, topLevel, partMap, dirIdMap);
-        return summary;
+        return (List<Object[]>) query.getResultList();
     }
 
-    private void setupPart(Map<Long, TdarDir> dirIdMap, Map<Long, DirSummaryPart> partMap, DirSummaryPart part) {
-        part.setDir(dirIdMap.get(part.getId()));
-        part.setDirPath(buildDirTree(part));
-        partMap.put(part.getId(), part);
-    }
-
-    private void buildChildMapAndTopLevelNodes(List<TdarDir> dirs, Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel) {
-        for (TdarDir dir : dirs) {
-            if (dir.getParentId() == null) {
-                continue;
-            }
-            TdarDir dir_ = dir;
-            while (dir_ != null) {
-                Long parentId = dir_.getParentId();
-                Set<Long> children = dirChildMap.getOrDefault(parentId, new HashSet<>());
-                children.add(dir_.getId());
-                dirChildMap.put(parentId, children);
-
-                if (dir_.getParent() == null) {
-                    topLevel.add(dir_.getId());
-                }
-                dir_ = dir_.getParent();
-            }
-        }
-    }
-
-    /**
-     * Recursively summarize all children from top down so we don't double count
-     * 
-     * @param dirChildMap
-     * @param topLevel
-     * @param partMap
-     */
-    private void summarizeChildren(Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel, Map<Long, DirSummaryPart> partMap, Map<Long,TdarDir> dirMap) {
-        for (Long id : topLevel) {
-            if (CollectionUtils.isEmpty(dirChildMap.get(id))) {
-                continue;
-            }
-            Set<Long> working = new HashSet<>(dirChildMap.get(id));
-            Set<Long> allChildren = new HashSet<>(working);
-            while (!working.isEmpty()) {
-                Iterator<Long> iterator = working.iterator();
-                Long next = iterator.next();
-                iterator.remove();
-
-                Set<Long> nextChild = dirChildMap.get(next);
-                if (CollectionUtils.isNotEmpty(nextChild)) {
-                    working.addAll(nextChild);
-                    allChildren.addAll(nextChild);
-                }
-            }
-            DirSummaryPart part = partMap.get(id);
-            if (part == null) {
-                part = new DirSummaryPart(null);
-                part.setId(id);
-                setupPart(dirMap, partMap, part);
-            }
-            
-            part.addAll(allChildren, partMap);
-            if (CollectionUtils.isNotEmpty(dirChildMap.get(id))) {
-                summarizeChildren(dirChildMap, dirChildMap.get(id), partMap, dirMap);
-            }
-        }
-    }
-
-    private String buildDirTree(DirSummaryPart part) {
-        TdarDir parent = part.getDir();
-        if (parent == null) {
-            return "/";
-        }
-        StringBuilder path = new StringBuilder();
-        TdarDir d = parent;
-        while (d != null) {
-            path.insert(0, "/" + d.getName());
-            d = d.getParent();
-        }
-        return path.toString();
-    }
 
     public RecentFileSummary recentByAccount(BillingAccount account, Date date, TdarDir dir, TdarUser authenticatedUser) {
         // Note: these methods are not recursive, and users will probably expect them to be, that is, that the parent directory summarizes all children the way

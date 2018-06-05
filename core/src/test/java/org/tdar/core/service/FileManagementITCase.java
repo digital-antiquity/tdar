@@ -376,7 +376,31 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
     @Rollback
     public void testSummaryFiles() throws FileNotFoundException {
         BillingAccount act = setupAccountForPerson(getBasicUser());
-        List<AbstractFile> files = setupSomeFilesAndDirs(act, act);
+        List<AbstractFile> files = new ArrayList<>();
+        files.add(new TdarFile(TestConstants.getFile(TestConstants.TEST_DOCUMENT_SMALL), getBasicUser(), act));
+        files.add(new TdarFile(TestConstants.getFile(TestConstants.TEST_DOCUMENT), getBasicUser(), act));
+        TdarFile img = new TdarFile(TestConstants.getFile(TestConstants.TEST_IMAGE), getBasicUser(), act);
+        files.add(img);
+        TdarFile img2 = new TdarFile(TestConstants.getFile(TestConstants.TEST_IMAGE2), getBasicUser(), act);
+        files.add(img2);
+        files.add(new TdarFile(TestConstants.getFile(TestConstants.TEST_DATASET), getBasicUser(), act));
+        TdarDir dir = new TdarDir(getBasicUser(), act, DIR);
+        TdarDir subdir = new TdarDir(getBasicUser(), act, SUBDIR);
+        subdir.setParent(dir);
+        img.setParent(subdir);
+        img2.setParent(subdir);
+        files.add(dir);
+        files.add(subdir);
+        TdarFile gis1 = new TdarFile(TestConstants.getFile(TestConstants.TEST_GEOTIFF), getBasicUser(), act);
+        TdarFile gis2 = new TdarFile(TestConstants.getFile(TestConstants.TEST_GEOTIFF_TFW), getBasicUser(), act);
+        gis1.setParent(subdir);
+        gis2.setParent(subdir);
+        files.add(gis1);
+        files.add(gis2);
+        // setup a second account with one file
+        TdarFile gis3 = new TdarFile(TestConstants.getFile(TestConstants.TEST_GEOTIFF), getBasicUser(), act);
+        files.add(gis3);
+        genericService.saveOrUpdate(files);
         
         genericService.synchronize();
         DirSummary summary = pfs.summarizeAccountBy(act, null, getAdminUser());

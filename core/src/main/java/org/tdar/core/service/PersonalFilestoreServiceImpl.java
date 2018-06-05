@@ -5,8 +5,12 @@ import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,6 +33,7 @@ import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.DirSummary;
+import org.tdar.core.dao.DirSummaryPart;
 import org.tdar.core.dao.FileOrder;
 import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.RecentFileSummary;
@@ -39,6 +44,7 @@ import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Manages adding and saving files in the @link PersonalFilestore
@@ -410,8 +416,30 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Override
     @Transactional(readOnly=true)
     public DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser) {
-        return fileProcessingDao.summerizeByAccount(account, date, authenticatedUser);
-        
+        List<Object[]> resultList = fileProcessingDao.summerizeByAccount(account, date, authenticatedUser);
+
+        List<TdarDir> dirs = fileProcessingDao.listDirectoriesFor(null, account, authenticatedUser);
+        Map<Long, TdarDir> dirIdMap = PersistableUtils.createIdMap(dirs);
+        Map<Long, Set<Long>> dirChildMap = new HashMap<>();
+        Set<Long> topLevel = new HashSet<>();
+
+        // get the structure of the hierarchy tree
+        buildChildMapAndTopLevelNodes(dirs, dirChildMap, topLevel);
+        DirSummary summary = new DirSummary();
+
+        // setup each dirSummaryPart
+        Map<Long, DirSummaryPart> partMap = new HashMap<>();
+        for (Object[] row : resultList) {
+            DirSummaryPart part = summary.addPart(row);
+            setupPart(dirIdMap, partMap, part);
+            logger.debug("{}, {}", part.getDirPath(),  row);
+        }
+        // there may be parts that are mid-level directories that are empty, we don't add them, but they should be in the parts array 
+
+        summarizeChildren(dirChildMap, topLevel, partMap, dirIdMap);
+
+        summary.getParts().addAll(partMap.values());
+        return summary;
     }
     
     @Override
@@ -421,5 +449,87 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         
     }
     
-    
+
+    private void setupPart(Map<Long, TdarDir> dirIdMap, Map<Long, DirSummaryPart> partMap, DirSummaryPart part) {
+        part.setDir(dirIdMap.get(part.getId()));
+        part.setDirPath(buildDirTree(part));
+        partMap.put(part.getId(), part);
+    }
+
+    /**
+     * Find all of the children of a given node, also find "top" level nodes
+     * @param dirs
+     * @param dirChildMap
+     * @param topLevel
+     */
+    private void buildChildMapAndTopLevelNodes(List<TdarDir> dirs, Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel) {
+        for (TdarDir dir : dirs) {
+            if (dir.getParentId() == null) {
+                topLevel.add(dir.getId());
+                continue;
+            }
+            TdarDir dir_ = dir;
+            while (dir_ != null) {
+                Long parentId = dir_.getParentId();
+                Set<Long> children = dirChildMap.getOrDefault(parentId, new HashSet<>());
+                children.add(dir_.getId());
+                dirChildMap.put(parentId, children);
+                dir_ = dir_.getParent();
+            }
+        }
+    }
+
+    /**
+     * Recursively summarize all children from top down so we don't double count
+     * 
+     * @param dirChildMap
+     * @param topLevel
+     * @param partMap
+     */
+    private void summarizeChildren(Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel, Map<Long, DirSummaryPart> partMap, Map<Long,TdarDir> dirMap) {
+        for (Long id : topLevel) {
+            Set<Long> working = new HashSet<>(dirChildMap.getOrDefault((id), new HashSet<>()));
+            Set<Long> allChildren = new HashSet<>(working);
+            while (!working.isEmpty()) {
+                Iterator<Long> iterator = working.iterator();
+                Long next = iterator.next();
+                iterator.remove();
+
+                Set<Long> nextChild = dirChildMap.get(next);
+                if (CollectionUtils.isNotEmpty(nextChild)) {
+                    working.addAll(nextChild);
+                    allChildren.addAll(nextChild);
+                }
+            }
+            DirSummaryPart part = partMap.get(id);
+            if (part == null) {
+                logger.debug("creating part {}",  id);
+                logger.debug(" chilren      {}",  dirChildMap.get(id));
+                
+                part = new DirSummaryPart(null);
+                part.setId(id);
+                setupPart(dirMap, partMap, part);
+            }
+            
+            part.addAll(allChildren, partMap);
+            if (CollectionUtils.isNotEmpty(dirChildMap.get(id))) {
+                summarizeChildren(dirChildMap, dirChildMap.get(id), partMap, dirMap);
+            }
+        }
+    }
+
+    private String buildDirTree(DirSummaryPart part) {
+        TdarDir parent = part.getDir();
+        if (parent == null) {
+            return "/";
+        }
+        StringBuilder path = new StringBuilder();
+        TdarDir d = parent;
+        while (d != null) {
+            path.insert(0, "/" + d.getName());
+            d = d.getParent();
+        }
+        return path.toString();
+    }
+
 }
