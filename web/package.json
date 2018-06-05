@@ -85,6 +85,7 @@
     "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",
     "build": "npm run webpack",
     "webpack-dev": "npm run webpack --config webpack.dev.js",
+    "webpack-server": "webpack-dev-server --https --port 9000 --mode development --content-base src/main/webapp --open -d",
     "webpack": "webpack",
     "pretest": "echo node src/test/frontend/pretest.js",
     "test": "karma start --no-single-run"

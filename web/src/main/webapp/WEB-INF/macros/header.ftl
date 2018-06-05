@@ -1,6 +1,7 @@
 <#import "common.ftl" as common>
 <#macro scripts combine=false>
-<script type="text/javascript" src="/webpack/staticAssets.js"></script>
+<script type="text/javascript" src="${staticHost}/webpack/bundle.js"></script>
+<script type="text/javascript" src="${staticHost}/webpack/staticAssets.js"></script>
 <!--
 <script type="text/javascript" src="/webpack/blueimp-tmpl/js/tmpl.js"></script>
 <script type="text/javascript" src="/webpack/jquery-file-upload/js/jquery.iframe-transport.js"></script>

@@ -65,8 +65,6 @@
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
-    <script src="/webpack/staticAssets.js"></script>
-<script type="text/javascript" src="/webpack/bundle.js"></script>
     
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
     <#include "/${config.themeDir}/head.dec" />
@@ -292,7 +290,7 @@ ${head}
 
     <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
         <script type="text/javascript">
-            TDAR.loadScript('https://${config.jiraScriptLink}');
+      //      TDAR.loadScript('https://${config.jiraScriptLink}');
         </script>
     </#if>
 
