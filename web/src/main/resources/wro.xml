@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<groups xmlns="http://www.isdc.ro/wro">
+    <group name='default'>
+        <css>/css/tdar-bootstrap.css</css>
+        <css>/css/tdar.dashboard.css</css>
+        <css>/css/famfamfam.css</css>
+        <css>/components/jquery.treeview/jquery.treeview.css</css>
+        <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
+        <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css</css>
+        <!--  used by jquery.treeview -->
+        <js>/includes/jquery.cookie.js</js>
+        <css>/css/tdar-svg.css</css>
+        <js>/components/svgxuse/svgxuse.min.js</js>
+        <!-- LICENSE: MIT /GPL 2.0 -->
+        <!--  not sure who uses this -->
+<!--    <js>/includes/jquery.metadata.2.1/jquery.metadata.js</js> -->
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.textarearesizer.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/js/jquery.FormNavigate.js</js>
+        <js>/includes/jquery.watermark-3.1.3.min.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js</js>
+        <!-- LICENSE: BSD /GPL 2.0 -->
+        <js>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js</js>
+        <!-- LICENSE: BSD /GPL 2.0 -->
+        <js>/components/jquery.treeview/jquery.treeview.js</js>
+        <!-- LICENSE: MIT /GPL 2.0 -->
+        <css>/components/jquery-file-upload/css/jquery.fileupload-ui.css</css>
+        <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
+        <js>/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js</js>
+        
+        <!--<js>/components/jquery-file-upload/js/vendor/jquery.ui.widget.js</js>-->
+        
+        <js>/components/blueimp-tmpl/js/tmpl.js</js>
+        <js>/components/jquery-file-upload/js/jquery.iframe-transport.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload-process.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload-validate.js</js>
+        <js>/components/jquery-file-upload/js/jquery.fileupload-ui.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.populate.js</js>
+        <!-- LICENSE: MIT -->
+        <js>/includes/jquery.tabby-0.12.js</js>
+        <!-- LICENSE:CC Attribution 3.0 Unported -->
+        <js>/js/latLongUtil-1.0.js</js>
+        <js>/components/leaflet/dist/leaflet.js</js>
+        <js>/components/leaflet-choropleth/dist/choropleth.js</js>
+        
+        <js>/components/es6-promise/es6-promise.js</js>
+        <js>/components/es6-promise/es6-promise.auto.js</js>
+        <!-- <js>/components/axios/dist/axios.js</js> -->
+        <js>/components/axios/dist/axios.min.js</js>
+        <js>/components/qs/dist/qs.js</js>
+        <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
+        <js>/includes/Leaflet.Sleep.js</js>
+        <css>/components/leaflet/dist/leaflet.css</css>
+        <js>/components/leaflet-draw/dist/leaflet.draw.js</js>
+        <css>/components/leaflet-draw/dist/leaflet.draw.css</css>
+        <js>/components/leaflet-cluster/dist/leaflet.markercluster.js</js>
+        <css>/components/leaflet-cluster/dist/MarkerCluster.css</css>
+        <css>/components/leaflet-cluster/dist/MarkerCluster.Default.css</css>
+        <js>/components/d3/d3.min.js</js>
+        <js>/components/c3/c3.min.js</js>
+        <css>/components/c3/c3.min.css</css>
+        <js>/components/leaflet-control-geocoder/dist/Control.Geocoder.js</js>
+        <css>/components/leaflet-control-geocoder/dist/Control.Geocoder.css</css>
+        
+        <css>/css/tdar.homepage.css</css>
+        <css>/css/tdar.d3tree.css</css>
+        <css>/css/tdar.c3graph.css</css>
+        <css>/css/tdar.leaflet.css</css>
+        <css>/css/tdar.worldmap.css</css>
+        <css>/css/tdar.datatablemapping.css</css>
+        <css>/css/tdar.sprites.css</css>
+        <css>/css/tdar.datatables.css</css>
+        <css>/css/tdar.searchresults.css</css>
+        <css>/css/tdar.invoice.css</css>
+        
+        <!-- LICENSE: MIT -->
+        <js>/includes/js-emca-5.1-polyfill.js</js>
+
+        <!--Selectize  -->        
+        <js>/components/selectize/dist/js/standalone/selectize.js</js>
+        <css>/components/selectize/dist/css/selectize.css</css>
+
+
+        <js>/components/vue/dist/vue.min.js</js>
+        <js>/components/bundle.js</js>
+        
+
+    </group>
+    <group name="ng-integrate">
+        <css>/css/tdar-integration.css</css>
+
+<!--          <js minimize="false">https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js</js> -->
+        <!-- LICENSE: MIT -->
+        <js>/components/angular-modal-service/dst/angular-modal-service.min.js</js>
+
+        <group-ref>default</group-ref>
+    </group>
+</groups>

@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="production,test" >
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="munsell-01" author="abrin">
+        <update tableName="information_resource_file">
+            <column name="restriction" value="EMBARGOED_FIVE_YEARS" />
+            <where>restriction='EMBARGOED'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="munsell-02" author='jtdevos'>
+        <addColumn tableName="institution">
+            <column name="email" type="varchar(255)" />
+        </addColumn>
+        <addUniqueConstraint columnNames="email"
+                             constraintName="uk_9grdn54hea5ns8ahq4yogpb7u" deferrable="false"
+                             disabled="false" initiallyDeferred="false" tableName="institution" />
+    </changeSet>
+
+    <changeSet id="munsell-04" author="abrin">
+        <comment>Changing database to match hibernate validation requirements</comment>
+        <modifyDataType tableName="coding_sheet" columnName="category_variable_id"
+                        newDataType="int8" />
+        <modifyDataType tableName="ontology" columnName="category_variable_id"
+                        newDataType="int8" />
+        <modifyDataType tableName="data_table_column"
+                        columnName="category_variable_id" newDataType="int8" />
+        <modifyDataType tableName="category_variable_synonyms"
+                        columnName="categoryvariable_id" newDataType="int8" />
+        <modifyDataType tableName="resource_collection_view_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="creator_view_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="resource_access_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="information_resource_file_download_statistics"
+                        columnName="date_accessed" newDataType="date" />
+        <modifyDataType tableName="information_resource_file"
+                        columnName="number_of_parts" newDataType="int4" />
+        <modifyDataType tableName="information_resource_file"
+                        columnName="file_created_date" newDataType="date" />
+        <modifyDataType tableName="source_collection"
+                        columnName="text" newDataType="text" />
+        <modifyDataType tableName="stats" columnName="recorded_date"
+                        newDataType="date" />
+        <modifyDataType tableName="related_comparative_collection"
+                        columnName="text" newDataType="text" />
+        <modifyDataType tableName="sensory_data_image"
+                        columnName="sequence_number" newDataType="int4" />
+        <modifyDataType tableName="sensory_data_scan"
+                        columnName="sequence_number" newDataType="int4" />
+        <!-- <modifyDataType tableName="sensory_data_scan" columnName="resolution"
+            newDataType="float8" /> -->
+    </changeSet>
+
+
+    <changeSet id="munsell-06" author="jdevos">
+        <createTable tableName="download_authorization">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="resource_collection_id" type="bigint">
+                <constraints nullable="false" references="collection"
+                             foreignKeyName="fk_download_authorization__resource_collection_id__collection" />
+            </column>
+            <column name="institution_id" type="bigint">
+                <constraints nullable="false" references="institution"
+                             foreignKeyName="fk_download_authorization__institution_id__institution" />
+            </column>
+            <column name="api_key" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+            <column name="referer_regex" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="download_authorization" />
+        </rollback>
+    </changeSet>
+    <changeSet id="munsell-07" author="abrin">
+        <addColumn tableName="collection">
+            <column name="hidden" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+        <update tableName="collection">
+            <column name="hidden" valueBoolean="TRUE" />
+            <where>visible is false</where>
+        </update>
+    </changeSet>
+    <changeSet id="munsell-09" author="abrin">
+        <dropColumn tableName="collection" columnName="visible" />
+    </changeSet>
+    <changeSet id="munsell-08-ab" author="abrin">
+        <comment>Changing database to match hibernate validation requirements</comment>
+        <modifyDataType tableName="resource_collection_view_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="creator_view_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="resource_access_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="information_resource_file_download_statistics"
+                        columnName="date_accessed" newDataType="timestamp" />
+        <modifyDataType tableName="information_resource_file"
+                        columnName="file_created_date" newDataType="date" />
+        <modifyDataType tableName="sensory_data_scan"
+                        columnName="resolution" newDataType="varchar(255)" />
+    </changeSet>
+
+    <changeSet id="munsell-10" author="abrin">
+        <dropColumn tableName="download_authorization" columnName="referer_regex" />
+        <dropColumn tableName="download_authorization" columnName="institution_id" />
+        <createTable tableName="referrer_hostnames">
+            <column name="download_authorization_id" type="bigint">
+                <constraints nullable="false" references="download_authorization"
+                             foreignKeyName="fk_referrer_hostnames__download_authorization_id" />
+            </column>
+            <column name="hostname" type="varchar(255)" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="munsell-11" author="abrin">
+        <comment>adding authorization table for users to manage institutions</comment>
+        <createTable tableName="institution_authorization">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" references="tdar_user"
+                             foreignKeyName="fk_institution_authorization__tdar_user_id" />
+            </column>
+            <column name="institution_id" type="bigint">
+                <constraints nullable="false" references="institution"
+                             foreignKeyName="fk_institution_authorization__institution_id" />
+            </column>
+            <column name="authorized" type="boolean" defaultValueBoolean="false" />
+            <column name="reason" type="text" />
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="munsell-004766b0e703-feature-integration-ko" author="jdevos">
+        <comment>adding top-level table for persisted workflow integrations</comment>
+        <createTable tableName="data_integration_workflow">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <!-- TODO: proposal: put fk names in form of fk_sourcetable__sourcecolumn__destinationtable instead of fk_sourcetable__destinationtable__destinationcolumn -->
+                <constraints nullable="false" references="tdar_user"
+                             foreignKeyName="fk_data_integration_workflow__tdar_user_id" />
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(2047)" defaultValue="" />
+            <column name="json_data" type="clob" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="munsell-12-feature-integration-ko" author="alee">
+        <comment>adding fields to data integration workflow entity</comment>
+        <addColumn tableName="data_integration_workflow">
+            <column name='date_created' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='last_updated' type='timestamp'>
+                <constraints nullable='false' />
+            </column>
+            <column name='version' type='int4'>
+                <constraints nullable='false' />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="munsell-12" author="abrin">
+        <comment>adding material keyword</comment>
+        <addColumn tableName="material_keyword">
+            <column name="approved" defaultValueBoolean="false" type="boolean" />
+        </addColumn>
+        <update tableName="material_keyword">
+            <column name="approved" valueBoolean="TRUE" />
+        </update>
+    </changeSet>
+
+    <changeSet id="munsell-13" author="abrin">
+        <addColumn tableName="tdar_user">
+            <column name="start_as_draft" type="boolean" defaultValueBoolean="false" />
+        </addColumn>
+    </changeSet>
+
+
+    <!--
+    <changeSet id="munsell-14" author="jdevos">
+        <preConditions onFail="CONTINUE" onError="WARN">
+            <sqlCheck expectedResult="1">
+                select
+                    count(*)
+                from
+                    pg_catalog.pg_class c
+                        join pg_catalog.pg_index i on (i.indexrelid = c.oid)
+                where
+                    c.relname = 'resource_access_stats_count_id';
+            </sqlCheck>
+        </preConditions>
+        <comment>Delete index "resource_access_stats_count_id" if it exists. Ignore check failures (not all db instances have this index),but warn on
+            exceptions. </comment>
+        <dropIndex indexName="resource_access_stats_count_id" tableName="resource_access_statistics" />
+    </changeSet>
+
+    <changeSet id="munsell-15" author="jdevos">
+        <comment>Add index on resource_access_statistics(date_accessed)</comment>
+        <createIndex tableName="resource_access_statistics" indexName="resource_access_statistics_date_accessed_idx">
+            <column name="date_accessed" />
+        </createIndex>
+    </changeSet>
+    -->
+
+    <changeSet id="munsell-14-feature-whitelabel" author="jdevos">
+        <createTable tableName="whitelabel_collection">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" references="collection" foreignKeyName="whitelabel_collection_id_collection_fkey" />
+            </column>
+            <column name="customHeaderEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="featuredResourcesEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="searchEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="subCollectionsEnabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+            <column name="css" type="clob" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="munsell-15-feature-whitelabel" author="jdevos">
+        <comment>Renaming column names according to convention (also, I discovered that camelCase identifiers are a problem in hibernate because hibernate
+        generates sql with unquoted identifiers.  Postgres normalizes unquoted identifiers to lowercase, so the sql fails because.</comment>
+        <renameColumn tableName="whitelabel_collection" oldColumnName="customHeaderEnabled" newColumnName="custom_header_enabled" />
+        <renameColumn tableName="whitelabel_collection" oldColumnName="featuredResourcesEnabled" newColumnName="featured_resources_enabled" />
+        <renameColumn tableName="whitelabel_collection" oldColumnName="searchEnabled" newColumnName="search_enabled" />
+        <renameColumn tableName="whitelabel_collection" oldColumnName="subCollectionsEnabled" newColumnName="sub_collections_enabled" />
+    </changeSet>
+
+    <changeSet id="munsell-16-feature-whitelabel" author="jdevos">
+        <comment>Adding foreign key whitelabel_collection to institution </comment>
+        <addColumn tableName="whitelabel_collection">
+            <column name="institution_id" type="bigint">
+                <!-- fixme: why do I have to specify the referenced column name in 'references' attr? An FK implicently references the PK of a table. -->
+                <constraints nullable="false" foreignKeyName="whitelabel_collection_institution_id_institution_fkey" references="institution(id)"  />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="munsell-15" author="abrin">
+        <addColumn tableName="document">
+            <column name="document_subtype" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="munsell-17-feature-whitelabel" author="jdevos">
+        <comment>Join table for featured resources. Note the additional fk on collection_resource. </comment>
+        <createTable tableName="whitelabel_featured_resource" >
+            <column name="collection_id" type="bigint" ><constraints  nullable="false"/></column>
+            <column name="resource_id" type="bigint" ><constraints nullable="false"/></column>
+        </createTable>
+        <addPrimaryKey tableName="whitelabel_featured_resource" columnNames="collection_id, resource_id"/>
+        <addForeignKeyConstraint
+                constraintName="whitelabel_featured_resource_collection_id_resource_id_collection_resource_fk"
+                baseTableName="whitelabel_featured_resource"
+                baseColumnNames="collection_id, resource_id"
+                referencedTableName="collection_resource"
+                referencedColumnNames="collection_id, resource_id"/>
+    </changeSet>
+
+    <changeSet id="munsell-18-feature-whitelabel" author="jdevos">
+        <comment>adding whitelabel subtitle, institution no longer required</comment>
+        <addColumn tableName="whitelabel_collection">
+            <column name="subtitle" type="varchar(255)" />
+        </addColumn>
+
+        <dropColumn tableName="whitelabel_collection" columnName="institution_id" />
+        <addColumn tableName="whitelabel_collection">
+            <column name="institution_id" type="bigint">
+                <constraints nullable="true" foreignKeyName="whitelabel_collection_institution_id_institution_fkey" references="institution(id)"  />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="munsell-19-feature-whitelabel" author="jdevos">
+        <comment>Dialing back the costraints on whitelabel featured resources.  The resources/collections no longer need to belong to a resource collection
+            (though they still need to refer to valid entities).
+        </comment>
+        <dropForeignKeyConstraint baseTableName="whitelabel_featured_resource" constraintName="whitelabel_featured_resource_collection_id_resource_id_collection_resource_fk" />
+        <addForeignKeyConstraint
+                baseTableName="whitelabel_featured_resource"
+                baseColumnNames="collection_id"
+                constraintName="whitelabel_featured_resource_collection_id_collection_fk"
+                referencedTableName="collection"
+                referencedColumnNames="id" />
+        <addForeignKeyConstraint
+                baseTableName="whitelabel_featured_resource"
+                baseColumnNames="resource_id"
+                constraintName="whitelabel_featured_resource_resource_id_resource_fk"
+                referencedTableName="resource"
+                referencedColumnNames="id" />
+    </changeSet>
+
+    
+<!--
+    DO NOT RUN - FIXED ON CORE, but VALUE should probably be VALUE_COMPUTED
+     <changeSet id="munsell-16" author="abrin">
+        <update tableName="ontology_node">
+            <column name="iri" value=" replace(iri,'.','_');"></column>
+            <where>iri like '%\.'</where>
+        </update>
+    </changeSet>
+ -->
+
+    <changeSet id="munsell-20" author="abrin">
+        <createTable tableName="pos_account_usage_history">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="account_id" type="bigint">
+                <constraints nullable="false" references="pos_account"
+                             foreignKeyName="fk_account_usage_history_pos_account" />
+            </column>
+            <column name="files_used" type="bigint"/>
+            <column name="space_used" type="bigint"/>
+            <column name="resources_used" type="bigint"/>
+
+            <column name="date_created" type="date">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <!--  had issue with id running, hence skipping to 25 -->
+    <changeSet id="munsell-25" author="abrin">
+    	<createTable tableName="homepage_featured_collection">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="collection_id" type="bigint">
+                <constraints nullable="false" references="collection"
+                             foreignKeyName="fk_homepage_featured_collection_collection_id" />
+            </column>
+    	
+    	</createTable>
+    </changeSet>
+    <changeSet id="munsell-26" author="abrin">
+    <addColumn tableName="whitelabel_collection">
+        <column name="custom_doc_logo_enabled" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
+    </addColumn>    
+    </changeSet>
+    <changeSet id="munsell-27" author="abrin">
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberoffiles" newColumnName="num_files"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberofmb" newColumnName="num_mb"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberofhours" newColumnName="num_hours"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="numberofresources" newColumnName="num_resources"/>
+
+        <renameColumn tableName="pos_billing_activity" oldColumnName="displaynumberoffiles" newColumnName="display_num_files"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="displaynumberofmb" newColumnName="display_num_mb"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="displaynumberofresources" newColumnName="display_num_resources"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="groupname" newColumnName="group_name"/>
+        <renameColumn tableName="pos_billing_activity" oldColumnName="enabled" newColumnName="active"/>
+    </changeSet>
+
+    <changeSet id="munsell-28" author="jtdevos">
+        <comment>
+            Changing whitelabel collection ID from SERIAL to BIGINT.  Note that SERIAL is just a BIGINT with  a
+            default value to a dynamically-generated sequence.
+        </comment>
+        <dropDefaultValue tableName="whitelabel_collection" columnName="id"/>
+        <dropSequence sequenceName="whitelabel_collection_id_seq" />
+    </changeSet>
+
+
+    <changeSet id="munsell-29" author="abrin">
+        <comment>
+        Adding Download Count to TdarUser
+        </comment>
+        <addColumn tableName="tdar_user">
+        <column name="total_downloads" defaultValue="0" type="bigint"/></addColumn>
+    </changeSet>
+
+
+</databaseChangeLog>
