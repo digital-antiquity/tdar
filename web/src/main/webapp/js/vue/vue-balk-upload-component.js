@@ -187,7 +187,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return ret;
                 },
                 select: function() {
-                    this.$emit('toggleselect', [this.file.selected, this.file]);
+                    this.$emit('toggleselect', this.file);
                 },
                 markCurated: function() {
                     var ret = this._mark(CURATED,"dateCurated", "curatedByName", "curatedByInitials");
@@ -681,10 +681,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return ret;
                 },
                 toggleSelect: function(data) {
-                    var toggle = data[0];
-                    var file = data[1];
+                    var file = data;
                     var id = file.id;
-//                    console.log("toggle select", existing, id);
                     var seen = false;
                     var indexToRemove = -1;
                     for (var i =0; i < this.selectedFiles.length; i++) {
@@ -693,12 +691,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                             indexToRemove = i;
                         }
                     }
-                    
-                    if (toggle == true) { // add
-                        if (seen == false)  {
-                            this.selectedFiles.push(file);
-                            file.selected = true;
-                        }
+                    if (seen == false)  {
+                        this.selectedFiles.push(file);
+                        file.selected = true;
                     } else { // remove
                         if (indexToRemove > -1) {
                             var ret = this.selectedFiles.splice(indexToRemove,1);
