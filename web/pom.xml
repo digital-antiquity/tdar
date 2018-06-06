@@ -376,7 +376,7 @@
                     <!-- note - npm, bower, karma and other tools
                         are installed globally on build -->
                     <execution>
-                        <id>exec-yarn-install</id>
+<!--                        <id>exec-yarn-install</id>
                         <phase>generate-sources</phase>
                         <configuration>
                             <skip>${skipNode}</skip>
@@ -391,7 +391,7 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
-                    
+                
                     <execution>
                         <id>exec-run-yarn</id>
                         <phase>generate-sources</phase>
@@ -409,14 +409,15 @@
                             <goal>exec</goal>
                         </goals>
                     </execution>
-                    
+    -->                    
                     <execution>
                         <id>exec-run-webpack</id>
                         <phase>generate-sources</phase>
                         <configuration>
                             <skip>${skipNode}</skip>
-                            <executable>./node_modules/.bin/yarn</executable>
+                            <executable>./node_modules/.bin/npm</executable>
                             <arguments>
+                                <argument>run-script</argument>
                                 <argument>build</argument>
                             </arguments>
                         </configuration>

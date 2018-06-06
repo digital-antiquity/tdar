@@ -72,6 +72,7 @@
         <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
     </#if>
     
+    <@header.scripts ( webFilePreprocessingEnabled) />
 ${head}
 
     <@common.globalJavascript />
@@ -281,7 +282,6 @@ ${head}
 
 
 
-    <@header.scripts ( webFilePreprocessingEnabled) />
 
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>
@@ -290,7 +290,7 @@ ${head}
 
     <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
         <script type="text/javascript">
-      //      TDAR.loadScript('https://${config.jiraScriptLink}');
+            TDAR.loadScript('https://${config.jiraScriptLink}');
         </script>
     </#if>
 
