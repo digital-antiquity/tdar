@@ -375,7 +375,7 @@
                         /usr -->
                     <!-- note - npm, bower, karma and other tools
                         are installed globally on build -->
-                    <execution>
+<!--                    <execution>
                         <id>exec-yarn-install</id>
                         <phase>generate-sources</phase>
                         <configuration>
@@ -384,14 +384,14 @@
                              <arguments>
                                 <argument>i</argument>
                                 <argument>yarn</argument>
-                                <argument>--save --cache-min 9999999</argument>
+                                <argument>\-\-save \-\-cache-min 9999999</argument>
                             </arguments>
                         </configuration>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                     </execution>
-                    
+                
                     <execution>
                         <id>exec-run-yarn</id>
                         <phase>generate-sources</phase>
@@ -400,23 +400,22 @@
                             <executable>./node_modules/.bin/yarn</executable>
                             <arguments>
                                 <argument>install</argument>
-                                <argument>--force</argument>
-                                <!-- >argument>- -modules-folder</argument>
-                                <argument>./src/main/webapp/components</argument-->
+                                <argument>\-\-force</argument>
                             </arguments>
                         </configuration>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                     </execution>
-                    
+    -->                    
                     <execution>
                         <id>exec-run-webpack</id>
                         <phase>generate-sources</phase>
                         <configuration>
                             <skip>${skipNode}</skip>
-                            <executable>./node_modules/.bin/yarn</executable>
+                            <executable>./node_modules/.bin/npm</executable>
                             <arguments>
+                                <argument>run-script</argument>
                                 <argument>build</argument>
                             </arguments>
                         </configuration>
