@@ -32,15 +32,6 @@ TDAR.vuejs.balkreport = (function(console, $, ctx, Vue) {
                 }
             },
             methods: {
-                yesNo: function(date) {
-                    if (dateEnd == undefined || this.dateStart == undefined) {
-                        return '';
-                    }
-                    if (new Date(this.dateStart) < new Date(dateEnd)) {
-                        return true;
-                    }
-                    return '';
-                },
                 loadData: function() {
                     var _app = this;
                     $.get("/api/file/reports/summary", {accountId: this.accountId}).done(function(sum) {

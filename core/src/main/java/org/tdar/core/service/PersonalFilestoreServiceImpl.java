@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -444,8 +445,8 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     
     @Override
     @Transactional(readOnly=true)
-    public RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd, TdarDir dir, TdarUser authenticatedUser) {
-        return fileProcessingDao.recentByAccount(account, dateStart, dateEnd, dir, authenticatedUser);
+    public RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd, TdarDir dir, TdarUser actor, TdarUser authenticatedUser) {
+        return fileProcessingDao.recentByAccount(account, dateStart, dateEnd, dir, actor, authenticatedUser);
         
     }
     
@@ -503,15 +504,15 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             }
             DirSummaryPart part = partMap.get(id);
             if (part == null) {
-                logger.debug("creating part {}",  id);
-                logger.debug(" chilren      {}",  dirChildMap.get(id));
+//                logger.debug("creating part {}",  id);
+//                logger.debug(" chilren      {}",  dirChildMap.get(id));
                 
                 part = new DirSummaryPart(null);
                 part.setId(id);
                 setupPart(dirMap, partMap, part);
             }
             
-            part.addAll(allChildren, partMap);
+//            part.addAll(allChildren, partMap);
             if (CollectionUtils.isNotEmpty(dirChildMap.get(id))) {
                 summarizeChildren(dirChildMap, dirChildMap.get(id), partMap, dirMap);
             }

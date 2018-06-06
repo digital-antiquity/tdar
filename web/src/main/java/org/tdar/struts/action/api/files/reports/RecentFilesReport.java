@@ -63,7 +63,7 @@ public class RecentFilesReport extends AbstractJsonApiAction {
     @Override
     @Action("recentFiles")
     public String execute() throws Exception {
-        report = personalFilestoreService.recentByAccount(account, dateStart, dateEnd, parent, user);
+        report = personalFilestoreService.recentByAccount(account, dateStart, dateEnd, parent, user, getAuthenticatedUser());
         setResultObject(report);
         return super.execute();
     }

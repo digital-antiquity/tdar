@@ -126,6 +126,6 @@ public interface PersonalFilestoreService {
 
     DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser);
 
-    RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd,  TdarDir dir, TdarUser authenticatedUser);
+    RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd,  TdarDir dir, TdarUser actor, TdarUser authenticatedUser);
 
 }

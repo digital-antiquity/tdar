@@ -1,8 +1,11 @@
 package org.tdar.core.dao;
 
 import java.io.Serializable;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -15,15 +18,27 @@ public class DirSummary extends DirSummaryPart implements Serializable {
         super(null);
     }
 
-    public Set<DirSummaryPart> getParts() {
+    public SortedSet<DirSummaryPart> getParts() {
         return parts;
     }
 
-    public void setParts(Set<DirSummaryPart> parts) {
+    public void setParts(SortedSet<DirSummaryPart> parts) {
         this.parts = parts;
     }
 
-    private Set<DirSummaryPart> parts = new LinkedHashSet<>();
+    private SortedSet<DirSummaryPart> parts = new TreeSet<>( new Comparator<DirSummaryPart>() {
+
+        @Override
+        public int compare(DirSummaryPart o1, DirSummaryPart o2) {
+            if (o1 == null) {
+                return -1;
+            }
+            if (o2 == null) {
+                return 1;
+            }
+            return StringUtils.compare(o1.getDirPath(), o2.getDirPath());
+        }
+    });
     
     public DirSummaryPart addPart(Object[] row) {
         DirSummaryPart part = new DirSummaryPart(row);

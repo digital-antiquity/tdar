@@ -159,7 +159,8 @@
     </div>
     <div class="btn-group">
         <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
-        <button class="btn" type="button" id="create" @click="createRecordFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button> 
+        <button class="btn" type="button" id="create" @click="createRecordFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button>
+		<a v-if="fullService" class="btn" type="button" href="fileReports">Reports</a> 
     </div>
     <span class="label" data-toggle="tooltip" data-placement="top" :title="selectedFileNames"> {{selectedFiles.length}} </span>
     </div>

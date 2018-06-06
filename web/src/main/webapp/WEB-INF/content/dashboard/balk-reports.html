@@ -114,12 +114,12 @@
 </tr>
 <tr v-for="(file, index) in recent.files">
 <td>{{file.name}}</td>
-<td><span v-if="yesNo(file.dateCreated)"><i class="icon-check"></i></span></td>
-<td><span v-if="yesNo(file.dateResourceCreated)"><i class="icon-check"></i></span></td>
-<td><span v-if="yesNo(file.dateCurated)"><i class="icon-check"></i></span></td>
-<td><span v-if="yesNo(file.dateInitialReviewed)"><i class="icon-check"></i></span></td>
-<td><span v-if="yesNo(file.dateReviewed)"><i class="icon-check"></i></span></td>
-<td><span v-if="yesNo(file.dateExternalReviewed)"><i class="icon-check"></i></span></td>
+<td><span v-if="file.created"><i class="icon-check"></i></span></td>
+<td><span v-if="file.resource"><i class="icon-check"></i></span></td>
+<td><span v-if="file.curated"><i class="icon-check"></i></span></td>
+<td><span v-if="file.initialReviewed"><i class="icon-check"></i></span></td>
+<td><span v-if="file.reviewed"><i class="icon-check"></i></span></td>
+<td><span v-if="file.externalReviewed"><i class="icon-check"></i></span></td>
 <td></td>
 </tr>
 </table>

@@ -1,6 +1,7 @@
 package org.tdar.core.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,18 +28,22 @@ public class RecentFileSummary implements Serializable {
     Integer initialReviewed = 0;
     Integer reviewed = 0;
     Integer externalReviewed = 0;
-    private List<TdarFile> files;
+    private List<FileStatsProxy> files = new ArrayList<>();
     private TdarUser person;
     private Date startDate;
     private Map<Long, Map<String, Object>> userMap = new HashMap<>();
     private Date endDate;
 
+    @Override
+    public String toString() {
+        return String.format("(%s <--> %s) created: %s, resource: %s, curated:%s, initial: %s, reviewed:%s, external:%s", startDate, endDate, created, resource, curated, initialReviewed, reviewed, externalReviewed);
+    }
+    
     public RecentFileSummary(List<TdarFile> files, Date startDate, Date endDate, TdarUser person) {
 
         this.setEndDate(endDate);
         this.setStartDate(startDate);
         this.setPerson(person);
-        this.setFiles(files);
         for (TdarFile f : files) {
             addToUserMap(f);
             incrementCounters(person, f);
@@ -46,22 +51,30 @@ public class RecentFileSummary implements Serializable {
     }
 
     private void incrementCounters(TdarUser person, TdarFile f) {
+        FileStatsProxy fsp = new FileStatsProxy(f);
+        files.add(fsp);
         if (between(f.getDateCreated()) && checkPerson(person, f.getUploader())) {
+            fsp.setCreated(true);
             created++;
         }
         if (between(f.getDateResourceCreated()) && checkPerson(person, f.getResource().getSubmitter())) {
+            fsp.setResource(true);
             resource++;
         }
         if (between(f.getDateCurated()) && checkPerson(person, f.getCuratedBy())) {
+            fsp.setCurated(true);
             curated++;
         }
         if (between(f.getDateInitialReviewed()) && checkPerson(person, f.getInitialReviewedBy())) {
+            fsp.setInitialReviewed(true);
             initialReviewed++;
         }
         if (between(f.getDateReviewed()) && checkPerson(person, f.getReviewedBy())) {
+            fsp.setReviewed(true);
             reviewed++;
         }
         if (between(f.getDateExternalReviewed()) && checkPerson(person, f.getExternalReviewedBy())) {
+            fsp.setExternalReviewed(true);
             externalReviewed++;
         }
     }
@@ -111,10 +124,9 @@ public class RecentFileSummary implements Serializable {
         }
 
         if (startDate.before(date)) {
-            if (endDate != null && endDate.after(date)) {
-                return false;
+            if (endDate != null && (endDate == date || endDate.after(date))) {
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -178,11 +190,11 @@ public class RecentFileSummary implements Serializable {
         this.externalReviewed = externalReviewed;
     }
 
-    public List<TdarFile> getFiles() {
+    public List<FileStatsProxy> getFiles() {
         return files;
     }
 
-    public void setFiles(List<TdarFile> files) {
+    public void setFiles(List<FileStatsProxy> files) {
         this.files = files;
     }
 

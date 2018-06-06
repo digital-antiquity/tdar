@@ -29,7 +29,9 @@ import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.dao.DirSummary;
+import org.tdar.core.dao.FileStatsProxy;
 import org.tdar.core.dao.RecentFileSummary;
+import org.tdar.utils.PersistableUtils;
 
 
 public class FileManagementITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
@@ -369,8 +371,23 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         List<AbstractFile> files = setupSomeFilesAndDirs(act, act);
         
         genericService.synchronize();
-        RecentFileSummary recentByAccount = pfs.recentByAccount(act, DateTime.now().minusWeeks(1).toDate(), new Date(), null, getAdminUser());
-        assertTrue(files.containsAll(recentByAccount.getFiles()));
+        RecentFileSummary recentByAccount = pfs.recentByAccount(act, DateTime.now().minusWeeks(1).toDate(), new Date(), null, null, getAdminUser());
+        logger.debug(recentByAccount.toString());
+        List<Long> ids = new ArrayList<>();
+        for (FileStatsProxy fsp : recentByAccount.getFiles()) {
+            ids.add(fsp.getId());
+        }
+        
+        // we only care about Ids
+        List<Long> fileIds = new ArrayList<>();
+        for (AbstractFile file : files) {
+            if (file instanceof TdarFile) {
+                fileIds.add(file.getId());
+            }
+        }
+        logger.debug("ids: {}; fileIds: {}", ids, fileIds);
+        assertTrue(ids.containsAll(fileIds));
+        assertTrue(fileIds.containsAll(ids));
     }
 
     @Test
@@ -407,7 +424,7 @@ public class FileManagementITCase extends AbstractIntegrationTestCase implements
         DirSummary summary = pfs.summarizeAccountBy(act, null, getAdminUser());
         logger.debug(String.format("total: %s, %s, %s, %s, %s",summary.getCurated(), summary.getResource(), summary.getInitialReviewed(), summary.getReviewed(),  summary.getExternalReviewed()));
         summary.getParts().forEach(sum -> {
-            logger.debug(String.format("%s: %s, %s, %s, %s, %s", sum.getDir() ,sum.getCurated(), sum.getResource(), sum.getInitialReviewed(), sum.getReviewed(), sum.getExternalReviewed()));
+            logger.debug(String.format("%s: %s, %s, %s, %s, %s", sum.getDirPath() ,sum.getCurated(), sum.getResource(), sum.getInitialReviewed(), sum.getReviewed(), sum.getExternalReviewed()));
         });
     }
 
