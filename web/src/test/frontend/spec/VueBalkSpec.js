@@ -249,16 +249,17 @@ describe("BalkSpec.js: fileupload suite - root", function(){
                 {id:3, name:'test2.tif',size:1000,type:'tif/image',lastModified:-1, extension:'tif', selected:false}
                 ];
             
-            vapp.toggleSelect([vapp.files[0]]);
+            vapp.toggleSelect(vapp.files[0]);
             expect(vapp.selectedFiles).toHaveLength(1);
+            console.log("selected" ,vapp.selectedFiles[0].id);
             expect(vapp.selectedFiles[0].id == vapp.files[0].id).toBe(true);
-            vapp.toggleSelect([vapp.files[1]]);
+            vapp.toggleSelect(vapp.files[1]);
             expect(vapp.selectedFiles).toHaveLength(2);
 
-            vapp.toggleSelect([vapp.files[0]]);
+            vapp.toggleSelect(vapp.files[0]);
             expect(vapp.selectedFiles[0].id == vapp.files[1].id).toBe(true);
             expect(vapp.selectedFiles).toHaveLength(1);
-            vapp.toggleSelect([vapp.files[1]]);
+            vapp.toggleSelect(vapp.files[1]);
             expect(vapp.selectedFiles).toHaveLength(0);
             
             

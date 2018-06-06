@@ -434,6 +434,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 cannotMoveSelected: function() {
                     return this._cannotSelect();
                 },
+                fileReportsLink: function() {
+                    return "fileReports#/" + this.accountId;
+                },
                 selectedFileNames: function() {
                     return this._selectedFileNames();
                 },
