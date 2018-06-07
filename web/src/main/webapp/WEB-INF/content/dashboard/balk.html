@@ -1,6 +1,8 @@
 <div class="span10" id="filesTool">
 
     <balk />
+    
+    
 
 </div>
 <script type="text/x-template"   id="move-entry-template">
@@ -85,7 +87,8 @@
 </script>
 
 <script type="text/x-template"  id="balk-template">
-<form class="form-horizontal">
+<form class="form-horizontal" >
+<div id="balkTemplate">
 <div class="row">
     <div class="span6">
     <label  style="display:inline">Account:
@@ -160,7 +163,7 @@
     <div class="btn-group">
         <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
         <button class="btn" type="button" id="create" @click="createRecordFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button>
-		<a v-if="fullService" class="btn" type="button" :href="fileReportsLink">Reports</a> 
+		<a v-if="fullService" class="btn" type="button" @click="showReports()">Reports</a> 
     </div>
     <span class="label" data-toggle="tooltip" data-placement="top" :title="selectedFileNames"> {{selectedFiles.length}} </span>
     </div>
@@ -230,8 +233,126 @@
 
 
 </div>
+     <reports :accountId="accountId" :account="selectedAccount"/>
+</div>
 </form>
 
+
+</script>
+
+
+<script type="text/x-template" id="reports-template">
+
+<div id="filesReport" style="display:none">
+<ul class="nav nav-tabs" id="reports">
+  <li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
+  <li><a href="#recent" data-toggle="tab">Recent Changes</a></li>
+  <li><a @click="hideReports()" >Return to Files</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="summary">
+<table class="table" v-if="summary != undefined">
+    <thead>
+        <tr>
+            <th>Directory</th>
+            <th>Added</th>
+            <th>Resources</th>
+            <th>Curated</th>
+            <th>Initial Reviewed</th>
+            <th>Reviewed</th>
+            <th>External Reviewed</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><b>Total:</b></td>
+            <td>{{summary.added}}</td>
+            <td>{{summary.resource}}</td>
+            <td>{{summary.curated}}</td>
+            <td>{{summary.initialReviewed}}</td>
+            <td>{{summary.reviewed}}</td>
+            <td>{{summary.externalReviewed}}</td>
+        </tr>
+        <tr v-for="(dir,index) in summary.parts" >
+            <td>{{dir.dirPath}}</td>
+            <td>{{dir.added}}</td>
+            <td>{{dir.resource}}</td>
+            <td>{{dir.curated}}</td>
+            <td>{{dir.initialReviewed}}</td>
+            <td>{{dir.reviewed}}</td>
+            <td>{{dir.externalReviewed}}</td>
+        </tr>
+        
+    </tbody>
+</table>
+  
+  </div>
+  <div class="tab-pane" id="recent">
+
+<div v-if='recent != undefined' class='row'>
+    <div class="span3">
+            <select name="userId" id="userId" v-model="userId">
+                    <option>All Users</option>
+                    <option v-for="(option, index) in recent.userMap" v-bind:value="option.id"> {{ option.name }} </option>
+            </select>
+    </div>
+    <div class="span3">
+        <div class="input-append" >
+            <label for="dateStart" style="display:inline">From:
+            <input v-model="dateStart" type="text" name="dateStart" id="dateStart" class="placeholdered " data-date-format="mm/dd/yy" placeholder="mm/dd/yy">
+            <span class="add-on"><i class="icon-th"></i></span>
+            </label>
+        </div>
+    </div>
+    <div class="span3">
+        <div class="input-append" >
+            <label for="dateEnd" style="display:inline">To:
+            <input v-model="dateEnd" type="text" name="dateEnd" id="dateEnd" class="placeholdered " data-date-format="mm/dd/yy" placeholder="mm/dd/yy">
+            <span class="add-on"><i class="icon-th"></i></span>
+            </label>
+        </div>
+    </div>
+</div>
+<table class="table"  v-if="recent != undefined && recent.files != undefined">
+<tr>
+<th>Recently Changed Files</th>
+<th>Added</th>
+<th>Resource Created</th>
+<th>Curated</th>
+<th>Initial Reviewed</th>
+<th>Reviewed</th>
+<th>External Reviewed</th>
+</tr>
+<tr>    
+    <th>Total:{{recent.files.length}}</th>
+    <th>{{recent.created}}</th>
+    <th>{{recent.resource}}</th>
+    <th>{{recent.curated}}</th>
+    <th>{{recent.initialReviewed}}</th>
+    <th>{{recent.reviewed}}</th>
+    <th>{{recent.externalReviewed}}</th>
+
+</tr>
+<tr v-for="(file, index) in recent.files">
+<td>{{file.name}}</td>
+<td><span v-if="file.created"><i class="icon-check"></i></span></td>
+<td><span v-if="file.resource"><i class="icon-check"></i></span></td>
+<td><span v-if="file.curated"><i class="icon-check"></i></span></td>
+<td><span v-if="file.initialReviewed"><i class="icon-check"></i></span></td>
+<td><span v-if="file.reviewed"><i class="icon-check"></i></span></td>
+<td><span v-if="file.externalReviewed"><i class="icon-check"></i></span></td>
+<td></td>
+</tr>
+</table>
+  
+  
+  </div>
+</div>
+ 
+
+</div>
+</div>
 </script>
 
 <script id="insert"></script>

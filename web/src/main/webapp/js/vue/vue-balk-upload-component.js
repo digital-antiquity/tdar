@@ -434,9 +434,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 cannotMoveSelected: function() {
                     return this._cannotSelect();
                 },
-                fileReportsLink: function() {
-                    return "fileReports#/" + this.accountId;
-                },
                 selectedFileNames: function() {
                     return this._selectedFileNames();
                 },
@@ -745,6 +742,14 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     });
                     
                 },
+                showReports: function() {
+                    $("#balkTemplate").hide();
+                    $("#filesReport").show();
+                },
+                hideReports: function() {
+                    $("#balkTemplate").show();
+                    $("#filesReport").hide();
+                },
                 addComment: function() {
                     // add a comment to a file
                     console.log('add comment', this.comment);
@@ -1025,9 +1030,99 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             }
         });
         
+        var app2 = Vue.component("reports",{
+            template : '#reports-template',
+            data : function() {
+                return {
+                    summary : undefined,
+                    recent : undefined,
+                    dateStart : undefined,
+                    dateEnd : undefined,
+                    accountId: undefined,
+                    account: undefined,
+                    userId : undefined
+                }
+            },
+            watch : {
+                accountId : function(after, before) {
+                    this.loadData();
+                    this.loadRecentData();
+                    Vue.set(this, "userId", undefined);
+                },
+                dateStart : function(after, before) {
+                    this.loadRecentData();
+                },
+                dateEnd : function(after, before) {
+                    this.loadRecentData();
+                },
+                userId : function(after, before) {
+                    this.loadRecentData();
+                },
+                '$route': function(to, from) {
+                    console.log(to.params);
+                    Vue.set(this, "accountId", to.params.accountId);
+                    this.loadData();
+                    this.loadRecentData();
+                    Vue.set(this, "userId", undefined);
+                }
+            },
+            methods : {
+                hideReports: function() {
+                    $("#balkTemplate").show();
+                    $("#filesReport").hide();
+                },
+                loadData : function() {
+                    if (this.accountId == undefined) {
+                        return;
+                    }
+                    var _app = this;
+                    $.get("/api/file/reports/summary", {
+                        accountId : this.accountId
+                    }).done(function(sum) {
+                        Vue.set(_app, "summary", sum);
+                    });
+                },
+                loadRecentData : function() {
+                    if (this.accountId == undefined) {
+                        return;
+                    }
+                    var _app = this;
+                    $.get("/api/file/reports/recentFiles", {
+                        accountId : this.accountId,
+                        dateStart : this.dateStart,
+                        dateEnd : this.dateEnd,
+                        userId : this.userId
+                    }).done(function(sum) {
+                        Vue.set(_app, "recent", sum);
+                    });
+                }
+            },
+            mounted : function() {
+                var date = new Date();
+                date.setDate(date.getDate() - 7);
+                Vue.set(this, "dateStart", (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear().toString());
+                date = new Date();
+                Vue.set(this, "dateEnd", (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear().toString());
+                var _app = this;
+                $('#reports a[data-toggle="tab"]').on('shown', function(e) {
+                    var $picker = $(".placeholdered").datepicker({
+                        autoclose : true,
+                        format : "mm/dd/yyyy"
+                    }).on('changeDate', function(ev) {
+                        var $target = $(ev.target);
+                        Vue.set(_app, $target.attr('id'), $target.val());
+                        $target.datepicker('hide');
+                    });
+                    $picker.removeClass("placeholderd");
+                });
+            }
+        });
+
+        
         var router = new VueRouter({
             routes: [
                 { path: '/:accountId(\\d+)/:dir*', component: app },
+                { path: '/report/:accountId(\\d+)', app2}
               ]
         });
 
@@ -1042,6 +1137,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             'router' : router,
             'app' : pp,
             'balk' : _app,
+            'reports': app2,
             'files' : _files,
             'pentry': _pentry,
             'dir'   : _dir,
