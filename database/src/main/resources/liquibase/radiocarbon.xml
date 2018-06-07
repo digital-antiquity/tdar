@@ -247,4 +247,7 @@
         </addColumn>
         <dropColumn tableName="files" columnName="curate"/>
     </changeSet>
+    <changeSet id="radiocarbon-file-first-17" author="abrin">
+    <renameColumn tableName="pos_account" oldColumnName="student_review" newColumnName="initial_review"/>
+    </changeSet>
 </databaseChangeLog>

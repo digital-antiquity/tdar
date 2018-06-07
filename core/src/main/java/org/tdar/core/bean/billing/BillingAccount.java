@@ -154,9 +154,9 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @JsonView({JsonAccountFilter.class })
     private Boolean fullService = false;
     
-    @Column(name = "student_review", nullable=false, columnDefinition="boolean default false")
+    @Column(name = "initial_review", nullable=false, columnDefinition="boolean default false")
     @JsonView({JsonAccountFilter.class })
-    private Boolean studentReview = false;
+    private Boolean initialReview = false;
     
     @Column(name = "external_review", nullable=false, columnDefinition="boolean default false")
     @JsonView({JsonAccountFilter.class })
@@ -545,12 +545,12 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         this.fullService = fullService;
     }
 
-    public Boolean getStudentReview() {
-        return studentReview;
+    public Boolean getInitialReview() {
+        return initialReview;
     }
 
-    public void setStudentReview(Boolean studentReview) {
-        this.studentReview = studentReview;
+    public void setInitialReview(Boolean initialReview) {
+        this.initialReview = initialReview;
     }
 
     public Boolean getExternalReview() {

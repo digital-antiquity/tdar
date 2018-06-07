@@ -67,7 +67,7 @@
     </td>
     <td v-if="fullservice && initialreviewed"> 
         <pentry :initials="file.initialReviewedByInitials" :date="file.dateInitialReviewed" :name="file.initialReviewedByName" ></pentry> 
-        <i v-if="canStudentReview" @click="markinitialReviewed()" class="icon-thumbs-up"></i></td>
+        <i v-if="canInitialReview" @click="markinitialReviewed()" class="icon-thumbs-up"></i></td>
     <td v-if="fullservice">
        <pentry :initials="file.reviewedByInitials" :date="file.dateReviewed" :name="file.reviewedByName" ></pentry> 
         <i v-if="canReview" @click="markReviewed()" class="icon-thumbs-up"></i></td>
@@ -242,8 +242,8 @@
 
 
 <script type="text/x-template" id="reports-template">
-
 <div id="filesReport" style="display:none">
+<h3>{{accountName}}</h3>
 <ul class="nav nav-tabs" id="reports">
   <li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>
   <li><a href="#recent" data-toggle="tab">Recent Changes</a></li>
@@ -259,9 +259,9 @@
             <th>Added</th>
             <th>Resources</th>
             <th>Curated</th>
-            <th>Initial Reviewed</th>
+            <th v-if="initialReview == true">Initial Reviewed</th>
             <th>Reviewed</th>
-            <th>External Reviewed</th>
+            <th v-if="externalReview == true">External Reviewed</th>
         </tr>
     </thead>
     <tbody>
@@ -270,18 +270,18 @@
             <td>{{summary.added}}</td>
             <td>{{summary.resource}}</td>
             <td>{{summary.curated}}</td>
-            <td>{{summary.initialReviewed}}</td>
+            <td v-if="initialReview == true">{{summary.initialReviewed}}</td>
             <td>{{summary.reviewed}}</td>
-            <td>{{summary.externalReviewed}}</td>
+            <td v-if="externalReview == true">{{summary.externalReviewed}}</td>
         </tr>
         <tr v-for="(dir,index) in summary.parts" >
             <td>{{dir.dirPath}}</td>
             <td>{{dir.added}}</td>
             <td>{{dir.resource}}</td>
             <td>{{dir.curated}}</td>
-            <td>{{dir.initialReviewed}}</td>
+            <td v-if="initialReview == true">{{dir.initialReviewed}}</td>
             <td>{{dir.reviewed}}</td>
-            <td>{{dir.externalReviewed}}</td>
+            <td v-if="externalReview == true">{{dir.externalReviewed}}</td>
         </tr>
         
     </tbody>
@@ -320,18 +320,18 @@
 <th>Added</th>
 <th>Resource Created</th>
 <th>Curated</th>
-<th>Initial Reviewed</th>
+<th v-if="initialReview == true">Initial Reviewed</th>
 <th>Reviewed</th>
-<th>External Reviewed</th>
+<th v-if="externalReview == true">External Reviewed</th>
 </tr>
 <tr>    
     <th>Total:{{recent.files.length}}</th>
     <th>{{recent.created}}</th>
     <th>{{recent.resource}}</th>
     <th>{{recent.curated}}</th>
-    <th>{{recent.initialReviewed}}</th>
+    <th v-if="initialReview == true">{{recent.initialReviewed}}</th>
     <th>{{recent.reviewed}}</th>
-    <th>{{recent.externalReviewed}}</th>
+    <th v-if="externalReview == true">{{recent.externalReviewed}}</th>
 
 </tr>
 <tr v-for="(file, index) in recent.files">
@@ -339,9 +339,9 @@
 <td><span v-if="file.created"><i class="icon-check"></i></span></td>
 <td><span v-if="file.resource"><i class="icon-check"></i></span></td>
 <td><span v-if="file.curated"><i class="icon-check"></i></span></td>
-<td><span v-if="file.initialReviewed"><i class="icon-check"></i></span></td>
+<td v-if="initialReview == true"><span v-if="file.initialReviewed"><i class="icon-check"></i></span></td>
 <td><span v-if="file.reviewed"><i class="icon-check"></i></span></td>
-<td><span v-if="file.externalReviewed"><i class="icon-check"></i></span></td>
+<td v-if="externalReview == true"><span v-if="file.externalReviewed"><i class="icon-check"></i></span></td>
 <td></td>
 </tr>
 </table>

@@ -187,7 +187,7 @@
 <p>
     <b>Files Expire After:</b> ${account.daysFilesExpireAfter}<br/>
     <b>Full Service Enabled:</b> ${account.fullService?c}<br/>
-    <b>Student Review Phase:</b> ${account.studentReview?c}<br/>
+    <b>Initial Review Phase:</b> ${account.initialReview?c}<br/>
     <b>External Review Phase:</b> ${account.externalReview?c}<br/>
     
 </#if>

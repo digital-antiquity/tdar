@@ -35,6 +35,19 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         return (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear().toString().substring(2);
     }
 
+
+    /** format the data to a yy/mm/dd
+     * 
+     */
+    var _formatDateFullYear = function(date_) {
+        if (date_ == undefined ) {
+            return "";
+        }
+        
+        var date = new Date(date_);
+        return (date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear().toString();
+    }
+    
     /**
      * format date with time
      */
@@ -278,16 +291,16 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 _canCurate: function () {
                     // if it hasn't been curated and we have a resource id, then yes
                     if (this.file.dateCurated != undefined) {
-                        console.trace("canCurate:: dateCurated defined");
+//                        console.trace("canCurate:: dateCurated defined");
                         return false;
                     }
 
                     if (this.file.curation == WONT_CURATE) {
-                        console.trace("canCurate:: curation == WONT_CURATE");
+//                        console.trace("canCurate:: curation == WONT_CURATE");
                         return false;
                     } 
                     if (this.file.resourceId == undefined) {
-                        console.trace("canCurate:: dateCurated defined");
+//                        console.trace("canCurate:: dateCurated defined");
                         return false;
                     }
                     
@@ -311,10 +324,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 _canReview: function () {
                     // either (a) done  review, or curated
                     if (this.file.dateReviewed != undefined) {
-                        console.trace("canReview:: dateReviewed set");
+//                        console.trace("canReview:: dateReviewed set");
                         return false;
                     }
-                    console.trace("canReview:: " , this.initialReviewed, this.file.dateInitialReviewed , this.file.dateCurated );
+//                    console.trace("canReview:: " , this.initialReviewed, this.file.dateInitialReviewed , this.file.dateCurated );
                     if (this.initialReviewed && this.file.dateInitialReviewed != undefined || 
                             this.initialReviewed != true && this.file.dateCurated != undefined) {
                         return true;
@@ -559,7 +572,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         
                         if (file.resourceId != undefined) {
                             ext = "BAD";
-                            console.trace("file has tDAR ID", file.resourceId);
+//                            console.trace("file has tDAR ID", file.resourceId);
                             return;
                         }
                         
@@ -568,7 +581,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                         if (_ext == undefined || _ext == '') {
                             ext = "BAD";
-                            console.trace("file has bad extension", file);
+//                            console.trace("file has bad extension", file);
                             return;
                         }
                         console.log("ext:", _ext, ext);
@@ -579,7 +592,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                     });
                     if (ext == "BAD") {
-                        console.trace("cannot create");
+//                        console.trace("cannot create");
                         return true;
                     }
                     return false;
@@ -615,6 +628,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return false;
                 },
                 switchAccount: function(accountId) {
+                    console.log("switching account to", accountId);
                     router.push({ path: '/' + accountId })
                     // reset the dir tree, and other state variables
                     Vue.set(this,"commentFile",undefined);
@@ -1032,15 +1046,17 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         
         var app2 = Vue.component("reports",{
             template : '#reports-template',
+            props : [ 'account', 'accountId'],
             data : function() {
                 return {
                     summary : undefined,
                     recent : undefined,
                     dateStart : undefined,
+                    accountName: undefined,
                     dateEnd : undefined,
-                    accountId: undefined,
-                    account: undefined,
-                    userId : undefined
+                    userId : undefined,
+                    externalReview: false,
+                    initialReview: false
                 }
             },
             watch : {
@@ -1048,6 +1064,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.loadData();
                     this.loadRecentData();
                     Vue.set(this, "userId", undefined);
+                },
+                account: function(after,before) {
+                  Vue.set(this,"accountName",this.account.name);  
+                  Vue.set(this,"externalReview",this.account.externalReview);  
+                  Vue.set(this,"initialReview",this.account.initialReview);  
                 },
                 dateStart : function(after, before) {
                     this.loadRecentData();
@@ -1057,13 +1078,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 userId : function(after, before) {
                     this.loadRecentData();
-                },
-                '$route': function(to, from) {
-                    console.log(to.params);
-                    Vue.set(this, "accountId", to.params.accountId);
-                    this.loadData();
-                    this.loadRecentData();
-                    Vue.set(this, "userId", undefined);
                 }
             },
             methods : {
@@ -1100,9 +1114,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             mounted : function() {
                 var date = new Date();
                 date.setDate(date.getDate() - 7);
-                Vue.set(this, "dateStart", (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear().toString());
+                Vue.set(this, "dateStart", _formatDateFullYear(date));
                 date = new Date();
-                Vue.set(this, "dateEnd", (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear().toString());
+                Vue.set(this, "dateEnd", _formatDateFullYear (date));
                 var _app = this;
                 $('#reports a[data-toggle="tab"]').on('shown', function(e) {
                     var $picker = $(".placeholdered").datepicker({
@@ -1121,8 +1135,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         
         var router = new VueRouter({
             routes: [
-                { path: '/:accountId(\\d+)/:dir*', component: app },
-                { path: '/report/:accountId(\\d+)', app2}
+                { path: '/:accountId(\\d+)/:dir*', component: app }
               ]
         });
 

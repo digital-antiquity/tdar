@@ -118,7 +118,6 @@
         <js>/js/vue/vue-base-upload.js</js>
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>
-        <js>/js/vue/vue-balk-report.js</js>
         <js>/js/vue/edit-collection.js</js>
 
     </group>
