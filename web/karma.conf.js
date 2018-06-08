@@ -1,5 +1,5 @@
 // Karma configuration
-var wro = require("./src/test/frontend/lib/wro");
+//var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
 
 /**
@@ -16,10 +16,17 @@ function buildFilesFromWro(profile) {
     return files;
 }
 
+function getWebpackBundles(){
+    return [
+      "src/main/webapp/dist/bundle.js"  
+    ];
+}
+
+
 
 
 module.exports = function(config) {
-    var wroFiles = buildFilesFromWro('default');
+    var wroFiles = getWebpackBundles();//buildFilesFromWro('default');
     config.set({
 
         browserConsoleLogOptions: {terminal:false},

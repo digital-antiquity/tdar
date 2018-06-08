@@ -1,5 +1,3 @@
-import 'jquery';
-
 (function (console, window) {
     'use strict';
 

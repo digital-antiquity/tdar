@@ -1,9 +1,9 @@
-import 'leaflet';
-import 'leaflet-choropleth';
-import './../../includes/Leaflet.Sleep.js';
-import 'leaflet-draw/dist/leaflet.draw.js';
-import 'leaflet-cluster/dist/leaflet.markercluster.js';
-import jQuery from 'jquery' 
+//import 'leaflet';
+//import 'leaflet-choropleth';
+//import './../../includes/Leaflet.Sleep.js';
+//import 'leaflet-draw/dist/leaflet.draw.js';
+//import 'leaflet-cluster/dist/leaflet.markercluster.js';
+//import jQuery from 'jquery' 
 
 TDAR.leaflet = (function(console, $, ctx, L) {
     "use strict";

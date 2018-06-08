@@ -1,3 +1,5 @@
+console.log("TDAR is ",TDAR);
+console.log("Vue is ",Vue);
 TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios) {
     "use strict";
 
@@ -474,4 +476,4 @@ return {
         }
     }
 }
-})(console, jQuery, window, Vue,axios);
+})(console, jQuery, window, Vue, axios);

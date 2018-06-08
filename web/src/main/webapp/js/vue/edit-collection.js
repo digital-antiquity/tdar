@@ -1,3 +1,4 @@
+
 TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 	"use strict";
 

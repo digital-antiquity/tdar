@@ -2,13 +2,16 @@
 var webpack = require("webpack");
 const path = require('path');
 
+
+
+
 // webpack.autoProvidejQuery();
 module.exports = {
     context: __dirname,
     
   entry: { main: './src/main/webapp/js/webpack/index.js' },
   output: {
-        path: path.resolve(__dirname, "./src/main/webapp/webpack/"),
+        path: path.resolve(__dirname, "./src/main/webapp/dist/"),
         filename: 'bundle.js',
         chunkFilename: "[id].bundle.js"
   },
@@ -49,7 +52,9 @@ module.exports = {
          jQuery: "jquery",
          jquery: "jquery",
          c3: "c3",
-         d3: "d3"
+         d3: "d3",
+         TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
+         Vue : 'vue'
      })
   ],
   // this seemed to make a difference: 

@@ -1,6 +1,3 @@
-import $ from 'jquery';
-import "jquery-validation";
-
 TDAR.validate = (function($, ctx) {
     "use strict";
 
