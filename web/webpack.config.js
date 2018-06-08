@@ -17,24 +17,15 @@ module.exports = {
   },
   module: {
     rules: [
-        // {
-        //     test: /[\/\\]node_modules[\/\\]jquery_validation[\/\\]dist[\/\\].*$/,
-        //     loader: "imports-loader?$=jquery"
-        // }
+        /*{
+            test: require.resolve("jquery-validation"),
+            use: "imports-loader?$=jquery,this=>window,define=>false"
+        }*/
     ]
   },
   optimization: {
-    // minimizer: [
-    //   new UglifyJSPlugin({
-    //     sourceMap: true,
-    //     uglifyOptions: {
-    //       compress: {
-    //         inline: false
-    //       }
-    //     }
-    //   })
-    // ],
     runtimeChunk: false,
+
     splitChunks: {
       cacheGroups: {
         default: false,
@@ -46,25 +37,30 @@ module.exports = {
         }
       }
     }
-  },  plugins: [
+  },
+  
+  plugins: [
      new webpack.ProvidePlugin({
          $: "jquery",
          jQuery: "jquery",
-         jquery: "jquery",
+        // jquery: "jquery",
          c3: "c3",
          d3: "d3",
-         TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
+         //TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
          Vue : 'vue'
      })
   ],
+ 
   // this seemed to make a difference: 
   // https://github.com/webpack/webpack.js.org/issues/63
   resolve: {
         // alias: {
         //     jquery: "jquery/dist/jquery"
         // }
-    }
+  }
 };
+
+
 //
 //
 // const path = require('path');

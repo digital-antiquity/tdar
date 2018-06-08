@@ -1004,5 +1004,5 @@ TDAR.common = function (TDAR, fileupload) {
     });
 
     return self;
-}(TDAR, TDAR.fileupload);
+}(TDAR, TDAR.fileupload, jQuery);
 
