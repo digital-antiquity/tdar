@@ -10,14 +10,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     var _app;
     var _pp;
     
-    var _getApp = function () {
-        return _app;
-    }
-
-    var _getPp = function () {
-        return _pp;
-    }
-
     var MAX_SELECTED_FILES = 50;
     /**
      * this tool handles the file-first upload management
@@ -490,6 +482,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 renameDir: function() {
                     var pid = this.parentId;
                     var name = $("#rename").val();
+                    if (name == undefined || name.trim() == '') {
+                        this.cancelRename();
+                        return;
+                    }
                     var _app = this;
                     $.post("/api/file/renameDir", {"id": pid,"name":name, "accountId": this.accountId}).done(function(_file){
                         _app.dirStack.forEach(function(dir){
@@ -1061,8 +1057,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
             },
             watch : {
                 accountId : function(after, before) {
-                    this.loadData();
-                    this.loadRecentData();
+                    this.refresh();
                     Vue.set(this, "userId", undefined);
                 },
                 account: function(after,before) {
@@ -1081,6 +1076,10 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 }
             },
             methods : {
+                refresh: function() {
+                    this.loadData();
+                    this.loadRecentData();
+                },
                 hideReports: function() {
                     $("#balkTemplate").show();
                     $("#filesReport").hide();
@@ -1160,8 +1159,6 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
     
     return {
         init : _init,
-        getApp: _getApp,
-        getPp: _getPp,
         formatDate : _formatDate,
         formatLongDate : _formatLongDate, 
         main : function() {
