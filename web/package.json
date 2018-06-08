@@ -30,6 +30,7 @@
     "d3": "^3.5.17",
     "jquery": "^1.11.3",
     "jquery-validation": "^1.15.1",
+    "jstree": "3.0.9",
     "leaflet": "^1.0.3",
     "leaflet-choropleth": "^1.0.3",
     "leaflet-draw": "^0.4.9"
