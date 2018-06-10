@@ -12,6 +12,8 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
  */
 public class SpatialObfuscationUtil {
 
+    private static final double _1D = 1d;
+
     private static final transient Logger logger = LoggerFactory.getLogger(SpatialObfuscationUtil.class);
 
     private static Double random;
@@ -39,7 +41,7 @@ public class SpatialObfuscationUtil {
             // this should be something less than 1 mile
 
             // x y random1 random2 random3 random4 distance
-            double south1 = centerLatitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
+            double south1 = centerLatitude - _1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
                     + getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
 
             // north is then south plus 1 mile
@@ -60,7 +62,7 @@ public class SpatialObfuscationUtil {
             Double centerLongitude = latitudeLongitudeBox.getCenterLongitude();
 
             // west is center (longitude - 1 mile ) + random * 1 mile
-            double west1 = centerLongitude - 1d * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
+            double west1 = centerLongitude - _1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
                     + getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
 
             // east is 1 mile plus west
