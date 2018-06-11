@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
     <#import "/WEB-INF/macros/common-rights.ftl" as rights>
-    <#import "/${config.themeDir}/settings.ftl" as settings>
+    <#import "/WEB-INF/settings.ftl" as settings>
 
 <head>
 

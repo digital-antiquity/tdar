@@ -6,8 +6,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#escape _untrusted as _untrusted?html>
     <#import "common-resource.ftl" as commonr>
     <#import "../common.ftl" as common>
-    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
-    <#import "/${config.themeDir}/settings.ftl" as settings>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
+    <#import "/WEB-INF/settings.ftl" as settings>
     <#import "../navigation-macros.ftl" as nav>
     <#import "../common-rights.ftl" as rights>
 

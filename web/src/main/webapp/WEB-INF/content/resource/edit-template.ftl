@@ -12,7 +12,7 @@
 <#-- We define local_ as a reference to the actual template in question. It's going to define for us any functions/methods that get overriden 
 	 in the form. if local_.method?? && local_.method?is_macro ... then execute it...  -->
 
-    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 <#-- helptext can be overriden by the theme so we import it, it, in turn override the default helptext -->
 <head>
 <#-- expose pageTitle so edit pages can use it elsewhere -->

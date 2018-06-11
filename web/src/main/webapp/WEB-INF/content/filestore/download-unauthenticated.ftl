@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html>
-<#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
+<#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 
 <#if informationResourceFileVersion?has_content>
     <#assign title>${informationResourceFileVersion.filename!"undefined"?html}</#assign>
