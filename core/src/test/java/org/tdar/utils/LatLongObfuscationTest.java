@@ -1,6 +1,7 @@
 package org.tdar.utils;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.rdf4j.model.vocabulary.SP;
@@ -64,14 +65,17 @@ public class LatLongObfuscationTest {
         Double east = llb.getEast();
         Double west = llb.getWest();
         logger.debug("before: e:{} w:{}", east, west);
+        String geoJsonRaw = toGeoJson(llb, false);
+        logger.debug(" after: {}", geoJsonRaw);
         llb.obfuscate();
-        logger.debug(" after: {}", toGeoJson(llb, false));
         logger.debug("east: {} ; obs: {}", east, llb.getObfuscatedEast());
         logger.debug("west: {} ; obs: {}", west, llb.getObfuscatedWest());
         // double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE, true);
-        logger.debug(" after: {}", toGeoJson(llb, true));
+        String geoJsonObs = toGeoJson(llb, true);
+        logger.debug(" after: {}", geoJsonObs);
         logger.debug("result e:" + llb.getObfuscatedEast() + " > " + east);
         logger.debug("result w:" + llb.getObfuscatedWest() + " < " + west);
+        assertNotEquals(geoJsonRaw, geoJsonObs);
         assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() > east);
         assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedWest() < west);
     }
@@ -83,7 +87,7 @@ public class LatLongObfuscationTest {
         sb.append(String.format("\"properties\":{\"obfuscated\":%s},",obfs));
         sb.append(String.format("\"geometry\": {\"%s\":\"%s\",","type", "Polygon"));
         sb.append("\"coordinates\": [[");
-        if (obfs) {
+        if (!obfs) {
             sb.append(String.format("[%s,%s],", llb.getEast(), llb.getSouth()));
             sb.append(String.format("[%s,%s],", llb.getEast(), llb.getNorth()));
             sb.append(String.format("[%s,%s],", llb.getWest(), llb.getNorth()));
