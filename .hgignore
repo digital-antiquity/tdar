@@ -87,7 +87,6 @@ syntax: regexp
 ^(.+)/src/main/resources/(.+)-local-settings.xml
 ^(.+)/src/main/resources/log4j\.xml
 ^(.+)/src/main/resources/log4j2\.xml
-^(.+)/src/main/webapp/bower_components
 ^(.+)/(indexes|target|logs|bin|node_modules)
 ^web/src/main/webapp/components/(.+)/(examples|examples_support|test|tests|unit_testing|demo|docs)/(.+)
 ^web/src/main/webapp/components/(.+)\.sh
