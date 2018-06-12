@@ -179,8 +179,12 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         // load resource provider institution and publishers
         setResourceProviderInstitution(getResource().getResourceProviderInstitution());
         setPublisherName(getResource().getPublisherName());
-        if (getTdarConfiguration().getCopyrightMandatory() || PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder())) {
-            copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
+        boolean hasValidCopyrightHolder = PersistableUtils.isNotNullOrTransient(getResource().getCopyrightHolder());
+        if (getTdarConfiguration().getCopyrightMandatory() || hasValidCopyrightHolder) {
+            copyrightHolderProxies.setRole(ResourceCreatorRole.COPYRIGHT_HOLDER);
+            if (hasValidCopyrightHolder) {
+                copyrightHolderProxies = new ResourceCreatorProxy(getResource().getCopyrightHolder(), ResourceCreatorRole.COPYRIGHT_HOLDER);
+            }
         }
     }
 
