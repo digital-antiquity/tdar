@@ -29,6 +29,7 @@ public class SchemaOrgResourceTransformer extends AbstractSchemaOrgMetadataTrans
         addGraphSection(r.getActiveSiteNameKeywords(), "tdar:siteNameKeywords");
         addGraphSection(r.getActiveSiteTypeKeywords(), "tdar:siteTypeKeywords");
         addGraphSection(r.getActiveTemporalKeywords(), "tdar:temporalKeywords");
+        ss.markReadOnly(r.getFirstActiveLatitudeLongitudeBox());
         addGraphSectionSpatial(r.getActiveLatitudeLongitudeBoxes());
         addGraphSectionTemporal(r.getActiveCoverageDates());
         addContextSection(jsonLd);
