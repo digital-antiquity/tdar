@@ -48,7 +48,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.service.event.EventBusResourceHolder;
@@ -87,9 +86,6 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
 
     @Autowired
     private JaxbPersistableConverter persistableConverter;
-    
-    @Autowired
-    private GenericDao genericDao;
 
     @Autowired
     private JaxbResourceCollectionRefConverter collectionRefConverter;
@@ -99,10 +95,6 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
         jaxbClasses = ReflectionHelper.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
 
-    @Transactional(readOnly=true)
-    public void markReadOnly(Persistable persistable) {
-        genericDao.markReadOnly(persistable);
-    }
     /*
      * (non-Javadoc)
      * 
