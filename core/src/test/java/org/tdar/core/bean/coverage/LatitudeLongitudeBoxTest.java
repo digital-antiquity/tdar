@@ -1,4 +1,4 @@
-package org.tdar.utils;
+package org.tdar.core.bean.coverage;
 
 import static java.lang.Math.abs;
 import static org.hamcrest.Matchers.greaterThan;
@@ -13,7 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.utils.SpatialObfuscationUtil;
 
 @SuppressWarnings({ "static-method" })
 public class LatitudeLongitudeBoxTest {
@@ -119,9 +119,6 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void testExactLLB2() {
         // not 100% necessary, but attempting to get at the randomness
-        SpatialObfuscationUtil.useRandom(false);
-        SpatialObfuscationUtil.setRandom(0.9999);
-
         for (int i = 0; i < 100; i++) {
             LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-36.845703125d, -3.64903402157866d, -36.845703125d, 3.64903402157866d);
 
@@ -133,9 +130,6 @@ public class LatitudeLongitudeBoxTest {
             llb.obfuscateAll();
             assertGreaterThanOneMile(llb);
         }
-        SpatialObfuscationUtil.useRandom(true);
-        SpatialObfuscationUtil.setRandom(null);
-
     }
 
     private void assertGreaterThanOneMile(LatitudeLongitudeBox llb) {

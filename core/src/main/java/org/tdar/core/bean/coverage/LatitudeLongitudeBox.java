@@ -3,6 +3,7 @@ package org.tdar.core.bean.coverage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.json.JsonLookupFilter;
 
