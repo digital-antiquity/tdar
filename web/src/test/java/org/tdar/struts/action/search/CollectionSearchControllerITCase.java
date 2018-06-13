@@ -16,11 +16,14 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.exception.SearchIndexException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.utils.MessageHelper;
+
+import com.amazonaws.services.ec2.model.EgressOnlyInternetGateway;
 
 @Transactional
 public class CollectionSearchControllerITCase extends AbstractControllerITCase {
@@ -73,6 +76,32 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
         ResourceCollection collection = setupCollection(true, getBasicUser(), true, CollectionResourceSection.UNMANAGED);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
+    }
+
+    
+    @Test
+    @Rollback
+    public void testSearchForDeletedCollectionAsBasicUser()
+            throws InstantiationException, IllegalAccessException, SearchIndexException, IOException {
+        TdarUser user = getBasicUser();
+        ResourceCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
+        collection.setDescription("test");
+        collection.setHidden(false);
+        collection.setStatus(Status.DELETED);
+        collection.markUpdated(getUser());
+        genericService.saveOrUpdate(collection);
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), user, Permissions.ADMINISTER_COLLECTION));
+        collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), user, Permissions.ADMINISTER_COLLECTION));
+        genericService.saveOrUpdate(collection);
+        searchIndexService.index(collection);
+        controller = generateNewController(CollectionSearchAction.class);
+        init(controller, user);
+        doSearch("Hohokam Archaeology");
+        assertFalse(controller.getResults().contains(collection));
+        controller = generateNewController(CollectionSearchAction.class);
+        init(controller, getAdminUser());
+        doSearch("Hohokam Archaeology");
+        assertFalse(controller.getResults().contains(collection));
     }
 
     @Test

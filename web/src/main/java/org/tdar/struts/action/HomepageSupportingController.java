@@ -135,8 +135,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
         featuredResources.forEach(r -> {
             if (r.getFirstLatitudeLongitudeBox() != null) {
-                getGenericService().markReadOnly(r.getFirstActiveLatitudeLongitudeBox());
-                r.getFirstLatitudeLongitudeBox().obfuscate();
+                r.getFirstLatitudeLongitudeBox().obfuscateAll();
             }
         });
 

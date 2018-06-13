@@ -182,7 +182,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return order;
     }
 
-    public void setOrder(int order) {
+    private void setOrder(int order) {
         this.order = order;
     }
 
@@ -254,7 +254,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return schema;
     }
 
-    public void setSchema(String schema) {
+    private void setSchema(String schema) {
         this.schema = schema;
     }
 

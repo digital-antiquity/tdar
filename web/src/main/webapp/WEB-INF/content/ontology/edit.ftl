@@ -7,7 +7,7 @@
 
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 
 
     <#macro subNavMenu>

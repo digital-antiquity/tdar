@@ -15,6 +15,7 @@ import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -115,6 +116,31 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
 
         gotoPage("/document/" + docid + "/edit");
         assertTextPresent("Default account for");
+    }
+
+
+    @Test
+    public void testAccountAddUser() throws Exception {
+        Map<String, String> personmap = new HashMap<String, String>();
+        setupBasicUser(personmap, "bobloblaw123" + System.currentTimeMillis());
+        personmap.remove("reg.contributorReason");
+        testRegister(personmap, TERMS.BOTH, true);
+
+        gotoPage(URLConstants.CART_ADD);
+        setInput("invoice.numberOfMb", "20");
+        setInput("invoice.numberOfFiles", "2");
+        submitForm();
+        logger.debug("curernt page:{}", getCurrentUrlPath());
+        // setInput("invoice.paymentMethod", "CREDIT_CARD");
+        String accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
+        gotoPage("/billing/"+ accountId + "/edit");
+        setInput("proxies[5].id",TestConfiguration.getInstance().getUserId());
+        setInput("proxies[5].permission",Permissions.USE_ACCOUNT);
+        submitForm();
+        logger.debug(getPageText());
+        assertTextPresentInPage("test user");
+        assertTextPresentInPage("Charge to Billing Account");
+//        assertTextPresentInPage("test user  test@tdar.org   Charge to Billing Account");
     }
 
     @Test

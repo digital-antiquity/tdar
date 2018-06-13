@@ -4,7 +4,7 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 <#import "/WEB-INF/macros/common.ftl" as common>
-<#import "/${config.themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/settings.ftl" as settings>
 
 <head>
     <title>Welcome to ${siteName}</title>
@@ -119,7 +119,14 @@
 		<#if featuredCollection?has_content>
             <@commonr.featuredCollection featuredCollection />
 		<#else>
-            <#include "/${config.themeDir}/homepage-bottom-left.dec" />
+<h3>Getting Started with ${siteAcronym}</h3>
+<ul>
+    <li><a href="${config.documentationUrl}">a tutorial that can help you get started</a>.</li>
+    <li><a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
+    <li><a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
+    <li><a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
+</ul>
+<!--    <a href="<@s.url value="/register"/>" class="button">Register</a> or <a href="<@s.url value="/login"/>" class="button">Log in</a> -->
 		</#if>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-6">

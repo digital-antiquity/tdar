@@ -1,5 +1,6 @@
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import org.tdar.filestore.tasks.PrepareArchiveForKettleTask;
 @Component
 public class FileArchiveWorkflow extends BaseWorkflow {
 
-    public static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "zip", "tar", "bz2", "tgz" });
+    public static final Collection<String> ARCHIVE_EXTENSIONS_SUPPORTED = Arrays.asList(new String[] { "zip", "tar", "bz2", "tgz" });
 
     public FileArchiveWorkflow() {
         for (String extension : ARCHIVE_EXTENSIONS_SUPPORTED) {

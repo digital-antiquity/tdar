@@ -90,7 +90,7 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("document.volume", "25");
         if (TdarConfiguration.getInstance().getLicenseEnabled()) {
             docValMap.put("resource.licenseType", LicenseType.OTHER.name());
-            alternateTextLookup.add(LicenseType.OTHER.getLabel());
+            alternateTextLookup.add("Custom License Type");
             docValMap.put("resource.licenseText", "my custom license");
         }
 
@@ -214,18 +214,13 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.putAll(docUnorderdValMap);
 
         setInputs(docValMap, docMultiValMap);
+        logger.debug(getPageText());
 
         submitForm();
 
         String path = internalPage.getUrl().getPath().toLowerCase();
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + getPageText(), path.matches(REGEX_DOCUMENT_VIEW));
 
-        // try {
-        // FileUtils.writeStringToFile(new File("post-save.html"), getPageCode());
-        // } catch (IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
 
         assertViewPage(docValMap, docMultiValMapLab);
 

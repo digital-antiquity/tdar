@@ -136,6 +136,9 @@
                         <@s.a href="${config.contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
                         and wish to add ${siteAcronym} content.
                     </label>
+	<br/>
+                <span class="help-block">Review our <a href="${config.privacyPolicyUrl}">privacy policy</a>.</span>
+                    
                 </div>
             </div>
             <#if (level > 1)>

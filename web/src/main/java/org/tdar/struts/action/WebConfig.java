@@ -157,6 +157,10 @@ public class WebConfig {
         return config.getContributorAgreementUrl();
     }
 
+    public String getPrivacyPolicyUrl() {
+        return config.getPrivacyPolicyUrl();
+    }
+
     public boolean isAuthenticationAllowed() {
         return config.allowAuthentication();
     }

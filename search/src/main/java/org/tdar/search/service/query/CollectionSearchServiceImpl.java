@@ -96,7 +96,6 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
                 // if view anything and empty or view all
                 if (viewAnything) {
                     rightsPart.clear();
-                    rightsPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
                 } else {
                     rightsPart.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
 
@@ -108,7 +107,11 @@ public class CollectionSearchServiceImpl extends AbstractSearchService implement
             CollectionAccessQueryPart queryPart = getPermissionsPart(authenticatedUser, query);
             rightsPart.append(queryPart);
         }
-        return rightsPart;
+
+        QueryPartGroup parentPart = new QueryPartGroup(Operator.AND);
+        parentPart.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Operator.OR, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
+        parentPart.append(rightsPart);
+        return parentPart;
     }
 
     /*

@@ -75,7 +75,58 @@
     
     <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}.custom/jquery-ui.min.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
-    <#include "/${config.themeDir}/head.dec" />
+    
+<meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
+<meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
+<meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
+<Meta name = "baidu-site-verification" content = "QBf6pGiSwd" />
+
+<link rel='shortcut icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
+<link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
+
+<#if !(test!false)>
+<script type="text/javascript">
+    (function(d) {
+        var config = {
+                    kitId: 'czp6njc',
+                    scriptTimeout: 3000
+                },
+                h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(
+                        /\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement(
+                        "script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";
+                        tk.src='//use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;
+                        f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+    })(document);
+</script>
+</#if>
+<style>
+    @media screen {
+        /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
+        h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+            font-family: "soleil", sans-serif !important;
+        }
+
+        #home .news li, .cols p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+            font-family: "ff-tisa-web-pro", serif !important;
+        }
+
+    }
+
+    /* for typekit to prevent flash of unstyled content */
+    .wf-loading {
+        font-family: "helvetica";
+        visibility: hidden;
+    }
+
+    .wf-active {
+        visibility: visible;
+    }
+</style>
+
+
     <#if whiteLabelCollection??>  
         <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
     </#if>
@@ -385,7 +436,12 @@ ${head}
         </script>
     </#if>
 
-    <#import "/${config.themeDir}/settings.ftl" as settings />
+<!-- colors for bar charts -->
+<!-- colors for homepage map -->
+<#assign mapColors = ["ebd790","D6B84B","C3AA72","A09D5B","909D5B", "909D5B","DC7612","DC5000","BD3200","BD3200","660000"] />
+
+<#assign helptext = {"name":"mouse", "price":50}>
+
 <script id="c3colors">
  [<#list config.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
 </script>
@@ -399,7 +455,19 @@ ${head}
 
     <!-- BEGIN-TDAR-FOOTER -->
     
-    <#include "/${config.themeDir}/sub-footer.dec" />
+<div class="container"  style="margin-top:10px;margin-bottom:10px">
+<div class="row">
+    <div class="span12" id="foothumb">
+        <a href="http://www.asu.edu"><img src="/images/logos/asu_veritcal.png" class="image ht"  title="Arizona State University" alt="Arizona State University" /></a>
+        <a href="http://www.mellon.org"><img src="/images/logos/Mellon.png" class="image ht" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a>
+        <a href="http://www.nsf.gov"><img src="/images/logos/nsf.jpg" class="image ht" title="National Science Foundation" alt="National Science Foundation" /></a>
+        <a href="http://www.neh.gov"><img src="/images/logos/neh_logo_stckd.jpg" class="image ht" title="National Endowment for the Humanities" alt="National Endowment for the Humanities" /></a>
+        <a href="http://www.saa.org"><img src="/images/logos/saa-small.png" class="image ht" title="Society for American Archaeology" alt="Society for American Archaeology" /></a>
+        <a href="http://www.archaeological.org"><img src="/images/logos/aia.png" class="image ht" title="Archaeological Institute of America" alt="Archaeological Institute of America" /></a>
+            <span class="stretch"></span>
+    </div>
+</div>
+</div>
 
 </body>
 </html>

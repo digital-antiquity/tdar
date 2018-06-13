@@ -404,7 +404,7 @@ TDAR.autocomplete = (function () {
                             createRow.value = request.term;
                             // allow for custom phrasing
                             if (options.showCreatePhrase) {
-                                createRow.label = "(" + options.showCreatePhrase + ": " + request.term + ")";
+                                createRow.label = " (" + options.showCreatePhrase + ": " + request.term + ")";
                             }
                             createRow.id = -1;
                             createRow.isNewItem = true;
@@ -538,7 +538,7 @@ TDAR.autocomplete = (function () {
                 }
                 var ocur = "";
                 if (item.occurrence != undefined && item.occurrence != 0) {
-                    ocur = "(" + item.occurrence + ")";
+                    ocur = " (" + item.occurrence + ")";
                 }
                 var extra = "<span class='pull-right'>" + star + ocur + " " + "&nbsp;&nbsp;</span>";
 
@@ -628,7 +628,7 @@ TDAR.autocomplete = (function () {
             var link = "";
             var idpart = "";
             if (item.id != -1) {
-                idpart = "("+item.id+")";
+                idpart = " ("+item.id+")";
             }
             return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>" +idpart).appendTo(ul);
         };

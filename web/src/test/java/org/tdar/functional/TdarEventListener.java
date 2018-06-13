@@ -222,5 +222,12 @@ public class TdarEventListener extends WebDriverEventAdapter {
     public void beforeSwitchToWindow(String arg0, WebDriver arg1) {
         logger.trace("beforeSwitchToWindow");
     }
+    
+//    @Override
+//    public beforeGetScreenshotAs(OutputType<X> x) {}
+//    
+//    @Override
+//    public void afterGetScreenshotAs(OutputType<X> x, X xx) {}
+    
 
 }

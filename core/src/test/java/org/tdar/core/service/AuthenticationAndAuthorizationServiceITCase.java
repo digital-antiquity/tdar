@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -13,15 +14,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -39,6 +46,35 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         user.setTosVersion(tosVersion);
         user.setContributorAgreementVersion(creatorAgreementVersion);
         return user;
+    }
+    
+    @Autowired
+    AuthorizedUserDao authoriedUserDao;
+    
+    @Test
+    @Rollback
+    public void testExpiredAccess() throws InstantiationException, IllegalAccessException {
+        Document document = generateDocumentAndUseDefaultUser();
+        AuthorizedUser au = new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.MODIFY_RECORD);
+        au.setDateExpires(DateTime.now().minusDays(2).toDate());;
+        document.getAuthorizedUsers().add(au);
+        genericService.saveOrUpdate(document);
+        genericService.saveOrUpdate(au);
+        assertFalse(authoriedUserDao.isAllowedTo(getBillingUser(), document, Permissions.MODIFY_METADATA));
+        
+    }
+
+    @Test
+    @Rollback
+    public void testUnExpiredAccess() throws InstantiationException, IllegalAccessException {
+        Document document = generateDocumentAndUseDefaultUser();
+        AuthorizedUser au = new AuthorizedUser(getAdminUser(), getBillingUser(), Permissions.MODIFY_RECORD);
+        au.setDateExpires(DateTime.now().plusDays(2).toDate());;
+        document.getAuthorizedUsers().add(au);
+        genericService.saveOrUpdate(document);
+        genericService.saveOrUpdate(au);
+        assertTrue(authoriedUserDao.isAllowedTo(getBillingUser(), document, Permissions.MODIFY_METADATA));
+        
     }
 
     @Test
