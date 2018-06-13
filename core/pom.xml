@@ -54,12 +54,6 @@
         </dependency>
         
         <dependency>
-            <groupId>org.knowm.xchart</groupId>
-            <artifactId>xchart</artifactId>
-            <version>${xchart.version}</version>
-        </dependency>
-        
-        <dependency>
             <groupId>com.joestelmach</groupId>
             <artifactId>natty</artifactId>
             <version>0.13</version>
