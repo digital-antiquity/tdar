@@ -1,4 +1,4 @@
-package org.tdar.core.service.external;
+    package org.tdar.core.service.external;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +49,7 @@ import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.dao.resource.stats.DateGranularity;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.utils.EmailStatisticsHelper;
@@ -139,7 +140,10 @@ public class EmailServiceImpl implements EmailService {
                 // `src="cid:FILE.EXT"`.
                 // This will generate a base64 encoded mime segment with for
                 // FILE.EXT.
-                file.renameTo(new File(_inlineAttachmentDir + File.separator + fileName));
+                boolean renameTo = file.renameTo(new File(_inlineAttachmentDir + File.separator + fileName));
+                if (renameTo ==false) {
+                    throw new TdarRecoverableRuntimeException("can't rename file:" + fileName);
+                }
             });
 
             email.getAttachments().forEach(file -> {

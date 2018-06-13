@@ -57,7 +57,7 @@ public abstract class AbstractAppConfiguration implements Serializable {
     protected static final String TDAR_PROPERTIES = "tdar.properties";
     private static final long serialVersionUID = 2190713147269025044L;
     public transient Logger logger = LoggerFactory.getLogger(getClass());
-    public static transient Logger staticLogger = LoggerFactory.getLogger(AbstractAppConfiguration.class);
+    public static final transient Logger staticLogger = LoggerFactory.getLogger(AbstractAppConfiguration.class);
 
     public AbstractAppConfiguration() {
         logger.debug("Initializing Simple Application Context");
