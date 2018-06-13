@@ -1,0 +1,14 @@
+{
+  "name": "es6-promise",
+  "homepage": "https://github.com/stefanpenner/es6-promise",
+  "version": "4.2.4",
+  "_release": "4.2.4",
+  "_resolution": {
+    "type": "version",
+    "tag": "v4.2.4",
+    "commit": "314e4831d5a0a85edcb084444ce089c16afdcbe2"
+  },
+  "_source": "https://github.com/stefanpenner/es6-promise.git",
+  "_target": "*",
+  "_originalSource": "https://github.com/stefanpenner/es6-promise.git"
+}
