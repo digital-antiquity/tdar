@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -229,5 +230,17 @@ public class TdarEventListener extends WebDriverEventAdapter {
 //    @Override
 //    public void afterGetScreenshotAs(OutputType<X> x, X xx) {}
     
+
+    @Override
+    public <X> void afterGetScreenshotAs(OutputType<X> arg0, X arg1) {
+        logger.trace("afterGetScreenshotAs");
+        
+    }
+
+    @Override
+    public <X> void beforeGetScreenshotAs(OutputType<X> arg0) {
+        logger.trace("beforeGetScreenshotAs");
+        
+    }
 
 }

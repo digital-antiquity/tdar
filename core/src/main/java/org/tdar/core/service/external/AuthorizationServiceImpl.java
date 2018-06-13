@@ -902,6 +902,15 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
 
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean cannotChargeAccount(TdarUser authenticatedUser, BillingAccount account) {
+        if (canChargeAccount(authenticatedUser, account)) {
+            return false;
+        }
+        return true;
+    }
+
     /*
      * (non-Javadoc)
      * 

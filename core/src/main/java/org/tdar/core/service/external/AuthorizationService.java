@@ -258,4 +258,6 @@ public interface AuthorizationService {
 
     boolean canChargeAccount(TdarUser authenticatedUser, BillingAccount account);
 
+    boolean cannotChargeAccount(TdarUser authenticatedUser, BillingAccount account);
+
 }
