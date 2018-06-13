@@ -1,3 +1,6 @@
+/**TDAR edit-collection.js */
+
+
 import Vue from "vue";
 TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
 	"use strict";

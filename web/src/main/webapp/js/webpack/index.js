@@ -82,40 +82,32 @@ window.c3 = c3;
 
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
 
-
-
 import "jquery-validation/dist/jquery.validate";
 import "jquery-validation/dist/additional-methods";
-
-/**TDAR Components**/
-
-
 
 import './../tdar.datepicker';
 import './../tdar.moreinfo';
 import './../tdar.upload';
-/**This breaks $.validator. **/
-//import './../tdar.jquery-upload-validation';
+import './../tdar.jquery-upload-validation';
 import './../tdar.common';
 import './../tdar.bulk';
 import './../tdar.repeatrow';
-//import './../tdar.autocomplete';
+import './../tdar.autocomplete';
 
 import './../tdar.c3graphsupport';
 import './../tdar.c3graph';
 import './../tdar.validate';
 import './../tdar.messages_en';
 import './../tdar.d3tree';
-//
 
 import './../tdar.datatable';
-//import './../tdar.dataset-metadata';
-//import './../tdar.ontology-mapping';
+import './../tdar.dataset-metadata';
+import './../tdar.ontology-mapping';
 
 import './../tdar.sensorydata';
 import './../tdar.notifications';
 import './../tdar.advanced-search';
-//import './../tdar.authority-management';
+import './../tdar.authority-management';
 import './../tdar.auth';
 import './../tdar.inheritance';
 import './../tdar.download';
@@ -124,7 +116,7 @@ import './../tdar.contexthelp';
 import './../tdar.menu';
 import './../tdar.formValidateExtensions';
 import './../../includes/bindWithDelay';
-//import './../tdar.bookmark';
+import './../tdar.bookmark';
 import './../maps/tdar.leaflet';
 
 import './../../includes/js-emca-5.1-polyfill.js';
@@ -133,14 +125,15 @@ import 'selectize/dist/js/standalone/selectize.js';
 import './../maps/tdar.worldmap';
 
 import "vue";
-/**
+
 import './../vue/vue-selectize.js';
-*/
 require('script-loader!../../includes/bootstrap-2.32/js/bootstrap.js');
 import './../vue/view-collection-widget.js';
 import './../vue/edit-collection';
 
-//TDAR.main();
+console.log("TDAR is: ",TDAR);
+
+TDAR.main();
 
 //import "bootstrap-2.3.2/js/bootstrap-affix.js";
 //import "bootstrap-2.3.2/js/bootstrap-alert.js";

@@ -1,3 +1,7 @@
+/**
+ * TDAR.bulk.js
+ */
+
 (function (TDAR, $) {
     'use strict';
     var asyncUrl;

@@ -1,4 +1,4 @@
-TDAR.validate = (function($, ctx) {
+TDAR.validate = (function($, ctx, TDAR) {
     "use strict";
 
 
@@ -393,4 +393,4 @@ TDAR.validate = (function($, ctx) {
             TDAR.validate.init();
         }
     }
-})(jQuery, window);
+})(jQuery, window, TDAR);

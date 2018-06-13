@@ -1,5 +1,6 @@
-TDAR.c3graph = {};
 /**
+ * TDAR.c3graph
+ * 
  * This library is designed to provide a pass-through translation between the c3 graphing library and tDAR. In general, all configuration is done through data
  * attributes on DIV elements
  * 
@@ -12,7 +13,9 @@ TDAR.c3graph = {};
  * 
  * 
  */
-TDAR.c3graph = (function(console, $, ctx, c3) {
+ TDAR.c3graph = {};
+ 
+TDAR.c3graph = (function(console, $, ctx, c3, TDAR) {
     "use strict";
 
     var _getColors = function() {
@@ -419,4 +422,4 @@ TDAR.c3graph = (function(console, $, ctx, c3) {
             TDAR.c3graph.initGaugeChart();
         }
     }
-})(console, jQuery, window, c3);
+})(console, jQuery, window, c3, TDAR);

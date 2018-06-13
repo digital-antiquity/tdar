@@ -2,13 +2,10 @@
 var webpack = require("webpack");
 const path = require('path');
 
-
-
-
 // webpack.autoProvidejQuery();
 module.exports = {
     context: __dirname,
-    
+    //devtool: 'eval-source-map',
   entry: { main: './src/main/webapp/js/webpack/index.js' },
   output: {
         path: path.resolve(__dirname, "./src/main/webapp/dist/"),
@@ -48,10 +45,10 @@ module.exports = {
         // jquery: "jquery",
          c3: "c3",
          d3: "d3",
-         //TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
-//         axios:"axios",
+         // TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
+         // axios:"axios",
          Vue : 'vue',
-//         Vue : 'Vue'
+         // Vue : 'Vue'
      })
   ],
  

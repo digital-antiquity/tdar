@@ -1,4 +1,8 @@
- tmpl = require('script-loader!blueimp-tmpl/js/tmpl.js')
+/**
+ * tdar.common.js
+ */
+
+tmpl = require('script-loader!blueimp-tmpl/js/tmpl.js')
 /*
  * $Id$
  * 

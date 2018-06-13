@@ -1,6 +1,10 @@
+/**
+ * tdar.c3graphsupport
+ */
+
 TDAR.c3graphsupport = {};
 
-TDAR.c3graphsupport = (function(console, $, ctx) {
+TDAR.c3graphsupport = (function(console, $, ctx, TDAR) {
     var _resourceBarGraphClick = function(d, element) {
         var $parent = $("#resourceBarGraph");
         var source = JSON.parse($($parent.data("source")).html());
@@ -40,4 +44,4 @@ TDAR.c3graphsupport = (function(console, $, ctx) {
         getClickPath : _getClickPath
     }
     
-})(console, jQuery, window);
+})(console, jQuery, window, TDAR);

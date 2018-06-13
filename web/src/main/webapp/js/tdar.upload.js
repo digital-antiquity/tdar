@@ -1,4 +1,7 @@
-/* ASYNC FILE UPLOAD SUPPORT */
+/* ASYNC FILE UPLOAD SUPPORT 
+ * 
+ * tdar.fileupload
+ * */
 
 TDAR.fileupload = (function (TDAR, $) {
     "use strict";

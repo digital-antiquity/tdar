@@ -1,3 +1,10 @@
+/**TDAR
+ * view-collection-widget.js
+ * 
+ * This module is used to add/remove resources from the jQuery datatable. 
+ */
+
+
 import Vue from "vue";
 TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios, TDAR) {
     "use strict";

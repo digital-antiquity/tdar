@@ -1,3 +1,6 @@
+/***
+ * tdar.moreinfo.js
+ */
 (function (TDAR, $) {
     'use strict';
 
