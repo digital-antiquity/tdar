@@ -49,6 +49,7 @@ core/ANDPersistentIdentifierClient.log
 search/ANDPersistentIdentifierClient.log
 web/.tern-project
 web/phantomjsdriver.log
+web/src/main/webapp/webpack
 .springBeans
 *.diff
 
@@ -56,7 +57,10 @@ core/src/main/resources/rebel.xml
 web/src/main/resources/rebel.xml
 docker/docker
 docker/postgres
-web/src/main/webapp/webpack
+web/src/main/webapp/components/angular.js
+web/src/main/webapp/components/jquery/dist/jquery.js
+web/src/main/webapp/components/jquery/dist/jquery.min.js
+web/src/main/webapp/components/jquery/dist/jquery.min.map
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 webservice/([^\/]+)/build/.*
@@ -83,7 +87,6 @@ syntax: regexp
 ^(.+)/src/main/resources/(.+)-local-settings.xml
 ^(.+)/src/main/resources/log4j\.xml
 ^(.+)/src/main/resources/log4j2\.xml
-^(.+)/src/main/webapp/bower_components
 ^(.+)/(indexes|target|logs|bin|node_modules)
 ^web/src/main/webapp/components/(.+)/(examples|examples_support|test|tests|unit_testing|demo|docs)/(.+)
 ^web/src/main/webapp/components/(.+)\.sh

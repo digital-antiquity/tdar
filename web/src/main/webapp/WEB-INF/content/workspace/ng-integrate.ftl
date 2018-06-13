@@ -1,5 +1,5 @@
 <#setting url_escaping_charset="UTF-8">
-<#global angular_version="1.5.5">
+<#global angular_version="1.5.7">
 
 <head>
     <title>Dataset Integration: Edit</title>
@@ -326,7 +326,7 @@
     ${categoriesJson}
     </script>
     <script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
-
+    <script type="text/javascript" src="/components/angular.js"></script>
 
 </div>
 

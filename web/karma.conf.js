@@ -1,5 +1,5 @@
 // Karma configuration
-var wro = require("./src/test/frontend/lib/wro");
+//var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
 
 /**
@@ -16,10 +16,17 @@ function buildFilesFromWro(profile) {
     return files;
 }
 
+function getWebpackBundles(){
+    return [
+      "src/main/webapp/dist/bundle.js"  
+    ];
+}
+
+
 
 
 module.exports = function(config) {
-    var wroFiles = buildFilesFromWro('default');
+    var wroFiles = getWebpackBundles();//buildFilesFromWro('default');
     config.set({
 
         browserConsoleLogOptions: {terminal:false},
@@ -35,8 +42,8 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                'node_modules/es6-promise/dist/es6-promise.js',
-                'node_modules/es6-promise/dist/es6-promise.auto.js',
+                'node_modules/es6-promise/es6-promise.js',
+                'node_modules/es6-promise/es6-promise.auto.js',
                 'node_modules/vue/dist/vue.js',
                 'node_modules/axios/dist/axios.js',
                 'node_modules/moxios/dist/moxios.js',
@@ -51,8 +58,10 @@ module.exports = function(config) {
 
 
             ],
+            
             //files specified in wro.xml 
             wroFiles,
+            
             [
                 // specs
                 "src/test/frontend/spec/**/*.js",
@@ -126,7 +135,7 @@ module.exports = function(config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
 
-        // browsers: ['ChromeHeadless'],
+       // browsers: ['ChromeHeadless'],
         browsers: ['PhantomJS'],
         // concurrency: Infinity,
         // Continuous Integration mode

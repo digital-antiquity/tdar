@@ -1,8 +1,8 @@
-TDAR.d3tree = {};
-
-TDAR.d3tree = (function(console, $, ctx) {
+TDAR.d3tree = (function(console, $, ctx, d3) {
     "use strict";
 
+    // var d3 = window.d3 ? window.d3 : typeof require !== 'undefined' ? require("d3") : undefined;
+    
     // basically a way to get the path to an object
 
     function searchTree(obj, search, path) {
@@ -323,4 +323,4 @@ TDAR.d3tree = (function(console, $, ctx) {
         "clearSearch": _clearSearch,
         "allNodes": allNodes
     };
-})(console, jQuery, window);
+})(console, jQuery, window, d3);

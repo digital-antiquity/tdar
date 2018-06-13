@@ -88,6 +88,7 @@ View freemarker macros
         <#if version.latestUploadedVersion?? >
             <#assign version=version.latestUploadedVersion />
         </#if>
+        ${version.viewable?c} ${ resource.confidentialViewable?c}
         <#if (version.viewable)>
         <#-- refactor ? -->
         <#local irid = (irfile.informationResource.id)!-1 />

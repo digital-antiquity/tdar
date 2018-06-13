@@ -12,7 +12,7 @@ TDAR.c3graph = {};
  * 
  * 
  */
-TDAR.c3graph = (function(console, $, ctx) {
+TDAR.c3graph = (function(console, $, ctx, c3) {
     "use strict";
 
     var _getColors = function() {
@@ -419,4 +419,4 @@ TDAR.c3graph = (function(console, $, ctx) {
             TDAR.c3graph.initGaugeChart();
         }
     }
-})(console, jQuery, window);
+})(console, jQuery, window, c3);

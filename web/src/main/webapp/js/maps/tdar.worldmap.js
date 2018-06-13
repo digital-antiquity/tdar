@@ -1,5 +1,8 @@
+TDAR.worldmap ={};
+
 TDAR.worldmap = (function(console, $, ctx) {
     "use strict";
+
     var _PLURAL = "_PLURAL";
     var hlayer;
     var geodata = {};
@@ -619,6 +622,12 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     return {
         initWorldMap : _initWorldMap,
-        resetView : _resetView
+        resetView : _resetView,
+        main: function() {
+            console.log("running main...");
+            // if ($("#worldmap").length > 0) {
+            	TDAR.worldmap.initWorldMap("worldmap","horizontal", "");
+            // }
+        }
     }
 })(console, jQuery, window);

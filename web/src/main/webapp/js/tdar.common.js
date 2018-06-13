@@ -1,3 +1,4 @@
+ tmpl = require('script-loader!blueimp-tmpl/js/tmpl.js')
 /*
  * $Id$
  * 
@@ -1003,5 +1004,5 @@ TDAR.common = function (TDAR, fileupload) {
     });
 
     return self;
-}(TDAR, TDAR.fileupload);
+}(TDAR, TDAR.fileupload, jQuery);
 

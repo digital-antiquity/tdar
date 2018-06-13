@@ -394,4 +394,3 @@ TDAR.validate = (function($, ctx) {
         }
     }
 })(jQuery, window);
-
