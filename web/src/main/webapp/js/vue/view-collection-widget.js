@@ -1,6 +1,5 @@
-console.log("TDAR is ",TDAR);
-console.log("Vue is ",Vue);
-TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios) {
+import Vue from "vue";
+TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios, TDAR) {
     "use strict";
 
 //These are the default options for selectize. They are merged when the selectize box is created. 
@@ -476,4 +475,4 @@ return {
         }
     }
 }
-})(console, jQuery, window, Vue, axios);
+})(console, jQuery, window, Vue, axios, TDAR);

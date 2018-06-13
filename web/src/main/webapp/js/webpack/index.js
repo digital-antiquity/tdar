@@ -32,7 +32,7 @@ import './../../includes/jquery.treeview/jquery.treeview.js';
 //import './../../includes/blueimp-tmpl/js/tmpl.min.js';
 require('script-loader!blueimp-tmpl/js/tmpl.js');
 
-import './../../includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js';
+require('script-loader!./../../includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js');
 
 
 
@@ -123,7 +123,7 @@ import './../tdar.pricing';
 import './../tdar.contexthelp';
 import './../tdar.menu';
 import './../tdar.formValidateExtensions';
-//import './../../includes/bindWithDelay';
+import './../../includes/bindWithDelay';
 //import './../tdar.bookmark';
 import './../maps/tdar.leaflet';
 
@@ -135,12 +135,12 @@ import './../maps/tdar.worldmap';
 import "vue";
 /**
 import './../vue/vue-selectize.js';
+*/
+require('script-loader!../../includes/bootstrap-2.32/js/bootstrap.js');
 import './../vue/view-collection-widget.js';
 import './../vue/edit-collection';
-*/
 
 //TDAR.main();
-
 
 //import "bootstrap-2.3.2/js/bootstrap-affix.js";
 //import "bootstrap-2.3.2/js/bootstrap-alert.js";

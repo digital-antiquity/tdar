@@ -15,6 +15,7 @@ module.exports = {
         filename: 'bundle.js',
         chunkFilename: "[id].bundle.js"
   },
+  // externals: ['axios'], this is a way to use an extenral version of jquery, whatever is referecned here should probably be a 'dev' dependency too
   module: {
     rules: [
         /*{
@@ -43,11 +44,14 @@ module.exports = {
      new webpack.ProvidePlugin({
          $: "jquery",
          jQuery: "jquery",
+         axios:"Axios",
         // jquery: "jquery",
          c3: "c3",
          d3: "d3",
          //TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
-         Vue : 'vue'
+//         axios:"axios",
+         Vue : 'vue',
+//         Vue : 'Vue'
      })
   ],
  
