@@ -88,7 +88,7 @@
 
 <script type="text/x-template"  id="balk-template">
 <form class="form-horizontal" >
-<div id="balkTemplate">
+<div id="balkTemplate" v-show="balkVisible">
 <div class="row">
     <div class="span6">
     <label  style="display:inline">Account:
@@ -125,9 +125,9 @@
 		<span v-if="index != 0"> / </span> <span class="link" @click="cd(dir)">{{dir.name}}</span>
 </span>
 <span class="pull-right" v-if="dirStack.length > 0">
-	<span class="link" id="renamePlaceholder" @click="showRename()">(rename)</span>
-	<div id="renamePart" class="hidden">
-		<input name="rename" id="rename" type="text" value="" />
+	<span class="link" id="renamePlaceholder" @click="showRename()" v-show="renameVisible == false">(rename)</span>
+	<div id="renamePart" v-show="renameVisible">
+		<input name="rename" id="rename" type="text" v-model="rename" />
         <span @click="renameDir()" class="link">ok</span>
         <span class="link" @click="cancelRename()">cancel</span>
 	</div>
@@ -157,7 +157,7 @@
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label>
     <div class="input-append">
-    <input class="span2" id="dirName" name="dirName" type="text">
+    <input class="span2" id="dirName" name="dirName" type="text" v-model="dirName">
         <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
     </div>
     <div class="btn-group">
@@ -233,7 +233,7 @@
 
 
 </div>
-     <reports :accountId="accountId" :account="selectedAccount"/>
+     <reports :accountId="accountId" :account="selectedAccount" @showBalk="hideReports()" :showreports="reportsVisible" />
 </div>
 </form>
 
@@ -242,7 +242,7 @@
 
 
 <script type="text/x-template" id="reports-template">
-<div id="filesReport" style="display:none">
+<div id="filesReport" v-show="showreports != undefined && showreports == true">
 <h3>{{accountName}} <a class='refresh' @click='refresh()'><i class='icon-refresh'></i></a></h3>
 <ul class="nav nav-tabs" id="reports">
   <li class="active"><a href="#summary" data-toggle="tab">Summary</a></li>

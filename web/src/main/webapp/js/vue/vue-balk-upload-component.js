@@ -423,7 +423,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 selectedFiles: [],
                 dirStack: [],
                 search: "",
-                commentFile:undefined,
+                rename: '',
+                dirName:"",
+                commentFile: undefined,
+                renameVisible: false,
+                reportsVisible: false,
+                balkVisible: true,
                 path : "" }
             },
             computed : {
@@ -476,12 +481,11 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.loadFiles(this.parentId, this.path, sort);
                 },
                 showRename: function() {
-                    $("#renamePlaceholder").hide();
-                    $("#renamePart").toggleClass("hidden");
+                    Vue.set(this,"renameVisible", true);
                 },
                 renameDir: function() {
                     var pid = this.parentId;
-                    var name = $("#rename").val();
+                    var name = this.rename;
                     if (name == undefined || name.trim() == '') {
                         this.cancelRename();
                         return;
@@ -499,9 +503,8 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.cancelRename();
                 },
                 cancelRename: function() {
-                    $("#rename").val("");
-                    $("#renamePlaceholder").show();
-                    $("#renamePart").toggleClass("hidden");
+                    Vue.set(this,"renameVisible", false);
+                    Vue.set(this,"rename",'');
                 },
                 _routeAccounts: function(to, from) {
                     console.log(">>> changed route to: ", to);
@@ -753,12 +756,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     
                 },
                 showReports: function() {
-                    $("#balkTemplate").hide();
-                    $("#filesReport").show();
+                    Vue.set(this,"balkVisible", false);
+                    Vue.set(this,"reportsVisible", true);
                 },
                 hideReports: function() {
-                    $("#balkTemplate").show();
-                    $("#filesReport").hide();
+                    Vue.set(this,"balkVisible", true);
+                    Vue.set(this,"reportsVisible", false);
                 },
                 addComment: function() {
                     // add a comment to a file
@@ -793,7 +796,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     // create a directory
                   var dir = this.dir;
                   var _app = this;
-                  var dirName = $("#dirName").val() ;
+                  var dirName = this.dirName;
                   if (dirName == undefined || dirName == '') {
                       return;
                   }
@@ -801,7 +804,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": dirName, accountId: _app.accountId}
                     ).done(function(msg) {
                         _app.files.push(msg);
-                        $("#dirName").val("");
+                        Vue.set(this,'dirName','');
                     });
                 },
                 moveUI: function() {
@@ -969,10 +972,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     return TDAR.vuejs.upload.fileUploadAdd($upload, data, this);
                 },
                 _enable: function() {
+                    Vue.set(this,"uploadDisabled", false);
                     $(".submitButton, #fileAsyncUpload").prop("disabled", false);
                     $(".fileinput-button").removeClass("disabled");
                 },
                 _disable: function() {
+                    Vue.set(this,"uploadDisabled", true);
                     $(".submitButton, #fileAsyncUpload").prop("disabled", true);
                     $(".fileinput-button").addClass("disabled");
                 },
@@ -1042,7 +1047,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         
         var app2 = Vue.component("reports",{
             template : '#reports-template',
-            props : [ 'account', 'accountId'],
+            props : [ 'account', 'accountId',"showreports"],
             data : function() {
                 return {
                     summary : undefined,
@@ -1081,8 +1086,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     this.loadRecentData();
                 },
                 hideReports: function() {
-                    $("#balkTemplate").show();
-                    $("#filesReport").hide();
+                    this.$emit("showBalk");
                 },
                 loadData : function() {
                     if (this.accountId == undefined) {

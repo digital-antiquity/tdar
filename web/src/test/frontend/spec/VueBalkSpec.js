@@ -448,7 +448,7 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             expect(request.url).toBe('/api/file/list?accountId=1');
             expect(request.method).toBe('GET');
             
-            $("#dirName").val("testdir");
+            vapp.dirName = "testdir";
             vapp.parentId = 100;
             vapp.mkdir();
             request = jasmine.Ajax.requests.mostRecent();
