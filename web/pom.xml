@@ -409,11 +409,26 @@
                     </execution>
     -->                    
                     <execution>
+                        <id>exec-install-npm</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    
+                    <execution>
                         <id>exec-run-webpack</id>
                         <phase>generate-sources</phase>
                         <configuration>
                             <skip>${skipNode}</skip>
-                            <executable>./node_modules/.bin/npm</executable>
+                            <executable>npm</executable>
                             <arguments>
                                 <argument>run-script</argument>
                                 <argument>build</argument>
