@@ -72,12 +72,6 @@
             <version>${dbcp.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.locationtech.jts/jts-core -->
-        <dependency>
-            <groupId>org.locationtech.jts</groupId>
-            <artifactId>jts-core</artifactId>
-            <version>1.15.0</version>
-        </dependency>
         <!-- hibernate and JPA persistence -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -582,8 +576,7 @@
         <dependency>
           <groupId>org.freemarker</groupId>
           <artifactId>freemarker</artifactId>
-          <version>2.3.27-incubating</version>
-          <!-- LICENSE: BSD -->
+          <version>2.3.28</version>
         </dependency>
 <!--         <dependency>
             <groupId>org.owasp.antisamy</groupId>
