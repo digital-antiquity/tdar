@@ -641,7 +641,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             resource.setPublisher(null);
         }
 
-        if (CONFIG.getCopyrightMandatory() && copyrightHolderProxies != null) {
+        if (copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             logger.debug("setting copyright holder to:  {} ", transientCreator);
             resource.setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));
