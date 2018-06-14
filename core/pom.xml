@@ -14,7 +14,7 @@
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
-        <artifactId>base</artifactId>
+        <artifactId>parent-base</artifactId>
          <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
         <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
@@ -64,18 +64,6 @@
             <artifactId>cglib-nodep</artifactId>
             <version>${cglib.version}</version>
             <!-- LICENSE: APACHE 1.1 -->
-        </dependency>
-        <dependency>
-            <groupId>commons-dbutils</groupId>
-            <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${dbcp.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <!-- hibernate and JPA persistence -->
         <dependency>
