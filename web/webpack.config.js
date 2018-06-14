@@ -5,7 +5,7 @@ const path = require('path');
 // webpack.autoProvidejQuery();
 module.exports = {
     context: __dirname,
-    //devtool: 'eval-source-map',
+    devtool: 'eval-source-map',
   entry: { main: './src/main/webapp/js/webpack/index.js' },
   output: {
         path: path.resolve(__dirname, "./src/main/webapp/dist/"),

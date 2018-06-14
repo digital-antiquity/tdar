@@ -1,5 +1,5 @@
 // Karma configuration
-//var wro = require("./src/test/frontend/lib/wro");
+var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
 
 /**
@@ -11,24 +11,17 @@ function buildFilesFromWro(profile) {
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles
-            .concat(wroconfig[profile].jsFiles)
+            .concat("/dist/bundle.js")
             .map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
 
-function getWebpackBundles(){
-    return [
-      "src/main/webapp/dist/bundle.js"  
-    ];
-}
-
-
 
 
 module.exports = function(config) {
-    var wroFiles = getWebpackBundles();//buildFilesFromWro('default');
+    var wroFiles = buildFilesFromWro('default');
+    
     config.set({
-
         browserConsoleLogOptions: {terminal:false},
 
         // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -55,8 +48,6 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},
                 {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
                 {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
-
-
             ],
             
             //files specified in wro.xml 
@@ -88,12 +79,12 @@ module.exports = function(config) {
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
         proxies: {
-            '/images/': '/base/src/main/webapp/images/',
+            '/images/'  : '/base/src/main/webapp/images/',
             '/includes/': '/base/src/main/webapp/includes/',
-            '/js/maps/': '/base/src/main/webapp/js/maps/'
+            '/js/maps/' : '/base/src/main/webapp/js/maps/'
         },
-            ///Users/jimdevos/develop/tdar.src/src/main/webapp/js/maps/world.json
-
+        
+        ///Users/jimdevos/develop/tdar.src/src/main/webapp/js/maps/world.json
         // list of files to exclude that would otherwise get picked up by the config.files patterns
         exclude: [],
 
@@ -135,8 +126,8 @@ module.exports = function(config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
 
-       // browsers: ['ChromeHeadless'],
-        browsers: ['PhantomJS'],
+        browsers: ['ChromeHeadless'],
+        //browsers: ['PhantomJS'],
         // concurrency: Infinity,
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits

@@ -5,7 +5,7 @@
 
 
 TDAR.autocomplete = {};
-TDAR.autocomplete = (function () {
+TDAR.autocomplete = (function (TDAR) {
     "use strict";
 
     //when a user creates a record manually instead of choosing a menu-item from the autocomplete dropdown, this module
@@ -865,4 +865,4 @@ TDAR.autocomplete = (function () {
         "buildRequestData": _buildRequestData,
         "ObjectCache": ObjectCache
     };
-})();
+})(TDAR);
