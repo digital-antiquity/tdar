@@ -22,8 +22,8 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.NonFatalWorkflowException;
+import org.tdar.filestore.VersionType;
 
 /**
  * @author Adam Brin

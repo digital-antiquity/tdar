@@ -7,12 +7,12 @@ import java.io.File;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
 /**

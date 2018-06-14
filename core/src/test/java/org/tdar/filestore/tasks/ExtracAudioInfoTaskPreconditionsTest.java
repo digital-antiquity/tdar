@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
 /**

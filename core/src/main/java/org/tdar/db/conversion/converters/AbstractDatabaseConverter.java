@@ -22,9 +22,9 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 import com.healthmarketscience.jackcess.Database;
 

@@ -13,10 +13,11 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.pdf.PdfConfig;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.VersionType;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -126,7 +127,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
     private PDDocument openPDF(String password, File pdfFile) {
         PDDocument document = null;
         try {
-            document = PDDocument.load(pdfFile, TdarConfiguration.getInstance().getPDFMemoryReadSetting());
+            document = PDDocument.load(pdfFile, PdfConfig.getPDFMemoryReadSetting());
 
             // if (document.isEncrypted()) {
             // getLogger().info("access permissions: " + document.getCurrentAccessPermission());

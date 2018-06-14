@@ -24,8 +24,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DatabaseBuilder;

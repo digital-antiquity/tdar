@@ -35,6 +35,8 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
+import org.tdar.configuration.ConfigurationAssistant;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.processes.manager.BaseProcessManager;
 import org.tdar.core.service.processes.manager.ProcessManager;

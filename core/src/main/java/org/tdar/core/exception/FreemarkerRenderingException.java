@@ -1,6 +1,6 @@
-package org.tdar.core.service;
+package org.tdar.core.exception;
 
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 public class FreemarkerRenderingException extends TdarRecoverableRuntimeException {
 

@@ -14,11 +14,11 @@ import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.TestConfiguration;
 

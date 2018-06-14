@@ -35,7 +35,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.geometry.Envelope;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.filestore.VersionType;
 import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.Polygon;

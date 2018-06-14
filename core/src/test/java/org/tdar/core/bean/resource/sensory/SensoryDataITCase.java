@@ -9,11 +9,11 @@ import java.util.LinkedHashSet;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.configuration.TdarConfiguration;
 
 public class SensoryDataITCase extends AbstractIntegrationTestCase {
 

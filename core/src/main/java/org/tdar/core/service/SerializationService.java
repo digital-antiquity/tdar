@@ -8,16 +8,10 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 
-import org.tdar.core.bean.FileProxies;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.event.LoggingObjectContainer;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

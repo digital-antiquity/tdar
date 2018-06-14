@@ -3,7 +3,7 @@ package org.tdar.core.service.processes.manager;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.service.processes.ScheduledProcess;
 
 public class AutowiredProcessManager extends BaseProcessManager {

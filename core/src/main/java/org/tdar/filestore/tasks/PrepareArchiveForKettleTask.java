@@ -13,9 +13,9 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.WorkflowContext;
 
 import freemarker.cache.StringTemplateLoader;

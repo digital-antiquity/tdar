@@ -9,8 +9,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.URLConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.FormEncodingType;

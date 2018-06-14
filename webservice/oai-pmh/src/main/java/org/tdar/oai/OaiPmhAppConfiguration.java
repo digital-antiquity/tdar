@@ -1,10 +1,9 @@
 package org.tdar.oai;
 
+import java.beans.Transient;
 import java.io.IOException;
+import java.util.logging.Logger;
 
-import javax.persistence.Transient;
-
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

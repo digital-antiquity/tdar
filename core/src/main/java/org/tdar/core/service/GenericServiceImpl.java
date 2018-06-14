@@ -26,8 +26,8 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.base.GenericDao.FindOptions;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /**

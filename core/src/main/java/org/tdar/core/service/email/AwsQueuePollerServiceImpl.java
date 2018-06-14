@@ -12,7 +12,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.utils.EmailRawMessageHelper;
 
 import com.amazonaws.AmazonClientException;
@@ -31,7 +31,6 @@ public class AwsQueuePollerServiceImpl implements AwsQueuePollerService {
     private static final String NAME = "name";
     private static final String VALUE = "value";
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
-    private Regions awsRegion = config.getAwsRegion();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /*
@@ -101,9 +100,17 @@ public class AwsQueuePollerServiceImpl implements AwsQueuePollerService {
 
     private AmazonSQS getSqsClient() {
         AmazonSQS client = AmazonSQSClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(getAwsCredentials())).withRegion(awsRegion).build();
+                .withCredentials(new AWSStaticCredentialsProvider(getAwsCredentials())).withRegion(getRegion()).build();
         return client;
 
+    }
+
+    private Regions getRegion() {
+        String awsRegion = config.getAwsRegion();
+        if (awsRegion == null) {
+            return Regions.DEFAULT_REGION;
+        }
+        return Regions.fromName(awsRegion);
     }
 
     /*

@@ -14,8 +14,8 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 import com.opensymphony.xwork2.TextProvider;
 

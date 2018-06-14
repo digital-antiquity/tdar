@@ -13,11 +13,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.VersionType;
 import org.tdar.utils.ExceptionWrapper;
 
 public class ConvertDatasetTask extends AbstractTask {

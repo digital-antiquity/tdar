@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.tdar.core.exception.I18nException;
+import org.tdar.exception.I18nException;
 
 /**
  * $Id$

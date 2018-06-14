@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.collection.CollectionResourceSection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Person;
@@ -19,7 +20,6 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
-import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * @author Adam Brin

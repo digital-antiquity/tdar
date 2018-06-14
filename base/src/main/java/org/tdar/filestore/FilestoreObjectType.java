@@ -10,18 +10,6 @@ public enum FilestoreObjectType {
     CREATOR,
     COLLECTION;
 
-//    public static FilestoreObjectType fromClass(Class<?> cls) {
-//        if (Resource.class.isAssignableFrom(cls)) {
-//            return RESOURCE;
-//        }
-//        if (ResourceCollection.class.isAssignableFrom(cls)) {
-//            return COLLECTION;
-//        }
-//        if (Creator.class.isAssignableFrom(cls)) {
-//            return CREATOR;
-//        }
-//        return null;
-//    }
 
     public String getRootDir() {
         return name().toLowerCase();

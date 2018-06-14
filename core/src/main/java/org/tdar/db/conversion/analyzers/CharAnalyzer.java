@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 public class CharAnalyzer implements ColumnAnalyzer {
     private static final String EXCEL_BAD_REGEX = "(.*)(#(REF|NUM|N/A|VALUE|NAME|DIV))(.*)";

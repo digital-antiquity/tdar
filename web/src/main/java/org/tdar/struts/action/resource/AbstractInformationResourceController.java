@@ -197,7 +197,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public LicenseType getDefaultLicenseType() {
-        return getTdarConfiguration().getDefaultLicenseType();
+        return LicenseType.valueOf(getTdarConfiguration().getDefaultLicenseType());
 
     }
 

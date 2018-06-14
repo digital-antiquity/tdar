@@ -4,12 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 
 /*
  * This service attempts to centralize and support the creation of URL strings from within the java app. It's centralized here

@@ -5,9 +5,9 @@ import java.util.Arrays;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.authority.AuthorityManagementLog;
 import org.tdar.utils.MessageHelper;
 
