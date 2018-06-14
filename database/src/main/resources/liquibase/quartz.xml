@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="production,test" >
+     
+     <changeSet id="prehistoric-rights2-1" author="abrin">
+         <addColumn tableName="authorized_user">
+            <column name="integration_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_user_integration" referencedTableName="data_integration_workflow" 
+            baseColumnNames="integration_id" baseTableName="authorized_user" referencedColumnNames="id"/>
+
+         <addColumn tableName="authorized_user">
+            <column name="account_id" type='bigint' />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_user_account" referencedTableName="pos_account" 
+            baseColumnNames="account_id" baseTableName="authorized_user" referencedColumnNames="id"/>
+     
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,account_id) select owner_id, user_id, now(), 'EDIT_ACCOUNT',10000, account_id from pos_account a, pos_members m where a.id=m.account_id</sql> 
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,account_id) select owner_id, owner_id, now(), 'EDIT_ACCOUNT',10000, id from pos_account</sql> 
+
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,integration_id) select a.user_id, m.user_id, now(), 'EDIT_INTEGRATION',2000, integration_id from data_integration_workflow a, data_integration_users m where a.id=m.integration_id</sql> 
+     <sql>insert into authorized_user (creator_id, user_id, date_created, general_permission, general_permission_int,integration_id) select user_id, user_id, now(), 'EDIT_INTEGRATION',2000, id from data_integration_workflow</sql> 
+     
+     </changeSet>
+     <changeSet id="quartz-collections-1" author="abrin">
+     <sql>
+     update authorized_user set general_permission_int=40 where general_permission_int=4000;
+     update authorized_user set general_permission_int=50 where general_permission_int=4500;
+     update authorized_user set general_permission_int=40, general_permission='ADD_TO_SHARE' where general_permission='ADD_TO_COLLECTION';
+     update authorized_user set general_permission_int=50, general_permission='REMOVE_FROM_SHARE' where general_permission='REMOVE_FROM_COLLECTION';
+     </sql>
+     </changeSet>
+     <changeSet id="quartz-collections-2" author="abrin">
+        <sql>update authorized_user set general_permission='ADD_TO_COLLECTION' where general_permission='ADD_TO_SHARE'</sql>
+        <sql>update authorized_user set general_permission='REMOVE_FROM_COLLECTION' where general_permission='REMOVE_FROM_SHARE'</sql>
+        <sql>update authorized_user set general_permission='ADMINISTER_COLLECTION' where general_permission='ADMINISTER_SHARE'</sql>
+     </changeSet>
+     <changeSet id="quartz-collections-3" author="abrin">
+     <addColumn tableName="collection">
+        <column name="verified" type="boolean" defaultValueBoolean="false" />
+     </addColumn>
+     </changeSet>
+     <changeSet author="bcastel1" id="emailTracking">
+        <addColumn tableName="email_queue">
+            <column name="aws_message_type" type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="email_queue">
+            <column name="message_uuid" type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="email_queue">
+            <column name="from_user_id" type="bigint" />
+        </addColumn>
+        <addColumn tableName="email_queue">
+            <column name="to_person_id" type="bigint" />
+        </addColumn>
+                
+        <addForeignKeyConstraint constraintName="fk_email_from_user"
+            referencedTableName="tdar_user" referencedColumnNames="id"
+            baseTableName="email_queue" baseColumnNames="from_user_id" />
+        <addForeignKeyConstraint constraintName="fk_email_to_person"
+            referencedTableName="person" referencedColumnNames="id"
+            baseTableName="email_queue" baseColumnNames="to_person_id" />
+    </changeSet>
+    
+    <changeSet id="emailTracking-2" author="bcastel1">
+        <sql>UPDATE EMAIL_QUEUE SET AWS_MESSAGE_TYPE='GENERIC' WHERE AWS_MESSAGE_TYPE IS NULL</sql>
+    </changeSet>
+    <changeSet id="quartz-default-1" author="abrin">
+        <insert tableName="user_notification">
+            <column name="message_type" value="SYSTEM_BROADCAST"/>
+            <column name="message_key" value="quartz"/>
+            <column name="display_type" value="FREEMARKER"/>
+            <column name="date_created" valueComputed="now()" />
+        </insert>
+    </changeSet>
+    <changeSet id="quartz-sort-order-refactor" author="briancastellanos">
+         <sql>UPDATE collection set sort_order = 'RESOURCE_TYPE' WHERE sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+         <sql>UPDATE collection set secondary_sort_order = 'RESOURCE_TYPE' WHERE secondary_sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+         <sql>UPDATE project SET sort_order = 'RESOURCE_TYPE' WHERE sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+         <sql>UPDATE project SET secondary_sort_order = 'RESOURCE_TYPE' WHERE secondary_sort_order = 'RESOURCE_TYPE_REVERSE'</sql>
+    </changeSet>
+
+    <changeSet id="quartz-permissions-" author="abrin">
+         <sql>UPDATE authorized_user set general_permission_int=20000 where general_permission='EDIT_ACCOUNT'</sql>
+         <sql>UPDATE authorized_user set general_permission='ADMINISTER_ACCOUNT' where general_permission='EDIT_ACCOUNT'</sql>
+    </changeSet>
+    
+</databaseChangeLog>
+
