@@ -3,6 +3,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -142,7 +143,7 @@ public class EmailServiceImpl implements EmailService {
                 // FILE.EXT.
                 boolean renameTo = file.renameTo(new File(_inlineAttachmentDir + File.separator + fileName));
                 if (renameTo ==false) {
-                    throw new TdarRecoverableRuntimeException("can't rename file:" + fileName);
+                    throw new TdarRecoverableRuntimeException("emailService.cannot_rename_file" , Arrays.asList(fileName));
                 }
             });
 

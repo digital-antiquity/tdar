@@ -43,7 +43,7 @@ public abstract class AbstractTask implements Task {
     void deleteFile(File f) {
         boolean delete = f.delete();
         if (delete == false) {
-            throw new TdarRecoverableRuntimeException("cannot delete " + f);
+            throw new TdarRecoverableRuntimeException("abstractTask.cannot_delete" , Arrays.asList(f));
         }
     }
 
