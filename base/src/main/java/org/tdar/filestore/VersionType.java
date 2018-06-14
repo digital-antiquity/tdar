@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource.file;
+package org.tdar.filestore;
 
 import java.util.ArrayList;
 import java.util.List;

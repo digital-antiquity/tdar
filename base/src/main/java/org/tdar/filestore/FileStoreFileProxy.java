@@ -3,7 +3,7 @@ package org.tdar.filestore;
 import java.io.File;
 import java.util.Date;
 
-import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.filestore.VersionType;
 
 public interface FileStoreFileProxy {
 

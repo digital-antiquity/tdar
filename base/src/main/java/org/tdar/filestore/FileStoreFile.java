@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.filestore.VersionType;
 
 public class FileStoreFile implements Serializable, FileStoreFileProxy {
 

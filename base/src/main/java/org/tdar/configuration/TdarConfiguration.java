@@ -1,4 +1,4 @@
-package org.tdar.core.configuration;
+package org.tdar.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,14 +12,11 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.PairtreeFilestore;
 
-import com.amazonaws.regions.Regions;
 
 /**
  * $Id$
@@ -598,8 +595,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("site.name", "the Digital Archaeological Record");
     }
 
-    public LicenseType getDefaultLicenseType() {
-        return LicenseType.valueOf(assistant.getStringProperty("default.license.type", LicenseType.CREATIVE_COMMONS_ATTRIBUTION.name()));
+    public String getDefaultLicenseType() {
+        return assistant.getStringProperty("default.license.type", "CREATIVE_COMMONS_ATTRIBUTION");
     }
 
     public Boolean isRPAEnabled() {
@@ -961,17 +958,17 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("show.exact.location.to.editable", false);
     }
 
-    public MemoryUsageSetting getPDFMemoryReadSetting() {
-        return MemoryUsageSetting.setupTempFileOnly();
-    }
-
-    public MemoryUsageSetting getPDFMemoryWriteSetting(File file) {
-        if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
-            return MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L);
-        } else {
-            return MemoryUsageSetting.setupMainMemoryOnly();
-        }
-    }
+//    public MemoryUsageSetting getPDFMemoryReadSetting() {
+//        return MemoryUsageSetting.setupTempFileOnly();
+//    }
+//
+//    public MemoryUsageSetting getPDFMemoryWriteSetting(File file) {
+//        if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
+//            return MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 5L);
+//        } else {
+//            return MemoryUsageSetting.setupMainMemoryOnly();
+//        }
+//    }
 
     public boolean ssoEnabled() {
         return assistant.getBooleanProperty("sso.enabled", true);
@@ -1013,13 +1010,12 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("aws.queuename");
     }
 
-    public Regions getAwsRegion() {
-        try {
-            String key = assistant.getStringProperty("aws.region");
-            return Regions.valueOf(key);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            return Regions.US_WEST_2;
-        }
+    public String getAwsRegion() {
+            return assistant.getStringProperty("aws.region");
+//            return Regions.valueOf(key);
+//        } catch (NullPointerException | IllegalArgumentException e) {
+//            return Regions.US_WEST_2;
+//        }
     }
 
     public String getEmailAttachmentsDirectory() {

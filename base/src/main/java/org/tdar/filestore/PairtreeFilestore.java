@@ -21,12 +21,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
-//import org.tdar.core.bean.resource.InformationResourceFileVersion;
-import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.filestore.VersionType;
+import org.tdar.configuration.TdarConfiguration;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
-import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -271,7 +269,7 @@ public class PairtreeFilestore extends BaseFilestore {
         StringBuffer base = new StringBuffer();
         base.append(getResourceDirPath(type, irID));
         if (version.getType() == FilestoreObjectType.RESOURCE) {
-            if (PersistableUtils.isNotNullOrTransient(version.getInformationResourceFileId())) {
+            if (version.getInformationResourceFileId() != null && version.getInformationResourceFileId() != -1 ) {
                 append(base, version.getInformationResourceFileId());
                 append(base, V + version.getVersion());
                 if (version.getVersionType().isArchival()) {

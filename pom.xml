@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
+    <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -17,6 +17,7 @@
             on "database" and "test" -->
         <module>locales</module>
         <module>parent-base</module>
+        <module>base</module>
         <!-- tdar "core" files -->
         <module>core</module>
         <module>fileprocessing</module>

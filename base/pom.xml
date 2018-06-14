@@ -4,13 +4,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>fileprocessing</artifactId>
+    <artifactId>base</artifactId>
     <packaging>jar</packaging>
-    <name>tDAR (fileprocessing)</name>
+    <name>tDAR (base)</name>
 
     <properties>
-        <skipTestLiquibase>false</skipTestLiquibase>
-        <testChangeLog>changelog-integration.xml</testChangeLog>
+        <skipTestLiquibase>true</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -24,11 +23,6 @@
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
-        <dependency>
-            <groupId>org.tdar</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <!-- needed by spring for @Transactional calls -->
             <groupId>cglib</groupId>
@@ -687,113 +681,35 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.tuckey</groupId>
-            <artifactId>urlrewritefilter</artifactId>
-            <version>4.0.4</version>
-            <type>jar</type>
-            <!-- LICENSE: BSD -->
-        </dependency>
-        <dependency>
-            <groupId>org.ebaysf.web</groupId>
-            <artifactId>cors-filter</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.4</version>
-            <classifier>jdk15</classifier>
-            <scope>test</scope>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
-            <type>jar</type>
-            <!-- LICENSE: BSD -->
-        </dependency>
-        <!-- joda time -->
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>${joda-time.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate5</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-smile</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>${jackson.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>commons-dbutils</groupId>
-            <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>${commons-beanutils.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.tdar</groupId>
-            <artifactId>tdar-logging</artifactId>
-            <version>1.2</version>
-            <scope>runtime</scope>
+                <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <version>${struts2.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <artifactId>javassist</artifactId>
+                    <groupId>javassist</groupId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-api</artifactId>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.logging.log4j</groupId>
-                    <artifactId>log4j-core</artifactId>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-commons</artifactId>
+                </exclusion>
+                <exclusion>
+                        <groupId>org.freemarker</groupId>
+                        <artifactId>freemarker</artifactId>
                 </exclusion>
             </exclusions>
-            <!-- LICENSE: APACHE 2.0 -->
-       </dependency>
+        </dependency>
+        
     </dependencies>
 
 
     <build>
-        <finalName>tdar-core</finalName>
+        <finalName>tdar-base</finalName>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
@@ -821,7 +737,7 @@
                             <goal>test-jar</goal>
                         </goals>
                         <configuration>
-                            <finalName>tdar-core-test</finalName>
+                            <finalName>tdar-base-test</finalName>
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
                             <excludes>
                                 <exclude>**/hibernate-ehcache.xml</exclude>
@@ -957,8 +873,6 @@
                 <webapp.deploy.dir>target/</webapp.deploy.dir>
             </properties>
             <dependencies>
-                <!-- <dependency> <groupId>org.apache.struts</groupId> <artifactId>struts2-config-browser-plugin</artifactId> 
-                    </dependency> -->                    <!-- LICENSE: APACHE 2.0 -->
             </dependencies>
         </profile>
         <profile>

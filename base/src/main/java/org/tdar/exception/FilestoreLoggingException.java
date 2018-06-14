@@ -1,4 +1,4 @@
-package org.tdar.core.exception;
+package org.tdar.exception;
 
 import java.util.List;
 

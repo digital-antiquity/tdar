@@ -14,9 +14,9 @@
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
-        <artifactId>base</artifactId>
-         <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
-        <relativePath>../base/pom.xml</relativePath>
+        <artifactId>parent-base</artifactId>
+         <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
+        <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
             <dependencies>
@@ -35,6 +35,11 @@
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
          <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>

@@ -1,4 +1,4 @@
-package org.tdar.core.configuration;
+package org.tdar.configuration;
 
 public abstract class AbstractConfigurationFile {
 

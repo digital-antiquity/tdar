@@ -1,4 +1,4 @@
-package org.tdar.core.configuration;
+package org.tdar.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;

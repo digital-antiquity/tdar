@@ -30,8 +30,8 @@ import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
 
 public abstract class BaseFilestore implements Filestore {
