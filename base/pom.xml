@@ -230,102 +230,11 @@
         </profile>
 
         <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <!-- the properties defined in these files will be available 
-                    for interpolation in all filtered resources -->
-                <!-- <filters> <filter>src/main/resources/hibernate.properties</filter> 
-                    </filters> -->
-            </build>
-            <properties>
-                <!-- These are the default passwords for running locally 
-                    when developing -->
-                <!-- For more secret passwords, place them in settings.xml 
-                    in the ~.m2 directory -->
-                <!-- as per: http://maven.apache.org/settings.html -->
-                <!-- For even more secret passwords, encrypt them: http://maven.apache.org/guides/mini/guide-encryption.html -->
-                <application.password>tdardev.crowdpw</application.password>
-                <the.jdbc.password>tdar</the.jdbc.password>
-                <webapp.deploy.dir>target/</webapp.deploy.dir>
-            </properties>
-            <dependencies>
-            </dependencies>
-        </profile>
-        <profile>
             <id>test</id>
             <build>
                 <defaultGoal>surefire:test</defaultGoal>
-                <filters>
-                    <filter>src/test/resources/hibernate.properties</filter>
-                    <filter>src/main/resources/liquibase.properties</filter>
-                </filters>
                 <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>properties-maven-plugin</artifactId>
-                        <version>1.0-alpha-2</version>
-                        <executions>
-                            <execution>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>read-project-properties</goal>
-                                </goals>
-                                <configuration>
-                                    <files>
-                                        <file>src/test/resources/hibernate.properties</file>
-                                    </files>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                 </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>copy</id>
-            <build>
-                <plugins>
-                     <plugin>
-                       <groupId>org.apache.maven.plugins</groupId>
-                       <artifactId>maven-dependency-plugin</artifactId>
-                       <version>2.10</version>
-                       <executions>
-                         <execution>
-                           <id>copy</id>
-                           <phase>package</phase>
-                           <goals>
-                             <goal>copy</goal>
-                           </goals>
-                           <configuration>
-                             <artifactItems>
-                                 <artifactItem>
-                                   <groupId>org.liquibase</groupId>
-                                   <artifactId>liquibase-core</artifactId>
-                                   <version>${liquibase.version}</version>
-                                   <type>jar</type>
-                                   <overWrite>true</overWrite>
-                                   <outputDirectory>target/extra/</outputDirectory>
-                                   <destFileName>liquibase.jar</destFileName>
-                                 </artifactItem>
-                                 <artifactItem>
-                                     <groupId>org.postgresql</groupId>
-                                     <artifactId>postgresql</artifactId>
-                                     <version>${postgresql.jdbc.version}</version>
-                                   <type>jar</type>
-                                   <overWrite>true</overWrite>
-                                   <outputDirectory>target/extra/</outputDirectory>
-                                   <destFileName>postgresql.jar</destFileName>
-                                 </artifactItem>
-                             </artifactItems>
-                             <!-- other configurations here -->
-                           </configuration>
-                         </execution>
-                       </executions>
-                     </plugin>
-                   </plugins>
             </build>
         </profile>
     </profiles>
