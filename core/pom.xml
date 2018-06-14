@@ -14,7 +14,7 @@
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
-        <artifactId>parent-base</artifactId>
+        <artifactId>base</artifactId>
          <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
         <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
