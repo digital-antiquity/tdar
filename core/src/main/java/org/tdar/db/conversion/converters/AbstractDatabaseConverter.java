@@ -16,11 +16,13 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.datatable.DataTableColumnEncodingType;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.ImportTable;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableColumn;
+import org.tdar.datatable.TDataTableRelationship;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -40,8 +42,8 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     protected FileStoreFileProxy informationResourceFileVersion;
     protected TargetDatabase targetDatabase;
     protected Connection connection;
-    protected Set<DataTable> dataTables = new HashSet<>();
-    protected Set<DataTableRelationship> dataTableRelationships = new HashSet<>();
+    protected Set<TDataTable> dataTables = new HashSet<>();
+    protected Set<TDataTableRelationship> dataTableRelationships = new HashSet<>();
     private File indexedContentsFile;
     private Set<String> dataTableNames = new HashSet<>();
     private Map<String, List<String>> dataTableColumnNames = new HashMap<>();
@@ -58,19 +60,19 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     }
 
     @Override
-    public void setRelationships(Set<DataTableRelationship> relationships) {
+    public void setRelationships(Set<TDataTableRelationship> relationships) {
         this.dataTableRelationships = relationships;
     }
 
     @Override
-    public Set<DataTableRelationship> getRelationships() {
+    public Set<TDataTableRelationship> getRelationships() {
         return dataTableRelationships;
     }
 
     @Override
-    public List<DataTableRelationship> getRelationshipsWithTable(String tableName) {
-        List<DataTableRelationship> rels = new ArrayList<DataTableRelationship>();
-        for (DataTableRelationship rel : dataTableRelationships) {
+    public List<TDataTableRelationship> getRelationshipsWithTable(String tableName) {
+        List<TDataTableRelationship> rels = new ArrayList<>();
+        for (TDataTableRelationship rel : dataTableRelationships) {
             if (rel.getForeignTable().getName().equals(tableName) || rel.getLocalTable().getName().equals(tableName)) {
                 rels.add(rel);
             }
@@ -79,12 +81,12 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     }
 
     @Override
-    public Set<DataTable> getDataTables() {
+    public Set<TDataTable> getDataTables() {
         return dataTables;
     }
 
-    public DataTable createDataTable(String name, int order) {
-        DataTable dataTable = new DataTable();
+    public TDataTable createDataTable(String name, int order) {
+        TDataTable dataTable = new TDataTable();
         dataTable.setDisplayName(name);
         dataTable.setImportOrder(order);
         String name_ = generateDataTableName(name);
@@ -117,9 +119,9 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
         return name;
     }
 
-    public DataTableColumn createDataTableColumn(String name_, DataTableColumnType type, DataTable dataTable, int order) {
+    public TDataTableColumn createDataTableColumn(String name_, DataTableColumnType type, TDataTable dataTable, int order) {
         String name = name_;
-        DataTableColumn dataTableColumn = new DataTableColumn();
+        TDataTableColumn dataTableColumn = new TDataTableColumn();
         if (StringUtils.length(name) > 250) {
             name = name.substring(0, 250);
         }
@@ -138,15 +140,13 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
         dataTableColumn.setImportOrder(order);
         columnNames.add(internalName);
         dataTableColumn.setColumnDataType(type);
-        dataTableColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
-        dataTableColumn.setDataTable(dataTable);
         dataTable.getDataTableColumns().add(dataTableColumn);
         dataTableColumn.setSequenceNumber(dataTable.getDataTableColumns().size());
         return dataTableColumn;
     }
 
     public void completePreparedStatements() throws Exception {
-        targetDatabase.closePreparedStatements(getDataTables());
+        targetDatabase.closePreparedStatements((Set<ImportTable>)(Set<?>)getDataTables());
         logger.debug("completed prepared statements...");
     }
 
@@ -157,7 +157,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
      * and add it to the finally clause
      */
     @Override
-    public Set<DataTable> execute() {
+    public Set<TDataTable> execute() {
         try {
             openInputDatabase();
             dumpData();
@@ -179,15 +179,15 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     @Override
     public List<String> getTableNames() {
         ArrayList<String> tables = new ArrayList<String>();
-        for (DataTable table : dataTables) {
+        for (ImportTable table : dataTables) {
             tables.add(table.getName());
         }
         return tables;
     }
 
     @Override
-    public DataTable getDataTableByName(String name) {
-        for (DataTable table : dataTables) {
+    public ImportTable getDataTableByName(String name) {
+        for (ImportTable table : dataTables) {
             if (name.equals(table.getName())) {
                 return table;
             }
@@ -196,8 +196,8 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     }
 
     @Override
-    public DataTable getDataTableByOriginalName(String name) {
-        for (DataTable table : dataTables) {
+    public ImportTable getDataTableByOriginalName(String name) {
+        for (ImportTable table : dataTables) {
             if (Objects.equals(getInternalTableName(name), getInternalTableName(table.getName()))) {
                 return table;
             }
@@ -205,10 +205,10 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
         return null;
     }
 
-    protected void alterTableColumnTypes(DataTable dataTable, Map<DataTableColumn, List<ColumnAnalyzer>> statistics) {
+    protected void alterTableColumnTypes(ImportTable dataTable, Map<TDataTableColumn, List<ColumnAnalyzer>> statistics) {
         logger.debug("altering table column types for {}", dataTable.getDisplayName());
-        for (Map.Entry<DataTableColumn, List<ColumnAnalyzer>> entry : statistics.entrySet()) {
-            DataTableColumn column = entry.getKey();
+        for (Map.Entry<TDataTableColumn, List<ColumnAnalyzer>> entry : statistics.entrySet()) {
+            TDataTableColumn column = entry.getKey();
             // the first item in the list is our "most desired" conversion choice
             ColumnAnalyzer best = entry.getValue().get(0);
             logger.trace("altering {} to {} {}", column, best.getType(), best.getLength());
@@ -267,7 +267,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     }
 
     @Override
-    public Set<DataTableRelationship> getKeys() {
+    public Set<TDataTableRelationship> getKeys() {
         return dataTableRelationships;
     }
 

@@ -70,6 +70,7 @@ import org.tdar.core.service.excel.ExcelWorkbookWriter;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
+import org.tdar.datatable.ImportTable;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.VersionType;
@@ -646,7 +647,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return columnNames;
     }
 
-    public boolean checkExists(DataTable dataTable) {
+    public boolean checkExists(ImportTable dataTable) {
         return tdarDataImportDatabase.checkTableExists(dataTable);
     }
 
@@ -655,4 +656,5 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameter("id", id);
         return query.list();
     }
+
 }

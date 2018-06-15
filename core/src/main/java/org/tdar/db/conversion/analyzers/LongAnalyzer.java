@@ -1,8 +1,8 @@
 package org.tdar.db.conversion.analyzers;
 
 import org.apache.commons.lang.StringUtils;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTableColumn;
 
 /**
  * Determines whether the column contains a Long value
@@ -24,7 +24,7 @@ public class LongAnalyzer implements ColumnAnalyzer {
      * Analyze if the String is a Long
      */
     @Override
-    public boolean analyze(String value, DataTableColumn column, int row) {
+    public boolean analyze(String value, TDataTableColumn column, int row) {
         if (value == null) {
             return true;
         }

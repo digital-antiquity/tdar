@@ -25,13 +25,13 @@ import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.datatable.DataTableColumnEncodingType;
 import org.tdar.locale.HasLabel;
 import org.tdar.locale.Localizable;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -230,7 +230,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
 
     private List<DataTableColumn> initializePaginationHelper() {
         DataTable currentDataTable = getDataTable();
-        List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
+        List<DataTableColumn> columns = new ArrayList<>((List<DataTableColumn>)(List<?>)currentDataTable.getSortedDataTableColumns());
         setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
         return columns;
     }

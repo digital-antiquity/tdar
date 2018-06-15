@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 
 public class AbstractSqlTools {
 

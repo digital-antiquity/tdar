@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.datatable.ImportTable;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableRelationship;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileStoreFileProxy;
 
@@ -33,21 +34,21 @@ public interface DatasetConverter {
      * @param targetDatabase
      * @return
      */
-    Set<DataTable> execute();
+    Set<TDataTable> execute();
 
     String getInternalTableName(String originalTableName);
 
-    Set<DataTable> getDataTables();
+    Set<TDataTable> getDataTables();
 
-    Set<DataTableRelationship> getKeys();
+    Set<TDataTableRelationship> getKeys();
 
-    DataTable getDataTableByName(String name);
+    ImportTable getDataTableByName(String name);
 
-    DataTable getDataTableByOriginalName(String name);
+    ImportTable getDataTableByOriginalName(String name);
 
-    Set<DataTableRelationship> getRelationships();
+    Set<TDataTableRelationship> getRelationships();
 
-    void setRelationships(Set<DataTableRelationship> relationships);
+    void setRelationships(Set<TDataTableRelationship> relationships);
 
     void setInformationResourceFileVersion(FileStoreFileProxy version);
 
@@ -55,6 +56,6 @@ public interface DatasetConverter {
 
     String getFilename();
 
-    List<DataTableRelationship> getRelationshipsWithTable(String tableName);
+    List<TDataTableRelationship> getRelationshipsWithTable(String tableName);
 
 }

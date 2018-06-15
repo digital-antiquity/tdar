@@ -10,9 +10,10 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableColumn;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -78,7 +79,7 @@ public abstract class SimpleConverter extends AbstractDatabaseConverter {
     @Override
     public void dumpData() throws Exception {
 
-        DataTable dataTable = createDataTable(getTableName(), 0);
+        TDataTable dataTable = createDataTable(getTableName(), 0);
 
         for (int i = 0; i < getHeaderLine().length; i++) {
             createDataTableColumn(getHeaderLine()[i], DataTableColumnType.TEXT, dataTable, i);
@@ -102,7 +103,7 @@ public abstract class SimpleConverter extends AbstractDatabaseConverter {
             numberOfLines++;
             // 1-based count for PreparedStatement's weirdness.
             int count = 1;
-            Map<DataTableColumn, String> columnToValueMap = new HashMap<DataTableColumn, String>();
+            Map<TDataTableColumn, String> columnToValueMap = new HashMap<>();
             if (line.length > getHeaderLine().length) {
                 throw new TdarRecoverableRuntimeException("simpleConverter.column_has_more", Arrays.asList(numberOfLines, line.length,
                         dataTable.getDisplayName()));

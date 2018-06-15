@@ -17,12 +17,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
-import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.datatable.DataTableColumnRelationshipType;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableColumn;
+import org.tdar.datatable.TDataTableColumnRelationship;
+import org.tdar.datatable.TDataTableRelationship;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileStoreFileProxy;
@@ -82,7 +82,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
     @Override
     public void dumpData() throws Exception {
         // start dumping ...
-        Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
+        Map<String, TDataTable> dataTableNameMap = new HashMap<>();
         Iterator<Table> iterator = getDatabase().newIterable().setIncludeLinkedTables(false).iterator();
         Set<String> notLinked = new HashSet<>();
         Set<String> linked = new HashSet<>();
@@ -101,7 +101,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
                 continue;
             }
             // generate and sanitize new table name
-            DataTable dataTable = createDataTable(tableName, tableOrder);
+            TDataTable dataTable = createDataTable(tableName, tableOrder);
             tableOrder++;
             dataTableNameMap.put(tableName, dataTable);
             // drop the table if it has been there
@@ -148,7 +148,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
                         dataType = DataTableColumnType.VARCHAR;
                 }
 
-                DataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable, count);
+                TDataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable, count);
                 count++;
                 currentColumn.getProperties();
 
@@ -170,14 +170,14 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
             try {
                 int rowCount = getDatabase().getTable(tableName).getRowCount();
                 for (rowNumber = 0; rowNumber < rowCount; rowNumber++) {
-                    HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
+                    HashMap<TDataTableColumn, String> valueColumnMap = new HashMap<>();
                     Map<String, Object> currentRow = currentTable.getNextRow();
                     int j = 0;
                     if (currentRow == null) {
                         continue;
                     }
                     for (Object currentObject : currentRow.values()) {
-                        DataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
+                        TDataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
                         if (currentObject == null) {
                             j++;
                             continue;
@@ -233,8 +233,8 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
         setRelationships(extractRelationships(dataTableNameMap, linked));
     }
 
-    private Set<DataTableRelationship> extractRelationships(Map<String, DataTable> dataTableNameMap, Set<String> linked) throws IOException {
-        Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
+    private Set<TDataTableRelationship> extractRelationships(Map<String, TDataTable> dataTableNameMap, Set<String> linked) throws IOException {
+        Set<TDataTableRelationship> relationships = new HashSet<>();
         for (String tableName1 : getDatabase().getTableNames()) {
             for (String tableName2 : getDatabase().getTableNames()) {
                 if (tableName1.equals(tableName2)) {
@@ -250,19 +250,18 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
                         continue;
                     }
                     logger.trace(relationship.getName());
-                    DataTableRelationship relationshipToPersist = new DataTableRelationship();
+                    TDataTableRelationship relationshipToPersist = new TDataTableRelationship();
                     // iterate over the two lists of columns (from- and to-) and pair them up
                     Iterator<Column> fromColumns = relationship.getFromColumns().iterator();
                     Iterator<Column> toColumns = relationship.getToColumns().iterator();
                     while (fromColumns.hasNext() && toColumns.hasNext()) {
                         Column fromColumn = fromColumns.next();
                         Column toColumn = toColumns.next();
-                        DataTableColumn fromDataTableColumn = dataTableNameMap.get(tableName1).getColumnByDisplayName(fromColumn.getName());
-                        DataTableColumn toDataTableColumn = dataTableNameMap.get(tableName2).getColumnByDisplayName(toColumn.getName());
-                        DataTableColumnRelationship columnRelationship = new DataTableColumnRelationship();
+                        TDataTableColumn fromDataTableColumn = dataTableNameMap.get(tableName1).getColumnByDisplayName(fromColumn.getName());
+                        TDataTableColumn toDataTableColumn = dataTableNameMap.get(tableName2).getColumnByDisplayName(toColumn.getName());
+                        TDataTableColumnRelationship columnRelationship = new TDataTableColumnRelationship();
                         columnRelationship.setLocalColumn(fromDataTableColumn);
                         columnRelationship.setForeignColumn(toDataTableColumn);
-                        // columnRelationship.setRelationship(relationshipToPersist);
                         relationshipToPersist.getColumnRelationships().add(columnRelationship);
                     }
 

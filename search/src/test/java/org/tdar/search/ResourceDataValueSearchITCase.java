@@ -20,7 +20,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.converter.DataValueDocumentConverter;

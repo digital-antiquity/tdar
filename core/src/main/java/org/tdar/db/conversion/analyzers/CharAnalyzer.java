@@ -3,9 +3,8 @@ package org.tdar.db.conversion.analyzers;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTableColumn;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 
 public class CharAnalyzer implements ColumnAnalyzer {
@@ -24,7 +23,7 @@ public class CharAnalyzer implements ColumnAnalyzer {
      * Analyze the String for length and validity
      */
     @Override
-    public boolean analyze(String value, DataTableColumn column, int rowNumber) {
+    public boolean analyze(String value, TDataTableColumn column, int rowNumber) {
         if (value == null) {
             return true;
         }
@@ -33,15 +32,14 @@ public class CharAnalyzer implements ColumnAnalyzer {
         }
         if (value.matches(EXCEL_BAD_REGEX)) {
             String columnName = "unknown";
-            String tableName = "unknown";
             if (StringUtils.isNotBlank(column.getDisplayName())) {
                 columnName = column.getDisplayName();
             }
-            DataTable table = column.getDataTable();
-            if ((table != null) && StringUtils.isNotBlank(table.getDisplayName())) {
-                tableName = table.getDisplayName();
-            }
-            throw new TdarRecoverableRuntimeException("charAnalyzer.excel_data_error", Arrays.asList(rowNumber, columnName, tableName));
+//            DataTable table = column.getDataTable();
+//            if ((table != null) && StringUtils.isNotBlank(table.getDisplayName())) {
+//                tableName = table.getDisplayName();
+//            }
+            throw new TdarRecoverableRuntimeException("charAnalyzer.excel_data_error", Arrays.asList(rowNumber, columnName));
         }
         if (value.length() > len) {
             len = value.length();

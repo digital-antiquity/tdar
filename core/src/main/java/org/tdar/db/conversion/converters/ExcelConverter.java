@@ -20,11 +20,11 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.excel.SheetEvaluator;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableColumn;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -168,7 +168,7 @@ public class ExcelConverter extends AbstractDatabaseConverter {
             return;
         }
         // create the data table + columns based on the SheetEvaluator's reported headers.
-        DataTable dataTable = createDataTable(sheetName, order);
+        TDataTable dataTable = createDataTable(sheetName, order);
         int count = 0;
         for (String columnName : sheetEvaluator.getHeaderColumnNames()) {
             createDataTableColumn(columnName, DataTableColumnType.TEXT, dataTable, count);
@@ -208,7 +208,7 @@ public class ExcelConverter extends AbstractDatabaseConverter {
                 continue;
             }
             sheetEvaluator.validate(currentRow);
-            Map<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
+            Map<TDataTableColumn, String> valueColumnMap = new HashMap<>();
             for (int columnIndex = startColumnIndex; columnIndex <= endColumnIndex; columnIndex++) {
                 Cell currentCell = currentRow.getCell(columnIndex);
                 if (currentCell != null) {
@@ -222,7 +222,7 @@ public class ExcelConverter extends AbstractDatabaseConverter {
                         cellValue = null;
                     }
                     // make sure to offset by the startColumnIndex. sheet data starts at startColumnIndex but DataTableColumns are zero-based
-                    DataTableColumn column = dataTable.getDataTableColumns().get(columnIndex - startColumnIndex);
+                    TDataTableColumn column = dataTable.getDataTableColumns().get(columnIndex - startColumnIndex);
                     valueColumnMap.put(column, cellValue);
                     statisticsManager.updateStatistics(column, cellValue, rowIndex);
                 }

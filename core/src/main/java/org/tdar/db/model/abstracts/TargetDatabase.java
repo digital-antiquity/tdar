@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.ImportColumn;
+import org.tdar.datatable.ImportTable;
 
 /**
  * A base class for target Databases that can be written to via a
@@ -28,7 +30,7 @@ public interface TargetDatabase extends Database {
     String normalizeTableOrColumnNames(String input);
 
     @Transactional(value = "tdarDataTx", readOnly = false)
-    void closePreparedStatements(Collection<DataTable> dataTables) throws Exception;
+    void closePreparedStatements(Collection<ImportTable> dataTables) throws Exception;
 
     String getFullyQualifiedTableName(String tableName);
 
@@ -36,13 +38,13 @@ public interface TargetDatabase extends Database {
     void dropTable(String tableName);
 
     @Transactional(value = "tdarDataTx", readOnly = false)
-    void dropTable(DataTable dataTable);
+    void dropTable(ImportTable dataTable);
 
     @Transactional(value = "tdarDataTx", readOnly = false)
-    void createTable(DataTable dataTable) throws Exception;
+    void createTable(ImportTable dataTable) throws Exception;
 
     @Transactional(value = "tdarDataTx", readOnly = false)
-    void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
+    <T extends ImportColumn> void addTableRow(ImportTable<T> dataTable, Map<? extends ImportColumn, String> valueColumnMap) throws Exception;
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     List<String> selectNonNullDistinctValues(DataTableColumn column, boolean useUntranslatedValues);
@@ -91,6 +93,6 @@ public interface TargetDatabase extends Database {
             ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    boolean checkTableExists(DataTable dataTable);
+    boolean checkTableExists(ImportTable dataTable);
 
 }

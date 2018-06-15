@@ -1,4 +1,4 @@
-package org.tdar.datatable;
+package org.tdar.core.bean.resource.datatable;
 
 import org.tdar.locale.HasLabel;
 import org.tdar.locale.Localizable;

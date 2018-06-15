@@ -32,9 +32,10 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.configuration.TdarConfiguration;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableColumn;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -105,7 +106,7 @@ public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
         setIndexedContentsFile(new File(TdarConfiguration.getInstance().getTempDirectory(), String.format("%s.%s.%s", getFilename(), "index", "txt")));
         FileOutputStream fileOutputStream = new FileOutputStream(getIndexedContentsFile());
         BufferedOutputStream indexedFileOutputStream = new BufferedOutputStream(fileOutputStream);
-        DataTable dataTable = createDataTable(getFilename(), 0);
+        TDataTable dataTable = createDataTable(getFilename(), 0);
         // drop the table if it has been there
         targetDatabase.dropTable(dataTable);
 
@@ -163,11 +164,11 @@ public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
             int rowNum = 0;
             while (iterator.hasNext()) {
                 rowNum++;
-                HashMap<DataTableColumn, String> valueColumnMap = new HashMap<DataTableColumn, String>();
+                HashMap<TDataTableColumn, String> valueColumnMap = new HashMap<>();
                 Feature feature = iterator.next();
                 StringBuilder sb = new StringBuilder();
                 for (Property prop : feature.getValue()) {
-                    DataTableColumn column = dataTable.getColumnByDisplayName(prop.getName().toString());
+                    TDataTableColumn column = dataTable.getColumnByDisplayName(prop.getName().toString());
                     String value = null;
                     if (prop.getValue() != null) {
                         logger.debug("{} - {}", prop.getName(), prop.getValue().getClass());

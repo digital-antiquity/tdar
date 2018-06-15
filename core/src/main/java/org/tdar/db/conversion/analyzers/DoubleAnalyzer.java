@@ -1,8 +1,8 @@
 package org.tdar.db.conversion.analyzers;
 
 import org.apache.commons.lang.StringUtils;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTableColumn;
 
 public class DoubleAnalyzer implements ColumnAnalyzer {
 
@@ -18,7 +18,7 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
      * Analyze whether the String can be mapped to a Double
      */
     @Override
-    public boolean analyze(String value, DataTableColumn column, int row) {
+    public boolean analyze(String value, TDataTableColumn column, int row) {
         if (value == null) {
             return true;
         }

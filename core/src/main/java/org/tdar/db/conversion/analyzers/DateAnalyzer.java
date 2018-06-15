@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.TDataTableColumn;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
@@ -116,7 +117,7 @@ public class DateAnalyzer implements ColumnAnalyzer {
      * For a String, see if it can be converted to a valid date
      */
     @Override
-    public boolean analyze(final String value, final DataTableColumn column, final int rowNumber) {
+    public boolean analyze(final String value, final TDataTableColumn column, final int rowNumber) {
         if (null == value) {
             return false;
         }

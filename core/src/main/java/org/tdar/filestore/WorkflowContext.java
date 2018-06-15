@@ -16,13 +16,13 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.NonFatalWorkflowException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowContextService;
 import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableRelationship;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.tasks.Task;
 import org.tdar.utils.ExceptionWrapper;
@@ -54,8 +54,8 @@ public final class WorkflowContext implements Serializable {
     private ResourceType resourceType;
     private Class<? extends Workflow> workflowClass;
     private List<String> dataTablesToCleanup = new ArrayList<>();
-    private transient List<DataTable> dataTables = new ArrayList<>();
-    private transient List<DataTableRelationship> relationships = new ArrayList<>();
+    private transient List<TDataTable> dataTables = new ArrayList<>();
+    private transient List<TDataTableRelationship> relationships = new ArrayList<>();
     private boolean okToStoreInFilestore = true;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
     private transient SerializationService serializationService;
@@ -317,19 +317,19 @@ public final class WorkflowContext implements Serializable {
         this.okToStoreInFilestore = okToStoreInFilestore;
     }
 
-    public List<DataTable> getDataTables() {
+    public List<TDataTable> getDataTables() {
         return dataTables;
     }
 
-    public void setDataTables(List<DataTable> dataTables) {
+    public void setDataTables(List<TDataTable> dataTables) {
         this.dataTables = dataTables;
     }
 
-    public List<DataTableRelationship> getRelationships() {
+    public List<TDataTableRelationship> getRelationships() {
         return relationships;
     }
 
-    public void setRelationships(List<DataTableRelationship> relationships) {
+    public void setRelationships(List<TDataTableRelationship> relationships) {
         this.relationships = relationships;
     }
 

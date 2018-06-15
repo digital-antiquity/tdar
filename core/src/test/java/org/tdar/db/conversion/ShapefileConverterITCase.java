@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.datatable.TDataTable;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.PairtreeFilestore;
@@ -78,7 +79,7 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         // task.run();
         //
         // DatasetConverter converter = convertDatabase("az-paleoindian-point-survey.mdb", 1129L);
-        for (DataTable table : wc.getDataTables()) {
+        for (TDataTable table : wc.getDataTables()) {
             logger.info("{}", table);
         }
 

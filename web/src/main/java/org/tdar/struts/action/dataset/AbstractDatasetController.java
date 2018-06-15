@@ -17,11 +17,11 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.datatable.DataTableColumnEncodingType;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.utils.PersistableUtils;
 
