@@ -113,6 +113,7 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
     public FileStoreFile(FilestoreObjectType type, VersionType type2, String name, Integer version2, Long informationResourceId, Long informationResourceFileId2, Long versionId) {
         this.versionType = type2;
+        this.type = type;
         this.filename = name;
         this.version = version2;
         this.informationResourceFileId = informationResourceFileId2;
