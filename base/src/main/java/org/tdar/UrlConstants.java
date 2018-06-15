@@ -4,7 +4,7 @@ package org.tdar;
  * @author Adam Brin
  * 
  */
-public interface URLConstants {
+public interface UrlConstants {
 
     String HOME = "/";
     String DASHBOARD = "/dashboard";

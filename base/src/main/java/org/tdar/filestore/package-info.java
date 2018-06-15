@@ -5,7 +5,7 @@
                         namespaceURI = org.tdar.UrlConstants.TDAR_NAMESPACE_URL)
         },
         elementFormDefault = XmlNsForm.QUALIFIED)
-package org.tdar.utils.jaxb;
+package org.tdar.filestore;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

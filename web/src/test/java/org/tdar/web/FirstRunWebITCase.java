@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -73,7 +73,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
         // now delete it, assert you cannot go to view page anymore
         clickLinkWithText("delete");
         submitForm("delete");
-        assertCurrentUrlContains(URLConstants.DASHBOARD);
+        assertCurrentUrlContains(UrlConstants.DASHBOARD);
         gotoPage(url.toString());
         assertPageTitleContains("Access Denied");
     }
@@ -107,7 +107,7 @@ public class FirstRunWebITCase extends AbstractAuthenticatedWebTestCase {
 
         clickLinkWithText("delete");
         submitForm("delete");
-        assertCurrentUrlContains(URLConstants.DASHBOARD);
+        assertCurrentUrlContains(UrlConstants.DASHBOARD);
 
         gotoPage(url.toString());
         assertPageTitleContains("Access Denied");

@@ -42,7 +42,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.HasLabel;
@@ -391,7 +391,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Override
     @JsonView(JsonLookupFilter.class)
     public String getUrlNamespace() {
-        return URLConstants.ENTITY_NAMESPACE;
+        return UrlConstants.ENTITY_NAMESPACE;
     }
 
     public abstract boolean hasNoPersistableValues();

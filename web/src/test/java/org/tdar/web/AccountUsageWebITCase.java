@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.permissions.Permissions;
@@ -37,7 +37,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.BOTH, true);
         assertTextPresent("Start a new Project");
 
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(UrlConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
@@ -63,7 +63,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.BOTH, true);
         assertTextPresent("Start a new Project");
 
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(UrlConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
@@ -78,7 +78,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         String code = getHtmlPage().getDocumentElement().querySelector("td.voucherCode").getFirstChild().toString();
 
         logger.info("coupon code is:" + code);
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(UrlConstants.CART_ADD);
         setInput("invoice.numberOfFiles", "1");
         setInput("code", code);
         submitForm();
@@ -97,7 +97,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH, true);
 
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(UrlConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
@@ -126,7 +126,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH, true);
 
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(UrlConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
         setInput("invoice.numberOfFiles", "2");
         submitForm();
@@ -172,7 +172,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     }
 
     public int createNewAccountWithInvoice(String accountName, int files, int mb) throws Exception {
-        gotoPage(URLConstants.CART_ADD);
+        gotoPage(UrlConstants.CART_ADD);
         setInput("invoice.numberOfMb", files);
         setInput("invoice.numberOfFiles", mb);
         logger.debug("about to submit form:{}", getForm());

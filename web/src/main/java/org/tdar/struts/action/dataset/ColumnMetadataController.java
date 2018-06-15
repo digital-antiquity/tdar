@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.entity.permissions.Permissions;
@@ -194,7 +194,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SAVE_VIEW, type = TDAR_REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
-                    @Result(name = SAVE_MAP_THIS, type = TDAR_REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
+                    @Result(name = SAVE_MAP_THIS, type = TDAR_REDIRECT, location = UrlConstants.COLUMNS_RESOURCE_ID),
                     @Result(name = INPUT_COLUMNS, location = "../../dataset/edit-column-metadata.ftl")
             })
     /**

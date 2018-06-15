@@ -9,7 +9,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.AuthenticationService;
@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
+        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.DASHBOARD) })
 @CacheControl
 public class CartLoginController extends AbstractCartController implements Validateable, Preparable {
 
@@ -55,7 +55,7 @@ public class CartLoginController extends AbstractCartController implements Valid
     @Action(value = "process-cart-login",
             interceptorRefs = { @InterceptorRef("registrationStack") },
             results = {
-                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.CART_REVIEW_PURCHASE),
                     @Result(name = INPUT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
                             "returnUrl not expected for login from cart" }),
                     @Result(name = INPUT, type = FREEMARKER, location = "review-unauthenticated.ftl")
