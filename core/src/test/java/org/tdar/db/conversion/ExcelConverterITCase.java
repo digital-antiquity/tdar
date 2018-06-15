@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,10 +27,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.datatable.ImportColumn;
 import org.tdar.datatable.ImportTable;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableColumn;
@@ -66,21 +62,20 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
         assertEquals(1, dataTables.size());
         TDataTable table = dataTables.iterator().next();
         // List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
-        fail();
-//        Integer total = tdarDataImportDatabase.selectAllFromTable(table, new ResultSetExtractor<Integer>() {
-//
-//            @Override
-//            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
-//                int total = 0;
-//                while (rs.next()) {
-//                    String str = rs.getString(2);
-//                    logger.trace(str);
-//                    total += Integer.parseInt(rs.getString(2));
-//                }
-//                return total;
-//            }
-//        }, true);
-//        assertEquals(946, total.intValue());
+        Integer total = tdarDataImportDatabase.selectAllFromTable(table, new ResultSetExtractor<Integer>() {
+
+            @Override
+            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+                int total = 0;
+                while (rs.next()) {
+                    String str = rs.getString(2);
+                    logger.trace(str);
+                    total += Integer.parseInt(rs.getString(2));
+                }
+                return total;
+            }
+        }, true);
+        assertEquals(946, total.intValue());
     }
 
     @Test
@@ -198,20 +193,19 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
         TDataTable table = converter.getDataTables().iterator().next();
         assertTrue("table created", table.getName().indexOf("dataset_all_text") > 0);
 
-        fail();
-//        // confirm that all the columns in the new table are varchar
-//        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
-//                new ResultSetExtractor<Object>() {
-//                    @Override
-//                    public Object extractData(ResultSet rs)
-//                            throws SQLException, DataAccessException {
-//                        ResultSetMetaData meta = rs.getMetaData();
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(2));
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(3));
-//                        return null;
-//                    }
-//                }, false);
+        // confirm that all the columns in the new table are varchar
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
+                new ResultSetExtractor<Object>() {
+                    @Override
+                    public Object extractData(ResultSet rs)
+                            throws SQLException, DataAccessException {
+                        ResultSetMetaData meta = rs.getMetaData();
+                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
+                        assertEquals(Types.VARCHAR, meta.getColumnType(2));
+                        assertEquals(Types.VARCHAR, meta.getColumnType(3));
+                        return null;
+                    }
+                }, false);
     }
 
     @Test
@@ -226,22 +220,21 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
         TDataTable table = converter.getDataTables().iterator().next();
         assertEquals("table created", -1, table.getName().indexOf("sheet1"));
         assertTrue("table created", table.getName().indexOf("dataset_with_ints") > 0);
-        fail();
-//        // confirm that all the columns in the new table are ints
-//        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
-//                new ResultSetExtractor<Object>() {
-//                    @Override
-//                    public Object extractData(ResultSet rs)
-//                            throws SQLException, DataAccessException {
-//                        ResultSetMetaData meta = rs.getMetaData();
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
-//                        assertEquals(Types.BIGINT, meta.getColumnType(2));
-//                        assertEquals(Types.BIGINT, meta.getColumnType(3));
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(4));
-//                        assertEquals(Types.BIGINT, meta.getColumnType(5));
-//                        return null;
-//                    }
-//                }, false);
+        // confirm that all the columns in the new table are ints
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
+                new ResultSetExtractor<Object>() {
+                    @Override
+                    public Object extractData(ResultSet rs)
+                            throws SQLException, DataAccessException {
+                        ResultSetMetaData meta = rs.getMetaData();
+                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
+                        assertEquals(Types.BIGINT, meta.getColumnType(2));
+                        assertEquals(Types.BIGINT, meta.getColumnType(3));
+                        assertEquals(Types.VARCHAR, meta.getColumnType(4));
+                        assertEquals(Types.BIGINT, meta.getColumnType(5));
+                        return null;
+                    }
+                }, false);
     }
 
     @Test
@@ -256,33 +249,32 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
         TDataTable table = converter.getDataTables().iterator().next();
         assertEquals("table created", -1, table.getName().indexOf("sheet1"));
         assertTrue("table created", table.getName().indexOf("dataset_with_dates") > 0);
-fail();
         // confirm that all the columns in the new table are dates
-//        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
-//                new ResultSetExtractor<Object>() {
-//                    @Override
-//                    public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
-//                        ResultSetMetaData meta = rs.getMetaData();
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
-//                        assertEquals(Types.TIMESTAMP, meta.getColumnType(2));
-//                        assertEquals(Types.BIGINT, meta.getColumnType(3));
-//                        assertEquals(Types.BIGINT, meta.getColumnType(4));
-//                        assertEquals(Types.DOUBLE, meta.getColumnType(5));
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(6));
-//                        rs.next();
-//                        final Date date = rs.getDate(2);
-//                        // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
-//                        Calendar calendar = Calendar.getInstance();
-//                        calendar.setTime(date);
-//                        int year = calendar.get(Calendar.YEAR);
-//                        int month = calendar.get(Calendar.MONTH);
-//                        int day = calendar.get(Calendar.DAY_OF_MONTH);
-//                        assertEquals("Year should be 2003: " + year, 2003, year);
-//                        assertEquals("Month should be 1: " + month, 1, month);
-//                        assertEquals("Day should be 1: " + day, 1, day);
-//                        return null;
-//                    }
-//                }, false);
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
+                new ResultSetExtractor<Object>() {
+                    @Override
+                    public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        ResultSetMetaData meta = rs.getMetaData();
+                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
+                        assertEquals(Types.TIMESTAMP, meta.getColumnType(2));
+                        assertEquals(Types.BIGINT, meta.getColumnType(3));
+                        assertEquals(Types.BIGINT, meta.getColumnType(4));
+                        assertEquals(Types.DOUBLE, meta.getColumnType(5));
+                        assertEquals(Types.VARCHAR, meta.getColumnType(6));
+                        rs.next();
+                        final Date date = rs.getDate(2);
+                        // I know that getYear, getMonth and getDate are deprecated, but this just seemed the simplest.
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(date);
+                        int year = calendar.get(Calendar.YEAR);
+                        int month = calendar.get(Calendar.MONTH);
+                        int day = calendar.get(Calendar.DAY_OF_MONTH);
+                        assertEquals("Year should be 2003: " + year, 2003, year);
+                        assertEquals("Month should be 1: " + month, 1, month);
+                        assertEquals("Day should be 1: " + day, 1, day);
+                        return null;
+                    }
+                }, false);
     }
 
     @Test
@@ -295,19 +287,18 @@ fail();
         converter.execute();
         ImportTable table = converter.getDataTables().iterator().next();
         assertTrue("table created", table.getName().indexOf("dataset_with_floats") > 0);
-        fail();
-//        // confirm that all the columns in the new table are ints
-//        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
-//                new ResultSetExtractor<Object>() {
-//                    @Override
-//                    public Object extractData(ResultSet rs)
-//                            throws SQLException, DataAccessException {
-//                        ResultSetMetaData meta = rs.getMetaData();
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
-//                        assertEquals(Types.DOUBLE, meta.getColumnType(2));
-//                        return null;
-//                    }
-//                }, false);
+        // confirm that all the columns in the new table are ints
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
+                new ResultSetExtractor<Object>() {
+                    @Override
+                    public Object extractData(ResultSet rs)
+                            throws SQLException, DataAccessException {
+                        ResultSetMetaData meta = rs.getMetaData();
+                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
+                        assertEquals(Types.DOUBLE, meta.getColumnType(2));
+                        return null;
+                    }
+                }, false);
     }
 
     // TODO: break this into more granular tests.
@@ -328,20 +319,19 @@ fail();
         }
         assertNotNull("table created", dataTable);
 
-        fail();
-//        // confirm that all the columns in the new table are ints
-//        tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable,
-//                new ResultSetExtractor<Object>() {
-//                    @Override
-//                    public Object extractData(ResultSet rs)
-//                            throws SQLException, DataAccessException {
-//                        ResultSetMetaData meta = rs.getMetaData();
-//                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
-//                        assertEquals(Types.BIGINT, meta.getColumnType(2));
-//                        assertEquals(Types.DOUBLE, meta.getColumnType(3));
-//                        return null;
-//                    }
-//                }, false);
+        // confirm that all the columns in the new table are ints
+        tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable,
+                new ResultSetExtractor<Object>() {
+                    @Override
+                    public Object extractData(ResultSet rs)
+                            throws SQLException, DataAccessException {
+                        ResultSetMetaData meta = rs.getMetaData();
+                        assertEquals(Types.VARCHAR, meta.getColumnType(1));
+                        assertEquals(Types.BIGINT, meta.getColumnType(2));
+                        assertEquals(Types.DOUBLE, meta.getColumnType(3));
+                        return null;
+                    }
+                }, false);
     }
 
     @Test

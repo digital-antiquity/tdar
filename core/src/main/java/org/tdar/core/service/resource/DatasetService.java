@@ -72,7 +72,7 @@ public interface DatasetService {
     /*
      * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
      */
-    List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column);
+//    List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column);
 
     /*
      * Based on a set of @link DataTableColumn entries, and a @link Project we can will clear out the existing mappings; and then identify mappings that need to

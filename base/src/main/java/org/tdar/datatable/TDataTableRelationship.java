@@ -9,7 +9,7 @@ import java.util.Set;
  * These relationships can represent a single column foreign key, or multiple column
  * foreign key, as well as more basic primary keys.
  */
-public class TDataTableRelationship implements Serializable{
+public class TDataTableRelationship implements Serializable {
 
     private static final long serialVersionUID = -9205684029932129972L;
 

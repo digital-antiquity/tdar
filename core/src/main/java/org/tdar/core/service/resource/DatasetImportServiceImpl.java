@@ -154,8 +154,8 @@ public class DatasetImportServiceImpl implements DatasetImportService {
             } else {
                 // continue with the for loop, tableToPersist does not require any metadata merging because
                 // we can't find an existing table to merge it with
-                copyValuesFromIncomingTDataTable(incomingtable, tableToPersist);
-                copyColumnsFromIncomingTDataTable(incomingtable, tableToPersist);
+                DatasetImportUtils.copyValuesFromIncomingTDataTable(incomingtable, tableToPersist);
+                DatasetImportUtils.copyColumnsFromIncomingTDataTable(incomingtable, tableToPersist);
                 logger.trace("No analogous existing table to merge with incoming data table {}, moving on", tableToPersist);
             }
             tableToPersist.setDataset(dataset);
@@ -165,32 +165,6 @@ public class DatasetImportServiceImpl implements DatasetImportService {
         // any tables left in existingTables didn't have an analog in the incoming dataset, so clean them up
         Collection<DataTable> tablesToRemove = existingTablesMap.values();
         return new Pair<Collection<DataTable>, Collection<DataTableColumn>>(tablesToRemove, columnsToUnmap);
-    }
-
-    private void copyColumnsFromIncomingTDataTable(TDataTable incomingtable, DataTable tableToPersist) {
-        for (TDataTableColumn incomingColumn : incomingtable.getDataTableColumns()) {
-            createDataTableColumn(incomingColumn, tableToPersist);
-        }
-        
-    }
-
-    private void createDataTableColumn(ImportColumn incomingColumn, DataTable tableToPersist) {
-        DataTableColumn col = new DataTableColumn();
-        col.setName(incomingColumn.getName());
-        col.setDisplayName(incomingColumn.getDisplayName());
-        col.setDescription(incomingColumn.getDescription());
-        col.setColumnDataType(incomingColumn.getColumnDataType());
-        col.setImportOrder(incomingColumn.getImportOrder());
-        col.setDataTable(tableToPersist);
-        col.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
-
-    }
-
-    private void copyValuesFromIncomingTDataTable(ImportTable incomingtable, DataTable tableToPersist) {
-        tableToPersist.setDescription(incomingtable.getDescription());
-        tableToPersist.setDisplayName(incomingtable.getDisplayName());
-        tableToPersist.setName(incomingtable.getName());
-        tableToPersist.setImportOrder(incomingtable.getImportOrder());
     }
 
     /*
@@ -275,7 +249,7 @@ public class DatasetImportServiceImpl implements DatasetImportService {
         // FIXME: check that types are compatible before merging
 
         if (existingColumn == null) {
-            createDataTableColumn(incomingColumn, existingTable);
+            DatasetImportUtils.createDataTableColumn(incomingColumn, existingTable);
             return;
         }
         /*

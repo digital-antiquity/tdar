@@ -47,7 +47,7 @@ public interface TargetDatabase extends Database {
     <T extends ImportColumn> void addTableRow(ImportTable<T> dataTable, Map<? extends ImportColumn, String> valueColumnMap) throws Exception;
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    List<String> selectNonNullDistinctValues(DataTableColumn column, boolean useUntranslatedValues);
+    List<String> selectNonNullDistinctValues(ImportTable table, ImportColumn column, boolean useUntranslatedValues);
 
     /**
      * @param dataType
@@ -58,23 +58,23 @@ public interface TargetDatabase extends Database {
 
     @Deprecated
     @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+    <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
     @Deprecated
     @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy);
+    <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+    <T> T selectAllFromTableInImportOrder(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
+    Map<String, Long> selectDistinctValuesWithCounts(ImportTable table, ImportColumn dataTableColumn);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    List<String> selectDistinctValues(DataTableColumn column, boolean sort);
+    List<String> selectDistinctValues(ImportTable table, ImportColumn column, boolean sort);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,

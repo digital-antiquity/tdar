@@ -211,7 +211,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Override
     @Deprecated
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
+    public <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
     }
@@ -219,22 +219,22 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Override
     @Deprecated
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
+    public <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
         SqlSelectBuilder builder = getSelectAll(table, false);
         builder.getOrderBy().addAll(Arrays.asList(orderBy));
         return jdbcTemplate.query(new LowMemoryStatementCreator(builder.toSql()), resultSetExtractor);
     }
 
-    private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
+    private SqlSelectBuilder getSelectAll(ImportTable table, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         if (includeGeneratedValues) {
             builder.getColumns().add(DataTableColumn.TDAR_ROW_ID.getName());
         }
-        List<DataTableColumn> columns = table.getDataTableColumns();
-        columns.sort(new Comparator<DataTableColumn>() {
+        List<ImportColumn> columns = table.getDataTableColumns();
+        columns.sort(new Comparator<ImportColumn>() {
 
             @Override
-            public int compare(DataTableColumn o1, DataTableColumn o2) {
+            public int compare(ImportColumn o1, ImportColumn o2) {
                 Integer c1 = 0;
                 Integer c2 = 0;
                 if (o1.getImportOrder() != null) {
@@ -247,19 +247,23 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             }
 
         });
-        table.getDataTableColumns().forEach(dtc -> {
+        for (ImportColumn dtc : columns) {
             builder.getColumns().add(dtc.getName());
-            if (dtc.getDefaultCodingSheet() != null && includeGeneratedValues) {
-                builder.getColumns().add(generateOriginalColumnName(dtc));
+
+            if (dtc instanceof DataTableColumn) {
+                DataTableColumn col = (DataTableColumn) dtc;
+                if (col.getDefaultCodingSheet() != null && includeGeneratedValues) {
+                    builder.getColumns().add(generateOriginalColumnName(col));
+                }
             }
-        });
+        }
         builder.getTableNames().add(table.getName());
         return builder;
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
+    public <T> T selectAllFromTableInImportOrder(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         builder.getOrderBy().add(DataTableColumn.TDAR_ROW_ID.getName());
         LowMemoryStatementCreator lmsc = new LowMemoryStatementCreator(builder.toSql());
@@ -268,7 +272,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<String> selectDistinctValues(DataTableColumn dataTableColumn, boolean sort) {
+    public List<String> selectDistinctValues(ImportTable table , ImportColumn dataTableColumn, boolean sort) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
@@ -281,7 +285,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             builder.getGroupBy().add(dataTableColumn.getName());
         }
         builder.getColumns().add(dataTableColumn.getName());
-        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getTableNames().add(table.getName());
         if (sort) {
             builder.getOrderBy().add(dataTableColumn.getName());
         }
@@ -291,7 +295,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn) {
+    public Map<String, Long> selectDistinctValuesWithCounts(ImportTable table, ImportColumn dataTableColumn) {
         if (dataTableColumn == null) {
             return Collections.emptyMap();
         }
@@ -300,7 +304,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         builder.setCountColumn(dataTableColumn.getName());
         builder.getGroupBy().add(dataTableColumn.getName());
         builder.getColumns().add(dataTableColumn.getName());
-        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getTableNames().add(table.getName());
         builder.getOrderBy().add(dataTableColumn.getName());
 
         final Map<String, Long> toReturn = new HashMap<String, Long>();
@@ -316,17 +320,17 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<String> selectNonNullDistinctValues(DataTableColumn dataTableColumn, boolean useUntranslatedValues) {
+    public List<String> selectNonNullDistinctValues(ImportTable table, ImportColumn dataTableColumn, boolean useUntranslatedValues) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
         SqlSelectBuilder builder = new SqlSelectBuilder();
-        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getTableNames().add(table.getName());
         builder.setDistinct(true);
         String name = dataTableColumn.getName();
         if (useUntranslatedValues) {
-            String original = generateOriginalColumnName(dataTableColumn);
-            if (hasColumn(dataTableColumn.getDataTable().getName(), original)) {
+            String original = generateOriginalColumnName((DataTableColumn)dataTableColumn);
+            if (hasColumn(table.getName(), original)) {
                 name = original;
             }
         }
@@ -585,7 +589,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         }
     }
 
-    private void setPreparedStatementValue(PreparedStatement preparedStatement, int i, ImportColumn column, String dataTableName, String colValue) throws SQLException {
+    private void setPreparedStatementValue(PreparedStatement preparedStatement, int i, ImportColumn column, String dataTableName, String colValue)
+            throws SQLException {
         // not thread-safe
         DateFormat dateFormat = new SimpleDateFormat();
         DateFormat accessDateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");

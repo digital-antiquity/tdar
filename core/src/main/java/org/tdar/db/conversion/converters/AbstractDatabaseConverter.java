@@ -73,6 +73,9 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     public List<TDataTableRelationship> getRelationshipsWithTable(String tableName) {
         List<TDataTableRelationship> rels = new ArrayList<>();
         for (TDataTableRelationship rel : dataTableRelationships) {
+            if (rel == null || rel.getLocalTable() == null || rel.getForeignTable() == null) {
+                continue;
+            }
             if (rel.getForeignTable().getName().equals(tableName) || rel.getLocalTable().getName().equals(tableName)) {
                 rels.add(rel);
             }

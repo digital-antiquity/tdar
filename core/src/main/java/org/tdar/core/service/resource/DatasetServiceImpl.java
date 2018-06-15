@@ -330,29 +330,29 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         return wrapper;
     }
 
-    /*
-     * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#listRelationshipsForColumns(org.tdar.core.bean.resource.datatable.DataTableColumn)
-     */
-    @Override
-    @Transactional
-    public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
-        List<DataTableRelationship> relationships = new ArrayList<>();
-        Set<DataTableRelationship> allDatasetRelationships = column.getDataTable().getDataset().getRelationships();
-        getLogger().trace("All relationships: {}", allDatasetRelationships);
-        for (DataTableRelationship relationship : allDatasetRelationships) {
-            for (DataTableColumnRelationship columnRelationship : relationship.getColumnRelationships()) {
-                if (column.equals(columnRelationship.getLocalColumn())) {
-                    relationships.add(relationship);
-                }
-            }
-        }
-        return relationships;
-    }
+//    /*
+//     * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
+//     */
+//    /*
+//     * (non-Javadoc)
+//     * 
+//     * @see org.tdar.core.service.resource.DatasetService#listRelationshipsForColumns(org.tdar.core.bean.resource.datatable.DataTableColumn)
+//     */
+//    @Override
+//    @Transactional
+//    public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
+//        List<DataTableRelationship> relationships = new ArrayList<>();
+//        Set<DataTableRelationship> allDatasetRelationships = column.getDataTable().getDataset().getRelationships();
+//        getLogger().trace("All relationships: {}", allDatasetRelationships);
+//        for (DataTableRelationship relationship : allDatasetRelationships) {
+//            for (DataTableColumnRelationship columnRelationship : relationship.getColumnRelationships()) {
+//                if (column.equals(columnRelationship.getLocalColumn())) {
+//                    relationships.add(relationship);
+//                }
+//            }
+//        }
+//        return relationships;
+//    }
 
     /*
      * Based on a set of @link DataTableColumn entries, and a @link Project we can will clear out the existing mappings; and then identify mappings that need to
