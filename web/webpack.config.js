@@ -1,6 +1,7 @@
 // webpack v4
 var webpack = require("webpack");
 const path = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 // webpack.autoProvidejQuery();
 module.exports = {
@@ -38,6 +39,7 @@ module.exports = {
   },
   
   plugins: [
+//     new BundleAnalyzerPlugin(),
      new webpack.ProvidePlugin({
          $: "jquery",
          jQuery: "jquery",

@@ -873,7 +873,6 @@
                         </executions>
                         <configuration>
                             <configFile>karma.conf.js</configFile>
-                            <browsers>PhantomJS</browsers>
                             <autoWatch>false</autoWatch>
                             <singleRun>true</singleRun>
                             <colors>true</colors>
