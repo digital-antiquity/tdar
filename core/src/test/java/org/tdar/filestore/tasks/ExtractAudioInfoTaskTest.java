@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Audio;
+import org.tdar.filestore.FileStoreFile;
 
 /**
  * A bare bones test required for the processing of the extract audio info task.
@@ -47,8 +48,9 @@ public class ExtractAudioInfoTaskTest {
     private void testFileCodec(String fileName, String expected) throws FileNotFoundException {
         ExtractAudioInfoTask task = new ExtractAudioInfoTask();
         File audioFile = TestConstants.getFile(TestConstants.TEST_AUDIO_DIR, fileName);
-        task.writeFileMetadataToAudioFile(testSubject, audioFile);
-        final String audioCodecFound = testSubject.getAudioCodec();
+        FileStoreFile fsf = new FileStoreFile();
+        task.writeFileMetadataToAudioFile(fsf, audioFile);
+        final String audioCodecFound = fsf.getCodex();
         assertTrue("Expected: '" + expected + "' but found: '" + audioCodecFound + "'", expected.equals(audioCodecFound));
     }
 

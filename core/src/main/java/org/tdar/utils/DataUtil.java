@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.HasLabel;
+import org.tdar.locale.HasLabel;
 
 public class DataUtil {
 

@@ -18,6 +18,7 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
     private Long informationResourceFileId;
     private Long id;
     private Long fileLength;
+    private String codex;
     private String mimeType;
     private String path;
     private Long uncompressedSizeOnDisk;
@@ -277,6 +278,14 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
     public void setWidth(Integer width) {
         this.width = width;
+    }
+
+    public String getCodex() {
+        return codex;
+    }
+
+    public void setCodex(String codex) {
+        this.codex = codex;
     }
 
 }

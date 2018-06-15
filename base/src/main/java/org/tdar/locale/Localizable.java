@@ -1,4 +1,4 @@
-package org.tdar.core.bean;
+package org.tdar.locale;
 
 public interface Localizable {
 

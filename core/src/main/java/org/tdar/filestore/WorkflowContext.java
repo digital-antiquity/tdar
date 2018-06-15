@@ -15,8 +15,9 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.configuration.TdarConfiguration;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.exception.NonFatalWorkflowException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.workflow.MessageService;
@@ -43,7 +44,6 @@ public final class WorkflowContext implements Serializable {
 
     private static final long serialVersionUID = -1020989469518487007L;
 
-    // private Long informationResourceFileId;
     private Long informationResourceId;
     private List<FileStoreFile> versions = new ArrayList<>();
     private List<FileStoreFile> originalFiles = new ArrayList<>();
@@ -54,7 +54,8 @@ public final class WorkflowContext implements Serializable {
     private ResourceType resourceType;
     private Class<? extends Workflow> workflowClass;
     private List<String> dataTablesToCleanup = new ArrayList<>();
-    private transient Resource transientResource;
+    private transient List<DataTable> dataTables = new ArrayList<>();
+    private transient List<DataTableRelationship> relationships = new ArrayList<>();
     private boolean okToStoreInFilestore = true;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
     private transient SerializationService serializationService;
@@ -184,13 +185,13 @@ public final class WorkflowContext implements Serializable {
         this.dataTablesToCleanup = dataTablesToCleanup;
     }
 
-    public Resource getTransientResource() {
-        return transientResource;
-    }
-
-    public void setTransientResource(Resource transientResource) {
-        this.transientResource = transientResource;
-    }
+//    public Resource getTransientResource() {
+//        return transientResource;
+//    }
+//
+//    public void setTransientResource(Resource transientResource) {
+//        this.transientResource = transientResource;
+//    }
 
     public ResourceType getResourceType() {
         return resourceType;
@@ -299,7 +300,8 @@ public final class WorkflowContext implements Serializable {
     }
 
     public void clear() {
-        transientResource = null;
+        getDataTables().clear();
+        getRelationships().clear();
         versions = null;
         originalFiles = null;
 
@@ -313,6 +315,22 @@ public final class WorkflowContext implements Serializable {
 
     public void setOkToStoreInFilestore(boolean okToStoreInFilestore) {
         this.okToStoreInFilestore = okToStoreInFilestore;
+    }
+
+    public List<DataTable> getDataTables() {
+        return dataTables;
+    }
+
+    public void setDataTables(List<DataTable> dataTables) {
+        this.dataTables = dataTables;
+    }
+
+    public List<DataTableRelationship> getRelationships() {
+        return relationships;
+    }
+
+    public void setRelationships(List<DataTableRelationship> relationships) {
+        this.relationships = relationships;
     }
 
 }

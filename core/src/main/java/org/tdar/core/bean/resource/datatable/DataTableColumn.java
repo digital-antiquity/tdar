@@ -39,6 +39,8 @@ import org.tdar.core.bean.resource.HasStatic;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.datatable.DataTableColumnEncodingType;
+import org.tdar.datatable.DataTableColumnType;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;

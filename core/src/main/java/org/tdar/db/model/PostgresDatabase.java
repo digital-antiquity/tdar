@@ -53,7 +53,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.datatable.DataTableColumnType;
 import org.tdar.db.builder.AbstractSqlTools;
 import org.tdar.db.builder.SqlSelectBuilder;
 import org.tdar.db.builder.WhereCondition;

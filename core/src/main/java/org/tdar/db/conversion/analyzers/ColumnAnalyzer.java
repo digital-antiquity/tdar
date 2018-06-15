@@ -1,7 +1,7 @@
 package org.tdar.db.conversion.analyzers;
 
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.datatable.DataTableColumnType;
 
 public interface ColumnAnalyzer {
 

@@ -43,7 +43,7 @@ public class ExtracAudioInfoTaskPreconditionsTest {
         audio = new Audio();
         WorkflowContext ctx = new WorkflowContext();
         ctx.setResourceType(ResourceType.AUDIO);
-        ctx.setTransientResource(audio);
+//        ctx.setTransientResource(audio);
         task.setWorkflowContext(ctx);
     }
 
@@ -58,16 +58,6 @@ public class ExtracAudioInfoTaskPreconditionsTest {
         }
     }
 
-    @Test
-    public void mustHaveNonNullAudioFile() {
-        task.getWorkflowContext().setTransientResource(null);
-        try {
-            task.run();
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("Transient copy of audio not available..."));
-        }
-    }
 
     @Test
     public void mustHaveAFileToWorkWith() {

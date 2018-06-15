@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.UrlConstants;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasImage;
-import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -60,6 +59,7 @@ import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.filestore.VersionType;
+import org.tdar.locale.HasLabel;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 

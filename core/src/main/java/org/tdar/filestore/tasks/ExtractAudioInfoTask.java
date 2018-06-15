@@ -8,6 +8,7 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.apache.jena.sparql.pfunction.library.versionARQ;
 import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
@@ -29,11 +30,6 @@ public class ExtractAudioInfoTask extends AbstractTask {
             recordErrorAndExit("The Extract Audio Info Task has been called for a non audio resource! Resource class was: " + resourceClass);
         }
 
-        // if we can't get the archive, we don't have enough information to run...
-        Audio audio = (Audio) ctx.getTransientResource();
-        if (audio == null) {
-            recordErrorAndExit("Transient copy of audio not available...");
-        }
 
         // are there actual files to copy?
         final List<FileStoreFile> audioFiles = ctx.getOriginalFiles();
@@ -50,20 +46,19 @@ public class ExtractAudioInfoTask extends AbstractTask {
         // at the moment there should be only one of these files: however, that should only be an artifact of the user interface.
         for (FileStoreFile version : audioFiles) {
             File originalAudioFile = version.getTransientFile();
-            writeFileMetadataToAudioFile(audio, originalAudioFile);
+            writeFileMetadataToAudioFile(version, originalAudioFile);
         }
 
     }
 
-    protected void writeFileMetadataToAudioFile(Audio targetAudioResource, File originalAudioFile) {
-        AudioFileFormat audioFileFormat;
+    protected void writeFileMetadataToAudioFile(FileStoreFile version, File originalAudioFile) {
+        String audioFileFormat = " - ";
         try {
-            audioFileFormat = AudioSystem.getAudioFileFormat(originalAudioFile);
-            targetAudioResource.setAudioCodec(audioFileFormat.toString());
+            audioFileFormat = AudioSystem.getAudioFileFormat(originalAudioFile).toString();
         } catch (UnsupportedAudioFileException | IOException e) {
-            targetAudioResource.setAudioCodec(" - ");
             getLogger().error("Swallowed error - file: " + originalAudioFile.getName(), e);
         }
+        version.setCodex(audioFileFormat);
     }
 
     @Override

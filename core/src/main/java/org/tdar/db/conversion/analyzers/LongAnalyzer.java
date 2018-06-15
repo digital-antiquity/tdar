@@ -2,7 +2,7 @@ package org.tdar.db.conversion.analyzers;
 
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.datatable.DataTableColumnType;
 
 /**
  * Determines whether the column contains a Long value

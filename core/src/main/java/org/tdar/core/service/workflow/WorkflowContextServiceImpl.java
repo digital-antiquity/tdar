@@ -2,6 +2,7 @@ package org.tdar.core.service.workflow;
 
 import java.util.Date;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,16 +100,17 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
                 case DATASET:
                 case SENSORY_DATA:
                     Dataset dataset = (Dataset) resource;
-                    if (ctx.getTransientResource() == null) {
+                    if (CollectionUtils.isEmpty(ctx.getDataTables())) {
                         break;
                     }
 
                     // This should only be done once; if it's a composite geospatial resource, it might be dangerous to do twice as you're merging and
                     // reconcilling with yourself over yourself
                     if (count == 1) {
-                        genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
-                        logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
-                        datasetImportService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
+                        genericDao.detachFromSessionAndWarn(ctx.getDataTables());
+                        genericDao.detachFromSessionAndWarn(ctx.getRelationships());
+                        logger.info("data tables: {}", ctx.getDataTables());
+                        datasetImportService.reconcileDataset(irFile, dataset, ctx.getDataTables(), ctx.getRelationships());
                         genericDao.saveOrUpdate(dataset);
                     }
                     break;
@@ -126,7 +128,7 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
                     break;
                 case ARCHIVE:
                 case AUDIO:
-                    ((InformationResource) resource).updateFromTransientResource((InformationResource) ctx.getTransientResource());
+//                    ((InformationResource) resource).updateFromTransientResource((InformationResource) ctx.getTransientResource());
                     genericDao.saveOrUpdate(resource);
                     break;
                 default:
@@ -198,7 +200,7 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
         ctx.setTargetDatabase(tdarDataImportDatabase);
         final InformationResource informationResource = versions[0].getInformationResourceFile().getInformationResource();
         ctx.setResourceType(informationResource.getResourceType());
-        ctx.setTransientResource(informationResource.getTransientCopyForWorkflow());
+//        ctx.setTransientResource(informationResource.getTransientCopyForWorkflow());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());

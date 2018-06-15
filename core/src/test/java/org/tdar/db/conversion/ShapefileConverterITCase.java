@@ -65,7 +65,7 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
 
         task.setWorkflowContext(wc);
         task.run();
-        Dataset dataset = (Dataset) wc.getTransientResource();
+//        Dataset dataset = (Dataset) wc.getTransientResource();
         FileStoreFile geoJson = null;
         for (FileStoreFile vers : wc.getVersions()) {
             if (vers.getVersionType() == VersionType.GEOJSON) {
@@ -78,7 +78,7 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         // task.run();
         //
         // DatasetConverter converter = convertDatabase("az-paleoindian-point-survey.mdb", 1129L);
-        for (DataTable table : dataset.getDataTables()) {
+        for (DataTable table : wc.getDataTables()) {
             logger.info("{}", table);
         }
 

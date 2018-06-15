@@ -1,7 +1,7 @@
 package org.tdar.core.bean.keyword;
 
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum KeywordType implements Localizable {

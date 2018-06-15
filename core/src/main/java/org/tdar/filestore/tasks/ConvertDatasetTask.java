@@ -8,11 +8,8 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
@@ -74,9 +71,9 @@ public class ConvertDatasetTask extends AbstractTask {
                     getWorkflowContext().getTargetDatabase().dropTable(table);
                 }
 
-                Dataset transientDataset = new Dataset();
-                transientDataset.setStatus(Status.FLAGGED);
-                getWorkflowContext().setTransientResource(transientDataset);
+//                Dataset transientDataset = new Dataset();
+//                transientDataset.setStatus(Status.FLAGGED);
+//                getWorkflowContext().setTransientResource(transientDataset);
                 DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
                 // returns the set of transient POJOs from the incoming dataset.
 
@@ -102,8 +99,8 @@ public class ConvertDatasetTask extends AbstractTask {
                 if ((indexedContents != null) && (indexedContents.length() > 0)) {
                     addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
                 }
-                transientDataset.getDataTables().addAll(tablesToPersist);
-                transientDataset.getRelationships().addAll(databaseConverter.getRelationships());
+                getWorkflowContext().getDataTables().addAll(tablesToPersist);
+                getWorkflowContext().getRelationships().addAll(databaseConverter.getRelationships());
             }
         } catch (Exception e) {
             getWorkflowContext().setErrorFatal(true);
