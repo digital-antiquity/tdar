@@ -16,13 +16,17 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
     private File transientFile;
     private Long persistableId;
     private Long informationResourceFileId;
+    private Long id;
     private Long fileLength;
     private String mimeType;
     private String path;
     private Long uncompressedSizeOnDisk;
-    private Date dateCreated;
+    private Date dateCreated = new Date();
     private String extension;
     private Integer version;
+    private Integer width;
+    private Integer height;
+    private Boolean primary = false;
 
     @Override
     public Long getInformationResourceFileId() {
@@ -105,6 +109,15 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
         this.filename = filename;
         this.type = type;
         this.versionType = versionType;
+    }
+
+    public FileStoreFile(FilestoreObjectType type, VersionType type2, String name, Integer version2, Long informationResourceId, Long informationResourceFileId2, Long versionId) {
+        this.versionType = type2;
+        this.filename = name;
+        this.version = version2;
+        this.informationResourceFileId = informationResourceFileId2;
+        this.persistableId = informationResourceId;
+        this.id = versionId;
     }
 
     /*
@@ -231,6 +244,38 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long versionId) {
+        this.id = versionId;
+    }
+
+    public Boolean getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
     }
 
 }

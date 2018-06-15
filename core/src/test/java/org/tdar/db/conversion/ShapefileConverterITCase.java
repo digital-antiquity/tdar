@@ -19,10 +19,12 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.model.PostgresDatabase;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.VersionType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
+import org.tdar.utils.FileStoreFileUtils;
 
 public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
 
@@ -53,20 +55,20 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
         Geospatial doc = generateAndStoreVersion(Geospatial.class, name + ".shp", TestConstants.getFile(string + ".shp"), store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
-        wc.getOriginalFiles().add(originalFile);
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
 
         for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
             Geospatial doc2 = generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store);
-            wc.getOriginalFiles().add(doc2.getLatestUploadedVersion());
+            wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(doc2.getLatestUploadedVersion()));
 
         }
 
         task.setWorkflowContext(wc);
         task.run();
         Dataset dataset = (Dataset) wc.getTransientResource();
-        InformationResourceFileVersion geoJson = null;
-        for (InformationResourceFileVersion vers : wc.getVersions()) {
-            if (vers.getFileVersionType() == VersionType.GEOJSON) {
+        FileStoreFile geoJson = null;
+        for (FileStoreFile vers : wc.getVersions()) {
+            if (vers.getVersionType() == VersionType.GEOJSON) {
                 geoJson = vers;
             }
         }

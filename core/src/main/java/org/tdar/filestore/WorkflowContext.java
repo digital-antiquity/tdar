@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.NonFatalWorkflowException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.workflow.MessageService;
@@ -36,7 +35,7 @@ import org.tdar.utils.ExceptionWrapper;
  * context back to XML and then return that structure to the application. In this way the workflow tasks are decoupled from the application, I assume with the
  * eventual goal of allowing long running tasks to be run in the background without impacting the user.
  * 
- * @see MessageService#sendFileProcessingRequest(Workflow, InformationResourceFileVersion...)
+ * @see MessageService#sendFileProcessingRequest(Workflow, FileStoreFile...)
  * @author Adam Brin
  */
 @XmlRootElement
@@ -46,8 +45,8 @@ public final class WorkflowContext implements Serializable {
 
     // private Long informationResourceFileId;
     private Long informationResourceId;
-    private List<InformationResourceFileVersion> versions = new ArrayList<>();
-    private List<InformationResourceFileVersion> originalFiles = new ArrayList<>();
+    private List<FileStoreFile> versions = new ArrayList<>();
+    private List<FileStoreFile> originalFiles = new ArrayList<>();
     private File workingDirectory = null;
     private int numPages = -1;
     private transient Filestore filestore;
@@ -84,31 +83,31 @@ public final class WorkflowContext implements Serializable {
      * All of the derivative versions of the file
      */
     @XmlElementWrapper(name = "versions")
-    @XmlElement(name = "informationResourceFileVersion")
-    public List<InformationResourceFileVersion> getVersions() {
+    @XmlElement(name = "versionFile")
+    public List<FileStoreFile> getVersions() {
         if (versions == null) {
-            versions = new ArrayList<InformationResourceFileVersion>();
+            versions = new ArrayList<>();
         }
         return versions;
     }
 
-    public void addVersion(InformationResourceFileVersion version) {
+    public void addVersion(FileStoreFile version) {
         if (this.versions == null) {
-            this.versions = new ArrayList<InformationResourceFileVersion>();
+            this.versions = new ArrayList<>();
         }
         this.versions.add(version);
     }
 
     @XmlElementWrapper(name = "originalFiles")
-    @XmlElement(name = "informationResourceFileVersion")
-    public List<InformationResourceFileVersion> getOriginalFiles() {
+    @XmlElement(name = "originalFiles")
+    public List<FileStoreFile> getOriginalFiles() {
         return originalFiles;
     }
 
     /*
      * Get the Original File
      */
-    public void setOriginalFiles(List<InformationResourceFileVersion> originalFile) {
+    public void setOriginalFiles(List<FileStoreFile> originalFile) {
         this.originalFiles = originalFile;
     }
 

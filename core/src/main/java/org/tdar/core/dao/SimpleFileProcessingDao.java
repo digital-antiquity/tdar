@@ -13,6 +13,8 @@ import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.VersionType;
@@ -36,19 +38,17 @@ public class SimpleFileProcessingDao {
         }
         // techincally this should use the proxy version of an IRFV, but it's easier here to hack it
         String filename = LOGO + FilenameUtils.getExtension(fileProxy.getFilename());
-        InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, filename, null);
-        // this will be the "final" filename
-        version.setFilename(filename);
+        FilestoreObjectType type = FilestoreObjectType.CREATOR;
+        if (persistable instanceof ResourceCollection) {
+            type = FilestoreObjectType.COLLECTION;
+        }
+        FileStoreFile version = new FileStoreFile(type, VersionType.UPLOADED, null, filename);
 
         WorkflowContext context = new WorkflowContext();
         context.getOriginalFiles().add(version);
         context.setOkToStoreInFilestore(false);
         context.setResourceType(ResourceType.IMAGE);
 
-        FilestoreObjectType type = FilestoreObjectType.CREATOR;
-        if (persistable instanceof ResourceCollection) {
-            type = FilestoreObjectType.COLLECTION;
-        }
 
         ImageThumbnailTask thumbnailTask = new ImageThumbnailTask();
         thumbnailTask.setWorkflowContext(context);
@@ -60,10 +60,10 @@ public class SimpleFileProcessingDao {
             IOUtils.copyLarge(new FileInputStream(fileProxy.getFile()), new FileOutputStream(file));
             thumbnailTask.run();
             Filestore filestore = TdarConfiguration.getInstance().getFilestore();
-            version.setInformationResourceId(persistable.getId());
+            version.setPersistableId(persistable.getId());
             filestore.store(type, version.getTransientFile(), version);
-            for (InformationResourceFileVersion v : context.getVersions()) {
-                v.setInformationResourceId(persistable.getId());
+            for (FileStoreFile v : context.getVersions()) {
+                v.setPersistableId(persistable.getId());
                 filestore.store(type, v.getTransientFile(), v);
             }
 

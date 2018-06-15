@@ -21,10 +21,10 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFileProxy;
 
 import com.healthmarketscience.jackcess.Database;
 
@@ -37,7 +37,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     private Long irFileId;
     private Database database = null;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    protected InformationResourceFileVersion informationResourceFileVersion;
+    protected FileStoreFileProxy informationResourceFileVersion;
     protected TargetDatabase targetDatabase;
     protected Connection connection;
     protected Set<DataTable> dataTables = new HashSet<>();
@@ -276,14 +276,14 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
      *            the informationResourceFileVersion to set
      */
     @Override
-    public void setInformationResourceFileVersion(InformationResourceFileVersion informationResourceFileVersion) {
+    public void setInformationResourceFileVersion(FileStoreFileProxy informationResourceFileVersion) {
         this.informationResourceFileVersion = informationResourceFileVersion;
     }
 
     /**
      * @return the informationResourceFileVersion
      */
-    public InformationResourceFileVersion getInformationResourceFileVersion() {
+    public FileStoreFileProxy getInformationResourceFileVersion() {
         return informationResourceFileVersion;
     }
 

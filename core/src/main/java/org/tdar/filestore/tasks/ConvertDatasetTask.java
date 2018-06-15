@@ -17,6 +17,7 @@ import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.VersionType;
 import org.tdar.utils.ExceptionWrapper;
 
@@ -31,19 +32,19 @@ public class ConvertDatasetTask extends AbstractTask {
             return;
         }
 
-        List<InformationResourceFileVersion> filesToProcess = new ArrayList<>(getWorkflowContext().getOriginalFiles());
+        List<FileStoreFile> filesToProcess = new ArrayList<>(getWorkflowContext().getOriginalFiles());
 
         File file = getWorkflowContext().getOriginalFiles().get(0).getTransientFile();
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
         }
 
         if (getWorkflowContext().getResourceType() == ResourceType.GEOSPATIAL) {
-            for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+            for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
                 if (version.getExtension().equals("shp") || version.getExtension().equals("mdb") || version.getExtension().equals("gdb")) {
                     filesToProcess.clear();
                     filesToProcess.add(version);
@@ -52,7 +53,7 @@ public class ConvertDatasetTask extends AbstractTask {
         }
 
         try {
-            for (InformationResourceFileVersion versionToConvert : filesToProcess) {
+            for (FileStoreFile versionToConvert : filesToProcess) {
                 File version = versionToConvert.getTransientFile();
 
                 if (version == null) {

@@ -30,6 +30,7 @@ import org.apache.tika.parser.Parser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.VersionType;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.MessageHelper;
@@ -48,12 +49,12 @@ public class IndexableTextExtractionTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
             run(version);
         }
     }
 
-    public void run(InformationResourceFileVersion version) throws Exception {
+    public void run(FileStoreFile version) throws Exception {
         File file = version.getTransientFile();
         FileOutputStream metadataOutputStream = null;
         InputStream stream = null;

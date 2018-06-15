@@ -21,6 +21,7 @@ import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.GisFileReaderTask;
+import org.tdar.utils.FileStoreFileUtils;
 
 /**
  * @author Adam Brin
@@ -49,8 +50,8 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion supportingFile = doc2.getLatestUploadedVersion();
 
         Workflow workflow = fileAnalyzer.getWorkflow(originalFile, supportingFile);
-        wc.getOriginalFiles().add(originalFile);
-        wc.getOriginalFiles().add(supportingFile);
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(supportingFile));
 
         workflow.run(wc);
         task.setWorkflowContext(wc);
@@ -66,8 +67,8 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         Geospatial doc = generateAndStoreVersion(Geospatial.class, "untitled.tif", TestConstants.getFile(TestConstants.TEST_GEOTIFF_COMBINED),
                 store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
-
-        wc.getOriginalFiles().add(originalFile);
+        
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
         task.setWorkflowContext(wc);
         task.run();
     }
@@ -82,7 +83,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
                 store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
 
-        wc.getOriginalFiles().add(originalFile);
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
         task.setWorkflowContext(wc);
         task.run();
     }
@@ -97,11 +98,11 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
         Geospatial doc = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
-        wc.getOriginalFiles().add(originalFile);
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
         for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
             Geospatial doc2 = generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store);
             InformationResourceFileVersion originalVersion = doc2.getLatestUploadedVersion();
-            wc.getOriginalFiles().add(originalVersion);
+            wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalVersion));
 
         }
         task.setWorkflowContext(wc);
@@ -119,11 +120,11 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         String string = TestConstants.TEST_GEOTIFF_DIR + name;
         Geospatial doc = generateAndStoreVersion(Geospatial.class, name + ".tif", new File(string + ".tif"), store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
-        wc.getOriginalFiles().add(originalFile);
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
         for (String ext : new String[] { ".tif.aux.xml" }) {
             Geospatial doc2 = generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store);
             InformationResourceFileVersion originalVersion = doc2.getLatestUploadedVersion();
-            wc.getOriginalFiles().add(originalVersion);
+            wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalVersion));
         }
         task.setWorkflowContext(wc);
         task.run();
@@ -142,7 +143,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         // for (String ext : new String[] { ".tif.aux.xml" }) {
         // originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
         // }
-        wc.getOriginalFiles().add(originalVersion);
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalVersion));
         task.setWorkflowContext(wc);
         task.run();
     }
@@ -161,7 +162,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         // for (String ext : new String[] { ".tif.aux.xml" }) {
         // originalFile.getSupportingFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
         // }
-        wc.getOriginalFiles().add(originalVersion);
+        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalVersion));
         task.setWorkflowContext(wc);
         task.run();
     }

@@ -23,9 +23,9 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFileProxy;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.DatabaseBuilder;
@@ -56,7 +56,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
     public AccessDatabaseConverter() {
     }
 
-    public AccessDatabaseConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
+    public AccessDatabaseConverter(TargetDatabase targetDatabase, FileStoreFileProxy... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

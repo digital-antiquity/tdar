@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFileProxy;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -36,7 +36,7 @@ public abstract class SimpleConverter extends AbstractDatabaseConverter {
     public SimpleConverter() {
     }
 
-    public SimpleConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
+    public SimpleConverter(TargetDatabase targetDatabase, FileStoreFileProxy... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

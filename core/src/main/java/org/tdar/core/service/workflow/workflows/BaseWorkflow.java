@@ -17,6 +17,7 @@ import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
@@ -50,7 +51,7 @@ public abstract class BaseWorkflow implements Workflow {
         // by default tasks are processed in the order they are added within the phase that they're part of.
 
         try {
-            for (InformationResourceFileVersion version : workflowContext.getOriginalFiles()) {
+            for (FileStoreFile version : workflowContext.getOriginalFiles()) {
                 version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
             }
         } catch (Exception e) {

@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.NonFatalWorkflowException;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.VersionType;
 
 /**
@@ -45,7 +46,7 @@ public class ListArchiveTask extends AbstractTask {
      */
     @Override
     public void run() throws IOException {
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
             File f_ = version.getTransientFile();
             // take the file
             getLogger().debug("listing contents of: " + f_.getName());
@@ -92,9 +93,9 @@ public class ListArchiveTask extends AbstractTask {
 
             // write that to a file with a known format (one file per line)
             FileUtils.writeStringToFile(f, archiveContents.toString());
-            InformationResourceFileVersion version_ = generateInformationResourceFileVersionFromOriginal(version, f, VersionType.TRANSLATED);
+            FileStoreFile version_ = generateInformationResourceFileVersionFromOriginal(version, f, VersionType.TRANSLATED);
             FileUtils.writeStringToFile(f2, archiveContents.toString());
-            InformationResourceFileVersion version2_ = generateInformationResourceFileVersionFromOriginal(version, f2, VersionType.INDEXABLE_TEXT);
+            FileStoreFile version2_ = generateInformationResourceFileVersionFromOriginal(version, f2, VersionType.INDEXABLE_TEXT);
             version.setUncompressedSizeOnDisk(getEffectiveSize());
             getWorkflowContext().addVersion(version_);
             getWorkflowContext().addVersion(version2_);

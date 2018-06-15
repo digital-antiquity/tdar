@@ -2,6 +2,7 @@ package org.tdar.db.conversion.converters;
 
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.FileStoreFileProxy;
 
 /**
  * Converts text TAB file into a postgres database... uses the fact that the OpenCSV Reader can read tab delimited files
@@ -22,7 +23,7 @@ public class TabConverter extends SimpleConverter {
     public TabConverter() {
     };
 
-    public TabConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
+    public TabConverter(TargetDatabase targetDatabase, FileStoreFileProxy... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

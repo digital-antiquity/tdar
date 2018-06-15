@@ -11,6 +11,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.WorkflowContext;
 
 public class ExtractAudioInfoTask extends AbstractTask {
@@ -35,7 +36,7 @@ public class ExtractAudioInfoTask extends AbstractTask {
         }
 
         // are there actual files to copy?
-        final List<InformationResourceFileVersion> audioFiles = ctx.getOriginalFiles();
+        final List<FileStoreFile> audioFiles = ctx.getOriginalFiles();
         if (audioFiles.size() <= 0) {
             recordErrorAndExit("Must have an audio file to work with");
         }
@@ -47,7 +48,7 @@ public class ExtractAudioInfoTask extends AbstractTask {
 
         // Preconditions have been checked, now to write the control file and extract the audio files to work with.
         // at the moment there should be only one of these files: however, that should only be an artifact of the user interface.
-        for (InformationResourceFileVersion version : audioFiles) {
+        for (FileStoreFile version : audioFiles) {
             File originalAudioFile = version.getTransientFile();
             writeFileMetadataToAudioFile(audio, originalAudioFile);
         }

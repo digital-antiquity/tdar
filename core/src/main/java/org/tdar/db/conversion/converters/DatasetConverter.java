@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.FileStoreFileProxy;
 
 public interface DatasetConverter {
 
@@ -49,7 +49,7 @@ public interface DatasetConverter {
 
     void setRelationships(Set<DataTableRelationship> relationships);
 
-    void setInformationResourceFileVersion(InformationResourceFileVersion version);
+    void setInformationResourceFileVersion(FileStoreFileProxy version);
 
     void setFilename(String filename);
 

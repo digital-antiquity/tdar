@@ -57,4 +57,6 @@ public interface FileStoreFileProxy {
 
     Integer getVersion();
 
+    Long getId();
+
 }

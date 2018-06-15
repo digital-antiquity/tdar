@@ -1,6 +1,6 @@
 package org.tdar.core.service.workflow;
 
-import java.util.Arrays;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,9 @@ import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.WorkflowContext;
+import org.tdar.utils.FileStoreFileUtils;
 
 /**
  * @author Adam Brin
@@ -77,12 +79,13 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
         // FIXME: only delete the derivatives for the CURRENT VERSON, not ALL VERSIONS
 
         int count = 0;
-        for (InformationResourceFileVersion orig : ctx.getOriginalFiles()) {
-            informationResourceFileVersionService.deleteDerivatives(orig);
+        for (FileStoreFile orig_ : ctx.getOriginalFiles()) {
             count++;
             // gets the uploaded IRFileVersion
             // InformationResourceFileVersion orig = ctx.getOriginalFile();
-
+            InformationResourceFileVersion orig = genericDao.find(InformationResourceFileVersion.class, orig_.getId());
+            informationResourceFileVersionService.deleteDerivatives(orig);
+            FileStoreFileUtils.copyFileStoreFileIntoVersion(orig_, orig);
             // Finds the irFile. We could call orig.getInformationResourceFile() but we need irFile associated w/ the current hibernate session
             InformationResourceFile irFile = genericDao.find(InformationResourceFile.class, orig.getInformationResourceFileId());
             logger.info("IRFILE {}", irFile);
@@ -135,11 +138,13 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
             orig.setInformationResourceFile(irFile);
 
             // Grab the new derivatives from the context and persist them.
-            for (InformationResourceFileVersion version : ctx.getVersions()) {
+            for (FileStoreFile version : ctx.getVersions()) {
                 // if the derivative's ID is null, we know that it hasn't been persisted yet, so we save.
                 if (version.getInformationResourceFileId().equals(irFile.getId())) {
-                    version.setInformationResourceFile(irFile);
-                    irFile.addFileVersion(version);
+                    InformationResourceFileVersion irfv = new InformationResourceFileVersion();
+                    FileStoreFileUtils.copyFileStoreFileIntoVersion(version, irfv);
+                    irfv.setInformationResourceFile(irFile);
+                    irFile.addFileVersion(irfv);
                 }
             }
             logger.debug("irFile: {} ", irFile);
@@ -186,7 +191,10 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
     @Override
     public WorkflowContext initializeWorkflowContext(Workflow w, InformationResourceFileVersion... versions) {
         WorkflowContext ctx = new WorkflowContext();
-        ctx.getOriginalFiles().addAll(Arrays.asList(versions));
+        for (InformationResourceFileVersion irfv : versions) {
+            FileStoreFile fsf = FileStoreFileUtils.copyVersionToFilestoreFile(irfv);
+            ctx.getOriginalFiles().add(fsf);
+        }
         ctx.setTargetDatabase(tdarDataImportDatabase);
         final InformationResource informationResource = versions[0].getInformationResourceFile().getInformationResource();
         ctx.setResourceType(informationResource.getResourceType());

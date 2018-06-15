@@ -35,10 +35,10 @@ import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.db.conversion.ConversionStatisticsManager;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFileProxy;
 
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
@@ -68,10 +68,10 @@ public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
     public ShapeFileDatabaseConverter() {
     }
 
-    private List<InformationResourceFileVersion> versions = new ArrayList<>();
+    private List<FileStoreFileProxy> versions = new ArrayList<>();
     private File geoJsonFile;
 
-    public ShapeFileDatabaseConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
+    public ShapeFileDatabaseConverter(TargetDatabase targetDatabase, FileStoreFileProxy... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
         this.versions = Arrays.asList(versions);
@@ -83,7 +83,7 @@ public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
 
         File workingDir = new File(TdarConfiguration.getInstance().getTempDirectory(), getDatabaseFile().getName());
         workingDir.mkdir();
-        for (InformationResourceFileVersion version : versions) {
+        for (FileStoreFileProxy version : versions) {
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             File workingOriginal = new File(workingDir, getDatabaseFile().getName());
             setDatabaseFile(workingOriginal);

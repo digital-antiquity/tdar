@@ -34,7 +34,7 @@ import org.opengis.coverage.grid.GridCoverageReader;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.geometry.Envelope;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.VersionType;
 import org.xml.sax.SAXException;
 
@@ -49,7 +49,7 @@ public class GisFileReaderTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        InformationResourceFileVersion original = null;
+        FileStoreFile original = null;
         if (CollectionUtils.isNotEmpty(getWorkflowContext().getOriginalFiles())) {
             original = getWorkflowContext().getOriginalFiles().get(0);
         }
@@ -58,10 +58,10 @@ public class GisFileReaderTask extends AbstractTask {
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
         File workingOriginal = new File(workingDir, file.getName());
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
-            if (version.isPrimaryFile()) {
+            if (version.getPrimary()) {
                 original = version;
             }
         }
@@ -138,7 +138,7 @@ public class GisFileReaderTask extends AbstractTask {
         }
     }
 
-    private void writeFeatureToGeoJson(InformationResourceFileVersion original, FileWriter fwriter, File geoJson, FeatureJSON fjson,
+    private void writeFeatureToGeoJson(FileStoreFile original, FileWriter fwriter, File geoJson, FeatureJSON fjson,
             DefaultFeatureCollection collection) {
         try {
             fjson.writeFeatureCollection(collection, fwriter);
