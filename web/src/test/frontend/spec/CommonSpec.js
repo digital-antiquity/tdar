@@ -397,7 +397,7 @@ describe("CommonSpec.js: edit page tests", function () {
     
             //clicking on a thumbnail should update the featured image and label
             $(".thumbnailLink").click();
-            expect($j('#confidentialLabel')).toHaveText('This file is awesome but you have rights to it');
+            expect($j('#confidentialLabel')).toHaveText('This file is awesome, but you have rights to see it');
             expect($j('#bigImage').get(0).src).toContain('/images/book.png');
     
         });
