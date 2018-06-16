@@ -47,7 +47,7 @@ public class SimpleFileProcessingDao {
         WorkflowContext context = new WorkflowContext();
         context.getOriginalFiles().add(version);
         context.setOkToStoreInFilestore(false);
-        context.setResourceType(ResourceType.IMAGE);
+        context.setHasDimensions(true);
 
 
         ImageThumbnailTask thumbnailTask = new ImageThumbnailTask();

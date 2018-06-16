@@ -43,5 +43,9 @@ public interface Workflow {
     void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] versions);
 
     boolean validateProxyCollection(FileProxy primary);
+    
+    void setExtension(String ext);
+
+    String getExtension();
 
 }

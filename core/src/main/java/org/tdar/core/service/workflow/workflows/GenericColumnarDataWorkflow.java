@@ -112,6 +112,7 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
     }
 
     public Class<? extends DatasetConverter> getDatasetConverterForExtension(String ext) {
+        getLogger().debug("{} :: {}", ext, datasetConverterMap);
         return datasetConverterMap.get(ext.toLowerCase());
     }
 

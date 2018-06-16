@@ -15,14 +15,14 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.configuration.TdarConfiguration;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.NonFatalWorkflowException;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.WorkflowContextService;
+//import org.tdar.core.service.workflow.MessageService;
+//import org.tdar.core.service.workflow.WorkflowContextService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableRelationship;
+import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.tasks.Task;
 import org.tdar.utils.ExceptionWrapper;
@@ -50,8 +50,10 @@ public final class WorkflowContext implements Serializable {
     private File workingDirectory = null;
     private int numPages = -1;
     private transient Filestore filestore;
+    private String primaryExtension;
     private boolean processedSuccessfully = false;
-    private ResourceType resourceType;
+    private boolean hasDimensions;
+    private boolean dataTableSupported;
     private Class<? extends Workflow> workflowClass;
     private List<String> dataTablesToCleanup = new ArrayList<>();
     private transient List<TDataTable> dataTables = new ArrayList<>();
@@ -64,6 +66,8 @@ public final class WorkflowContext implements Serializable {
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
 
     private boolean isErrorFatal;
+
+    private Class<? extends DatasetConverter> datasetConverter;
 
     public WorkflowContext() {
     }
@@ -183,22 +187,6 @@ public final class WorkflowContext implements Serializable {
 
     public void setDataTablesToCleanup(List<String> dataTablesToCleanup) {
         this.dataTablesToCleanup = dataTablesToCleanup;
-    }
-
-//    public Resource getTransientResource() {
-//        return transientResource;
-//    }
-//
-//    public void setTransientResource(Resource transientResource) {
-//        this.transientResource = transientResource;
-//    }
-
-    public ResourceType getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(ResourceType resourceType) {
-        this.resourceType = resourceType;
     }
 
     public void setTargetDatabase(TargetDatabase tdarDataImportDatabase) {
@@ -331,6 +319,38 @@ public final class WorkflowContext implements Serializable {
 
     public void setRelationships(List<TDataTableRelationship> relationships) {
         this.relationships = relationships;
+    }
+    
+    public Class<? extends DatasetConverter> getDatasetConverter() {
+        return datasetConverter;
+    }
+    
+    public void setDatasetConverter(Class<? extends DatasetConverter> class1) {
+        this.datasetConverter = class1;
+    }
+
+    public boolean isHasDimensions() {
+        return hasDimensions;
+    }
+
+    public void setHasDimensions(boolean hasDimensions) {
+        this.hasDimensions = hasDimensions;
+    }
+
+    public boolean isDataTableSupported() {
+        return dataTableSupported;
+    }
+
+    public void setDataTableSupported(boolean dataTableSupported) {
+        this.dataTableSupported = dataTableSupported;
+    }
+
+    public String getPrimaryExtension() {
+        return primaryExtension;
+    }
+
+    public void setPrimaryExtension(String primaryExtension) {
+        this.primaryExtension = primaryExtension;
     }
 
 }

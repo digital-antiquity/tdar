@@ -107,7 +107,7 @@ public class ImageThumbnailTask extends AbstractTask {
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);
         openImageFile(sourceFile, filename, ext, opener);
-        if (getWorkflowContext().getResourceType() == null || getWorkflowContext().getResourceType().hasDemensions()) {
+        if (getWorkflowContext().isHasDimensions()) {
             version.setHeight(ijSource.getHeight());
             version.setWidth(ijSource.getWidth());
             version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));

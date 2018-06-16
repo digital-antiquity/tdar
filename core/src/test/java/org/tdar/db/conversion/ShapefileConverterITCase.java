@@ -50,7 +50,7 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         wc.setFilestore(TdarConfiguration.getInstance().getFilestore());
         wc.setInformationResourceId(12345L);
         wc.setInformationResourceId(111L);
-        wc.setResourceType(ResourceType.GEOSPATIAL);
+        wc.setHasDimensions(true);;
         wc.setTargetDatabase(tdarDataImportDatabase);
         String name = "Occ_3l";
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;

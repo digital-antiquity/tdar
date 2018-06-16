@@ -103,6 +103,9 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
             // generate and sanitize new table name
             TDataTable dataTable = createDataTable(tableName, tableOrder);
             tableOrder++;
+            if (dataTableNameMap.containsKey(tableName)) {
+                logger.error("duplicate table name: {} -- {} / {}", tableName, dataTableNameMap.get(tableName), dataTable);
+            }
             dataTableNameMap.put(tableName, dataTable);
             // drop the table if it has been there
             targetDatabase.dropTable(dataTable);
@@ -112,111 +115,13 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
             List<? extends Column> columnList = currentTable.getColumns();
             int count = 0;
             for (Column currentColumn : columnList) {
-                DataTableColumnType dataType = DataTableColumnType.VARCHAR;
-                logger.info("INCOMING COLUMN: '{}'  ({})", currentColumn.getName(), currentColumn.getType());
-                // NOTE: switch passthrough is intentional here (e.g. big, long, int types should all convert to BIGINT)
-                switch (currentColumn.getType()) {
-                    case BOOLEAN:
-                        dataType = DataTableColumnType.BOOLEAN;
-                        break;
-                    case DOUBLE:
-                    case NUMERIC:
-                    case FLOAT:
-                    case MONEY:
-                        dataType = DataTableColumnType.DOUBLE;
-                        break;
-                    case BYTE:
-                    case LONG:
-                    case INT:
-                        dataType = DataTableColumnType.BIGINT;
-                        break;
-                    case TEXT:
-                    case MEMO:
-                    case GUID:
-                        dataType = DataTableColumnType.TEXT;
-                        break;
-                    case SHORT_DATE_TIME:
-                        dataType = DataTableColumnType.DATETIME;
-                        break;
-                    case BINARY:
-                    case UNKNOWN_11:
-                    case UNKNOWN_0D:
-                    case OLE:
-                        dataType = DataTableColumnType.BLOB;
-                        break;
-                    default:
-                        dataType = DataTableColumnType.VARCHAR;
-                }
-
-                TDataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable, count);
-                count++;
-                currentColumn.getProperties();
-
-                Object description_ = currentColumn.getProperties().getValue(PropertyMap.DESCRIPTION_PROP);
-                if ((description_ != null) && !StringUtils.isEmpty(description_.toString())) {
-                    dataTableColumn.setDescription(description_.toString());
-                }
-                if (dataType == DataTableColumnType.VARCHAR) {
-                    dataTableColumn.setLength(Short.valueOf(currentColumn.getLengthInUnits()).intValue());
-                    logger.trace("currentColumn:{}\t length:{}\t length in units:{}", new Object[] { currentColumn, currentColumn.getLength(),
-                            currentColumn.getLengthInUnits() });
-                }
-                logger.info("  \t create column {} {} ({}) -- {}", dataTableColumn.getName(), dataTableColumn.getColumnDataType(), dataTableColumn.getLength(),
-                        dataTableColumn.getDescription());
+                count = createColumn(dataTable, count, currentColumn);
             }
 
             targetDatabase.createTable(dataTable);
             int rowNumber = 0;
             try {
-                int rowCount = getDatabase().getTable(tableName).getRowCount();
-                for (rowNumber = 0; rowNumber < rowCount; rowNumber++) {
-                    HashMap<TDataTableColumn, String> valueColumnMap = new HashMap<>();
-                    Map<String, Object> currentRow = currentTable.getNextRow();
-                    int j = 0;
-                    if (currentRow == null) {
-                        continue;
-                    }
-                    for (Object currentObject : currentRow.values()) {
-                        TDataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
-                        if (currentObject == null) {
-                            j++;
-                            continue;
-                        }
-                        String currentObjectAsString = currentObject.toString();
-                        if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
-
-                            // logger.info(currentObject.getClass().getCanonicalName());
-                            byte[] data = (byte[]) currentObject;
-                            // InflaterInputStream iis = new InflaterInputStream(new ByteArrayInputStream(data));
-                            // byte[] uncompressed = IOUtils.toByteArray(iis);
-                            // logger.info("{}", Hex.encodeHexString(data));
-                            // logger.info("{}", uncompressed);
-                            // DATA here is paired with the data in the GDBGeomColumns table to describe the feature type, etc
-                            GeometryFactory factory = new GeometryFactory();
-                            // factory.
-                            // WKBReader reader = new WKBReader(factory);
-
-                            // http://sourceforge.net/mailarchive/message.php?msg_id=30646557
-                            // http://sourceforge.net/mailarchive/message.php?msg_id=29982387
-                            // https://github.com/geotools/geotools/blob/master/modules/unsupported/ogr/ogr-jni/pom.xml
-                            // http://www.giser.net/wp-content/uploads/2011/01/extended-shapefile-format.pdf
-                            // this does not work, see ogrpgeogeometry.cpp in ( extended_shapefile_format.pdf)
-                            // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
-                            @SuppressWarnings("unused")
-                            com.vividsolutions.jts.geom.Geometry g = null;
-                            try {
-                                String encoded = new String(Hex.encodeHex(data));
-                                g = new WKBReader(factory).read(encoded.getBytes());
-                            } catch (Exception e) {
-                                // logger.error("{}", e);
-                            }
-                            // logger.info("data: {} ", data);
-                        }
-                        valueColumnMap.put(currentColumn, currentObjectAsString);
-                        j++;
-                    }
-                    targetDatabase.addTableRow(dataTable, valueColumnMap);
-                }
+                rowNumber = loadRow(tableName, dataTable, currentTable);
             } catch (BufferUnderflowException | IllegalStateException bex) {
                 throw new TdarRecoverableRuntimeException("accessDatabaseConverter.error_corrupt");
             } catch (Exception e) {
@@ -233,20 +138,129 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
         setRelationships(extractRelationships(dataTableNameMap, linked));
     }
 
+    private int loadRow(String tableName, TDataTable dataTable, Table currentTable) throws IOException, Exception {
+        int rowNumber;
+        int rowCount = getDatabase().getTable(tableName).getRowCount();
+        for (rowNumber = 0; rowNumber < rowCount; rowNumber++) {
+            HashMap<TDataTableColumn, String> valueColumnMap = new HashMap<>();
+            Map<String, Object> currentRow = currentTable.getNextRow();
+            int j = 0;
+            if (currentRow == null) {
+                continue;
+            }
+            for (Object currentObject : currentRow.values()) {
+                TDataTableColumn currentColumn = dataTable.getDataTableColumns().get(j);
+                if (currentObject == null) {
+                    j++;
+                    continue;
+                }
+                String currentObjectAsString = currentObject.toString();
+                if (currentColumn.getColumnDataType() == DataTableColumnType.BLOB) {
+
+                    // logger.info(currentObject.getClass().getCanonicalName());
+                    byte[] data = (byte[]) currentObject;
+                    // InflaterInputStream iis = new InflaterInputStream(new ByteArrayInputStream(data));
+                    // byte[] uncompressed = IOUtils.toByteArray(iis);
+                    // logger.info("{}", Hex.encodeHexString(data));
+                    // logger.info("{}", uncompressed);
+                    // DATA here is paired with the data in the GDBGeomColumns table to describe the feature type, etc
+                    GeometryFactory factory = new GeometryFactory();
+                    // factory.
+                    // WKBReader reader = new WKBReader(factory);
+
+                    // http://sourceforge.net/mailarchive/message.php?msg_id=30646557
+                    // http://sourceforge.net/mailarchive/message.php?msg_id=29982387
+                    // https://github.com/geotools/geotools/blob/master/modules/unsupported/ogr/ogr-jni/pom.xml
+                    // http://www.giser.net/wp-content/uploads/2011/01/extended-shapefile-format.pdf
+                    // this does not work, see ogrpgeogeometry.cpp in ( extended_shapefile_format.pdf)
+                    // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
+                    @SuppressWarnings("unused")
+                    com.vividsolutions.jts.geom.Geometry g = null;
+                    try {
+                        String encoded = new String(Hex.encodeHex(data));
+                        g = new WKBReader(factory).read(encoded.getBytes());
+                    } catch (Exception e) {
+                        // logger.error("{}", e);
+                    }
+                    // logger.info("data: {} ", data);
+                }
+                valueColumnMap.put(currentColumn, currentObjectAsString);
+                j++;
+            }
+            targetDatabase.addTableRow(dataTable, valueColumnMap);
+        }
+        return rowNumber;
+    }
+
+    private int createColumn(TDataTable dataTable, int count, Column currentColumn) throws IOException {
+        DataTableColumnType dataType = DataTableColumnType.VARCHAR;
+        logger.info("INCOMING COLUMN: '{}'  ({})", currentColumn.getName(), currentColumn.getType());
+        // NOTE: switch passthrough is intentional here (e.g. big, long, int types should all convert to BIGINT)
+        switch (currentColumn.getType()) {
+            case BOOLEAN:
+                dataType = DataTableColumnType.BOOLEAN;
+                break;
+            case DOUBLE:
+            case NUMERIC:
+            case FLOAT:
+            case MONEY:
+                dataType = DataTableColumnType.DOUBLE;
+                break;
+            case BYTE:
+            case LONG:
+            case INT:
+                dataType = DataTableColumnType.BIGINT;
+                break;
+            case TEXT:
+            case MEMO:
+            case GUID:
+                dataType = DataTableColumnType.TEXT;
+                break;
+            case SHORT_DATE_TIME:
+                dataType = DataTableColumnType.DATETIME;
+                break;
+            case BINARY:
+            case UNKNOWN_11:
+            case UNKNOWN_0D:
+            case OLE:
+                dataType = DataTableColumnType.BLOB;
+                break;
+            default:
+                dataType = DataTableColumnType.VARCHAR;
+        }
+
+        TDataTableColumn dataTableColumn = createDataTableColumn(currentColumn.getName(), dataType, dataTable, count);
+        count++;
+        currentColumn.getProperties();
+
+        Object description_ = currentColumn.getProperties().getValue(PropertyMap.DESCRIPTION_PROP);
+        if ((description_ != null) && !StringUtils.isEmpty(description_.toString())) {
+            dataTableColumn.setDescription(description_.toString());
+        }
+        if (dataType == DataTableColumnType.VARCHAR) {
+            dataTableColumn.setLength(Short.valueOf(currentColumn.getLengthInUnits()).intValue());
+            logger.trace("currentColumn:{}\t length:{}\t length in units:{}", new Object[] { currentColumn, currentColumn.getLength(),
+                    currentColumn.getLengthInUnits() });
+        }
+        logger.info("  \t create column {} {} ({}) -- {}", dataTableColumn.getName(), dataTableColumn.getColumnDataType(), dataTableColumn.getLength(),
+                dataTableColumn.getDescription());
+        return count;
+    }
+
     private Set<TDataTableRelationship> extractRelationships(Map<String, TDataTable> dataTableNameMap, Set<String> linked) throws IOException {
         Set<TDataTableRelationship> relationships = new HashSet<>();
-        for (String tableName1 : getDatabase().getTableNames()) {
-            for (String tableName2 : getDatabase().getTableNames()) {
-                if (tableName1.equals(tableName2)) {
+        for (String fromTableName : getDatabase().getTableNames()) {
+            for (String toTableName : getDatabase().getTableNames()) {
+                if (fromTableName.equals(toTableName)) {
                     continue;
                 }
 
-                if (linked.contains(tableName1) || linked.contains(tableName2)) {
+                if (linked.contains(fromTableName) || linked.contains(toTableName)) {
                     continue;
                 }
 
-                for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(tableName1), getDatabase().getTable(tableName2))) {
-                    if (!tableName1.equals(relationship.getFromTable().getName())) {
+                for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(fromTableName), getDatabase().getTable(toTableName))) {
+                    if (!fromTableName.equals(relationship.getFromTable().getName())) {
                         continue;
                     }
                     logger.trace(relationship.getName());
@@ -257,11 +271,15 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
                     while (fromColumns.hasNext() && toColumns.hasNext()) {
                         Column fromColumn = fromColumns.next();
                         Column toColumn = toColumns.next();
-                        TDataTableColumn fromDataTableColumn = dataTableNameMap.get(tableName1).getColumnByDisplayName(fromColumn.getName());
-                        TDataTableColumn toDataTableColumn = dataTableNameMap.get(tableName2).getColumnByDisplayName(toColumn.getName());
+                        TDataTable fromTable = dataTableNameMap.get(fromTableName);
+                        TDataTableColumn fromDataTableColumn = fromTable.getColumnByDisplayName(fromColumn.getName());
+                        TDataTable toTable = dataTableNameMap.get(toTableName);
+                        TDataTableColumn toDataTableColumn = toTable.getColumnByDisplayName(toColumn.getName());
                         TDataTableColumnRelationship columnRelationship = new TDataTableColumnRelationship();
                         columnRelationship.setLocalColumn(fromDataTableColumn);
                         columnRelationship.setForeignColumn(toDataTableColumn);
+                        columnRelationship.setForeignTable(fromTable);
+                        columnRelationship.setLocalTable(toTable);
                         relationshipToPersist.getColumnRelationships().add(columnRelationship);
                     }
 

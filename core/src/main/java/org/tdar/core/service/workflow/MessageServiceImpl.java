@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
@@ -84,6 +85,9 @@ public class MessageServiceImpl implements MessageService {
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
             ctx.setSerializationService(serializationService);
+            if (workflow_ instanceof GenericColumnarDataWorkflow) {
+                ctx.setDatasetConverter(((GenericColumnarDataWorkflow) workflow_).getDatasetConverterForExtension(ctx.getPrimaryExtension()));
+            }
             boolean success = workflow_.run(ctx);
             // Martin: the following mandates that we wait for run to complete.
             // Surely the plan is to immediately show the user a result page with "your request is being processed" and then

@@ -23,14 +23,6 @@ public class ExtractAudioInfoTask extends AbstractTask {
     public void run() {
         final WorkflowContext ctx = getWorkflowContext();
 
-        // first off, a whole raft of preconditions that we need to pass before we write the control file:
-        // reality check: do we have an archive?
-        final Class<? extends Resource> resourceClass = ctx.getResourceType().getResourceClass();
-        if (Audio.class != resourceClass) {
-            recordErrorAndExit("The Extract Audio Info Task has been called for a non audio resource! Resource class was: " + resourceClass);
-        }
-
-
         // are there actual files to copy?
         final List<FileStoreFile> audioFiles = ctx.getOriginalFiles();
         if (audioFiles.size() <= 0) {

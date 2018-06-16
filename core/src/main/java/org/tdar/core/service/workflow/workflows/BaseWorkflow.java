@@ -34,6 +34,15 @@ public abstract class BaseWorkflow implements Workflow {
     private Map<ResourceType, Set<String>> resourceTypeToExtensions = new HashMap<>();
     // were we expecting that these Workflows would be serializable?
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private String extension;
+    
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
 
     public BaseWorkflow() {
         addTask(LoggingTask.class, WorkflowPhase.CLEANUP);

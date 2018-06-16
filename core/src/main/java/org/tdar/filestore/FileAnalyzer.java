@@ -106,6 +106,7 @@ public class FileAnalyzer {
         Workflow wf = null;
         for (HasExtension ex : irFileVersion) {
             Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension().toLowerCase());
+            w.setExtension(ex.getExtension().toLowerCase());
             if (wf == null) {
                 wf = w;
             } else if ((w != null) && (wf.getClass() != w.getClass())) {
@@ -125,6 +126,7 @@ public class FileAnalyzer {
             throw new TdarRecoverableRuntimeException(message);
         }
         checkFilesExist(informationResourceFileVersions);
+        logger.debug(workflow.getExtension());
 
         logger.debug("using workflow: {}", workflow);
         // Martin: if this is ever going to run asynchronously, this should this return anything?

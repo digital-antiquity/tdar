@@ -77,8 +77,8 @@ public class DatasetImportServiceImpl implements DatasetImportService {
         Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, incomingDataTables);
 
         datasetDao.deleteRelationships(dataset.getRelationships());
-        reconcileRelationships(dataset, incomingRelationships);
         datasetDao.cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
+        reconcileRelationships(dataset, incomingRelationships);
         reconcileTables = null; // resetting and removing references
         logger.debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
         for (DataTable dataTable : dataset.getDataTables()) {

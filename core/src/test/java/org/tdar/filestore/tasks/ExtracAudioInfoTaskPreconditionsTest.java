@@ -42,20 +42,7 @@ public class ExtracAudioInfoTaskPreconditionsTest {
         task = new ExtractAudioInfoTask();
         audio = new Audio();
         WorkflowContext ctx = new WorkflowContext();
-        ctx.setResourceType(ResourceType.AUDIO);
-//        ctx.setTransientResource(audio);
         task.setWorkflowContext(ctx);
-    }
-
-    @Test
-    public void mustBeAudioResourceType() {
-        task.getWorkflowContext().setResourceType(ResourceType.DOCUMENT);
-        try {
-            task.run();
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("The Extract Audio Info Task has been called for a non audio resource!"));
-        }
     }
 
 

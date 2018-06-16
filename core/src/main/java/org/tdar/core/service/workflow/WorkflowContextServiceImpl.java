@@ -94,8 +94,8 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
                 irFile.setNumberOfParts(ctx.getNumPages());
             }
 
-            Resource resource = genericDao.find(ctx.getResourceType().getResourceClass(), ctx.getInformationResourceId());
-            switch (ctx.getResourceType()) {
+            Resource resource = genericDao.find(Resource.class, ctx.getInformationResourceId());
+            switch (resource.getResourceType()) {
                 case GEOSPATIAL:
                 case DATASET:
                 case SENSORY_DATA:
@@ -191,13 +191,15 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
     @Override
     public WorkflowContext initializeWorkflowContext(Workflow w, InformationResourceFileVersion... versions) {
         WorkflowContext ctx = new WorkflowContext();
+        ctx.setPrimaryExtension(w.getExtension());
         for (InformationResourceFileVersion irfv : versions) {
             FileStoreFile fsf = FileStoreFileUtils.copyVersionToFilestoreFile(irfv);
             ctx.getOriginalFiles().add(fsf);
         }
         ctx.setTargetDatabase(tdarDataImportDatabase);
         final InformationResource informationResource = versions[0].getInformationResourceFile().getInformationResource();
-        ctx.setResourceType(informationResource.getResourceType());
+        ctx.setHasDimensions(informationResource.getResourceType().hasDemensions());
+        ctx.setDataTableSupported(informationResource.getResourceType().isDataTableSupported());
 //        ctx.setTransientResource(informationResource.getTransientCopyForWorkflow());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());

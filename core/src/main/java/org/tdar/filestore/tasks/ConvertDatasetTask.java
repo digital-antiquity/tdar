@@ -8,9 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.datatable.TDataTable;
-import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -24,7 +22,7 @@ public class ConvertDatasetTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        if (!getWorkflowContext().getResourceType().isDataTableSupported()) {
+        if (!getWorkflowContext().isDataTableSupported()) {
             getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
             return;
         }
@@ -40,12 +38,10 @@ public class ConvertDatasetTask extends AbstractTask {
             version.setTransientFile(new File(workingDir, version.getFilename()));
         }
 
-        if (getWorkflowContext().getResourceType() == ResourceType.GEOSPATIAL) {
-            for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
-                if (version.getExtension().equals("shp") || version.getExtension().equals("mdb") || version.getExtension().equals("gdb")) {
-                    filesToProcess.clear();
-                    filesToProcess.add(version);
-                }
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
+            if (version.getExtension().equals("shp") || version.getExtension().equals("mdb") || version.getExtension().equals("gdb")) {
+                filesToProcess.clear();
+                filesToProcess.add(version);
             }
         }
 
@@ -71,11 +67,11 @@ public class ConvertDatasetTask extends AbstractTask {
                     getWorkflowContext().getTargetDatabase().dropTable(table);
                 }
 
-//                Dataset transientDataset = new Dataset();
-//                transientDataset.setStatus(Status.FLAGGED);
-//                getWorkflowContext().setTransientResource(transientDataset);
                 
-                DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
+                Class<? extends DatasetConverter> databaseConverterClass = getWorkflowContext().getDatasetConverter();
+                DatasetConverter databaseConverter = databaseConverterClass.newInstance();
+                databaseConverter.setTargetDatabase(getWorkflowContext().getTargetDatabase());
+                databaseConverter.setInformationResourceFileVersion(versionToConvert);
                 // returns the set of transient POJOs from the incoming dataset.
 
                 Set<TDataTable> tablesToPersist = databaseConverter.execute();
