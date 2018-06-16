@@ -144,10 +144,10 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         assertNotNull(column.getDefaultCodingSheet());
         assertTrue(column.getDefaultCodingSheet().isGenerated());
 
-        List<String> original = database.selectNonNullDistinctValues(column, true);
+        List<String> original = database.selectNonNullDistinctValues(dataTable, column, true);
         logger.debug("original:{}", original);
         assertFalse(original.contains("ABCD"));
-        List<String> mapped = database.selectNonNullDistinctValues(column, false);
+        List<String> mapped = database.selectNonNullDistinctValues(dataTable, column, false);
         logger.debug("mapped:{}", mapped);
         assertTrue(mapped.contains("ABCD"));
 
@@ -175,7 +175,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         codingSheetController.setId(column.getDefaultCodingSheet().getId());
         codingSheetController.prepare();
         codingSheetController.loadOntologyMappedColumns();
-        List<String> findAllDistinctValues = dataTableService.findAllDistinctValues(column);
+        List<String> findAllDistinctValues = dataTableService.findAllDistinctValues(dataTable, column);
         List<String> tibias = new ArrayList<String>();
         for (String distinct : findAllDistinctValues) {
             if (distinct.toLowerCase().contains("tibia")) {

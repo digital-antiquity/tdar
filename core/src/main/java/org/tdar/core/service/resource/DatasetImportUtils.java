@@ -1,12 +1,15 @@
 package org.tdar.core.service.resource;
 
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.datatable.ImportColumn;
 import org.tdar.datatable.ImportTable;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableColumn;
+import org.tdar.datatable.TDataTableRelationship;
 
 public class DatasetImportUtils {
 
@@ -35,6 +38,11 @@ public class DatasetImportUtils {
         tableToPersist.setDisplayName(incomingtable.getDisplayName());
         tableToPersist.setName(incomingtable.getName());
         tableToPersist.setImportOrder(incomingtable.getImportOrder());
+    }
+
+    public static DataTableRelationship convertToRelationship(Dataset dataset, TDataTableRelationship rel) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

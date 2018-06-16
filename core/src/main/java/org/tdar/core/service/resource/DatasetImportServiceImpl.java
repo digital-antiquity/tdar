@@ -175,7 +175,7 @@ public class DatasetImportServiceImpl implements DatasetImportService {
         // dataset.getRelationships().clear();
 
         for (TDataTableRelationship rel : incomingRelationships) {
-//            dataset.getRelationships().add(rel);
+            dataset.getRelationships().add(DatasetImportUtils.convertToRelationship(dataset, rel));
         }
     }
 

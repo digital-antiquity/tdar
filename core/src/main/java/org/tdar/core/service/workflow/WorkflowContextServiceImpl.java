@@ -107,8 +107,6 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
                     // This should only be done once; if it's a composite geospatial resource, it might be dangerous to do twice as you're merging and
                     // reconcilling with yourself over yourself
                     if (count == 1) {
-                        genericDao.detachFromSessionAndWarn(ctx.getDataTables());
-                        genericDao.detachFromSessionAndWarn(ctx.getRelationships());
                         logger.info("data tables: {}", ctx.getDataTables());
                         datasetImportService.reconcileDataset(irFile, dataset, ctx.getDataTables(), ctx.getRelationships());
                         genericDao.saveOrUpdate(dataset);

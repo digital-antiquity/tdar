@@ -476,7 +476,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column, false));
+                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
             }
         }
 

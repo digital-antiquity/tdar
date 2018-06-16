@@ -118,7 +118,7 @@ public abstract class AbstractDatasetController<R extends Dataset> extends Abstr
         if (getDataTableColumn() == null) {
             return Collections.emptyMap();
         }
-        return dataTableService.findAllDistinctValuesWithCounts(dataTableColumn);
+        return dataTableService.findAllDistinctValuesWithCounts(dataTable, dataTableColumn);
     }
 
     public DataTableColumn getDataTableColumn() {
