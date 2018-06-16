@@ -4,11 +4,13 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.datatable.ImportColumn;
 import org.tdar.datatable.ImportTable;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableColumn;
+import org.tdar.datatable.TDataTableColumnRelationship;
 import org.tdar.datatable.TDataTableRelationship;
 
 public class DatasetImportUtils {
@@ -40,9 +42,19 @@ public class DatasetImportUtils {
         tableToPersist.setImportOrder(incomingtable.getImportOrder());
     }
 
-    public static DataTableRelationship convertToRelationship(Dataset dataset, TDataTableRelationship rel) {
-        // TODO Auto-generated method stub
-        return null;
+    public static DataTableRelationship convertToRelationship(Dataset dataset, TDataTableRelationship rel_) {
+        DataTableRelationship rel = new DataTableRelationship();
+        rel.setType(rel_.getType());
+        DataTable foreignTable =  dataset.getDataTableByName(rel_.getForeignTable().getName());
+        DataTable localTable =  dataset.getDataTableByName(rel_.getLocalTable().getName());
+        for (TDataTableColumnRelationship colRel_ : rel_.getColumnRelationships()) {
+            DataTableColumnRelationship colRel = new DataTableColumnRelationship();
+            colRel.setForeignColumn(foreignTable.getColumnByName(colRel_.getForeignColumn().getName()));
+            colRel.setLocalColumn(foreignTable.getColumnByName(colRel_.getLocalColumn().getName()));
+            rel.getColumnRelationships().add(colRel);
+        }
+        
+        return rel;
     }
 
 }

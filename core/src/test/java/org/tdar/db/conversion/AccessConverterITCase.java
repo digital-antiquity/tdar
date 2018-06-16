@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -150,7 +149,6 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
-    @Ignore
     public void testAccessConverterWithMultipleTables()
             throws Exception {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
