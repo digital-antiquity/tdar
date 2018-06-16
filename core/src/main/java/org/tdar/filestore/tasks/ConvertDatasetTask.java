@@ -9,7 +9,6 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.datatable.TDataTable;
 import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
@@ -75,6 +74,7 @@ public class ConvertDatasetTask extends AbstractTask {
 //                Dataset transientDataset = new Dataset();
 //                transientDataset.setStatus(Status.FLAGGED);
 //                getWorkflowContext().setTransientResource(transientDataset);
+                
                 DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
                 // returns the set of transient POJOs from the incoming dataset.
 

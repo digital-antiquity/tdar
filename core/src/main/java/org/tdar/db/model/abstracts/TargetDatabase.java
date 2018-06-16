@@ -11,6 +11,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
 import org.tdar.datatable.ImportColumn;
 import org.tdar.datatable.ImportTable;
+import org.tdar.db.ImportDatabase;
 
 /**
  * A base class for target Databases that can be written to via a
@@ -20,48 +21,29 @@ import org.tdar.datatable.ImportTable;
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
  */
-public interface TargetDatabase extends Database {
+public interface TargetDatabase extends Database , ImportDatabase {
 
     /**
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
 
-    String normalizeTableOrColumnNames(String input);
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    void closePreparedStatements(Collection<ImportTable> dataTables) throws Exception;
-
     String getFullyQualifiedTableName(String tableName);
 
-    @Transactional(value = "tdarDataTx", readOnly = false)
     void dropTable(String tableName);
 
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    void dropTable(ImportTable dataTable);
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    void createTable(ImportTable dataTable) throws Exception;
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    <T extends ImportColumn> void addTableRow(ImportTable<T> dataTable, Map<? extends ImportColumn, String> valueColumnMap) throws Exception;
-
-    @Transactional(value = "tdarDataTx", readOnly = true)
     List<String> selectNonNullDistinctValues(ImportTable table, ImportColumn column, boolean useUntranslatedValues);
 
     /**
      * @param dataType
      * @return
      */
-    @Transactional(value = "tdarDataTx", readOnly = true)
     String toImplementedTypeDeclaration(DataTableColumnType dataType, int precision);
 
     @Deprecated
-    @Transactional(value = "tdarDataTx", readOnly = true)
     <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
     @Deprecated
-    @Transactional(value = "tdarDataTx", readOnly = true)
     <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy);
 
     @Transactional(value = "tdarDataTx", readOnly = true)

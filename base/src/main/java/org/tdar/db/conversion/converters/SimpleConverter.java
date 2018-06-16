@@ -10,12 +10,11 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.datatable.DataTableColumnType;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableColumn;
+import org.tdar.db.ImportDatabase;
 import org.tdar.db.conversion.ConversionStatisticsManager;
-import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileStoreFileProxy;
 
@@ -37,7 +36,7 @@ public abstract class SimpleConverter extends AbstractDatabaseConverter {
     public SimpleConverter() {
     }
 
-    public SimpleConverter(TargetDatabase targetDatabase, FileStoreFileProxy... versions) {
+    public SimpleConverter(ImportDatabase targetDatabase, FileStoreFileProxy... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

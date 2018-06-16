@@ -16,15 +16,13 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.datatable.DataTableColumnType;
 import org.tdar.datatable.ImportTable;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableColumn;
 import org.tdar.datatable.TDataTableRelationship;
+import org.tdar.db.ImportDatabase;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
-import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileStoreFileProxy;
 
@@ -40,7 +38,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     private Database database = null;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     protected FileStoreFileProxy informationResourceFileVersion;
-    protected TargetDatabase targetDatabase;
+    protected ImportDatabase targetDatabase;
     protected Connection connection;
     protected Set<TDataTable> dataTables = new HashSet<>();
     protected Set<TDataTableRelationship> dataTableRelationships = new HashSet<>();
@@ -222,7 +220,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     }
 
     @Override
-    public void setTargetDatabase(TargetDatabase targetDatabase) {
+    public void setTargetDatabase(ImportDatabase targetDatabase) {
         this.targetDatabase = targetDatabase;
     }
 

@@ -23,7 +23,7 @@ import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableColumn;
 import org.tdar.datatable.TDataTableColumnRelationship;
 import org.tdar.datatable.TDataTableRelationship;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.ImportDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileStoreFileProxy;
 
@@ -56,7 +56,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
     public AccessDatabaseConverter() {
     }
 
-    public AccessDatabaseConverter(TargetDatabase targetDatabase, FileStoreFileProxy... versions) {
+    public AccessDatabaseConverter(ImportDatabase targetDatabase, FileStoreFileProxy... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

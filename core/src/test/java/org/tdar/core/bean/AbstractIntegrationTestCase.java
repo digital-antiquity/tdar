@@ -88,6 +88,7 @@ import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.VersionType;
@@ -698,6 +699,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected InformationResourceFileVersion makeFileVersion(File name, long id) throws IOException {
         long infoId = (long) (Math.random() * 10000);
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
+        version.setId(id);
+        filestore.store(FilestoreObjectType.RESOURCE, name, version);
+        version.setTransientFile(name);
+        return version;
+    }
+
+
+    protected FileStoreFile makeFileStoreFile(File name, long id) throws IOException {
+        long infoId = (long) (Math.random() * 10000);
+        FileStoreFile version = new FileStoreFile(FilestoreObjectType.RESOURCE, VersionType.UPLOADED, name.getName(), 1, infoId, 123L, 1L);
         version.setId(id);
         filestore.store(FilestoreObjectType.RESOURCE, name, version);
         version.setTransientFile(name);

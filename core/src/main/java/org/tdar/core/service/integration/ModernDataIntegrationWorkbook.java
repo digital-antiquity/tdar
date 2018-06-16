@@ -36,8 +36,8 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.service.excel.ExcelWorkbookWriter;
-import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.db.conversion.converters.ExcelWorkbookWriter;
+import org.tdar.db.conversion.converters.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.utils.PersistableUtils;
 

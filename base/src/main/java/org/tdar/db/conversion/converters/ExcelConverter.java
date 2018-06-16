@@ -20,14 +20,13 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.service.excel.SheetEvaluator;
 import org.tdar.datatable.DataTableColumnType;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableColumn;
+import org.tdar.db.ImportDatabase;
 import org.tdar.db.conversion.ConversionStatisticsManager;
-import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -60,7 +59,7 @@ public class ExcelConverter extends AbstractDatabaseConverter {
     }
 
     // FIXME: what is the point of these constructors? Just for tests?
-    public ExcelConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
+    public ExcelConverter(ImportDatabase targetDatabase, FileStoreFile... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
         setFilename(versions[0].getFilename());

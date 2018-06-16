@@ -1,7 +1,6 @@
 package org.tdar.db.conversion.converters;
 
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.ImportDatabase;
 import org.tdar.filestore.FileStoreFileProxy;
 
 /**
@@ -23,7 +22,7 @@ public class TabConverter extends SimpleConverter {
     public TabConverter() {
     };
 
-    public TabConverter(TargetDatabase targetDatabase, FileStoreFileProxy... versions) {
+    public TabConverter(ImportDatabase targetDatabase, FileStoreFileProxy... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

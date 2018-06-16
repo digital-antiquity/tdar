@@ -7,7 +7,7 @@ import java.util.Set;
 import org.tdar.datatable.ImportTable;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableRelationship;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.ImportDatabase;
 import org.tdar.filestore.FileStoreFileProxy;
 
 public interface DatasetConverter {
@@ -25,7 +25,7 @@ public interface DatasetConverter {
 
     File getIndexedContentsFile();
 
-    void setTargetDatabase(TargetDatabase targetDatabase);
+    void setTargetDatabase(ImportDatabase targetDatabase);
 
     /**
      * Imports the given sourceDatabase into the target database.

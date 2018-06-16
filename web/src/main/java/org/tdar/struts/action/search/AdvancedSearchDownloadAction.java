@@ -31,7 +31,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.excel.ExcelWorkbookWriter;
+import org.tdar.db.conversion.converters.ExcelWorkbookWriter;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;

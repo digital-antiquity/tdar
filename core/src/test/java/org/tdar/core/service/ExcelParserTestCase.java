@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
-import org.tdar.core.service.excel.SheetEvaluator;
+import org.tdar.db.conversion.converters.SheetEvaluator;
 
 public class ExcelParserTestCase {
 

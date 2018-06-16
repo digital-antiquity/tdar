@@ -1,7 +1,7 @@
 package org.tdar.db.conversion.converters;
 
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.ImportDatabase;
+import org.tdar.filestore.FileStoreFile;
 
 /**
  * Converts text CSV files into a postgres database.
@@ -21,7 +21,7 @@ public class CsvConverter extends SimpleConverter {
     public CsvConverter() {
     };
 
-    public CsvConverter(TargetDatabase targetDatabase, InformationResourceFileVersion... versions) {
+    public CsvConverter(ImportDatabase targetDatabase, FileStoreFile... versions) {
         setTargetDatabase(targetDatabase);
         setInformationResourceFileVersion(versions[0]);
     }

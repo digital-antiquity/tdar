@@ -47,6 +47,7 @@ import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.PostgresDatabase;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 
@@ -296,7 +297,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     }
 
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
-        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
+        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(file, irFileId);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
