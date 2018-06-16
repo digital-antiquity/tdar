@@ -13,5 +13,5 @@
             href="${config.commentUrlEscaped}?subject=tDAR%20comments&amp;cc=tdar-svn%40lists.asu.edu">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>
     Thanks for your interest!
 </p>
-<#include "/${config.themeDir}/notice.ftl">
+<#include "/WEB-INF/notice.ftl">
 

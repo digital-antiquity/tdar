@@ -8,6 +8,8 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
@@ -17,6 +19,8 @@ import com.dropbox.core.DbxWebAuthNoRedirect;
 
 public class DropboxConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(DropboxConfig.class);
+    
     private static DropboxConfig config;
     private static final String TDAR_CLIENT = "tdar/client";
     final String APP_KEY = "dropbox.key";
@@ -76,15 +80,8 @@ public class DropboxConfig {
         if (config == null) {
             try {
                 config = new DropboxConfig();
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (URISyntaxException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (Exception e) {
+                logger.error("{}",e,e);
             }
         }
         return config;

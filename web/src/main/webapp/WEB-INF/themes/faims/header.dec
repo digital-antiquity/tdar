@@ -1,6 +1,0 @@
-<div class="span3 logosection">
-    <p><a href="/"><img class="faimslogo" src="<@s.url value="/${config.themeDir}/images/faims_logo.png" />" alt="FAIMS" title="FAIMS" /></a>
-    <#if !production>
-        <strong>${serverEnvironmentStatus}</strong>
-    </#if>
-</div>
