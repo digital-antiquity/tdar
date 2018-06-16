@@ -1,0 +1,54 @@
+<#if !production >
+  <div class="alert alert-error"> 
+    <p><strong>Warning!</strong> This is a test site, for the purpose of debugging software in the process of development. 
+    Features may not work as expected and data may be lost at any time.</p>
+    <p>If you wish to deposit data contact <a href="mailto:leadership@fedarch.org?subject=FAIMS%20deposit">leadership@fedarch.org</a>.</p>
+  </div>
+</#if>
+<div class="row">
+            <div class="span3 bucket">
+                <img src="/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
+                <h3>Access &amp; Use</h3>
+                <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+                <div class="span3 bucket">
+                <img src="/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
+                <h3>Preservation</h3>
+                <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+                <div class="span3 bucket">
+                <img src="/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship" />
+                <h3>Upload Resources</h3>
+                <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+                <div class="span3 bucket">
+                <img src="/images/r4/icn-uses.png" alt="Use" title="Use" />
+                <h3>Who Uses FAIMS</h3>
+                <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
+                <p>
+                    <a href="http://www.fedarch.org/" class="button">Learn More</a>
+                </p>
+            </div>
+</div>
+<hr />
+<h3>Browse Your Field Of Research</h3>
+<div class="container">
+  <div class="row">
+    <div class="offset1 span10">
+        <!-- if you want to search in with in child categories, use keywords and not id's -->
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210101&amp;explore=true">Aboriginal Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210108&amp;explore=true">Historical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210105&amp;explore=true">Classical Archaeology</a>
+        <a class="research_link button" href = "/search/results?groups[0].fieldTypes[0]=KEYWORD_CULTURAL&amp;groups[0].approvedCultureKeywordIdLists[0]=210110&amp;explore=true">Maritime Archaeology</a>
+    </div>
+  </div>
+</div>
