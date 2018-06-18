@@ -5,9 +5,12 @@ package org.tdar.filestore;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -15,15 +18,13 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.configuration.TdarConfiguration;
-import org.tdar.core.exception.NonFatalWorkflowException;
-import org.tdar.core.service.SerializationService;
-//import org.tdar.core.service.workflow.MessageService;
-//import org.tdar.core.service.workflow.WorkflowContextService;
+import org.tdar.core.service.UrlService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.datatable.TDataTable;
 import org.tdar.datatable.TDataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.exception.NonFatalWorkflowException;
 import org.tdar.filestore.tasks.Task;
 import org.tdar.utils.ExceptionWrapper;
 
@@ -60,7 +61,6 @@ public final class WorkflowContext implements Serializable {
     private transient List<TDataTableRelationship> relationships = new ArrayList<>();
     private boolean okToStoreInFilestore = true;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
-    private transient SerializationService serializationService;
     private transient TargetDatabase targetDatabase;
 
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
@@ -133,7 +133,15 @@ public final class WorkflowContext implements Serializable {
     }
 
     public String toXML() throws Exception {
-        return getSerializationService().convertToXML(this);
+        StringWriter sw = new StringWriter();
+        JAXBContext jc = JAXBContext.newInstance();
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, UrlService.getPairedSchemaUrl());
+        // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
+//        logger.trace("converting: {}", this);
+        marshaller.marshal(this, sw);
+        return sw.toString();
     }
 
     public void setNumPages(int numPages) {
@@ -245,15 +253,6 @@ public final class WorkflowContext implements Serializable {
         this.exceptions = exceptions;
     }
 
-    @XmlTransient
-    public SerializationService getSerializationService() {
-        return serializationService;
-    }
-
-    public void setSerializationService(SerializationService serializationService) {
-        this.serializationService = serializationService;
-    }
-
     public Class<? extends Workflow> getWorkflowClass() {
         return workflowClass;
     }
@@ -320,11 +319,11 @@ public final class WorkflowContext implements Serializable {
     public void setRelationships(List<TDataTableRelationship> relationships) {
         this.relationships = relationships;
     }
-    
+
     public Class<? extends DatasetConverter> getDatasetConverter() {
         return datasetConverter;
     }
-    
+
     public void setDatasetConverter(Class<? extends DatasetConverter> class1) {
         this.datasetConverter = class1;
     }

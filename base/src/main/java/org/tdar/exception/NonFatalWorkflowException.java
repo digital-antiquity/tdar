@@ -1,8 +1,6 @@
-package org.tdar.core.exception;
+package org.tdar.exception;
 
 import java.util.List;
-
-import org.tdar.exception.TdarRecoverableRuntimeException;
 
 public class NonFatalWorkflowException extends TdarRecoverableRuntimeException {
 

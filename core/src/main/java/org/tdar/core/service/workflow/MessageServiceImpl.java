@@ -84,7 +84,6 @@ public class MessageServiceImpl implements MessageService {
         resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
-            ctx.setSerializationService(serializationService);
             if (workflow_ instanceof GenericColumnarDataWorkflow) {
                 ctx.setDatasetConverter(((GenericColumnarDataWorkflow) workflow_).getDatasetConverterForExtension(ctx.getPrimaryExtension()));
             }
