@@ -1,6 +1,7 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +35,9 @@ public class ConvertDatasetTask extends AbstractTask {
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
         for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
+            if (!version.getTransientFile().exists()) {
+                throw new FileNotFoundException("could not find file: " + version.getTransientFile());
+            }
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
         }

@@ -43,6 +43,9 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         WorkflowContext wc = new WorkflowContext();
         wc.setFilestore(TdarConfiguration.getInstance().getFilestore());
         wc.setInformationResourceId(123456789L);
+//        wc.setDataTableSupported(true);
+        wc.setHasDimensions(true);
+        
         Geospatial doc = generateAndStoreVersion(Geospatial.class, "untitled.tif", TestConstants.getFile(TestConstants.TEST_GEOTIFF), store);
         Geospatial doc2 = generateAndStoreVersion(Geospatial.class, "untitled.tfw", TestConstants.getFile(TestConstants.TEST_GEOTIFF_TFW),
                 store);

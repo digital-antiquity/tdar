@@ -17,8 +17,10 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.datatable.TDataTable;
+import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.PairtreeFilestore;
@@ -50,7 +52,9 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         wc.setFilestore(TdarConfiguration.getInstance().getFilestore());
         wc.setInformationResourceId(12345L);
         wc.setInformationResourceId(111L);
-        wc.setHasDimensions(true);;
+        wc.setHasDimensions(true);
+        wc.setDataTableSupported(true);
+        wc.setDatasetConverter(ShapeFileDatabaseConverter.class);
         wc.setTargetDatabase(tdarDataImportDatabase);
         String name = "Occ_3l";
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
@@ -59,8 +63,11 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
 
         for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
-            Geospatial doc2 = generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store);
-            wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(doc2.getLatestUploadedVersion()));
+//            Geospatial doc2 = generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store);
+            FileStoreFile fsf = makeFileStoreFile(TestConstants.getFile(string  + ext) ,doc.getId());
+            wc.getOriginalFiles().add(fsf);
+            logger.debug("{} / {} -- {} ",fsf.getPath(),fsf.getExtension(), fsf.getTransientFile());
+   
 
         }
 

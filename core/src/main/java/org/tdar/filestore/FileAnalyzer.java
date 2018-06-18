@@ -105,8 +105,11 @@ public class FileAnalyzer {
     public Workflow getWorkflow(HasExtension... irFileVersion) {
         Workflow wf = null;
         for (HasExtension ex : irFileVersion) {
-            Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension().toLowerCase());
-            w.setExtension(ex.getExtension().toLowerCase());
+            String lowerCase = ex.getExtension().toLowerCase();
+            Workflow w = fileExtensionToWorkflowMap.get(lowerCase);
+            if (w!= null) { // not all extensions map... that's ok
+                w.setExtension(lowerCase);
+            }
             if (wf == null) {
                 wf = w;
             } else if ((w != null) && (wf.getClass() != w.getClass())) {

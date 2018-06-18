@@ -14,10 +14,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.configuration.TdarConfiguration;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
@@ -178,13 +177,8 @@ public abstract class BaseWorkflow implements Workflow {
     }
 
     @Override
-    public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] version) {
+    public void initializeWorkflowContext(WorkflowContext ctx, FileStoreFileProxy[] version) {
         return;
-    }
-
-    @Override
-    public boolean validateProxyCollection(FileProxy primary) {
-        return true;
     }
 
     @Override

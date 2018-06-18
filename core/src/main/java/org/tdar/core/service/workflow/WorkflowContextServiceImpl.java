@@ -1,7 +1,5 @@
 package org.tdar.core.service.workflow;
 
-import java.util.Date;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +14,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
@@ -206,6 +205,13 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
         ctx.setWorkflowClass(w.getClass());
         ctx.setSerializationService(serializationService);
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
+        if (informationResource.getResourceType().isDataTableSupported()) {
+            Dataset dataset = (Dataset) informationResource;
+            for (DataTable table : dataset.getDataTables()) {
+                ctx.getDataTablesToCleanup().add(table.getName());
+            }
+        }
+
         try {
             if (logger.isTraceEnabled()) {
                 logger.trace(ctx.toXML());
