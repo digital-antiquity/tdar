@@ -92,7 +92,8 @@ public class DatasetImportServiceImpl implements DatasetImportService {
         datasetFile.setStatus(FileStatus.PROCESSED);
         datasetFile.setInformationResource(dataset);
         // NOTE: do I need to clear the incoming?
-        dataset = datasetDao.merge(dataset);
+//        dataset = datasetDao.merge(dataset);
+        datasetDao.saveOrUpdate(dataset);
         dsChangeLog.compare(dataset);
     }
 
