@@ -228,7 +228,7 @@
                                                     </thead>
                                                     <tbody>
                                                     <tr ng-repeat="nodeSelection in outputColumn.nodeSelections" ng-init="nodeIndex = $index">
-                                                        <td><input ng-disabled="isReadOnly" type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{::nodeSelection.node.id}}"></td>
+                                                        <td><input ng-disabled="isReadOnly()" type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{::nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{::nodeSelection.node.index.split('.').length}}">
                                                                 <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
