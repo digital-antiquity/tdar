@@ -14,6 +14,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
@@ -134,7 +135,7 @@ public final class WorkflowContext implements Serializable {
 
     public String toXML() throws Exception {
         StringWriter sw = new StringWriter();
-        JAXBContext jc = JAXBContext.newInstance();
+        JAXBContext jc = JAXBContext.newInstance(WorkflowContext.class);
         Marshaller marshaller = jc.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, UrlService.getPairedSchemaUrl());
