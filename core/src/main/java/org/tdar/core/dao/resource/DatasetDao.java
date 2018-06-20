@@ -429,6 +429,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         // first unmap all columns from the removed tables
         unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+        for (DataTableColumn column : columnsToRemove) {
+            column.getDataTable().getDataTableColumns().remove(column);
+        }
 
         delete(columnsToRemove);
         if (CollectionUtils.isNotEmpty(tablesToRemove)) {
