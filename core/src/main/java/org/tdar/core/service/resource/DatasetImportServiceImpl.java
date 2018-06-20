@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,7 +30,6 @@ import org.tdar.core.service.resource.dataset.DatasetChangeLogger;
 import org.tdar.datatable.ImportColumn;
 import org.tdar.datatable.ImportTable;
 import org.tdar.datatable.TDataTable;
-import org.tdar.datatable.TDataTableColumn;
 import org.tdar.datatable.TDataTableRelationship;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -92,7 +92,7 @@ public class DatasetImportServiceImpl implements DatasetImportService {
         datasetFile.setStatus(FileStatus.PROCESSED);
         datasetFile.setInformationResource(dataset);
         // NOTE: do I need to clear the incoming?
-//        dataset = datasetDao.merge(dataset);
+        // dataset = datasetDao.merge(dataset);
         datasetDao.saveOrUpdate(dataset);
         dsChangeLog.compare(dataset);
     }
@@ -225,8 +225,8 @@ public class DatasetImportServiceImpl implements DatasetImportService {
 
         logger.debug("deleting unmerged columns: {}", existingColumnsMap);
         logger.debug("result: {}", incomingColumns);
-//        datasetDao.detachFromSession(existingTable);
-//        tableToPersist.setId(existingTable.getId());
+        // datasetDao.detachFromSession(existingTable);
+        // tableToPersist.setId(existingTable.getId());
 
         logger.debug("merged data table is now {}", tableToPersist);
         logger.debug("actual data table columns {}, incoming data table columns {}", tableToPersist.getDataTableColumns(), incomingColumns);
@@ -258,15 +258,13 @@ public class DatasetImportServiceImpl implements DatasetImportService {
          * originally set on. copy all values that should be retained
          */
         logger.trace("Merging incoming column with existing column");
-//        incomingColumn.setDataTable(incomingTable);
-//        incomingColumn.setId(existingColumn.getId());
-//        incomingColumn.setDefaultCodingSheet(existingColumn.getDefaultCodingSheet());
-
-//        incomingColumn.setCategoryVariable(existingColumn.getCategoryVariable());
-        existingColumn.setColumnDataType(incomingColumn.getColumnDataType());
-//        existingColumn.set
-//        incomingColumn.copyUserMetadataFrom(existingColumn);
-//        incomingColumn.copyMappingMetadataFrom(existingColumn);
+        existingColumn.setName(incomingColumn.getName());
+        // if our column type changes, then we need to reset the mappings
+        if (!Objects.equals(existingColumn.getColumnDataType(), incomingColumn.getColumnDataType())) {
+            existingColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
+            existingColumn.setMappedOntology(null);
+            existingColumn.setDefaultCodingSheet(null);
+        }
         existingNameToColumnMap.remove(normalizedColumnName);
     }
 
