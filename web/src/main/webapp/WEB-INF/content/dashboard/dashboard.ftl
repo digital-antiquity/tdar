@@ -288,6 +288,10 @@
         TDAR.notifications.init();
         TDAR.common.collectionTreeview();
         $("#myCarousel").carousel('cycle');
+        if ($("#project-selector").val() != '' || $("#collection-selector").val() != '' || $("#statuses").val() != '' || $("#resourceTypes").val() != '') {
+        console.log("show advanved filters");
+        	$("#divAdvancedFilters").toggleClass("collapse");
+        }
     });
 </script>
 </#escape>
