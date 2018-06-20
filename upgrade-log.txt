@@ -108,3 +108,13 @@ standalone solr:
 	aws.queuename
 	email.attachments.location
  - Created TXT record for verifying the domain with AWS
+
+—————————————————
+::RADIOCARBON:
+—————————————————
+
+ - for solr (7.3), change the field-types.xml's  spatialContextFactory entry to:
+     spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+     - install notes: https://cwiki.apache.org/confluence/display/solr/Taking+Solr+to+Production
+
+  ** NOTE: a new version of JTS is required (1.15) **

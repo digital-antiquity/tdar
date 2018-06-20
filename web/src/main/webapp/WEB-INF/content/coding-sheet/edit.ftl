@@ -7,7 +7,7 @@
 
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
-    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 
     <#macro subNavMenu>
     <li class="hidden-tablet hidden-phone"><a href="#enter-data">Coding Rules</a></li>

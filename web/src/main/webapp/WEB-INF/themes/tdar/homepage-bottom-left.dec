@@ -1,8 +1,0 @@
-<h3>Getting Started with ${siteAcronym}</h3>
-<ul>
-    <li><a href="${config.documentationUrl}">a tutorial that can help you get started</a>.</li>
-    <li><a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
-    <li><a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
-    <li><a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
-</ul>
-<!--    <a href="<@s.url value="/register"/>" class="button">Register</a> or <a href="<@s.url value="/login"/>" class="button">Log in</a> -->

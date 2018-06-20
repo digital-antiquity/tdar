@@ -74,9 +74,9 @@ public class AwsQueuePollerServiceImpl implements AwsQueuePollerService {
                 }
             }
         } catch (AmazonServiceException ase) {
-            ase.printStackTrace();
+            logger.error("AWSServiceException: {}", ase);
         } catch (AmazonClientException ace) {
-            ace.printStackTrace();
+            logger.error("AWSClientException: {}", ace);
         }
 
         return new ArrayList<Message>(allMessages.values());
