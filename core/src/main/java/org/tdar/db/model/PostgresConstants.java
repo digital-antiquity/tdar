@@ -2,6 +2,10 @@ package org.tdar.db.model;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
+
+import org.tdar.datatable.ImportColumn;
+import org.tdar.datatable.ImportTable;
 
 public interface PostgresConstants {
     public static final String DROP_STATE_ERROR_CODE = "42P01";

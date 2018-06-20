@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
@@ -15,7 +15,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
 @Results({
-        @Result(name = "redirect-start", location = URLConstants.CART_ADD, type = TdarActionSupport.TDAR_REDIRECT)
+        @Result(name = "redirect-start", location = UrlConstants.CART_ADD, type = TdarActionSupport.TDAR_REDIRECT)
 })
 /**
  * Base class for all cart based things.

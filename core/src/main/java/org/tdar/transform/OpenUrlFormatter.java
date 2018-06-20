@@ -5,9 +5,9 @@ import java.net.URLEncoder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
 
 public class OpenUrlFormatter {
 

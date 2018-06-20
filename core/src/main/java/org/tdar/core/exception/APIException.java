@@ -2,6 +2,8 @@ package org.tdar.core.exception;
 
 import java.util.List;
 
+import org.tdar.exception.I18nException;
+
 /**
  * $Id$
  * 

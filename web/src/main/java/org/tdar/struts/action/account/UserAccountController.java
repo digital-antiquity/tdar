@@ -13,7 +13,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
@@ -85,12 +85,12 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
                     interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
                     results = {
                             @Result(name = SUCCESS, location = "edit.ftl"),
-                            @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) }),
+                            @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.DASHBOARD) }),
             @Action(value = "add",
                     interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
                     results = {
                             @Result(name = SUCCESS, location = "edit.ftl"),
-                            @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
+                            @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.DASHBOARD) })
     })
     @SkipValidation
     @Override
@@ -112,7 +112,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
     @Actions({
             @Action(value = "register",
                     interceptorRefs = { @InterceptorRef("registrationStack") },
-                    results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD),
+                    results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.DASHBOARD),
                             @Result(name = ADD, type = TdarActionSupport.TDAR_REDIRECT, location = "/account/add"),
                             @Result(name = INPUT, location = "edit.ftl") })
     })

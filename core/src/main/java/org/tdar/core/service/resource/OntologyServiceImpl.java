@@ -23,22 +23,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.OntologySearchFilter;
 import org.tdar.core.dao.resource.OntologyDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.filestore.FilestoreObjectType;
 
 /**

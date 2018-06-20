@@ -2,10 +2,10 @@ package org.tdar.dataone.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.AbstractConfigurationFile;
-import org.tdar.core.configuration.ConfigurationAssistant;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.ConfigurationFileException;
+import org.tdar.configuration.AbstractConfigurationFile;
+import org.tdar.configuration.ConfigurationAssistant;
+import org.tdar.configuration.TdarConfiguration;
+import org.tdar.exception.ConfigurationFileException;
 
 /**
  * $Id$

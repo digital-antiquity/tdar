@@ -16,7 +16,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 public class NelNetTransactionRequestTemplate implements Serializable {

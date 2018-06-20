@@ -1,6 +1,7 @@
 package org.tdar.filestore.tasks;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,16 +9,12 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.db.conversion.DatasetConversionFactory;
+import org.tdar.datatable.TDataTable;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.VersionType;
 import org.tdar.utils.ExceptionWrapper;
 
 public class ConvertDatasetTask extends AbstractTask {
@@ -26,33 +23,34 @@ public class ConvertDatasetTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        if (!getWorkflowContext().getResourceType().isDataTableSupported()) {
+        if (!getWorkflowContext().isDataTableSupported()) {
             getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
             return;
         }
 
-        List<InformationResourceFileVersion> filesToProcess = new ArrayList<>(getWorkflowContext().getOriginalFiles());
+        List<FileStoreFile> filesToProcess = new ArrayList<>(getWorkflowContext().getOriginalFiles());
 
         File file = getWorkflowContext().getOriginalFiles().get(0).getTransientFile();
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
+            if (!version.getTransientFile().exists()) {
+                throw new FileNotFoundException("could not find file: " + version.getTransientFile());
+            }
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
         }
 
-        if (getWorkflowContext().getResourceType() == ResourceType.GEOSPATIAL) {
-            for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
-                if (version.getExtension().equals("shp") || version.getExtension().equals("mdb") || version.getExtension().equals("gdb")) {
-                    filesToProcess.clear();
-                    filesToProcess.add(version);
-                }
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
+            if (version.getExtension().equals("shp") || version.getExtension().equals("mdb") || version.getExtension().equals("gdb")) {
+                filesToProcess.clear();
+                filesToProcess.add(version);
             }
         }
 
         try {
-            for (InformationResourceFileVersion versionToConvert : filesToProcess) {
+            for (FileStoreFile versionToConvert : filesToProcess) {
                 File version = versionToConvert.getTransientFile();
 
                 if (version == null) {
@@ -73,13 +71,14 @@ public class ConvertDatasetTask extends AbstractTask {
                     getWorkflowContext().getTargetDatabase().dropTable(table);
                 }
 
-                Dataset transientDataset = new Dataset();
-                transientDataset.setStatus(Status.FLAGGED);
-                getWorkflowContext().setTransientResource(transientDataset);
-                DatasetConverter databaseConverter = DatasetConversionFactory.getConverter(versionToConvert, getWorkflowContext().getTargetDatabase());
+                
+                Class<? extends DatasetConverter> databaseConverterClass = getWorkflowContext().getDatasetConverter();
+                DatasetConverter databaseConverter = databaseConverterClass.newInstance();
+                databaseConverter.setTargetDatabase(getWorkflowContext().getTargetDatabase());
+                databaseConverter.setInformationResourceFileVersion(versionToConvert);
                 // returns the set of transient POJOs from the incoming dataset.
 
-                Set<DataTable> tablesToPersist = databaseConverter.execute();
+                Set<TDataTable> tablesToPersist = databaseConverter.execute();
                 if (CollectionUtils.isNotEmpty(databaseConverter.getMessages())) {
                     for (String message : databaseConverter.getMessages()) {
                         ExceptionWrapper wrapper = new ExceptionWrapper(message, "");
@@ -101,8 +100,8 @@ public class ConvertDatasetTask extends AbstractTask {
                 if ((indexedContents != null) && (indexedContents.length() > 0)) {
                     addDerivativeFile(versionToConvert, indexedContents, VersionType.INDEXABLE_TEXT);
                 }
-                transientDataset.getDataTables().addAll(tablesToPersist);
-                transientDataset.getRelationships().addAll(databaseConverter.getRelationships());
+                getWorkflowContext().getDataTables().addAll(tablesToPersist);
+                getWorkflowContext().getRelationships().addAll(databaseConverter.getRelationships());
             }
         } catch (Exception e) {
             getWorkflowContext().setErrorFatal(true);

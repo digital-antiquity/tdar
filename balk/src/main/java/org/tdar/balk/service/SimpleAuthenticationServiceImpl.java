@@ -16,15 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationStatus;
 import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.core.service.external.session.SessionData;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 @Service
 public class SimpleAuthenticationServiceImpl implements SimpleAuthenticationService {

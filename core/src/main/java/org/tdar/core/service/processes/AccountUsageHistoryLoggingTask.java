@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.billing.AccountUsageHistory;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.utils.PersistableUtils;
 

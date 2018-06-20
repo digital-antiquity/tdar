@@ -26,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 /**
  * Uses OWL-API to parse OWL ontologies into a Map<OWLClass, OntologyNode>.

@@ -8,7 +8,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -99,7 +99,7 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
         }
     }
 
-    @Action(value = REVIEW, results = { @Result(name = INPUT, type = TDAR_REDIRECT, location = URLConstants.CART_ADD) })
+    @Action(value = REVIEW, results = { @Result(name = INPUT, type = TDAR_REDIRECT, location = UrlConstants.CART_ADD) })
     public String execute() {
         if (!getInvoice().isModifiable()) {
             addActionMessage(getText("cartController.cannot_modify_completed_invoice"));

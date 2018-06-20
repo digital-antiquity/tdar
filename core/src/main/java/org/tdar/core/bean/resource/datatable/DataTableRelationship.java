@@ -17,6 +17,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.datatable.DataTableColumnRelationshipType;
 
 /**
  * This Class represents a Primary or Foreign Key relationship between two data tables

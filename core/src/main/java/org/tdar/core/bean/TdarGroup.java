@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
+import org.tdar.locale.HasLabel;
 
 public enum TdarGroup implements HasLabel {
 

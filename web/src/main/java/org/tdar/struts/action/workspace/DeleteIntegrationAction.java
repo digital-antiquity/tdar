@@ -1,7 +1,5 @@
 package org.tdar.struts.action.workspace;
 
-import java.util.Objects;
-
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;

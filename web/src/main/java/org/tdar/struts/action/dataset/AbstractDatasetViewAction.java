@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.datatable.ImportColumn;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
@@ -45,9 +46,9 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
         super.loadCustomViewMetadata();
         List<Map<String, Object>> result = new ArrayList<>();
         if (PersistableUtils.isNotNullOrTransient(getDataTable())) {
-            for (DataTableColumn dtc : getDataTable().getSortedDataTableColumnsByImportOrder()) {
+            for (ImportColumn dtc : getDataTable().getSortedDataTableColumnsByImportOrder()) {
                 Map<String, Object> col = new HashMap<>();
-                col.put("simpleName", dtc.getJsSimpleName());
+                col.put("simpleName", ((DataTableColumn)dtc).getJsSimpleName());
                 col.put("displayName", dtc.getDisplayName());
                 result.add(col);
             }

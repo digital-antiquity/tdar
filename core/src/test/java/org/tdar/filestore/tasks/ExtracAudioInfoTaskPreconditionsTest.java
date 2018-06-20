@@ -23,7 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -42,32 +42,9 @@ public class ExtracAudioInfoTaskPreconditionsTest {
         task = new ExtractAudioInfoTask();
         audio = new Audio();
         WorkflowContext ctx = new WorkflowContext();
-        ctx.setResourceType(ResourceType.AUDIO);
-        ctx.setTransientResource(audio);
         task.setWorkflowContext(ctx);
     }
 
-    @Test
-    public void mustBeAudioResourceType() {
-        task.getWorkflowContext().setResourceType(ResourceType.DOCUMENT);
-        try {
-            task.run();
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("The Extract Audio Info Task has been called for a non audio resource!"));
-        }
-    }
-
-    @Test
-    public void mustHaveNonNullAudioFile() {
-        task.getWorkflowContext().setTransientResource(null);
-        try {
-            task.run();
-        } catch (Exception e) {
-            assertTrue(e.getMessage(), e.getClass().equals(TdarRecoverableRuntimeException.class));
-            assertTrue(e.getMessage(), e.getMessage().startsWith("Transient copy of audio not available..."));
-        }
-    }
 
     @Test
     public void mustHaveAFileToWorkWith() {

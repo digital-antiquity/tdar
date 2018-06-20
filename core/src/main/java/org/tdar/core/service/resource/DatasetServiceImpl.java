@@ -25,6 +25,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
@@ -40,11 +41,9 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.integration.DataIntegrationService;
@@ -53,6 +52,7 @@ import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;
@@ -330,29 +330,29 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         return wrapper;
     }
 
-    /*
-     * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
-     */
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.service.resource.DatasetService#listRelationshipsForColumns(org.tdar.core.bean.resource.datatable.DataTableColumn)
-     */
-    @Override
-    @Transactional
-    public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
-        List<DataTableRelationship> relationships = new ArrayList<>();
-        Set<DataTableRelationship> allDatasetRelationships = column.getDataTable().getDataset().getRelationships();
-        getLogger().trace("All relationships: {}", allDatasetRelationships);
-        for (DataTableRelationship relationship : allDatasetRelationships) {
-            for (DataTableColumnRelationship columnRelationship : relationship.getColumnRelationships()) {
-                if (column.equals(columnRelationship.getLocalColumn())) {
-                    relationships.add(relationship);
-                }
-            }
-        }
-        return relationships;
-    }
+//    /*
+//     * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
+//     */
+//    /*
+//     * (non-Javadoc)
+//     * 
+//     * @see org.tdar.core.service.resource.DatasetService#listRelationshipsForColumns(org.tdar.core.bean.resource.datatable.DataTableColumn)
+//     */
+//    @Override
+//    @Transactional
+//    public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
+//        List<DataTableRelationship> relationships = new ArrayList<>();
+//        Set<DataTableRelationship> allDatasetRelationships = column.getDataTable().getDataset().getRelationships();
+//        getLogger().trace("All relationships: {}", allDatasetRelationships);
+//        for (DataTableRelationship relationship : allDatasetRelationships) {
+//            for (DataTableColumnRelationship columnRelationship : relationship.getColumnRelationships()) {
+//                if (column.equals(columnRelationship.getLocalColumn())) {
+//                    relationships.add(relationship);
+//                }
+//            }
+//        }
+//        return relationships;
+//    }
 
     /*
      * Based on a set of @link DataTableColumn entries, and a @link Project we can will clear out the existing mappings; and then identify mappings that need to
@@ -440,7 +440,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column, false));
+                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
             }
         }
     }

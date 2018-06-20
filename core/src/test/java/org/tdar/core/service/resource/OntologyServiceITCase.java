@@ -28,8 +28,8 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.resource.OntologyNodeDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /**

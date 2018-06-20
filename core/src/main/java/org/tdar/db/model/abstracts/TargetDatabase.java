@@ -8,7 +8,10 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.ImportColumn;
+import org.tdar.datatable.ImportTable;
+import org.tdar.db.ImportDatabase;
 
 /**
  * A base class for target Databases that can be written to via a
@@ -18,61 +21,42 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
  * @author <a href='mailto:Yan.Qi@asu.edu'>Yan Qi</a>
  * @version $Revision$
  */
-public interface TargetDatabase extends Database {
+public interface TargetDatabase extends Database , ImportDatabase {
 
     /**
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
 
-    String normalizeTableOrColumnNames(String input);
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    void closePreparedStatements(Collection<DataTable> dataTables) throws Exception;
-
     String getFullyQualifiedTableName(String tableName);
 
-    @Transactional(value = "tdarDataTx", readOnly = false)
     void dropTable(String tableName);
 
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    void dropTable(DataTable dataTable);
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    void createTable(DataTable dataTable) throws Exception;
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
-
-    @Transactional(value = "tdarDataTx", readOnly = true)
-    List<String> selectNonNullDistinctValues(DataTableColumn column, boolean useUntranslatedValues);
+    List<String> selectNonNullDistinctValues(ImportTable table, ImportColumn column, boolean useUntranslatedValues);
 
     /**
      * @param dataType
      * @return
      */
-    @Transactional(value = "tdarDataTx", readOnly = true)
     String toImplementedTypeDeclaration(DataTableColumnType dataType, int precision);
 
     @Deprecated
-    @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+    <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
     @Deprecated
-    @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy);
+    <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
+    <T> T selectAllFromTableInImportOrder(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
+    Map<String, Long> selectDistinctValuesWithCounts(ImportTable table, ImportColumn dataTableColumn);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    List<String> selectDistinctValues(DataTableColumn column, boolean sort);
+    List<String> selectDistinctValues(ImportTable table, ImportColumn column, boolean sort);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
@@ -91,6 +75,6 @@ public interface TargetDatabase extends Database {
             ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    boolean checkTableExists(DataTable dataTable);
+    boolean checkTableExists(ImportTable dataTable);
 
 }

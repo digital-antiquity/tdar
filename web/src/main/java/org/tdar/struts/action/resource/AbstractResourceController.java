@@ -16,7 +16,8 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
@@ -45,7 +46,6 @@ import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
@@ -287,8 +287,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
-            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.MY_PROFILE),
-            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.CART_ADD)
+            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.MY_PROFILE),
+            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.CART_ADD)
     })
     @HttpsOnly
     @Override

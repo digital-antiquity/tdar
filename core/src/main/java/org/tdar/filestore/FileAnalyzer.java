@@ -16,15 +16,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -105,7 +105,11 @@ public class FileAnalyzer {
     public Workflow getWorkflow(HasExtension... irFileVersion) {
         Workflow wf = null;
         for (HasExtension ex : irFileVersion) {
-            Workflow w = fileExtensionToWorkflowMap.get(ex.getExtension().toLowerCase());
+            String lowerCase = ex.getExtension().toLowerCase();
+            Workflow w = fileExtensionToWorkflowMap.get(lowerCase);
+            if (w!= null) { // not all extensions map... that's ok
+                w.setExtension(lowerCase);
+            }
             if (wf == null) {
                 wf = w;
             } else if ((w != null) && (wf.getClass() != w.getClass())) {
@@ -125,6 +129,7 @@ public class FileAnalyzer {
             throw new TdarRecoverableRuntimeException(message);
         }
         checkFilesExist(informationResourceFileVersions);
+        logger.debug(workflow.getExtension());
 
         logger.debug("using workflow: {}", workflow);
         // Martin: if this is ever going to run asynchronously, this should this return anything?

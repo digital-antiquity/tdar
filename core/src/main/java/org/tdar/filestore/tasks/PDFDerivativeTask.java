@@ -13,10 +13,11 @@ import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.pdf.PdfConfig;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.VersionType;
 import org.tdar.filestore.WorkflowContext;
 
 /**
@@ -34,7 +35,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         File origFile = new File(baseDir, orig);
         WorkflowContext ctx = new WorkflowContext();
         task.setWorkflowContext(ctx);
-        InformationResourceFileVersion vers = new InformationResourceFileVersion(VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L);
+        FileStoreFile vers = new FileStoreFile(FilestoreObjectType.RESOURCE, VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L, null);
         ctx.getOriginalFiles().add(vers);
         try {
             task.run(vers);
@@ -45,13 +46,13 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     @Override
     public void run() throws Exception {
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
             run(version);
         }
     }
 
     @Override
-    public void run(InformationResourceFileVersion version) throws Exception {
+    public void run(FileStoreFile version) throws Exception {
         File originalFile = version.getTransientFile();
         try {
             PDDocument document = openPDF("", originalFile);
@@ -75,7 +76,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         }
     }
 
-    protected String extractPage(int pageNum, InformationResourceFileVersion originalFile, PDDocument document) {
+    protected String extractPage(int pageNum, FileStoreFile originalFile, PDDocument document) {
         // File pdfFile = new File(sourceFile);
         @SuppressWarnings("unused")
         File pdfFile = originalFile.getTransientFile();
@@ -126,7 +127,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
     private PDDocument openPDF(String password, File pdfFile) {
         PDDocument document = null;
         try {
-            document = PDDocument.load(pdfFile, TdarConfiguration.getInstance().getPDFMemoryReadSetting());
+            document = PDDocument.load(pdfFile, PdfConfig.getPDFMemoryReadSetting());
 
             // if (document.isEncrypted()) {
             // getLogger().info("access permissions: " + document.getCurrentAccessPermission());

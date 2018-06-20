@@ -1,9 +1,7 @@
 package org.tdar.core.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.joda.time.DateTime;
@@ -15,7 +13,6 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.search.exception.SearchIndexException;
-import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 import org.tdar.web.service.WebScheduledProcessService;

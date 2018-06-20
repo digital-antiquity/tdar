@@ -43,8 +43,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.XmlEscapeHelper;
 
 import edu.asu.lib.mods.ModsDocument;

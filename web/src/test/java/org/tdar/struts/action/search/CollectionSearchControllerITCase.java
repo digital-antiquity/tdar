@@ -23,8 +23,6 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.utils.MessageHelper;
 
-import com.amazonaws.services.ec2.model.EgressOnlyInternetGateway;
-
 @Transactional
 public class CollectionSearchControllerITCase extends AbstractControllerITCase {
 

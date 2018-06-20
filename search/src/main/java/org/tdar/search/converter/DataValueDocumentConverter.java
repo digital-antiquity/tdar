@@ -6,9 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.SearchUtils;

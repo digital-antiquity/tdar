@@ -1,20 +1,12 @@
 package org.tdar.core.service.workflow.workflows;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.file.FileType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CsvCodingSheetParser;
 import org.tdar.core.parser.ExcelCodingSheetParser;
@@ -25,7 +17,6 @@ import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.db.conversion.converters.TabConverter;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 
@@ -67,18 +58,6 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }
 
-    @Override
-    public boolean validateProxyCollection(FileProxy primary) {
-        if (primary.getExtension().equals("shp")) {
-            List<String> supporting = new ArrayList<String>(getRequiredExtensions().get("shp"));
-            for (FileProxy proxy : primary.getSupportingProxies()) {
-                supporting.remove(proxy.getExtension());
-            }
-            return CollectionUtils.isEmpty(supporting);
-        }
-        return true;
-    }
-
     public void registerFileExtension(String fileExtension, Class<? extends DatasetConverter> datasetConverter,
             Class<? extends CodingSheetParser> codingSheetParser,
             ResourceType... resourceTypes) {
@@ -92,17 +71,6 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
     }
 
     @Override
-    public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] version) {
-        InformationResource resource = version[0].getInformationResourceFile().getInformationResource();
-        if (resource.getResourceType().isDataTableSupported()) {
-            Dataset dataset = (Dataset) resource;
-            for (DataTable table : dataset.getDataTables()) {
-                ctx.getDataTablesToCleanup().add(table.getName());
-            }
-        }
-    };
-
-    @Override
     public boolean isEnabled() {
         return true;
     }
@@ -112,6 +80,7 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
     }
 
     public Class<? extends DatasetConverter> getDatasetConverterForExtension(String ext) {
+        getLogger().debug("{} :: {}", ext, datasetConverterMap);
         return datasetConverterMap.get(ext.toLowerCase());
     }
 

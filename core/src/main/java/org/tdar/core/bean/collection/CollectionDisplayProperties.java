@@ -17,7 +17,7 @@ import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.filestore.VersionType;
 
 @XmlElement("collectionDisplayProperties")
 @Embeddable

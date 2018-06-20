@@ -27,12 +27,12 @@ import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.FreemarkerService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.filestore.FilestoreObjectType;
 
 /**

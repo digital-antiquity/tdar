@@ -13,10 +13,10 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.FileProxy;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
@@ -33,6 +33,15 @@ public abstract class BaseWorkflow implements Workflow {
     private Map<ResourceType, Set<String>> resourceTypeToExtensions = new HashMap<>();
     // were we expecting that these Workflows would be serializable?
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private String extension;
+    
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
 
     public BaseWorkflow() {
         addTask(LoggingTask.class, WorkflowPhase.CLEANUP);
@@ -50,7 +59,7 @@ public abstract class BaseWorkflow implements Workflow {
         // by default tasks are processed in the order they are added within the phase that they're part of.
 
         try {
-            for (InformationResourceFileVersion version : workflowContext.getOriginalFiles()) {
+            for (FileStoreFile version : workflowContext.getOriginalFiles()) {
                 version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
             }
         } catch (Exception e) {
@@ -168,13 +177,8 @@ public abstract class BaseWorkflow implements Workflow {
     }
 
     @Override
-    public void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] version) {
+    public void initializeWorkflowContext(WorkflowContext ctx, FileStoreFileProxy[] version) {
         return;
-    }
-
-    @Override
-    public boolean validateProxyCollection(FileProxy primary) {
-        return true;
     }
 
     @Override

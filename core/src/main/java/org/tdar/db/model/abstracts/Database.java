@@ -2,7 +2,8 @@ package org.tdar.db.model.abstracts;
 
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.datatable.DataTableColumnType;
+import org.tdar.datatable.ImportColumn;
 
 /**
  * Marker interface for all database types.
@@ -35,7 +36,7 @@ public interface Database {
      *            type id as defined in {@link java.sql.Types}
      */
     // TODO: add throws TypeConversionException?
-    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type);
+    void alterTableColumnType(String tableName, ImportColumn column, DataTableColumnType type);
 
     /**
      * Attempt to change the datatype of the specified column in the specified table
@@ -49,8 +50,7 @@ public interface Database {
      * @param jdbcType
      *            type id as defined in {@link java.sql.Types}
      */
-    // TODO: add throws TypeConversionException?
-    void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type, int length);
+    void alterTableColumnType(String tableName, ImportColumn column, DataTableColumnType type, int length);
 
     void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet);
 

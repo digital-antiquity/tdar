@@ -14,9 +14,9 @@
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
-        <artifactId>base</artifactId>
-         <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
-        <relativePath>../base/pom.xml</relativePath>
+        <artifactId>parent-base</artifactId>
+         <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
+        <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
             <dependencies>
@@ -35,6 +35,11 @@
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
          <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
@@ -59,18 +64,6 @@
             <artifactId>cglib-nodep</artifactId>
             <version>${cglib.version}</version>
             <!-- LICENSE: APACHE 1.1 -->
-        </dependency>
-        <dependency>
-            <groupId>commons-dbutils</groupId>
-            <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${dbcp.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <!-- hibernate and JPA persistence -->
         <dependency>
@@ -137,12 +130,6 @@
             </exclusions>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>        
-        <dependency>
-            <groupId>com.joestelmach</groupId>
-            <artifactId>natty</artifactId>
-            <version>0.13</version>
-            <!-- LICENSE: MIT -->
-        </dependency>
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>keytool-api</artifactId>
@@ -254,11 +241,6 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>${commons-codec.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>org.atteo</groupId>
@@ -399,85 +381,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-shapefile</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-opengis</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-          <groupId>org.geotools</groupId>
-          <artifactId>gt-geometry</artifactId>
-          <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-geojson</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>junit</artifactId>
-                    <groupId>junit</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-xml</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geotools.xsd</groupId>
-            <artifactId>gt-xsd-kml</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geotools.xsd</groupId>
-            <artifactId>gt-xsd-core</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-image</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-extension</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-hsql</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <!-- <dependency> <groupId>org.geotools</groupId> <artifactId>gt-epsg-wkt</artifactId> 
-            <version>${geotools.version}</version> </dependency> -->
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-geotiff</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-swing</artifactId>
-            <version>${geotools.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
+
         <dependency>
             <groupId>com.google.code</groupId>
             <artifactId>sitemapgen4j</artifactId>
@@ -590,38 +494,6 @@
                 </exclusion>
             </exclusions>
         </dependency> -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-            <!-- LICENSE: Apache 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.findbugs</groupId>
-                    <artifactId>jsr305</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!-- Apache POI / HSSF - included via tika -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-            <version>${poi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
-        </dependency>
 
  <!--   <dependency>
             <groupId>javax.el</groupId>
@@ -704,19 +576,6 @@
             <version>2.2</version>
         </dependency>
         <!-- compress -->
-        <dependency>
-            <groupId>com.healthmarketscience.jackcess</groupId>
-            <artifactId>jackcess</artifactId>
-            <version>${jackcess.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <!-- OpenCSV -->
-        <dependency>
-            <groupId>net.sf.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>2.4</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
         <!-- Jakarta Commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>

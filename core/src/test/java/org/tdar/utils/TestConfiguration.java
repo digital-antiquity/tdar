@@ -8,7 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.ConfigurationAssistant;
+import org.tdar.configuration.ConfigurationAssistant;
 import org.tdar.core.dao.external.auth.MockAuthenticationProvider;
 
 /**

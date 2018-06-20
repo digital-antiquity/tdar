@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task;
 
@@ -40,8 +39,10 @@ public interface Workflow {
 
     Map<String, List<String>> getSuggestedExtensions();
 
-    void initializeWorkflowContext(WorkflowContext ctx, InformationResourceFileVersion[] versions);
+    void initializeWorkflowContext(WorkflowContext ctx, FileStoreFileProxy[] versions);
 
-    boolean validateProxyCollection(FileProxy primary);
+    void setExtension(String ext);
+
+    String getExtension();
 
 }

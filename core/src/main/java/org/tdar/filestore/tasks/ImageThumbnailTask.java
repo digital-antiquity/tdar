@@ -22,10 +22,11 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataSourceException;
 import org.geotools.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.VersionType;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -74,16 +75,16 @@ public class ImageThumbnailTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        for (InformationResourceFileVersion version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
             run(version);
         }
     }
 
-    public void run(InformationResourceFileVersion version) throws Exception {
+    public void run(FileStoreFile version) throws Exception {
         processImage(version, version.getTransientFile());
     }
 
-    public void processImage(InformationResourceFileVersion version, File sourceFile) {
+    public void processImage(FileStoreFile version, File sourceFile) {
         if ((sourceFile == null) || !sourceFile.exists()) {
             getWorkflowContext().setErrorFatal(true);
             throw new TdarRecoverableRuntimeException("error.file_not_found");
@@ -106,7 +107,7 @@ public class ImageThumbnailTask extends AbstractTask {
         opener.setSilentMode(true);
         IJ.redirectErrorMessages(true);
         openImageFile(sourceFile, filename, ext, opener);
-        if (getWorkflowContext().getResourceType() == null || getWorkflowContext().getResourceType().hasDemensions()) {
+        if (getWorkflowContext().isHasDimensions()) {
             version.setHeight(ijSource.getHeight());
             version.setWidth(ijSource.getWidth());
             version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
@@ -218,7 +219,7 @@ public class ImageThumbnailTask extends AbstractTask {
         return ratio;
     }
 
-    protected void createJpegDerivative(InformationResourceFileVersion originalVersion, ImagePlus ijSource, String origFileName, int resolution,
+    protected void createJpegDerivative(FileStoreFile originalVersion, ImagePlus ijSource, String origFileName, int resolution,
             boolean canSwitchSource)
             throws Throwable {
         File outputFile = generateFilename(origFileName, resolution);
@@ -282,7 +283,7 @@ public class ImageThumbnailTask extends AbstractTask {
             ImageIO.write(bImage, "jpg", outputFile);
             bImage.flush();
             bImage = null;
-            InformationResourceFileVersion version = generateInformationResourceFileVersionFromOriginal(originalVersion, outputFile, type);
+            FileStoreFile version = generateInformationResourceFileVersionFromOriginal(originalVersion, outputFile, type);
             version.setHeight(destHeight);
             version.setWidth(destWidth);
             version.setUncompressedSizeOnDisk(ImageThumbnailTask.calculateUncompressedSize(version));
@@ -298,7 +299,7 @@ public class ImageThumbnailTask extends AbstractTask {
         }
     }
 
-    private static Long calculateUncompressedSize(InformationResourceFileVersion version) {
+    private static Long calculateUncompressedSize(FileStoreFile version) {
         try {
             return version.getHeight() * version.getWidth() * 3L * 8L;
         } catch (Exception e) {

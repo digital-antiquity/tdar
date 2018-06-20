@@ -20,6 +20,8 @@ import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.datatable.ImportColumn;
+import org.tdar.datatable.ImportTable;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.utils.PersistableUtils;
 
@@ -82,8 +84,8 @@ public class DataTableServiceImpl extends ServiceInterface.TypedDaoBase<DataTabl
      */
     @Override
     @Transactional(readOnly = true)
-    public List<String> findAllDistinctValues(DataTableColumn column) {
-        return tdarDataImportDatabase.selectNonNullDistinctValues(column, false);
+    public List<String> findAllDistinctValues(ImportTable table, ImportColumn column) {
+        return tdarDataImportDatabase.selectNonNullDistinctValues(table, column, false);
     }
 
     /*
@@ -95,8 +97,8 @@ public class DataTableServiceImpl extends ServiceInterface.TypedDaoBase<DataTabl
      * @see org.tdar.core.service.resource.DataTableService#findAllDistinctValuesWithCounts(org.tdar.core.bean.resource.datatable.DataTableColumn)
      */
     @Override
-    public Map<String, Long> findAllDistinctValuesWithCounts(DataTableColumn dataTableColumn) {
-        return tdarDataImportDatabase.selectDistinctValuesWithCounts(dataTableColumn);
+    public Map<String, Long> findAllDistinctValuesWithCounts(ImportTable table, ImportColumn column) {
+        return tdarDataImportDatabase.selectDistinctValuesWithCounts(table, column);
     }
 
     /*
@@ -157,7 +159,7 @@ public class DataTableServiceImpl extends ServiceInterface.TypedDaoBase<DataTabl
             for (DataTableColumn col : table.getDataTableColumns()) {
                 if (PersistableUtils.isEqual(col.getDefaultCodingSheet(), sheet)) {
                     try {
-                        List<String> selectNonNullDistinctValues = tdarDataImportDatabase.selectNonNullDistinctValues(col, true);
+                        List<String> selectNonNullDistinctValues = tdarDataImportDatabase.selectNonNullDistinctValues(table, col, true);
                         logger.trace("unique values for {}: {}", table.getName(), selectNonNullDistinctValues);
                         uniqueValues.addAll(selectNonNullDistinctValues);
                     } catch (Exception e) {

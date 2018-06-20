@@ -5,25 +5,27 @@ package org.tdar.filestore;
 
 import java.io.File;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.NonFatalWorkflowException;
-import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.WorkflowContextService;
+import org.tdar.configuration.TdarConfiguration;
+import org.tdar.core.service.UrlService;
 import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.datatable.TDataTable;
+import org.tdar.datatable.TDataTableRelationship;
+import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.exception.NonFatalWorkflowException;
 import org.tdar.filestore.tasks.Task;
 import org.tdar.utils.ExceptionWrapper;
 
@@ -36,7 +38,7 @@ import org.tdar.utils.ExceptionWrapper;
  * context back to XML and then return that structure to the application. In this way the workflow tasks are decoupled from the application, I assume with the
  * eventual goal of allowing long running tasks to be run in the background without impacting the user.
  * 
- * @see MessageService#sendFileProcessingRequest(Workflow, InformationResourceFileVersion...)
+ * @see MessageService#sendFileProcessingRequest(Workflow, FileStoreFile...)
  * @author Adam Brin
  */
 @XmlRootElement
@@ -44,26 +46,29 @@ public final class WorkflowContext implements Serializable {
 
     private static final long serialVersionUID = -1020989469518487007L;
 
-    // private Long informationResourceFileId;
     private Long informationResourceId;
-    private List<InformationResourceFileVersion> versions = new ArrayList<>();
-    private List<InformationResourceFileVersion> originalFiles = new ArrayList<>();
+    private List<FileStoreFile> versions = new ArrayList<>();
+    private List<FileStoreFile> originalFiles = new ArrayList<>();
     private File workingDirectory = null;
     private int numPages = -1;
     private transient Filestore filestore;
+    private String primaryExtension;
     private boolean processedSuccessfully = false;
-    private ResourceType resourceType;
+    private boolean hasDimensions;
+    private boolean dataTableSupported;
     private Class<? extends Workflow> workflowClass;
     private List<String> dataTablesToCleanup = new ArrayList<>();
-    private transient Resource transientResource;
+    private transient List<TDataTable> dataTables = new ArrayList<>();
+    private transient List<TDataTableRelationship> relationships = new ArrayList<>();
     private boolean okToStoreInFilestore = true;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
-    private transient SerializationService serializationService;
     private transient TargetDatabase targetDatabase;
 
     private List<ExceptionWrapper> exceptions = new ArrayList<>();
 
     private boolean isErrorFatal;
+
+    private Class<? extends DatasetConverter> datasetConverter;
 
     public WorkflowContext() {
     }
@@ -84,31 +89,31 @@ public final class WorkflowContext implements Serializable {
      * All of the derivative versions of the file
      */
     @XmlElementWrapper(name = "versions")
-    @XmlElement(name = "informationResourceFileVersion")
-    public List<InformationResourceFileVersion> getVersions() {
+    @XmlElement(name = "versionFile")
+    public List<FileStoreFile> getVersions() {
         if (versions == null) {
-            versions = new ArrayList<InformationResourceFileVersion>();
+            versions = new ArrayList<>();
         }
         return versions;
     }
 
-    public void addVersion(InformationResourceFileVersion version) {
+    public void addVersion(FileStoreFile version) {
         if (this.versions == null) {
-            this.versions = new ArrayList<InformationResourceFileVersion>();
+            this.versions = new ArrayList<>();
         }
         this.versions.add(version);
     }
 
     @XmlElementWrapper(name = "originalFiles")
-    @XmlElement(name = "informationResourceFileVersion")
-    public List<InformationResourceFileVersion> getOriginalFiles() {
+    @XmlElement(name = "originalFiles")
+    public List<FileStoreFile> getOriginalFiles() {
         return originalFiles;
     }
 
     /*
      * Get the Original File
      */
-    public void setOriginalFiles(List<InformationResourceFileVersion> originalFile) {
+    public void setOriginalFiles(List<FileStoreFile> originalFile) {
         this.originalFiles = originalFile;
     }
 
@@ -129,7 +134,15 @@ public final class WorkflowContext implements Serializable {
     }
 
     public String toXML() throws Exception {
-        return getSerializationService().convertToXML(this);
+        StringWriter sw = new StringWriter();
+        JAXBContext jc = JAXBContext.newInstance(WorkflowContext.class);
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, UrlService.getPairedSchemaUrl());
+        // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
+//        logger.trace("converting: {}", this);
+        marshaller.marshal(this, sw);
+        return sw.toString();
     }
 
     public void setNumPages(int numPages) {
@@ -183,22 +196,6 @@ public final class WorkflowContext implements Serializable {
 
     public void setDataTablesToCleanup(List<String> dataTablesToCleanup) {
         this.dataTablesToCleanup = dataTablesToCleanup;
-    }
-
-    public Resource getTransientResource() {
-        return transientResource;
-    }
-
-    public void setTransientResource(Resource transientResource) {
-        this.transientResource = transientResource;
-    }
-
-    public ResourceType getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(ResourceType resourceType) {
-        this.resourceType = resourceType;
     }
 
     public void setTargetDatabase(TargetDatabase tdarDataImportDatabase) {
@@ -257,15 +254,6 @@ public final class WorkflowContext implements Serializable {
         this.exceptions = exceptions;
     }
 
-    @XmlTransient
-    public SerializationService getSerializationService() {
-        return serializationService;
-    }
-
-    public void setSerializationService(SerializationService serializationService) {
-        this.serializationService = serializationService;
-    }
-
     public Class<? extends Workflow> getWorkflowClass() {
         return workflowClass;
     }
@@ -300,7 +288,8 @@ public final class WorkflowContext implements Serializable {
     }
 
     public void clear() {
-        transientResource = null;
+        getDataTables().clear();
+        getRelationships().clear();
         versions = null;
         originalFiles = null;
 
@@ -314,6 +303,54 @@ public final class WorkflowContext implements Serializable {
 
     public void setOkToStoreInFilestore(boolean okToStoreInFilestore) {
         this.okToStoreInFilestore = okToStoreInFilestore;
+    }
+
+    public List<TDataTable> getDataTables() {
+        return dataTables;
+    }
+
+    public void setDataTables(List<TDataTable> dataTables) {
+        this.dataTables = dataTables;
+    }
+
+    public List<TDataTableRelationship> getRelationships() {
+        return relationships;
+    }
+
+    public void setRelationships(List<TDataTableRelationship> relationships) {
+        this.relationships = relationships;
+    }
+
+    public Class<? extends DatasetConverter> getDatasetConverter() {
+        return datasetConverter;
+    }
+
+    public void setDatasetConverter(Class<? extends DatasetConverter> class1) {
+        this.datasetConverter = class1;
+    }
+
+    public boolean isHasDimensions() {
+        return hasDimensions;
+    }
+
+    public void setHasDimensions(boolean hasDimensions) {
+        this.hasDimensions = hasDimensions;
+    }
+
+    public boolean isDataTableSupported() {
+        return dataTableSupported;
+    }
+
+    public void setDataTableSupported(boolean dataTableSupported) {
+        this.dataTableSupported = dataTableSupported;
+    }
+
+    public String getPrimaryExtension() {
+        return primaryExtension;
+    }
+
+    public void setPrimaryExtension(String primaryExtension) {
+        this.primaryExtension = primaryExtension;
     }
 
 }

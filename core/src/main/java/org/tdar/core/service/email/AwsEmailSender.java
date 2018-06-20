@@ -29,5 +29,5 @@ public interface AwsEmailSender {
      */
     SendRawEmailResult sendMultiPartMessage(Email email) throws IOException, MessagingException;
 
-    void setAwsRegion(Regions region);
+//    void setAwsRegion(Regions region);
 }

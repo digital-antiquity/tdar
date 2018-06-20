@@ -8,10 +8,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.VersionType;
 import org.tdar.filestore.WorkflowContext;
 
 public abstract class AbstractTask implements Task {
@@ -47,11 +47,11 @@ public abstract class AbstractTask implements Task {
         }
     }
 
-    protected InformationResourceFileVersion generateInformationResourceFileVersionFromOriginal(InformationResourceFileVersion originalVersion, File f,
+    protected FileStoreFile generateInformationResourceFileVersionFromOriginal(FileStoreFile originalVersion, File f,
             VersionType type) {
         WorkflowContext ctx = getWorkflowContext();
-        InformationResourceFileVersion version = new InformationResourceFileVersion(type, f.getName(), originalVersion.getVersion(),
-                ctx.getInformationResourceId(), originalVersion.getInformationResourceFileId());
+        FileStoreFile version = new FileStoreFile(FilestoreObjectType.RESOURCE, type, f.getName(), originalVersion.getVersion(),
+                ctx.getInformationResourceId(), originalVersion.getInformationResourceFileId(), null);
 
         if (ctx.isOkToStoreInFilestore()) {
             try {
@@ -94,7 +94,7 @@ public abstract class AbstractTask implements Task {
         return new File(outputFile.getParent());
     }
 
-    void addDerivativeFile(InformationResourceFileVersion originalVersion, File file, String extension, String text, VersionType type) throws Exception {
+    void addDerivativeFile(FileStoreFile originalVersion, File file, String extension, String text, VersionType type) throws Exception {
         if (StringUtils.isNotBlank(text)) {
             File f = new File(getWorkflowContext().getWorkingDirectory(), file.getName() + "." + extension);
             FileUtils.writeStringToFile(f, text);
@@ -102,10 +102,10 @@ public abstract class AbstractTask implements Task {
         }
     }
 
-    void addDerivativeFile(InformationResourceFileVersion orginalVersion, File f, VersionType type) {
+    void addDerivativeFile(FileStoreFile orginalVersion, File f, VersionType type) {
         if (f.length() > 0) {
             getLogger().info("Writing file: " + f);
-            InformationResourceFileVersion version = generateInformationResourceFileVersionFromOriginal(orginalVersion, f, type);
+            FileStoreFile version = generateInformationResourceFileVersionFromOriginal(orginalVersion, f, type);
             getWorkflowContext().addVersion(version);
         } else {
             logger.warn("writing empty file ... skipping " + f.getName());

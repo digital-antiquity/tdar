@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasStatus;
@@ -50,16 +51,15 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.TdarEvent;
-import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.service.event.EventBusResourceHolder;
 import org.tdar.core.service.event.EventBusUtils;
 import org.tdar.core.service.event.LoggingObjectContainer;
 import org.tdar.core.service.event.TxMessageBus;
+import org.tdar.exception.FilestoreLoggingException;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.VersionType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
@@ -122,7 +122,7 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
 
         try {
             File file = writeToTempFile(id, record);
-            LoggingObjectContainer container = new LoggingObjectContainer(file, id, event.getType(), FilestoreObjectType.fromClass(record.getClass()),
+            LoggingObjectContainer container = new LoggingObjectContainer(file, id, event.getType(), fromClass(record.getClass()),
                     record.getId());
             if (!isUseTransactionalEvents() || !CONFIG.useTransactionalEvents()) {
                 post(container);
@@ -181,7 +181,7 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
             throw new FilestoreLoggingException("serializationService.could_not_save");
         }
 
-        writeToFilestore(FilestoreObjectType.fromClass(resource.getClass()), resource.getId(), xml);
+        writeToFilestore(fromClass(resource.getClass()), resource.getId(), xml);
         logger.trace("done saving");
     }
 
@@ -535,4 +535,18 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
         logger.trace("event write to filestore: {}", o);
         writeToFilestore(o.getFilestoreObjectType(), o.getPersistableId(), new FileInputStream(o.getDoc()));
     }
+    
+    public static FilestoreObjectType fromClass(Class<?> cls) {
+        if (Resource.class.isAssignableFrom(cls)) {
+            return FilestoreObjectType.RESOURCE;
+        }
+        if (ResourceCollection.class.isAssignableFrom(cls)) {
+            return FilestoreObjectType.COLLECTION;
+        }
+        if (Creator.class.isAssignableFrom(cls)) {
+            return FilestoreObjectType.CREATOR;
+        }
+        return null;
+    }
+
 }

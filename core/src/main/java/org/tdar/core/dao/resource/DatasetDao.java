@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -62,17 +63,17 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.excel.ExcelWorkbookWriter;
-import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
+import org.tdar.datatable.ImportTable;
+import org.tdar.db.conversion.converters.ExcelWorkbookWriter;
+import org.tdar.db.conversion.converters.SheetProxy;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.VersionType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.XmlEscapeHelper;
@@ -428,6 +429,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         // first unmap all columns from the removed tables
         unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+        for (DataTableColumn column : columnsToRemove) {
+            column.getDataTable().getDataTableColumns().remove(column);
+        }
 
         delete(columnsToRemove);
         if (CollectionUtils.isNotEmpty(tablesToRemove)) {
@@ -475,7 +479,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column, false));
+                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
             }
         }
 
@@ -646,7 +650,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return columnNames;
     }
 
-    public boolean checkExists(DataTable dataTable) {
+    public boolean checkExists(ImportTable dataTable) {
         return tdarDataImportDatabase.checkTableExists(dataTable);
     }
 
@@ -655,4 +659,5 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameter("id", id);
         return query.list();
     }
+
 }
