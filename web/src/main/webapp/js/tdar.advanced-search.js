@@ -1,5 +1,5 @@
 TDAR.advancedSearch = {}
-TDAR.advancedSearch = (function () {
+TDAR.advancedSearch = (function (jQuery) {
     "use strict";
 
     
@@ -347,5 +347,5 @@ TDAR.advancedSearch = (function () {
         initAdvancedSearch: _initAdvancedSearch,
         "initializeResultsPage" : _initializeResultsPage
     };
-})();
+})(jQuery);
 

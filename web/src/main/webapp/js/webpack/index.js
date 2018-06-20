@@ -44,7 +44,7 @@ require('script-loader!./../../includes/bootstrap-datepicker-eyecon/js/bootstrap
 //require('script-loader!blueimp-load-image/js/load-image.all.min.js');
 //require('script-loader!blueimp-canvas-to-blob/js/canvas-to-blob.js');
 
-//import './../../includes/jquery-ui-1.11.4.custom/jquery-ui.js';
+import './../../includes/jquery-ui-1.11.4.custom/jquery-ui.min.js';
 require('script-loader!blueimp-file-upload/js/vendor/jquery.ui.widget.js');
 require('script-loader!blueimp-file-upload/js/jquery.iframe-transport.js');
 require('script-loader!blueimp-file-upload/js/jquery.fileupload.js');

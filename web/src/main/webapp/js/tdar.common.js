@@ -2,7 +2,9 @@
  * tdar.common.js
  */
 
-tmpl = require('script-loader!blueimp-tmpl/js/tmpl.js')
+import tmpl from 'blueimp-tmpl';//require('script-loader!blueimp-tmpl/js/tmpl.js')
+
+
 /*
  * $Id$
  * 
@@ -62,11 +64,10 @@ jQuery.extend({
  * trying to move these functions out of global scope and apply strict parsing.
  */
 
-TDAR.common = function (TDAR, fileupload) {
+TDAR.common = function (TDAR, fileupload, jQuery, tmpl) {
     "use strict";
 
     var self = {};
-
 
     /**
      * Specify the target element for any adhoc child windows spawned from the current page.
@@ -1008,5 +1009,5 @@ TDAR.common = function (TDAR, fileupload) {
     });
 
     return self;
-}(TDAR, TDAR.fileupload, jQuery);
+}(TDAR, TDAR.fileupload,jQuery, tmpl);
 

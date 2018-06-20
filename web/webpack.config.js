@@ -21,13 +21,14 @@ module.exports = {
             use: "imports-loader?$=jquery,this=>window,define=>false"
         }*/
     ]
-  },
+  }
+  ,
   optimization: {
     runtimeChunk: false,
 
     splitChunks: {
       cacheGroups: {
-        default: false,
+        //default: false,
         commons: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendor_app',
@@ -51,6 +52,7 @@ module.exports = {
          // axios:"axios",
          Vue : 'vue',
          // Vue : 'Vue'
+         LatLon: path.resolve(__dirname,'src/main/webapp/js/latLongUtil-1.0')
      })
   ],
  
