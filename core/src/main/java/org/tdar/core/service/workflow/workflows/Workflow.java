@@ -1,10 +1,5 @@
 package org.tdar.core.service.workflow.workflows;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.WorkflowContext;
@@ -21,23 +16,23 @@ public interface Workflow {
 
     boolean run(WorkflowContext workflowContext) throws Exception;
 
-    Set<String> getValidExtensions();
+//    Set<String> getValidExtensions();
 
     void addTask(Class<? extends Task> task, WorkflowPhase phase);
 
-    boolean canProcess(String ext);
+//    boolean canProcess(String ext);
 
     FileType getInformationResourceFileType();
 
     boolean isEnabled();
 
-    void registerFileExtension(String ext, ResourceType... types);
+//    void registerFileExtension(String ext, ResourceType... types);
 
-    Set<String> getValidExtensionsForResourceType(ResourceType type);
+//    Set<String> getValidExtensionsForResourceType(ResourceType type);
 
-    Map<String, List<String>> getRequiredExtensions();
+//    Map<String, List<String>> getRequiredExtensions();
 
-    Map<String, List<String>> getSuggestedExtensions();
+    //    Map<String, List<String>> getSuggestedExtensions();
 
     void initializeWorkflowContext(WorkflowContext ctx, FileStoreFileProxy[] versions);
 

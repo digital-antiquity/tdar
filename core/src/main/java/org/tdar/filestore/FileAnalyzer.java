@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.service.ResourceTypeExtensionWorkflowMap;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -37,22 +38,24 @@ import org.tdar.utils.MessageHelper;
 @Component
 public class FileAnalyzer {
 
-    private List<Workflow> workflows;
-    private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<>();
-    private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
+    // private List<Workflow> workflows;
+//    private Map<String, Workflow> fileExtensionToWorkflowMap = new HashMap<>();
+    // private Map<FileType, List<String>> primaryExtensionList = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
     public TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+    private ResourceTypeExtensionWorkflowMap resourceTypeExtensionWorkflowMap = new ResourceTypeExtensionWorkflowMap();
+
     @Autowired
     private MessageService messageService;
 
-    public FileType analyzeFile(HasExtension version) {
-        for (Workflow w : workflows) {
-            if (w.canProcess(version.getExtension())) {
-                return w.getInformationResourceFileType();
-            }
-        }
-        return FileType.OTHER;
-    }
+    // public FileType analyzeFile(HasExtension version) {
+    // for (Workflow w : workflows) {
+    // if (w.canProcess(version.getExtension())) {
+    // return w.getInformationResourceFileType();
+    // }
+    // }
+    // return FileType.OTHER;
+    // }
 
     /**
      * Returns a modifiable Set<String> of valid file extensions for the given ResourceType.
@@ -61,53 +64,34 @@ public class FileAnalyzer {
      * @return
      */
     public Set<String> getExtensionsForType(ResourceType type) {
-        Set<String> toReturn = new HashSet<>();
-        for (Workflow w : workflows) {
-            Set<String> exts = w.getValidExtensionsForResourceType(type);
-            if (CollectionUtils.isNotEmpty(exts)) {
-                toReturn.addAll(exts);
-                for (List<String> values : w.getRequiredExtensions().values()) {
-                    toReturn.addAll(values);
-                }
-                for (List<String> values : w.getSuggestedExtensions().values()) {
-                    toReturn.addAll(values);
-                }
-            }
-        }
-        if (type == ResourceType.GEOSPATIAL) {
-            toReturn.add("jpg");
-            toReturn.add("tif");
-        }
-        return toReturn;
+        return resourceTypeExtensionWorkflowMap.getExtensionsForResourceType(type);
     }
 
     public Set<String> getExtensionsForTypes(ResourceType... resourceTypes) {
         Set<String> extensions = new HashSet<>();
-        for (Workflow workflow : workflows) {
-            for (ResourceType resourceType : resourceTypes) {
-                extensions.addAll(workflow.getValidExtensionsForResourceType(resourceType));
-            }
+        for (ResourceType resourceType : resourceTypes) {
+            extensions.addAll(getExtensionsForType(resourceType));
         }
         return extensions;
     }
 
     public ResourceType suggestTypeForFileExtension(String ext, ResourceType... types) {
         for (ResourceType type : types) {
-            for (Workflow w : workflows) {
-                if (w.getValidExtensionsForResourceType(type).contains(ext.toLowerCase())) {
-                    return type;
-                }
+            // for (Workflow w : workflows) {
+            if (getExtensionsForType(type).contains(ext.toLowerCase())) {
+                return type;
             }
+            // }
         }
         return null;
     }
 
-    public Workflow getWorkflow(HasExtension... irFileVersion) {
+    public Workflow getWorkflow(ResourceType rt, HasExtension... irFileVersion) {
         Workflow wf = null;
         for (HasExtension ex : irFileVersion) {
             String lowerCase = ex.getExtension().toLowerCase();
-            Workflow w = fileExtensionToWorkflowMap.get(lowerCase);
-            if (w!= null) { // not all extensions map... that's ok
+            Workflow w = resourceTypeExtensionWorkflowMap.getWorkflow(rt, lowerCase);
+            if (w != null) { // not all extensions map... that's ok
                 w.setExtension(lowerCase);
             }
             if (wf == null) {
@@ -119,11 +103,11 @@ public class FileAnalyzer {
         return wf;
     }
 
-    private boolean processFile(InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
+    private boolean processFile(ResourceType rt, InformationResourceFileVersion... informationResourceFileVersions) throws FileNotFoundException, IOException {
         if (informationResourceFileVersions == null) {
             throw new TdarRecoverableRuntimeException("filestore.file_version_null");
         }
-        Workflow workflow = getWorkflow(informationResourceFileVersions);
+        Workflow workflow = getWorkflow(rt, informationResourceFileVersions);
         if (workflow == null) {
             String message = MessageHelper.getMessage("fileAnalyzer.no_workflow_found", Arrays.asList(Arrays.toString(informationResourceFileVersions)));
             throw new TdarRecoverableRuntimeException(message);
@@ -150,34 +134,26 @@ public class FileAnalyzer {
         }
 
     }
-
-    @Autowired
-    public void setWorkflows(List<Workflow> workflows) {
-        if (CollectionUtils.isEmpty(workflows)) {
-            return;
-        }
-        for (Workflow workflow : workflows) {
-            for (String validExtension : workflow.getValidExtensions()) {
-                String normalizedExtension = validExtension.toLowerCase();
-                if (!normalizedExtension.equals(validExtension)) {
-                    logger.warn("extension had uppercase characters, normalizing from {} to {}", validExtension, normalizedExtension);
-                }
-                Workflow previousWorkflow = fileExtensionToWorkflowMap.put(normalizedExtension, workflow);
-                if (previousWorkflow != null) {
-                    logger.warn("associated {} with {}, replacing old workflow {}", new Object[] { workflow, normalizedExtension, previousWorkflow });
-                }
-            }
-        }
-        this.workflows = workflows;
-    }
-
-    public boolean isPrimaryFile(FileProxy proxy, FileType type) {
-        List<String> extensions = primaryExtensionList.get(type);
-        if (CollectionUtils.isNotEmpty(extensions) && extensions.contains(proxy.getExtension())) {
-            return true;
-        }
-        return false;
-    }
+    //
+    // @Autowired
+    // public void setWorkflows(List<Workflow> workflows) {
+    // if (CollectionUtils.isEmpty(workflows)) {
+    // return;
+    // }
+    // for (Workflow workflow : workflows) {
+    // for (String validExtension : workflow.getValidExtensions()) {
+    // String normalizedExtension = validExtension.toLowerCase();
+    // if (!normalizedExtension.equals(validExtension)) {
+    // logger.warn("extension had uppercase characters, normalizing from {} to {}", validExtension, normalizedExtension);
+    // }
+    // Workflow previousWorkflow = fileExtensionToWorkflowMap.put(normalizedExtension, workflow);
+    // if (previousWorkflow != null) {
+    // logger.warn("associated {} with {}, replacing old workflow {}", new Object[] { workflow, normalizedExtension, previousWorkflow });
+    // }
+    // }
+    // }
+    // this.workflows = workflows;
+    // }
 
     public ResourceType suggestTypeForFileName(String fileName, ResourceType[] resourceTypesSupportingBulkUpload) {
         String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
@@ -188,20 +164,20 @@ public class FileAnalyzer {
      * Process the files based on whether the @link ResourceType is a composite (like a @link Dataset where all of the files are necessary) or not where each
      * file is processed separately
      */
-    public void processFiles(List<InformationResourceFileVersion> filesToProcess, boolean compositeFilesEnabled) throws FileNotFoundException, IOException {
+    public void processFiles(ResourceType rt, List<InformationResourceFileVersion> filesToProcess, boolean compositeFilesEnabled) throws FileNotFoundException, IOException {
         if (CollectionUtils.isEmpty(filesToProcess)) {
             return;
         }
 
         if (compositeFilesEnabled) {
-            processFile(filesToProcess.toArray(new InformationResourceFileVersion[0]));
+            processFile(rt, filesToProcess.toArray(new InformationResourceFileVersion[0]));
         } else {
             for (InformationResourceFileVersion version : filesToProcess) {
                 if ((version.getTransientFile() == null) || (!version.getTransientFile().exists())) {
                     // If we are re-processing, the transient file might not exist.
                     version.setTransientFile(CONFIG.getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
                 }
-                processFile(version);
+                processFile(rt,version);
             }
         }
     }

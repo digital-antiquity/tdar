@@ -91,7 +91,7 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
 
         wrapper.processMetadataForFileProxies();
 
-        analyzer.processFiles(wrapper.getFilesToProcess(), resource.getResourceType().isCompositeFilesEnabled());
+        analyzer.processFiles(resource.getResourceType(), wrapper.getFilesToProcess(), resource.getResourceType().isCompositeFilesEnabled());
 
         /*
          * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
@@ -144,7 +144,7 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
                 }
             }
         }
-        analyzer.processFiles(latestVersions, ir.getResourceType().isCompositeFilesEnabled());
+        analyzer.processFiles(ir.getResourceType(), latestVersions, ir.getResourceType().isCompositeFilesEnabled());
         // this is a known case where we need to purge the session
         // getDao().synchronize();
 

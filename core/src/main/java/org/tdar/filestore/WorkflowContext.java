@@ -61,6 +61,7 @@ public final class WorkflowContext implements Serializable {
     private transient List<TDataTable> dataTables = new ArrayList<>();
     private transient List<TDataTableRelationship> relationships = new ArrayList<>();
     private boolean okToStoreInFilestore = true;
+    private boolean codingSheet;
     // I would be autowired, but going across the message service and serializing/deserializing, better to just "inject"
     private transient TargetDatabase targetDatabase;
 
@@ -351,6 +352,14 @@ public final class WorkflowContext implements Serializable {
 
     public void setPrimaryExtension(String primaryExtension) {
         this.primaryExtension = primaryExtension;
+    }
+
+    public boolean isCodingSheet() {
+        return codingSheet;
+    }
+
+    public void setCodingSheet(boolean codingSheet) {
+        this.codingSheet = codingSheet;
     }
 
 }

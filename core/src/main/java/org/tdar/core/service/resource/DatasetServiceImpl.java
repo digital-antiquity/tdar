@@ -33,6 +33,7 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -139,7 +140,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
                 latestVersions.add(latestUploadedVersion);
             }
 
-            analyzer.processFiles(latestVersions, true);
+            analyzer.processFiles(dataset.getResourceType(), latestVersions, true);
             if (dataset.hasCodingColumns()) {
                 createTranslatedFile(dataset);
             }

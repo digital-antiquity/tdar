@@ -1,6 +1,5 @@
 package org.tdar.filestore;
 
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +7,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.tdar.core.service.workflow.workflows.Workflow;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
@@ -17,6 +18,15 @@ public class RequiredOptionalPairs implements Serializable {
 
     List<String> required = new ArrayList<>();
     List<String> optional = new ArrayList<>();
+
+    private Class<? extends Workflow> workflowClass;
+
+    public RequiredOptionalPairs() {
+    }
+
+    public RequiredOptionalPairs(Class<? extends Workflow> cls) {
+        this.workflowClass = cls;
+    }
 
     public List<String> getRequired() {
         return required;

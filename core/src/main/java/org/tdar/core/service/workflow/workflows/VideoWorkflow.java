@@ -1,9 +1,6 @@
 package org.tdar.core.service.workflow.workflows;
 
-import java.util.Collection;
-
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 
 /**
@@ -34,12 +31,12 @@ public class VideoWorkflow extends BaseWorkflow {
      * <p>
      * We need to be able to extract a thumbnail
      */
-    static final Collection<String> VIDEO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "mpg", "mpeg", "mp4", "mj2", "mjp2" });
+//    static final Collection<String> VIDEO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "mpg", "mpeg", "mp4", "mj2", "mjp2" });
 
     public VideoWorkflow() {
-        for (String extension : VIDEO_EXTENSIONS_SUPPORTED) {
-            registerFileExtension(extension, ResourceType.VIDEO);
-        }
+//        for (String extension : VIDEO_EXTENSIONS_SUPPORTED) {
+//            registerFileExtension(extension, ResourceType.VIDEO);
+//        }
         // what tasks do we want to do with video?
         // at the very least we should extract some of the meta data and put it into the parent resource, I'm guessing...
         // addTask(ExtractVideoInfoTask.class, WorkflowPhase.PRE_PROCESS);

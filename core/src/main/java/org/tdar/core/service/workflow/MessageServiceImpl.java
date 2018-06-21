@@ -84,7 +84,7 @@ public class MessageServiceImpl implements MessageService {
         resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
-            if (workflow_ instanceof GenericColumnarDataWorkflow) {
+            if (ctx.isCodingSheet() == false && ctx.isDataTableSupported()) {
                 ctx.setDatasetConverter(((GenericColumnarDataWorkflow) workflow_).getDatasetConverterForExtension(ctx.getPrimaryExtension()));
             }
             boolean success = workflow_.run(ctx);

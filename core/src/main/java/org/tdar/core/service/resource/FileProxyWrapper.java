@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.service.ResourceTypeExtensionWorkflowMap;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.FileAnalyzer;
@@ -86,7 +87,7 @@ public class FileProxyWrapper {
                     break;
             }
         }
-
+        ResourceTypeExtensionWorkflowMap map = new ResourceTypeExtensionWorkflowMap();
         for (FileProxy proxy : cleanedProxies) {
             if (!proxy.getAction().requiresWorkflowProcessing()) {
                 continue;
@@ -99,7 +100,7 @@ public class FileProxyWrapper {
             switch (version.getFileVersionType()) {
                 case UPLOADED:
                 case UPLOADED_ARCHIVAL:
-                    irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
+                    irFile.setInformationResourceFileType(map.getFileTypeForExtension(version));
                     getFilesToProcess().add(version);
                     break;
                 default:

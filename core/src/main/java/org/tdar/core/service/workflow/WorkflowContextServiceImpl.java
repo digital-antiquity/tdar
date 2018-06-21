@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -44,7 +45,6 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
     private TargetDatabase tdarDataImportDatabase;
     private InformationResourceFileVersionService informationResourceFileVersionService;
     private GenericDao genericDao;
-    private SerializationService serializationService;
     private OntologyService ontologyService;
     private CodingSheetService codingSheetService;
     private DatasetImportService datasetImportService;
@@ -55,12 +55,11 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
     @Autowired
     public WorkflowContextServiceImpl(
             @Qualifier("target") TargetDatabase tdarDataImportDatabase, InformationResourceFileVersionService informationResourceFileVersionService,
-            GenericDao genericDao, SerializationService serializationService, DatasetImportService datasetImportService,
+            GenericDao genericDao, DatasetImportService datasetImportService,
             OntologyService ontologyService, CodingSheetService codingSheetService) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
         this.informationResourceFileVersionService = informationResourceFileVersionService;
         this.genericDao = genericDao;
-        this.serializationService = serializationService;
         this.datasetImportService = datasetImportService;
         this.ontologyService = ontologyService;
         this.codingSheetService = codingSheetService;
@@ -197,14 +196,18 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
         }
         ctx.setTargetDatabase(tdarDataImportDatabase);
         final InformationResource informationResource = versions[0].getInformationResourceFile().getInformationResource();
-        ctx.setHasDimensions(informationResource.getResourceType().hasDemensions());
-        ctx.setDataTableSupported(informationResource.getResourceType().isDataTableSupported());
-//        ctx.setTransientResource(informationResource.getTransientCopyForWorkflow());
+        ResourceType resourceType = informationResource.getResourceType();
+        ctx.setHasDimensions(resourceType.hasDemensions());
+        ctx.setDataTableSupported(resourceType.isDataTableSupported());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
         ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
         w.initializeWorkflowContext(ctx, versions); // handle any special bits here
-        if (informationResource.getResourceType().isDataTableSupported()) {
+        if (resourceType.isCodingSheet()) {
+            ctx.setCodingSheet(true);
+        }
+        
+        if (resourceType.isDataTableSupported()) {
             Dataset dataset = (Dataset) informationResource;
             for (DataTable table : dataset.getDataTables()) {
                 ctx.getDataTablesToCleanup().add(table.getName());
