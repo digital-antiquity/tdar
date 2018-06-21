@@ -15,6 +15,7 @@ import org.tdar.TestConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Geospatial;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
@@ -52,7 +53,7 @@ public class ShapefileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
         InformationResourceFileVersion supportingFile = doc2.getLatestUploadedVersion();
 
-        Workflow workflow = fileAnalyzer.getWorkflow(originalFile, supportingFile);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.GEOSPATIAL, originalFile, supportingFile);
         wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
         wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(supportingFile));
 

@@ -1,6 +1,9 @@
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.Arrays;
+
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.filestore.tasks.ExtractAudioInfoTask;
 
@@ -33,9 +36,8 @@ public class AudioWorkflow extends BaseWorkflow {
 //    static final Collection<String> AUDIO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "wav", "aif", "aiff", "flac", "bwf", "mp3" });
 
     public AudioWorkflow() {
-//        for (String extension : AUDIO_EXTENSIONS_SUPPORTED) {
-//            registerFileExtension(extension, ResourceType.AUDIO);
-//        }
+        addRequired(AudioWorkflow.class, Arrays.asList("wav", "aif", "aiff", "flac", "bwf", "mp3"));
+
         // what tasks do we want to do with audio?
         // at the very least we should extract some of the meta data and put it into the parent resource, I'm guessing...
         addTask(ExtractAudioInfoTask.class, WorkflowPhase.PRE_PROCESS);

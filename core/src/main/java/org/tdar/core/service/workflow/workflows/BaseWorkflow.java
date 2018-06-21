@@ -3,8 +3,10 @@ package org.tdar.core.service.workflow.workflows;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.tdar.configuration.TdarConfiguration;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.LoggingTask;
 import org.tdar.filestore.tasks.Task;
@@ -24,6 +27,7 @@ public abstract class BaseWorkflow implements Workflow {
     // were we expecting that these Workflows would be serializable?
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private String extension;
+    private Set<RequiredOptionalPairs> requiredOptionalPairs = new HashSet<>();
     
     public String getExtension() {
         return extension;
@@ -42,6 +46,15 @@ public abstract class BaseWorkflow implements Workflow {
         return true;
     }
 
+    
+    @Override
+    public boolean canProcess(String extension) {
+        if (getAnyRequiredExtensions().contains(extension)) {
+            return true;
+        }
+        return false;
+    }
+    
     @Override
     public boolean run(WorkflowContext workflowContext) throws Exception {
         boolean successful = true;
@@ -107,7 +120,40 @@ public abstract class BaseWorkflow implements Workflow {
         return;
     }
     
+    protected void addRequired(Class<? extends Workflow> cls, List<String> asList) {
+        for (String ext : asList) {
+            RequiredOptionalPairs rop = new RequiredOptionalPairs(cls);
+            rop.getRequired().add(ext);
+            getRequiredOptionalPairs().add(rop);
+        }
+    }
+
+    
+    
+    
     public Logger getLogger() {
         return logger;
     }
+
+    public Set<RequiredOptionalPairs> getRequiredOptionalPairs() {
+        return requiredOptionalPairs;
+    }
+
+    public List<String> getAnyRequiredExtensions() {
+        List<String> extensions = new ArrayList<>();
+        for (RequiredOptionalPairs pair : requiredOptionalPairs) {
+            extensions.addAll(pair.getRequired());
+        }
+        return extensions;
+    }
+ 
+    public List<String> getAllValidExtensions() {
+        List<String> extensions = new ArrayList<>();
+        for (RequiredOptionalPairs pair : requiredOptionalPairs) {
+            extensions.addAll(pair.getRequired());
+            extensions.addAll(pair.getOptional());
+        }
+        return extensions;
+    }
+ 
 }

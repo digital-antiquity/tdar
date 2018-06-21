@@ -75,6 +75,7 @@ import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
@@ -199,7 +200,13 @@ public class ImportServiceImpl implements ImportService {
      */
     private <R extends Resource> void processFiles(TdarUser authorizedUser, Collection<FileProxy> proxies, R incomingResource)
             throws APIException, IOException {
-        Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
+        
+        // NOTE: I currently only work with primary types (simple files)
+        Set<RequiredOptionalPairs> pairs = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
+        Set<String> extensionsForType = new HashSet<>();
+        for (RequiredOptionalPairs pair : pairs) {
+            extensionsForType.addAll(pair.getRequired());
+        }
         if (CollectionUtils.isNotEmpty(proxies)) {
             for (FileProxy proxy : proxies) {
                 String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();

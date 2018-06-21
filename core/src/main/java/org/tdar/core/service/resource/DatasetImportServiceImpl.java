@@ -267,6 +267,7 @@ public class DatasetImportServiceImpl implements DatasetImportService {
             existingColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
             existingColumn.setMappedOntology(null);
             existingColumn.setDefaultCodingSheet(null);
+            existingColumn.setColumnDataType(incomingColumn.getColumnDataType());
         }
         existingNameToColumnMap.remove(normalizedColumnName);
     }

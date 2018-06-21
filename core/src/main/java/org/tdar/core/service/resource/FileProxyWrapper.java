@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -24,7 +25,6 @@ import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.service.ResourceTypeExtensionWorkflowMap;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.FileAnalyzer;
@@ -87,7 +87,6 @@ public class FileProxyWrapper {
                     break;
             }
         }
-        ResourceTypeExtensionWorkflowMap map = new ResourceTypeExtensionWorkflowMap();
         for (FileProxy proxy : cleanedProxies) {
             if (!proxy.getAction().requiresWorkflowProcessing()) {
                 continue;
@@ -100,7 +99,7 @@ public class FileProxyWrapper {
             switch (version.getFileVersionType()) {
                 case UPLOADED:
                 case UPLOADED_ARCHIVAL:
-                    irFile.setInformationResourceFileType(map.getFileTypeForExtension(version));
+                    irFile.setInformationResourceFileType(analyzer.getFileTypeForExtension(version, informationResource.getResourceType()));
                     getFilesToProcess().add(version);
                     break;
                 default:
@@ -127,12 +126,23 @@ public class FileProxyWrapper {
      */
     public void addInformationResourceFile(FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
+        
         InformationResourceFile irFile = proxy.getInformationResourceFile();
-        incrementVersionNumber(irFile);
-        // genericDao.saveOrUpdate(resource);
-        if (informationResource.isTransient()) {
-            datasetDao.saveOrUpdate(informationResource);
+        if (proxy.getAction() == FileAction.ADD && !informationResource.getResourceType().allowsMultipleFiles()) {
+            if (CollectionUtils.isNotEmpty(informationResource.getInformationResourceFiles()) && informationResource.getInformationResourceFiles().size() > 1) {
+                throw new TdarRecoverableRuntimeException("informationResourceFile.too.many.files");
+            }
+            InformationResourceFile firstInformationResourceFile = informationResource.getFirstInformationResourceFile();
+            if (firstInformationResourceFile != null) {
+                firstInformationResourceFile.setDeleted(true);
+            }
         }
+        incrementVersionNumber(irFile);
+        
+        // genericDao.saveOrUpdate(resource);
+
+        
+        
         irFile.setInformationResource(informationResource);
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(proxy));
         setInformationResourceFileMetadata(proxy);

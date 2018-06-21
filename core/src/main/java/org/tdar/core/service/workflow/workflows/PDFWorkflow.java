@@ -1,6 +1,9 @@
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.Arrays;
+
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 import org.tdar.filestore.tasks.PDFDerivativeTask;
@@ -20,7 +23,7 @@ public class PDFWorkflow extends BaseWorkflow {
     }
 
     public PDFWorkflow() {
-//        registerFileExtension("pdf", ResourceType.DOCUMENT);
+        addRequired(GenericDocumentWorkflow.class, Arrays.asList("pdf"));
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(PDFDerivativeTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }
