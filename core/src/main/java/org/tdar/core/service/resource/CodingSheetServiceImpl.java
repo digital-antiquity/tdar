@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -146,15 +147,40 @@ public class CodingSheetServiceImpl extends ServiceInterface.TypedDaoBase<Coding
         }
 
         Map<String, CodingRule> codeToRuleMap = codingSheet.getCodeToRuleMap();
+        deleteUnusedCodingRules(codingSheet, incomingCodingRules);
+        addOrCopyNewOrExistingRules(codingSheet, incomingCodingRules, codeToRuleMap);
+        getDao().saveOrUpdate(codingSheet);
+    }
+
+    private void addOrCopyNewOrExistingRules(CodingSheet codingSheet, List<TCodingRule> incomingCodingRules, Map<String, CodingRule> codeToRuleMap) {
         for (TCodingRule rule : incomingCodingRules) {
             CodingRule existingRule = codeToRuleMap.get(rule.getCode());
-            if (existingRule != null) {
-                rule.setOntologyNode(existingRule.getOntologyNode());
+            if (existingRule == null) {
+                existingRule = new CodingRule();
+                existingRule.setCode(rule.getCode());
+                existingRule.setCodingSheet(codingSheet);
+                codingSheet.getCodingRules().add(existingRule);
+            }
+            existingRule.setDescription(rule.getDescription());
+            existingRule.setTerm(rule.getTerm());
+        }
+    }
+
+    private void deleteUnusedCodingRules(CodingSheet codingSheet, List<TCodingRule> incomingCodingRules) {
+        Iterator<CodingRule> iterator = codingSheet.getCodingRules().iterator();
+        while (iterator.hasNext()) {
+            CodingRule rule = iterator.next();
+            boolean seen = false;
+            for (TCodingRule trule : incomingCodingRules) {
+                if (StringUtils.equals(trule.getCode(), rule.getCode())) {
+                    seen = true;
+                    break;
+                }
+            }
+            if (seen == false) {
+                iterator.remove();
             }
         }
-        getDao().delete(codingSheet.getCodingRules());
-        codingSheet.getCodingRules().addAll(incomingCodingRules);
-        getDao().saveOrUpdate(codingSheet);
     }
 
     /*

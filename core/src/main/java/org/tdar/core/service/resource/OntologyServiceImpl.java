@@ -110,10 +110,10 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
                 getLogger().debug("has no mappings... deleting ontology and replacing");
             }
             getDao().removeReferencesToOntologyNodes(existingOntologyNodes);
-            getDao().delete(existingOntologyNodes);
+//            getDao().delete(existingOntologyNodes);
             getDao().saveOrUpdate(incomingOntologyNodes);
             logger.debug("existing ontology nodes: {}", ontology.getOntologyNodes());
-            ontology.getOntologyNodes().addAll(incomingOntologyNodes);
+//            ontology.getOntologyNodes().addAll(incomingOntologyNodes);
             owlOntologyManager.removeOntology(parser.getOwlOntology());
         }
     }
@@ -131,45 +131,28 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
 
         HashMap<String, OntologyNode> existingSet = new HashMap<>();
-        HashMap<String, OntologyNode> synonymsSet = new HashMap<>();
-        for (OntologyNode node : existingOntologyNodes) {
-            existingSet.put(node.getIri(), node);
-            for (String synonym : node.getSynonyms()) {
-                synonymsSet.put(synonym, node);
-            }
-            synonymsSet.put(node.getDisplayName(), node);
-        }
+        HashMap<String, OntologyNode> synonymsSet = buildSynonyms(existingOntologyNodes, existingSet);
 
+        /**
+         * NEED TO REMOVE UNMAPPED EXISTING, NEED TO ADD NEW ONES
+         */
         for (int index = 0; index < incomingOntologyNodes.size(); index++) {
             // check to see if incoming has an equivalent in the existing nodes
             // if so, steal the ID
             TOntologyNode incoming = incomingOntologyNodes.get(index);
-            /*
-             * Equivalency logic is as follows:
-             * test equivalency of incoming and existing. If there is a match (the first match) then take it, and stop evaluating.
-             * A potential problem here is if synonyms have matches to multiple nodes. Look at "Other Tool/Unknown Tool" in
-             * ontology test cases
-             */
-            OntologyNode existing = existingSet.get(incoming.getIri());
-            if (existing == null) {
-                // ONLY MAP synonym to node if node remains umapped; e.g. if Dentary is a Synonym of Mandible, and Dentary becomes it's own Node, don't use the
-                // id for Mandible
-                OntologyNode synonym = synonymsSet.get(incoming.getDisplayName());
-                if (synonym != null && existingSet.get(synonym.getIri()) == null) {
-                    existing = synonym;
-                }
-            }
+
+            OntologyNode existing = getExisting(existingSet, synonymsSet, incoming);
 
             if (existing == null) {
                 continue;
             }
             Long original = existing.getId();
-            Long incomingId = incoming.getId();
-            incoming = getDao().merge(incoming, existing);
+//            Long incomingId = incoming.getId();
+//            incoming = getDao().merge(incoming, existing);
 
-            getLogger().trace("{} {} -> {} <--> e: {} {} -> {} ", incomingId, incoming.getDisplayName(), incomingId, original, existing.getDisplayName(),
-                    original);
-            incomingOntologyNodes.set(index, incoming);
+//            getLogger().trace("{} {} -> {} <--> e: {} {} -> {} ", incomingId, incoming.getDisplayName(), incomingId, original, existing.getDisplayName(),
+//                    original);
+//            incomingOntologyNodes.set(index, incoming);
             existingOntologyNodes.remove(existing);
             existingSet.remove(existing.getIri());
             synonymsSet.remove(existing.getDisplayName());
@@ -181,6 +164,38 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
         existingOntologyNodes.removeAll(Collections.singleton(null));
         getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
+    }
+
+    private OntologyNode getExisting(HashMap<String, OntologyNode> existingSet, HashMap<String, OntologyNode> synonymsSet, TOntologyNode incoming) {
+        /*
+         * Equivalency logic is as follows:
+         * test equivalency of incoming and existing. If there is a match (the first match) then take it, and stop evaluating.
+         * A potential problem here is if synonyms have matches to multiple nodes. Look at "Other Tool/Unknown Tool" in
+         * ontology test cases
+         */
+
+        OntologyNode existing = existingSet.get(incoming.getIri());
+        if (existing == null) {
+            // ONLY MAP synonym to node if node remains umapped; e.g. if Dentary is a Synonym of Mandible, and Dentary becomes it's own Node, don't use the
+            // id for Mandible
+            OntologyNode synonym = synonymsSet.get(incoming.getDisplayName());
+            if (synonym != null && existingSet.get(synonym.getIri()) == null) {
+                existing = synonym;
+            }
+        }
+        return existing;
+    }
+
+    private HashMap<String, OntologyNode> buildSynonyms(List<OntologyNode> existingOntologyNodes, HashMap<String, OntologyNode> existingSet) {
+        HashMap<String, OntologyNode> synonymsSet = new HashMap<>();
+        for (OntologyNode node : existingOntologyNodes) {
+            existingSet.put(node.getIri(), node);
+            for (String synonym : node.getSynonyms()) {
+                synonymsSet.put(synonym, node);
+            }
+            synonymsSet.put(node.getDisplayName(), node);
+        }
+        return synonymsSet;
     }
 
     /*
