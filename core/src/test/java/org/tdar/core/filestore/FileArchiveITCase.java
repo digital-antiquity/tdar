@@ -72,7 +72,7 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         SensoryData doc = generateAndStoreVersion(SensoryData.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
 
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.FILE_ARCHIVE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.SENSORY_DATA, originalVersion);
         assertEquals(FileArchiveWorkflow.class, workflow.getClass());

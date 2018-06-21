@@ -2,9 +2,7 @@ package org.tdar.workflows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.tdar.db.conversion.converters.AccessDatabaseConverter;
@@ -20,7 +18,6 @@ import org.tdar.parser.CodingSheetParser;
 import org.tdar.parser.CsvCodingSheetParser;
 import org.tdar.parser.ExcelCodingSheetParser;
 import org.tdar.parser.TabCodingSheetParser;
-import org.w3.xlink.ResourceType;
 
 /**
  * $Id$
@@ -30,8 +27,6 @@ import org.w3.xlink.ResourceType;
  */
 @Component
 public class GenericColumnarDataWorkflow extends BaseWorkflow {
-    private Map<String, Class<? extends DatasetConverter>> datasetConverterMap = new HashMap<String, Class<? extends DatasetConverter>>();
-    private Map<String, Class<? extends CodingSheetParser>> codingSheetParserMap = new HashMap<String, Class<? extends CodingSheetParser>>();
 
     @Override
     public FileType getInformationResourceFileType() {
@@ -39,7 +34,7 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
     }
 
     public GenericColumnarDataWorkflow() {
-        addRequired(GenericColumnarDataWorkflow.class, Arrays.asList("csv", "tab", "xls","xlsx", "mdb", "accdb", "gdb"));
+        addRequired(GenericColumnarDataWorkflow.class, Arrays.asList("csv", "tab", "xls", "xlsx", "mdb", "accdb", "gdb"));
 
         List<RequiredOptionalPairs> shapePairs = new ArrayList<>();
         RequiredOptionalPairs shapefile = new RequiredOptionalPairs(GenericColumnarDataWorkflow.class);
@@ -59,21 +54,10 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         geojpg.getRequired().add("jpg");
         geojpg.getOptional().add("jfw");
         shapePairs.add(geojpg);
-        getRequiredOptionalPairs().addAll(shapePairs);        
-        
+        getRequiredOptionalPairs().addAll(shapePairs);
+
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);
-    }
-
-    public void registerFileExtension(String fileExtension, Class<? extends DatasetConverter> datasetConverter,
-            Class<? extends CodingSheetParser> codingSheetParser,
-            ResourceType... resourceTypes) {
-        if (datasetConverter != null) {
-            datasetConverterMap.put(fileExtension.toLowerCase(), datasetConverter);
-        }
-        if (codingSheetParser != null) {
-            codingSheetParserMap.put(fileExtension.toLowerCase(), codingSheetParser);
-        }
     }
 
     @Override
@@ -82,12 +66,37 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
     }
 
     public Class<? extends CodingSheetParser> getCodingSheetParserForExtension(String ext) {
-        return codingSheetParserMap.get(ext.toLowerCase());
+        switch (ext) {
+            case "xls":
+            case "xlsx":
+                return ExcelCodingSheetParser.class;
+            case "tab":
+                return TabCodingSheetParser.class;
+            case "csv":
+            case "merge":
+                return CsvCodingSheetParser.class;
+        }
+        return null;
     }
 
     public Class<? extends DatasetConverter> getDatasetConverterForExtension(String ext) {
-        getLogger().debug("{} :: {}", ext, datasetConverterMap);
-        return datasetConverterMap.get(ext.toLowerCase());
+        switch (ext.toLowerCase()) {
+            case "xls":
+            case "xlsx":
+                return ExcelConverter.class;
+            case "tab":
+                return TabConverter.class;
+            case "csv":
+            case "merge":
+                return CsvConverter.class;
+            case "mdb":
+            case "accdb":
+            case "gdb":
+                return AccessDatabaseConverter.class;
+            case "shp":
+                return ShapeFileDatabaseConverter.class;
+        }
+        return null;
     }
 
 }

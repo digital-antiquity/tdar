@@ -51,7 +51,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
 
         Document doc = generateAndStoreVersion(Document.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.DOCUMENT, originalVersion);
         assertEquals(PDFWorkflow.class, workflow.getClass());
@@ -71,7 +71,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
 
         Document doc = generateAndStoreVersion(Document.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.DOCUMENT, originalVersion);
         assertEquals(GenericDocumentWorkflow.class, workflow.getClass());

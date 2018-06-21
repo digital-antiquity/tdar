@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.MessageService;
@@ -42,15 +43,6 @@ public class FileAnalyzer {
 
     @Autowired
     private MessageService messageService;
-
-    public FileType analyzeFile(HasExtension version) {
-        for (Workflow w : workflows) {
-            if (w.canProcess(version.getExtension())) {
-                return w.getInformationResourceFileType();
-            }
-        }
-        return FileType.OTHER;
-    }
 
     public List<FileType> getFileTypesForResourceType(ResourceType type) {
         List<FileType> toReturn = new ArrayList<>();
@@ -115,42 +107,6 @@ public class FileAnalyzer {
     }
 
 
-    private Set<String> getExtensionsForType(FileType fileArchive) {
-        return getExtensionsForType(fileArchive, null, null);
-    }
-
-    private Set<String> getExtensionsForType(FileType fileArchive, FileType image, List<String> list) {
-        Set<String> extensions = new HashSet<>();
-        for (Workflow workflow : workflows) {
-            if (workflow.getInformationResourceFileType() == fileArchive || workflow.getInformationResourceFileType() == image) {
-                extensions.addAll(workflow.getAllValidExtensions());
-            }
-        }
-        if (CollectionUtils.isNotEmpty(list)) {
-            extensions.removeAll(list);
-        }
-        return extensions;
-    }
-
-//    public Set<String> getExtensionsForTypes(ResourceType... resourceTypes) {
-//        Set<String> extensions = new HashSet<>();
-//        for (ResourceType resourceType : resourceTypes) {
-//            extensions.addAll(getExtensionsForType(resourceType));
-//        }
-//        return extensions;
-//    }
-
-//    public ResourceType suggestTypeForFileExtension(String ext, ResourceType... types) {
-//        for (ResourceType type : types) {
-//            // for (Workflow w : workflows) {
-//            if (getExtensionsForType(type).contains(ext.toLowerCase())) {
-//                return type;
-//            }
-//            // }
-//        }
-//        return null;
-//    }
-
     public Workflow getWorkflow(ResourceType rt, HasExtension... irFileVersion) {
         Workflow wf = null;
         for (HasExtension ex : irFileVersion) {
@@ -205,25 +161,9 @@ public class FileAnalyzer {
         if (CollectionUtils.isEmpty(workflows)) {
             return;
         }
-        // for (Workflow workflow : workflows) {
-        // for (String validExtension : workflow.getValidExtensions()) {
-        // String normalizedExtension = validExtension.toLowerCase();
-        // if (!normalizedExtension.equals(validExtension)) {
-        // logger.warn("extension had uppercase characters, normalizing from {} to {}", validExtension, normalizedExtension);
-        // }
-        // Workflow previousWorkflow = fileExtensionToWorkflowMap.put(normalizedExtension, workflow);
-        // if (previousWorkflow != null) {
-        // logger.warn("associated {} with {}, replacing old workflow {}", new Object[] { workflow, normalizedExtension, previousWorkflow });
-        // }
-        // }
-        // }
         this.workflows = workflows;
     }
 
-//    public ResourceType suggestTypeForFileName(String fileName, ResourceType[] resourceTypesSupportingBulkUpload) {
-//        String extension = FilenameUtils.getExtension((fileName.toLowerCase()));
-//        return suggestTypeForFileExtension(extension, resourceTypesSupportingBulkUpload);
-//    }
 
     /*
      * Process the files based on whether the @link ResourceType is a composite (like a @link Dataset where all of the files are necessary) or not where each
@@ -248,20 +188,20 @@ public class FileAnalyzer {
         }
     }
 
-    public FileType getFileTypeForExtension(InformationResourceFileVersion version, ResourceType resourceType) {
+    public FileType getFileTypeForExtension(HasExtension version, ResourceType resourceType) {
+        logger.debug("analyzing file extension: {}: {}", version.getExtension(), resourceType);
         List<FileType> types = getFileTypesForResourceType(resourceType);
-        for (FileType type : types) {
-            for (Workflow w : workflows) {
-                if (w.getInformationResourceFileType() == type && w.getAllValidExtensions().contains(version.getExtension().toLowerCase())) {
-                    return type;
-                }
+        for (Workflow w : workflows) {
+            if (types.contains(w.getInformationResourceFileType()) && w.canProcess(version.getExtension())) {
+                return w.getInformationResourceFileType();
             }
         }
-        return null;
+        return FileType.OTHER;
     }
 
     public Workflow getWorkflowForResourceType(HasExtension ex, ResourceType resourceType) {
         List<FileType> types = getFileTypesForResourceType(resourceType);
+        logger.debug("FileTypes: {} for resourceType:{}", types, resourceType);
         for (FileType type : types) {
             for (Workflow w : workflows) {
                 if (w.getInformationResourceFileType() == type && w.getAllValidExtensions().contains(ex.getExtension().toLowerCase())) {

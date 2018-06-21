@@ -43,38 +43,6 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
         tdarDataImportDatabase.setDataSource(dataSource);
     }
 
-    /* this test is based on data that does not exist */
-    // @Test
-    // @Rollback
-    // public void testMappingIssueWithFloats() throws IOException {
-    // Dataset jswVersion = setupAndLoadResource("../coding sheet/mapping_test_jsw/sha-ceramics-with-feature-dates.csv", Dataset.class);
-    // CodingSheet part_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---part.csv", CodingSheet.class);
-    // CodingSheet size_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---size.csv", CodingSheet.class);
-    // CodingSheet tsg_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai---tsg.csv", CodingSheet.class);
-    // CodingSheet tt_ = setupAndLoadResource("../coding sheet/mapping_test_jsw/dai--tt.csv", CodingSheet.class);
-    // DataTable table = jswVersion.getDataTables().iterator().next();
-    // DataTableColumn vpart = new DataTableColumn();
-    // vpart.setName("vpart");
-    // vpart.setDefaultCodingSheet(part_);
-    // vpart.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-    //
-    // DataTableColumn size = new DataTableColumn();
-    // size.setName("size");
-    // size.setDefaultCodingSheet(size_);
-    // size.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-    //
-    // DataTableColumn tsg = new DataTableColumn();
-    // tsg.setName("tsg");
-    // tsg.setDefaultCodingSheet(tsg_);
-    // tsg.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-    //
-    // DataTableColumn tt = new DataTableColumn();
-    // tt.setName("tt");
-    // tt.setDefaultCodingSheet(tt_);
-    // tt.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-    //
-    // mapColumnsToDataset(jswVersion, table, vpart, tsg, tt, size);
-    // }
 
     @Test
     @Rollback(true)

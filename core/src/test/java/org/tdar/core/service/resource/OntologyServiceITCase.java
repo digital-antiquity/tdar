@@ -103,7 +103,6 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(ids.contains(42990L));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testSplitOntologyNodeSynonymIntoNode() throws IOException {
@@ -159,7 +158,6 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(rule);
     }
 
-    @SuppressWarnings({ "deprecation", "unused" })
     @Test
     @Rollback(true)
     public void testJoinOntologyNodeSynonymIntoNode() throws IOException {
@@ -173,7 +171,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         OntologyNode dent = ont.getNodeByIri("Dentary");
         OntologyNode mand = ont.getNodeByIri("Mandible");
         Long mandId = mand.getId();
-        Long dentId = dent.getId();
+//        Long dentId = dent.getId();
         logger.debug("Dentary {}", dent);
         logger.debug("Mandible {}", mand);
         assertNotNull(dent);
@@ -188,6 +186,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("Dentary: {}", dent);
         logger.debug("Mandible: {}", mand);
         assertNull(dent);
+//        assertEquals(dentId, dent.getId());
         assertEquals(mandId, mand.getId());
 
     }

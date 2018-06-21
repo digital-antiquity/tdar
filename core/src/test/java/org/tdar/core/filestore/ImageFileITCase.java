@@ -114,7 +114,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
 
         SensoryData doc = generateAndStoreVersion(SensoryData.class, f.getName(), f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.IMAGE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.IMAGE, originalVersion);
         assertEquals(ImageWorkflow.class, workflow.getClass());
