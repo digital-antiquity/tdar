@@ -33,7 +33,6 @@ public class SpatialObfuscationUtil {
 
         // if the Latitude is > 1 mile, don't obfuscate it
         if (absoluteLatLength < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
-
             // get the center
             Double centerLatitude = latitudeLongitudeBox.getCenterLatitude();
 
@@ -41,8 +40,8 @@ public class SpatialObfuscationUtil {
             // this should be something less than 1 mile
 
             // x y random1 random2 random3 random4 distance
-            double south1 = centerLatitude - _1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
-                    + getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
+            double south1 = (centerLatitude - (_1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES))
+                    + (getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES); // -1*$G2+C2*$G2
 
             // north is then south plus 1 mile
             double north1 = south1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
@@ -61,9 +60,11 @@ public class SpatialObfuscationUtil {
             // get the center longitude
             Double centerLongitude = latitudeLongitudeBox.getCenterLongitude();
 
+            
+            double offset = (getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES); 
+            double oneMile = (_1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
             // west is center (longitude - 1 mile ) + random * 1 mile
-            double west1 = centerLongitude - _1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES
-                    + getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES; // -1*$G2+C2*$G2
+            double west1 = (centerLongitude - oneMile) + (offset); // -1*$G2+C2*$G2
 
             // east is 1 mile plus west
             double east1 = west1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
@@ -82,8 +83,8 @@ public class SpatialObfuscationUtil {
         if (useRandom) {
             return Math.random();
         } else {
-            logger.error("using TESTING RANDOM (NOT RANDOM)");
-            return random.doubleValue();
+            logger.error("using TESTING RANDOM (NOT RANDOM) "+ random.doubleValue());
+            return  random.doubleValue();
         }
     }
 
