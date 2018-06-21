@@ -1483,7 +1483,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </#macro>
 
     <#-- emit a repeatrow table of @registeredUserRow controls -->
-    <#macro listMemberUsers >
+    <#macro listMemberUsers includerights=true>
         <#local _authorizedUsers=authorizedMembers />
         <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
 
@@ -1496,7 +1496,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <#if user??>
                         <div class="controls-row repeat-row" id="userrow_${user_index}_">
                             <div class="span6">
-                                <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false includeRights=true />
+                                <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false includeRights=includerights />
                             </div>
                             <div class="span1">
                                 <@nav.clearDeleteButton id="user${user_index}"  />

@@ -350,6 +350,14 @@
             self.getIntegrationColumns().forEach(function(integrationColumn) {
                 integrationColumn.$getSelectedDataTableColumns()
             });
+
+            self.columns.forEach(function(column){
+               if (column.type != 'integration') {
+                   addedDataTables.forEach(function(table) {
+                       column.dataTableColumnSelections.push({dataTable: table, dataTableCoumn:null});
+                   });
+               } 
+            });
         }
 
         /**
