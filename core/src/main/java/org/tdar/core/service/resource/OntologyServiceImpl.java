@@ -32,14 +32,15 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.OntologySearchFilter;
 import org.tdar.core.dao.resource.OntologyDao;
-import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
-import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.exception.TdarRuntimeException;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.parser.OwlApiHierarchyParser;
+import org.tdar.parser.OwlOntologyConverter;
+import org.tdar.parser.TOntologyNode;
 
 /**
  * Transactional service providing persistence access to OntologyS as well as OWL access to Ontology files.
@@ -94,12 +95,12 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
             OwlApiHierarchyParser parser;
             try {
                 OwlOntologyConverter converter = new OwlOntologyConverter();
-                parser = new OwlApiHierarchyParser(ontology, converter.toOwlOntology(latestUploadedFile));
+                parser = new OwlApiHierarchyParser(converter.toOwlOntology(latestUploadedFile));
             } catch (FileNotFoundException e) {
                 logger.warn("file not found: {}", e);
                 throw new TdarRecoverableRuntimeException("error.file_not_found", e, Arrays.asList(latestUploadedFile.getFilename()));
             }
-            List<OntologyNode> incomingOntologyNodes = parser.generate();
+            List<TOntologyNode> incomingOntologyNodes = parser.generate();
             getLogger().debug("created {} ontology nodes from {}", incomingOntologyNodes.size(), latestUploadedFile.getFilename());
             // start reconciliation process
             if (numberOfMappedValues > 0) {
@@ -125,7 +126,7 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
      * @param existingOntologyNodes
      * @param incomingOntologyNodes
      */
-    private void reconcile(List<OntologyNode> existingOntologyNodes, List<OntologyNode> incomingOntologyNodes) {
+    private void reconcile(List<OntologyNode> existingOntologyNodes, List<TOntologyNode> incomingOntologyNodes) {
         getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
 
@@ -142,7 +143,7 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
         for (int index = 0; index < incomingOntologyNodes.size(); index++) {
             // check to see if incoming has an equivalent in the existing nodes
             // if so, steal the ID
-            OntologyNode incoming = incomingOntologyNodes.get(index);
+            TOntologyNode incoming = incomingOntologyNodes.get(index);
             /*
              * Equivalency logic is as follows:
              * test equivalency of incoming and existing. If there is a match (the first match) then take it, and stop evaluating.
@@ -284,10 +285,12 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
     @Override
     @Transactional(readOnly = true)
     public String toOwlXml(Long id, String fileTextInput) {
-        OwlOntologyConverter converter = new OwlOntologyConverter();
+        EnhancedOwlOntologyConverter converter = new EnhancedOwlOntologyConverter();
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
     }
 
+    
+    
     /*
      * (non-Javadoc)
      * 

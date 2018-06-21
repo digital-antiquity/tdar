@@ -25,4 +25,6 @@ public interface ImportDatabase {
 
     <T extends ImportColumn> void addTableRow(ImportTable<T> dataTable, Map<? extends ImportColumn, String> valueColumnMap) throws Exception;
 
+    void dropTable(String table);
+
 }

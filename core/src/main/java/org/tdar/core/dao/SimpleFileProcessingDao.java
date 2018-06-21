@@ -18,8 +18,8 @@ import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.VersionType;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ImageThumbnailTask;
+import org.tdar.workflows.WorkflowContext;
 
 @Component
 public class SimpleFileProcessingDao {

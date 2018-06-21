@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.filestore.WorkflowContext;
-import org.tdar.utils.ExceptionWrapper;
+import org.tdar.exception.ExceptionWrapper;
+import org.tdar.workflows.WorkflowContext;
 
 public class WorkflowResult implements Serializable {
 

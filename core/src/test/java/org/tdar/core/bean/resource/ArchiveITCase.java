@@ -14,9 +14,9 @@ import org.tdar.TestConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.file.FileStatus;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.FilestoreObjectType;
 
 public class ArchiveITCase extends AbstractIntegrationTestCase {

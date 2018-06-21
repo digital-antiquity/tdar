@@ -2,12 +2,12 @@ package org.tdar.db.conversion;
 
 import java.util.Arrays;
 
-import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.db.ImportDatabase;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.utils.MessageHelper;
+import org.tdar.workflows.GenericColumnarDataWorkflow;
 
 public class DatasetConversionFactory {
 

@@ -25,9 +25,9 @@ import org.tdar.db.model.PostgresDatabase;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.VersionType;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
 import org.tdar.utils.FileStoreFileUtils;
+import org.tdar.workflows.WorkflowContext;
 
 public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
 

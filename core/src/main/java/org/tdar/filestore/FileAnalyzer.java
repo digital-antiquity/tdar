@@ -18,13 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
+import org.tdar.workflows.RequiredOptionalPairs;
+import org.tdar.workflows.Workflow;
 
 /**
  * $Id$

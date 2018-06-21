@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.tdar.core.bean.resource.Audio;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.exception.TdarRecoverableRuntimeException;
-import org.tdar.filestore.WorkflowContext;
+import org.tdar.workflows.WorkflowContext;
 
 /**
  * A test to check that the preconditions work: although other classes are used, it's not an integration test, as no database or

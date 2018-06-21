@@ -32,17 +32,18 @@ import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.CodingSheetDao;
-import org.tdar.core.parser.CodingSheetParser;
-import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
+import org.tdar.exception.ExceptionWrapper;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.VersionType;
-import org.tdar.filestore.WorkflowContext;
-import org.tdar.utils.ExceptionWrapper;
+import org.tdar.parser.CodingSheetParser;
+import org.tdar.parser.CodingSheetParserException;
+import org.tdar.parser.TCodingRule;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.workflows.GenericColumnarDataWorkflow;
+import org.tdar.workflows.WorkflowContext;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.
@@ -120,12 +121,12 @@ public class CodingSheetServiceImpl extends ServiceInterface.TypedDaoBase<Coding
         // codingSheet.getCodingRules().clear();
         FileInputStream stream = null;
         Set<String> duplicates = new HashSet<String>();
-        List<CodingRule> incomingCodingRules = new ArrayList<CodingRule>();
+        List<TCodingRule> incomingCodingRules = new ArrayList<>();
         try {
             stream = new FileInputStream(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
-            incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(codingSheet, stream));
+            incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(stream));
             Set<String> uniqueSet = new HashSet<String>();
-            for (CodingRule rule : incomingCodingRules) {
+            for (TCodingRule rule : incomingCodingRules) {
                 boolean unique = uniqueSet.add(rule.getCode());
                 if (!unique) {
                     duplicates.add(rule.getCode());
@@ -145,7 +146,7 @@ public class CodingSheetServiceImpl extends ServiceInterface.TypedDaoBase<Coding
         }
 
         Map<String, CodingRule> codeToRuleMap = codingSheet.getCodeToRuleMap();
-        for (CodingRule rule : incomingCodingRules) {
+        for (TCodingRule rule : incomingCodingRules) {
             CodingRule existingRule = codeToRuleMap.get(rule.getCode());
             if (existingRule != null) {
                 rule.setOntologyNode(existingRule.getOntologyNode());

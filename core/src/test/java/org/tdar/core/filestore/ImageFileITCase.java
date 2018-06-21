@@ -22,19 +22,19 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.file.FileStatus;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowResult;
-import org.tdar.core.service.workflow.workflows.ImageWorkflow;
-import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.VersionType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.workflows.ImageWorkflow;
+import org.tdar.workflows.Workflow;
 
 /**
  * @author Adam Brin

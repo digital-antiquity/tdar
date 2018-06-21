@@ -22,15 +22,15 @@ import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
-import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.workflows.FileArchiveWorkflow;
+import org.tdar.workflows.Workflow;
 
 /**
  * @author Adam Brin

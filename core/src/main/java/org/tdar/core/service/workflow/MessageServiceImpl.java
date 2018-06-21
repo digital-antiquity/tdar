@@ -17,10 +17,10 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
-import org.tdar.core.service.workflow.workflows.Workflow;
 import org.tdar.exception.TdarRecoverableRuntimeException;
-import org.tdar.filestore.WorkflowContext;
+import org.tdar.workflows.GenericColumnarDataWorkflow;
+import org.tdar.workflows.Workflow;
+import org.tdar.workflows.WorkflowContext;
 
 /**
  * $Id$

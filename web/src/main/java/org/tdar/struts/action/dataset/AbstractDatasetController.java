@@ -23,9 +23,9 @@ import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.workflows.RequiredOptionalPairs;
 
 public abstract class AbstractDatasetController<R extends Dataset> extends AbstractInformationResourceController<R> {
 

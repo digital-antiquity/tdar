@@ -20,7 +20,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.statistics.FileDownloadStatistic;
@@ -31,6 +30,7 @@ import org.tdar.core.service.PdfService;
 import org.tdar.core.service.collection.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;
 

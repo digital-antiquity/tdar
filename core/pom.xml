@@ -191,45 +191,9 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
-            <groupId>net.imagej</groupId>
-            <artifactId>ij</artifactId>
-            <version>1.51k</version>
-            <!-- LICENSE: PUBLIC DOMAIN -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>tools</artifactId>
-                    <groupId>com.sun</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.ij_io</groupId>
-            <artifactId>ij_io</artifactId>
-            <version>1.2.4</version>
-            <!-- LICENSE: APACHE 2.0 / LGPL 2 -->
-        </dependency>
-        <dependency>
-            <groupId>javax.media.jai</groupId>
-            <artifactId>com.springsource.javax.media.jai.core</artifactId>
-            <version>1.1.3</version>
-            <!-- SUN Binary Code License Agreement -->
-        </dependency>
-        <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>1.8.10</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.media.jai</groupId>
-            <artifactId>com.springsource.javax.media.jai.codec</artifactId>
-            <version>1.1.3</version>
-            <!-- SUN Binary Code License Agreement -->
-        </dependency>
-        <dependency>
-            <groupId>javax.media</groupId>
-            <artifactId>jmf</artifactId>
-            <version>2.1.1e</version>
-            <!-- SUN Binary Code License Agreement -->
         </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -333,54 +297,6 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <!-- Junit -->
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            <version>${jena.version}</version>
-            <!-- LICENSE: MIT/BSD VARIENT -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-            <version>${jena.version}</version>
-            <!-- LICENSE: MIT/BSD VARIENT -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpclient-cache</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
 
         <dependency>
             <groupId>com.google.code</groupId>
@@ -591,18 +507,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
-            <artifactId>commons-exec</artifactId>
-            <version>1.3</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-            <version>${commons-compress.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
@@ -612,31 +516,6 @@
             <artifactId>commons-io</artifactId>
             <version>${commons-io.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <!-- OWL API access -->
-        <dependency>
-            <groupId>net.sourceforge.owlapi</groupId>
-            <artifactId>owlapi-apibinding</artifactId>
-            <version>${owlapi.version}</version>
-            <!-- LICENSE: APACHE 2.0 / LGPL -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>jsr305</artifactId>
-                    <groupId>com.google.code.findbugs</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.owlapi</groupId>
-            <artifactId>owlapi-api</artifactId>
-            <version>${owlapi.version}</version>
-            <!-- LICENSE: APACHE 2.0 / LGPL -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>jsr305</artifactId>
-                    <groupId>com.google.code.findbugs</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>edu.asu.lib</groupId>
@@ -659,30 +538,6 @@
             <version>4.1</version>
             <type>jar</type>
             <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>${pdfbox.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>preflight</artifactId>
-            <version>${pdfbox.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!--  https://github.com/levigo/jbig2-imageio -->
-        <dependency>
-          <groupId>com.levigo.jbig2</groupId>
-          <artifactId>levigo-jbig2-imageio</artifactId>
-          <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>

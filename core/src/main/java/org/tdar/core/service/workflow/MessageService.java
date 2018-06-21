@@ -1,7 +1,7 @@
 package org.tdar.core.service.workflow;
 
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.workflows.Workflow;
 
 public interface MessageService {
 

@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.workflows.RequiredOptionalPairs;
 
 /**
  * $Id$
