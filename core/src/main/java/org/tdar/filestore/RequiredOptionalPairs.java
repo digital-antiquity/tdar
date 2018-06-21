@@ -25,7 +25,7 @@ public class RequiredOptionalPairs implements Serializable {
     }
 
     public RequiredOptionalPairs(Class<? extends Workflow> cls) {
-        this.workflowClass = cls;
+        this.setWorkflowClass(cls);
     }
 
     public List<String> getRequired() {
@@ -42,6 +42,14 @@ public class RequiredOptionalPairs implements Serializable {
 
     public void setOptional(List<String> optional) {
         this.optional = optional;
+    }
+
+    public Class<? extends Workflow> getWorkflowClass() {
+        return workflowClass;
+    }
+
+    public void setWorkflowClass(Class<? extends Workflow> workflowClass) {
+        this.workflowClass = workflowClass;
     }
 
 }

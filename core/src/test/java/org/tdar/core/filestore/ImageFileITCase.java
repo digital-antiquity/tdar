@@ -19,6 +19,7 @@ import org.tdar.TestConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.FileType;
@@ -115,7 +116,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.IMAGE, fileType);
-        Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.IMAGE, originalVersion);
         assertEquals(ImageWorkflow.class, workflow.getClass());
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         FileProxy proxy = new FileProxy(f.getName(), f, VersionType.UPLOADED);

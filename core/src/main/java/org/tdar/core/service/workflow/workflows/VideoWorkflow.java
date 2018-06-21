@@ -1,6 +1,9 @@
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.Arrays;
+
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 
 /**
@@ -34,6 +37,7 @@ public class VideoWorkflow extends BaseWorkflow {
 //    static final Collection<String> VIDEO_EXTENSIONS_SUPPORTED = java.util.Arrays.asList(new String[] { "mpg", "mpeg", "mp4", "mj2", "mjp2" });
 
     public VideoWorkflow() {
+        addRequired(VideoWorkflow.class, Arrays.asList("mpg", "mpeg", "mp4", "mj2", "mjp2"));
 //        for (String extension : VIDEO_EXTENSIONS_SUPPORTED) {
 //            registerFileExtension(extension, ResourceType.VIDEO);
 //        }

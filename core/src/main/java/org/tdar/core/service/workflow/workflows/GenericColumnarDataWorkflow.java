@@ -1,6 +1,9 @@
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -16,6 +19,7 @@ import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.db.conversion.converters.TabConverter;
+import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 
@@ -36,6 +40,28 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
     }
 
     public GenericColumnarDataWorkflow() {
+        addRequired(GenericColumnarDataWorkflow.class, Arrays.asList("csv", "tab", "xls","xlsx", "mdb", "accdb", "gdb"));
+
+        List<RequiredOptionalPairs> shapePairs = new ArrayList<>();
+        RequiredOptionalPairs shapefile = new RequiredOptionalPairs(GenericColumnarDataWorkflow.class);
+        shapefile.getRequired().addAll(Arrays.asList("shp", "shx", "dbf"));
+        shapefile.getOptional().addAll(Arrays.asList("sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "cbg", "ixs", "rrd"));
+        shapePairs.add(shapefile);
+        RequiredOptionalPairs layer = new RequiredOptionalPairs();
+        layer.getRequired().addAll(Arrays.asList("lyr", "jpg"));
+        layer.getOptional().add("mxd");
+        shapePairs.add(layer);
+
+        RequiredOptionalPairs geotiff = new RequiredOptionalPairs(ImageWorkflow.class);
+        geotiff.getRequired().add("tif");
+        geotiff.getOptional().add("tfw");
+        shapePairs.add(geotiff);
+        RequiredOptionalPairs geojpg = new RequiredOptionalPairs(ImageWorkflow.class);
+        geojpg.getRequired().add("jpg");
+        geojpg.getOptional().add("jfw");
+        shapePairs.add(geojpg);
+        getRequiredOptionalPairs().addAll(shapePairs);        
+        
         registerFileExtension("csv", CsvConverter.class, CsvCodingSheetParser.class, ResourceType.CODING_SHEET, ResourceType.DATASET);
         registerFileExtension("tab", TabConverter.class, TabCodingSheetParser.class, ResourceType.CODING_SHEET, ResourceType.DATASET);
 

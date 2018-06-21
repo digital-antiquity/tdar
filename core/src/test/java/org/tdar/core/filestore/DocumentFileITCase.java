@@ -17,6 +17,7 @@ import org.tdar.TestConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -52,7 +53,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.DOCUMENT, fileType);
-        Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.DOCUMENT, originalVersion);
         assertEquals(PDFWorkflow.class, workflow.getClass());
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
@@ -72,7 +73,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.DOCUMENT, fileType);
-        Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.DOCUMENT, originalVersion);
         assertEquals(GenericDocumentWorkflow.class, workflow.getClass());
         logger.info("{}", originalVersion);
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);

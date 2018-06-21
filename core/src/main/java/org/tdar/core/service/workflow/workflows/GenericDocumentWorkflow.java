@@ -6,7 +6,10 @@
  */
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.Arrays;
+
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.filestore.tasks.IndexableTextExtractionTask;
 
@@ -23,6 +26,8 @@ public class GenericDocumentWorkflow extends BaseWorkflow {
     }
 
     public GenericDocumentWorkflow() {
+        addRequired(PDFWorkflow.class, Arrays.asList("rtf", "doc", "docx", "txt"));
+
 //        registerFileExtension("rtf", ResourceType.DOCUMENT);
 //        registerFileExtension("doc", ResourceType.DOCUMENT);
 //        registerFileExtension("docx", ResourceType.DOCUMENT);

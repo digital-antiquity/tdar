@@ -1,7 +1,11 @@
 package org.tdar.core.service.workflow.workflows;
 
+import java.util.List;
+import java.util.Set;
+
 import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.filestore.FileStoreFileProxy;
+import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.Task;
 
@@ -39,5 +43,11 @@ public interface Workflow {
     void setExtension(String ext);
 
     String getExtension();
+
+    boolean canProcess(String extension);
+
+    List<String> getAllValidExtensions();
+
+    Set<RequiredOptionalPairs> getRequiredOptionalPairs();
 
 }

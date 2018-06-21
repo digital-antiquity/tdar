@@ -21,6 +21,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.GenericService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -69,7 +70,7 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
 
                                 InformationResource ir = irfv.getInformationResourceFile().getInformationResource();
                                 ir = gs.merge(ir);
-                                analyzer.processFiles(Arrays.asList(irfv), false);
+                                analyzer.processFiles(ResourceType.IMAGE, Arrays.asList(irfv), false);
                             } catch (Exception e) {
                                 logger.error("exception in workflowITCase", e);
                                 throw new TdarRecoverableRuntimeException("something happened", e);
