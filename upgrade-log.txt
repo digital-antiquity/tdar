@@ -1,0 +1,120 @@
+------------
+::LITHIC::
+------------
+ - add the following lines to hibernate.properties
+
+    net.sf.ehcache.configurationResourceName=hibernate-ehcache.xml
+    hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.EhCacheRegionFactory
+    hibernate.cache.use_second_level_cache=false
+    hibernate.cache.use_query_cache=true
+    hibernate.cache.use_structured_entries=true
+    hibernate.cache.generate_statistics=true
+    hibernate.transaction.manager_lookup_class=org.springframework.orm.hibernate4.HibernateTransactionManager
+
+ - re-index database
+ - check for duplicate terms in keywords (case, leading/trailing spaces)
+ - run upgrade-db
+ - remove references to spring-ldap or spring-crowd in spring-local-settings.xml (not needed anymore)
+ 
+ 
+------------
+::MUNSELL:
+------------
+ 
+ - add the following hibernate.properties to force hibernate to valdiate the database config on startup
+  -- important for the split between hibernate and liqibase:
+ 
+	 hibernate.hbm2ddl.auto=validate
+
+ - comment out "munsell.xml" in src/main/db/changelog.xml
+ - run mvn -PchangelogSync clean compile
+ - uncomment "munsell.xml" in src/main/db/changelog.xml
+ - run the usual src/main/release/deploy-production.sh
+ 
+ -----------
+ NEOLITHIC:
+ -----------
+ - remove the log4j.properties and replace it with a log4j2.properties
+ - change scripts that expect tdar-2015-* to expect tdar.log for current tomcat log
+ - move all resource folders in filestore to /filestore/resource/
+ - before running, run "update databasechangelog set filename = replace(filename, 'src/main/db','target/liquibase');"
+ - JDBC properties that start with postgis or tdargisdata should be changed to prefix "tdargis."
+		- tdargisdata.connection.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
+		- postgis.driver.class=org.postgis.DriverWrapper
+		+ tdargisdata.persistence.jdbc.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
+		+ tdargisdata.persistence.jdbc.driver=org.postgis.DriverWrapper
+		+ tdardata.persistence.jdbc.url=...
+ - remove the c3p0.xml reference in spring-local-settings.xml 
+ - other work:
+	sudo add-apt-repository ppa:webupd8team/java
+	sudo apt-get update && sudo apt-get install oracle-java8-installer
+	sudo apt-get install oracle-java8-set-default
+	cd /usr/lib/jvm/java-8-oracle/ ; sudo sh /shared/java/install-extensions.sh 
+	
+	sudo apt-get install npm git npm-legacy
+	sudo npm install -g bower
+	sudo npm install -g karma karma-cli
+- update reference to the theme-dir or comment it out
+
+—————————————————
+::NEOLITHIC (.5):
+—————————————————
+- setup SOLR
+	- define  -Dsolr.data.dir=/home/tdar/solr-indexes/ in /etc/defaults/tomcat7
+	- if standalone version of SOLR include jts-topo-suite (jts-1.13.jar or later, should already be in tDAR dependency tree)
+	- add a search.properties to tell tDAR where to find the solr dir (solr.xml)
+
+standalone solr:
+	http://daniel.hepper.net/blog/2012/04/restricting-ip-addresses-for-solr-with-jetty/
+    limit access to localhost (/etc/defaults/solr...)
+    add solr data dir to /etc/defaults/solr (-Dsolr.data.dir=/home/tdar/solr-indexes/)
+    add -Dsolr.jetty.request.header.size=65535 to increase the max URL
+    
+    add solr to tdaradmin group
+    
+    copy JTS to solr dir:
+    sudo cp /home/tdar/app/ROOT/WEB-INF/lib/jts-1.13.jar  /opt/solr/server/lib/
+
+—————————————————
+::Obsidian:
+—————————————————
+ - for solr (6.1), change the field-types.xml's  spatialContextFactory entry to:
+     spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+     - install notes: https://cwiki.apache.org/confluence/display/solr/Taking+Solr+to+Production
+ - update Google Analytics for Universal Analytics
+ - re-run RebuildGeographicKeywordsProcess
+ - additional tasks
+    - https://issues.tdar.org/browse/TDAR-3515
+    - https://issues.tdar.org/browse/TDAR-610
+
+—————————————————
+::Prehistoric:
+—————————————————
+ - full-reindex for collection unification
+ - adjust cart page and SAA/SHA pages on tdar website for /api/ changes
+—————————————————
+::Quartz:
+—————————————————
+
+ - for solr (7.2), change the field-types.xml's  spatialContextFactory entry to:
+     spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+     - install notes: https://cwiki.apache.org/confluence/display/solr/Taking+Solr+to+Production
+
+ - Added properties for AWS integration to tdar.properties
+	The access Key from AWS should be regenerated on a regular basis for security purposes using the AWS Console.  
+	aws.accesskey.id  
+	aws.accesskey.secret
+	aws.characterset
+	aws.queuename
+	email.attachments.location
+ - Created TXT record for verifying the domain with AWS
+
+—————————————————
+::RADIOCARBON:
+—————————————————
+
+ - for solr (7.3), change the field-types.xml's  spatialContextFactory entry to:
+     spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+     - install notes: https://cwiki.apache.org/confluence/display/solr/Taking+Solr+to+Production
+
+  ** NOTE: a new version of JTS is required (1.15) **

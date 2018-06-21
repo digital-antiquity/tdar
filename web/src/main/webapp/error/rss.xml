@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- this is a simple test file to keep RSS requests for testing local -->
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+	<channel>
+		<title>System Issues with tDAR</title>
+		<link>/</link>
+		<description>We are currently encountering system issues with tDAR.  Please check twitter (@DigArcRec) for more information.</description>
+		<pubDate>Wed, 15 Oct 2008 11:16:06 +0000</pubDate>
+		<language>en</language>
+		<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" href="http://localhost/index.xml" type="application/rss+xml"/>
+		<item>
+			<title>System Issues with tDAR</title>
+			<link>http://localhost/</link>
+			<comments></comments>
+			<pubDate>Wed, 15 Oct 2008 11:16:06 +0000</pubDate>
+			<dc:creator>Adam Brin</dc:creator>
+			<guid isPermaLink="false">http://localhost/?p=4770</guid>
+			<description>We are currently encountering system issues with tDAR.  Please check twitter (@DigArcRec) for more information</description>
+			<content:encoded>Encoded content</content:encoded>
+		</item>
+	</channel>
+</rss>
