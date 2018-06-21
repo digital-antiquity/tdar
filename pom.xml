@@ -19,8 +19,8 @@
         <module>parent-base</module>
         <module>base</module>
         <!-- tdar "core" files -->
+        <module>fileprocessing</module>
         <module>core</module>
-        <!-- <module>fileprocessing</module> -->
         <module>search</module>
         <!-- <module>faims</module> -->
         

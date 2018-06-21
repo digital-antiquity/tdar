@@ -40,6 +40,11 @@
             <artifactId>base</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>fileprocessing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
          <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
