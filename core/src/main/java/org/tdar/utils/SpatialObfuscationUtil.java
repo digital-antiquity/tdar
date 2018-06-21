@@ -12,7 +12,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
  */
 public class SpatialObfuscationUtil {
 
-    private static final double _1D = 1d;
+    private static final double _1D = 1.5d;
 
     private static final transient Logger logger = LoggerFactory.getLogger(SpatialObfuscationUtil.class);
 
@@ -32,6 +32,7 @@ public class SpatialObfuscationUtil {
         boolean obfuscated = false;
 
         // if the Latitude is > 1 mile, don't obfuscate it
+        double oneMile = (_1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
         if (absoluteLatLength < LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES) {
             // get the center
             Double centerLatitude = latitudeLongitudeBox.getCenterLatitude();
@@ -39,12 +40,12 @@ public class SpatialObfuscationUtil {
             // compute the southern corner as: (center latitude - 1 mile) + (random * 1 mile)
             // this should be something less than 1 mile
 
+            double offset = (getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
             // x y random1 random2 random3 random4 distance
-            double south1 = (centerLatitude - (_1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES))
-                    + (getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES); // -1*$G2+C2*$G2
+            double south1 = (centerLatitude - oneMile) + offset; // -1*$G2+C2*$G2
 
             // north is then south plus 1 mile
-            double north1 = south1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
+            double north1 = south1 + 1.5d * oneMile;
 
             // set the values
             latitudeLongitudeBox.setObfuscatedNorth(correctForMeridiansAndPoles(north1, true));
@@ -62,12 +63,11 @@ public class SpatialObfuscationUtil {
 
             
             double offset = (getRandom() * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES); 
-            double oneMile = (_1D * LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES);
             // west is center (longitude - 1 mile ) + random * 1 mile
             double west1 = (centerLongitude - oneMile) + (offset); // -1*$G2+C2*$G2
 
             // east is 1 mile plus west
-            double east1 = west1 + LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
+            double east1 = west1 + 1.5d * oneMile;
 
             latitudeLongitudeBox.setObfuscatedEast(correctForMeridiansAndPoles(east1, false));
             latitudeLongitudeBox.setObfuscatedWest(correctForMeridiansAndPoles(west1, false));

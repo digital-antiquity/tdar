@@ -2,24 +2,21 @@ package org.tdar.utils;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.eclipse.rdf4j.model.vocabulary.SP;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.json.WriterBasedJsonGenerator;
-
 /**
  * @author Adam Brin
  * 
  */
 public class LatLongObfuscationTest {
+
+    private static final double NEARLY_ONE_MILE = 0.01470d;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -43,7 +40,7 @@ public class LatLongObfuscationTest {
         SpatialObfuscationUtil.useRandom(false);
         // NOTE: THESE FAIL... why???
         SpatialObfuscationUtil.setRandom(0.1d);
-        _testNegativeLatLongWithSalt();
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
     } 
     
     @Test
@@ -54,27 +51,81 @@ public class LatLongObfuscationTest {
         // with "random" there's some chance of this being less useful, thus... we do it a few times
 
         SpatialObfuscationUtil.setRandom(0.2);
-        _testNegativeLatLongWithSalt();
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
         
         SpatialObfuscationUtil.setRandom(0.5);
-        _testNegativeLatLongWithSalt();
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
         
         SpatialObfuscationUtil.setRandom(0.8);
-        _testNegativeLatLongWithSalt();
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
 
         // NOTE: THESE FAIL... why???
         SpatialObfuscationUtil.setRandom(0.1);
-        _testNegativeLatLongWithSalt();
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
         
         SpatialObfuscationUtil.setRandom(0.9);
-        _testNegativeLatLongWithSalt();
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
+
+        SpatialObfuscationUtil.setRandom(null);
+        SpatialObfuscationUtil.useRandom(true);
+    }
+    
+    @Test
+    public void testAlmostOneMileSquareLatLongWithSaltedResult() {
+        logger.debug("****** TEST testLatLongWithSaltedResult *******");
+        SpatialObfuscationUtil.useRandom(false);
+        // note, I fail with negative seeds
+        // with "random" there's some chance of this being less useful, thus... we do it a few times
+
+        SpatialObfuscationUtil.setRandom(0.2);
+        _testPositiveLatLongWithSalt(smallPos, smallPos + NEARLY_ONE_MILE, smallPos + NEARLY_ONE_MILE, smallPos);
+        
+        SpatialObfuscationUtil.setRandom(0.5);
+        _testPositiveLatLongWithSalt(smallPos, smallPos + NEARLY_ONE_MILE, smallPos + NEARLY_ONE_MILE, smallPos);
+        
+        SpatialObfuscationUtil.setRandom(0.8);
+        _testPositiveLatLongWithSalt(smallPos, smallPos + NEARLY_ONE_MILE, smallPos + NEARLY_ONE_MILE, smallPos);
+
+        // NOTE: THESE FAIL... why???
+        SpatialObfuscationUtil.setRandom(0.1);
+        _testPositiveLatLongWithSalt(smallPos, smallPos + NEARLY_ONE_MILE, smallPos + NEARLY_ONE_MILE, smallPos);
+        
+        SpatialObfuscationUtil.setRandom(0.9);
+        _testPositiveLatLongWithSalt(smallPos, smallPos + NEARLY_ONE_MILE, smallPos + NEARLY_ONE_MILE, smallPos);
+
+        SpatialObfuscationUtil.setRandom(null);
+        SpatialObfuscationUtil.useRandom(true);
+    }
+    
+    @Test
+    public void testAlmostOneMileSquareNegLatLongWithSaltedResult() {
+        logger.debug("****** TEST testNegLatLongWithSaltedResult *******");
+        SpatialObfuscationUtil.useRandom(false);
+        // note, I fail with negative seeds
+        // with "random" there's some chance of this being less useful, thus... we do it a few times
+
+        SpatialObfuscationUtil.setRandom(0.2);
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg + NEARLY_ONE_MILE, smallNeg + NEARLY_ONE_MILE, smallNeg);
+        
+        SpatialObfuscationUtil.setRandom(0.5);
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg + NEARLY_ONE_MILE, smallNeg + NEARLY_ONE_MILE, smallNeg);
+        
+        SpatialObfuscationUtil.setRandom(0.8);
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg + NEARLY_ONE_MILE, smallNeg + NEARLY_ONE_MILE, smallNeg);
+
+        // NOTE: THESE FAIL... why???
+        SpatialObfuscationUtil.setRandom(0.1);
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg + NEARLY_ONE_MILE, smallNeg + NEARLY_ONE_MILE, smallNeg);
+        
+        SpatialObfuscationUtil.setRandom(0.9);
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg + NEARLY_ONE_MILE, smallNeg + NEARLY_ONE_MILE, smallNeg);
 
         SpatialObfuscationUtil.setRandom(null);
         SpatialObfuscationUtil.useRandom(true);
     }
 
-    private void _testNegativeLatLongWithSalt() {
-        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(smallNeg, smallNeg2, smallNeg2, smallNeg);
+    private void _testNegativeLatLongWithSalt(double  w, double s , double e, double n) {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(w,s,e,n);
         Double east = llb.getEast(); // Original East boudnary (right most). 
         Double west = llb.getWest(); // Original West boundary (left most)
         logger.debug("before: e:{} w:{}", east, west);
@@ -90,11 +141,34 @@ public class LatLongObfuscationTest {
         logger.debug("result w:" + llb.getObfuscatedWest() + " < " + west);
         assertNotEquals(geoJsonRaw, geoJsonObs);
         
-        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() > east || (llb.getObfuscatedEast() < east && SpatialObfuscationUtil.getRandom()<.17));
+        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() > east);
         assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedWest() < west);
     }
 
-    
+
+    /** FIXME, not sure I WORK **/
+    private void _testPositiveLatLongWithSalt(double  w, double s , double e, double n) {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(w,s,e,n);
+        Double east = llb.getEast(); // Original East boudnary (right most). 
+        Double west = llb.getWest(); // Original West boundary (left most)
+        logger.debug("before: e:{} w:{}", east, west);
+        String geoJsonRaw = toGeoJson(llb, false);
+        logger.debug(" after: {}", geoJsonRaw);
+        llb.obfuscate();
+        logger.debug("east: {} ; obs: {}", east, llb.getObfuscatedEast());
+        logger.debug("west: {} ; obs: {}", west, llb.getObfuscatedWest());
+        // double result = LatitudeLongitudeBox.randomizeIfNeedBe(smallNeg, smallNeg2, LatitudeLongitudeBox.LONGITUDE, true);
+        String geoJsonObs = toGeoJson(llb, true);
+        logger.debug(" after: {}", geoJsonObs);
+        logger.debug("result e:" + llb.getObfuscatedEast() + " > " + east);
+        logger.debug("result w:" + llb.getObfuscatedWest() + " < " + west);
+        assertNotEquals(geoJsonRaw, geoJsonObs);
+        
+        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() < east);
+        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedWest() > west);
+    }
+
+
     public String toGeoJson(LatitudeLongitudeBox llb, boolean obfs) {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\":\"Feature\",");
