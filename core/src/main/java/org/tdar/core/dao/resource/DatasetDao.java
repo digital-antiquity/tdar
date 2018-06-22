@@ -71,7 +71,7 @@ import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.conversion.converters.ExcelWorkbookWriter;
 import org.tdar.db.conversion.converters.SheetProxy;
 import org.tdar.db.datatable.ImportTable;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.model.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.VersionType;
 import org.tdar.search.query.SearchResultHandler;

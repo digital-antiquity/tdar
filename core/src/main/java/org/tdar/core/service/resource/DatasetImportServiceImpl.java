@@ -31,7 +31,7 @@ import org.tdar.db.datatable.ImportColumn;
 import org.tdar.db.datatable.ImportTable;
 import org.tdar.db.datatable.TDataTable;
 import org.tdar.db.datatable.TDataTableRelationship;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.model.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;

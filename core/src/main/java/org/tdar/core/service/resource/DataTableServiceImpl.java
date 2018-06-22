@@ -22,7 +22,7 @@ import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.db.datatable.ImportColumn;
 import org.tdar.db.datatable.ImportTable;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.model.TargetDatabase;
 import org.tdar.utils.PersistableUtils;
 
 /**

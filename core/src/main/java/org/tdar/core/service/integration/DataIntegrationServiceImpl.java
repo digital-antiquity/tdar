@@ -53,7 +53,7 @@ import org.tdar.core.service.collection.CollectionRightsComparator;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.FileProxyWrapper;
-import org.tdar.db.model.abstracts.IntegrationDatabase;
+import org.tdar.db.model.IntegrationDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.VersionType;

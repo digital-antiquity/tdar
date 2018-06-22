@@ -1,4 +1,4 @@
-package org.tdar.db.model.abstracts;
+package org.tdar.db.model;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.service.integration.IntegrationContext;

@@ -26,7 +26,7 @@ import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetImportService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.model.TargetDatabase;
 import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileStoreFile;

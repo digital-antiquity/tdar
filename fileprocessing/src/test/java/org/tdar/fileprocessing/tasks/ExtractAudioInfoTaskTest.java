@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.junit.Test;
+import org.tdar.TestConstants;
 import org.tdar.filestore.FileStoreFile;
 
 /**
@@ -45,23 +46,11 @@ public class ExtractAudioInfoTaskTest {
 
     private void testFileCodec(String fileName, String expected) throws FileNotFoundException {
         ExtractAudioInfoTask task = new ExtractAudioInfoTask();
-        File audioFile = getFile(TEST_AUDIO_DIR, fileName);
+        File audioFile = TestConstants.getFile(TEST_AUDIO_DIR, fileName);
         FileStoreFile fsf = new FileStoreFile();
         task.writeFileMetadataToAudioFile(fsf, audioFile);
         final String audioCodecFound = fsf.getCodex();
         assertTrue("Expected: '" + expected + "' but found: '" + audioCodecFound + "'", expected.equals(audioCodecFound));
-    }
-
-    File getFile(String testPath, String filename) throws FileNotFoundException {
-        File test = new File(testPath, filename);
-        if (test.exists()) {
-            return test;
-        }
-        test = new File("../test-resources/src/main/resources/" + testPath.replace("target/test-resources/", ""), filename);
-        if (test.exists()) {
-            return test;
-        }
-        throw new FileNotFoundException("could not find " + testPath + "/" + filename);
     }
 
 }

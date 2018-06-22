@@ -49,7 +49,7 @@ import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
 import org.tdar.db.model.PostgresDatabase;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.model.TargetDatabase;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FilestoreObjectType;

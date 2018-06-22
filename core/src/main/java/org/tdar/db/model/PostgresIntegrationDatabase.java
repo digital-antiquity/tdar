@@ -31,7 +31,6 @@ import org.tdar.db.Database;
 import org.tdar.db.builder.SqlSelectBuilder;
 import org.tdar.db.builder.SqlTools;
 import org.tdar.db.builder.WhereCondition;
-import org.tdar.db.model.abstracts.IntegrationDatabase;
 
 import com.opensymphony.xwork2.TextProvider;
 
