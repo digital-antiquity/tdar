@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
-import org.tdar.parser.OwlOntologyConverter;
+import org.tdar.db.parser.OwlOntologyConverter;
 
 /**
  * Test case for OntologyService.

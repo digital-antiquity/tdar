@@ -43,10 +43,10 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileType;
 import org.tdar.filestore.VersionType;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-import org.tdar.workflows.WorkflowContext;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

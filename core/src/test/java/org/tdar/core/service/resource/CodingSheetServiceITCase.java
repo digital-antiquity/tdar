@@ -22,9 +22,9 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.db.parser.CodingSheetParserException;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.VersionType;
-import org.tdar.parser.CodingSheetParserException;
 
 /**
  * @author Adam Brin

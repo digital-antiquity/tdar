@@ -15,7 +15,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
-import org.tdar.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportColumn;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;

@@ -35,16 +35,16 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.CodingSheetDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.db.parser.CodingSheetParser;
+import org.tdar.db.parser.CodingSheetParserException;
+import org.tdar.db.parser.TCodingRule;
 import org.tdar.exception.ExceptionWrapper;
+import org.tdar.fileprocessing.workflows.GenericColumnarDataWorkflow;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.VersionType;
-import org.tdar.parser.CodingSheetParser;
-import org.tdar.parser.CodingSheetParserException;
-import org.tdar.parser.TCodingRule;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.workflows.GenericColumnarDataWorkflow;
-import org.tdar.workflows.WorkflowContext;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.

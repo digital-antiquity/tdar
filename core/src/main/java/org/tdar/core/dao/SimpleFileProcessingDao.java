@@ -11,15 +11,12 @@ import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.fileprocessing.tasks.ImageThumbnailTask;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.VersionType;
-import org.tdar.filestore.tasks.ImageThumbnailTask;
-import org.tdar.workflows.WorkflowContext;
 
 @Component
 public class SimpleFileProcessingDao {

@@ -20,8 +20,8 @@ import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.datatable.ImportColumn;
-import org.tdar.datatable.ImportTable;
+import org.tdar.db.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportTable;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.utils.PersistableUtils;
 

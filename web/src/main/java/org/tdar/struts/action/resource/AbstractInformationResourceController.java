@@ -34,6 +34,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.exception.ExceptionWrapper;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
@@ -45,7 +46,6 @@ import org.tdar.web.service.FileSaveWrapper;
 import org.tdar.web.service.ResourceEditControllerServiceImpl;
 import org.tdar.web.service.ResourceSaveControllerService;
 import org.tdar.web.service.ResourceViewControllerService;
-import org.tdar.workflows.RequiredOptionalPairs;
 
 /**
  * $Id$

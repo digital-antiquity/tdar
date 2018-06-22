@@ -5,27 +5,24 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
+import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.utils.MessageHelper;
-import org.tdar.workflows.RequiredOptionalPairs;
-import org.tdar.workflows.Workflow;
 
 /**
  * $Id$

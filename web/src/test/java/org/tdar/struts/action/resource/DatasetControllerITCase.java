@@ -43,7 +43,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.DataTableService;
-import org.tdar.datatable.DataTableColumnType;
+import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.PostgresIntegrationDatabase;
 import org.tdar.junit.MultipleTdarConfigurationRunner;

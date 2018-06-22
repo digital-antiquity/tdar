@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.tdar.datatable.ImportColumn;
-import org.tdar.datatable.ImportTable;
+import org.tdar.db.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportTable;
 
 public interface PostgresConstants {
     public static final String DROP_STATE_ERROR_CODE = "42P01";

@@ -8,10 +8,10 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.datatable.DataTableColumnType;
-import org.tdar.datatable.ImportColumn;
-import org.tdar.datatable.ImportTable;
 import org.tdar.db.ImportDatabase;
+import org.tdar.db.datatable.DataTableColumnType;
+import org.tdar.db.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportTable;
 
 /**
  * A base class for target Databases that can be written to via a

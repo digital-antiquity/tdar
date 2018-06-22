@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.datatable.DataTableColumnType;
+import org.tdar.db.datatable.DataTableColumnType;
 
 public class DateAnalyzerTest {
 

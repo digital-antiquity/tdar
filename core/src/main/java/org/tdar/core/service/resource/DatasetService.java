@@ -10,7 +10,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.db.model.PostgresDatabase;

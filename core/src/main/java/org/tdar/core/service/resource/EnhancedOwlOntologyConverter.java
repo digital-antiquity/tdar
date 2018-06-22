@@ -16,9 +16,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
+import org.tdar.db.parser.OwlOntologyConverter;
+import org.tdar.db.parser.TOntologyNode;
 import org.tdar.exception.TdarRecoverableRuntimeException;
-import org.tdar.parser.OwlOntologyConverter;
-import org.tdar.parser.TOntologyNode;
 
 public class EnhancedOwlOntologyConverter extends OwlOntologyConverter {
 

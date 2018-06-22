@@ -2,8 +2,6 @@ package org.tdar.db.conversion;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
 import javax.sql.DataSource;
 
 import org.junit.Test;
@@ -13,21 +11,17 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Geospatial;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.datatable.TDataTable;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
+import org.tdar.db.datatable.TDataTable;
 import org.tdar.db.model.PostgresDatabase;
+import org.tdar.fileprocessing.tasks.ConvertDatasetTask;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.VersionType;
-import org.tdar.filestore.tasks.ConvertDatasetTask;
 import org.tdar.utils.FileStoreFileUtils;
-import org.tdar.workflows.WorkflowContext;
 
 public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
 

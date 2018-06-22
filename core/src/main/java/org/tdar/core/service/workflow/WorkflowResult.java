@@ -14,7 +14,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.exception.ExceptionWrapper;
-import org.tdar.workflows.WorkflowContext;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 
 public class WorkflowResult implements Serializable {
 

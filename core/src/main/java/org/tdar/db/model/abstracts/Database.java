@@ -2,8 +2,8 @@ package org.tdar.db.model.abstracts;
 
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.datatable.DataTableColumnType;
-import org.tdar.datatable.ImportColumn;
+import org.tdar.db.datatable.DataTableColumnType;
+import org.tdar.db.datatable.ImportColumn;
 
 /**
  * Marker interface for all database types.

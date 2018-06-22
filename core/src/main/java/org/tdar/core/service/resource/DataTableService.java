@@ -12,8 +12,8 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
-import org.tdar.datatable.ImportColumn;
-import org.tdar.datatable.ImportTable;
+import org.tdar.db.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportTable;
 
 public interface DataTableService {
 

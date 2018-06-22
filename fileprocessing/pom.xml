@@ -9,7 +9,7 @@
     <name>tDAR (fileprocessing)</name>
 
     <properties>
-        <skipTestLiquibase>false</skipTestLiquibase>
+        <skipTestLiquibase>true</skipTestLiquibase>
         <testChangeLog>changelog-integration.xml</testChangeLog>
     </properties>
     <parent>
@@ -27,6 +27,11 @@
         <dependency>
             <groupId>org.tdar</groupId>
             <artifactId>base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>databaseprocessing</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

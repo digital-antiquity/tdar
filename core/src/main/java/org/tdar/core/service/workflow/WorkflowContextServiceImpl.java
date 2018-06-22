@@ -22,16 +22,15 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetImportService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.fileprocessing.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.utils.FileStoreFileUtils;
-import org.tdar.workflows.Workflow;
-import org.tdar.workflows.WorkflowContext;
 
 /**
  * @author Adam Brin

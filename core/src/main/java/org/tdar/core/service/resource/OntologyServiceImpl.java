@@ -36,12 +36,12 @@ import org.tdar.core.dao.resource.OntologyDao;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
+import org.tdar.db.parser.OwlApiHierarchyParser;
+import org.tdar.db.parser.OwlOntologyConverter;
+import org.tdar.db.parser.TOntologyNode;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.exception.TdarRuntimeException;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.parser.OwlApiHierarchyParser;
-import org.tdar.parser.OwlOntologyConverter;
-import org.tdar.parser.TOntologyNode;
 import org.tdar.utils.PersistableUtils;
 
 /**

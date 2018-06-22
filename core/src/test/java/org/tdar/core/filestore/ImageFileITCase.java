@@ -27,14 +27,14 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowResult;
+import org.tdar.fileprocessing.workflows.ImageWorkflow;
+import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.VersionType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
-import org.tdar.workflows.ImageWorkflow;
-import org.tdar.workflows.Workflow;
 
 /**
  * @author Adam Brin

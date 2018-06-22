@@ -1,0 +1,9 @@
+{
+    "baseUrl": "https://vmware-localhost:8443",
+    "chromeWebSecurity": false,
+    "reporter": "junit",
+    "reporterOptions": {
+      "mochaFile": "results/my-test-output.xml",
+      "toConsole": true
+    }
+}

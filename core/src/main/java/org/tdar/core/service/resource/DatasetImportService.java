@@ -5,8 +5,8 @@ import java.util.List;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.datatable.TDataTable;
-import org.tdar.datatable.TDataTableRelationship;
+import org.tdar.db.datatable.TDataTable;
+import org.tdar.db.datatable.TDataTableRelationship;
 
 public interface DatasetImportService {
 

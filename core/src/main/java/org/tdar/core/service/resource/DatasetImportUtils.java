@@ -8,12 +8,12 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.datatable.ImportColumn;
-import org.tdar.datatable.ImportTable;
-import org.tdar.datatable.TDataTable;
-import org.tdar.datatable.TDataTableColumn;
-import org.tdar.datatable.TDataTableColumnRelationship;
-import org.tdar.datatable.TDataTableRelationship;
+import org.tdar.db.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportTable;
+import org.tdar.db.datatable.TDataTable;
+import org.tdar.db.datatable.TDataTableColumn;
+import org.tdar.db.datatable.TDataTableColumnRelationship;
+import org.tdar.db.datatable.TDataTableRelationship;
 
 public class DatasetImportUtils {
 

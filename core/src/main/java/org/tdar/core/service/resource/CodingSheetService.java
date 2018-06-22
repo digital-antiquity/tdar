@@ -8,8 +8,8 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.parser.CodingSheetParserException;
-import org.tdar.workflows.WorkflowContext;
+import org.tdar.db.parser.CodingSheetParserException;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 
 public interface CodingSheetService {
 

@@ -17,12 +17,12 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.fileprocessing.tasks.GisFileReaderTask;
+import org.tdar.fileprocessing.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.filestore.tasks.GisFileReaderTask;
 import org.tdar.utils.FileStoreFileUtils;
-import org.tdar.workflows.Workflow;
-import org.tdar.workflows.WorkflowContext;
 
 /**
  * @author Adam Brin

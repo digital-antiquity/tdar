@@ -4,9 +4,9 @@ import java.util.Arrays;
 
 import org.tdar.db.ImportDatabase;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.fileprocessing.workflows.GenericColumnarDataWorkflow;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.utils.MessageHelper;
-import org.tdar.workflows.GenericColumnarDataWorkflow;
 
 public class DatasetConversionFactory {
 

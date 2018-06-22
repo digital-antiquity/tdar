@@ -20,6 +20,7 @@
         <module>base</module>
         <!-- tdar "core" files -->
         <module>fileprocessing</module>
+        <module>databaseprocessing</module>
         <module>core</module>
         <module>search</module>
         <!-- <module>faims</module> -->

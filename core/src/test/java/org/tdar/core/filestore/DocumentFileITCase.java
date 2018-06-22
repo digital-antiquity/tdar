@@ -22,13 +22,13 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.MessageService;
+import org.tdar.fileprocessing.workflows.GenericDocumentWorkflow;
+import org.tdar.fileprocessing.workflows.PDFWorkflow;
+import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileType;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.workflows.GenericDocumentWorkflow;
-import org.tdar.workflows.PDFWorkflow;
-import org.tdar.workflows.Workflow;
 
 /**
  * @author Adam Brin

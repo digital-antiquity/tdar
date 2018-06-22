@@ -32,12 +32,12 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.WorkflowResult;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.workflows.WorkflowContext;
 
 /**
  * $Id$

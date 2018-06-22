@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.parser.OwlApiHierarchyParser;
-import org.tdar.parser.TOntologyNode;
+import org.tdar.db.parser.OwlApiHierarchyParser;
+import org.tdar.db.parser.TOntologyNode;
 
 /**
  * $Id$

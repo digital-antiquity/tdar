@@ -74,12 +74,12 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.workflows.RequiredOptionalPairs;
 
 /**
  * The service that handles the import of info from the API into tDAR... Ideally this should be merged wih the BulkUploadService
