@@ -46,16 +46,6 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Test
-    public void testAnalyzerSuggestions() {
-        assertEquals(ResourceType.DOCUMENT, fileAnalyzer.suggestTypeForFileName("doc", ResourceType.DOCUMENT));
-        assertEquals(ResourceType.SENSORY_DATA, fileAnalyzer.suggestTypeForFileName("gif", ResourceType.SENSORY_DATA, ResourceType.IMAGE));
-        assertEquals(ResourceType.IMAGE, fileAnalyzer.suggestTypeForFileName("gif", ResourceType.IMAGE, ResourceType.SENSORY_DATA));
-        assertNull(fileAnalyzer.suggestTypeForFileName("xls", ResourceType.ONTOLOGY));
-        assertEquals(ResourceType.CODING_SHEET, fileAnalyzer.suggestTypeForFileName("xls", ResourceType.ONTOLOGY, ResourceType.CODING_SHEET));
-        assertFalse(fileAnalyzer.getExtensionsForType(ResourceType.ARCHIVE).contains("xml"));
-        assertEquals(ResourceType.AUDIO, fileAnalyzer.suggestTypeForFileName("aiff", ResourceType.values()));
-    }
 
     @Test
     @Rollback
