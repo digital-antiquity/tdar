@@ -73,25 +73,22 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
-    private JdbcTemplate jdbcTemplate;
-
-
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     public void createTable(final String createTableStatement) {
         logger.debug(createTableStatement);
-        jdbcTemplate.execute(createTableStatement);
+        getJdbcTemplate().execute(createTableStatement);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Transactional(value = "tdarDataTx", readOnly = true)
     public List query(String sql, RowMapper rowMapper) {
-        return jdbcTemplate.query(sql, rowMapper);
+        return getJdbcTemplate().query(sql, rowMapper);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T query(String sql, ResultSetExtractor<T> resultSetExtractor) {
-        return jdbcTemplate.query(sql, resultSetExtractor);
+        return getJdbcTemplate().query(sql, resultSetExtractor);
     }
 
     @Override
@@ -99,7 +96,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
-        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+        return getJdbcTemplate().query(builder.toSql(), resultSetExtractor);
     }
 
     @Override
@@ -108,7 +105,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
     public <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
         SqlSelectBuilder builder = getSelectAll(table, false);
         builder.getOrderBy().addAll(Arrays.asList(orderBy));
-        return jdbcTemplate.query(new LowMemoryStatementCreator(builder.toSql()), resultSetExtractor);
+        return getJdbcTemplate().query(new LowMemoryStatementCreator(builder.toSql()), resultSetExtractor);
     }
 
     private SqlSelectBuilder getSelectAll(ImportTable table, boolean includeGeneratedValues) {
@@ -153,7 +150,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         builder.getOrderBy().add(DataTableColumn.TDAR_ROW_ID.getName());
         LowMemoryStatementCreator lmsc = new LowMemoryStatementCreator(builder.toSql());
-        return jdbcTemplate.query(lmsc, resultSetExtractor);
+        return getJdbcTemplate().query(lmsc, resultSetExtractor);
     }
 
     @Override
@@ -176,7 +173,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
             builder.getOrderBy().add(dataTableColumn.getName());
         }
         logger.trace(builder.toSql());
-        return jdbcTemplate.queryForList(builder.toSql(), String.class);
+        return getJdbcTemplate().queryForList(builder.toSql(), String.class);
     }
 
     @Override
@@ -232,14 +229,14 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
             builder.getWhere().add(notBlank);
         }
 
-        return jdbcTemplate.queryForList(builder.toSql(), String.class);
+        return getJdbcTemplate().queryForList(builder.toSql(), String.class);
     }
 
 
     // FIXME: allows for totally free form queries, refine this later?
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse) {
-        return jdbcTemplate.query(psc, pss, rse);
+        return getJdbcTemplate().query(psc, pss, rse);
     }
 
 
@@ -297,15 +294,15 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
             // this column has already been translated once. Wipe the current
             // translation and replace it with the new.
             String clearTranslatedColumnSql = String.format(UPDATE_COLUMN_TO_NULL, tableName, columnName);
-            jdbcTemplate.execute(clearTranslatedColumnSql);
+            getJdbcTemplate().execute(clearTranslatedColumnSql);
         } else {
             // FIXME: preserve original column order
             // if this column has never had a default coding sheet, rename column to column_original
             String renameColumnSql = String.format(RENAME_COLUMN, tableName, columnName, originalColumnName);
-            jdbcTemplate.execute(renameColumnSql);
+            getJdbcTemplate().execute(renameColumnSql);
             // and then create the column again.
             String createColumnSql = String.format(ADD_COLUMN, tableName, columnName);
-            jdbcTemplate.execute(createColumnSql);
+            getJdbcTemplate().execute(createColumnSql);
 
         }
 
@@ -375,7 +372,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
             }
         };
         // executes translation step
-        jdbcTemplate.execute(translateColumnPreparedStatementCreator, translateColumnCallback);
+        getJdbcTemplate().execute(translateColumnPreparedStatementCreator, translateColumnCallback);
         // the last step is to update all untranslated rows
         // SQL is essentially: update tableName set translatedColumnName='No
         // coding sheet value for code: ' || originalColumnName where
@@ -383,7 +380,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         String updateUntranslatedRows = String.format(UPDATE_UNMAPPED_CODING_SHEET, tableName, columnName, originalColumnName, columnName);
         // getLogger().debug("updating untranslated rows: " +
         // updateUntranslatedRows);
-        jdbcTemplate.execute(updateUntranslatedRows);
+        getJdbcTemplate().execute(updateUntranslatedRows);
     }
 
     /**
@@ -428,20 +425,20 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         logger.debug(sqlDrop);
         logger.debug(sqlRename);
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
-        jdbcTemplate.execute(sqlDrop);
-        jdbcTemplate.execute(sqlRename);
+        getJdbcTemplate().execute(sqlDrop);
+        getJdbcTemplate().execute(sqlRename);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     public void executeUpdateOrDelete(final String createTableStatement) {
         logger.debug(createTableStatement);
-        jdbcTemplate.execute(createTableStatement);
+        getJdbcTemplate().execute(createTableStatement);
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor) {
-        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, column.getDataTable().getName(), column.getName()),
+        return getJdbcTemplate().query(String.format(SELECT_ALL_FROM_TABLE_WHERE, column.getDataTable().getName(), column.getName()),
                 new String[] { key },
                 resultSetExtractor);
     }
@@ -450,7 +447,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
     @Transactional(value = "tdarDataTx", readOnly = true)
     public Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
             ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor) {
-        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE_LOWER, column.getDataTable().getName(), column.getName()),
+        return getJdbcTemplate().query(String.format(SELECT_ALL_FROM_TABLE_WHERE_LOWER, column.getDataTable().getName(), column.getName()),
                 new String[] { key }, resultSetExtractor);
     }
 
@@ -459,7 +456,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         logger.warn("RENAMING COLUMN " + column + " TO " + newName, new Exception("altering column should only be done by tests."));
         String sql = String.format(RENAME_COLUMN, column.getDataTable().getName(), column.getName(), newName);
         column.setName(newName);
-        jdbcTemplate.execute(sql);
+        getJdbcTemplate().execute(sql);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
@@ -476,7 +473,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
     @Transactional(value = "tdarDataTx", readOnly = true)
     public int getRowCount(ImportTable dataTable) {
         String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+        return getJdbcTemplate().queryForObject(sql, Integer.class);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
@@ -487,7 +484,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         SqlSelectBuilder builder = new SqlSelectBuilder();
         builder.getColumns().add(column.getName());
         builder.getTableNames().add(column.getDataTable().getName());
-        return jdbcTemplate.queryForList(builder.toSql(), String.class);
+        return getJdbcTemplate().queryForList(builder.toSql(), String.class);
     }
 
 
@@ -510,7 +507,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         String sql = String.format("SELECT %s from \"%s\" where to_tsvector('english', %s) @@ to_tsquery(%s)", selectColumns, dataTable.getName(), vector,
                 SqlTools.quote(query, false));
         logger.debug(sql);
-        return jdbcTemplate.query(sql, resultSetExtractor);
+        return getJdbcTemplate().query(sql, resultSetExtractor);
     }
 
     @Override
@@ -521,7 +518,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         WhereCondition where = new WhereCondition(DataTableColumn.TDAR_ROW_ID.getName());
         where.setValue(rowId);
         builder.getWhere().add(where);
-        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+        return getJdbcTemplate().query(builder.toSql(), resultSetExtractor);
     }
 
     @Override
@@ -529,7 +526,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
     public String selectTableAsXml(ImportTable dataTable) {
         String sql = String.format("select table_to_xml('%s',true,false,'');", dataTable.getName());
         logger.debug(sql);
-        return jdbcTemplate.queryForObject(sql, String.class);
+        return getJdbcTemplate().queryForObject(sql, String.class);
     }
 
     @Override
@@ -542,7 +539,7 @@ public class PostgresDatabase extends PostgresImportDatabase implements TargetDa
         String sql = String.format("select * from \"%s\" limit 1", table);
         logger.trace(sql);
         try {
-            SqlRowSet queryForRowSet = jdbcTemplate.queryForRowSet(sql);
+            SqlRowSet queryForRowSet = getJdbcTemplate().queryForRowSet(sql);
             queryForRowSet.next();
             return true;
         } catch (Throwable e) {

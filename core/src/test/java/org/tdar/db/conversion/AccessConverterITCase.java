@@ -52,7 +52,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "rpms_corrected.mdb"), 1224L);
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "rpms_corrected.mdb"), 1224L);
         for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
@@ -70,7 +70,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testSpatialDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "az-paleoindian-point-survey.mdb"), 1129L);
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR, "az-paleoindian-point-survey.mdb"), 1129L);
         for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
@@ -242,7 +242,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testPgmDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "pgm-tdr-test-docs.mdb"), 1125L);
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "pgm-tdr-test-docs.mdb"), 1125L);
         for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
@@ -276,7 +276,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDatabaseWithDateTimeAndDuplicateTableNames() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "a32mo0296-306-1374-1375-mandan-nd.mdb"), 1224L);
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "a32mo0296-306-1374-1375-mandan-nd.mdb"), 1224L);
         for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
@@ -288,7 +288,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
 
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
         spitalIrId++;
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  SPITAL_DB_NAME), spitalIrId);
         return converter;
     }
 

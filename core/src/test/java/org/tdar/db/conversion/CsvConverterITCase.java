@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.conversion.converters.DatasetConverter;
@@ -48,7 +49,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testCsvConverterMalformedFile()
             throws Exception {
-        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(new File(getTestFilePath(), "malformed_csv_dataset.csv"), 505);
+        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "malformed_csv_dataset.csv"), 505);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
@@ -65,7 +66,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testCsvConverterWordQuotedFile()
             throws Exception {
-        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(new File(getTestFilePath(), "word_formed_csv_dataset.csv"), 504);
+        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "word_formed_csv_dataset.csv"), 504);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
@@ -82,7 +83,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testCsvWithTooManyColumns()
             throws Exception {
-        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(new File(getTestFilePath(), "too_many_columns.tab"), 504);
+        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR, "too_many_columns.tab"), 504);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
@@ -100,7 +101,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testCsvConverterWithMultipleTables()
             throws Exception {
-        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(new File(getTestFilePath(), "Workbook1.csv"), 503);
+        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "Workbook1.csv"), 503);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);
