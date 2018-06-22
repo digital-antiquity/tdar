@@ -730,7 +730,7 @@ TDAR.datatable = function() {
                     'resourceTypes' : $("#resourceTypes").val() == undefined ? "" : $("#resourceTypes").val(),
                     'includedStatuses' : $("#statuses").val() == undefined ? "" : $("#statuses").val(),
                     'sortField' : $("#sortBy").val(),
-                    'term' : $("#query").val(),
+                    'query' : $("#query").val(),
                     'projectId' : $("#project-selector").val(),
                     'collectionId' : $("#collection-selector").val(),
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
@@ -907,7 +907,7 @@ TDAR.datatable = function() {
                     'resourceTypes' : "",
                     'includedStatuses' : "",
                     'sortField' : "",
-                    'term' : $("#existing_res_query").val(),
+                    'query' : $("#existing_res_query").val(),
                     'projectId' : "",
                   
                 	//These are sent. 

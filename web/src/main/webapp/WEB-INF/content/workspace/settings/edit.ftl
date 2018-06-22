@@ -32,7 +32,7 @@
         
 
         <p><b>Users who can view/run this integration</b></p>
-        <@edit.listMemberUsers />
+        <@edit.listMemberUsers false />
 
         <@s.hidden name="id" value="${persistable.id?c!-1}" />
         <@edit.submit fileReminder=false />
