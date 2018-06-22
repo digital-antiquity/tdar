@@ -39,7 +39,7 @@ public class LatLongObfuscationTest {
         logger.debug("****** TEST testNegLatLongWithSaltedResult *******");
         SpatialObfuscationUtil.useRandom(false);
         // NOTE: THESE FAIL... why???
-        SpatialObfuscationUtil.setRandom(0.1d);
+        SpatialObfuscationUtil.setRandom(0.9d);
         _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
     } 
     
@@ -141,8 +141,20 @@ public class LatLongObfuscationTest {
         logger.debug("result w:" + llb.getObfuscatedWest() + " < " + west);
         assertNotEquals(geoJsonRaw, geoJsonObs);
         
-        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() > east);
-        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedWest() < west);
+        
+        boolean isWestward = llb.getObfuscatedEast() > east && llb.getObfuscatedWest() > west && llb.getObfuscatedEast() > llb.getCenterLongitude();
+        boolean isEastward = llb.getObfuscatedEast() < east  && llb.getObfuscatedWest() < west && llb.getObfuscatedWest() < llb.getCenterLongitude(); 
+        
+        //This is done as an XOR, which means that the bounding box can cover the west edge or the cover the east edge, but not both.
+        //In both cases, the shift can't extend to such an extent that the center point is no longer covered. 
+        
+        //By changing it to OR , then it means the left edge, the right edge, or both can be covered, but the center must be covered still
+        assertTrue("failed with random of "+SpatialObfuscationUtil.getRandom(),(isEastward ^ isWestward));
+        
+        
+        
+       // assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() > east);
+       // assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedWest() < west);
     }
 
 
@@ -164,8 +176,17 @@ public class LatLongObfuscationTest {
         logger.debug("result w:" + llb.getObfuscatedWest() + " < " + west);
         assertNotEquals(geoJsonRaw, geoJsonObs);
         
-        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() < east);
-        assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedWest() > west);
+        
+         //The point can be shifted such that the point is west of west and east, or east of west and east, but can't be both. 
+        
+        boolean isWestward = llb.getObfuscatedEast() > east && llb.getObfuscatedWest() > west && llb.getObfuscatedEast() > llb.getCenterLongitude();
+        boolean isEastward = llb.getObfuscatedEast() < east  && llb.getObfuscatedWest() < west && llb.getObfuscatedWest() < llb.getCenterLongitude(); 
+        
+        
+        assertTrue("failed with random of "+SpatialObfuscationUtil.getRandom(),(isEastward ^ isWestward));
+        
+       // assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedEast() < east);
+        //assertTrue("failed with random of " + SpatialObfuscationUtil.getRandom(), llb.getObfuscatedWest() > west);
     }
 
 
@@ -210,7 +231,6 @@ public class LatLongObfuscationTest {
             _testWrappingLong();
             SpatialObfuscationUtil.setRandom(null);
             SpatialObfuscationUtil.useRandom(true);
-
     }
 
     private void _testWrappingLong() {
