@@ -32,6 +32,13 @@
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
+            <artifactId>base</artifactId>
+            <scope>test</scope>
+            <type>test-jar</type>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
             <artifactId>databaseprocessing</artifactId>
             <version>${project.version}</version>
         </dependency>
