@@ -1,13 +1,14 @@
 package org.tdar.db.model.abstracts;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.CodingSheet;
+//import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.db.Database;
 import org.tdar.db.ImportDatabase;
 import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.ImportColumn;
@@ -59,14 +60,14 @@ public interface TargetDatabase extends Database , ImportDatabase {
     List<String> selectDistinctValues(ImportTable table, ImportColumn column, boolean sort);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
+    List<List<String>> selectAllFromTable(ImportTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
             String query);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId);
+    <T> T selectRowFromTable(ImportTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    String selectTableAsXml(DataTable dataTable);
+    String selectTableAsXml(ImportTable dataTable);
 
     int getMaxColumnNameLength();
 
@@ -77,4 +78,10 @@ public interface TargetDatabase extends Database , ImportDatabase {
     @Transactional(value = "tdarDataTx", readOnly = true)
     boolean checkTableExists(ImportTable dataTable);
 
+
+    @Transactional(value = "tdarDataTx", readOnly = false)
+    void translateInPlace(final DataTableColumn column, final CodingSheet codingSheet);
+
+    @Transactional(value = "tdarDataTx", readOnly = false)
+    void untranslate(DataTableColumn column);
 }

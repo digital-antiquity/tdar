@@ -5,8 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
+import org.tdar.db.datatable.ImportColumn;
 
 public class AbstractSqlTools {
 
@@ -46,8 +45,7 @@ public class AbstractSqlTools {
         }
     }
 
-    public static String getResultSetValueAsString(ResultSet result, int i, DataTableColumn column) throws SQLException {
-        try {
+    public static String getResultSetValueAsString(ResultSet result, int i, ImportColumn column) throws SQLException {
             switch (column.getColumnDataType()) {
                 case BOOLEAN:
                     return Boolean.toString(result.getBoolean(i));
@@ -61,13 +59,6 @@ public class AbstractSqlTools {
                 default:
                     return result.getString(i);
             }
-        } catch (Exception e) {
-            // FIXME: this may cause an issue with a coded value that's numeric
-            if (column.getColumnEncodingType() == DataTableColumnEncodingType.CODED_VALUE) {
-                return result.getString(i);
-            }
-        }
-        return null;
     }
 
     public void joinListWithCommas(StringBuilder sb, List<String> list, boolean quote) {

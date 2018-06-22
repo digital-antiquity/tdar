@@ -27,9 +27,9 @@ import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.db.Database;
 import org.tdar.db.builder.SqlSelectBuilder;
 import org.tdar.db.builder.WhereCondition;
-import org.tdar.db.model.abstracts.Database;
 import org.tdar.db.model.abstracts.IntegrationDatabase;
 
 import com.opensymphony.xwork2.TextProvider;

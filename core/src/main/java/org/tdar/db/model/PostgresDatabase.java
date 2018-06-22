@@ -28,7 +28,6 @@ import java.util.concurrent.ConcurrentMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +61,9 @@ import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.ImportColumn;
 import org.tdar.db.datatable.ImportTable;
-import org.tdar.db.model.abstracts.AbstractDataRecord;
-import org.tdar.db.model.abstracts.RowOperations;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.postgres.PostgresConstants;
 import org.tdar.exception.TdarRecoverableRuntimeException;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 /**
@@ -79,7 +76,7 @@ import org.tdar.utils.Pair;
  * @version $Revision$
  */
 @Component(value = "target")
-public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
+public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, PostgresConstants {
 
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT * FROM \"%s\" WHERE \"%s\"=?";
@@ -861,7 +858,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public int getRowCount(DataTable dataTable) {
+    public int getRowCount(ImportTable dataTable) {
         String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
         return jdbcTemplate.queryForObject(sql, Integer.class);
     }
@@ -877,55 +874,14 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
 
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
-
-        String columnAssignments = "";
-        final List<Object> values = new ArrayList<Object>();
-        String separator = "";
-        for (Object columnName : data.keySet()) {
-            if (!"id".equals(columnName)) {
-                columnAssignments += separator + columnName + "=" + "?";
-                values.add(data.get(columnName));
-                separator = " ";
-            }
-        }
-        // Put id last so WHERE id = ? will work.
-        values.add(data.get("id"));
-
-        // TODO RR: should this fail with an exception?
-        // Probably should log it.
-        if (values.size() > 1) {
-            String sqlTemplate = "UPDATE \"%s\" SET %s WHERE id = ?";
-            String sql = String.format(sqlTemplate, dataTable.getName(), columnAssignments);
-
-            jdbcTemplate.update(sql, values.toArray());
-        }
-    }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public Set<AbstractDataRecord> findAllRows(DataTable dataTable) {
-        return null;
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void deleteRow(DataTable dataTable, Long rowId) {
-        // Do nothing.
-        // Not allowed this time.
-        // The use case was to allow modification of existing records.
-        // I am interpreting this literally as update only.
-        throw new NotImplementedException(MessageHelper.getMessage("error.not_implemented"));
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
+    public List<List<String>> selectAllFromTable(ImportTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
             String query) {
         List<String> coalesce = new ArrayList<String>();
-        for (DataTableColumn column : dataTable.getDataTableColumns()) {
+        List<ImportColumn> columns =(List<ImportColumn>)(List)dataTable.getDataTableColumns();
+        for (ImportColumn column : columns) {
             coalesce.add(String.format("coalesce(\"%s\",'') ", column.getName()));
         }
 
@@ -943,7 +899,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
+    public <T> T selectRowFromTable(ImportTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         builder.getTableNames().add(dataTable.getName());
         WhereCondition where = new WhereCondition(DataTableColumn.TDAR_ROW_ID.getName());
@@ -954,7 +910,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public String selectTableAsXml(DataTable dataTable) {
+    public String selectTableAsXml(ImportTable dataTable) {
         String sql = String.format("select table_to_xml('%s',true,false,'');", dataTable.getName());
         logger.debug(sql);
         return jdbcTemplate.queryForObject(sql, String.class);

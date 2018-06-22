@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource.datatable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,8 +28,6 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.db.datatable.DataTableColumnRelationshipType;
-import org.tdar.db.datatable.ImportColumn;
 import org.tdar.db.datatable.ImportTable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;

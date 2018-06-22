@@ -5,6 +5,8 @@ package org.tdar.db.model.abstracts;
 
 import java.util.Set;
 
+import org.tdar.db.Database;
+
 /**
  * Marker interface for source DBs, the input of DBConvertor.
  * 

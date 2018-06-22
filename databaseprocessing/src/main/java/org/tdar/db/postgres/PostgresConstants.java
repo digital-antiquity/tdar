@@ -1,4 +1,4 @@
-package org.tdar.db.model;
+package org.tdar.db.postgres;
 
 import java.util.Arrays;
 import java.util.HashSet;

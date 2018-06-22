@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.db.model.abstracts.Database;
+import org.tdar.db.Database;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
