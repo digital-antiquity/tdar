@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.struts.action.dataset.AbstractDatasetController;
-import org.tdar.struts.action.resource.RequiredOptionalPairs;
 import org.tdar.struts_base.action.TdarActionSupport;
 
 /**
