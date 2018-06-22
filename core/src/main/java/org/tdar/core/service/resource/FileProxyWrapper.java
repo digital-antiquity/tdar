@@ -195,6 +195,10 @@ public class FileProxyWrapper {
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(proxy.getVersionType(), filename, irFile);
         if (irFile.isTransient()) {
+            if (irFile.getInformationResource().isTransient()) {
+                datasetDao.saveOrUpdate(irFile.getInformationResource());
+            }
+
             datasetDao.saveOrUpdate(irFile);
         }
 

@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.tdar.filestore.VersionType;
 
-public interface FileStoreFileProxy {
+public interface FileStoreFileProxy extends HasExtension {
 
     String getFilename();
 

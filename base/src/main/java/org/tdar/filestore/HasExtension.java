@@ -1,4 +1,4 @@
-package org.tdar.core.bean.resource.file;
+package org.tdar.filestore;
 
 /**
  * abstraction for things that have a file-extension

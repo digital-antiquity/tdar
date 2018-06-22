@@ -21,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
-import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.filestore.HasExtension;
 import org.tdar.filestore.VersionType;
 
 /**

@@ -46,16 +46,6 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow {
         layer.getOptional().add("mxd");
         shapePairs.add(layer);
 
-        RequiredOptionalPairs geotiff = new RequiredOptionalPairs(ImageWorkflow.class);
-        geotiff.getRequired().add("tif");
-        geotiff.getOptional().add("tfw");
-        shapePairs.add(geotiff);
-        RequiredOptionalPairs geojpg = new RequiredOptionalPairs(ImageWorkflow.class);
-        geojpg.getRequired().add("jpg");
-        geojpg.getOptional().add("jfw");
-        shapePairs.add(geojpg);
-        getRequiredOptionalPairs().addAll(shapePairs);
-
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }

@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
@@ -209,9 +209,12 @@ public class FileAnalyzer {
         return null;
     }
 
-    public ResourceType suggestTypeForFileName(String extension, ResourceType ... resourceTypes) {
+    public ResourceType suggestTypeForFileName(String filename, ResourceType ... resourceTypes) {
+        logger.debug("suggesting type for :{} :: {}", filename, resourceTypes);
+        String extension = FilenameUtils.getExtension(filename).toLowerCase();
         for (ResourceType type : resourceTypes) {
             for (RequiredOptionalPairs pair : getExtensionsForType(type)) {
+                logger.debug("pair:{}, {} / {}", pair.getRequired(), type, filename);
                 if (pair.getRequired().contains(extension)) {
                     return type;
                 }
