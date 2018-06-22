@@ -172,9 +172,6 @@
                         <configuration>
                             <finalName>tdar-base-test</finalName>
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
-                            <excludes>
-                                <exclude>**/hibernate-ehcache.xml</exclude>
-                            </excludes>
                         </configuration>
                     </execution>
                 </executions>

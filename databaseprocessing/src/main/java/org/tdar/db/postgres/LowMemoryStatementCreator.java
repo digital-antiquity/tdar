@@ -1,4 +1,4 @@
-package org.tdar.db.model;
+package org.tdar.db.postgres;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

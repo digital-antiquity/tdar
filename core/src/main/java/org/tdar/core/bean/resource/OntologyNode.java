@@ -31,7 +31,6 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.util.UrlUtils;
-import org.tdar.db.parser.TOntologyNode;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;

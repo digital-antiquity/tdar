@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.tdar.filestore.VersionType;
-
 public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
     private static final long serialVersionUID = -3168636719632062521L;

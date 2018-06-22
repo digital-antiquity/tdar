@@ -3,8 +3,6 @@ package org.tdar.filestore;
 import java.io.File;
 import java.util.Date;
 
-import org.tdar.filestore.VersionType;
-
 public interface FileStoreFileProxy extends HasExtension {
 
     String getFilename();

@@ -43,6 +43,7 @@ import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.ImportColumn;
 import org.tdar.db.datatable.ImportTable;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.postgres.LowMemoryStatementCreator;
 import org.tdar.db.postgres.PostgresImportDatabase;
 
 /**
