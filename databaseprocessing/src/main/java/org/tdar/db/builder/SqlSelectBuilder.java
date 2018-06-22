@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
  * @author abrin
  *
  */
-public class SqlSelectBuilder extends AbstractSqlTools implements Serializable {
+public class SqlSelectBuilder extends SqlTools implements Serializable {
 
     private static final long serialVersionUID = -1875170201260652139L;
     private List<String> columns = new ArrayList<>();

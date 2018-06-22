@@ -27,4 +27,6 @@ public interface ImportDatabase {
 
     void dropTable(String table);
 
+    String getFullyQualifiedTableName(String tableName);
+
 }

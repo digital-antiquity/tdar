@@ -73,8 +73,6 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    public static final String TDAR_ID_COLUMN = "id_row_tdar";
-
     public static final DataTableColumn TDAR_ROW_ID = new DataTableColumn() {
 
         private static final long serialVersionUID = 3518018865128797773L;

@@ -1,5 +1,7 @@
 package org.tdar.db;
 
+import javax.sql.DataSource;
+
 import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.ImportColumn;
 
@@ -49,6 +51,10 @@ public interface Database {
      *            type id as defined in {@link java.sql.Types}
      */
     void alterTableColumnType(String tableName, ImportColumn column, DataTableColumnType type, int length);
+
+    void setDataSource(DataSource dataSource);
+
+    String toImplementedTypeDeclaration(DataTableColumnType dataType, int length_);
 
 
 }

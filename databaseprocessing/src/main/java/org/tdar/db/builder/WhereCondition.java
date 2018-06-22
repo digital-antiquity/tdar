@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class WhereCondition extends AbstractSqlTools implements Serializable {
+public class WhereCondition extends SqlTools implements Serializable {
 
     private static final long serialVersionUID = -5257989550031533775L;
 
