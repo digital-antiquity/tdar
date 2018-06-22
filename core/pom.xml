@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
@@ -15,22 +16,16 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>parent-base</artifactId>
-         <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
+        <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
         <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
-            <dependencies>
-                <dependency>
+        <dependencies>
+            <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk</artifactId>
                 <version>${aws.java.version}</version>
             </dependency>
-
-<!--             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>${commons-compress.version}</version>
-            </dependency> -->
         </dependencies>
     </dependencyManagement>
     <!-- 3rd party dependencies and libraries -->
@@ -45,7 +40,7 @@
             <artifactId>fileprocessing</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
             <version>${aws.java.version}</version>
@@ -56,13 +51,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
-    
+
         <dependency>
             <groupId>org.knowm.xchart</groupId>
             <artifactId>xchart</artifactId>
             <version>${xchart.version}</version>
         </dependency>
-        
+
         <dependency>
             <!-- needed by spring for @Transactional calls -->
             <groupId>cglib</groupId>
@@ -113,12 +108,10 @@
         </dependency>
 
         <!-- <dependency> -->
-            <!-- this attempts to use the META-INF/ configuraiton for the 
-                right logging source; this allows us to pipe hibernate into slf4j -->
-            <!-- <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>3.2.0.Final</version>
-        </dependency> -->
+        <!-- this attempts to use the META-INF/ configuraiton for the right 
+            logging source; this allows us to pipe hibernate into slf4j -->
+        <!-- <groupId>org.jboss.logging</groupId> <artifactId>jboss-logging</artifactId> 
+            <version>3.2.0.Final</version> </dependency> -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
@@ -134,7 +127,7 @@
                 </exclusion>
             </exclusions>
             <!-- LICENSE: LGPL 2.1 -->
-        </dependency>        
+        </dependency>
         <dependency>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>keytool-api</artifactId>
@@ -328,12 +321,8 @@
             <!-- LICENSE: BSD -->
         </dependency>
         <!-- needed for ANDSPidClient -->
-<!--         <dependency>
-            <groupId>commons-httpclient</groupId>
-            <artifactId>commons-httpclient</artifactId>
-            <version>3.1</version>
-        </dependency>
- -->        <!-- these are required for htmlunit 2.10 -->
+        <!-- <dependency> <groupId>commons-httpclient</groupId> <artifactId>commons-httpclient</artifactId> 
+            <version>3.1</version> </dependency> -->        <!-- these are required for htmlunit 2.10 -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
@@ -376,8 +365,8 @@
                     <artifactId>asm-commons</artifactId>
                 </exclusion>
                 <exclusion>
-                        <groupId>org.freemarker</groupId>
-                        <artifactId>freemarker</artifactId>
+                    <groupId>org.freemarker</groupId>
+                    <artifactId>freemarker</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -391,39 +380,24 @@
             <artifactId>asm</artifactId>
             <version>${asm.version}</version>
         </dependency>
-        <!-- <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-debug-all</artifactId>
-            <version>${asm.version}</version>
-        </dependency> -->
+        <!-- <dependency> <groupId>org.ow2.asm</groupId> <artifactId>asm-debug-all</artifactId> 
+            <version>${asm.version}</version> </dependency> -->
 
         <!-- freemarker -->
         <dependency>
-          <groupId>org.freemarker</groupId>
-          <artifactId>freemarker</artifactId>
-          <version>2.3.28</version>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.28</version>
         </dependency>
-<!--         <dependency>
-            <groupId>org.owasp.antisamy</groupId>
-            <artifactId>antisamy</artifactId>
-            <version>1.5.3</version>
-            LICENSE: BSD
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-httpclient</artifactId>
-                    <groupId>commons-httpclient</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency> -->
+        <!-- <dependency> <groupId>org.owasp.antisamy</groupId> <artifactId>antisamy</artifactId> 
+            <version>1.5.3</version> LICENSE: BSD <exclusions> <exclusion> <artifactId>commons-httpclient</artifactId> 
+            <groupId>commons-httpclient</groupId> </exclusion> </exclusions> </dependency> -->
 
- <!--   <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>2.2.4</version>
-        </dependency>-->
+        <!-- <dependency> <groupId>javax.el</groupId> <artifactId>javax.el-api</artifactId> 
+            <version>2.2.4</version> </dependency> -->
         <!-- SPRING DEPENDENCIES (we're not listing them all individually, 
             but includes orm, jdbc, aop, tx, -->
-        
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -609,8 +583,8 @@
                     <artifactId>commons-compress</artifactId>
                 </exclusion>
                 <exclusion>
-                  <groupId>commons-logging</groupId>
-                  <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -654,7 +628,7 @@
             <version>${jackson.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-hibernate5</artifactId>
@@ -715,7 +689,7 @@
                 </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
-       </dependency>
+        </dependency>
     </dependencies>
 
 
@@ -922,44 +896,44 @@
             <id>copy</id>
             <build>
                 <plugins>
-                     <plugin>
-                       <groupId>org.apache.maven.plugins</groupId>
-                       <artifactId>maven-dependency-plugin</artifactId>
-                       <version>2.10</version>
-                       <executions>
-                         <execution>
-                           <id>copy</id>
-                           <phase>package</phase>
-                           <goals>
-                             <goal>copy</goal>
-                           </goals>
-                           <configuration>
-                             <artifactItems>
-                                 <artifactItem>
-                                   <groupId>org.liquibase</groupId>
-                                   <artifactId>liquibase-core</artifactId>
-                                   <version>${liquibase.version}</version>
-                                   <type>jar</type>
-                                   <overWrite>true</overWrite>
-                                   <outputDirectory>target/extra/</outputDirectory>
-                                   <destFileName>liquibase.jar</destFileName>
-                                 </artifactItem>
-                                 <artifactItem>
-                                     <groupId>org.postgresql</groupId>
-                                     <artifactId>postgresql</artifactId>
-                                     <version>${postgresql.jdbc.version}</version>
-                                   <type>jar</type>
-                                   <overWrite>true</overWrite>
-                                   <outputDirectory>target/extra/</outputDirectory>
-                                   <destFileName>postgresql.jar</destFileName>
-                                 </artifactItem>
-                             </artifactItems>
-                             <!-- other configurations here -->
-                           </configuration>
-                         </execution>
-                       </executions>
-                     </plugin>
-                   </plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.10</version>
+                        <executions>
+                            <execution>
+                                <id>copy</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.liquibase</groupId>
+                                            <artifactId>liquibase-core</artifactId>
+                                            <version>${liquibase.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>target/extra/</outputDirectory>
+                                            <destFileName>liquibase.jar</destFileName>
+                                        </artifactItem>
+                                        <artifactItem>
+                                            <groupId>org.postgresql</groupId>
+                                            <artifactId>postgresql</artifactId>
+                                            <version>${postgresql.jdbc.version}</version>
+                                            <type>jar</type>
+                                            <overWrite>true</overWrite>
+                                            <outputDirectory>target/extra/</outputDirectory>
+                                            <destFileName>postgresql.jar</destFileName>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <!-- other configurations here -->
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>
