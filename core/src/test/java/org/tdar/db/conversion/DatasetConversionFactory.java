@@ -21,7 +21,7 @@ public class DatasetConversionFactory {
     public static DatasetConverter getConverter(FileStoreFileProxy dataset, ImportDatabase targetDatabase) {
         try {
             GenericColumnarDataWorkflow workflow = new GenericColumnarDataWorkflow();
-            Class<? extends DatasetConverter> converterClass = workflow.getDatasetConverterForExtension(dataset.getExtension());
+            Class<? extends DatasetConverter> converterClass = workflow.getDatabaaseConverterForExtension(dataset.getExtension());
             DatasetConverter converter = converterClass.newInstance();
             converter.setTargetDatabase(targetDatabase);
             converter.setInformationResourceFileVersion(dataset);
