@@ -65,7 +65,7 @@ public class GisFileReaderTask extends AbstractTask {
                 original = version;
             }
         }
-        FeatureJSON fjson = new FeatureJSON();
+//        FeatureJSON fjson = new FeatureJSON();
         File geoJson = new File(System.getProperty("java.io.tmpdir"), FilenameUtils.getBaseName(file.getName()) + ".json");
         FileWriter writer = new FileWriter(geoJson);
 
@@ -104,13 +104,13 @@ public class GisFileReaderTask extends AbstractTask {
                 ReferencedEnvelope re = new ReferencedEnvelope(env);
                 Polygon geometry = JTS.toGeometry(re);
                 getLogger().debug("{}", geometry);
-                fjson.writeCRS(tiffCov.getCoordinateReferenceSystem(), writer);
+//                fjson.writeCRS(tiffCov.getCoordinateReferenceSystem(), writer);
 
                 DefaultFeatureCollection collection = new DefaultFeatureCollection(null, null);
                 SimpleFeatureType type = DataUtilities.createType("location", "geom:Polygon,name:String");
                 final SimpleFeature feature1 = SimpleFeatureBuilder.build(type, new Object[] { geometry, file.getName() }, null);
                 collection.add(feature1);
-                writeFeatureToGeoJson(original, writer, geoJson, fjson, collection);
+//                writeFeatureToGeoJson(original, writer, geoJson, fjson, collection);
 
                 // getLogger().debug(writer.toString());
 
@@ -131,8 +131,8 @@ public class GisFileReaderTask extends AbstractTask {
                 if (feature != null) {
                     DefaultFeatureCollection fc = new DefaultFeatureCollection(null, null);
                     fc.add(feature);
-                    fjson.writeCRS(DefaultGeographicCRS.WGS84, writer);
-                    writeFeatureToGeoJson(original, writer, geoJson, fjson, fc);
+//                    fjson.writeCRS(DefaultGeographicCRS.WGS84, writer);
+//                    writeFeatureToGeoJson(original, writer, geoJson, fjson, fc);
                 }
                 break;
         }
