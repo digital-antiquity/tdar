@@ -128,7 +128,7 @@ public class FileProxyWrapper {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
         
         InformationResourceFile irFile = proxy.getInformationResourceFile();
-        if (proxy.getAction() == FileAction.ADD && !informationResource.getResourceType().allowsMultipleFiles()) {
+        if (proxy.getAction() == FileAction.ADD && !informationResource.getResourceType().allowsMultipleFiles() && !informationResource.getResourceType().isCompositeFilesEnabled()) {
             if (CollectionUtils.isNotEmpty(informationResource.getInformationResourceFiles()) && informationResource.getInformationResourceFiles().size() > 1) {
                 throw new TdarRecoverableRuntimeException("informationResourceFile.too.many.files");
             }

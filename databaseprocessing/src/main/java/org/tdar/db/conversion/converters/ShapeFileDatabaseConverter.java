@@ -170,7 +170,7 @@ public class ShapeFileDatabaseConverter extends AbstractDatabaseConverter {
                     TDataTableColumn column = dataTable.getColumnByDisplayName(prop.getName().toString());
                     String value = null;
                     if (prop.getValue() != null) {
-                        logger.debug("{} - {}", prop.getName(), prop.getValue().getClass());
+            //            logger.debug("{} - {}", prop.getName(), prop.getValue().getClass());
                         value = prop.getValue().toString();
                     }
                     valueColumnMap.put(column, value);

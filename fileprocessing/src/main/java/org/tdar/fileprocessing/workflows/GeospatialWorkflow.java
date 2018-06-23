@@ -32,15 +32,14 @@ public class GeospatialWorkflow extends BaseWorkflow implements HasDatabaseConve
         getRequiredOptionalPairs().add(geojpg);
         getRequiredOptionalPairs().add(geotiff);
 
-        List<RequiredOptionalPairs> shapePairs = new ArrayList<>();
         RequiredOptionalPairs shapefile = new RequiredOptionalPairs(GenericColumnarDataWorkflow.class);
         shapefile.getRequired().addAll(Arrays.asList("shp", "shx", "dbf"));
-        shapefile.getOptional().addAll(Arrays.asList("sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "cbg", "ixs", "rrd"));
-        shapePairs.add(shapefile);
+        shapefile.getOptional().addAll(Arrays.asList("sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "cbg", "ixs", "rrd","xml"));
+        getRequiredOptionalPairs().add(shapefile);
         RequiredOptionalPairs layer = new RequiredOptionalPairs();
         layer.getRequired().addAll(Arrays.asList("lyr", "jpg"));
-        layer.getOptional().add("mxd");
-        shapePairs.add(layer);
+        layer.getOptional().addAll(Arrays.asList("mxd","xml"));
+        getRequiredOptionalPairs().add(layer);
 
         addTask(ImageThumbnailTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);
