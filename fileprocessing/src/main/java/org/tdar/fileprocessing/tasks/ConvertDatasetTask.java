@@ -23,13 +23,7 @@ public class ConvertDatasetTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        if (!getWorkflowContext().isDataTableSupported()) {
-//            registerFileExtension("csv", CsvConverter.class, CsvCodingSheetParser.class, ResourceType.CODING_SHEET, ResourceType.DATASET);
-//            registerFileExtension("tab", TabConverter.class, TabCodingSheetParser.class, ResourceType.CODING_SHEET, ResourceType.DATASET);
-//
-//            registerFileExtension("merge", null, CsvCodingSheetParser.class, ResourceType.CODING_SHEET);
-//            registerFileExtension("xlsx", ExcelConverter.class, ExcelCodingSheetParser.class, ResourceType.CODING_SHEET, ResourceType.DATASET);
-//            registerFileExtension("xls", ExcelConverter.class, ExcelCodingSheetParser.class, ResourceType.CODING_SHEET, ResourceType.DATASET);
+        if (!getWorkflowContext().isDataTableSupported() || getWorkflowContext().getDatasetConverter() == null) {
 
             getLogger().info("This is not actually a dataset (probably a coding sheet), returning");
             return;

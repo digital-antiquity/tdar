@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
-import org.tdar.fileprocessing.workflows.GenericColumnarDataWorkflow;
+import org.tdar.fileprocessing.workflows.HasDatabaseConverter;
 import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.fileprocessing.workflows.WorkflowContext;
 
@@ -84,8 +84,8 @@ public class MessageServiceImpl implements MessageService {
         resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
-            if (ctx.isCodingSheet() == false && ctx.isDataTableSupported()) {
-                ctx.setDatasetConverter(((GenericColumnarDataWorkflow) workflow_).getDatasetConverterForExtension(ctx.getPrimaryExtension()));
+            if (ctx.isCodingSheet() == false && ctx.isDataTableSupported() && workflow instanceof HasDatabaseConverter) {
+                ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaaseConverterForExtension(ctx.getPrimaryExtension()));
             }
             boolean success = workflow_.run(ctx);
             // Martin: the following mandates that we wait for run to complete.

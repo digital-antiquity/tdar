@@ -58,7 +58,8 @@ public class FileAnalyzer {
                 toReturn.add(FileType.DOCUMENT);
                 break;
             case GEOSPATIAL:
-                toReturn.add(FileType.COLUMNAR_DATA);
+                toReturn.add(FileType.GEOSPATIAL);
+                break;
             case IMAGE:
                 toReturn.add(FileType.IMAGE);
                 break;
