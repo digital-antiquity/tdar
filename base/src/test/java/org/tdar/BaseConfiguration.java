@@ -16,10 +16,9 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.tdar.configuration.PooledDataSourceWrapper;
 
-@ComponentScan(basePackages = { "org.tdar" })
+//@ComponentScan(basePackages = { "org.tdar" })
 @EnableTransactionManagement()
-//@EnableAspectJAutoProxy(proxyTargetClass = true)
-@Configuration()
+//@Configuration()
 @PropertySource(value = "hibernate.properties", ignoreResourceNotFound = true)
 public class BaseConfiguration {
 
