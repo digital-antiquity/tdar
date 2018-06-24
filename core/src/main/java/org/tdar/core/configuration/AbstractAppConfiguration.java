@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
 import org.tdar.configuration.ConfigurationAssistant;
+import org.tdar.configuration.PooledDataSourceWrapper;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.processes.manager.BaseProcessManager;
@@ -89,7 +90,7 @@ public abstract class AbstractAppConfiguration implements Serializable {
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {
         try {
-            return configureDataSource(getMetadataDatabaseName());
+            return new PooledDataSourceWrapper(getMetadataDatabaseName(), env).getDataSource();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -174,84 +175,5 @@ public abstract class AbstractAppConfiguration implements Serializable {
         return new BaseProcessManager();
     }
 
-    /**
-     * Configure the dataSource by using the dataSource prefix (tdardata, tdarmetadata, tdargis); for jpa properties, the defaults of javax.persistance.jdbc.
-     * can be swapped in.
-     * 
-     * @param prefix
-     * @return
-     * @throws PropertyVetoException
-     */
-    protected DataSource configureDataSource(String prefix) throws PropertyVetoException {
-        ComboPooledDataSource ds = new ComboPooledDataSource();
-
-        String driver_ = ".persistence.jdbc.driver";
-        String url_ = ".persistence.jdbc.url";
-        String user_ = ".persistence.jdbc.user";
-        String password_ = ".persistence.jdbc.password";
-        ds.setDriverClass(getProperty(prefix, driver_));
-        setupAndLogJdbcConnectionString(prefix, ds, url_);
-        ds.setUser(getProperty(prefix, user_));
-        ds.setPassword(getProperty(prefix, password_));
-
-        ds.setAcquireIncrement(env.getProperty(prefix + ".acquireIncrement", Integer.class, 5));
-        ds.setPreferredTestQuery(env.getProperty(prefix + ".preferredTestQuery", String.class, "select 1"));
-        ds.setMaxIdleTime(env.getProperty(prefix + ".maxIdleTime", Integer.class, 600));
-        ds.setIdleConnectionTestPeriod(env.getProperty(prefix + ".idleConnectionTestPeriod", Integer.class, 300));
-        ds.setMaxStatements(env.getProperty(prefix + ".maxStatements", Integer.class, 100));
-        ds.setTestConnectionOnCheckin(env.getProperty(prefix + ".testConnectionOnCheckin", Boolean.class, true));
-        ds.setMaxPoolSize(getChainedOptionalProperty(prefix, ".maxConnections", 10));
-        ds.setMinPoolSize(getChainedOptionalProperty(prefix, ".minConnections", 1));
-        return ds;
-    }
-
-    private void setupAndLogJdbcConnectionString(String prefix, ComboPooledDataSource ds, String url_) {
-        String property = getProperty(prefix, url_);
-        String prefix_ = "tdar";
-        String appPrefix = System.getProperty("appPrefix");
-        if (StringUtils.isNotBlank(appPrefix)) {
-            prefix_ = appPrefix;
-        }
-        if (property.contains("?")) {
-            property += "&ApplicationName=" + prefix_;
-        } else {
-            property += "?ApplicationName=" + prefix_;
-        }
-        ds.setJdbcUrl(property);
-        logger.debug(prefix_ + " JDBC Connection (" + prefix + "):" + property);
-    }
-
-    private int getChainedOptionalProperty(String prefix, String key, Integer deflt) {
-        String appPrefix = System.getProperty("appPrefix");
-        String prefix_ = prefix;
-        if (StringUtils.isNotBlank(appPrefix)) {
-            prefix_ = appPrefix + "." + prefix;
-        }
-
-        Integer val = env.getProperty(prefix_ + key, Integer.class);
-        if (val != null) {
-            logger.debug(prefix_ + key + ": " + val);
-            return val;
-        }
-
-        return env.getProperty(prefix + key, Integer.class, deflt);
-    }
-
-    /**
-     * Allow for the override of the default connection properties (good for postGIS)
-     * 
-     * @param prefix
-     * @param val_
-     * @return
-     */
-    private String getProperty(String prefix, String val_) {
-        String val = env.getProperty(prefix + val_);
-        if (val == null) {
-            val = env.getRequiredProperty("javax" + val_);
-        } else {
-            logger.debug("{} --> {}", prefix + val_, val);
-        }
-        return val;
-    }
 
 }

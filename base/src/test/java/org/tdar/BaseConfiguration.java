@@ -1,17 +1,31 @@
-package org.tdar.core.configuration;
+package org.tdar;
 
 import java.beans.PropertyVetoException;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.tdar.configuration.PooledDataSourceWrapper;
 
-public class IntegrationAppConfiguration extends SimpleAppConfiguration {
+@ComponentScan(basePackages = { "org.tdar" })
+@EnableTransactionManagement()
+//@EnableAspectJAutoProxy(proxyTargetClass = true)
+@Configuration()
+@PropertySource(value = "hibernate.properties", ignoreResourceNotFound = true)
+public class BaseConfiguration {
 
-    private static final long serialVersionUID = 6361299741688277624L;
+
+    @Autowired
+    protected Environment env;
 
     @Bean
     @Qualifier("tdarDataTx")

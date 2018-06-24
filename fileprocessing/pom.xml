@@ -11,7 +11,6 @@
 
     <properties>
         <skipTestLiquibase>true</skipTestLiquibase>
-        <testChangeLog>changelog-integration.xml</testChangeLog>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -245,6 +244,54 @@
             <id>test</id>
             <build>
                 <defaultGoal>surefire:test</defaultGoal>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${basedir}/src/test/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <configuration>
+                            <username>${javax.persistence.jdbc.user}</username>
+                            <password>${javax.persistence.jdbc.password}</password>
+                            <url>${javax.persistence.jdbc.url}</url>
+                            <driver>${javax.persistence.jdbc.driver}</driver>
+                            <verbose>false</verbose>
+                            <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <!-- in the "test" context, drop the database contents, 
+                                    and reload it -->
+                                <id>dropall</id>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <logging>warning</logging>
+                                </configuration>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>dropAll</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>

@@ -10,7 +10,6 @@
 
     <properties>
         <skipTestLiquibase>true</skipTestLiquibase>
-        <testChangeLog>changelog-integration.xml</testChangeLog>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -27,6 +26,13 @@
         <dependency>
             <groupId>org.tdar</groupId>
             <artifactId>base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>base</artifactId>
+            <scope>test</scope>
+            <type>test-jar</type>
             <version>${project.version}</version>
         </dependency>
         
@@ -192,6 +198,77 @@
             <version>${geotools.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>${tika.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.pdfbox</groupId>
+                    <artifactId>pdfbox</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>poi-ooxml</artifactId>
+                    <groupId>org.apache.poi</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.tika</groupId>
+                    <artifactId>tika-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>poi</artifactId>
+                    <groupId>org.apache.poi</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>poi-scratchpad</artifactId>
+                    <groupId>org.apache.poi</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>rome</artifactId>
+                    <groupId>rome</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpcore</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>httpmime</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>c3p0</artifactId>
+                    <groupId>c3p0</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.opengis</groupId>
+                    <artifactId>geoapi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>ehcache-core</artifactId>
+                    <groupId>net.sf.ehcache</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-compress</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- Apache POI / HSSF - included via tika -->
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -354,6 +431,54 @@
             <id>test</id>
             <build>
                 <defaultGoal>surefire:test</defaultGoal>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${basedir}/src/test/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-maven-plugin</artifactId>
+                        <configuration>
+                            <username>${javax.persistence.jdbc.user}</username>
+                            <password>${javax.persistence.jdbc.password}</password>
+                            <url>${javax.persistence.jdbc.url}</url>
+                            <driver>${javax.persistence.jdbc.driver}</driver>
+                            <verbose>false</verbose>
+                            <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <!-- in the "test" context, drop the database contents, 
+                                    and reload it -->
+                                <id>dropall</id>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <logging>warning</logging>
+                                </configuration>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>dropAll</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>
