@@ -20,7 +20,8 @@
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label> <br> <br>
 
-    <div id="fileUploadErrors" class="fileuploaderrors controls controls-row" v-if="valid == false">
+
+    <div id="fileUploadErrors" class="fileuploaderrors controls controls-row" >
         
         <ul v-for="(error,index) in errors" >
             <li> <label :for="append('fue',index )">{{ error }}</label>

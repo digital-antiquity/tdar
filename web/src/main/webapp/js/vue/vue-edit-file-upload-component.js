@@ -245,6 +245,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 fileUploadSubmit : function(e, data) {
                 },
                 fileUploadAdd : function(e, data) {
+                    Vue.set(this,"errors", []);
                     // add a file
                     var _app = this;
                     console.log('fileUploadAdd:', e, data);

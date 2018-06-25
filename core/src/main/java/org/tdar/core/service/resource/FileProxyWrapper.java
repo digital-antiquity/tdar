@@ -305,6 +305,10 @@ public class FileProxyWrapper {
                             proxy.setAction(FileAction.NONE);
                         }
                     } else {
+                        if (proxy.getAction() == FileAction.DELETE) {
+                            proxy.setAction(FileAction.NONE);
+                            continue;
+                        }
                         throw new TdarRecoverableRuntimeException("abstractInformationResourceService.bad_proxy", Arrays.asList(proxy.getName(),
                                 proxy.getAction(), proxy.getFileId()));
                     }

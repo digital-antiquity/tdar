@@ -167,8 +167,8 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         console.log(normalName);
         var dupFound = false;
         files.forEach(function(existing) {
-            console.log(existing);
-           if (normalName == existing.name && existing.action != 'DELETE') {
+            console.trace(existing.name , normalName, normalName == __normalize(existing.name), existing.action);
+           if (normalName == __normalize(existing.name) && existing.action != 'DELETE') {
                console.log(replace, normalName);
                if (replace != undefined && replace == normalName) {
                    // ignore
