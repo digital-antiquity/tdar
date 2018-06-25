@@ -937,7 +937,7 @@ TDAR.common = function (TDAR, fileupload, jQuery, tmpl) {
             $("#bigImage").attr('src', $this.data('url'));
             var rights = "";
             if ($this.data("access-rights")) {
-                rights = "This file is <em>" + $this.data("access-rights") + "</em> but you have rights to it";
+                rights = "This file is <em>" + $this.data("access-rights") + "</em>, but you have rights to see it";
             }
             $("#confidentialLabel").html(rights);
             $("#downloadText").html($this.attr('alt'));

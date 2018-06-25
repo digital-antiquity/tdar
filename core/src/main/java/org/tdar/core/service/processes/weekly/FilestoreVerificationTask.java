@@ -54,8 +54,7 @@ public class FilestoreVerificationTask implements Runnable {
                     Thread.sleep(1000);
                     slept--;
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.error("{}",e,e);
                 }
                 if (slept == 0) {
                     running = false;

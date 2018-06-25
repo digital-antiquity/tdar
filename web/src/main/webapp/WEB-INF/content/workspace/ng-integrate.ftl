@@ -86,7 +86,7 @@
                                                 <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
                                             </td>
                                             <td style="width:10%">
-                                                <a class="btn btn-mini delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)">X</a>
+                                                <a class="btn btn-mini delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)" ng-disabled="isReadOnly()">X</a>
                                             </td>
 
                                         </tr>
@@ -130,23 +130,23 @@
 
                             <div class="btn-group">
                                 <div class="btn-group" >
-                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy()}">
+                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
                                         Add Integration Column
                                         <span class="caret"></span>
                                     </a>
                                     <ul class="dropdown-menu" id="btnSetAddIntegrationColumns">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
-                                                ><a ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
+                                                ><a ng-disabled="isReadOnly()" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 </div>
                                 <button type="button" class="btn btn-mini" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
-                                        ng-disabled="!ctrl.integration.ontologies.length || isBusy()"
+                                        ng-disabled="!ctrl.integration.ontologies.length || isBusy() || isReadOnly()"
                                         >Add Display Column</button>
 
                                 <button type="button" class="btn btn-mini" id="btnAddCountColumn"
                                         ng-click="ctrl.addCountColumnClicked()"
-                                        ng-disabled="ctrl.isCountColumnDisabled() || isBusy()"
+                                        ng-disabled="ctrl.isCountColumnDisabled() || isBusy() || isReadOnly()"
                                         >Add Count Column</button>
                             </div>
 
@@ -228,7 +228,7 @@
                                                     </thead>
                                                     <tbody>
                                                     <tr ng-repeat="nodeSelection in outputColumn.nodeSelections" ng-init="nodeIndex = $index">
-                                                        <td><input type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{::nodeSelection.node.id}}"></td>
+                                                        <td><input ng-disabled="isReadOnly()" type="checkbox" name="cbont" ng-model="nodeSelection.selected" id="cbont_{{::nodeSelection.node.id}}"></td>
                                                         <td style="white-space: nowrap;">
                                                             <div class="nodechild{{::nodeSelection.node.index.split('.').length}}">
                                                                 <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
