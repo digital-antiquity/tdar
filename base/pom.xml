@@ -31,7 +31,7 @@
                 <artifactId>maven-remote-resources-plugin</artifactId>
                 <version>1.5</version>
                 <executions>
-                    <execution>
+                    <!-- <execution>
                         <id>process-resources</id>
                         <goals>
                             <goal>process</goal>
@@ -43,7 +43,7 @@
                                 <resourceBundle>org.tdar:locales:${project.version}</resourceBundle>
                             </resourceBundles>
                         </configuration>
-                    </execution>
+                    </execution> -->
                     <execution>
                         <id>process-test-resources</id>
                         <goals>

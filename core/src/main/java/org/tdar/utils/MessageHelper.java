@@ -37,30 +37,31 @@ public class MessageHelper implements Serializable, TextProvider {
     private ResourceBundle bundle;
 
     protected MessageHelper() {
+        this(BUNDLE_NAME);
+    }
+
+    protected MessageHelper(String name) {
         try {
-            ResourceBundle.getBundle(BUNDLE_NAME);
+            bundle = ResourceBundle.getBundle(name);
         } catch (NoClassDefFoundError | MissingResourceException cnf) {
-            loadFalback();
-            if (bundle == null) {
-                throw cnf;
-            }
         }
         if (bundle == null) {
-            loadFalback();
+            loadFalback(name);
         }
     }
 
-    private void loadFalback() {
+    private void loadFalback(String name) {
         Logger log = LoggerFactory.getLogger(MessageHelper.class);
         log.warn("loading fallback locale");
-        for (String fallback : Arrays.asList("../locales/src/main/resources/", "../../locales/src/main/resources/","locales/src/main/resources/", "../../../locales/src/main/resources/")) {
+        for (String fallback : Arrays.asList("../locales/src/main/resources/", "../../locales/src/main/resources/", "locales/src/main/resources/",
+                "../../../locales/src/main/resources/")) {
             if (new File(fallback).exists()) {
                 try {
                     List<URL> paths = new ArrayList<>();
                     paths.add(new File(fallback).toURI().toURL());
                     ClassLoader loader = new URLClassLoader(paths.toArray(new URL[0]));
                     log.debug("{}", paths);
-                    loadBundle(BUNDLE_NAME, loader);
+                    loadBundle(name, loader);
                     if (bundle != null) {
                         return;
                     }
@@ -71,7 +72,6 @@ public class MessageHelper implements Serializable, TextProvider {
             }
         }
     }
-
 
     private void loadBundle(String path, ClassLoader loader) {
         bundle = ResourceBundle.getBundle(path, Locale.getDefault(), loader);
