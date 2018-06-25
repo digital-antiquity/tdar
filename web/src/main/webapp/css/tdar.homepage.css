@@ -1,0 +1,53 @@
+
+/** RSS-NEWS FEED **/
+
+#home .news ul, #home .news li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    clear: left;
+}
+
+#home .news li:first-child {
+    padding: 0 0 16px 60px;
+}
+
+#home .news li {
+    font-size: 12px;
+    line-height: 20px;
+    color: #7d7a77;
+    font-style: italic;
+    display: block;
+    position: relative;
+    padding: 12px 0 26px 60px;
+    border-bottom: 1px solid #e8e3d7;
+    min-height: 4em;
+}
+
+#home .news span {
+    font-weight: 700;
+    color: #e3dfd8;
+    display: block;
+    width: 35px;
+    position: absolute;
+    left: 0;
+    text-align: center;
+    font-size: 16px;
+    line-height: 24px;
+    font-style: normal;
+}
+
+#home .news em {
+    font-size: 30px;
+    font-style: normal;
+    display: block;
+}
+
+#home .news a.title {
+    font-family: helvetica, arial, sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    font-style: normal;
+    display: block;
+}
+
