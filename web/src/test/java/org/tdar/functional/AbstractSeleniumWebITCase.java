@@ -2,7 +2,6 @@ package org.tdar.functional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
@@ -252,7 +251,9 @@ public abstract class AbstractSeleniumWebITCase {
 
         someTask = new KillSeleniumAfter();
         long timeDelay = 10; // You can specify 3 what
+
         someScheduler.schedule(someTask, timeDelay, TimeUnit.MINUTES);
+
 
     }
 
@@ -337,6 +338,8 @@ public abstract class AbstractSeleniumWebITCase {
                         .build();
 
                 ChromeOptions copts = new ChromeOptions();
+//                copts.setCapability("pageLoadStrategy", "none");
+                
                 // copts.setExperimentalOption("autofill.enabled",false);
 
                 // turn off autocomplete: https://code.google.com/p/chromedriver/issues/detail?id=333
@@ -411,6 +414,11 @@ public abstract class AbstractSeleniumWebITCase {
         }
         if (someTask != null) {
             someTask.disable();
+            try {
+            someScheduler.shutdownNow();
+            } catch (Throwable t) {
+                logger.error(t.getMessage(),t,t);
+            }
         }
 
         if (quitBrowserBetweenTests) {
@@ -1252,7 +1260,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("fileAsyncUpload")));
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("fileuploadWrapper")));
         // TEMPORARY FIX
         try {
             Thread.sleep(500);
@@ -1260,10 +1268,11 @@ public abstract class AbstractSeleniumWebITCase {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        waitFor((WebDriver driver) -> driver.findElement(By.id("fileAsyncUpload")).isEnabled());
-        find(By.id("fileAsyncUpload")).sendKeys(uploadFile.getAbsolutePath());
-        waitFor(".delete-button");
+        waitFor((WebDriver driver) -> driver.findElement(By.id("fileupload")).isEnabled());
+        find(By.id("fileupload")).sendKeys(uploadFile.getAbsolutePath());
+        waitFor(ExpectedConditions.textToBePresentInElementLocated(By.id("uploadstatus"), "Complete"));
         find("#proxy0_conf").val(restriction.name());
+        waitFor(ExpectedConditions.attributeToBeNotEmpty(find(By.id("ticketId")).first(), "value"));
     }
 
     protected void prepIndexedFields(Collection<String> fieldNames) {
@@ -1280,14 +1289,15 @@ public abstract class AbstractSeleniumWebITCase {
     protected void expandAllTreeviews() {
         int giveupCount = 0;
         // yes, you really have to do this. the api has no "expand all" method.
-        WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
-        while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
-            waitFor(TdarExpectedConditions.stabilityOfElement(".expandable-hitarea"), Duration.of(10, ChronoUnit.SECONDS), Duration.of(125, ChronoUnit.MILLIS))
-                    .click();
-            // visibleElements.click();
-            visibleElements = find(".expandable-hitarea").visibleElements();
-        }
-        assertTrue("trying to expand all listview subtrees", giveupCount < 100);
+        executeJavascript("$(\".expandable-hitarea\").click();");
+//        WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
+//        while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
+//            waitFor(TdarExpectedConditions.stabilityOfElement(".expandable-hitarea"), Duration.of(10, ChronoUnit.SECONDS), Duration.of(125, ChronoUnit.MILLIS))
+//                    .click();
+//            // visibleElements.click();
+//            visibleElements = find(".expandable-hitarea").visibleElements();
+//        }
+//        assertTrue("trying to expand all listview subtrees", giveupCount < 100);
     }
 
     protected void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
@@ -1698,7 +1708,7 @@ public abstract class AbstractSeleniumWebITCase {
     public void clearFileInputStyles() {
         // todo: we removed this back in rev 94d504cf5128:7082 as workaround to FirefoxDriver bug.
         // Try removing the workaround and seeing if the firefoxdriver bug is fixed.
-        WebElement input = find("#fileAsyncUpload").first();
+        WebElement input = find("#fileupload").first();
         showAsyncFileInput(input);
     }
 

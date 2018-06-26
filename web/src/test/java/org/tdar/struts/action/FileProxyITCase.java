@@ -18,7 +18,6 @@ import static org.tdar.TestConstants.TEST_DOCUMENT_DIR;
 import static org.tdar.TestConstants.TEST_IMAGE_DIR;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,7 +36,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
-import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 
 /**
@@ -149,7 +147,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
         controller.prepare();
         controller.edit();
         controller.getFileProxies().get(0).setAction(FileAction.DELETE);
-        String deletedFilename = controller.getFileProxies().get(0).getFilename();
+        String deletedFilename = controller.getFileProxies().get(0).getName();
         // replace the confidential file
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {
@@ -159,7 +157,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
         }
         replaceConfidentialFileProxy.setAction(FileAction.REPLACE);
         replaceConfidentialFileProxy.setRestriction(FileAccessRestriction.PUBLIC);
-        replaceConfidentialFileProxy.setFilename("pia-09-lame-1980.pdf");
+        replaceConfidentialFileProxy.setName("pia-09-lame-1980.pdf");
         Pair<PersonalFilestoreTicket, List<FileProxy>> newProxyList = uploadFilesAsync(Arrays.asList(new File(TEST_DOCUMENT_DIR
                 + "pia-09-lame-1980.pdf")));
         controller.setTicketId(newProxyList.getFirst().getId());
@@ -213,7 +211,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
 
         FileProxy replaceConfidentialFileProxy = null;
         for (FileProxy proxy : controller.getFileProxies()) {
-            if (proxy.getFilename().equals(a2pdf)) {
+            if (proxy.getName().equals(a2pdf)) {
                 replaceConfidentialFileProxy = proxy;
             }
         }
@@ -236,7 +234,7 @@ public class FileProxyITCase extends AbstractControllerITCase {
     }
 
     @Test
-    public void testImageWithUppercaseFilename() throws FileNotFoundException, TdarActionException {
+    public void testImageWithUppercaseFilename() throws Exception {
         PersonalFilestoreTicket ticket = grabTicket();
         FileProxy fileProxy = uploadFileAsync(new File(TEST_IMAGE_DIR, "GREYBOX.PNG"), ticket);
         ImageController controller = generateNewInitializedController(ImageController.class);
