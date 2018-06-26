@@ -35,13 +35,22 @@ public class LatLongObfuscationTest {
     }
 
     @Test
-    public void testRandomWithPointOne(){
+    public void testRandomWithVerySmall(){
         logger.debug("****** TEST testNegLatLongWithSaltedResult *******");
         SpatialObfuscationUtil.useRandom(false);
         // NOTE: THESE FAIL... why???
-        SpatialObfuscationUtil.setRandom(0.9d);
+        SpatialObfuscationUtil.setRandom(0.0000001d);
         _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
-    } 
+    }
+
+    @Test
+    public void testRandomWithVeryLarge(){
+        logger.debug("****** TEST testNegLatLongWithSaltedResult *******");
+        SpatialObfuscationUtil.useRandom(false);
+        // NOTE: THESE FAIL... why???
+        SpatialObfuscationUtil.setRandom(0.9999999d);
+        _testNegativeLatLongWithSalt(smallNeg, smallNeg2, smallNeg2, smallNeg);
+    }
     
     @Test
     public void testNegLatLongWithSaltedResult() {

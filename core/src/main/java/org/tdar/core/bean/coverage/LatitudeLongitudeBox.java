@@ -453,18 +453,21 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return Math.abs(getObfuscatedEast() - getObfuscatedWest());
     }
 
+    @Deprecated
     public double getAbsoluteLatLength() {
-        if (getObfuscatedNorth() == null) {
-            updateObfuscatedValues();
-        }
-        return Math.abs(getObfuscatedNorth() - getObfuscatedSouth());
+        return Math.abs(getNorth() - getSouth());
     }
 
+    @Deprecated
     public double getAbsoluteLongLength() {
-        if (getObfuscatedEast() == null) {
-            updateObfuscatedValues();
+        if (crossesPrimeMeridian()) {
+            return Math.abs(getWest() - getEast());
         }
-        return Math.abs(getObfuscatedEast() - getObfuscatedWest());
+        if (crossesDateline()) {
+            logger.debug("e: {}, w: {}",getEast(), getWest());
+            return Math.abs(MIN_LONGITUDE - getEast()) + Math.abs(MAX_LONGITUDE - getWest());
+        }
+        return Math.abs(getEast() - getWest());
     }
 
     public double getArea() {
@@ -475,17 +478,17 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @return
      */
     public boolean crossesDateline() {
-        if (getObfuscatedEast() == null) {
-            updateObfuscatedValues();
-        }
-        return LatitudeLongitudeBox.crossesDateline(getObfuscatedWest(), getObfuscatedEast());
+//        if (getObfuscatedEast() == null) {
+//            updateObfuscatedValues();
+//        }
+        return LatitudeLongitudeBox.crossesDateline(getWest(), getEast());
     }
 
     public boolean crossesPrimeMeridian() {
-        if (getObfuscatedEast() == null) {
-            updateObfuscatedValues();
-        }
-        return LatitudeLongitudeBox.crossesPrimeMeridian(getObfuscatedWest(), getObfuscatedEast());
+//        if (getObfuscatedEast() == null) {
+//            updateObfuscatedValues();
+//        }
+        return LatitudeLongitudeBox.crossesPrimeMeridian(getWest(), getEast());
     }
 
     public static boolean crossesDateline(double minLongitude, double maxLongitude) {

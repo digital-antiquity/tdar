@@ -34,8 +34,8 @@ public class SpatialObfuscationUtil {
         double oneMile = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
 
         // get the width and height of the LLB
-        double userBoxLatLength = Math.abs(latitudeLongitudeBox.getNorth() - latitudeLongitudeBox.getSouth());
-        double userBoxLongLength = Math.abs(latitudeLongitudeBox.getEast() - latitudeLongitudeBox.getWest());
+        double userBoxLatLength = latitudeLongitudeBox.getAbsoluteLatLength();
+        double userBoxLongLength = latitudeLongitudeBox.getAbsoluteLongLength();
         boolean obfuscated = false;
 
         // Set how wide you want the bounding box to be if it is obsfucating the original. The box needs to be > 1 mile because if the box approximates 1 mile,
@@ -45,12 +45,12 @@ public class SpatialObfuscationUtil {
 
         if (logger.isTraceEnabled()) {
             logger.trace("absoluteLatLength = {} degrees, {} mi", userBoxLatLength, degMinutesToMiles(userBoxLatLength));
-            logger.trace("absoluteLongLength = {} degrees, {} mi", userBoxLongLength, degMinutesToMiles(userBoxLatLength));
+            logger.trace("absoluteLongLength = {} degrees, {} mi", userBoxLongLength, degMinutesToMiles(userBoxLongLength));
         }
 
         // This is the delta of how wide/tall the box is.
-        double boxWidthDelta = Math.abs(boundingBoxWidth - userBoxLatLength);
-        double boxHeightDelta = Math.abs(boundingBoxHeight - userBoxLongLength);
+        double boxWidthDelta = Math.abs(boundingBoxWidth - userBoxLongLength);
+        double boxHeightDelta = Math.abs(boundingBoxHeight - userBoxLatLength);
 
         if (logger.isTraceEnabled()) {
             logger.trace("The width delta is {} degrees, {} mi", boxWidthDelta, degMinutesToMiles(boxWidthDelta));
@@ -62,7 +62,7 @@ public class SpatialObfuscationUtil {
             obfuscate(latitudeLongitudeBox, userBoxLatLength, boundingBoxHeight, boxHeightDelta, true);
             obfuscated = true;
         } else {
-            logger.debug("Not obsfucating the latitude");
+            logger.trace("Not obsfucating the latitude");
             // otherwise obfuscated values are set to current values because we don't need to obfuscate
             latitudeLongitudeBox.setObfuscatedNorth(latitudeLongitudeBox.getNorth());
             latitudeLongitudeBox.setObfuscatedSouth(latitudeLongitudeBox.getSouth());
@@ -72,6 +72,7 @@ public class SpatialObfuscationUtil {
             obfuscate(latitudeLongitudeBox, userBoxLongLength, boundingBoxWidth, boxWidthDelta, false);
             obfuscated = true;
         } else {
+            logger.trace("Not obsfucating the longitude");
             latitudeLongitudeBox.setObfuscatedEast(latitudeLongitudeBox.getEast());
             latitudeLongitudeBox.setObfuscatedWest(latitudeLongitudeBox.getWest());
         }
@@ -81,7 +82,11 @@ public class SpatialObfuscationUtil {
     private static void obfuscate(LatitudeLongitudeBox latitudeLongitudeBox, double userBoxLatLength, double boundingBoxHeight, double boxHeightDelta,
             boolean latitude) {
         if (logger.isTraceEnabled()) {
-            logger.trace("Obsfucating the latitude, because it's less than one mile in degrees minutes");
+            if (latitude) {
+                logger.trace("Obsfucating the latitude, because it's less than one mile in degrees minutes");
+            } else {
+                logger.trace("Obsfucating the longitude, because it's less than one mile in degrees minutes");
+            }
         }
         // get the center
         Double center = latitudeLongitudeBox.getCenterLatitude();
@@ -110,21 +115,30 @@ public class SpatialObfuscationUtil {
         // box.
         // If the shift is greater than that difference, then it means that shift will be too far won't cover the boundary.
         // This second shift is so that the shift back isn't so great that it no longer covers the box.
-        //Math.min(maxShift, randomShift);
+        // Math.min(maxShift, randomShift);
         double shift = randomShift;
 
         // If the delta is less than half the width of the box, then the initial position of the box won't be far enough down to cover the
         // southern boundry of the box. This ensures that coverage.
-//        double minimumOffset = Math.max(boxHeightDelta, (absoluteLatLength / 2d) + shift);
+        // double minimumOffset = Math.max(boxHeightDelta, (absoluteLatLength / 2d) + shift);
         double minimumOffset = userBoxLatLength / 2d + shift;
 
         if (logger.isTraceEnabled()) {
-            logger.trace("The box will be offset southward  {} deg, {} mi ", minimumOffset, degMinutesToMiles(minimumOffset));
-            logger.trace("The box will be shifted north {} degrees, {} mi ", shift, degMinutesToMiles(shift));
+            String o = "north";
+            String o2 = "south";
+            if (!latitude) {
+                o = "east";
+                o2 = "west";
+            }
+            if (latitude) {
+                logger.trace("The box will be offset {}  {} deg, {} mi ", o2, minimumOffset, degMinutesToMiles(minimumOffset));
+                logger.trace("The box will be shifted {} {} degrees, {} mi ", o, shift, degMinutesToMiles(shift));
+            }
+
         }
         // x y random1 random2 random3 random4 distance
         // The point is also moved slightly left of center so that the obfuscating box will never touch the original box.
-        double p1 = (center - minimumOffset - .000001) + shift; 
+        double p1 = (center - minimumOffset - .000001) + shift;
 
         // north is then south plus the height of the box.
         double p2 = p1 + boundingBoxHeight;

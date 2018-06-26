@@ -7,6 +7,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.tdar.core.bean.coverage.LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
 
 import java.math.RoundingMode;
@@ -471,7 +472,7 @@ public class LatitudeLongitudeBoxTest {
     }
 
     @Test
-    public void testCenterWithDateline() {
+    public void testCenterWithDatelineAntiMeridian() {
         double minimumLongitude = -170d;
         double maximumLongitude = 170d;
         double minimumLatitude = 1;
@@ -484,6 +485,37 @@ public class LatitudeLongitudeBoxTest {
         logger.debug("{}", llb.getObfuscatedCenterLongitude());
         assertTrue(Double.valueOf(6.0).equals(llb.getObfuscatedCenterLatitude()));
         assertTrue(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLongitude()));
+    }
+    
+    @Test
+    public void testObfuscatedWithCenterAntiMeridian() {
+        double minimumLongitude =  179.9999999d;
+        double maximumLongitude = -179.9999999d;
+        double minimumLatitude = 1;
+        double maximumLatitude = 11;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
+        SpatialObfuscationUtil.obfuscate(llb);
+        
+//        llb.obfuscate();
+        logger.debug("{}/ {}", llb.getObfuscatedEast(), llb.getObfuscatedWest());
+        assertTrue(llb.getObfuscatedEast() > maximumLongitude);
+        assertTrue(llb.getObfuscatedWest() < minimumLongitude);
+        fail("i don't trust this");
+    }
+    @Test
+    public void testObfuscatedWithCenterPrimeMeridian() {
+        double minimumLongitude = -.00001d;
+        double maximumLongitude =  .00001d;
+        double minimumLatitude = 1;
+        double maximumLatitude = 11;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
+
+        
+        llb.obfuscate();
+        logger.debug("{}/ {}", llb.getObfuscatedEast(), llb.getObfuscatedWest());
+        assertTrue(minimumLongitude < llb.getObfuscatedEast() );
+        assertTrue(llb.getObfuscatedWest() > maximumLongitude);
+        fail("i don't trust this");
     }
 
     @SuppressWarnings({ "static-method", "deprecation" })
