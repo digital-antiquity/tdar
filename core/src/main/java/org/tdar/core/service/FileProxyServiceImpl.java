@@ -134,6 +134,8 @@ public class FileProxyServiceImpl implements FileProxyService {
                         primary.add(file);
                     }
                     all.add(file);
+                } else {
+                    logger.debug("file is null for: {}", proxy);
                 }
             }
         }

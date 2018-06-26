@@ -6,7 +6,6 @@
 <#import "/WEB-INF/macros/search-macros.ftl" as search>
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 <#import "/WEB-INF/macros/common.ftl" as common>
-<#import "/${config.themeDir}/settings.ftl" as settings>
 
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>

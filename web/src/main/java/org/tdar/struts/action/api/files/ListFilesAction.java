@@ -49,7 +49,13 @@ public class ListFilesAction extends AbstractJsonApiAction {
     @Action(value = "list",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") })
     public String execute() throws IOException {
-        List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, getTerm(), sortBy,  getAuthenticatedUser());
+        List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, getTerm(), sortBy, getAuthenticatedUser());
+        if (parent == null) {
+            TdarDir dir = personalFilestoreService.findUnfileDir(getAuthenticatedUser());
+            if (dir != null) {
+                files.add(dir);
+            }
+        }
         setResultObject(files);
         return SUCCESS;
     }
