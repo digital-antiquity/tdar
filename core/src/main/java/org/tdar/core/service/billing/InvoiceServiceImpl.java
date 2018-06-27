@@ -2,10 +2,8 @@ package org.tdar.core.service.billing;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +24,6 @@ import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Address;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.EmailType;
@@ -44,7 +41,6 @@ import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 @Service

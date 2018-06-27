@@ -17,6 +17,7 @@ import org.tdar.core.service.GeoRssMode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonLookupFilter;
 
 @Namespaces(value = {
@@ -58,7 +59,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
     }
 
     @Override
-    public void jsonifyResult(Class<?> filter) {
+    public void jsonifyResult(Class<?  extends JacksonView> filter) {
         prepareResult();
         if (!isReindexing()) {
             try {

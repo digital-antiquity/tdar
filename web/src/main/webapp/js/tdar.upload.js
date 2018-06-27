@@ -52,6 +52,10 @@ TDAR.fileupload = (function (TDAR, $) {
             $('html').addClass("ie10")
         }
 
+//        $(".fileinput-button").click(function(e) {
+//            var el = $("input[type='file']", this);
+//            el.trigger('click');
+//        });
         //combine options w/ defaults
         var _options = $.extend(_defaults, options);
 

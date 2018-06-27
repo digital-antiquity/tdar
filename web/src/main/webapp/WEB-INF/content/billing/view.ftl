@@ -182,6 +182,16 @@
     </#list>
 </table>
 
+<#if editor>
+<h3>Account File Settings</h3>
+<p>
+    <b>Files Expire After:</b> ${account.daysFilesExpireAfter}<br/>
+    <b>Full Service Enabled:</b> ${account.fullService?c}<br/>
+    <b>Initial Review Phase:</b> ${account.initialReview?c}<br/>
+    <b>External Review Phase:</b> ${account.externalReview?c}<br/>
+    
+</#if>
+
 <h3>Resources associated with this account</h3>
 <table class="tableFormat table">
     <thead>

@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -216,6 +217,11 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         localizedTextProvider.addDefaultResourceBundle("target/maven-shared-archive-resources/Locales/tdar-messages");
         localizedTextProvider.addDefaultResourceBundle("target/Locales/tdar-messages");
         localizedTextProvider.addDefaultResourceBundle("Locales/tdar-messages");
+        File f = new File("..");
+        localizedTextProvider.addDefaultResourceBundle(f.getAbsolutePath() + "/locales/src/main/resources/Locales/tdar-freemarker-messages");
+        localizedTextProvider.addDefaultResourceBundle(f.getAbsolutePath() + "/locales/src/main/resources/Locales/tdar-messages");
+        localizedTextProvider.addDefaultResourceBundle("../../locales/src/main/resources/Locales/tdar-freemarker-messages");
+        localizedTextProvider.addDefaultResourceBundle("../../locales/src/main/resources/Locales/tdar-messages");
         localizedTextProvider.addDefaultResourceBundle("target/classes/Locales/tdar-messages");
     }
 

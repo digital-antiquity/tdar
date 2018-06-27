@@ -230,4 +230,16 @@ public class TdarEventListener extends WebDriverEventAdapter {
 //        
 //    }
 
+    @Override
+    public <X> void afterGetScreenshotAs(OutputType<X> arg0, X arg1) {
+        logger.trace("afterGetScreenshotAs");
+        
+    }
+
+    @Override
+    public <X> void beforeGetScreenshotAs(OutputType<X> arg0) {
+        logger.trace("beforeGetScreenshotAs");
+        
+    }
+
 }

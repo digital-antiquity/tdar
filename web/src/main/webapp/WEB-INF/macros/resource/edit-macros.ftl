@@ -850,7 +850,7 @@ to singleFileUpload, continue lifting useful logic here into singleFileUpload (e
 jquery validation hooks?)
 MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
-<#-- emit file upload section for non-async uploads -->
+<#-- emit file upload section for non-async uploads --> 
     <#macro upload uploadLabel="File" showMultiple=false divTitle="Upload File" showAccess=true>
         <@_sharedUploadFile>
             <@_singleFileUpload>
@@ -882,40 +882,18 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
         <div class='fileupload-content'>
             <#nested />
-        <#-- XXX: verify logic for rendering this -->
             <#if multipleFileUploadEnabled || resource.hasFiles()>
-                <!-- not sure this is ever used -->
                 <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
 
                 <div class="">
                     <p><span class="label">Note:</span> You can only have <strong><#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord}
                         files</#if> </strong> per record</p>
                 </div>
-                <table id="uploadFiles" class="files table tableFormat">
-                </table>
-                <table id="files" class="files sortable">
-                    <thead>
-                    <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-                        <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <#list fileProxies as fileProxy>
-                            <#if fileProxy??>
-                                <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
-                            </#if>
-						<#else>
-                        <tr class="noFiles newRow">
-                            <td><em>no files uploaded</em></td>
-                        </tr>
-                        </#list>
-                    </tbody>
-                </table>
             </#if>
         </div>
         <@helptext.confidentialFile />
     </div>
-    </#macro>
+    </#macro> 
     <#macro _singleFileUpload typeLabel="${resource.resourceType.label}">
         <#if !ableToUploadFiles>
             <#if ableToAdjustPermissions?? && !ableToAdjustPermissions>
@@ -968,91 +946,16 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <b>note:</b> your billing acccount is overdrawn. You must add funds to your account before you can add or replace a file.<br/>
             </#if>
         <#else>
-            <div class="row fileupload-buttonbar">
-                <div class="span2">
-                    <!-- The fileinput-button span is used to style the file input field as button -->
-            <span class="btn btn-success fileinput-button btn-block">
-                <i class="icon-plus icon-white"></i>
-                <span class="btn-lbl-singleclick">Add files...</span>
-                <span class="btn-lbl-doubleclick">Double-click to add files ...</span>
-            <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="${inputFileCss}">
-            </span>
-                </div>
-                <!-- The global progress information -->
-                <div class="span5 fileupload-progress fade">
-                    <!-- The global progress bar -->
-                    <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                        <div class="bar" style="width:0%;"></div>
-                    </div>
-                    <!-- The extended global progress information -->
-                    <div class="progress-extended">&nbsp;</div>
-                </div>
-            </div>
-            <!-- The loading indicator is shown during file processing -->
-            <div class="fileupload-loading"></div>
-            <!-- The table listing the files available for upload/download -->
-        </#if>
-        <table id="files" role="presentation" class="table table-striped table-bordered">
-            <tbody id="fileProxyUploadBody" class="files">
-                <#list fileProxies as fileProxy>
-                <#if fileProxy??>
-                    <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
-                </#if>
-            </#list>
-            </tbody>
-        </table>
-        <div id="cancelledProxies" style="display:none">
+                <#assign uploadConfigId="uploadConfig"/>
+                <script id="uploadConfig" type="application/json">
+                <#noescape>
+                ${fileUploadSettings!''}
+                </#noescape>
+                </script>
 
-        </div>
+			<#include "../../content/resource/vue-file-upload-template.html"/>
+        </#if>
     </div>
-    </#macro>
-    <#macro _fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=blankFileProxy >
-    <tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable fade existing-file in">
-
-        <td class="preview">
-        <#--
-                        <#if (proxy.informationResourceFile.latestThumbnail)?has_content>
-                <img src="<@s.url value="/filestore/${proxy.informationResourceFile.latestThumbnail.id?c}/thumbnail"/>">
-            </#if>
-            
-            -->
-        </td>
-        <td class="name">
-        	<#if versionId != -1>
-            <a href="<@s.url value='/filestore/get/${id?c}/${versionId?c}'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
-			</#if>
-            <span class="replacement-text"></span>
-        </td>
-        <td class="size"><span>${filesize} bytes</span></td>
-        <#if ableToUploadFiles>
-            <td colspan="2">
-
-                        <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right"
-                        style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
-                <#local val = ""/>
-                <#if (proxy.fileCreatedDate)?has_content>
-                        <#local val = proxy.fileCreatedDate?string["MM/dd/yyyy"]>
-                    </#if>
-                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
-                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
-
-            </td>
-
-            <td class="delete">
-                <button class="btn btn-danger delete-button" data-type="DELETE" data-url="">
-                    <i class="icon-trash icon-white"></i><span>Delete</span>
-                </button>
-            </td>
-            <td>
-
-                <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}">
-                <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}">
-                <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}">
-                <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value="${rowId}">
-
-            </td>
-        </#if>
-    </tr>
     </#macro>
 
 <#-- emit the right-sidebar section.  Note this gets parsed by sitemesh, so more content will go inside.
