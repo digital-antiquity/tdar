@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -158,8 +159,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         proxy.setResourceProviderInstitutionName(resourceProviderInstitutionName);
         proxy.setPublisherName(publisherName);
         proxy.setCopyrightHolder(copyrightHolderProxies);
-        proxy.setValidFileExtensions(getValidFileExtensions());
-
+        List<String> exts = new ArrayList<>(getValidFileExtensions());
+        for (int i=0; i < exts.size(); i++) {
+            exts.set(i, "." + exts.get(i));
+        }
+        proxy.setValidFileExtensions(exts);
         fsw.setBulkUpload(isBulkUpload());
         fsw.setFileProxies(getFileProxies());
         fsw.setFileTextInput(fileTextInput);

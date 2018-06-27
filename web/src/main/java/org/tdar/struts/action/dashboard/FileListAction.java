@@ -78,8 +78,12 @@ public class FileListAction extends AbstractAuthenticatableAction implements Pre
             exts.addAll(pair.getOptional());
             exts.addAll(pair.getRequired());
         }
+        List<String> exts_ = new ArrayList<>(exts);
+        for (int i=0; i < exts_.size(); i++) {
+            exts_.set(i, "." + exts_.get(i));
+        }
 
-        setExtensions(exts);
+        setExtensions(new HashSet<>(exts_));
         setValidFormats(serializationService.convertToJson(extensions));
         }
 

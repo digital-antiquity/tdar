@@ -94,7 +94,7 @@ public class ShapefileControllerITCase extends AbstractAdminControllerITCase imp
      * 
      * @throws TdarActionException
      */
-    public void testDatasetReplaceLegacy() throws TdarActionException {
+    public void testDatasetReplaceLegacy() throws Exception {
         Dataset dataset = setupAndLoadResource(PUNDO_FAUNAL_REMAINS_XLS, Dataset.class);
         DataTable table = dataset.getDataTables().iterator().next();
         final Long id = dataset.getId();
@@ -124,6 +124,9 @@ public class ShapefileControllerITCase extends AbstractAdminControllerITCase imp
                 } catch (TdarActionException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
                 return null;
             }
@@ -133,7 +136,7 @@ public class ShapefileControllerITCase extends AbstractAdminControllerITCase imp
 
     @Test
     @Rollback
-    public void testShapeFile() throws TdarActionException, FileNotFoundException {
+    public void testShapeFile() throws Exception {
         GeospatialController controller = generateNewInitializedController(GeospatialController.class);
         controller.prepare();
         controller.add();
@@ -145,7 +148,7 @@ public class ShapefileControllerITCase extends AbstractAdminControllerITCase imp
         for (File f : dir.listFiles()) {
             FileProxy fp = new FileProxy();
             fp.setAction(FileAction.ADD);
-            fp.setFilename(f.getName());
+            fp.setName(f.getName());
             controller.getFileProxies().add(fp);
         }
         controller.setTicketId(ticket.getId());
