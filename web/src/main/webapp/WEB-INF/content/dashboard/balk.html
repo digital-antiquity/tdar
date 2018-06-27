@@ -170,6 +170,9 @@
      <br> <br>
      <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">
         
+        <ul v-for="(error,index) in warnings" >
+            <li> <label :for="append('fue',index )">{{ error }}</label>
+        </ul>
         <ul v-for="(error,index) in errors" >
             <li> <label :for="append('fue',index )">{{ error }}</label>
                  <input type="text" :id="append('fue',index )" required="true" class=" required hidden"  :title="error" /> </li>

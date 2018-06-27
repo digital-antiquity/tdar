@@ -159,7 +159,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         });
         if (validExt == undefined) {
             console.error("extension is not valid:", file, validFormats);
-            errorListener.addError("file extension is not valid for file " + file.name);
+            errorListener.addWarning("file extension is not valid for file " + file.name);
             return false;
         }
 
@@ -180,14 +180,14 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
            } 
         });
         if (dupFound) {
-            errorListener.addError("file is a duplicate of " + file.name);
+            errorListener.addWarning("file is a duplicate of " + file.name);
             return false;
         }
         // check number of files
 
         if (replace == undefined && currentNumberOfFiles >= maxNumberOfFiles) {
             console.error("too many files", maxNumberOfFiles);
-            errorListener.addError("you have exceeded the number of files you can add");
+            errorListener.addWarning("you have exceeded the number of files you can add");
             return false;
         }
 
@@ -208,7 +208,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
                 });
                 if (!validSidecar) {
                     console.error("file is not valid sidecar", base);
-                    errorListener.addError("this file cannot be added to this record: " + file.name);
+                    errorListener.addWarning("this file cannot be added to this record: " + file.name);
                     return false;
                 }
             }

@@ -23,12 +23,15 @@
 
     <div id="fileUploadErrors" class="fileuploaderrors controls controls-row" >
         
-        <ul v-for="(error,index) in errors" >
-            <li> <label :for="append('fue',index )">{{ error }}</label>
+        <ul v-for="(error,index) in errors"  class="unstyled">
+            <li>  <label :for="append('fue',index )"><i class="icon-ban-circle"></i> {{ error }}</label>
                  <input type="text" :id="append('fue',index )" required="true" class=" required hidden"  :title="error" /> </li>
         </ul>
+        <ul v-for="(error,index) in warnings" class="unstyled" >
+            <li> <label :for="append('fue',index )"><i class="icon-warning-sign"></i> {{ error }}</label>
+        </ul>
         <ul v-for="(error,index) in packageMessages" >
-        <li><label :for="append('pm',index )"> {{ error }} </label>
+        <li><label :for="append('pm',index )"><i class="icon-ban-circle"></i> {{ error }} </label>
             <input type="text" :id="append('pm',index )" required="true"  class=" required hidden"  :title="error" /> </li>
         </ul>
 

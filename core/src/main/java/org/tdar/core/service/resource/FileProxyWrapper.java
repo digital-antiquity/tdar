@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -199,6 +200,9 @@ public class FileProxyWrapper {
 
         Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
         for (DataTable table : tablesToRemove) {
+            if (table == null || CollectionUtils.isEmpty(table.getRelationships())) {
+                continue;
+            }
             relationshipsToRemove.addAll(table.getRelationships());
         }
         datasetDao.deleteRelationships(relationshipsToRemove);

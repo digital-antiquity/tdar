@@ -417,6 +417,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 moveAccountId: undefined,
                 files : [],
                 errors: [],
+                warnings: [],
                 comment: "",
                 comments: [],
                 dirTree: [],
@@ -959,6 +960,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 },
                 addError : function(error) {
                     this.errors.push(error);
+                },
+                addWarning : function(error) {
+                    this.warnings.push(error);
                 },
                 append: function(a, b) {
                   return a + "" + b;  

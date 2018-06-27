@@ -176,6 +176,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 sideCarOnly : config.sideCarOnly,
                 maxNumberOfFiles : config.maxNumberOfFiles,
                 errors : [],
+                warnings : [],
                 packageMessages: [],
                 requiredOptionalPairs : config.requiredOptionalPairs,
                 ableToUpload : config.ableToUpload
@@ -223,6 +224,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 addError : function(error) {
                   this.errors.push(error);  
                 },
+                addWarning : function(error) {
+                    this.warnings.push(error);  
+                },
                 append: function(a, b) {
                   return a + "" + b;  
                 },
@@ -246,6 +250,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 },
                 fileUploadAdd : function(e, data) {
                     Vue.set(this,"errors", []);
+                    Vue.set(this,"warnings", []);
                     // add a file
                     var _app = this;
                     console.log('fileUploadAdd:', e, data);
