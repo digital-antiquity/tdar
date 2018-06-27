@@ -13,7 +13,7 @@
     "DataTables": "~1.9.4",
     "DataTablesPlugins": "https://github.com/DataTables/Plugins.git#1.0.1",
     "jquery": "~1.11.3",
-    "jquery-file-upload": "8.6.1",
+    "jquery-file-upload": "9.22.0",
     "jquery.treeview": "~1.4.1",
     "leaflet": "1.0.3",
     "leaflet-choropleth": "~1.0.3",
