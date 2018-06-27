@@ -4,6 +4,7 @@
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "common-account.ftl" as accountcommon>
     <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 
 <head>
     <title>${account.name!"Your account"}</title>
@@ -25,6 +26,46 @@
         <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"  cols="80"  />
 
 
+        <#if editor>
+        <div class="well">
+            <h4>Account File Settings</h4>
+            <@s.textfield name="account.daysFilesExpireAfter" cssClass="input-xlarge" label="Expire Files After # days"/>
+
+            <div class="control-group">
+                <label class="control-label">Full Service Account?</label>
+
+                <div class="controls">
+                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="account.fullService"
+                                                                            value="true" <@commonr.checkedif account.fullService true /> />Yes</label>
+                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="account.fullService"
+                                                                             value="false" <@commonr.checkedif account.fullService false /> />No</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Enable External Review (if full service)</label>
+
+                <div class="controls">
+                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="account.externalReview"
+                                                                            value="true" <@commonr.checkedif account.externalReview true /> />Yes</label>
+                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="account.externalReview"
+                                                                             value="false" <@commonr.checkedif account.externalReview false /> />No</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Enable Initial Review phase (if full service)</label>
+
+                <div class="controls">
+                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="account.initialReview"
+                                                                            value="true" <@commonr.checkedif account.initialReview true /> />Yes</label>
+                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="account.initialReview"
+                                                                             value="false" <@commonr.checkedif account.initialReview false /> />No</label>
+                </div>
+            </div>
+        </div>
+
+        </#if>
         <#if billingManager>
             <div class="control-group" id="divSubmitter">
                 <label class="control-label">Owner</label>

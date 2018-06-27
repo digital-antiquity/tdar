@@ -12,6 +12,9 @@
 
         <#--<li <@activeIf current "share" />><a href="/share">Share</a></li>-->
 
+    <#if editor>
+        <li <@activeIf current "files" />> <a href="/dashboard/files">Files</a></li>
+    </#if>
 
 
         <#--<li class="nav-header">My Library</li>-->

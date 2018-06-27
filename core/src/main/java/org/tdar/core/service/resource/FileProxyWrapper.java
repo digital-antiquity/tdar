@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -176,7 +177,7 @@ public class FileProxyWrapper {
      */
     public InformationResourceFileVersion createVersionMetadataAndStore(FileProxy proxy) throws IOException {
         InformationResourceFile irFile = proxy.getInformationResourceFile();
-        String originalFilename = proxy.getFilename();
+        String originalFilename = proxy.getName();
         String filename = BaseFilestore.sanitizeFilename(originalFilename);
         File file = proxy.getFile();
         if ((file == null) || !file.exists()) {
@@ -199,6 +200,9 @@ public class FileProxyWrapper {
 
         Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
         for (DataTable table : tablesToRemove) {
+            if (table == null || CollectionUtils.isEmpty(table.getRelationships())) {
+                continue;
+            }
             relationshipsToRemove.addAll(table.getRelationships());
         }
         datasetDao.deleteRelationships(relationshipsToRemove);
@@ -305,14 +309,18 @@ public class FileProxyWrapper {
                             proxy.setAction(FileAction.NONE);
                         }
                     } else {
-                        throw new TdarRecoverableRuntimeException("abstractInformationResourceService.bad_proxy", Arrays.asList(proxy.getFilename(),
+                        if (proxy.getAction() == FileAction.DELETE) {
+                            proxy.setAction(FileAction.NONE);
+                            continue;
+                        }
+                        throw new TdarRecoverableRuntimeException("abstractInformationResourceService.bad_proxy", Arrays.asList(proxy.getName(),
                                 proxy.getAction(), proxy.getFileId()));
                     }
                 }
             }
 
             if (proxy.getAction() == FileAction.REPLACE || proxy.getAction() == FileAction.ADD) {
-                irFile.setFilename(proxy.getFilename());
+                irFile.setFilename(proxy.getName());
             }
 
             proxy.setInformationResourceFile(irFile);

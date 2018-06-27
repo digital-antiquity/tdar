@@ -552,7 +552,37 @@
                 query = "from AggregateDayViewStatistic vs where vs.resource.id=:resourceId"),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.FIND_EMAIL_BY_GUID,
-                query = "from Email email where email.messageUuid=:guid")
+                query = "from Email email where email.messageUuid=:guid"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.FIND_FILES_BY_STATUS,
+                query = "from TdarFile file where file.status in (:status)"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.LIST_FILES_FOR_DIR,
+                query = "from AbstractFile file where (:topLevel is true and file.parent is null or file.parent.id=:parentId or :term is not null) "
+                        + "and (:account is null or file.account=:account) "
+                        + "and (:term is null or lower(file.filename) like :term  )"
+                        + "and (:uploader is null or file.uploader=:uploader) and part_of_id is null"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.LIST_DIR,
+                query = "from TdarDir file where (:topLevel is true or :parentId is not null and file.parent.id=:parentId) "
+                        + "and (file.account=:account) "),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.FIND_DIR_BY_NAME,
+                query = "from TdarDir file where file.filename =:name and (:account is null or file.account=:account) and (:uploader is null or file.uploader=:uploader)"),
+        @NamedQuery( 
+                name = org.tdar.core.dao.TdarNamedQueries.SUMMARIZE_BY_ACCOUNT,
+                query = "select f.parentId, count(*), count(f.resourceId) as resource_id, count(f.dateCurated) as curated, count(f.dateInitialReviewed) as initial_reviewed , "
+                        + "count(f.dateReviewed) as reviewed , count(f.dateExternalReviewed) as external_revieewd from TdarFile f where f.partOfId is null and f.account.id=:accountId "
+                        + "and (cast(:date as date) is null "
+                        + " or (:date < f.dateCreated or :date < f.dateCurated or :date < f.dateInitialReviewed or :date < f.dateReviewed or :date < f.dateExternalReviewed)"
+                        + ") group by f.parentId"),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.BY_ACCOUNT_RECENT,
+                query = "from TdarFile f where part_of_id is null and account_id=:accountId and (cast(:dateStart as date) is null or " + 
+                        "(:dateStart < f.dateCreated or :dateStart < f.dateCurated or :dateStart < f.dateInitialReviewed or :dateStart < f.dateReviewed or :dateStart < f.dateExternalReviewed)"
+                        + ")  AND  (cast(:dateEnd as date) is null or "
+                        + "(:dateEnd < f.dateCreated or :dateEnd < f.dateCurated or :dateEnd < f.dateInitialReviewed or :dateEnd < f.dateReviewed or :dateEnd < f.dateExternalReviewed)"
+                        + ") and (:dir is null or :dir = f.parent) ")
 })
 package org.tdar.core.dao;
 

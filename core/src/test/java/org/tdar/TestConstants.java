@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.regex.Pattern;
 
 public interface TestConstants {
+    public static final String PUNDO_FAUNAL_REMAINS_XLS = "Pundo faunal remains.xls";
     // public static final String DEFAULT_HOST = "localhost";
     /** id for a user that has admin rights **/
     // public static Long ADMIN_USER_ID = 8093L;
@@ -50,12 +51,14 @@ public interface TestConstants {
     public static final String TEST_DOCUMENT_NAME = "pia-09-lame-1980.pdf";
     public static final String TEST_DOCUMENT_NAME_SMALL = "pia-09-lame-1980-small.pdf";
     public static final String TEST_DOCUMENT = TEST_DOCUMENT_DIR + TEST_DOCUMENT_NAME;
+    public static final String TEST_DOCUMENT_SMALL = TEST_DOCUMENT_DIR + TEST_DOCUMENT_NAME_SMALL;
 
     public static final String TEST_IMAGE_NAME = "5127663428_42ef7f4463_b.jpg";
     public static final String TEST_IMAGE = TEST_IMAGE_DIR + TEST_IMAGE_NAME;
     public static final String TEST_IMAGE_NAME2 = "handbook_of_archaeology.jpg";
     public static final String TEST_IMAGE2 = TEST_IMAGE_DIR + TEST_IMAGE_NAME2;
 
+    public static String TEST_DATASET = TEST_DATA_INTEGRATION_DIR + PUNDO_FAUNAL_REMAINS_XLS;
     public static String INSTITUTION_NAME = "Arizona State University";
     public static String DEFAULT_FIRST_NAME = "Test";
     public static String DEFAULT_LAST_NAME = "Person";
@@ -67,6 +70,7 @@ public interface TestConstants {
     public static String FAULTY_ARCHIVE = "broken.zip";
     public static String GOOD_ARCHIVE = "good.zip";
     public static String SPITAL_DB_NAME = "Spital Abone database.mdb";
+    
 
     public static final String DOCUMENT_FIELD_TITLE = "document.title";
     public static final String DOCUMENT_FIELD_DESCRIPTION = "document.description";
@@ -85,6 +89,7 @@ public interface TestConstants {
             .quote("maps.googleapis.com/maps/api/js/QuotaService.RecordEvent"));
     public static final Pattern REGEX_TYPEKIT = Pattern.compile("use.typekit.net");
     public static final Pattern REGEX_GOOGLE_ANALYTICS = Pattern.compile("ssl.google-analytics.com");
+    public static final String STDEV_DATASET = "stdev.xlsx";
 
     static File getFile(String testPath, String filename) throws FileNotFoundException {
         File test = new File(testPath, filename);
