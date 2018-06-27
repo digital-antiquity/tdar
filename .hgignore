@@ -57,6 +57,7 @@ web/src/main/resources/rebel.xml
 docker/docker
 docker/postgres
 web/src/main/webapp/webpack
+.metadata/
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 webservice/([^\/]+)/build/.*
