@@ -68,12 +68,13 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.utils.MessageHelper;
@@ -199,7 +200,13 @@ public class ImportServiceImpl implements ImportService {
      */
     private <R extends Resource> void processFiles(TdarUser authorizedUser, Collection<FileProxy> proxies, R incomingResource)
             throws APIException, IOException {
-        Set<String> extensionsForType = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
+        
+        // NOTE: I currently only work with primary types (simple files)
+        Set<RequiredOptionalPairs> pairs = fileAnalyzer.getExtensionsForType(ResourceType.fromClass(incomingResource.getClass()));
+        Set<String> extensionsForType = new HashSet<>();
+        for (RequiredOptionalPairs pair : pairs) {
+            extensionsForType.addAll(pair.getRequired());
+        }
         if (CollectionUtils.isNotEmpty(proxies)) {
             for (FileProxy proxy : proxies) {
                 String ext = FilenameUtils.getExtension(proxy.getName()).toLowerCase();

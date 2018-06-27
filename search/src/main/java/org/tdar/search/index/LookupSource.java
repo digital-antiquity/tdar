@@ -1,9 +1,7 @@
 package org.tdar.search.index;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -21,6 +19,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.datatable.DataTableRow;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.search.service.CoreNames;
 import org.tdar.utils.MessageHelper;
 

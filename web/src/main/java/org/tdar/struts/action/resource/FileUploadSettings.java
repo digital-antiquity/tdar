@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.tdar.core.bean.FileProxy;
-import org.tdar.filestore.RequiredOptionalPairs;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

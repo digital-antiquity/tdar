@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.StatisticsService;
 import org.tdar.core.service.resource.InformationResourceFileService;
+import org.tdar.filestore.VersionType;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 

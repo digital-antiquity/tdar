@@ -8,9 +8,9 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.integration.dto.IntegrationDTO;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)

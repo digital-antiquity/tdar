@@ -1,6 +1,6 @@
 package org.tdar.core.service.processes;
 
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 public interface BatchProcess {
 

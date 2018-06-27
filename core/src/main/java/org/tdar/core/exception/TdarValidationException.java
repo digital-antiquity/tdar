@@ -2,6 +2,8 @@ package org.tdar.core.exception;
 
 import java.util.List;
 
+import org.tdar.exception.TdarRecoverableRuntimeException;
+
 public class TdarValidationException extends TdarRecoverableRuntimeException {
 
     private static final long serialVersionUID = 3624836043900396149L;

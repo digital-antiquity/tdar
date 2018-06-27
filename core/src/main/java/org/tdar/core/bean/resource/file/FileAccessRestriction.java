@@ -1,8 +1,8 @@
 package org.tdar.core.bean.resource.file;
 
 import org.apache.commons.lang3.text.WordUtils;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum FileAccessRestriction implements HasLabel, Localizable {

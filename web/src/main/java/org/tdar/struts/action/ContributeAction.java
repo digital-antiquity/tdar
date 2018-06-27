@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -46,15 +48,25 @@ public class ContributeAction extends AbstractAuthenticatableAction {
     }
 
     public Set<String> getDocumentTypes() {
-        return analyzer.getExtensionsForType(ResourceType.DOCUMENT);
+        return getExtensionsForType(ResourceType.DOCUMENT);
     }
 
     public Set<String> getImageTypes() {
-        return analyzer.getExtensionsForType(ResourceType.IMAGE);
+        return getExtensionsForType(ResourceType.IMAGE);
     }
 
     public Set<String> getDatasetTypes() {
-        return analyzer.getExtensionsForType(ResourceType.DATASET);
+        return getExtensionsForType(ResourceType.DATASET);
     }
 
+
+    protected Set<String> getExtensionsForType(ResourceType ...resourceTypes) {
+        Set<RequiredOptionalPairs> extensionsForType = analyzer.getExtensionsForType(resourceTypes);
+        Set<String> exts = new HashSet<>();
+        for (RequiredOptionalPairs pair : extensionsForType) {
+            exts.addAll(pair.getOptional());
+            exts.addAll(pair.getRequired());
+        }
+        return exts;
+    }
 }

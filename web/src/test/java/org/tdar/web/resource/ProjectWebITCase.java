@@ -2,8 +2,8 @@ package org.tdar.web.resource;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class ProjectWebITCase extends AbstractAdminAuthenticatedWebTestCase {

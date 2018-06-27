@@ -1,5 +1,6 @@
 package org.tdar.core.bean;
 
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum RelationType implements Localizable {

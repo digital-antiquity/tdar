@@ -12,7 +12,7 @@ import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.internal.chartpart.Chart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 public abstract class AbstractChart {
 

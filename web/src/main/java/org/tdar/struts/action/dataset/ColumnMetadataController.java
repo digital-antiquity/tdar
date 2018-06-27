@@ -18,9 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CategoryType;
 import org.tdar.core.bean.resource.CategoryVariable;
@@ -34,6 +32,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -194,7 +194,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SAVE_VIEW, type = TDAR_REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
-                    @Result(name = SAVE_MAP_THIS, type = TDAR_REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
+                    @Result(name = SAVE_MAP_THIS, type = TDAR_REDIRECT, location = UrlConstants.COLUMNS_RESOURCE_ID),
                     @Result(name = INPUT_COLUMNS, location = "../../dataset/edit-column-metadata.ftl")
             })
     /**
@@ -230,7 +230,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
 
     private List<DataTableColumn> initializePaginationHelper() {
         DataTable currentDataTable = getDataTable();
-        List<DataTableColumn> columns = new ArrayList<>(currentDataTable.getSortedDataTableColumns());
+        List<DataTableColumn> columns = new ArrayList<>((List<DataTableColumn>)(List<?>)currentDataTable.getSortedDataTableColumns());
         setPaginationHelper(PaginationHelper.withStartRecord(columns.size(), getRecordsPerPage(), 100, getStartRecord()));
         return columns;
     }

@@ -1,6 +1,6 @@
 package org.tdar.search.exception;
 
-import org.tdar.core.exception.I18nException;
+import org.tdar.exception.I18nException;
 
 public class SearchException extends I18nException {
 

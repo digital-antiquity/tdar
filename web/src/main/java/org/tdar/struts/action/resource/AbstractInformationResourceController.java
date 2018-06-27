@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +25,7 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.LicenseType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.ObfuscationService;
@@ -31,14 +34,14 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.exception.ExceptionWrapper;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.RequiredOptionalPairs;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.geospatial.GeospatialController;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
-import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonProjectLookupFilter;
@@ -210,7 +213,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     }
 
     public LicenseType getDefaultLicenseType() {
-        return getTdarConfiguration().getDefaultLicenseType();
+        return LicenseType.valueOf(getTdarConfiguration().getDefaultLicenseType());
 
     }
 
@@ -280,6 +283,7 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         loadResourceProviderInformation();
         resourceViewControllerService.setTransientViewableStatus(getResource(), getAuthenticatedUser());
     }
+
 
     @Override
     public String loadAddMetadata() {
@@ -655,6 +659,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
             getLogger().error("{}", t, t);
             return "{}";
         }
+    }
+    
+    
+    
+
+    protected Set<String> getExtensionsForType(ResourceType ...resourceTypes) {
+        Set<RequiredOptionalPairs> extensionsForType = getAnalyzer().getExtensionsForType(resourceTypes);
+        Set<String> exts = new HashSet<>();
+        for (RequiredOptionalPairs pair : extensionsForType) {
+            exts.addAll(pair.getOptional());
+            exts.addAll(pair.getRequired());
+        }
+        return exts;
     }
 
     public String getVueFilesFallback() {

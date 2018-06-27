@@ -36,7 +36,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.ResourceEvaluator;
@@ -45,6 +44,7 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.VersionType;
 
 public class AccountITCase extends AbstractIntegrationTestCase implements TestBillingAccountHelper {
 

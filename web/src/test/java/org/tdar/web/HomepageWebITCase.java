@@ -7,7 +7,7 @@
 package org.tdar.web;
 
 import org.junit.Test;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 public class HomepageWebITCase extends AbstractAnonymousWebTestCase {
 

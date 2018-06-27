@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Properties;
 
 import org.junit.Test;
+import org.tdar.configuration.ConfigurationAssistant;
+import org.tdar.configuration.TdarConfiguration;
 
 /**
  * Put in place simply to ensure that the map obfuscation settings are indeed going to result in a fail safe outcome if they not set correctly in the

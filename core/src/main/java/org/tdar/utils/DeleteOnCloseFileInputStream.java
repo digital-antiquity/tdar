@@ -9,8 +9,8 @@ import java.util.Arrays;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.configuration.TdarConfiguration;
+import org.tdar.exception.TdarRuntimeException;
 
 /*
  * from: http://stackoverflow.com/questions/4693968/is-there-an-existing-fileinputstream-delete-on-close

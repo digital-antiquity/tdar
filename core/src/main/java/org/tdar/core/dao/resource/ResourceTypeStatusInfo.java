@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public class ResourceTypeStatusInfo implements Serializable {

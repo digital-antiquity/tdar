@@ -37,7 +37,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.base.HibernateBase;
 import org.tdar.core.exception.TdarQuotaException;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.AccountEvaluationHelper;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.PersistableUtils;

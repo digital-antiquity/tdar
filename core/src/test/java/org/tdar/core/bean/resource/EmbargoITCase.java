@@ -19,8 +19,8 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.MessageHelper;
 
 public class EmbargoITCase extends AbstractIntegrationTestCase {
