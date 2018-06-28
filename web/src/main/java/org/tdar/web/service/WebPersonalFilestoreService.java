@@ -44,6 +44,7 @@ public class WebPersonalFilestoreService {
         for (int i = 0; i < files.size(); i++) {
             File file = files.get(i);
             String fileName = fileNames.get(i);
+            logger.debug("{} / {}/{}", i, file, file.exists());
             // put upload in holding area to be retrieved later (maybe) by the informationResourceController
             if ((file != null) && file.exists()) {
                 String contentType = "";
@@ -55,6 +56,7 @@ public class WebPersonalFilestoreService {
                 hashCodes.add(store);
             }
         }
+        logger.debug("{}", hashCodes);
         return hashCodes;
     }
 

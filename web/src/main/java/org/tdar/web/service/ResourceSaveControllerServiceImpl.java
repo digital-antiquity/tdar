@@ -123,7 +123,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
     private void validateFileExtensions(List<FileProxy> proxies, Collection<String> validFileExtensions, TextProvider provider) throws TdarActionException {
         List<FileProxy> invalidFiles = new ArrayList<>();
         for (FileProxy proxy : proxies) {
-            if (!validFileExtensions.contains(proxy.getExtension().toLowerCase()) && proxy.getAction() != FileAction.DELETE) {
+            String ext = "." + proxy.getExtension().toLowerCase();
+            
+            if (!validFileExtensions.contains(ext) && proxy.getAction() != FileAction.DELETE) {
                 logger.info("Rejecting file:{} - extension not allowed.  Allowed types:{}", proxy.getExtension(), validFileExtensions);
                 invalidFiles.add(proxy);
             }
