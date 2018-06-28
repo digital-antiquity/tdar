@@ -460,6 +460,12 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     @Deprecated
     public double getAbsoluteLongLength() {
+        
+        /**if(crossesAntiMeridian(getWest(), getEast())){
+            logger.debug("e: {}, w: {}",getEast(), getWest());
+            return Math.abs(MAX_LONGITUDE - getEast()) + Math.abs(MIN_LONGITUDE - getWest());
+        }**/
+        
         if (crossesPrimeMeridian()) {
             return Math.abs(getWest() - getEast());
         }
@@ -490,7 +496,14 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 //        }
         return LatitudeLongitudeBox.crossesPrimeMeridian(getWest(), getEast());
     }
+    
 
+    /**
+     * Returns true if the start point is in the eastern hemisphere and crosses into the western hemisphere. 
+     * @param minLongitude
+     * @param maxLongitude
+     * @return
+     */
     public static boolean crossesDateline(double minLongitude, double maxLongitude) {
         /*
          * below is the logic that was originally used in PostGIS -- it worked to help identify issues where a box was
@@ -505,12 +518,22 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return false;
     }
 
-    public static boolean crossesPrimeMeridian(double minLongitude, double maxLongitude) {
+    /**
+     * Checks to see if the starting point is in the western hemisphere  and crosses into the eastern hemisphere. 
+     * @param minLongitude
+     * @param maxLongitude
+     * @return
+     */
+    public static boolean crossesPrimeMeridian(double minLongitude, double maxLongitude) {        
         if (minLongitude < 0f && maxLongitude > 0f) {
             return true;
         }
 
         return false;
+    }
+ 
+    public static boolean crossesPrimeAndAnteMeridians(double minLongitude, double maxLongitude){
+       return crossesPrimeMeridian(minLongitude, maxLongitude) && crossesDateline(minLongitude, maxLongitude);
     }
 
     @Override

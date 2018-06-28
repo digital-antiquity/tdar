@@ -30,6 +30,29 @@ public class LatitudeLongitudeBoxTest {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
+    public void testVerifyDistanceAcrossPrimeMeridian(){
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-.01,-.01,.01,.01);
+        
+        double latLen = llb.getAbsoluteLatLength();
+        double longLen = llb.getAbsoluteLongLength();
+        
+        assertTrue("Length is .02", latLen == .02);
+        assertTrue("Length is .02", longLen == .02);        
+    }
+    
+    @Test
+    public void testVerifyDistanceAcrossAntiMeridian(){
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-179.0,-.01,179.0,.01);
+        
+        double latLen = llb.getAbsoluteLatLength();
+        double longLen = llb.getAbsoluteLongLength();
+        logger.debug("long length is {} ",longLen);
+        
+        assertTrue("Length is .02", latLen == .02);
+        assertTrue("Length is .02", longLen == 2);        
+    }
+    
+    @Test
     public void testNewObfuscation() {
         double half = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 3;
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(half, half, half, half);
