@@ -262,12 +262,16 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     this.files.push(file);
                 },
                 _disable: function() {
-                    $(".submitButton, #fileAsyncUpload").prop("disabled", true);
-                    $(".fileinput-button").addClass("disabled");
+                    //    $('.disabledCheckboxes').prop("disabled", true);
+                    //$('.disabledCheckboxes').removeAttr("disabled");
+
+                    $(".submitButton, #fileAsyncUpload").prop("disabled", "disabled");
+                    $(".submitButton, .fileinput-button").addClass("disabled");
                 },
                 _enable: function() {
                     $(".submitButton, #fileAsyncUpload").prop("disabled", false);
-                    $(".fileinput-button").removeClass("disabled");
+                    $(".submitButton, #fileAsyncUpload").removeAttr("disabled");
+                    $(".fileinput-button, .submitButton, #fileAsyncUpload").removeClass("disabled");
                 },
                 fileUploadAddDone : function(e, data) {
                     // complete the add action
