@@ -86,8 +86,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 },
                 fileuploadId : function() {
                     return "fileupload" + this.index;
-                },
-
+                }
             },
             methods : {
                 updateCreatedDate : function(date) {
@@ -187,10 +186,19 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     return this.validatePackage();
                 },
                 inputDisabled : function() {
-                    if (this.getCurrentNumberOfFiles(this.files) >= this.maxNumberOfFiles) {
-                        return true;
+                    if (this.ableToUpload) {
+                        if (this.getCurrentNumberOfFiles(this.files) >= this.maxNumberOfFiles) {
+                            return true;
+                        }
                     }
                     return !this.ableToUpload;
+                },
+                fileUploadButtonCss: function() {
+                    var css = "btn btn-success fileinput-button ";
+                    if (this.inputDisabled) {
+                        return css + " disabled";
+                    }
+                    return css;
                 }
             },
             methods : {
@@ -269,14 +277,23 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 _disable: function() {
                     //    $('.disabledCheckboxes').prop("disabled", true);
                     //$('.disabledCheckboxes').removeAttr("disabled");
-
-                    $(".submitButton, #fileAsyncUpload").prop("disabled", "disabled");
-                    $(".submitButton, .fileinput-button").addClass("disabled");
+                    this.ableToUpload=false;
+                    $(".submitButton").prop("disabled", "disabled");
+                    $(".submitButton").addClass("disabled");
                 },
                 _enable: function() {
-                    $(".submitButton, #fileAsyncUpload").prop("disabled", false);
-                    $(".submitButton, #fileAsyncUpload").removeAttr("disabled");
-                    $(".fileinput-button, .submitButton, #fileAsyncUpload").removeClass("disabled");
+                    this.ableToUpload=true;
+                    $(".submitButton").prop("disabled", false);
+                    $(".submitButton").removeAttr("disabled");
+                    $(".submitButton").removeClass("disabled");
+                },
+                handleClick: function(e) {
+                    if (this.ableToUpload) {
+                        
+                    } else {
+                        console.log("disable?");
+                        e.preventDefault();
+                    }
                 },
                 fileUploadAddDone : function(e, data) {
                     // complete the add action
