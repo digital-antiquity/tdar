@@ -336,8 +336,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 var _app = this;
 
                 up.bind('fileuploadadd', _app.fileUploadAdd).bind('fileuploaddone', _app.fileUploadAddDone).bind('fileuploadsubmit', _app.fileUploadSubmit)
-                        .bind('fileuploadprogress', _app.updateFileProgress);
-                // .bind('fileuploadfail', function (e, data) {console.log('fileUploadFail:',e);})
+                        .bind('fileuploadprogress', _app.updateFileProgress)
+                 .bind('fileuploadfail', function (e, data) {console.log('fileUploadFail:',e);
+                 _app.addWarning(e);
+                 console.error(e);
+                 _app._enable();
+                 });
                 // .bind('fileuploadstart', function (e) {console.log('fileUploadStart:',e);})
                 // .bind('fileuploadstop', function (e) {console.log('fileUploadStop:',e);})
                 // .bind('fileuploadchange', function (e, data) {console.log('fileUploadChange:',e);});
