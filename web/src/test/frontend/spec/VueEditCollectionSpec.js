@@ -139,10 +139,11 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
         
         vapp.$forceUpdate();
         // make VueJS "tick" or re-render
+        
+        //console.debug("JQUERY: is ",jQuery==$);
         Vue.nextTick(function() {
         	var rows = fix.find("#tblToAdd tr");
         	console.log("There are "+rows.length+" rows ");
-    		console.log(rows);
             //expect(rows).toHaveLength(5);
           	var row = rows[0];
           	expect(row).toContainText(resources[0]["title"]);

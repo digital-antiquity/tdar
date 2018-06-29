@@ -14,6 +14,8 @@ describe("LatLonSpec.js: latlong tests", function () {
     function _approx(a, b) {
         return Math.abs(a-b) < _ff;
     }
+    
+    console.log(LatLon);
 
     //FIXME:  RTFM Jim, you may learn something: https://github.com/jasmine/jasmine/blob/master/src/core/matchers/toBeCloseTo.js
     // Custom matcher that assumes that any two points/magnitudes within 20km of each other are 'approximately'

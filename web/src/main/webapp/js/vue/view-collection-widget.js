@@ -6,6 +6,7 @@
 
 
 import Vue from "vue";
+import "Axios";
 TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios, TDAR) {
     "use strict";
 
@@ -147,6 +148,7 @@ var _init = function(appId) {
 	            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
 	                Vue.set(this,"managedResource",true);
 	            }
+	            console.debug($('#collection-list'));
 	
 	            var $select = $('#collection-list').selectize();
 	            $select[0].selectize.clear();

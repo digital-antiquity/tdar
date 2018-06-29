@@ -1,4 +1,6 @@
 // Karma configuration
+var webpackConfig = require('./webpack.config');
+
 var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
 
@@ -11,7 +13,7 @@ function buildFilesFromWro(profile) {
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles
-            .concat("/dist/bundle.js")
+            //.concat("/dist/bundle.js")
             .map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
@@ -22,6 +24,7 @@ module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     
     config.set({
+        webpack: webpackConfig,
         browserConsoleLogOptions: {terminal:false},
 
         // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -94,7 +97,11 @@ module.exports = function(config) {
             //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js'],
-            'src/main/webapp/js/**/*.js': ['coverage']
+            'src/main/webapp/js/**/*.js': ['coverage'],
+            
+            'src/test/**/*Spec.js': ['webpack'],
+            'src/test/**/*Spec.jsx': ['webpack']
+            
         },
 
         // test results reporter to use

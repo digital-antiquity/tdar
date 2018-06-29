@@ -1,4 +1,6 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
+
+
 describe("Vue-collection-widget.js: collection widget test", function() {
 
     beforeEach(function() {
@@ -55,7 +57,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     //cancelAddToCollectionChanges
     it("presses the cancel button to hide the modal window and reset the form.", function(done){
     	var fix = setupFixture("true","true","2");
-
+    	
         // only install the moxios proxy ONCE the fixture has been setup
         moxios.install(axios);
         
