@@ -28,6 +28,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             console.log($($(widgetId).data('config')).text());
             $.extend(config, JSON.parse($($(widgetId).data('config')).text()));
         }
+        console.log("config:", config);
         var _fpart = Vue.component('fpart', {
             template : "#fpart-template",
             props : [ "file", "index", "editable" ],
@@ -231,7 +232,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                   return a + "" + b;  
                 },
                 validateAdd : function(file, replace) {
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maximumNumberOfFiles , this.sideCarOnly, this  )
+                    
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
