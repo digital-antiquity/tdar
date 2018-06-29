@@ -257,7 +257,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         assertEquals("appendix_8", dt.getInternalName());
     }
 
-    @SuppressWarnings("deprecation")
+//    @SuppressWarnings("deprecation")
     @Test
     @Rollback(value = false)
     /**
@@ -273,6 +273,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
         final Long elId = el.getId();
         el.setName("element");
         genericService.saveOrUpdate(el);
+        logger.debug("tables:{}", dataset.getDataTables());
         logger.debug("element:{}", el);
         dataset = null;
         el = null;
@@ -292,6 +293,7 @@ public class DatasetControllerITCase extends AbstractAdminControllerITCase imple
                     Long elid2 = el.getId();
                     el = null;
                     assertEquals(elId, elid2);
+                    genericService.delete(genericService.find(Dataset.class, id));
                 } catch (TdarActionException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
