@@ -187,6 +187,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     return this.validatePackage();
                 },
                 inputDisabled : function() {
+                    if (this.getCurrentNumberOfFiles(this.files) >= this.maxNumberOfFiles) {
+                        return true;
+                    }
                     return !this.ableToUpload;
                 }
             },
