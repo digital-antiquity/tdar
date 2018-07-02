@@ -37,7 +37,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     previousDeleteState : '',
                     xhr : undefined,
                     previousReplaceState : '',
-                    originalFileName: ""
+                    originalFileName: "",
+                    originalFileSize: ""
                 }
             },
             mounted : function() {
@@ -120,6 +121,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     }
                     Vue.set(this.file, "replaceFile", undefined);
                     Vue.set(this.file, "name", this.originalFileName);
+                    Vue.set(this.file, "size", this.originalFileSize);
                     TDAR.vuejs.upload.setProgress(0);
                     Vue.set(this.file, "progress", undefined);
                     // $("#fileupload" + this.index).reset();
@@ -132,6 +134,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     Vue.set(this, "previousReplaceState", this.file.action);
                     if (this.file.name != undefined) {
                         Vue.set(this, "originalFileName", this.file.name);
+                        Vue.set(this.file, "originalFileSize", this.file.size);
+                        Vue.set(this, "originalFileSize", this.file.size);
                         Vue.set(this.file, "originalFileName", this.file.name);
                         
                     }
