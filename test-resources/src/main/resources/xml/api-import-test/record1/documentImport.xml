@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://www.tdar.org/namespace">
+	<id>1</id>
+	<title>The True Prairie ecosystem</title>
+	<resourceType>DOCUMENT</resourceType>
+	<metadataLanguage>ENGLISH</metadataLanguage>
+	<description>
+		This citation has been migrated into tDAR from the National Park Service's
+		National Archaeology Data Base (NADB). Most NADB records consist of
+		citation and other metadata but do not have the documents themselves
+		uploaded.</description>
+	<documentType>BOOK</documentType>
+	<resourceLanguage>ENGLISH</resourceLanguage>
+	<copyLocation>AAS Citation Data Tranfer, Location Unknown [ 20370]</copyLocation>
+	<publisherLocation>Stroudsburg, Pa</publisherLocation>
+	<date>1981</date>
+	<publisher>distributed world wide by Academic Press</publisher>
+	<seriesName>US / IBP synthesis series ; 16</seriesName>
+	<resourceAnnotations>
+		<resourceAnnotation>
+			<value>QH104 .T78 1981</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>lcc</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+		<resourceAnnotation>
+			<value>574.5 / 264</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>ddc</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+		<resourceAnnotation>
+			<value>0879333618</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>isbn</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+		<resourceAnnotation>
+			<value>79019857</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>lccn</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+		<resourceAnnotation>
+			<value>000000009534</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>cit_key</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+		<resourceAnnotation>
+			<value>2150371</value>
+			<resourceAnnotationKey resourceAnnotationType="IDENTIFIER"
+				resourceAnnotationDataType="STRING">
+				<key>doc_number</key>
+			</resourceAnnotationKey>
+		</resourceAnnotation>
+	</resourceAnnotations>
+	<resourceCreators>
+		<resourceCreator sequence="0">
+			<creator class="org.tdar.core.bean.entity.Institution">
+				<name>Risser, Paul G.</name>
+			</creator>
+			<role>AUTHOR</role>
+		</resourceCreator>
+	</resourceCreators>
+	<siteNameKeywords />
+	<otherKeywords>
+		<otherKeyword level="topic">
+			<label>Prairie ecology</label>
+		</otherKeyword>
+		<otherKeyword level="topic">
+			<label>Environment</label>
+		</otherKeyword>
+		<otherKeyword level="topic">
+			<label>SWD-ST</label>
+		</otherKeyword>
+		<otherKeyword level="topic">
+			<label>Vegetation Study</label>
+		</otherKeyword>
+	</otherKeywords>
+	<geographicKeywords>
+		<geographicKeyword>
+			<label>n-us---</label>
+		</geographicKeyword>
+		<geographicKeyword>
+			<label>United States</label>
+		</geographicKeyword>
+		<geographicKeyword level="CONTINENT">
+			<label>North America (Continent)</label>
+		</geographicKeyword>
+		<geographicKeyword level="COUNTRY">
+			<label>United States of America (Country)</label>
+		</geographicKeyword>
+		<geographicKeyword level="STATE">
+			<label>Arkansas (State)</label>
+		</geographicKeyword>
+		<geographicKeyword level="FIPS_CODE">
+			<label>05998 (Fips_code)</label>
+		</geographicKeyword>
+		<geographicKeyword level="COUNTY">
+			<label>Uncoded County (County)</label>
+		</geographicKeyword>
+	</geographicKeywords>
+	<resourceNotes>
+		<resourceNote type="GENERAL">
+			<note>Includes indexes.</note>
+		</resourceNote>
+		<resourceNote type="GENERAL">
+			<note>Bibliography: p. 477-515.</note>
+		</resourceNote>
+	</resourceNotes>
+	<siteTypeKeywords />
+	<coverageDates>
+		<coverageDate dateType="CALENDAR_DATE">
+			<startDate>-1000</startDate>
+			<endDate>1002</endDate>
+		</coverageDate>
+	</coverageDates>
+	<temporalKeywords />
+	<cultureKeywords />
+	<materialKeywords />
+	<investigationTypes>
+		<investigationType>
+			<label>Methodology, Theory, or Synthesis</label>
+		</investigationType>
+	</investigationTypes>
+</document>
+  

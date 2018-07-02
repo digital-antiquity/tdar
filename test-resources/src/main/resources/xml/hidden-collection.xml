@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tdar:document id="-1" status="DRAFT" submitterRef="NULL_REF" updaterRef="NULL_REF" uploaderRef="NULL_REF" xsi:schemaLocation="http://core.tdar.org/schema/current schema.xsd" xmlns:tdar="http://www.tdar.org/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <tdar:coverageDates/>
+    <tdar:cultureKeywords/>
+    <tdar:date>2016</tdar:date>
+    <tdar:dateNormalized>2010</tdar:dateNormalized>
+    <tdar:description>1971_SanJuan_OCR_PDFA.pdf</tdar:description>
+    <tdar:externalReference>false</tdar:externalReference>
+    <tdar:fileProxies/>
+    <tdar:filesUsed>0</tdar:filesUsed>
+    <tdar:geographicKeywords/>
+    <tdar:informationResourceFiles/>
+    <tdar:inheritingCollectionInformation>false</tdar:inheritingCollectionInformation>
+    <tdar:inheritingCulturalInformation>false</tdar:inheritingCulturalInformation>
+    <tdar:inheritingIdentifierInformation>false</tdar:inheritingIdentifierInformation>
+    <tdar:inheritingIndividualAndInstitutionalCredit>false</tdar:inheritingIndividualAndInstitutionalCredit>
+    <tdar:inheritingInvestigationInformation>false</tdar:inheritingInvestigationInformation>
+    <tdar:inheritingMaterialInformation>false</tdar:inheritingMaterialInformation>
+    <tdar:inheritingNoteInformation>false</tdar:inheritingNoteInformation>
+    <tdar:inheritingOtherInformation>false</tdar:inheritingOtherInformation>
+    <tdar:inheritingSiteInformation>false</tdar:inheritingSiteInformation>
+    <tdar:inheritingSpatialInformation>false</tdar:inheritingSpatialInformation>
+    <tdar:inheritingTemporalInformation>false</tdar:inheritingTemporalInformation>
+    <tdar:investigationTypes/>
+    <tdar:latitudeLongitudeBoxes/>
+    <tdar:managedGeographicKeywords/>
+    <tdar:resourceCollections>
+        <tdar:resourceCollection hidden="true" id="-1" ownerIdRef="NULL_REF" parentIdRef="NULL_REF" updaterIdRef="NULL_REF">
+            <tdar:dateCreated>2016-08-18T09:48:22.938-07:00</tdar:dateCreated>
+            <tdar:description>(from dropbox)</tdar:description>
+            <tdar:name>srp digital library/Batch 1</tdar:name>
+        </tdar:resourceCollection>
+    </tdar:resourceCollections>
+    <tdar:materialKeywords/>
+    <tdar:otherKeywords/>
+    <tdar:previousFilesUsed>0</tdar:previousFilesUsed>
+    <tdar:previousSpaceInBytesUsed>0</tdar:previousSpaceInBytesUsed>
+    <tdar:previousStatus>ACTIVE</tdar:previousStatus>
+    <tdar:projectRef>:-1</tdar:projectRef>
+    <tdar:relatedComparativeCollections/>
+    <tdar:resourceAnnotations/>
+    <tdar:resourceCreators/>
+    <tdar:resourceNotes/>
+    <tdar:resourceType>DOCUMENT</tdar:resourceType>
+    <tdar:siteNameKeywords/>
+    <tdar:siteTypeKeywords/>
+    <tdar:sourceCollections/>
+    <tdar:spaceInBytesUsed>0</tdar:spaceInBytesUsed>
+    <tdar:statusChanged>true</tdar:statusChanged>
+    <tdar:temporalKeywords/>
+    <tdar:title>1971_SanJuan_OCR_PDFA.pdf</tdar:title>
+    <tdar:documentType>BOOK</tdar:documentType>
+</tdar:document>
