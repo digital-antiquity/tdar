@@ -3,7 +3,7 @@
     <#global inheritanceEnabled=true />
     <#global multipleUpload=true />
     <#global hideRelatedCollections=true/>
-    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 
 
     <#macro basicInformation>

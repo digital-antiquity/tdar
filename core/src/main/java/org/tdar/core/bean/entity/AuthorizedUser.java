@@ -32,6 +32,9 @@ import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonAccountFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin
@@ -113,6 +116,7 @@ public class AuthorizedUser extends AbstractPersistable {
 
     @XmlElement(name = "personRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    @JsonView({JsonAccountFilter.class })
     public TdarUser getUser() {
         return user;
     }

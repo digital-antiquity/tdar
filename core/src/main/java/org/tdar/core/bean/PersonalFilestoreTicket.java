@@ -11,9 +11,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.filestore.personal.PersonalFileType;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -51,6 +54,8 @@ public class PersonalFilestoreTicket extends AbstractPersistable {
     @Column(length = FieldLength.FIELD_LENGTH_500)
     private String description;
 
+    @XmlElement(name = "submitterRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getSubmitter() {
         return submitter;
     }

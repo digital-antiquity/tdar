@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html >
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
-    <#import "/${config.themeDir}/settings.ftl" as settings>
+    <#import "/WEB-INF/settings.ftl" as settings>
 
 <h1>Administrative info for <span>${resource.title}</span></h1>
 

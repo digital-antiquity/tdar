@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-        <version>17.0.0-QUARTZ</version>
+        <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
 
@@ -127,6 +127,10 @@
                 <exclusion>
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jetty-xml</artifactId>
+                    <groupId>org.eclipse.jetty</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

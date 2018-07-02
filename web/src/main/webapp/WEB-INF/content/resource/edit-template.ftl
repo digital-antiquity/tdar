@@ -12,7 +12,7 @@
 <#-- We define local_ as a reference to the actual template in question. It's going to define for us any functions/methods that get overriden 
 	 in the form. if local_.method?? && local_.method?is_macro ... then execute it...  -->
 
-    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 <#-- helptext can be overriden by the theme so we import it, it, in turn override the default helptext -->
 <head>
 <#-- expose pageTitle so edit pages can use it elsewhere -->
@@ -414,8 +414,6 @@
             </@edit.submit>
     </@s.form>
 
-<#-- include any JS templates -->
-    <@edit.asyncUploadTemplates />
 
 <#-- include footer on resource page -->
     <#if local_.footer?? && local_.footer?is_macro>
@@ -469,7 +467,7 @@ Auth Info
          };
         var form = $(props.formSelector)[0];
         TDAR.common.initEditPage(form, props);
-            
+        TDAR.vuejs.uploadWidget.main();
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
         </#if>

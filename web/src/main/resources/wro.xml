@@ -27,17 +27,15 @@
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/components/jquery.treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
-        <css>/components/jquery-file-upload/css/jquery.fileupload-ui.css</css>
-        <js>/components/blueimp-tmpl/js/tmpl.js</js>
         <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
         <js>/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js</js>
-        
-        <!--<js>/components/jquery-file-upload/js/vendor/jquery.ui.widget.js</js>-->
-        <js>/components/jquery-file-upload/js/jquery.iframe-transport.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload-process.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload-validate.js</js>
-        <js>/components/jquery-file-upload/js/jquery.fileupload-ui.js</js>
+        <!--  we use the template for the person autocomplete, we should fix this and then remove it -->
+        <js>/components/blueimp-tmpl/js/tmpl.js</js>
+        <!--      
+        <js>/components/blueimp-file-upload/js/vendor/jquery.ui.widget.js</js>
+      -->    
+        <js>/components/blueimp-file-upload/js/jquery.iframe-transport.js</js>
+        <js>/components/blueimp-file-upload/js/jquery.fileupload.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/jquery.populate.js</js>
         <!-- LICENSE: MIT -->
@@ -68,8 +66,6 @@
         <js>/js/tdar.core.js</js>
         <js>/js/tdar.datepicker.js</js>
         <js>/js/tdar.moreinfo.js</js>
-        <js>/js/tdar.upload.js</js>
-        <js>/js/tdar.jquery-upload-validation.js</js>
         <js>/js/tdar.common.js</js>
         <js>/js/tdar.bulk.js</js>
         <js>/js/tdar.repeatrow.js</js>
@@ -117,9 +113,13 @@
         <css>/components/selectize/dist/css/selectize.css</css>
 
 
-        <js>/components/vue/dist/vue.min.js</js>
+        <js>/components/vue/dist/vue.js</js>
+        <js>/components/vue-router/dist/vue-router.js</js> 
         <js>/js/vue/vue-selectize.js</js>
         <js>/js/vue/view-collection-widget.js</js>
+        <js>/js/vue/vue-base-upload.js</js>
+        <js>/js/vue/vue-edit-file-upload-component.js</js>
+        <js>/js/vue/vue-balk-upload-component.js</js>
         <js>/js/vue/edit-collection.js</js>
 
     </group>

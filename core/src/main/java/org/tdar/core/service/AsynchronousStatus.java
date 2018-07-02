@@ -12,12 +12,13 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.utils.Pair;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_EMPTY)
-@JsonAutoDetect
+@JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
 public class AsynchronousStatus implements Serializable, AsyncUpdateReceiver {
 
     private static final long serialVersionUID = 1689999240817782998L;

@@ -2,10 +2,24 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.util.Date;
 import java.util.List;
 
 import org.tdar.core.bean.PersonalFilestoreTicket;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.file.AbstractFile;
+import org.tdar.core.bean.file.CurationState;
+import org.tdar.core.bean.file.FileComment;
+import org.tdar.core.bean.file.Mark;
+import org.tdar.core.bean.file.TdarDir;
+import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.dao.DirSummary;
+import org.tdar.core.dao.FileOrder;
+import org.tdar.core.dao.RecentFileSummary;
+import org.tdar.core.exception.FileUploadException;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
@@ -77,8 +91,41 @@ public interface PersonalFilestoreService {
      * @param file
      * @param filename
      * @return
+     * @throws FileUploadException
      * @throws IOException
      */
-    PersonalFilestoreFile store(PersonalFilestoreTicket ticket, File file, String filename) throws IOException;
+    TdarFile store(PersonalFilestoreTicket ticket, File file, String fileName, BillingAccount account, TdarUser user, TdarDir dir) throws FileUploadException;
+
+    TdarDir createDirectory(TdarDir parent, String name, BillingAccount account, TdarUser authenticatedUser) throws FileAlreadyExistsException;
+
+    List<AbstractFile> listFiles(TdarDir parent, BillingAccount account, String term, FileOrder sortBy, TdarUser authenticatedUser);
+
+    void deleteFile(AbstractFile file, TdarUser authenticatedUser) throws FileUploadException;
+
+    void moveFiles(List<AbstractFile> files, TdarDir dir, TdarUser authenticatedUser);
+
+    TdarDir findUnfileDir(TdarUser authenticatedUser);
+
+    void editMetadata(TdarFile file, String note, boolean needsOcr, CurationState curate, TdarUser authenticatedUser);
+
+    void mark(List<TdarFile> files, Mark mark, TdarUser authenticatedUser);
+
+    void unMark(List<TdarFile> files, Mark role, TdarUser authenticatedUser);
+
+    FileComment addComment(AbstractFile file, String comment, TdarUser authenticatedUser);
+
+    FileComment resolveComment(AbstractFile file, FileComment comment, TdarUser authenticatedUser);
+
+    ResourceType getResourceTypeForFiles(TdarFile files);
+
+    List<TdarDir> listDirectories(TdarDir parent, BillingAccount account, TdarUser authenticatedUser);
+
+    List<AbstractFile> moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser);
+
+    void renameDirectory(TdarDir file, BillingAccount account, String name, TdarUser authenticatedUser) throws FileAlreadyExistsException;
+
+    DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser);
+
+    RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd,  TdarDir dir, TdarUser actor, TdarUser authenticatedUser);
 
 }

@@ -496,7 +496,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     // this logic assumes no span greater than 180°, and that zero-length span is invalid.
-    boolean isValidLongitudeSpan(double min, double max_) {
+    public boolean isValidLongitudeSpan(double min, double max_) {
         double max = max_;
         if (Objects.equals(min, max)) {
             return true;

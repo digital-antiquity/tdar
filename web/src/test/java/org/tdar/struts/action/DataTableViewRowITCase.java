@@ -16,7 +16,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.struts.action.dataset.RowViewAction;
-import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 
@@ -31,7 +30,7 @@ public class DataTableViewRowITCase extends AbstractAdminControllerITCase {
         controller = generateNewInitializedController(RowViewAction.class);
     }
 
-    private void prepareValidData() throws TdarActionException {
+    private void prepareValidData() throws Exception {
         dataset = setupAndLoadResource(TEST_DATASET, Dataset.class);
         assertNotNull(dataset);
         DataTable dataTable = dataset.getDataTables().iterator().next();

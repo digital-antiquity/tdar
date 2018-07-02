@@ -16,4 +16,5 @@
     <include file="additional-prehistoric-test-setup.xml" relativeToChangelogFile="true"/>
     <include file="../liquibase/quartz.xml"  relativeToChangelogFile="true"/> 
     <include file="additional-quartz-test-setup.xml" relativeToChangelogFile="true"/>
+    <include file="../liquibase/radiocarbon.xml"  relativeToChangelogFile="true"/> 
 </databaseChangeLog>

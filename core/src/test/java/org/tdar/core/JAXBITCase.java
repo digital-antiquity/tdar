@@ -393,20 +393,20 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         // march 9th, local time zone
         Date dt = new DateTime(2015, 3, 9, 0, 0).toDate();
         String json = serializationService.convertToJson(dt);
-        assertThat(json, containsString("2015-03-09T00:00:00"));
+        assertThat(json, containsString("2015-03-09T00:00:00-07:00"));
         logger.debug("json:{}", json);
 
         FileProxy fileProxy = new FileProxy();
         fileProxy.setFileCreatedDate(dt);
         json = serializationService.convertToJson(fileProxy);
-        assertThat(json, containsString("2015-03-09T00:00:00"));
+        assertThat(json, containsString("03/09/2015"));
         logger.debug("json:{}", json);
 
         InformationResourceFile informationResourceFile = new InformationResourceFile();
         informationResourceFile.setFileCreatedDate(new DateTime(2015, 3, 9, 0, 0).toDate());
         fileProxy = new FileProxy(informationResourceFile);
         json = serializationService.convertToJson(fileProxy);
-        assertThat(json, containsString("2015-03-09T00:00:00"));
+        assertThat(json, containsString("03/09/2015"));
         logger.debug("json:{}", json);
     }
 
@@ -419,7 +419,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         FileProxy fileProxy = new FileProxy(informationResourceFile);
 
         String json = serializationService.convertToJson(fileProxy);
-        assertThat(json, containsString("2015-03-09T00:00:00"));
+        assertThat(json, containsString("03/09/2015"));
         logger.debug("json:{}", json);
     }
 

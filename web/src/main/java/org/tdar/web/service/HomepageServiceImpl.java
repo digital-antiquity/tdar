@@ -47,7 +47,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class HomepageServiceImpl implements HomepageService {
 
     private transient Logger logger = LoggerFactory.getLogger(getClass());
-    public static String _PLURAL = "_PLURAL";
+    public static final String _PLURAL = "_PLURAL";
     @Autowired
     private transient ResourceService resourceService;
     @Autowired

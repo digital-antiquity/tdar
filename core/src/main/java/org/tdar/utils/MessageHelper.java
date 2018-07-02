@@ -1,14 +1,23 @@
 package org.tdar.utils;
 
+import java.io.File;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.logging.Log;
+import org.apache.jena.base.Sys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -21,13 +30,51 @@ import com.opensymphony.xwork2.util.ValueStack;
  */
 public class MessageHelper implements Serializable, TextProvider {
 
+    private static final String BUNDLE_NAME = "Locales/tdar-messages";
     private static final long serialVersionUID = 3633016404256878510L;
-    private final static MessageHelper INSTANCE = new MessageHelper(ResourceBundle.getBundle("Locales/tdar-messages"));
+    private final static MessageHelper INSTANCE = new MessageHelper();
     private final static Logger logger = LoggerFactory.getLogger(MessageHelper.class);
     private ResourceBundle bundle;
 
     protected MessageHelper() {
-        // Exists only to defeat instantiation.
+        this(BUNDLE_NAME);
+    }
+
+    protected MessageHelper(String name) {
+        try {
+            bundle = ResourceBundle.getBundle(name);
+        } catch (NoClassDefFoundError | MissingResourceException cnf) {
+        }
+        if (bundle == null) {
+            loadFalback(name);
+        }
+    }
+
+    private void loadFalback(String name) {
+        Logger log = LoggerFactory.getLogger(MessageHelper.class);
+        log.warn("loading fallback locale");
+        for (String fallback : Arrays.asList("../locales/src/main/resources/", "../../locales/src/main/resources/", "locales/src/main/resources/",
+                "../../../locales/src/main/resources/")) {
+            if (new File(fallback).exists()) {
+                try {
+                    List<URL> paths = new ArrayList<>();
+                    paths.add(new File(fallback).toURI().toURL());
+                    ClassLoader loader = new URLClassLoader(paths.toArray(new URL[0]));
+                    log.debug("{}", paths);
+                    loadBundle(name, loader);
+                    if (bundle != null) {
+                        return;
+                    }
+                } catch (MalformedURLException e) {// TODO Auto-generated catch block
+                    log.warn("loading fallback locale");
+                    log.error("{}", e, e);
+                }
+            }
+        }
+    }
+
+    private void loadBundle(String path, ClassLoader loader) {
+        bundle = ResourceBundle.getBundle(path, Locale.getDefault(), loader);
     }
 
     public MessageHelper(ResourceBundle bundle) {

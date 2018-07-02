@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-        <version>17.0.0-QUARTZ</version>
+        <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
@@ -174,12 +174,6 @@
                     <artifactId>asm-commons</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>javax.el-api</artifactId>
-            <version>2.2.4</version>
         </dependency>
         <!-- Servlet & Jsp -->
         <dependency>

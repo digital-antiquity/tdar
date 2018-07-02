@@ -13,6 +13,25 @@ input[autocomplete="off"]::-webkit-contacts-auto-fill-button {
     History: this file represents the original source code as provided by Fervor
 */
 
+
+
+.fileinput-button input {
+    cursor: pointer;
+    direction: ltr;
+    filter: alpha(opacity=0);
+    font-size: 23px;
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    right: 0;
+/*     top: 0; */
+    transform: translate(-300px, 0) scale(4);
+}
+
+
+
 .red {
     color: #7a1501;
 }
