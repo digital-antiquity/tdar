@@ -175,12 +175,12 @@
 
             <#if !resource.resourceType.project>
                 <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
-	        <span id="publisher-hints" book="Publisher" book_section="Publisher" journal_article="Publisher" conference_presentation="Conference"
+	        <span id="publisher-hints" book="Publisher" report="Publisher" book_section="Publisher" journal_article="Publisher" conference_presentation="Conference"
                   thesis="Institution" other="Publisher">
                 <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
             </span>
 	
-	        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
+	        <span id="publisherLocation-hints" book="Publisher Loc." report="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
                   conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
                 <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='input-xxlarge' />
             </span>
