@@ -136,6 +136,26 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
             });
         });
 
+
+        it("delete file add dup", function() {
+            var vapp = setupValidApp();
+            Vue.nextTick(function() {
+                var filePart = vapp.$children[0];
+
+                filePart.deleteFile();
+                console.log(filePart.file.action);
+                expect(filePart.file.action).toEqual("DELETE");
+
+                var _files = [{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}];
+                var result = vapp.fileUploadAdd(undefined, {originalFiles:_files});
+                
+                filePart.unDeleteFile();
+                expect(filePart.file.action).toNotEqual("ADD");
+                vapp.$destroy();
+ 
+            });
+        });
+
         it("replace file", function() {
             var vapp = setupValidApp();
             Vue.nextTick(function() {
