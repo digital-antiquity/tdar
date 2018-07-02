@@ -277,21 +277,21 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 _disable: function() {
                     //    $('.disabledCheckboxes').prop("disabled", true);
                     //$('.disabledCheckboxes').removeAttr("disabled");
-                    this.ableToUpload=false;
+                    Vue.set(this,"ableToUpload",false);
                     $(".submitButton").prop("disabled", "disabled");
                     $(".submitButton").addClass("disabled");
                 },
                 _enable: function() {
-                    this.ableToUpload=true;
+                    Vue.set(this,"ableToUpload",true);
                     $(".submitButton").prop("disabled", false);
                     $(".submitButton").removeAttr("disabled");
                     $(".submitButton").removeClass("disabled");
                 },
                 handleClick: function(e) {
-                    if (this.ableToUpload) {
+                    if (this.inputDisabled == false) {
                         
                     } else {
-                        console.log("disable?");
+                        console.log("input disabled");
                         e.preventDefault();
                     }
                 },
@@ -308,7 +308,10 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log('file upload disabled');
                     return;
                 }
-
+                var app_ =this;
+                $("#fileuploadWrapper").click(function(e) {
+                    app_.handleClick(e);
+                })
                 if (this.files.length == undefined || this.files.length == 0) {
                     var val = $("#vueFilesFallback").val();
                     if (val != undefined && val.trim().length > 0) {
@@ -360,7 +363,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 up.bind('fileuploadadd', _app.fileUploadAdd).bind('fileuploaddone', _app.fileUploadAddDone).bind('fileuploadsubmit', _app.fileUploadSubmit)
                         .bind('fileuploadprogress', _app.updateFileProgress)
                  .bind('fileuploadfail', function (e, data) {console.log('fileUploadFail:',e);
-                 _app.addWarning(e);
+                 _app.addWarning("there was an error uploading the specified file");
                  console.error(e);
                  _app._enable();
                  });
