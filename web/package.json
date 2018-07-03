@@ -27,6 +27,7 @@
     "karma-jasmine-ajax": "~0.1.13",
     "karma-jasmine-jquery": "^0.1.1",
     "karma-junit-reporter": "^1.1.0",
+    "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.0",
     "moxios": "^0.4.0",
     "script-loader": "^0.7.2",

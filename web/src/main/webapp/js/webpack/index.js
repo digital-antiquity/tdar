@@ -68,7 +68,6 @@ import 'leaflet-choropleth/dist/choropleth.js';
 import './../../includes/es6-promise/lib/es6-promise.js';
 import './../../includes/es6-promise/lib/es6-promise.auto.js';
 
-import 'axios/dist/axios.min.js';
 import 'qs/dist/qs.js';
 
 import './../../includes/Leaflet.Sleep.js';
@@ -125,6 +124,7 @@ import 'selectize/dist/js/standalone/selectize.js';
 import './../maps/tdar.worldmap';
 
 import "vue";
+import 'axios/dist/axios.min.js';
 
 import './../vue/vue-selectize.js';
 require('script-loader!../../includes/bootstrap-2.32/js/bootstrap.js');
