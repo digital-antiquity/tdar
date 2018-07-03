@@ -602,7 +602,7 @@ View freemarker macros
             <span id="imageContainer">
             <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}"
                  src="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>"/>
-            <span id="confidentialLabel"><#if !irfile.public>This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</#if></span>
+            <#if !irfile.public><span id="confidentialLabel">This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</span></#if>
                 </div>
                 <div id="downloadText">
                     <@_altText irfile/>

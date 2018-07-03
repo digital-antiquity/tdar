@@ -27,13 +27,15 @@
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/components/jquery.treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
-        <js>/components/blueimp-tmpl/js/tmpl.js</js>
         <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
         <js>/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js</js>
-        
+        <!--  we use the template for the person autocomplete, we should fix this and then remove it -->
+        <js>/components/blueimp-tmpl/js/tmpl.js</js>
+        <!--      
+        <js>/components/blueimp-file-upload/js/vendor/jquery.ui.widget.js</js>
+      -->    
         <js>/components/blueimp-file-upload/js/jquery.iframe-transport.js</js>
         <js>/components/blueimp-file-upload/js/jquery.fileupload.js</js>
-        <js>/components/blueimp-file-upload/js/vendor/jquery.ui.widget.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/jquery.populate.js</js>
         <!-- LICENSE: MIT -->
