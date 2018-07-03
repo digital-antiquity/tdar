@@ -131,8 +131,6 @@ require('script-loader!../../includes/bootstrap-2.32/js/bootstrap.js');
 import './../vue/view-collection-widget.js';
 import './../vue/edit-collection';
 
-console.log("TDAR is: ",TDAR);
-
 TDAR.main();
 
 //import "bootstrap-2.3.2/js/bootstrap-affix.js";

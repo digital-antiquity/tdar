@@ -43,6 +43,7 @@ module.exports = {
 //     new BundleAnalyzerPlugin(),
      new webpack.ProvidePlugin({
          $: "jquery",
+         $j : "jquery",
          jQuery: "jquery",
          axios:"Axios",
         // jquery: "jquery",

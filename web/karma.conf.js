@@ -1,5 +1,5 @@
 // Karma configuration
-var webpackConfig = require('./webpack.config');
+//var webpackConfig = require('./webpack.config.js');
 
 var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
@@ -13,19 +13,18 @@ function buildFilesFromWro(profile) {
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles
-            //.concat("/dist/bundle.js")
+            .concat("/dist/bundle.js")
             .map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
-
-
 
 module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     
     config.set({
-        webpack: webpackConfig,
-        browserConsoleLogOptions: {terminal:false},
+       // webpack: webpackConfig,
+        
+        browserConsoleLogOptions: {terminal:true},
 
         // base path that will be used to resolve all patterns (eg. files, exclude)
         basePath: '',
@@ -38,30 +37,28 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                'node_modules/es6-promise/es6-promise.js',
-                'node_modules/es6-promise/es6-promise.auto.js',
-                'node_modules/vue/dist/vue.js',
-                'node_modules/axios/dist/axios.js',
-                'node_modules/moxios/dist/moxios.js',
-                {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
+                //'node_modules/es6-promise/es6-promise.js',
+                //'node_modules/es6-promise/es6-promise.auto.js',
+                //'node_modules/vue/dist/vue.js',
+                //'node_modules/axios/dist/axios.js',
+                //'node_modules/moxios/dist/moxios.js',
+                //{pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
+                //{pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
+                //{pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},
-                {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
-                {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
+                //{pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
+                //{pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},
+                //{pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
+                //{pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
             ],
             
             //files specified in wro.xml 
             wroFiles,
             
             [
-                // specs
-                "src/test/frontend/spec/**/*.js",
-
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
+
                 // more fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/main/webapp/WEB-INF/content/**/*.html", watched:true, served:true, included:false},
 
@@ -71,13 +68,14 @@ module.exports = function(config) {
                 //static files: served by karma webserver but not included on page
                 {pattern: "src/main/webapp/images/**/*", served:true, included:false, watched:false},
 
-
                 //static files: images used by js libraries, e.g. jquery-ui, jquery-file-upload
                 {pattern: "src/main/webapp/includes/**/images/**/*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/components/**/*.*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/js/maps/**/*.*", served:true, included:false, watched:false},
-
+                
+                // specs
+                "src/test/frontend/spec/**/*.js",
             ]),
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
@@ -99,9 +97,7 @@ module.exports = function(config) {
             'src/test/frontend/html2js/*.html': ['html2js'],
             'src/main/webapp/js/**/*.js': ['coverage'],
             
-            'src/test/**/*Spec.js': ['webpack'],
-            'src/test/**/*Spec.jsx': ['webpack']
-            
+            //'src/test/frontend/spec/**/*.js' : ['webpack']            
         },
 
         // test results reporter to use
@@ -125,7 +121,7 @@ module.exports = function(config) {
 
         // level of logging
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-        logLevel: config.LOG_DEBUG,
+        logLevel: config.LOG_INFO,
 
         // enable / disable watching file and executing tests whenever any file changes
         autoWatch: true,

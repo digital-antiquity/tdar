@@ -158,7 +158,6 @@ describe("Vue-collection-widget.js: collection widget test", function() {
             //Verify that the object is removed, and theres only one collection displayed. 
             Vue.nextTick(function() {
             	 expect(vapp.unmanagedCollectionsToRemove).toHaveLength(1);
-            	 console.debug(vapp.collections.unmanaged);
             	 
                 expect(vapp.collections.unmanaged).toHaveLength(2);
             	vapp.cancelAddToCollectionChanges();
