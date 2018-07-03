@@ -1,6 +1,11 @@
 <#macro layout_header>
 
-<#include "/${config.themeDir}/header.dec" />
+<h1 id="top"><img src="${staticHost}/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap" alt="tDAR Logo">
+    <map name="tdarmap">
+        <area shape="rect" coords="0,0,187,65" href="/" alt="tDAR" tabindex="-1">
+        <area shape="rect" coords="0,65,187,77" href="http://www.digitalantiquity.org/" alt="digital antiquity" tabindex="-1">
+    </map>
+</h1>
 <#if (authenticatedUser??) >
 
 <p id="welcome-menu" class="welcome  screen ">
@@ -45,7 +50,11 @@
 
 <nav>
     <ul class="hidden-phone-portrait">
-        <#include "/${config.themeDir}/nav-items.dec" />
+<li><a href="https://www.tdar.org/saa/">SAA</a></li>
+<li><a href="https://www.tdar.org/news/">News</a></li>
+<li><a href="https://www.tdar.org/about">About</a></li>
+<li><a href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>
+
 <!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
         <#if ((authenticatedUser.contributor)!true)>
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
@@ -67,49 +76,70 @@
 </#macro>
 
 <#macro homepageHeader>
-<div id="jumbo">
-    <div class="container">
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="jumbotron">
-            <ul class="pull-right hidden-phone hidden-tablet nav">
-                <li>
-                <form class="form-unstyled seleniumIgnoreForm logoutForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
-                        <input type="submit" class="tdar-button" name="logout" value="Logout" id="logout-button">
-                </form>
-                </li>
-            </ul>
-                
-    <h2>What can you dig up?</h2>
+        <div class="hero">
+<h2>What can you dig up?</h2>
 
-    <p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br>for archaeological information.</p>
+<p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
 
-    <form name="searchheader" action="/search/results" class="searchheader">
-        <div class="row">
-            <div class="col-lg-8 col-md-8 col-sm-10">
-                <div class="input-group jumbo-search">
-            <input type="text" name="query" placeholder="Find archaeological data..." accesskey="s" class="form-control">
-        
-            <input type="hidden" name="_tdar.searchType" value="simple">
+<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
+    <input type="text" name="query" placeholder="Find archaeological data..." accesskey="s" class="searchbox input-xxlarge">
+    <a href="<@s.url value="/search"/>">advanced</a>
+    <input type="hidden" name="_tdar.searchType" value="simple">
+</form>
 
-                <span class="input-group-btn">
-                  <button class="btn btn-default no-left-border" type="button"><i class="glyphicon glyphicon-search"></i></button>
-                </span>
-            </div>
-              </div><!-- /input-group -->
-
-            <div class="col-lg-4 col-md-4 col-sm-2">
-                <a href="/search">advanced</a>
-            </div>
+        <@auth.loginMenu true/>
         </div>
-    </form>
-
-            </div>
-        </div>
-        </div>
-    </div>
+        <ul class="inline-menu hidden-desktop"><@auth.loginMenu false/></ul>
     </div>
 
+
+<div class="row">
+    <div class="span3 bucket">
+        <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
+
+        <h3><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h3>
+
+        <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
+
+        <p>
+            <a href="http://www.tdar.org/why-tdar/data-access/" class="button">Learn More</a>
+        </p>
+    </div>
+    <div class="span3 bucket">
+        <img src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
+
+        <h3><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h3>
+
+        <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
+
+        <p>
+            <a href="http://www.tdar.org/why-tdar/preservation/" class="button">Learn More</a>
+        </p>
+    </div>
+    <div class="span3 bucket">
+        <img src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
+
+        <h3><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h3>
+
+        <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
+
+        <p>
+            <a href="http://www.tdar.org/why-tdar/contribute/" class="button">Learn More</a>
+        </p>
+    </div>
+    <div class="span3 bucket">
+        <img src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
+
+        <h3><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h3>
+
+        <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
+
+        <p>
+            <a href="http://www.tdar.org/using-tdar/" class="button">Learn More</a>
+        </p>
+    </div>
+</div>
 </#macro>
 
 <#macro subnav>
