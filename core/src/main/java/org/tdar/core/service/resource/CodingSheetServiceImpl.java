@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -30,17 +32,17 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.CodingSheetDao;
-import org.tdar.core.parser.CodingSheetParser;
-import org.tdar.core.parser.CodingSheetParserException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
+import org.tdar.db.parser.CodingSheetParser;
+import org.tdar.db.parser.CodingSheetParserException;
+import org.tdar.db.parser.TCodingRule;
+import org.tdar.exception.ExceptionWrapper;
+import org.tdar.fileprocessing.workflows.GenericColumnarDataWorkflow;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.filestore.WorkflowContext;
-import org.tdar.utils.ExceptionWrapper;
+import org.tdar.filestore.VersionType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
@@ -120,12 +122,12 @@ public class CodingSheetServiceImpl extends ServiceInterface.TypedDaoBase<Coding
         // codingSheet.getCodingRules().clear();
         FileInputStream stream = null;
         Set<String> duplicates = new HashSet<String>();
-        List<CodingRule> incomingCodingRules = new ArrayList<CodingRule>();
+        List<TCodingRule> incomingCodingRules = new ArrayList<>();
         try {
             stream = new FileInputStream(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
-            incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(codingSheet, stream));
+            incomingCodingRules.addAll(getCodingSheetParser(version.getFilename()).parse(stream));
             Set<String> uniqueSet = new HashSet<String>();
-            for (CodingRule rule : incomingCodingRules) {
+            for (TCodingRule rule : incomingCodingRules) {
                 boolean unique = uniqueSet.add(rule.getCode());
                 if (!unique) {
                     duplicates.add(rule.getCode());
@@ -145,15 +147,40 @@ public class CodingSheetServiceImpl extends ServiceInterface.TypedDaoBase<Coding
         }
 
         Map<String, CodingRule> codeToRuleMap = codingSheet.getCodeToRuleMap();
-        for (CodingRule rule : incomingCodingRules) {
+        deleteUnusedCodingRules(codingSheet, incomingCodingRules);
+        addOrCopyNewOrExistingRules(codingSheet, incomingCodingRules, codeToRuleMap);
+        getDao().saveOrUpdate(codingSheet);
+    }
+
+    private void addOrCopyNewOrExistingRules(CodingSheet codingSheet, List<TCodingRule> incomingCodingRules, Map<String, CodingRule> codeToRuleMap) {
+        for (TCodingRule rule : incomingCodingRules) {
             CodingRule existingRule = codeToRuleMap.get(rule.getCode());
-            if (existingRule != null) {
-                rule.setOntologyNode(existingRule.getOntologyNode());
+            if (existingRule == null) {
+                existingRule = new CodingRule();
+                existingRule.setCode(rule.getCode());
+                existingRule.setCodingSheet(codingSheet);
+                codingSheet.getCodingRules().add(existingRule);
+            }
+            existingRule.setDescription(rule.getDescription());
+            existingRule.setTerm(rule.getTerm());
+        }
+    }
+
+    private void deleteUnusedCodingRules(CodingSheet codingSheet, List<TCodingRule> incomingCodingRules) {
+        Iterator<CodingRule> iterator = codingSheet.getCodingRules().iterator();
+        while (iterator.hasNext()) {
+            CodingRule rule = iterator.next();
+            boolean seen = false;
+            for (TCodingRule trule : incomingCodingRules) {
+                if (StringUtils.equals(trule.getCode(), rule.getCode())) {
+                    seen = true;
+                    break;
+                }
+            }
+            if (seen == false) {
+                iterator.remove();
             }
         }
-        getDao().delete(codingSheet.getCodingRules());
-        codingSheet.getCodingRules().addAll(incomingCodingRules);
-        getDao().saveOrUpdate(codingSheet);
     }
 
     /*

@@ -10,7 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.fileprocessing.PdfConfig;
 
 /**
  * Handles the actual merging of the PDFs through a piped-output-stream.
@@ -39,7 +39,7 @@ public class PDFMergeTask implements Runnable {
     @Override
     public void run() {
         try {
-            wrapper.getMerger().mergeDocuments(TdarConfiguration.getInstance().getPDFMemoryWriteSetting(wrapper.getDocument()));
+            wrapper.getMerger().mergeDocuments(PdfConfig.getPDFMemoryWriteSetting(wrapper.getDocument()));
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions

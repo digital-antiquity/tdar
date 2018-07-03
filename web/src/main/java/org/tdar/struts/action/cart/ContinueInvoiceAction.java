@@ -6,7 +6,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
@@ -37,9 +37,9 @@ public class ContinueInvoiceAction extends AbstractAuthenticatableAction {
 
     @Action(value = "continue",
             results = {
-                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
-                    @Result(name = SUCCESS_UNAUTH, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED),
-                    @Result(name = INPUT, type = TDAR_REDIRECT, location = URLConstants.CART_ADD)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.CART_REVIEW_PURCHASE),
+                    @Result(name = SUCCESS_UNAUTH, type = TDAR_REDIRECT, location = UrlConstants.CART_REVIEW_UNAUTHENTICATED),
+                    @Result(name = INPUT, type = TDAR_REDIRECT, location = UrlConstants.CART_ADD)
             })
     public String execute() {
         getLogger().debug("setting invoice id {} on the session", invoiceId);

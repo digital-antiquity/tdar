@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Sequenceable;
@@ -52,12 +53,9 @@ import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ErrorTransferObject;
@@ -73,7 +71,9 @@ import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.VersionType;
 import org.tdar.struts.data.AuthWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
@@ -123,7 +123,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
     private void validateFileExtensions(List<FileProxy> proxies, Collection<String> validFileExtensions, TextProvider provider) throws TdarActionException {
         List<FileProxy> invalidFiles = new ArrayList<>();
         for (FileProxy proxy : proxies) {
-            if (!validFileExtensions.contains(proxy.getExtension().toLowerCase()) && proxy.getAction() != FileAction.DELETE) {
+            String ext = "." + proxy.getExtension().toLowerCase();
+            
+            if (!validFileExtensions.contains(ext) && proxy.getAction() != FileAction.DELETE) {
                 logger.info("Rejecting file:{} - extension not allowed.  Allowed types:{}", proxy.getExtension(), validFileExtensions);
                 invalidFiles.add(proxy);
             }

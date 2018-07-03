@@ -12,6 +12,8 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
+import org.tdar.db.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportTable;
 
 public interface DataTableService {
 
@@ -28,12 +30,12 @@ public interface DataTableService {
     /*
      * Find all distinct values for a @link DataTableColumn within the tdardata database
      */
-    List<String> findAllDistinctValues(DataTableColumn column);
+    List<String> findAllDistinctValues(ImportTable table, ImportColumn columnByName);
 
     /*
      * Find all distinct values for a @link DataTableColumn, but also return count() occurrences for each value.
      */
-    Map<String, Long> findAllDistinctValuesWithCounts(DataTableColumn dataTableColumn);
+    Map<String, Long> findAllDistinctValuesWithCounts(ImportTable table, ImportColumn column);
 
     /*
      * Find all @link DataTableColumn entries that are mapped to an @link Ontology
@@ -58,5 +60,6 @@ public interface DataTableService {
     Set<String> getMissingCodingKeys(CodingSheet sheet, List<DataTable> tables_);
 
     DataTable find(Long dataTableId);
+
 
 }

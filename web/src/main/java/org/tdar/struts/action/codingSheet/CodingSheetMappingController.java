@@ -16,7 +16,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -86,7 +86,7 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
     @SkipValidation
     @Action(value = MAPPING, results = {
             @Result(name = SUCCESS, location = "mapping.ftl"),
-            @Result(name = INPUT, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID)
+            @Result(name = INPUT, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.VIEW_RESOURCE_ID)
     })
     public String loadOntologyMappedColumns() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -111,7 +111,7 @@ public class CodingSheetMappingController extends AbstractAuthenticatableAction 
     @Action(value = SAVE_MAPPING,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.VIEW_RESOURCE_ID),
                     @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);

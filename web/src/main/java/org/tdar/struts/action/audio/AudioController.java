@@ -30,7 +30,7 @@ public class AudioController extends AbstractInformationResourceController<Audio
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return getAnalyzer().getExtensionsForType(ResourceType.AUDIO);
+        return getExtensionsForType(ResourceType.AUDIO);
     }
 
     public void setAudio(final Audio audio) {

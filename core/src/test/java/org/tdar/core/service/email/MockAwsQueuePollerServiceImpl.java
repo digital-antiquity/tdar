@@ -11,9 +11,9 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.EmailDao;
 import org.tdar.utils.EmailRawMessageHelper;
 

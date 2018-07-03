@@ -27,10 +27,10 @@ import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.db.Database;
 import org.tdar.db.builder.SqlSelectBuilder;
+import org.tdar.db.builder.SqlTools;
 import org.tdar.db.builder.WhereCondition;
-import org.tdar.db.model.abstracts.Database;
-import org.tdar.db.model.abstracts.IntegrationDatabase;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -143,7 +143,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     whereCond.setIncludeNulls(false);
                     StringBuilder sb = new StringBuilder("UPDATE ");
                     sb.append(proxy.getTempTableName());
-                    sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
+                    sb.append(" SET ").append(SqlTools.quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(SqlTools.quote(node.getDisplayName(), false));
                     sb.append(" WHERE ");
                     sb.append(tableCond.toSql());
                     sb.append(" AND ");
@@ -260,7 +260,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
      */
     private void generateModernIntegrationResult(final IntegrationContext proxy, final DataTable table) {
         StringBuilder sb = new StringBuilder();
-        joinListWithCommas(sb, proxy.getTempTable().getColumnNames(), true);
+        SqlTools.joinListWithCommas(sb, proxy.getTempTable().getColumnNames(), true);
         String selectSql = "INSERT INTO " + proxy.getTempTableName() + " ( " + sb.toString() + ") " + generateOntologyEnhancedSelect(table, proxy);
 
         executeUpdateOrDelete(selectSql);

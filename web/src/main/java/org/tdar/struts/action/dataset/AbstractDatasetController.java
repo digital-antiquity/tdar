@@ -3,6 +3,7 @@ package org.tdar.struts.action.dataset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.tdar.core.bean.resource.datatable.MeasurementUnit;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.OntologyService;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.utils.PersistableUtils;
 
@@ -118,7 +120,7 @@ public abstract class AbstractDatasetController<R extends Dataset> extends Abstr
         if (getDataTableColumn() == null) {
             return Collections.emptyMap();
         }
-        return dataTableService.findAllDistinctValuesWithCounts(dataTableColumn);
+        return dataTableService.findAllDistinctValuesWithCounts(dataTable, dataTableColumn);
     }
 
     public DataTableColumn getDataTableColumn() {
@@ -225,7 +227,13 @@ public abstract class AbstractDatasetController<R extends Dataset> extends Abstr
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return getAnalyzer().getExtensionsForTypes(getPersistable().getResourceType(), ResourceType.DATASET);
+        Set<RequiredOptionalPairs> extensionsForType = getAnalyzer().getExtensionsForType(getPersistable().getResourceType(), ResourceType.DATASET);
+        Set<String> exts = new HashSet<>();
+        for (RequiredOptionalPairs pair : extensionsForType) {
+            exts.addAll(pair.getOptional());
+            exts.addAll(pair.getRequired());
+        }
+        return exts;
     }
 
     @Override

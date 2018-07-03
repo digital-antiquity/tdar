@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.filestore.VersionType;
 
 /**
  * Proxy object for InformationResourceFileVersion difference from original is that it has no back-references

@@ -17,7 +17,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
-import org.tdar.db.model.abstracts.IntegrationDatabase;
+import org.tdar.db.model.IntegrationDatabase;
 
 import com.opensymphony.xwork2.TextProvider;
 

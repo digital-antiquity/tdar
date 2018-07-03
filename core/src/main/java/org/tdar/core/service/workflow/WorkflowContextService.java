@@ -1,8 +1,8 @@
 package org.tdar.core.service.workflow;
 
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.service.workflow.workflows.Workflow;
-import org.tdar.filestore.WorkflowContext;
+import org.tdar.fileprocessing.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 
 public interface WorkflowContextService {
 

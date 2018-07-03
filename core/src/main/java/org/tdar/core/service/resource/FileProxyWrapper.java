@@ -15,6 +15,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -23,9 +24,8 @@ import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FilestoreObjectType;
@@ -87,7 +87,6 @@ public class FileProxyWrapper {
                     break;
             }
         }
-
         for (FileProxy proxy : cleanedProxies) {
             if (!proxy.getAction().requiresWorkflowProcessing()) {
                 continue;
@@ -100,7 +99,7 @@ public class FileProxyWrapper {
             switch (version.getFileVersionType()) {
                 case UPLOADED:
                 case UPLOADED_ARCHIVAL:
-                    irFile.setInformationResourceFileType(analyzer.analyzeFile(version));
+                    irFile.setInformationResourceFileType(analyzer.getFileTypeForExtension(version, informationResource.getResourceType()));
                     getFilesToProcess().add(version);
                     break;
                 default:
@@ -127,12 +126,23 @@ public class FileProxyWrapper {
      */
     public void addInformationResourceFile(FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
+        
         InformationResourceFile irFile = proxy.getInformationResourceFile();
-        incrementVersionNumber(irFile);
-        // genericDao.saveOrUpdate(resource);
-        if (informationResource.isTransient()) {
-            datasetDao.saveOrUpdate(informationResource);
+        if (proxy.getAction() == FileAction.ADD && !informationResource.getResourceType().allowsMultipleFiles() && !informationResource.getResourceType().isCompositeFilesEnabled()) {
+            if (CollectionUtils.isNotEmpty(informationResource.getInformationResourceFiles()) && informationResource.getInformationResourceFiles().size() > 1) {
+                throw new TdarRecoverableRuntimeException("informationResourceFile.too.many.files");
+            }
+            InformationResourceFile firstInformationResourceFile = informationResource.getFirstInformationResourceFile();
+            if (firstInformationResourceFile != null) {
+                firstInformationResourceFile.setDeleted(true);
+            }
         }
+        incrementVersionNumber(irFile);
+        
+        // genericDao.saveOrUpdate(resource);
+
+        
+        
         irFile.setInformationResource(informationResource);
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(proxy));
         setInformationResourceFileMetadata(proxy);
@@ -185,6 +195,10 @@ public class FileProxyWrapper {
         }
         InformationResourceFileVersion version = new InformationResourceFileVersion(proxy.getVersionType(), filename, irFile);
         if (irFile.isTransient()) {
+            if (irFile.getInformationResource().isTransient()) {
+                datasetDao.saveOrUpdate(irFile.getInformationResource());
+            }
+
             datasetDao.saveOrUpdate(irFile);
         }
 

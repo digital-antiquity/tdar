@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -37,8 +38,6 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
@@ -46,7 +45,6 @@ import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.RightsResolver;
 import org.tdar.core.service.SerializationService;
@@ -55,8 +53,10 @@ import org.tdar.core.service.collection.CollectionRightsComparator;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.FileProxyWrapper;
-import org.tdar.db.model.abstracts.IntegrationDatabase;
+import org.tdar.db.model.IntegrationDatabase;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.VersionType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.PersistableUtils;
 
@@ -135,7 +135,7 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         }
         logger.trace("selecting distinct values from column");
 
-        Set<String> values = new HashSet<>(tdarDataImportDatabase.selectDistinctValues(column, false));
+        Set<String> values = new HashSet<>(tdarDataImportDatabase.selectDistinctValues(column.getDataTable(), column, false));
         logger.trace("values: {} ", values);
         logger.trace("matching coding rule terms to column values");
 
@@ -191,7 +191,7 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
     @Override
     @Transactional
     public List<CodingRule> findMappedCodingRules(DataTableColumn column) {
-        List<String> distinctColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column, false);
+        List<String> distinctColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false);
         return dataTableColumnDao.findMappedCodingRules(column, distinctColumnValues);
     }
 
@@ -211,7 +211,7 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         Dataset dataset = column.getDataTable().getDataset();
         CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
-        List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column, true);
+        List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, true);
         Set<CodingRule> rules = new HashSet<>();
         for (int index = 0; index < dataColumnValues.size(); index++) {
             String dataValue = dataColumnValues.get(index);

@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.configuration.TdarAppConfiguration;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionHelper;
 
 @ContextConfiguration(classes = TdarAppConfiguration.class)

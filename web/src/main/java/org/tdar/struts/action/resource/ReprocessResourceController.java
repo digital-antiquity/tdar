@@ -7,7 +7,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -43,7 +43,7 @@ public class ReprocessResourceController extends AbstractAuthenticatableAction i
     private InformationResource resource;
     private Long id;
 
-    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
+    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reprocess() throws TdarActionException {
         getLogger().info("reprocessing");
 
@@ -65,7 +65,7 @@ public class ReprocessResourceController extends AbstractAuthenticatableAction i
     }
 
     @WriteableSession
-    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
+    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reimport() throws TdarActionException {
         if (getResource() instanceof Dataset) {
             try {
@@ -97,7 +97,7 @@ public class ReprocessResourceController extends AbstractAuthenticatableAction i
      * Retranslates the given dataset.
      * XXX: does this need a WritableSession?
      */
-    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
+    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String retranslate() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (getResource() instanceof Dataset) {

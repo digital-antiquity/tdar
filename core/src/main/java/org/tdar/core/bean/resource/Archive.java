@@ -71,14 +71,4 @@ public class Archive extends InformationResource {
         return target;
     }
 
-    @Override
-    public void updateFromTransientResource(InformationResource transientResource) {
-        if (transientResource == null) {
-            // Should never be here, so perhaps we should do more than return?
-            return;
-        }
-        final Archive transientArchive = (Archive) transientResource;
-        this.doImportContent = transientArchive.isDoImportContent();
-        this.importdone = transientArchive.isImportDone();
-    }
 }

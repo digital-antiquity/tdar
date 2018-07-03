@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.tdar.configuration.PooledDataSourceWrapper;
 
 public class IntegrationAppConfiguration extends SimpleAppConfiguration {
 
@@ -23,7 +24,8 @@ public class IntegrationAppConfiguration extends SimpleAppConfiguration {
     @Bean(name = "tdarDataImportDataSource")
     public DataSource tdarDataDataSource() {
         try {
-            return configureDataSource("tdardata");
+            return new PooledDataSourceWrapper("tdardata", env).getDataSource();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

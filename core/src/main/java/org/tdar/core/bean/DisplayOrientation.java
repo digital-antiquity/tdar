@@ -3,6 +3,8 @@ package org.tdar.core.bean;
 import java.util.Arrays;
 import java.util.List;
 
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 /**

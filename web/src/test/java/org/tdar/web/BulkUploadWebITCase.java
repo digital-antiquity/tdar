@@ -29,13 +29,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.JacksonUtils;
 import org.tdar.core.service.bulk.BulkUpdateReceiver;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -101,7 +101,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException, FileNotFoundException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(URLConstants.CART_ADD);
+            gotoPage(UrlConstants.CART_ADD);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();
@@ -217,7 +217,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
     private String setupAccount(Map<String, String> extra, int numberOfMb, int numberOfFiles) throws MalformedURLException {
         String accountId = null;
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(URLConstants.CART_ADD);
+            gotoPage(UrlConstants.CART_ADD);
             setInput("invoice.numberOfMb", numberOfMb);
             setInput("invoice.numberOfFiles", numberOfFiles);
             submitForm();

@@ -31,7 +31,7 @@ public class ImageController extends AbstractInformationResourceController<Image
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return getAnalyzer().getExtensionsForType(ResourceType.IMAGE);
+        return getExtensionsForType(ResourceType.IMAGE);
     }
 
     @Override

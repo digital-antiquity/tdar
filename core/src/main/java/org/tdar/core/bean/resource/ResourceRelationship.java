@@ -9,8 +9,8 @@ import javax.persistence.Table;
 
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 /**

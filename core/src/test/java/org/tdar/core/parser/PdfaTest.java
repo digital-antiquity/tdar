@@ -18,7 +18,7 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
-import org.tdar.filestore.tasks.IndexableTextExtractionTask;
+import org.tdar.fileprocessing.tasks.IndexableTextExtractionTask;
 
 public class PdfaTest {
 

@@ -1,6 +1,7 @@
 package org.tdar.core.exception;
 
 import org.tdar.core.dao.AccountAdditionStatus;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 /**
  * $Id$

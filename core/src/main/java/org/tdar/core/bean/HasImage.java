@@ -1,6 +1,6 @@
 package org.tdar.core.bean;
 
-import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.filestore.VersionType;
 
 public interface HasImage extends Persistable {
 
