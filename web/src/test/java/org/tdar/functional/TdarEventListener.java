@@ -239,7 +239,16 @@ public class TdarEventListener extends WebDriverEventAdapter {
     @Override
     public <X> void beforeGetScreenshotAs(OutputType<X> arg0) {
         logger.trace("beforeGetScreenshotAs");
-        
+    }
+
+    @Override
+    public void beforeGetText(WebElement we, WebDriver wd) {
+        logger.trace("beforeGetText");
+    }
+
+    @Override
+    public void afterGetText(WebElement we, WebDriver wd, String str) {
+        logger.trace("afterGetText");
     }
 
 }
