@@ -216,6 +216,10 @@
                     <artifactId>pdfbox</artifactId>
                 </exclusion>
                 <exclusion>
+                    <artifactId>pdfbox-tools</artifactId>
+                    <groupId>org.apache.pdfbox</groupId>
+                </exclusion>
+                <exclusion>
                     <artifactId>poi-ooxml</artifactId>
                     <groupId>org.apache.poi</groupId>
                 </exclusion>
