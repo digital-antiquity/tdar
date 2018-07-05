@@ -102,7 +102,6 @@
     });
 </script>
 
-    <@edit.personAutocompleteTemplate />
 
 </body>
 </#escape>
