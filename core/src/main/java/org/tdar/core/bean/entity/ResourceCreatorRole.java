@@ -31,6 +31,7 @@ import org.tdar.utils.MessageHelper;
 public enum ResourceCreatorRole implements HasLabel, Localizable {
     CONTACT("Contact", ResourceCreatorRoleType.CREDIT),
     AUTHOR("Author", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DOCUMENT),
+    ANALYST("Analyst", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DATASET, ResourceType.SENSORY_DATA, ResourceType.GEOSPATIAL, ResourceType.IMAGE, ResourceType.ONTOLOGY,ResourceType.CODING_SHEET),
     CONTRIBUTOR(
             "Contributor", ResourceCreatorRoleType.CREDIT),
     EDITOR("Editor", ResourceCreatorRoleType.AUTHORSHIP, CreatorType.PERSON,
