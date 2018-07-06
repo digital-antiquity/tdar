@@ -740,7 +740,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
         </dependency>
-<<<<<<< mine
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -880,9 +879,6 @@
             <artifactId>c3p0</artifactId>
             <version>0.9.5.2</version>
         </dependency>
-=======
->>>>>>> theirs
-
     </dependencies>
     <profiles>
         <profile>
