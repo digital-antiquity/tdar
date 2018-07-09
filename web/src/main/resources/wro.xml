@@ -2,7 +2,7 @@
 
 <groups xmlns="http://www.isdc.ro/wro">
     <group name='default'>
-        <css>/css/tdar-bootstrap.css</css>
+        <!-- <css>/css/tdar-bootstrap.css</css> -->
         <css>/css/tdar.dashboard.css</css>
         <css>/css/famfamfam.css</css>
         <css>/components/jquery.treeview/jquery.treeview.css</css>

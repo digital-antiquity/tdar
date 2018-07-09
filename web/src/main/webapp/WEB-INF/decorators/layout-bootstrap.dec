@@ -54,11 +54,12 @@
     <#else>
         <link rel="stylesheet" href="${staticHost}/components/bootstrap/dist/css/bootstrap.min.css" >
     </#if>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 
         <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.min.css">
         <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.theme.min.css">
 
-    <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
+    <#-- <link href="${staticHost}/css/tdar-base.css" rel="stylesheet"> -->
     <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
     <@header.css (webFilePreprocessingEnabled ) />
 
@@ -187,12 +188,13 @@ ${head}
     </#if>
     <@header.outdatedBrowserWarning />
 
-    <div class="${bs.container()}">
-        <div class="row">
-            <header class="span12">
+    <div class="container">
+            <header>
                 <@dec.layout_header />
+
             </header>
-        </div>
+
+
         <#if (homepage!false)>
             <@dec.homepageHeader />
         </#if>
