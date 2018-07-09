@@ -32,7 +32,6 @@ import ij.ImagePlus;
 import ij.io.Opener;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import net.sf.ij.jaiio.JAIReader;
 
 /**
  * @author Adam Brin
@@ -74,6 +73,7 @@ public class ImageThumbnailTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
+        ImageIO.scanForPlugins();
         for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
             run(version);
         }
@@ -153,22 +153,18 @@ public class ImageThumbnailTask extends AbstractTask {
                 msg = e.getMessage();
             }
         }
-
-        if (isJaiImageJenabled() && (ijSource == null)) {
-            getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);
+        if (ijSource == null) {
+            getLogger().debug("Unable to load source image with ImageJ: {}, trying with ImageIO");
             try {
-                // http://sourceforge.net/projects/ij-plugins/files/ij-imageio/v.1.2.4/
-                ImagePlus[] read = JAIReader.read(sourceFile);
-                ijSource = read[0];
-            } catch (Exception e) {
-                getLogger().error("could not open image with ImageJ-ImageIO" + sourceFile, e);
-                if (msg == null) {
-                    msg = e.getMessage();
-                }
+                BufferedImage image = ImageIO.read(sourceFile);
+                ijSource = new ImagePlus("", image);
+            } catch (IOException e) {
+                getLogger().warn("issue with ImageIO attempt to process" + sourceFile, e);
+                msg = e.getMessage();
             }
         }
 
-        if (ijSource == null) {
+        if (ijSource == null || ijSource.getProcessor() == null) {
             getLogger().debug("Unable to load source image: {} ({}) ", sourceFile, msg);
             if (msg != null && !msg.contains("Note: IJ cannot open CMYK JPEGs")) {
                 getWorkflowContext().setErrorFatal(true);

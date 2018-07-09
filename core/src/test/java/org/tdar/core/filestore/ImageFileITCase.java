@@ -53,15 +53,6 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.JAI_DISABLED })
-    public void testMissingImageStatus() throws Exception {
-        String filename = "grandcanyon_cmyk.jpg";
-        InformationResourceFile informationResourceFile = testFileProcessing(filename, false);
-        assertEquals(FileStatus.PROCESSING_WARNING, informationResourceFile.getStatus());
-    }
-
-    @Test
-    @Rollback
     public void testMissingImageStatusWithJAI() throws Exception {
         String filename = "grandcanyon_cmyk.jpg";
         InformationResourceFile informationResourceFile = testFileProcessing(filename, true);
@@ -88,8 +79,8 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.JAI_DISABLED })
     public void testImageFormatMissingStatus() throws Exception {
         String filename = "grandcanyon_cmyk.jpg";
-        InformationResourceFile informationResourceFile = testFileProcessing(filename, false);
-        assertEquals(FileStatus.PROCESSING_WARNING, informationResourceFile.getStatus());
+        InformationResourceFile informationResourceFile = testFileProcessing(filename, true);
+        assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
     }
 
     @Test
@@ -100,13 +91,13 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
     }
 
-    // @Test
-    // @Rollback
-    // public void testImageLZW() throws Exception {
-    // String filename = "grandcanyon_lzw.tif";
-    // InformationResourceFile informationResourceFile = testFileProcessing(filename);
-    // assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
-    // }
+     @Test
+     @Rollback
+     public void testImageLZW() throws Exception {
+     String filename = "grandcanyon_lzw.tif";
+     InformationResourceFile informationResourceFile = testFileProcessing(filename, true);
+     assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
+     }
 
     private InformationResourceFile testFileProcessing(File f, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
             Exception {
