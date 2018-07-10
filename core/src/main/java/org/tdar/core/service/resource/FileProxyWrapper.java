@@ -17,11 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.file.TdarFileVersion;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.DatasetDao;
@@ -29,6 +31,7 @@ import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.utils.FileStoreFileUtils;
 import org.tdar.utils.PersistableUtils;
 
 public class FileProxyWrapper {
@@ -91,8 +94,13 @@ public class FileProxyWrapper {
             if (!proxy.getAction().requiresWorkflowProcessing()) {
                 continue;
             }
+            
             logger.debug("PROCESSING: {}", proxy);
             InformationResourceFile irFile = proxy.getInformationResourceFile();
+            if (irFile.getStatus() == FileStatus.PROCESSED) {
+                datasetDao.saveOrUpdate(irFile);
+                continue;
+            }
             getIrFiles().add(irFile);
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
             logger.trace("version: {} proxy: {} ", version, proxy);
@@ -206,6 +214,25 @@ public class FileProxyWrapper {
         TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, file, version);
         version.setTransientFile(file);
         datasetDao.save(version);
+        
+        if (CollectionUtils.isNotEmpty(proxy.getAdditionalVersions())) {
+            for (TdarFileVersion vers : proxy.getTdarFile().getVersions()) {
+                File file_ = new File(vers.getLocalPath());
+                if ((file_ == null) || !file_.exists()) {
+                    throw new TdarRecoverableRuntimeException("fileprocessing.error.not_found", Arrays.asList(file_.getName()));
+                }
+
+                InformationResourceFileVersion vers_ = new InformationResourceFileVersion(vers.getFileVersionType(), vers.getFilename(), irFile);
+                FileStoreFileUtils.copyVersionToFilestoreFile(vers, vers_);
+                irFile.addFileVersion(vers_);
+                TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, file_, vers_);
+                version.setTransientFile(file_);
+                datasetDao.save(vers_);
+
+            }
+            irFile.setStatus(FileStatus.PROCESSED);
+        }
+        
         datasetDao.saveOrUpdate(irFile);
         return version;
     }

@@ -5,10 +5,12 @@ import java.io.File;
 import javax.persistence.Column;
 
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.file.TdarFileVersion;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FilestoreObjectType;
 
 public class FileStoreFileUtils {
@@ -59,19 +61,12 @@ public class FileStoreFileUtils {
 
     public static FileStoreFile copyTdarFile(TdarFile orig) {
         FileStoreFile orig_ = new FileStoreFile();
-        orig_.setFileLength(orig.getSize());
-        orig_.setPath(orig.getLocalPath());
-        orig_.setDateCreated(orig.getDateCreated());
-        orig_.setExtension(orig.getExtension());
-        orig_.setFilename(orig.getFilename());
-        orig_.setChecksum(orig.getMd5());
-        orig_.setChecksumType("md5");
-        orig_.setTransientFile(new File(orig.getLocalPath()));
+        copyVersionToFilestoreFile(orig, orig_);
         orig_.setPersistableId(orig.getId());
         orig_.setId(orig.getId());
+
         return orig_;
     }
-
 
     public static TdarFileVersion copyToTdarFileVersion(FileStoreFile f) {
         TdarFileVersion v = new TdarFileVersion();
@@ -83,5 +78,26 @@ public class FileStoreFileUtils {
         v.setLocalPath(f.getPath());
         v.setMd5(f.getChecksum());
         return v;
+    }
+
+    public static void copyVersionToFilestoreFile(AbstractFile orig, FileStoreFileProxy vers_) {
+        if (orig instanceof TdarFile) {
+            TdarFile version = (TdarFile) orig;
+            vers_.setFileLength(version.getSize());
+            vers_.setExtension(version.getExtension());
+            vers_.setChecksum(version.getMd5());
+        }
+        if (orig instanceof TdarFileVersion) {
+            TdarFileVersion version = (TdarFileVersion) orig;
+            vers_.setFileLength(version.getSize());
+            vers_.setExtension(version.getExtension());
+            vers_.setChecksum(version.getMd5());
+        }
+        vers_.setPath(orig.getLocalPath());
+        vers_.setDateCreated(orig.getDateCreated());
+        vers_.setFilename(orig.getFilename());
+        vers_.setChecksumType("md5");
+        vers_.setTransientFile(new File(orig.getLocalPath()));
+
     }
 }
