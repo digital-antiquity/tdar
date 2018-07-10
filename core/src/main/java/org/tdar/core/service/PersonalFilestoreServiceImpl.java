@@ -278,6 +278,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Transactional(readOnly = false)
     public void process(TdarFile file, RequiredOptionalPairs pair) throws Throwable {
         WorkflowContext ctx = new WorkflowContext();
+        ctx.setTdarFile(true);
         ctx.setPrimaryExtension(file.getExtension());
         ctx.getOriginalFiles().add(FileStoreFileUtils.copyTdarFile(file));
         for (TdarFile f : file.getParts()) {

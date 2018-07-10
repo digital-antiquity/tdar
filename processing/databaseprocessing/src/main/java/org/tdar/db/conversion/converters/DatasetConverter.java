@@ -58,4 +58,8 @@ public interface DatasetConverter {
 
     List<TDataTableRelationship> getRelationshipsWithTable(String tableName);
 
+    void setTdarFile(boolean tdarFile);
+
+    boolean isTdarFile();
+
 }

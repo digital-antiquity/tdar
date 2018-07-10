@@ -77,6 +77,7 @@ public class ConvertDatasetTask extends AbstractTask {
                 DatasetConverter databaseConverter = databaseConverterClass.newInstance();
                 databaseConverter.setTargetDatabase(getWorkflowContext().getTargetDatabase());
                 databaseConverter.setInformationResourceFileVersion(versionToConvert);
+                databaseConverter.setTdarFile(getWorkflowContext().isTdarFile());
                 // returns the set of transient POJOs from the incoming dataset.
 
                 Set<TDataTable> tablesToPersist = databaseConverter.execute();

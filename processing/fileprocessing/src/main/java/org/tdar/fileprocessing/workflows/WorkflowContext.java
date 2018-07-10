@@ -53,6 +53,7 @@ public final class WorkflowContext implements Serializable {
     private int numPages = -1;
     private transient Filestore filestore;
     private String primaryExtension;
+    private boolean tdarFile;
     private boolean processedSuccessfully = false;
     private boolean hasDimensions;
     private boolean dataTableSupported;
@@ -366,6 +367,14 @@ public final class WorkflowContext implements Serializable {
 
     public void setCodingSheet(boolean codingSheet) {
         this.codingSheet = codingSheet;
+    }
+
+    public boolean isTdarFile() {
+        return tdarFile;
+    }
+
+    public void setTdarFile(boolean tdarFile) {
+        this.tdarFile = tdarFile;
     }
 
 }

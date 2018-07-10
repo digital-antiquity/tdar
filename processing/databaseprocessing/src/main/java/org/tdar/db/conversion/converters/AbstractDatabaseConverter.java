@@ -51,6 +51,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     protected abstract void dumpData() throws IOException, Exception;
 
     private List<String> messages = new ArrayList<>();
+    private boolean tdarFile;
 
     @Override
     public List<String> getMessages() {
@@ -254,6 +255,9 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
 
     protected String generateDataTableName(String tableName) {
         StringBuilder sb = new StringBuilder(getDatabasePrefix());
+        if (isTdarFile() ) {
+            sb.append("_f");
+        }
         sb.append('_').append(getIrFileId()).append('_');
         if (!StringUtils.isBlank(getFilename())) {
             sb.append(getFilename()).append('_');
@@ -261,6 +265,7 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
         sb.append(targetDatabase.normalizeTableOrColumnNames(tableName));
         return targetDatabase.normalizeTableOrColumnNames(sb.toString());
     }
+
 
     @Override
     public String getInternalTableName(String originalTableName) {
@@ -296,6 +301,16 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
     @Override
     public void setIndexedContentsFile(File indexedContentsFile) {
         this.indexedContentsFile = indexedContentsFile;
+    }
+
+    @Override
+    public boolean isTdarFile() {
+        return tdarFile;
+    }
+
+    @Override
+    public void setTdarFile(boolean tdarFile) {
+        this.tdarFile = tdarFile;
     }
 
 }
