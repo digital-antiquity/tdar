@@ -18,7 +18,9 @@ public class ImageWorkflow extends BaseWorkflow {
 
     public ImageWorkflow() {
         addRequired(ImageWorkflow.class, Arrays.asList("gif", "tif", "jpg", "tiff", "jpeg"));
-
+        for (RequiredOptionalPairs r : getRequiredOptionalPairs()) {
+            r.setHasDimensions(true);
+        }
         addTask(ImageThumbnailTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }

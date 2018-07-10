@@ -47,7 +47,6 @@ public final class WorkflowContext implements Serializable {
 
     private String baseUrl;
 
-    private Long informationResourceId;
     private List<FileStoreFile> versions = new ArrayList<>();
     private List<FileStoreFile> originalFiles = new ArrayList<>();
     private File workingDirectory = null;
@@ -75,9 +74,8 @@ public final class WorkflowContext implements Serializable {
     public WorkflowContext() {
     }
 
-    public WorkflowContext(Filestore store, long l) {
+    public WorkflowContext(Filestore store) {
         this.filestore = store;
-        this.informationResourceId = l;
     }
 
     /**
@@ -169,14 +167,6 @@ public final class WorkflowContext implements Serializable {
         return baseUrl;
     }
 
-
-    public Long getInformationResourceId() {
-        return informationResourceId;
-    }
-
-    public void setInformationResourceId(Long informationResourceId) {
-        this.informationResourceId = informationResourceId;
-    }
 
     /**
      * @param filestore

@@ -23,11 +23,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.filestore.VersionType;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
@@ -95,6 +94,10 @@ public class TdarFile extends AbstractFile {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "part_of_id")
     private List<TdarFile> parts = new ArrayList<>();
+    
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = true, name = "version_of_id")
+    private List<TdarFileVersion> versions = new ArrayList<>();
 
     @Column(name = "part_of_id", updatable = false, insertable = false)
     private Long partOfId;
@@ -386,5 +389,13 @@ public class TdarFile extends AbstractFile {
             return null;
         }
         return getResource().getSubmitter();
+    }
+
+    public List<TdarFileVersion> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(List<TdarFileVersion> versions) {
+        this.versions = versions;
     }
 }

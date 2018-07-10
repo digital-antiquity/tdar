@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.tdar.db.conversion.converters.DatasetConverter;
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class RequiredOptionalPairs implements Serializable {
@@ -18,6 +20,9 @@ public class RequiredOptionalPairs implements Serializable {
     List<String> optional = new ArrayList<>();
 
     private Class<? extends Workflow> workflowClass;
+
+    private boolean hasDimensions;
+    private Class<? extends DatasetConverter> datasetConverter;
 
     public RequiredOptionalPairs() {
     }
@@ -48,6 +53,22 @@ public class RequiredOptionalPairs implements Serializable {
 
     public void setWorkflowClass(Class<? extends Workflow> workflowClass) {
         this.workflowClass = workflowClass;
+    }
+
+    public void setHasDimensions(boolean hasDimensions) {
+        this.hasDimensions = hasDimensions;
+    }
+
+    public boolean isHasDimensions() {
+        return hasDimensions;
+    }
+    
+    public Class<? extends DatasetConverter> getDatasetConverter() {
+        return datasetConverter;
+    }
+
+    public void setDatasetConverter(Class<? extends DatasetConverter> datasetConverter) {
+        this.datasetConverter = datasetConverter;
     }
 
 }

@@ -1,7 +1,15 @@
 package org.tdar.utils;
 
+import java.io.File;
+
+import javax.persistence.Column;
+
+import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.file.TdarFileVersion;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FilestoreObjectType;
 
 public class FileStoreFileUtils {
 
@@ -47,5 +55,33 @@ public class FileStoreFileUtils {
         orig_.setHeight(orig.getHeight());
         orig_.setWidth(orig.getWidth());
         return orig_;
+    }
+
+    public static FileStoreFile copyTdarFile(TdarFile orig) {
+        FileStoreFile orig_ = new FileStoreFile();
+        orig_.setFileLength(orig.getSize());
+        orig_.setPath(orig.getLocalPath());
+        orig_.setDateCreated(orig.getDateCreated());
+        orig_.setExtension(orig.getExtension());
+        orig_.setFilename(orig.getFilename());
+        orig_.setChecksum(orig.getMd5());
+        orig_.setChecksumType("md5");
+        orig_.setTransientFile(new File(orig.getLocalPath()));
+        orig_.setPersistableId(orig.getId());
+        orig_.setId(orig.getId());
+        return orig_;
+    }
+
+
+    public static TdarFileVersion copyToTdarFileVersion(FileStoreFile f) {
+        TdarFileVersion v = new TdarFileVersion();
+        v.setFileVersionType(f.getVersionType());
+        v.setDateCreated(f.getDateCreated());
+        v.setSize(f.getFileLength());
+        v.setExtension(f.getExtension());
+        v.setFilename(f.getFilename());
+        v.setLocalPath(f.getPath());
+        v.setMd5(f.getChecksum());
+        return v;
     }
 }

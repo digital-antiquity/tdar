@@ -18,25 +18,11 @@ public interface Workflow {
 
     boolean run(WorkflowContext workflowContext) throws Exception;
 
-//    Set<String> getValidExtensions();
-
     void addTask(Class<? extends Task> task, WorkflowPhase phase);
-
-//    boolean canProcess(String ext);
 
     FileType getInformationResourceFileType();
 
     boolean isEnabled();
-
-//    void registerFileExtension(String ext, ResourceType... types);
-
-//    Set<String> getValidExtensionsForResourceType(ResourceType type);
-
-//    Map<String, List<String>> getRequiredExtensions();
-
-    //    Map<String, List<String>> getSuggestedExtensions();
-
-    void initializeWorkflowContext(WorkflowContext ctx, FileStoreFileProxy[] versions);
 
     void setExtension(String ext);
 

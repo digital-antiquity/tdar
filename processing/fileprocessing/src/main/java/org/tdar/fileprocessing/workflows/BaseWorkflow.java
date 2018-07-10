@@ -113,10 +113,6 @@ public abstract class BaseWorkflow implements Workflow {
         taskList.add(task);
     }
 
-    @Override
-    public void initializeWorkflowContext(WorkflowContext ctx, FileStoreFileProxy[] version) {
-        return;
-    }
     
     protected void addRequired(Class<? extends Workflow> cls, List<String> asList) {
         for (String ext : asList) {

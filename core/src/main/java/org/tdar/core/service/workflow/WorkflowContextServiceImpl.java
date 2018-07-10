@@ -91,7 +91,7 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
                 irFile.setNumberOfParts(ctx.getNumPages());
             }
 
-            Resource resource = genericDao.find(Resource.class, ctx.getInformationResourceId());
+            Resource resource = genericDao.find(Resource.class, orig.getPersistableId());
             switch (resource.getResourceType()) {
                 case GEOSPATIAL:
                 case DATASET:
@@ -148,7 +148,7 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
             // }
             orig.setInformationResourceFile(irFile);
             // genericDao.saveOrUpdate(orig);
-            InformationResource informationResource = genericDao.find(InformationResource.class, ctx.getInformationResourceId());
+            InformationResource informationResource = genericDao.find(InformationResource.class, orig.getPersistableId());
             irFile.setInformationResource(informationResource);
             irFile.setWorkflowContext(ctx);
 
@@ -199,9 +199,7 @@ public class WorkflowContextServiceImpl implements WorkflowContextService {
         ctx.setHasDimensions(resourceType.hasDemensions());
         ctx.setDataTableSupported(resourceType.isDataTableSupported());
         ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
-        ctx.setInformationResourceId(versions[0].getInformationResourceId());
         ctx.setWorkflowClass(w.getClass());
-        w.initializeWorkflowContext(ctx, versions); // handle any special bits here
         if (resourceType.isCodingSheet()) {
             ctx.setCodingSheet(true);
         }

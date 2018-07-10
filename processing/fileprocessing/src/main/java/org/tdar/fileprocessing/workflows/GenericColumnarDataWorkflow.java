@@ -32,6 +32,25 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow implements HasData
 
     public GenericColumnarDataWorkflow() {
         addRequired(GenericColumnarDataWorkflow.class, Arrays.asList("csv", "tab", "xls", "xlsx", "mdb", "accdb", "gdb"));
+        for (RequiredOptionalPairs r : getRequiredOptionalPairs()) {
+            switch (r.getRequired().iterator().next()) {
+                case "xlsx":
+                case "xls":
+                    r.setDatasetConverter(ExcelConverter.class);
+                    break;
+                case "csv":
+                    r.setDatasetConverter(CsvConverter.class);
+                    break;
+                case "tab":
+                    r.setDatasetConverter(TabConverter.class);
+                    break;
+                case "mdb":
+                case "accdb":
+                case "gdb":
+                    r.setDatasetConverter(AccessDatabaseConverter.class);
+                    break;
+            }
+        }
 
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
         addTask(ConvertDatasetTask.class, WorkflowPhase.CREATE_DERIVATIVE);

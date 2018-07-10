@@ -250,4 +250,18 @@
     <changeSet id="radiocarbon-file-first-17" author="abrin">
     <renameColumn tableName="pos_account" oldColumnName="student_review" newColumnName="initial_review"/>
     </changeSet>
+    <changeSet id="radiocarbon-file-first-18" author="abrin">
+        <addColumn tableName="files">
+            <column name="version_of_id" type="bigint"/>
+        </addColumn>
+        <addColumn tableName="files">
+            <column name="version_type" type="varchar(25)"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_version" referencedTableName="files"
+            baseColumnNames="version_of_id" baseTableName="files"
+            referencedColumnNames="id" />
+
+    </changeSet>
+    
 </databaseChangeLog>

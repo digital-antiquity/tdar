@@ -1,8 +1,6 @@
 package org.tdar.fileprocessing.workflows;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 import org.tdar.db.conversion.converters.AbstractDatabaseConverter;
@@ -24,9 +22,11 @@ public class GeospatialWorkflow extends BaseWorkflow implements HasDatabaseConve
     public GeospatialWorkflow() {
 
         RequiredOptionalPairs geotiff = new RequiredOptionalPairs(GeospatialWorkflow.class);
+        geotiff.setHasDimensions(true);
         geotiff.getRequired().add("tif");
         geotiff.getOptional().add("tfw");
         RequiredOptionalPairs geojpg = new RequiredOptionalPairs(GeospatialWorkflow.class);
+        geojpg.setHasDimensions(true);
         geojpg.getRequired().add("jpg");
         geojpg.getOptional().add("jfw");
         getRequiredOptionalPairs().add(geojpg);
@@ -36,7 +36,9 @@ public class GeospatialWorkflow extends BaseWorkflow implements HasDatabaseConve
         shapefile.getRequired().addAll(Arrays.asList("shp", "shx", "dbf"));
         shapefile.getOptional().addAll(Arrays.asList("sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "cbg", "ixs", "rrd","xml"));
         getRequiredOptionalPairs().add(shapefile);
+        shapefile.setDatasetConverter(ShapeFileDatabaseConverter.class);
         RequiredOptionalPairs layer = new RequiredOptionalPairs();
+        layer.setHasDimensions(true);
         layer.getRequired().addAll(Arrays.asList("lyr", "jpg"));
         layer.getOptional().addAll(Arrays.asList("mxd","xml"));
         getRequiredOptionalPairs().add(layer);
