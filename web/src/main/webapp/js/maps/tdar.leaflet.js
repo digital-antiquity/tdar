@@ -334,7 +334,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
 
     function _initFromDataAttr($el, map, rectangleSettings) {
-        console.log('$el is ', $el);
         var $minx = parseFloat($el.data("minx"));
         var $miny = parseFloat($el.data("miny"));
         var $maxx = parseFloat($el.data("maxx"));

@@ -5,17 +5,17 @@
         <css>/css/tdar-bootstrap.css</css>
         <css>/css/tdar.dashboard.css</css>
         <css>/css/famfamfam.css</css>
-        <css>/components/jquery.treeview/jquery.treeview.css</css>
+        <css>/includes/jquery.treeview/jquery.treeview.css</css>
         <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
         <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css</css>
         <css>/css/tdar-svg.css</css>
-        <css>/includes/jquery-file-upload/css/jquery.fileupload-ui.css</css>
+        <css>/components/jquery-file-upload/css/jquery.fileupload-ui.css</css>
         <css>/includes/bootstrap-datepicker-eyecon/css/datepicker.css</css>
-        <css>/includes/leaflet/dist/leaflet.css</css>
-        <css>/includes/leaflet-draw/dist/leaflet.draw.css</css>
+        <css>/components/leaflet/dist/leaflet.css</css>
+        <css>/components/leaflet-draw/dist/leaflet.draw.css</css>
         <css>/includes/leaflet-cluster/dist/MarkerCluster.css</css>
         <css>/includes/leaflet-cluster/dist/MarkerCluster.Default.css</css>
-        <css>/includes/c3/c3.min.css</css>
+        <css>/components/c3/c3.min.css</css>
         <css>/components/leaflet-control-geocoder/dist/Control.Geocoder.css</css>
         <css>/css/tdar.homepage.css</css>
         <css>/css/tdar.d3tree.css</css>

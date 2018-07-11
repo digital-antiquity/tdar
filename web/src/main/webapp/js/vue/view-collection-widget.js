@@ -7,7 +7,7 @@
 
 import Vue from "vue";
 import "Axios";
-TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios, TDAR) {
+TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue, axios, TDAR) {
     "use strict";
 
 //These are the default options for selectize. They are merged when the selectize box is created. 

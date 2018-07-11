@@ -1,0 +1,32 @@
+{
+  "name": "leaflet-choropleth",
+  "version": "1.0.3",
+  "homepage": "https://github.com/timwis/leaflet-choropleth",
+  "authors": [
+    "timwis <tim@timwis.com>"
+  ],
+  "description": "Choropleth plugin for Leaflet (color scale based on value)",
+  "main": "dist/choropleth.js",
+  "keywords": [
+    "leaflet",
+    "choropleth",
+    "chloropleth"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "1.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.3",
+    "commit": "bb6d6ee2b2fea2518ab17837e60c706d937212c3"
+  },
+  "_source": "https://github.com/timwis/leaflet-choropleth.git",
+  "_target": "~1.0.3",
+  "_originalSource": "leaflet-choropleth"
+}
