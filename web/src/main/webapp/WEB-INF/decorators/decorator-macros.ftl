@@ -212,11 +212,6 @@
 
 </div>
 </#if>
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-
     <div class="collapse navbar-collapse" id="tdarNavMenu">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/saa/">SAA</a></li>
@@ -245,7 +240,27 @@
 </#macro>
 
 <#macro homepageHeader>
-    <div class="row">
+
+<section id="hero">
+    <div class="px-5 pb-5 pt-3">
+        <div class="container">
+            <h2 class="display-3">What can you dig up?</h2>
+            <p class="lead"><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive for archaeological information.</p>
+            <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
+                <div class="input-group col-md-8 align-items-center">
+                    <input class="form-control" type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
+                    <div class="input-group-append">
+                        <button class="btn" type="button" name="_tdar.searchType" value="simple"><i class="fas fa-search"></i></button>
+                    </div>
+                    <a class="ml-3" href="<@s.url value="/search"/>">advanced</a>
+                    <input type="hidden" name="_tdar.searchType" value="simple">
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<#--     <div class="row">
         <div class="hero">
 <h2>What can you dig up?</h2>
 
@@ -260,7 +275,57 @@
         <@auth.loginMenu true/>
         </div>
         <ul class="inline-menu hidden-desktop"><@auth.loginMenu false/></ul>
+    </div> -->
+
+<section id="learnMore">
+    <div class="p-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
+                            <h5 class="card-title">Access & Use</h5>
+                            <p class="card-text">Broadening the access to archaeological data through simple search and browse functionality.</p>
+                            <a href="http://www.tdar.org/why-tdar/data-access/" class="btn btn-secondary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <p><i class="fas fa-file-alt fa-5x mb-3"></i></p>
+                            <h5 class="card-title">Contribute</h5>
+                            <p class="card-text">Contribute documents, data sets , images, and other critical archaeological materials.</p>
+                            <a href="#" class="btn btn-secondary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <p><i class="fas fa-archive fa-5x mb-3"></i></p>
+                            <h5 class="card-title">Preservation</h5>
+                            <p class="card-text">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
+                            <a href="#" class="btn btn-secondary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <p><i class="fas fa-search fa-5x mb-3"></i></p>
+                            <h5 class="card-title">Who Uses tDAR</h5>
+                            <p class="card-text">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
+                            <a href="#" class="btn btn-secondary">Learn More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </div>
     </div>
+</section>
 
 
 <div class="row">
