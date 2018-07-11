@@ -19,7 +19,7 @@
                     </a>
                 </p>
             <#else>
-                <p><a href="">Log In</a> or <a href="">Sign Up</a></p>
+                <p><a href="/login">Log In</a> or <a href="/account/new">Sign Up</a></p>
             </#if>  
         </div>
         <div class="collapse navbar-collapse d-flex align-items-end" id="tdarNavMenu">
@@ -155,7 +155,8 @@
                   </div>
                 </div>
             <#else>
-                <a class="dropdown-item" href="<@s.url value="/account/new" />" class="button" rel="nofollow">Sign Up</a>
+                <a class="dropdown-item" href="<@s.url value="/account/new" />" rel="nofollow">Sign Up</a>
+                <a class="dropdown-item" href="<@s.url value="/login" />" rel="nofollow">Log In</a>
             </#if>
           </div>
         </div>
