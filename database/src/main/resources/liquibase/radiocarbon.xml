@@ -263,8 +263,27 @@
             referencedColumnNames="id" />
 
     </changeSet>
-<!--     <changeSet id="radiocarbon-file-first-19" author="abrin">
+     <changeSet id="radiocarbon-file-first-19" author="abrin">
+         <addColumn tableName="files">
+            <column name="length" type="int"/>
+        </addColumn>
+         <addColumn tableName="data_table_relationship">
+            <column name="file_id" type="bigint"/>
+        </addColumn>
+         <addColumn tableName="data_table">
+            <column name="file_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_table" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="data_table"
+            referencedColumnNames="id" />
+        <addForeignKeyConstraint
+            constraintName="fk_file_relationship" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="data_table_relationship"
+            referencedColumnNames="id" />
+    </changeSet>
+     <changeSet id="radiocarbon-file-first-20" author="abrin" failOnError="false" >
+            
         <dropNotNullConstraint tableName="data_table" columnName="dataset_id"/>
-    </changeSet>    
- -->
+    </changeSet>
  </databaseChangeLog>

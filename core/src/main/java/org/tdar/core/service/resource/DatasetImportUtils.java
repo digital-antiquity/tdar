@@ -1,8 +1,10 @@
 package org.tdar.core.service.resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.HasTables;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -47,13 +49,13 @@ public class DatasetImportUtils {
         tableToPersist.setImportOrder(incomingtable.getImportOrder());
     }
 
-    public static DataTableRelationship convertToRelationship(Dataset dataset, TDataTableRelationship rel_) {
+    public static DataTableRelationship convertToRelationship(HasTables dataset, TDataTableRelationship rel_) {
         DataTableRelationship rel = new DataTableRelationship();
         rel.setType(rel_.getType());
         String foreignTableName = rel_.getForeignTable().getName();
-        DataTable foreignTable =  dataset.getDataTableByName(foreignTableName);
+        DataTable foreignTable =  getDataTableByName(dataset, foreignTableName);
         String localTableName = rel_.getLocalTable().getName();
-        DataTable localTable =  dataset.getDataTableByName(localTableName);
+        DataTable localTable =  getDataTableByName(dataset, localTableName);
         for (TDataTableColumnRelationship colRel_ : rel_.getColumnRelationships()) {
             String foreignName = colRel_.getForeignColumn().getName();
             String localName = colRel_.getLocalColumn().getName();
@@ -77,6 +79,15 @@ public class DatasetImportUtils {
         }
         
         return rel;
+    }
+
+    private static DataTable getDataTableByName(HasTables dataset, String localTableName) {
+        for (DataTable dt : dataset.getDataTables()) {
+            if (StringUtils.equals(dt.getName(), localTableName)) {
+                return dt;
+            }
+        }
+        return null;
     }
 
 }

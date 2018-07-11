@@ -29,8 +29,40 @@ public class TdarFileVersion extends AbstractFile {
     @Column(length = 15)
     private String extension;
 
+    @Column
+    private Integer length;
+
+    @Column
+    private Integer height;
+    @Column
+    private Integer width;
+
     public String getMd5() {
         return md5;
+    }
+
+    public Integer getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
     }
 
     public void setMd5(String md5) {

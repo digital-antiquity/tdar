@@ -2,6 +2,7 @@ package org.tdar.core.service.resource;
 
 import java.util.List;
 
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -22,5 +23,7 @@ public interface DatasetImportService {
      * to retranslate each of the @link Dataset records
      */
     void refreshAssociatedDataTables(CodingSheet codingSheet);
+
+    void reconcileDataset(TdarFile dataset_, List<TDataTable> incomingDataTables, List<TDataTableRelationship> incomingRelationships);
 
 }

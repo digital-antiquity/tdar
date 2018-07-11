@@ -42,7 +42,9 @@ import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
+import org.tdar.core.service.resource.DatasetImportService;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.datatable.TDataTable;
 import org.tdar.db.model.TargetDatabase;
 import org.tdar.fileprocessing.workflows.HasDatabaseConverter;
 import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
@@ -74,6 +76,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Autowired
     private GenericDao genericDao;
+
+    @Autowired
+    private DatasetImportService datasetImportService;
 
     @Autowired
     private FileProcessingDao fileProcessingDao;
@@ -303,6 +308,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             for (FileStoreFile f : ctx.getVersions()) {
                 file.getVersions().add(FileStoreFileUtils.copyToTdarFileVersion(f));
             }
+            datasetImportService.reconcileDataset(file, ctx.getDataTables(), ctx.getRelationships());
             file.setStatus(ImportFileStatus.PROCESSED);
         } else {
             file.setStatus(ImportFileStatus.PROCESING_FAILED);

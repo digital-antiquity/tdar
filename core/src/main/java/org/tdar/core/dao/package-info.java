@@ -137,7 +137,7 @@
                 query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology.id=:relatedId  or code=:relatedId) and dt.id in (select datatable.id from Dataset dataset inner join dataset.dataTables as datatable where dataset.status!='DELETED') "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLE_DATASET,
-                query = "FROM Dataset d join d.dataTables as dt where dt.id=:dataTableId"),
+                query = "select d FROM Dataset d join d.dataTables as dt where dt.id=:dataTableId"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY,
                 query = "FROM DataTableColumn dtc inner join dtc.defaultCodingSheet as code WHERE dtc.dataTable.dataset.id=:datasetId AND code.defaultOntology IS NOT NULL ORDER BY dtc.id"),

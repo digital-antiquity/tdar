@@ -215,6 +215,11 @@ public class FileProxyWrapper {
         TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, file, version);
         version.setTransientFile(file);
         datasetDao.save(version);
+        if (proxy.getTdarFile() != null && CollectionUtils.isNotEmpty(proxy.getTdarFile().getDataTables() )) {
+            Dataset ds = (Dataset)irFile.getInformationResource();
+            ds.getDataTables().addAll(proxy.getTdarFile().getDataTables());
+            ds.getRelationships().addAll(proxy.getTdarFile().getRelationships());
+        }
         
         if (CollectionUtils.isNotEmpty(proxy.getAdditionalVersions())) {
             for (TdarFileVersion vers : proxy.getTdarFile().getVersions()) {

@@ -77,6 +77,8 @@ public class FileStoreFileUtils {
         v.setFilename(f.getFilename());
         v.setLocalPath(f.getPath());
         v.setMd5(f.getChecksum());
+        v.setHeight(f.getHeight());
+        v.setWidth(f.getWidth());
         return v;
     }
 

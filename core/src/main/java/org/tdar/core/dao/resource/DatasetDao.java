@@ -52,6 +52,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.HasTables;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -419,7 +420,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query2.executeUpdate();
     }
 
-    public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
+    public void cleanupUnusedTablesAndColumns(HasTables dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
         logger.info("deleting unmerged tables: {}", tablesToRemove);
         ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
         if (CollectionUtils.isNotEmpty(columnsToRemove)) {
@@ -427,7 +428,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 columnsToUnmap.add(column);
             }
             // first unmap all columns from the removed tables
-            unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+            if (dataset instanceof Dataset) {
+                unmapAllColumnsInProject(((Dataset)dataset).getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+            }
             for (DataTableColumn column : columnsToRemove) {
                 column.getDataTable().getDataTableColumns().remove(column);
             }
