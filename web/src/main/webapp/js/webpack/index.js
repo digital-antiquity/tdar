@@ -3,9 +3,12 @@
 //They will be bundled together into one file. 
 import './../tdar.core';
 // window.TDAR = TDAR;
+
 import $ from 'jquery/dist/jquery';
+
 //import 'vue';
 //import 'axios';
+
 window.jQuery = $;
 window.$ = $;
 
@@ -59,7 +62,7 @@ import './../../includes/jquery.populate.js';
 import './../../includes/jquery.tabby-0.12.js';
 
 /* LICENSE:CC Attribution 3.0 Unported */
-import './../latLongUtil-1.0.js';
+//import './../latLongUtil-1.0.js';
 
 import 'leaflet/dist/leaflet';
 

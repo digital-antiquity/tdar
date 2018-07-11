@@ -7,6 +7,8 @@
 
 import Vue from "vue";
 import "Axios";
+import "jquery";
+
 TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue, axios, TDAR) {
     "use strict";
 
@@ -94,7 +96,10 @@ var _init = function(appId) {
 	    //This is called when vue is instantiated and is set up. 
 	    mounted: function() {
 	        var $e = $(this.$el);
-	        console.log("Calling mounting functions");
+	        
+	        console.debug("$e is ",this.$el);
+	        
+	        console.log("Calling mounting functions for Vue-collection-widget");
 	        
 	        if($e.data('resourceId')!=null){
 	          	Vue.set(this, 'administrator',$e.data('administrator'));
@@ -148,7 +153,6 @@ var _init = function(appId) {
 	            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
 	                Vue.set(this,"managedResource",true);
 	            }
-	            console.debug($('#collection-list'));
 	
 	            var $select = $('#collection-list').selectize();
 	            $select[0].selectize.clear();

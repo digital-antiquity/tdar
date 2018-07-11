@@ -1,6 +1,7 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 
-var axios = require("Axios");
+import axios from "Axios";
+import Vue from "vue";
 
 describe("Vue-collection-widget.js: collection widget test", function() {
 
@@ -44,15 +45,16 @@ describe("Vue-collection-widget.js: collection widget test", function() {
             }
     });
         
-        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
+    var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
         
-        vapp.newCollectionName = "ABC";
-        vapp.addToCollection();
-        Vue.nextTick(function() {
+    vapp.newCollectionName = "ABC";
+    vapp.addToCollection();
+    
+    Vue.nextTick(function() {
         	expect(vapp.collections.unmanaged[0].name).toBe("Test");
-        });
-        
-        done();
+    });
+
+    done();
     });
     
     //cancelAddToCollectionChanges

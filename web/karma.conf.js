@@ -33,6 +33,7 @@ module.exports = function(config) {
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine-ajax', 'jasmine-jquery', 'jasmine'],
 
+        
         // list of files / patterns to load in the browser (we aren't using requireJS, so order matters)
         files: [].concat(
                 
@@ -59,8 +60,9 @@ module.exports = function(config) {
             
             [
                 // specs
-                "src/test/frontend/spec/**/*.js",
-                //"src/test/frontend/spec/VueCollectionWidgetSpec.js",
+                //"src/test/frontend/spec/**/*.js",
+               //"src/test/frontend/spec/AdvancedSearchSpec.js",
+                "src/test/frontend/spec/CommonSpec.js",
                 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
@@ -99,6 +101,7 @@ module.exports = function(config) {
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js'],
             'src/main/webapp/js/**/*.js': ['coverage'],
+            //'src/test/frontend/spec/**/*.js' : ['webpack']
             'src/test/frontend/spec/**/*.js' : ['webpack']
         },
 
@@ -132,7 +135,7 @@ module.exports = function(config) {
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
 
         browsers: ['ChromeHeadless'],
-        //browsers: ['PhantomJS'],
+       // browsers: ['PhantomJS'],
         // concurrency: Infinity,
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits
