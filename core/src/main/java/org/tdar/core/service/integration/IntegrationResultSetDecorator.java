@@ -76,7 +76,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         for (DataTable dt : context.getDataTables()) {
             if (tableId.equals(dt.getId())) {
                 table = dt;
-                tableName = ModernDataIntegrationWorkbook.formatTableName(dt);
+                tableName = ModernDataIntegrationWorkbook.formatTableName(context.getTableMap().get(dt), dt);
             }
         }
         if (StringUtils.isEmpty(tableName)) {

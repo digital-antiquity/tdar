@@ -263,5 +263,8 @@
             referencedColumnNames="id" />
 
     </changeSet>
-    
-</databaseChangeLog>
+<!--     <changeSet id="radiocarbon-file-first-19" author="abrin">
+        <dropNotNullConstraint tableName="data_table" columnName="dataset_id"/>
+    </changeSet>    
+ -->
+ </databaseChangeLog>

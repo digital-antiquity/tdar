@@ -20,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -51,7 +52,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
         logger.debug("Context: {}", proxy);
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         @SuppressWarnings("unused")
-        ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, result, rawIntegration);
+        ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, result, rawIntegration, proxy.getTableMap());
         createIntegrationTempTable(proxy, provider);
         populateTempInterationTable(proxy);
         applyOntologyMappings(proxy);

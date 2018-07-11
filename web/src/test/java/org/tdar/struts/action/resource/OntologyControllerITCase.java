@@ -374,7 +374,6 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
         // create data table
         DataTable dataTable = new DataTable();
         dataTable.setName("test");
-        dataTable.setDataset(dataset);
         genericService.save(dataTable);
         // create data table column
         DataTableColumn dataTableColumn = new DataTableColumn();

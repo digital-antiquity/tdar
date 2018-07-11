@@ -162,7 +162,6 @@ public class DatasetImportServiceImpl implements DatasetImportService {
                 DatasetImportUtils.copyColumnsFromIncomingTDataTable(incomingtable, tableToPersist);
                 logger.trace("No analogous existing table to merge with incoming data table {}, moving on", tableToPersist);
             }
-            tableToPersist.setDataset(dataset);
             dataset.getDataTables().add(tableToPersist);
         }
 
@@ -292,7 +291,7 @@ public class DatasetImportServiceImpl implements DatasetImportService {
 
         datasetDao.translate(associatedDataTableColumns, codingSheet);
         for (DataTable dataTable : dataTableDao.findDataTablesUsingResource(codingSheet)) {
-            Dataset dataset = dataTable.getDataset();
+            Dataset dataset = dataTableDao.findDatasetForTable(dataTable);
             InformationResourceFile file = datasetDao.createTranslatedFile(dataset, analyzer, inormationResourceFileDao);
             dataTableDao.saveOrUpdate(file);
         }

@@ -307,8 +307,8 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         Sheet summarySheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.summary_worksheet"));
         List<String> names = new ArrayList<>();
         names.addAll(Arrays.asList("Fauna Element Ontology", "Fauna Taxon Ontology"));
-        names.add(ModernDataIntegrationWorkbook.formatTableName(alexandriaTable));
-        names.add(ModernDataIntegrationWorkbook.formatTableName(spitalMainTable));
+        names.add(ModernDataIntegrationWorkbook.formatTableName(alexandriaDb, alexandriaTable));
+        names.add(ModernDataIntegrationWorkbook.formatTableName(spitalDb, spitalMainTable));
         Row row = summarySheet.getRow(3);
         logger.debug(" {} | {} | {} | {} | {}", getVal(row, 0), getVal(row, 1), getVal(row, 2), getVal(row, 3), getVal(row, 4));
         List<String> seen = new ArrayList<String>();

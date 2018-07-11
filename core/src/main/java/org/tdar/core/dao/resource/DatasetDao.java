@@ -194,8 +194,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
      * 
      * Using a raw SQL update statement to try and simplify the execution here to use as few loops as possible...
      */
-    public void mapColumnToResource(DataTableColumn column, List<String> distinctValues) {
-        Project project = column.getDataTable().getDataset().getProject();
+    public void mapColumnToResource(Dataset dataset, DataTableColumn column, List<String> distinctValues) {
+        Project project = dataset.getProject();
         // for each distinct column value
 
         long timestamp = System.currentTimeMillis();
@@ -466,7 +466,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.getSingleResult();
     }
 
-    public void remapColumns(List<DataTableColumn> columns, Project project) {
+    public void remapColumns(List<DataTableColumn> columns, Dataset dataset, Project project) {
         getLogger().info("remapping columns: {} in {} ", columns, project);
         if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
             resetColumnMappings(project);
@@ -480,7 +480,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
+                mapColumnToResource(dataset, column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
             }
         }
 

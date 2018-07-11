@@ -38,6 +38,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -817,8 +818,9 @@ public class ResourceServiceImpl implements ResourceService {
                 List<DataTable> related = dataTableDao.findDataTablesUsingResource(persistable);
                 if (CollectionUtils.isNotEmpty(related)) {
                     for (DataTable table : related) {
-                        if (!table.getDataset().isDeleted()) {
-                            issue.getRelatedItems().add(table.getDataset());
+                        Dataset dataset = dataTableDao.findDatasetForTable(table);
+                        if (!dataset.isDeleted()) {
+                            issue.getRelatedItems().add(dataset);
                         }
                     }
                     issue.setIssue(provider.getText("abstractSupportingInformationResourceController.remove_mappings"));

@@ -43,6 +43,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.dao.resource.DataTableColumnDao;
+import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.PersonalFilestoreService;
@@ -88,6 +89,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
 
     @Autowired
     private DataTableColumnDao dataTableColumnDao;
+
+    @Autowired
+    private DataTableDao dataTableDao;
 
     @Autowired
     private PersonalFilestoreService filestoreService;
@@ -203,12 +207,11 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
      */
     @Override
     @Transactional
-    public CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter, Ontology ontology) {
+    public CodingSheet createGeneratedCodingSheet(TextProvider provider, Dataset dataset, DataTableColumn column, TdarUser submitter, Ontology ontology) {
         if (column == null) {
             logger.debug("{} tried to create an identity coding sheet for {} with no values", submitter, column);
         }
 
-        Dataset dataset = column.getDataTable().getDataset();
         CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
         List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, true);
@@ -446,8 +449,9 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
 
         List<String> unauthorizedDatasets = new ArrayList<>();
         for (DataTable dt : context.getDataTables()) {
-            if (!authorizationService.canViewConfidentialInformation(context.getCreator(), dt.getDataset())) {
-                unauthorizedDatasets.add(dt.getDataset().getTitle());
+            Dataset dataset = dataTableDao.findDatasetForTable(dt);
+            if (!authorizationService.canViewConfidentialInformation(context.getCreator(), dataset)) {
+                unauthorizedDatasets.add(dataset.getTitle());
             }
         }
 

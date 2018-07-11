@@ -180,4 +180,8 @@ public class DataTableServiceImpl extends ServiceInterface.TypedDaoBase<DataTabl
         return uniqueValues;
     }
 
+    @Transactional(readOnly=true)
+    public Dataset findDatasetForTable(DataTable dt) {
+        return getDao().findDatasetForTable(dt);
+    }
 }

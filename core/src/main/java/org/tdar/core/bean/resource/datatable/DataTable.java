@@ -77,15 +77,15 @@ public class DataTable extends AbstractPersistable implements ImportTable<DataTa
     private transient Map<String, DataTableColumn> displayNameToColumnMap;
     private transient int dataTableColumnHashCode = -1;
 
-    @XmlElement(name = "resourceRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Dataset getDataset() {
-        return dataset;
-    }
-
-    public void setDataset(Dataset dataset) {
-        this.dataset = dataset;
-    }
+//    @XmlElement(name = "resourceRef")
+//    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+//    public Dataset getDataset() {
+//        return dataset;
+//    }
+//
+//    public void setDataset(Dataset dataset) {
+//        this.dataset = dataset;
+//    }
 
     @JsonView(JsonIntegrationFilter.class)
     public String getName() {
@@ -213,15 +213,15 @@ public class DataTable extends AbstractPersistable implements ImportTable<DataTa
         return displayName;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
-    public String getDatasetTitle() {
-        return getDataset().getTitle();
-    }
-
-    @JsonView(JsonIntegrationDetailsFilter.class)
-    public Long getDatasetId() {
-        return getDataset().getId();
-    }
+//    @JsonView(JsonIntegrationDetailsFilter.class)
+//    public String getDatasetTitle() {
+//        return getDataset().getTitle();
+//    }
+//
+//    @JsonView(JsonIntegrationDetailsFilter.class)
+//    public Long getDatasetId() {
+//        return getDataset().getId();
+//    }
 
     @Transient
     public List<DataTableColumn> getColumnsWithOntologyMappings() {

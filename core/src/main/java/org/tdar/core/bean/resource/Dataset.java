@@ -44,7 +44,6 @@ public class Dataset extends InformationResource {
     private static final long serialVersionUID = -5796154884019127904L;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
-    // @IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

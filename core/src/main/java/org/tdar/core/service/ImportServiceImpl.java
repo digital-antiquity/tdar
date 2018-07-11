@@ -489,7 +489,6 @@ public class ImportServiceImpl implements ImportService {
                 if (value instanceof DataTable) {
                     DataTable dataTable = (DataTable) value;
                     Dataset dataset = (Dataset) rec;
-                    dataTable.setDataset(dataset);
                     List<DataTableColumn> adt = dataTable.getDataTableColumns();
                     List<DataTableColumn> vals = new ArrayList<>(adt);
                     adt.clear();
@@ -582,7 +581,6 @@ public class ImportServiceImpl implements ImportService {
 
         if (property instanceof DataTable) {
             DataTable dataTable = (DataTable) property;
-            dataTable.setDataset((Dataset) resource);
             toReturn = (P) dataTable;
             for (DataTableColumn dataTableColumn : dataTable.getDataTableColumns()) {
                 dataTableColumn.setDataTable(dataTable);

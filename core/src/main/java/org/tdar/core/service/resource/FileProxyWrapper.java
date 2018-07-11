@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.db.conversion.converters.TabConverter;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.FileAnalyzer;
@@ -240,11 +241,10 @@ public class FileProxyWrapper {
     private void removeAllRelationships(Dataset dataset, Collection<DataTable> tablesToRemove) {
 
         Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
-        for (DataTable table : tablesToRemove) {
-            if (table == null || CollectionUtils.isEmpty(table.getRelationships())) {
-                continue;
+        for (DataTableRelationship rel : dataset.getRelationships()) {
+            if (tablesToRemove.contains(rel.getLocalTable())|| tablesToRemove.contains(rel.getForeignTable())) {
+                relationshipsToRemove.add(rel);
             }
-            relationshipsToRemove.addAll(table.getRelationships());
         }
         datasetDao.deleteRelationships(relationshipsToRemove);
         // // remove affected relationships prior to deleting columns

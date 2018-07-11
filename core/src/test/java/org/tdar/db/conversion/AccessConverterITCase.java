@@ -124,7 +124,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
         ImportTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
         DataTable dt = new DataTable();
-        dt.setDataset(ds);
+//        dt.setDataset(ds);
         dt.setName(dataTable.getName());
         dt.setDisplayName(dt.getDisplayName());
         DataTableColumn keyCol = DatasetImportUtils.createDataTableColumn(dataTable.getColumnByName("basic_int"), dt);

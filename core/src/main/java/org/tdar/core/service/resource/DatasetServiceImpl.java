@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.resource.DataTableColumnDao;
+import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.service.SerializationService;
@@ -83,6 +84,8 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
 
     @Autowired
     private DataTableColumnDao dataTableColumnDao;
+    @Autowired
+    private DataTableDao dataTableDao;
 
     @Autowired
     private SerializationService serializationService;
@@ -184,7 +187,8 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         try {
             StringWriter writer = new StringWriter();
             serializationService.convertToXML(dataTable, writer);
-            resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString(), RevisionLogType.EDIT, start);
+            Dataset dataset = dataTableDao.findDatasetForTable(dataTable);
+            resourceService.logResourceModification(dataset, authenticatedUser, message, writer.toString(), RevisionLogType.EDIT, start);
             getLogger().trace("{} - xml {}", message, writer);
         } catch (Exception e) {
             getLogger().error("could not serialize to XML:", e);
@@ -207,7 +211,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
             final DataTableColumn valueColumn,
             final DataTableColumn descriptionColumn) {
         // codingSheet.setAccount(keyColumn.getDataTable().getDataset().getAccount());
-        Dataset dataset = keyColumn.getDataTable().getDataset();
+        Dataset dataset = dataTableDao.findDatasetForTable(keyColumn.getDataTable());
         final CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(keyColumn, dataset, user, provider, null);
         ResultSetExtractor<Set<CodingRule>> resultSetExtractor = new ResultSetExtractor<Set<CodingRule>>() {
             @Override
@@ -374,7 +378,8 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         getDao().unmapAllColumnsInProject(project.getId(), PersistableUtils.extractIds(columns));
         for (DataTableColumn column : columns) {
             getLogger().info("mapping dataset to resources using column: {} ", column);
-            Dataset dataset = column.getDataTable().getDataset();
+            Dataset dataset = dataTableDao.findDatasetForTable(column.getDataTable());
+
             if (dataset == null) {
                 throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column", Arrays.asList(column));
             } else if (ObjectUtils.notEqual(project, dataset.getProject())) {
@@ -438,7 +443,8 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
+                Dataset dataset = dataTableDao.findDatasetForTable(column.getDataTable());
+                getDao().mapColumnToResource(dataset, column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
             }
         }
     }
@@ -485,7 +491,8 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
             incomingColumn.setTransientOntology(defaultOntology);
             if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, existingColumn, authenticatedUser,
+                
+                CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, dataset, existingColumn, authenticatedUser,
                         defaultOntology);
                 incomingColumn.setDefaultCodingSheet(generatedCodingSheet);
                 getLogger().debug("generated coding sheet {} for {}", generatedCodingSheet, incomingColumn);
