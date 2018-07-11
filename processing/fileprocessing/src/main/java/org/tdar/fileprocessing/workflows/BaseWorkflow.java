@@ -60,9 +60,8 @@ public abstract class BaseWorkflow implements Workflow {
         // by default tasks are processed in the order they are added within the phase that they're part of.
 
         try {
-            for (FileStoreFile version : workflowContext.getOriginalFiles()) {
-                version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
-            }
+            FileStoreFile version = workflowContext.getOriginalFile();
+            version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
         } catch (Exception e) {
             workflowContext.addException(e);
             workflowContext.setErrorFatal(true);

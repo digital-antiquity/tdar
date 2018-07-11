@@ -29,13 +29,14 @@ public class ConvertDatasetTask extends AbstractTask {
             return;
         }
 
-        List<FileStoreFile> filesToProcess = new ArrayList<>(getWorkflowContext().getOriginalFiles());
+        List<FileStoreFile> filesToProcess = new ArrayList<>();
+        filesToProcess.add(getWorkflowContext().getOriginalFile());
 
-        File file = getWorkflowContext().getOriginalFiles().get(0).getTransientFile();
+        File file = getWorkflowContext().getOriginalFile().getTransientFile();
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
-        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFile().getParts()) {
             if (!version.getTransientFile().exists()) {
                 throw new FileNotFoundException("could not find file: " + version.getTransientFile());
             }
@@ -43,7 +44,7 @@ public class ConvertDatasetTask extends AbstractTask {
             version.setTransientFile(new File(workingDir, version.getFilename()));
         }
 
-        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : getWorkflowContext().getOriginalFile().getParts()) {
             if (version.getExtension().equals("shp") || version.getExtension().equals("mdb") || version.getExtension().equals("gdb")) {
                 filesToProcess.clear();
                 filesToProcess.add(version);

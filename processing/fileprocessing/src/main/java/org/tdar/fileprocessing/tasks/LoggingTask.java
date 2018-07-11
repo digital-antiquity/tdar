@@ -9,7 +9,6 @@ package org.tdar.fileprocessing.tasks;
 import java.io.File;
 
 import org.apache.commons.io.FileUtils;
-import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.VersionType;
 
 /**
@@ -28,12 +27,10 @@ public class LoggingTask extends AbstractTask {
      */
     @Override
     public void run() throws Exception {
-        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
-            File f = new File(getWorkflowContext().getWorkingDirectory(), LOG_XML);
-            FileUtils.writeStringToFile(f, getWorkflowContext().toXML());
-            generateInformationResourceFileVersionFromOriginal(version, f, VersionType.LOG);
-            // don't add to context, just write to filesystem
-        }
+        File f = new File(getWorkflowContext().getWorkingDirectory(), LOG_XML);
+        FileUtils.writeStringToFile(f, getWorkflowContext().toXML());
+        generateInformationResourceFileVersionFromOriginal(getWorkflowContext().getOriginalFile(), f, VersionType.LOG);
+        // don't add to context, just write to filesystem
     }
 
     /*

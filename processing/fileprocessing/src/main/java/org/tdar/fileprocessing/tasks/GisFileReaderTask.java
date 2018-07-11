@@ -49,16 +49,13 @@ public class GisFileReaderTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        FileStoreFile original = null;
-        if (CollectionUtils.isNotEmpty(getWorkflowContext().getOriginalFiles())) {
-            original = getWorkflowContext().getOriginalFiles().get(0);
-        }
+        FileStoreFile original = getWorkflowContext().getOriginalFile();
         File file = original.getTransientFile();
         File workingDir = new File(getWorkflowContext().getWorkingDirectory(), file.getName());
         workingDir.mkdir();
         FileUtils.copyFileToDirectory(file, workingDir);
         File workingOriginal = new File(workingDir, file.getName());
-        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
+        for (FileStoreFile version : original.getParts()) {
             FileUtils.copyFileToDirectory(version.getTransientFile(), workingDir);
             version.setTransientFile(new File(workingDir, version.getFilename()));
             if (version.getPrimary()) {

@@ -48,9 +48,7 @@ public class IndexableTextExtractionTask extends AbstractTask {
 
     @Override
     public void run() throws Exception {
-        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
-            run(version);
-        }
+        run(getWorkflowContext().getOriginalFile());
     }
 
     public void run(FileStoreFile version) throws Exception {

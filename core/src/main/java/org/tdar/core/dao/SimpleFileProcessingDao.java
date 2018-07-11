@@ -42,7 +42,7 @@ public class SimpleFileProcessingDao {
         FileStoreFile version = new FileStoreFile(type, VersionType.UPLOADED, null, filename);
 
         WorkflowContext context = new WorkflowContext();
-        context.getOriginalFiles().add(version);
+        context.setOriginalFile(version);
         context.setOkToStoreInFilestore(false);
         context.setHasDimensions(true);
 

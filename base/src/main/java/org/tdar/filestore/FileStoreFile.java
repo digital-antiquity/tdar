@@ -2,7 +2,9 @@ package org.tdar.filestore;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
@@ -26,6 +28,7 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
     private Integer width;
     private Integer height;
     private Boolean primary = false;
+    private List<FileStoreFile> parts = new ArrayList<>();
 
     @Override
     public Long getInformationResourceFileId() {
@@ -284,6 +287,14 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
 
     public void setCodex(String codex) {
         this.codex = codex;
+    }
+
+    public List<FileStoreFile> getParts() {
+        return parts;
+    }
+
+    public void setParts(List<FileStoreFile> parts) {
+        this.parts = parts;
     }
 
 }

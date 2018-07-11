@@ -69,19 +69,14 @@ public class MessageServiceImpl implements MessageService {
     public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
         List<Long> irfIds = new ArrayList<>();
-        Set<InformationResource> resources = new HashSet<>();
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
             InformationResourceFile irf = version.getInformationResourceFile();
             if (!irfIds.contains(irf.getId())) {
                 irf.setStatus(FileStatus.QUEUED);
                 genericDao.saveOrUpdate(irf);
-                // FIXME: when we reimplement the message queue, this will need to be adjusted to do a flush here, otherwise, we cannot guarantee that the save
-                // will happen before the evict
-                resources.add(irf.getInformationResource());
             }
         }
         // genericDao.detachFromSession(resources);
-        resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
             if (ctx.isCodingSheet() == false && ctx.isDataTableSupported() && workflow instanceof HasDatabaseConverter) {

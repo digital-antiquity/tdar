@@ -285,10 +285,10 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         WorkflowContext ctx = new WorkflowContext();
         ctx.setTdarFile(true);
         ctx.setPrimaryExtension(file.getExtension());
-        ctx.getOriginalFiles().add(FileStoreFileUtils.copyTdarFile(file));
+        ctx.setOriginalFile(FileStoreFileUtils.copyTdarFile(file));
         for (TdarFile f : file.getParts()) {
             FileStoreFile fsf = FileStoreFileUtils.copyTdarFile(f);
-            ctx.getOriginalFiles().add(fsf);
+            ctx.getOriginalFile().getParts().add(fsf);
         }
         ctx.setTargetDatabase(tdarDataImportDatabase);
         ctx.setHasDimensions(pair.isHasDimensions());
@@ -308,6 +308,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             for (FileStoreFile f : ctx.getVersions()) {
                 file.getVersions().add(FileStoreFileUtils.copyToTdarFileVersion(f));
             }
+            file.setLength(ctx.getNumPages());
+            file.setHeight(ctx.getOriginalFile().getHeight());
+            file.setWidth(ctx.getOriginalFile().getWidth());
             datasetImportService.reconcileDataset(file, ctx.getDataTables(), ctx.getRelationships());
             file.setStatus(ImportFileStatus.PROCESSED);
         } else {

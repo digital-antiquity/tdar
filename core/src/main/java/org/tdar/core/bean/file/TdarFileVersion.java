@@ -31,7 +31,6 @@ public class TdarFileVersion extends AbstractFile {
 
     @Column
     private Integer length;
-
     @Column
     private Integer height;
     @Column

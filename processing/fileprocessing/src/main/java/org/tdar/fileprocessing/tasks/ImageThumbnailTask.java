@@ -74,9 +74,7 @@ public class ImageThumbnailTask extends AbstractTask {
     @Override
     public void run() throws Exception {
         ImageIO.scanForPlugins();
-        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
-            run(version);
-        }
+        run(getWorkflowContext().getOriginalFile());
     }
 
     public void run(FileStoreFile version) throws Exception {

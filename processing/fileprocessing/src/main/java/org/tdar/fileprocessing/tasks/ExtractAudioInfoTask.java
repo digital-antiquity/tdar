@@ -19,22 +19,15 @@ public class ExtractAudioInfoTask extends AbstractTask {
         final WorkflowContext ctx = getWorkflowContext();
 
         // are there actual files to copy?
-        final List<FileStoreFile> audioFiles = ctx.getOriginalFiles();
-        if (audioFiles.size() <= 0) {
+        final FileStoreFile  audioFile= ctx.getOriginalFile();
+        if (audioFile == null) {
             recordErrorAndExit("Must have an audio file to work with");
-        }
-
-        // at the moment there should only be one file
-        if (1 < audioFiles.size()) {
-            recordErrorAndExit("There are too many audio files to work with (only one expected)");
         }
 
         // Preconditions have been checked, now to write the control file and extract the audio files to work with.
         // at the moment there should be only one of these files: however, that should only be an artifact of the user interface.
-        for (FileStoreFile version : audioFiles) {
-            File originalAudioFile = version.getTransientFile();
-            writeFileMetadataToAudioFile(version, originalAudioFile);
-        }
+        File originalAudioFile = audioFile.getTransientFile();
+        writeFileMetadataToAudioFile(audioFile, originalAudioFile);
 
     }
 

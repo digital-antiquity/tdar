@@ -52,12 +52,12 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
         Geospatial doc = generateAndStoreVersion(Geospatial.class, name + ".shp", TestConstants.getFile(string + ".shp"), store);
         InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
-        wc.getOriginalFiles().add(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
+        wc.setOriginalFile(FileStoreFileUtils.copyVersionToFilestoreFile(originalFile));
 
         for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
 //            Geospatial doc2 = generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store);
             FileStoreFile fsf = makeFileStoreFile(TestConstants.getFile(string  + ext) ,doc.getId());
-            wc.getOriginalFiles().add(fsf);
+            wc.getOriginalFile().getParts().add(fsf);
             logger.debug("{} / {} -- {} ",fsf.getPath(),fsf.getExtension(), fsf.getTransientFile());
    
 

@@ -95,20 +95,19 @@ public class TdarFile extends AbstractFile implements HasTables {
     @ManyToOne
     @JoinColumn(name = "resource_id")
     private InformationResource resource;
-    
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "file_id", nullable=true)
+    @JoinColumn(name = "file_id", nullable = true)
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "file_id", nullable=true)
+    @JoinColumn(name = "file_id", nullable = true)
     private Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
-
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "part_of_id")
     private List<TdarFile> parts = new ArrayList<>();
-    
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "version_of_id")
     private List<TdarFileVersion> versions = new ArrayList<>();
@@ -118,6 +117,13 @@ public class TdarFile extends AbstractFile implements HasTables {
 
     @Column(name = "resource_id", updatable = false, insertable = false)
     private Long resourceId;
+
+    @Column
+    private Integer length;
+    @Column
+    private Integer height;
+    @Column
+    private Integer width;
 
     public TdarFile() {
     }
@@ -428,4 +434,29 @@ public class TdarFile extends AbstractFile implements HasTables {
     public void setDataTables(Set<DataTable> dataTables) {
         this.dataTables = dataTables;
     }
+
+    public Integer getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
 }

@@ -36,7 +36,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         WorkflowContext ctx = new WorkflowContext();
         task.setWorkflowContext(ctx);
         FileStoreFile vers = new FileStoreFile(FilestoreObjectType.RESOURCE, VersionType.UPLOADED, origFile.getName(), 1, -1L, -1L, null);
-        ctx.getOriginalFiles().add(vers);
+        ctx.setOriginalFile(vers);
         try {
             task.run(vers);
         } catch (Throwable e) {
@@ -46,9 +46,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
 
     @Override
     public void run() throws Exception {
-        for (FileStoreFile version : getWorkflowContext().getOriginalFiles()) {
-            run(version);
-        }
+        run(getWorkflowContext().getOriginalFile());
     }
 
     @Override

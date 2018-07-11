@@ -48,7 +48,7 @@ public final class WorkflowContext implements Serializable {
     private String baseUrl;
 
     private List<FileStoreFile> versions = new ArrayList<>();
-    private List<FileStoreFile> originalFiles = new ArrayList<>();
+    private FileStoreFile originalFile;
     private File workingDirectory = null;
     private int numPages = -1;
     private transient Filestore filestore;
@@ -105,17 +105,16 @@ public final class WorkflowContext implements Serializable {
         this.versions.add(version);
     }
 
-    @XmlElementWrapper(name = "originalFiles")
-    @XmlElement(name = "originalFiles")
-    public List<FileStoreFile> getOriginalFiles() {
-        return originalFiles;
+    @XmlElement(name = "originalFile")
+    public FileStoreFile getOriginalFile() {
+        return originalFile;
     }
 
     /*
      * Get the Original File
      */
-    public void setOriginalFiles(List<FileStoreFile> originalFile) {
-        this.originalFiles = originalFile;
+    public void setOriginalFile(FileStoreFile originalFile) {
+        this.originalFile = originalFile;
     }
 
     /*
@@ -299,7 +298,7 @@ public final class WorkflowContext implements Serializable {
         getDataTables().clear();
         getRelationships().clear();
         versions = null;
-        originalFiles = null;
+        originalFile = null;
 
         // TODO Auto-generated method stub
 
