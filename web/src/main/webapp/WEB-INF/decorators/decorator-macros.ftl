@@ -1,6 +1,7 @@
 <#macro layout_header>
 
 <nav class="navbar navbar-expand-md navbar-light bg-white">
+  <div class = "container">
       <a href="/" class="navbar-brand">
                 <img src="${staticHost}/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap">
             </a>
@@ -41,129 +42,132 @@
           </ul>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <nav class="navbar navbar-expand-md navbar-light bg-white">
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu2">
-              <span class="navbar-toggler-icon"></span>
-          </button>
+  <nav class="navbar navbar-expand-md navbar-light bg-white">
+    <div class = "container">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu2">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="tdarNavMenu2">
-        <ul class="navbar-nav">
-          <li class="nav-item mr-sm-3">
-            <a href="" class="nav-link">SAA</a>
-          </li>
-          <li class="nav-item mr-sm-3">
-            <a href="" class="nav-link">News</a>
-          </li>
-          <li class="nav-item mr-sm-3">
-            <div class="dropdown">
-              <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                About
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <h5 class = "ml-4">About</h5>
-                <div class="d-flex flex-row">
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="#">Our Team</a>
-                    <a class="dropdown-item" href="#">Organization</a>
-                    <a class="dropdown-item" href="#">Publications</a>
-                    <a class="dropdown-item" href="#">History</a>
-                    <a class="dropdown-item" href="#">Contact Us</a>
-                    <a class="dropdown-item" href="#">Current Versions</a>
-                  </div>
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="#"><strong>Search</strong></a>
-                    <a class="dropdown-item" href="#"><strong>Explore</strong></a>
-                  </div>
+    <div class="collapse navbar-collapse" id="tdarNavMenu2">
+      <ul class="navbar-nav">
+        <li class="nav-item mr-sm-3">
+          <a href="" class="nav-link">SAA</a>
+        </li>
+        <li class="nav-item mr-sm-3">
+          <a href="" class="nav-link">News</a>
+        </li>
+        <li class="nav-item mr-sm-3">
+          <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              About
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <h5 class = "ml-4">About</h5>
+              <div class="d-flex flex-row">
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="#">Our Team</a>
+                  <a class="dropdown-item" href="#">Organization</a>
+                  <a class="dropdown-item" href="#">Publications</a>
+                  <a class="dropdown-item" href="#">History</a>
+                  <a class="dropdown-item" href="#">Contact Us</a>
+                  <a class="dropdown-item" href="#">Current Versions</a>
+                </div>
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="#"><strong>Search</strong></a>
+                  <a class="dropdown-item" href="#"><strong>Explore</strong></a>
                 </div>
               </div>
             </div>
-          </li>
-          <li class="nav-item mr-sm-3">
-            <div class="dropdown">
-              <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Why tDAR?
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <h5 class = "ml-4">Why tDAR?</h5>
-                <div class="d-flex flex-row">
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="#">Our Team</a>
-                    <a class="dropdown-item" href="#">Organization</a>
-                    <a class="dropdown-item" href="#">Publications</a>
-                    <a class="dropdown-item" href="#">History</a>
-                    <a class="dropdown-item" href="#">Contact Us</a>
-                    <a class="dropdown-item" href="#">Current Versions</a>
-                  </div>
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="#"><strong>Search</strong></a>
-                    <a class="dropdown-item" href="#"><strong>Explore</strong></a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li class="nav-item mr-sm-3">
-            <div class="dropdown">
-              <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Using tDAR
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <h5 class = "ml-4">Using tDAR</h5>
-                <div class="d-flex flex-row">
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="#">Our Team</a>
-                    <a class="dropdown-item" href="#">Organization</a>
-                    <a class="dropdown-item" href="#">Publications</a>
-                    <a class="dropdown-item" href="#">History</a>
-                    <a class="dropdown-item" href="#">Contact Us</a>
-                    <a class="dropdown-item" href="#">Current Versions</a>
-                  </div>
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="#"><strong>Search</strong></a>
-                    <a class="dropdown-item" href="#"><strong>Explore</strong></a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <div class="dropdown ml-auto">
-          <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            My Account
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-            <#if (authenticatedUser??) >
-                <h5 class = "ml-4">${authenticatedUser.properName}</h5>
-                <div class="d-flex flex-row">
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a>
-                    <a class="dropdown-item" href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a>
-                    <a class="dropdown-item" href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a>
-                    <a class="dropdown-item" href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a>
-                    <br>
-                    <a class="dropdown-item" href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a>
-                    <a class="dropdown-item" href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a>
-                    <form class="seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
-                      <button type="submit" class="dropdown-item btn-link" name="logout" value="Logout">Sign Out</button>
-                   </form>
-                  </div>
-                  <div class="d-flex flex-column">
-                    <a class="dropdown-item" href="#">Dashboard</a>
-                    <a class="dropdown-item" href="#">Explore</a>
-                    <a class="dropdown-item" href="#">Search</a>
-                    <a class="dropdown-item" href="#">Integrate</a>
-                  </div>
-                </div>
-            <#else>
-                <a class="dropdown-item" href="<@s.url value="/account/new" />" rel="nofollow">Sign Up</a>
-                <a class="dropdown-item" href="<@s.url value="/login" />" rel="nofollow">Log In</a>
-            </#if>
           </div>
+        </li>
+        <li class="nav-item mr-sm-3">
+          <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Why tDAR?
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <h5 class = "ml-4">Why tDAR?</h5>
+              <div class="d-flex flex-row">
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="#">Our Team</a>
+                  <a class="dropdown-item" href="#">Organization</a>
+                  <a class="dropdown-item" href="#">Publications</a>
+                  <a class="dropdown-item" href="#">History</a>
+                  <a class="dropdown-item" href="#">Contact Us</a>
+                  <a class="dropdown-item" href="#">Current Versions</a>
+                </div>
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="#"><strong>Search</strong></a>
+                  <a class="dropdown-item" href="#"><strong>Explore</strong></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item mr-sm-3">
+          <div class="dropdown">
+            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Using tDAR
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <h5 class = "ml-4">Using tDAR</h5>
+              <div class="d-flex flex-row">
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="#">Our Team</a>
+                  <a class="dropdown-item" href="#">Organization</a>
+                  <a class="dropdown-item" href="#">Publications</a>
+                  <a class="dropdown-item" href="#">History</a>
+                  <a class="dropdown-item" href="#">Contact Us</a>
+                  <a class="dropdown-item" href="#">Current Versions</a>
+                </div>
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="#"><strong>Search</strong></a>
+                  <a class="dropdown-item" href="#"><strong>Explore</strong></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <div class="dropdown ml-auto">
+        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          My Account
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+          <#if (authenticatedUser??) >
+              <h5 class = "ml-4">${authenticatedUser.properName}</h5>
+              <div class="d-flex flex-row">
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a>
+                  <a class="dropdown-item" href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a>
+                  <a class="dropdown-item" href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a>
+                  <a class="dropdown-item" href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a>
+                  <br>
+                  <a class="dropdown-item" href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a>
+                  <a class="dropdown-item" href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a>
+                  <form class="seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
+                    <button type="submit" class="dropdown-item btn-link" name="logout" value="Logout">Sign Out</button>
+                 </form>
+                </div>
+                <div class="d-flex flex-column">
+                  <a class="dropdown-item" href="#">Dashboard</a>
+                  <a class="dropdown-item" href="#">Explore</a>
+                  <a class="dropdown-item" href="#">Search</a>
+                  <a class="dropdown-item" href="#">Integrate</a>
+                </div>
+              </div>
+          <#else>
+              <a class="dropdown-item" href="<@s.url value="/account/new" />" rel="nofollow">Sign Up</a>
+              <a class="dropdown-item" href="<@s.url value="/login" />" rel="nofollow">Log In</a>
+          </#if>
         </div>
       </div>
-    </nav>
+    </div>
+  </div>
+</nav>
 
 
     

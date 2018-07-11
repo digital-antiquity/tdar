@@ -188,13 +188,13 @@ ${head}
     </#if>
     <@header.outdatedBrowserWarning />
 
-    <div class="container">
+    
             <header>
                 <@dec.layout_header />
 
             </header>
 
-
+    <div class="container">
         <#if (homepage!false)>
             <@dec.homepageHeader />
         </#if>
