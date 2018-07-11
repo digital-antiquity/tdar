@@ -281,7 +281,7 @@
     <div class="p-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-3 col-sm-6 mb-3">
+                <div class="col-lg-3 col-md-6 col-12 mb-3">
                     <div class="card text-center">
                         <div class="card-body">
                             <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
@@ -291,32 +291,32 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 mb-3">
+                <div class="col-lg-3 col-md-6 col-12 mb-3">
                     <div class="card text-center">
                         <div class="card-body">
-                            <p><i class="fas fa-file-alt fa-5x mb-3"></i></p>
-                            <h5 class="card-title">Contribute</h5>
+                            <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
+                            <h5 class="card-title">Upload Resources</h5>
                             <p class="card-text">Contribute documents, data sets , images, and other critical archaeological materials.</p>
                             <a href="#" class="btn btn-secondary">Learn More</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 mb-3">
+                <div class="col-lg-3 col-md-6 col-12 mb-3">
                     <div class="card text-center">
                         <div class="card-body">
-                            <p><i class="fas fa-archive fa-5x mb-3"></i></p>
+                            <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
                             <h5 class="card-title">Preservation</h5>
                             <p class="card-text">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
                             <a href="#" class="btn btn-secondary">Learn More</a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6 mb-3">
+                <div class="col-lg-3 col-md-6 col-12 mb-3">
                     <div class="card text-center">
                         <div class="card-body">
-                            <p><i class="fas fa-search fa-5x mb-3"></i></p>
+                            <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
                             <h5 class="card-title">Who Uses tDAR</h5>
-                            <p class="card-text">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
+                            <p class="card-text">Researchers like you. Uncover knowledge of the past, and preserve and protect resources.</p>
                             <a href="#" class="btn btn-secondary">Learn More</a>
                         </div>
                     </div>
@@ -328,7 +328,7 @@
 </section>
 
 
-<div class="row">
+<#-- <div class="row">
     <div class="span3 bucket">
         <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
 
@@ -373,7 +373,7 @@
             <a href="http://www.tdar.org/using-tdar/" class="button">Learn More</a>
         </p>
     </div>
-</div>
+</div> -->
 </#macro>
 
 <#macro subnav>
