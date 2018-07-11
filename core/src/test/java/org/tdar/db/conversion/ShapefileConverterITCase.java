@@ -44,8 +44,6 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         ConvertDatasetTask task = new ConvertDatasetTask();
         WorkflowContext wc = new WorkflowContext();
         wc.setFilestore(TdarConfiguration.getInstance().getFilestore());
-        wc.setInformationResourceId(12345L);
-        wc.setInformationResourceId(111L);
         wc.setHasDimensions(true);
         wc.setDataTableSupported(true);
         wc.setDatasetConverter(ShapeFileDatabaseConverter.class);
