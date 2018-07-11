@@ -173,68 +173,75 @@
     
 <#if (authenticatedUser??) >
 
-<p id="welcome-menu" class="welcome  screen ">
+<#-- <p id="welcome-menu" class="welcome  screen ">
     <@s.text name="menu.welcome_back"/> <a href="">${authenticatedUser.properName}
     <i class="caret drop-down"></i>
 </a>
-</p>
+</p> -->
 
-<div class="welcome-drop  screen ">
+<div class = "container">
+  <div class="alert alert-primary alert-dismissible fade show" role="alert">
+    <div class="welcome-drop  screen ">
 
-    <p>${authenticatedUser.properName}</p>
+      <p><strong>${authenticatedUser.properName}</strong></p>
 
-    <ul>
-        <li><a href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a></li>
-        <li><a href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a></li>
-        <li><a href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a></li>
-        <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
-        <li><a href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a></li>
-    </ul>
+      <ul class = "list-unstyled">
+          <li><a href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a></li>
+          <li><a href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a></li>
+          <li><a href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a></li>
+          <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
+          <li><a href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a></li>
+      </ul>
 
-    <ul>
-        <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
-        <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
-        <li>
-             <form class="form-complete-inline seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
-                <button type="submit" class="btn btn-link tdar-btn-link serif" name="logout" value="Logout">Logout</button>
-             </form>
-         </li>
-    </ul>
+      <ul class = "list-unstyled">
+          <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
+          <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
+          <li>
+               <form class="form-complete-inline seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
+                  <button type="submit" class="btn btn-link tdar-btn-link serif" name="logout" value="Logout">Logout</button>
+               </form>
+           </li>
+      </ul>
 
-    <#if administrator>
-        <ul>
-            <li><@s.text name="menu.admin_header"/></li>
-            <li><a href="<@s.url value='/admin'/>"><@s.text name="menu.admin_main"/></a></li>
-            <li><a href="<@s.url value='/admin/system/activity'/>"><@s.text name="menu.admin_activity"/></a></li>
-            <li><a href="<@s.url value='/admin/searchindex/build'/>"><@s.text name="menu.admin_reindex"/></a></li>
-        </ul>
-    </#if>
+      <#if administrator>
+          <ul class = "list-unstyled">
+              <li><@s.text name="menu.admin_header"/></li>
+              <li><a href="<@s.url value='/admin'/>"><@s.text name="menu.admin_main"/></a></li>
+              <li><a href="<@s.url value='/admin/system/activity'/>"><@s.text name="menu.admin_activity"/></a></li>
+              <li><a href="<@s.url value='/admin/searchindex/build'/>"><@s.text name="menu.admin_reindex"/></a></li>
+          </ul>
+      </#if>
 
-</div>
-</#if>
-    <div class="collapse navbar-collapse" id="tdarNavMenu">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/saa/">SAA</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/news/">News</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/about">About</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>
-
-<!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
-            <#if ((authenticatedUser.contributor)!true)>
-                <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
-            <li>
-                <#if navSearchBoxVisible>
-                    <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
-                    <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
-                        <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
-                        <input type="hidden" name="_tdar.searchType" value="simple">
-                    ${(page.properties["div.divSearchContext"])!""}
-                    </form>
-                </#if>
-            </li>
-        </ul>
     </div>
-</nav>
+    </#if>
+      <div class="collapse navbar-collapse" id="tdarNavMenu">
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/saa/">SAA</a></li>
+              <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/news/">News</a></li>
+              <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/about">About</a></li>
+              <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>
+
+  <!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
+              <#if ((authenticatedUser.contributor)!true)>
+                  <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
+              <li>
+                  <#if navSearchBoxVisible>
+                      <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
+                      <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
+                          <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
+                          <input type="hidden" name="_tdar.searchType" value="simple">
+                      ${(page.properties["div.divSearchContext"])!""}
+                      </form>
+                  </#if>
+              </li>
+          </ul>
+      </div>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+</div>
+
 
 
 </#macro>
