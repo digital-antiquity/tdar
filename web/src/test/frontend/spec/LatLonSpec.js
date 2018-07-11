@@ -2,6 +2,7 @@
 
 
 
+
 describe("LatLonSpec.js: latlong tests", function () {
     "use strict";
     var RADIUS_EARTH = 6371;

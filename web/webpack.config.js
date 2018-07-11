@@ -46,7 +46,7 @@ module.exports = {
          $j : "jquery",
          jQuery: "jquery",
          axios:"Axios",
-        // jquery: "jquery",
+         // jquery: "jquery",
          c3: "c3",
          d3: "d3",
          // TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),

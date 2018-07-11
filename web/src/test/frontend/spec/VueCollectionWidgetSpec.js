@@ -1,5 +1,6 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 
+var axios = require("Axios");
 
 describe("Vue-collection-widget.js: collection widget test", function() {
 

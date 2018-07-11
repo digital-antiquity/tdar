@@ -6,12 +6,12 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 // webpack.autoProvidejQuery();
 module.exports = {
     context: __dirname,
-    devtool: 'eval-source-map',
+    //devtool: 'eval-source-map',
   entry: { main: './src/main/webapp/js/webpack/index.js' },
   output: {
         path: path.resolve(__dirname, "./src/main/webapp/dist/"),
         filename: '[name].bundle.js',
-        chunkFilename: "[id].bundle.js"
+        //chunkFilename: "[id].bundle.js"
   },
   // externals: ['axios'], this is a way to use an extenral version of jquery, whatever is referecned here should probably be a 'dev' dependency too
   module: {
@@ -23,7 +23,7 @@ module.exports = {
     ]
   }
   ,
-  optimization: {
+  /*optimization: {
     runtimeChunk: false,
 
     splitChunks: {
@@ -37,7 +37,7 @@ module.exports = {
         }
       }
     }
-  },
+  },*/
   
   plugins: [
 //     new BundleAnalyzerPlugin(),

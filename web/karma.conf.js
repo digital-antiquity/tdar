@@ -1,5 +1,5 @@
 // Karma configuration
-//var webpackConfig = require('./webpack-test.config.js');
+var webpackConfig = require('./webpack-test.config.js');
 
 var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
@@ -22,7 +22,7 @@ module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     
     config.set({
-       // webpack: webpackConfig,
+        webpack: webpackConfig,
         
         browserConsoleLogOptions: {terminal:true},
 
@@ -60,6 +60,7 @@ module.exports = function(config) {
             [
                 // specs
                 "src/test/frontend/spec/**/*.js",
+                //"src/test/frontend/spec/VueCollectionWidgetSpec.js",
                 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
@@ -98,7 +99,7 @@ module.exports = function(config) {
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js'],
             'src/main/webapp/js/**/*.js': ['coverage'],
-           // 'src/test/frontend/spec/AdvancedSearchSpec.js' : ['webpack']
+            'src/test/frontend/spec/**/*.js' : ['webpack']
         },
 
         // test results reporter to use
