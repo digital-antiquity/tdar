@@ -145,7 +145,9 @@
                     <br>
                     <a class="dropdown-item" href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a>
                     <a class="dropdown-item" href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a>
-                    <a class="dropdown-item" href="#">Sign Out</a>
+                    <form class="seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
+                      <button type="submit" class="dropdown-item btn-link" name="logout" value="Logout">Sign Out</button>
+                   </form>
                   </div>
                   <div class="d-flex flex-column">
                     <a class="dropdown-item" href="#">Dashboard</a>
