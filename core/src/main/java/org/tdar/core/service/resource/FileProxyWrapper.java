@@ -95,7 +95,7 @@ public class FileProxyWrapper {
             if (!proxy.getAction().requiresWorkflowProcessing()) {
                 continue;
             }
-            
+
             logger.debug("PROCESSING: {}", proxy);
             InformationResourceFile irFile = proxy.getInformationResourceFile();
             if (irFile.getStatus() == FileStatus.PROCESSED) {
@@ -135,9 +135,10 @@ public class FileProxyWrapper {
      */
     public void addInformationResourceFile(FileProxy proxy) throws IOException {
         // always set the download/version info and persist the relationships between the InformationResource and its IRFile.
-        
+
         InformationResourceFile irFile = proxy.getInformationResourceFile();
-        if (proxy.getAction() == FileAction.ADD && !informationResource.getResourceType().allowsMultipleFiles() && !informationResource.getResourceType().isCompositeFilesEnabled()) {
+        if (proxy.getAction() == FileAction.ADD && !informationResource.getResourceType().allowsMultipleFiles()
+                && !informationResource.getResourceType().isCompositeFilesEnabled()) {
             if (CollectionUtils.isNotEmpty(informationResource.getInformationResourceFiles()) && informationResource.getInformationResourceFiles().size() > 1) {
                 throw new TdarRecoverableRuntimeException("informationResourceFile.too.many.files");
             }
@@ -147,11 +148,9 @@ public class FileProxyWrapper {
             }
         }
         incrementVersionNumber(irFile);
-        
+
         // genericDao.saveOrUpdate(resource);
 
-        
-        
         irFile.setInformationResource(informationResource);
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(proxy));
         setInformationResourceFileMetadata(proxy);
@@ -215,12 +214,15 @@ public class FileProxyWrapper {
         TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, file, version);
         version.setTransientFile(file);
         datasetDao.save(version);
-        if (proxy.getTdarFile() != null && CollectionUtils.isNotEmpty(proxy.getTdarFile().getDataTables() )) {
-            Dataset ds = (Dataset)irFile.getInformationResource();
+        if (proxy.getTdarFile() == null) {
+            return version;
+        }
+        if (CollectionUtils.isNotEmpty(proxy.getTdarFile().getDataTables())) {
+            Dataset ds = (Dataset) irFile.getInformationResource();
             ds.getDataTables().addAll(proxy.getTdarFile().getDataTables());
             ds.getRelationships().addAll(proxy.getTdarFile().getRelationships());
         }
-        
+
         if (CollectionUtils.isNotEmpty(proxy.getAdditionalVersions())) {
             for (TdarFileVersion vers : proxy.getTdarFile().getVersions()) {
                 File file_ = new File(vers.getLocalPath());
@@ -238,7 +240,7 @@ public class FileProxyWrapper {
             }
             irFile.setStatus(FileStatus.PROCESSED);
         }
-        
+
         datasetDao.saveOrUpdate(irFile);
         return version;
     }
@@ -247,7 +249,7 @@ public class FileProxyWrapper {
 
         Set<DataTableRelationship> relationshipsToRemove = new HashSet<>();
         for (DataTableRelationship rel : dataset.getRelationships()) {
-            if (tablesToRemove.contains(rel.getLocalTable())|| tablesToRemove.contains(rel.getForeignTable())) {
+            if (tablesToRemove.contains(rel.getLocalTable()) || tablesToRemove.contains(rel.getForeignTable())) {
                 relationshipsToRemove.add(rel);
             }
         }

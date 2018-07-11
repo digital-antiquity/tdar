@@ -51,6 +51,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
     public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, String rawIntegration, TextProvider provider) {
         logger.debug("Context: {}", proxy);
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
+        logger.debug("MAPL {}", proxy.getTableMap());
         @SuppressWarnings("unused")
         ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, result, rawIntegration, proxy.getTableMap());
         createIntegrationTempTable(proxy, provider);

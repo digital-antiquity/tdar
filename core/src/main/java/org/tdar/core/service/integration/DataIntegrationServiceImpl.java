@@ -516,6 +516,17 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
         // }
         //
 
+        Set<Dataset> sets = new HashSet<>();
+        for (DataTable table : integrationContext.getDataTables()) {
+            logger.debug("{}", table);
+            Dataset ds = dataTableDao.findDatasetForTable(table);
+            logger.debug("{}", ds);
+            if (ds != null) {
+                sets.add(ds);
+            }
+        }
+        integrationContext.setDatasets(new ArrayList<>(sets));
+        
         ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(integrationContext, integration, provider);
         storeResult(result);
         return result;
