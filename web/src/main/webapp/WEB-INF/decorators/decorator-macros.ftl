@@ -291,7 +291,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center h-100">
+                    <div class="card text-center h-100 border border-0">
                         <div class="card-body">
                             <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
                             <h5 class="card-title">Access & Use</h5>
@@ -301,7 +301,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center h-100">
+                    <div class="card text-center h-100 border border-0">
                         <div class="card-body">
                             <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
                             <h5 class="card-title">Upload Resources</h5>
@@ -311,7 +311,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center h-100">
+                    <div class="card text-center h-100 border border-0">
                         <div class="card-body">
                             <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
                             <h5 class="card-title">Preservation</h5>
@@ -321,7 +321,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center h-100">
+                    <div class="card text-center h-100 border border-0">
                         <div class="card-body">
                             <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
                             <h5 class="card-title">Who Uses tDAR</h5>
