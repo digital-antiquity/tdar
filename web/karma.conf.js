@@ -1,5 +1,5 @@
 // Karma configuration
-var webpackConfig = require('./webpack-test.config.js');
+//var webpackConfig = require('./webpack-test.config.js');
 
 var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
@@ -13,7 +13,7 @@ function buildFilesFromWro(profile) {
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles.
-            concat("/dist/bundle.js").
+            concat("/dist/main.bundle.js").
             map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
@@ -22,7 +22,7 @@ module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     
     config.set({
-        webpack: webpackConfig,
+        //webpack: webpackConfig,
         
         browserConsoleLogOptions: {terminal:true},
 
@@ -32,20 +32,19 @@ module.exports = function(config) {
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
         frameworks: ['jasmine-ajax', 'jasmine-jquery', 'jasmine'],
-
         
         // list of files / patterns to load in the browser (we aren't using requireJS, so order matters)
         files: [].concat(
-                
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
                 //'node_modules/es6-promise/es6-promise.js',
                 //'node_modules/es6-promise/es6-promise.auto.js',
                 //'node_modules/vue/dist/vue.js',
                 //'node_modules/axios/dist/axios.js',
-                'node_modules/moxios/dist/moxios.js',
                 
                 //{pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
+                //'src/main/webapp/dist/jquery.bundle.js',
+                'node_modules/moxios/dist/moxios.js',
                 //{pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
@@ -54,10 +53,7 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
                 {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
             ],
-            
-            
             wroFiles,
-            
             [
                 // specs
                 //"src/test/frontend/spec/**/*.js",
@@ -102,7 +98,6 @@ module.exports = function(config) {
             'src/test/frontend/html2js/*.html': ['html2js'],
             'src/main/webapp/js/**/*.js': ['coverage'],
             //'src/test/frontend/spec/**/*.js' : ['webpack']
-            'src/test/frontend/spec/**/*.js' : ['webpack']
         },
 
         // test results reporter to use

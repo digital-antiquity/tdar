@@ -5,14 +5,21 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 // webpack.autoProvidejQuery();
 module.exports = {
-    context: __dirname,
-    devtool: 'eval-source-map',
-  entry: { main: './src/main/webapp/js/webpack/index.js' },
+  //mode: 'production',
+  mode: 'development',
+  
+  context: __dirname,
+  //devtool: 'eval-source-map',
+  entry: { 
+     // jquery : ['jquery'],
+      main: './src/main/webapp/js/webpack/index.js' 
+  },
   output: {
         path: path.resolve(__dirname, "./src/main/webapp/dist/"),
-        filename: 'bundle.js',
+        filename: '[name].bundle.js',
         chunkFilename: "[id].bundle.js"
   },
+  
   // externals: ['axios'], this is a way to use an extenral version of jquery, whatever is referecned here should probably be a 'dev' dependency too
   module: {
     rules: [
@@ -24,23 +31,21 @@ module.exports = {
   }
   ,
   optimization: {
-    runtimeChunk: false,
-
+    //runtimeChunk: false,
     splitChunks: {
-      cacheGroups: {
-        //default: false,
-        commons: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendor_app',
-          chunks: 'all',
-          minChunks: 2
-        }
+        cacheGroups: {
+            commons: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              minChunks: 2
+            }
       }
     }
   },
   
   plugins: [
-//     new BundleAnalyzerPlugin(),
+     //new BundleAnalyzerPlugin(),
      new webpack.ProvidePlugin({
          $: "jquery",
          $j : "jquery",

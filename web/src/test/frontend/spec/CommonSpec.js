@@ -1,7 +1,5 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
 
-import "jquery";
-
 describe("CommonSpec.js: edit page tests", function () {
     "use strict";
 
@@ -26,10 +24,9 @@ describe("CommonSpec.js: edit page tests", function () {
         var form = document.getElementById('metadataForm');
         
         console.debug("OK!!!!");
-        console.debug("$J is ",$j);
-        console.debug(" JQUERY ", $);
-        console.debug($ == $j);
-        expect($j("#template-upload")).toHaveLength(1);
+        console.debug(" __FORM PROPS__ ", formProps);
+        
+        expect($("#template-upload")).toHaveLength(1);
         expect($j("#metadataForm")).toHaveLength(1);
         var result = TDAR.common.initEditPage(form, formProps);
 

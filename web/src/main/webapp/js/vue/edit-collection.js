@@ -2,7 +2,8 @@
 
 
 import Vue from "vue";
-import "Axios";
+import axios from "Axios";
+
 TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
 	"use strict";
 

@@ -127,7 +127,7 @@ import 'selectize/dist/js/standalone/selectize.js';
 import './../maps/tdar.worldmap';
 
 import "vue";
-import 'axios/dist/axios.min.js';
+//import 'axios/dist/axios.min.js';
 
 import './../vue/vue-selectize.js';
 require('script-loader!../../includes/bootstrap-2.32/js/bootstrap.js');

@@ -1,8 +1,5 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 
-import axios from "Axios";
-import Vue from "vue";
-
 describe("Vue-collection-widget.js: collection widget test", function() {
 
     beforeEach(function() {
