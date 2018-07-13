@@ -33,9 +33,11 @@
             </li>
             <li class="nav-item">
               <form class="form-inline">
-                <input class="form-control form-control-sm" type="search" placeholder="Search..." aria-label="Search">
-                <div class="input-group-append">
-                  <button class="btn btn-sm" type="button"><i class="fas fa-search"></i></button>
+                <div class="input-group">
+                    <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
+                    <span class="input-group-append">
+                        <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
+                    </span>
                 </div>
               </form>
             </li>
@@ -61,7 +63,7 @@
         </li>
         <li class="nav-item mr-sm-3">
           <div class="dropdown">
-            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               About
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -85,7 +87,7 @@
         </li>
         <li class="nav-item mr-sm-3">
           <div class="dropdown">
-            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Why tDAR?
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -109,7 +111,7 @@
         </li>
         <li class="nav-item mr-sm-3">
           <div class="dropdown">
-            <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Using tDAR
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -133,7 +135,7 @@
         </li>
       </ul>
       <div class="dropdown ml-auto">
-        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           My Account
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
@@ -254,12 +256,12 @@
             <h2 class="display-3">What can you dig up?</h2>
             <p class="lead"><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive for archaeological information.</p>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
-                <div class="input-group col-md-8 align-items-center">
-                    <input class="form-control" type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
-                    <div class="input-group-append">
-                        <button class="btn" type="button" name="_tdar.searchType" value="simple"><i class="fas fa-search"></i></button>
-                    </div>
-                    <a class="ml-3" href="<@s.url value="/search"/>">advanced</a>
+                <div class="input-group col-md-9">
+                    <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
+                    <span class="input-group-append" name="_tdar.searchType" value="simple">
+                        <div class="input-group-text bg-white"><i class="fa fa-search"></i></div>
+                    </span>
+                    <a class="ml-3 align-self-center" href="<@s.url value="/search"/>">advanced</a>
                     <input type="hidden" name="_tdar.searchType" value="simple">
                 </div>
             </form>
@@ -289,7 +291,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center">
+                    <div class="card text-center h-100">
                         <div class="card-body">
                             <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
                             <h5 class="card-title">Access & Use</h5>
@@ -299,7 +301,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center">
+                    <div class="card text-center h-100">
                         <div class="card-body">
                             <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
                             <h5 class="card-title">Upload Resources</h5>
@@ -309,7 +311,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center">
+                    <div class="card text-center h-100">
                         <div class="card-body">
                             <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
                             <h5 class="card-title">Preservation</h5>
@@ -319,7 +321,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6 col-12 mb-3">
-                    <div class="card text-center">
+                    <div class="card text-center h-100">
                         <div class="card-body">
                             <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
                             <h5 class="card-title">Who Uses tDAR</h5>
