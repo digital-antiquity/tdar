@@ -23,16 +23,20 @@ services:
       - solr-precreate
   tomcat:
     image: local:tomcat
+    depends_on:
+      - "db"
+      - "solr"
     ports:
-     - "8080:8080"
-     - "8443:8443"
+     - 8080:8080
+     - 8443:8443
+     - 443:443
     volumes:
       - ./tomcat/server.xml:/config/server.xml
       - ./tomcat/setenv.sh:/opt/tomcat/bin/setenv.sh
       - ./tdar.war:/opt/tomcat/webapps/ROOT.war
-      - ./tmp/:/data/filestore
-      - ./tmp/:/data/personal-filestore
-      - ./tmp/:/data/hosted-filestore
+      - ./tmp/filestore:/data/filestore
+      - ./tmp/personal-filestore:/data/personal-filestore
+      - ./tmp/hosted-filestore:/data/hosted-filestore
     # entrypoint:
       # - tomcat-entrypoint.sh
 volumes:
