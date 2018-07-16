@@ -26,10 +26,10 @@
         <div class="collapse navbar-collapse d-flex align-items-end" id="tdarNavMenu">
           <ul class="navbar-nav">
             <li class="nav-item mr-sm-3">
-              <button class="btn btn-sm btn-outline-secondary" type="button">Browse</button>
+              <a class="btn btn-sm btn-outline-secondary">Browse</a>
             </li>
             <li class="nav-item mr-sm-3">
-              <button class="btn btn-sm btn-outline-secondary" type="button">Upload</button>
+              <a class="btn btn-sm btn-outline-secondary">Upload</a>
             </li>
             <li class="nav-item">
               <form class="form-inline">
