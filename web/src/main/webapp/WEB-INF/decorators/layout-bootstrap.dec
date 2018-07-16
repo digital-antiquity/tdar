@@ -189,18 +189,15 @@ ${head}
     <@header.outdatedBrowserWarning />
 
     
-            <header>
-                <@dec.layout_header />
+        <header>
+            <@dec.layout_header />
+        </header>
 
-            </header>
-
-    <div class="container">
         <#if (homepage!false)>
             <@dec.homepageHeader />
         </#if>
 
         <#if searchHeaderEnabled!false>
-        </div>
             <@wdec.searchHeader />
             <div class="container">
         </#if>
@@ -295,7 +292,7 @@ ${head}
         ${page.properties["div.titlebar"]}
         </#if>
 
-        <section class="${bs.row()} ${part}">
+        <section>
 
             <#if showLeftSidebar()>
                 <aside class="span3">
@@ -303,7 +300,7 @@ ${head}
                 </aside>
             </#if>
 
-            <article class="span${spanSize} results" id="articleBody">
+            <article class="results" id="articleBody">
             <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
             <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
             ${body}
