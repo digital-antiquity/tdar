@@ -60,7 +60,7 @@
         <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.theme.min.css">
 
     <#-- <link href="${staticHost}/css/tdar-base.css" rel="stylesheet"> -->
-    <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
+    <#-- <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print"> -->
     <@header.css (webFilePreprocessingEnabled ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
@@ -292,22 +292,22 @@ ${head}
         ${page.properties["div.titlebar"]}
         </#if>
 
-        <section>
+        <section class="container">
 
             <#if showLeftSidebar()>
-                <aside class="span3">
+                <aside class="col-3">
                 ${page.properties["div.sidebar-left"]}
                 </aside>
             </#if>
 
-            <article class="results" id="articleBody">
+            <article class="col-${spanSize} results" id="articleBody">
             <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
             <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
             ${body}
             </article>
 
             <#if showRightSidebar() >
-                <aside class="span3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+                <aside class="col-3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
                 ${page.properties["div.sidebar-right"]}
                 </aside>
             </#if>

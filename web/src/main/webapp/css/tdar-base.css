@@ -153,8 +153,8 @@ a.button:hover, .tdar-button:hover, input.tdar-button[type=submit]:hover {
 }
 
 #home {
-    background: url(../images/r4/bg-home.jpg) center 115px;
-    background-repeat: no-repeat;
+//    background: url(../images/r4/bg-home.jpg) center 115px;
+//    background-repeat: no-repeat;
 }
 
 #alt, #sub {

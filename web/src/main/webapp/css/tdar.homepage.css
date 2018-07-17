@@ -1,5 +1,5 @@
-    #jumbo {
-        background: url(../../Documents/workspace/tdar.src/web/src/main/webapp/images/r4/bg-home.jpg) center 20px;
+#hero,  #jumbo {
+        background: url(../images/r4/bg-home.jpg) center;
         background-repeat: no-repeat;
     }
     .jumbotron {background:none;}
@@ -72,7 +72,7 @@
 }
 
 #home {
-    background: url(../images/r4/bg-home.jpg) center 115px;
+    background: url(../images/r4/bg-home.jpg) center -100px;
     background-repeat: no-repeat;
 }
 
