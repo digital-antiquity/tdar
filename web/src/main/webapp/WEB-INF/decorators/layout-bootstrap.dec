@@ -14,7 +14,7 @@
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.15.1" >
-<#global bootstrapVersion="4.1.1" >
+<#global bootstrapVersion="4.1.2" >
 
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
