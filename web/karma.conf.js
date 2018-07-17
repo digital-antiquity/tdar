@@ -13,7 +13,7 @@ function buildFilesFromWro(profile) {
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles.
-            concat("/dist/main.bundle.js").
+            concat("/dist/bundle.js").
             map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
@@ -44,8 +44,10 @@ module.exports = function(config) {
                 
                 //{pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
                 //'src/main/webapp/dist/jquery.bundle.js',
+               
                 'node_modules/moxios/dist/moxios.js',
-                //{pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
+                //"src/main/webapp/dist/main.bundle.js",
+                //   {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
@@ -53,8 +55,9 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
                 {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
             ],
-            wroFiles,
+            wroFiles, 
             [
+               
                 // specs
                 //"src/test/frontend/spec/**/*.js",
                //"src/test/frontend/spec/AdvancedSearchSpec.js",

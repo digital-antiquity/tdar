@@ -26,6 +26,8 @@ describe("CommonSpec.js: edit page tests", function () {
         console.debug("OK!!!!");
         console.debug(" __FORM PROPS__ ", formProps);
         
+        console.debug($().jquery);
+        
         expect($("#template-upload")).toHaveLength(1);
         expect($j("#metadataForm")).toHaveLength(1);
         var result = TDAR.common.initEditPage(form, formProps);
@@ -71,7 +73,7 @@ describe("CommonSpec.js: edit page tests", function () {
             setFixtures($categoryIdSelect);
             $categoryIdSelect.val('foo');
             appendSetFixtures($subCategoryIdSelect);
-            $expect('select').toHaveLength(2);
+            expect($('select')).toHaveLength(2);
             TDAR.common.changeSubcategory($categoryIdSelect, $subCategoryIdSelect);
 
             //server responsds with array containing the 'bar' subcategory
@@ -127,6 +129,8 @@ describe("CommonSpec.js: edit page tests", function () {
     describe("TDAR.common: session timeout tests", function() {
         var sessionTimeout;
         beforeEach(function(){
+            console.debug("JQuery: ",$.fn.dialog);
+            console.debug("$.fn", $.fn)
             //intercept calls to setTimeout() and $.fn.dialog(). Confirm that our function called them later. 
             spyOn(window, 'setTimeout');
             spyOn($.fn, 'dialog');
@@ -207,11 +211,11 @@ describe("CommonSpec.js: edit page tests", function () {
         it("should display the 'search within this collectin' checkbox when user focuses on the search textbox on a collection view page", function () {
             loadFixtures('searchheader.html');
             var result = TDAR.common.initializeView();
-            $expect('#divSearchContext.active').not.toBeInDOM();
+            expect($('#divSearchContext.active')).not.toBeInDOM();
     
             $(".searchbox").focus(); //workaround for ff issue. test fails unless focus event triggered twice
             $(".searchbox").focus();
-            $expect('#divSearchContext.active').toBeInDOM();
+            expect($('#divSearchContext.active')).toBeInDOM();
             expect($j('#divSearchContext')).toHaveClass('active');
         });
     

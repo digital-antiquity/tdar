@@ -16,7 +16,7 @@ module.exports = {
   },
   output: {
         path: path.resolve(__dirname, "./src/main/webapp/dist/"),
-        filename: '[name].bundle.js',
+        filename: 'bundle.js',
         chunkFilename: "[id].bundle.js"
   },
   
@@ -45,11 +45,12 @@ module.exports = {
   },
   
   plugins: [
-     //new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
      new webpack.ProvidePlugin({
          $: "jquery",
          $j : "jquery",
          jQuery: "jquery",
+         'global.jQuery': 'jquery',
          axios:"Axios",
          // jquery: "jquery",
          c3: "c3",
@@ -58,13 +59,19 @@ module.exports = {
          // axios:"axios",
          Vue : 'vue',
          // Vue : 'Vue'
-         LatLon: path.resolve(__dirname,'src/main/webapp/js/latLongUtil-1.0')
+         LatLon: 'js/latLongUtil-1.0'
      })
   ],
  
   // this seemed to make a difference: 
   // https://github.com/webpack/webpack.js.org/issues/63
   resolve: {
+      alias : {
+          "jquery-ui": path.join(__dirname, "src/main/webapp/includes/jquery-ui-1.11.4.custom/jquery-ui.js"), 
+          modules: path.join(__dirname, "node_modules"),
+          js: path.resolve(__dirname,'src/main/webapp/js/')
+      }
+      
         // alias: {
         //     jquery: "jquery/dist/jquery"
         // }
