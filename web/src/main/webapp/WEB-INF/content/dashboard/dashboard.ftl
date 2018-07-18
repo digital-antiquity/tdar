@@ -6,7 +6,7 @@
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
 <#import "/WEB-INF/macros/common.ftl" as common>
 <#import "common-dashboard.ftl" as dash >
-<#import "/${config.themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/settings.ftl" as settings>
 
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>
@@ -288,6 +288,10 @@
         TDAR.notifications.init();
         TDAR.common.collectionTreeview();
         $("#myCarousel").carousel('cycle');
+        if ($("#project-selector").val() != '' || $("#collection-selector").val() != '' || $("#statuses").val() != '' || $("#resourceTypes").val() != '') {
+        console.log("show advanved filters");
+        	$("#divAdvancedFilters").toggleClass("collapse");
+        }
     });
 </script>
 </#escape>

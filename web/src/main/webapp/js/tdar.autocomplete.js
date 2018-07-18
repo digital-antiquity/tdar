@@ -404,7 +404,7 @@ TDAR.autocomplete = (function () {
                             createRow.value = request.term;
                             // allow for custom phrasing
                             if (options.showCreatePhrase) {
-                                createRow.label = "(" + options.showCreatePhrase + ": " + request.term + ")";
+                                createRow.label = " (" + options.showCreatePhrase + ": " + request.term + ")";
                             }
                             createRow.id = -1;
                             createRow.isNewItem = true;
@@ -538,7 +538,7 @@ TDAR.autocomplete = (function () {
                 }
                 var ocur = "";
                 if (item.occurrence != undefined && item.occurrence != 0) {
-                    ocur = "(" + item.occurrence + ")";
+                    ocur = " (" + item.occurrence + ")";
                 }
                 var extra = "<span class='pull-right'>" + star + ocur + " " + "&nbsp;&nbsp;</span>";
 
@@ -569,7 +569,35 @@ TDAR.autocomplete = (function () {
             customRender: function (ul, item) {
                 var obj = $.extend({}, item);
                 obj.addnew = (item.id == -1 && options.showCreate);
-                var $snippet = $(tmpl("template-person-autocomplete-li", obj));
+                var tmpl = "<li class='{addnew}'><a><div class='person-{id}'><span class='name'>{propername}</span> <span class='email'>{email}</span>";
+                tmpl = tmpl + "<span class='institution'><i>{institution}</i></span>{create}</div></a></li>";
+
+                tmpl = tmpl.replace("{id}",item.id);
+                if (item.properName != undefined) {
+                    tmpl = tmpl.replace("{propername}",item.properName);
+                } else {
+                    tmpl = tmpl.replace("{propername}","");
+                }
+                if (item.email != undefined && item.email.trim() != '') {
+                    tmpl = tmpl.replace("{email}"," ("+ item.email +")");
+                } else {
+                    tmpl = tmpl.replace("{email}","");
+                }
+
+                if (item.institution != undefined && item.institution.name != undefined) {
+                    tmpl = tmpl.replace("{institution}", ", " + item.institution.name);
+                } else {
+                    tmpl = tmpl.replace("{institution}", " ");
+                }
+                if (obj.addnew) {
+                    tmpl = tmpl.replace("{create}","<b>Create a new person record</b>");
+                    tmpl = tmpl.replace("{addnew}","addnew");
+                } else {
+                    tmpl = tmpl.replace("{addnew}","");
+                    tmpl = tmpl.replace("{create}","");
+                }
+                
+                var $snippet = $(tmpl);
                 $snippet.data("item.autocomplete", item).appendTo(ul);
                 return $snippet;
             },
@@ -628,7 +656,7 @@ TDAR.autocomplete = (function () {
             var link = "";
             var idpart = "";
             if (item.id != -1) {
-                idpart = "("+item.id+")";
+                idpart = " ("+item.id+")";
             }
             return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>" +idpart).appendTo(ul);
         };

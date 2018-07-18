@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -304,7 +303,7 @@ public class PaymentResourceControllerITCase extends AbstractControllerITCase im
         return pair;
     }
 
-    private void extracted(String title, BillingAccount expectedAccount) throws TdarActionException, FileNotFoundException {
+    private void extracted(String title, BillingAccount expectedAccount) throws Exception {
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         Document d = setupDocument();
         d.setStatus(Status.DRAFT);

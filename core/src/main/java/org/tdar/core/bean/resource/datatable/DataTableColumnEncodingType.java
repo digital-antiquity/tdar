@@ -44,7 +44,7 @@ public enum DataTableColumnEncodingType implements HasLabel, Localizable {
      * @param supportsOntology
      *            the supportsOntology to set
      */
-    public void setSupportsOntology(boolean supportsOntology) {
+    private void setSupportsOntology(boolean supportsOntology) {
         this.supportsOntology = supportsOntology;
     }
 
@@ -59,7 +59,7 @@ public enum DataTableColumnEncodingType implements HasLabel, Localizable {
      * @param supportsCodingSheet
      *            the supportsCodingSheet to set
      */
-    public void setSupportsCodingSheet(boolean supportsCodingSheet) {
+    private void setSupportsCodingSheet(boolean supportsCodingSheet) {
         this.supportsCodingSheet = supportsCodingSheet;
     }
 
@@ -74,7 +74,7 @@ public enum DataTableColumnEncodingType implements HasLabel, Localizable {
      * @param supportsMeasurement
      *            the supportsMeasurement to set
      */
-    public void setSupportsMeasurement(boolean supportsMeasurement) {
+    private void setSupportsMeasurement(boolean supportsMeasurement) {
         this.supportsMeasurement = supportsMeasurement;
     }
 

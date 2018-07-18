@@ -1,4 +1,4 @@
-<#import "/${config.themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/settings.ftl" as settings>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      viewBox="${(svgWrapper.minX)?c} ${(svgWrapper.minY)?c} ${(svgWrapper.width)?c} ${(svgWrapper.height)?c}"
      width="100%" height="100%"

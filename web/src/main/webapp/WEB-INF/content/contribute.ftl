@@ -4,7 +4,7 @@
 <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/WEB-INF/content/cart/common-invoice.ftl" as invoiceCommon >
-<#import "/${config.themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/settings.ftl" as settings>
 
 <head>
     <title>Upload &amp; contribute content to ${siteAcronym}</title>

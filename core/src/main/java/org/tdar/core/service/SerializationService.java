@@ -35,9 +35,9 @@ public interface SerializationService {
     String XSD = ".xsd";
     String TDAR_SCHEMA = "tdar-schema";
     String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
-    @SuppressWarnings("unchecked")
-    Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class,
-            FileProxies.class, FileProxy.class };
+//    @SuppressWarnings("unchecked")
+//    Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class,
+//            FileProxies.class, FileProxy.class };
 
     void handleFilestoreEvent(TdarEvent event);
 
@@ -139,7 +139,5 @@ public interface SerializationService {
     void setUseTransactionalEvents(boolean useTransactionalEvents);
 
     void post(LoggingObjectContainer o) throws Exception;
-
-    void markReadOnly(Persistable persistable);
 
 }

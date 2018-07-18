@@ -22,7 +22,7 @@ public enum OaiErrorCode {
         return code;
     }
 
-    public void setCode(String code) {
+    private void setCode(String code) {
         this.code = code;
     }
 
@@ -30,7 +30,7 @@ public enum OaiErrorCode {
         return message;
     }
 
-    public void setMessage(String message) {
+    private void setMessage(String message) {
         this.message = message;
     }
 }

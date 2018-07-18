@@ -58,6 +58,7 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
             ResourceType.DATASET,
             ResourceType.SENSORY_DATA, ResourceType.ARCHIVE, ResourceType.GEOSPATIAL,
             ResourceType.VIDEO, ResourceType.AUDIO),
+    ANALYST("Analyst", ResourceCreatorRoleType.AUTHORSHIP, null, ResourceType.DATASET, ResourceType.SENSORY_DATA, ResourceType.GEOSPATIAL, ResourceType.IMAGE, ResourceType.ONTOLOGY,ResourceType.CODING_SHEET),
     PREPARER("Prepared By",
             ResourceCreatorRoleType.CREDIT,
             CreatorType.INSTITUTION),

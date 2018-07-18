@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.dao.base.GenericDao;
-import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.core.service.external.EmailService;
 
 /**

@@ -397,7 +397,7 @@ describe("CommonSpec.js: edit page tests", function () {
     
             //clicking on a thumbnail should update the featured image and label
             $(".thumbnailLink").click();
-            expect($j('#confidentialLabel')).toHaveText('This file is awesome but you have rights to it');
+            expect($j('#confidentialLabel')).toHaveText('This file is awesome, but you have rights to see it');
             expect($j('#bigImage').get(0).src).toContain('/images/book.png');
     
         });
@@ -419,12 +419,6 @@ describe("CommonSpec.js: edit page tests", function () {
             expect($('#textInputDiv')).toBeVisible();
         });
     
-        it("should work when we call tmpl", function () {
-            var fmt = 'Hello {%=o.title%}'
-            var obj = {title:'world'};
-            var result = TDAR.common.tmpl(fmt, obj);
-            expect(result).toBe('Hello world');
-        });
     
         it("initializes collection lists  when we call collectionTreeview", function () {
             loadFixtures('treeview.html');

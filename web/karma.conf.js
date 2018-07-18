@@ -16,6 +16,23 @@ function buildFilesFromWro(profile) {
     return files;
 }
 
+var specFiles = "src/test/frontend/spec/**/*.js";
+
+console.log("*************************************** ");
+console.log("**** to run a single test.         **** ");
+console.log("**** karma start -- VueBalkSpec.js ****")
+console.log("**** or          -- Vue            ****")
+console.log("*************************************** ");
+
+if (process.argv != undefined  && process.argv.length > 0) {
+    var last = process.argv[process.argv.length-1];
+    if (last != 'start' && last != 'run' && last != 'true') {
+        if (!last.endsWith(".js")) {
+            last = last + "*";
+        }
+        specFiles = "src/test/frontend/spec/**/*" + last;
+    }
+}
 
 
 module.exports = function(config) {
@@ -55,7 +72,7 @@ module.exports = function(config) {
             wroFiles,
             [
                 // specs
-                "src/test/frontend/spec/**/*.js",
+                specFiles,
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
@@ -93,8 +110,8 @@ module.exports = function(config) {
         preprocessors: {
             //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
-            'src/test/frontend/html2js/*.html': ['html2js'],
-            'src/main/webapp/js/**/*.js': ['coverage']
+            'src/test/frontend/html2js/*.html': ['html2js']
+            ,'src/main/webapp/js/**/*.js': ['coverage']
         },
 
         // test results reporter to use

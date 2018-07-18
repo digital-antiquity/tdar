@@ -6,8 +6,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#escape _untrusted as _untrusted?html>
     <#import "common-resource.ftl" as commonr>
     <#import "../common.ftl" as common>
-    <#import "/${config.themeDir}/local-helptext.ftl" as  helptext>
-    <#import "/${config.themeDir}/settings.ftl" as settings>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
+    <#import "/WEB-INF/settings.ftl" as settings>
     <#import "../navigation-macros.ftl" as nav>
     <#import "../common-rights.ftl" as rights>
 
@@ -850,7 +850,7 @@ to singleFileUpload, continue lifting useful logic here into singleFileUpload (e
 jquery validation hooks?)
 MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
-<#-- emit file upload section for non-async uploads -->
+<#-- emit file upload section for non-async uploads --> 
     <#macro upload uploadLabel="File" showMultiple=false divTitle="Upload File" showAccess=true>
         <@_sharedUploadFile>
             <@_singleFileUpload>
@@ -882,40 +882,18 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
         <div class='fileupload-content'>
             <#nested />
-        <#-- XXX: verify logic for rendering this -->
             <#if multipleFileUploadEnabled || resource.hasFiles()>
-                <!-- not sure this is ever used -->
                 <h4>Current ${multipleFileUploadEnabled?string("and Pending Files", "File")}</h4>
 
                 <div class="">
                     <p><span class="label">Note:</span> You can only have <strong><#if !multipleFileUploadEnabled>1 file<#else>${maxUploadFilesPerRecord}
                         files</#if> </strong> per record</p>
                 </div>
-                <table id="uploadFiles" class="files table tableFormat">
-                </table>
-                <table id="files" class="files sortable">
-                    <thead>
-                    <tr class="reorder <#if (fileProxies?size < 2 )>hidden</#if>">
-                        <th colspan=2>Reorder: <span class="link alphasort">Alphabetic</span> | <span class="link" onclick="customSort(this)">Custom</span></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <#list fileProxies as fileProxy>
-                            <#if fileProxy??>
-                                <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
-                            </#if>
-						<#else>
-                        <tr class="noFiles newRow">
-                            <td><em>no files uploaded</em></td>
-                        </tr>
-                        </#list>
-                    </tbody>
-                </table>
             </#if>
         </div>
         <@helptext.confidentialFile />
     </div>
-    </#macro>
+    </#macro> 
     <#macro _singleFileUpload typeLabel="${resource.resourceType.label}">
         <#if !ableToUploadFiles>
             <#if ableToAdjustPermissions?? && !ableToAdjustPermissions>
@@ -968,91 +946,16 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <b>note:</b> your billing acccount is overdrawn. You must add funds to your account before you can add or replace a file.<br/>
             </#if>
         <#else>
-            <div class="row fileupload-buttonbar">
-                <div class="span2">
-                    <!-- The fileinput-button span is used to style the file input field as button -->
-            <span class="btn btn-success fileinput-button btn-block">
-                <i class="icon-plus icon-white"></i>
-                <span class="btn-lbl-singleclick">Add files...</span>
-                <span class="btn-lbl-doubleclick">Double-click to add files ...</span>
-            <input type="file" name="uploadFile" id="fileAsyncUpload" multiple="multiple" class="${inputFileCss}">
-            </span>
-                </div>
-                <!-- The global progress information -->
-                <div class="span5 fileupload-progress fade">
-                    <!-- The global progress bar -->
-                    <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                        <div class="bar" style="width:0%;"></div>
-                    </div>
-                    <!-- The extended global progress information -->
-                    <div class="progress-extended">&nbsp;</div>
-                </div>
-            </div>
-            <!-- The loading indicator is shown during file processing -->
-            <div class="fileupload-loading"></div>
-            <!-- The table listing the files available for upload/download -->
-        </#if>
-        <table id="files" role="presentation" class="table table-striped table-bordered">
-            <tbody id="fileProxyUploadBody" class="files">
-                <#list fileProxies as fileProxy>
-                <#if fileProxy??>
-                    <@_fileProxyRow rowId=fileProxy_index filename=fileProxy.filename filesize=fileProxy.size fileid=fileProxy.fileId action=fileProxy.action versionId=fileProxy.originalFileVersionId proxy=fileProxy />
-                </#if>
-            </#list>
-            </tbody>
-        </table>
-        <div id="cancelledProxies" style="display:none">
+                <#assign uploadConfigId="uploadConfig"/>
+                <script id="uploadConfig" type="application/json">
+                <#noescape>
+                ${fileUploadSettings!''}
+                </#noescape>
+                </script>
 
-        </div>
+			<#include "../../content/resource/vue-file-upload-template.html"/>
+        </#if>
     </div>
-    </#macro>
-    <#macro _fileProxyRow rowId="{ID}" filename="{FILENAME}" filesize="{FILESIZE}" action="ADD" fileid=-1 versionId=-1 proxy=blankFileProxy >
-    <tr id="fileProxy_${rowId}" class="${(fileid == -1)?string('newrow', '')} sortable fade existing-file in">
-
-        <td class="preview">
-        <#--
-                        <#if (proxy.informationResourceFile.latestThumbnail)?has_content>
-                <img src="<@s.url value="/filestore/${proxy.informationResourceFile.latestThumbnail.id?c}/thumbnail"/>">
-            </#if>
-            
-            -->
-        </td>
-        <td class="name">
-        	<#if versionId != -1>
-            <a href="<@s.url value='/filestore/get/${id?c}/${versionId?c}'/>" title="${filename?html}" download="${filename?html}">${filename?html}</a>
-			</#if>
-            <span class="replacement-text"></span>
-        </td>
-        <td class="size"><span>${filesize} bytes</span></td>
-        <#if ableToUploadFiles>
-            <td colspan="2">
-
-                        <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right"
-                        style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
-                <#local val = ""/>
-                <#if (proxy.fileCreatedDate)?has_content>
-                        <#local val = proxy.fileCreatedDate?string["MM/dd/yyyy"]>
-                    </#if>
-                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
-                <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
-
-            </td>
-
-            <td class="delete">
-                <button class="btn btn-danger delete-button" data-type="DELETE" data-url="">
-                    <i class="icon-trash icon-white"></i><span>Delete</span>
-                </button>
-            </td>
-            <td>
-
-                <input type="hidden" class="fileAction" name="fileProxies[${rowId}].action" value="${action}">
-                <input type="hidden" class="fileId" name="fileProxies[${rowId}].fileId" value="${fileid?c}">
-                <input type="hidden" class="fileReplaceName" name="fileProxies[${rowId}].filename" value="${filename}">
-                <input type="hidden" class="fileSequenceNumber" name="fileProxies[${rowId}].sequenceNumber" value="${rowId}">
-
-            </td>
-        </#if>
-    </tr>
     </#macro>
 
 <#-- emit the right-sidebar section.  Note this gets parsed by sitemesh, so more content will go inside.
@@ -1320,125 +1223,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </div>
     </#macro>
 
-<#--emit the 'templates' used to render the parts of the asyc-upload section. The jQuery FileUpload plugin
- builds it's certain elements dynamically  using the Blueimp template library.
- -->
-    <#macro asyncUploadTemplates formId="resourceMetadataForm">
-
-    <!-- The template to display files available for upload (uses tmpl.min.js) -->
-    <script id="template-upload" type="text/x-tmpl">
-{% for (var i=0, file; file=o.files[i]; i++) { %}
-    <tr class="template-upload fade">
-        <td class="preview"><span class="fade"></span></td>
-        <td class="name"><span>{%=file.name%}</span></td>
-        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
-        {% if (file.error) { %}
-            <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
-        {% } else if (o.files.valid && !i) { %}
-            <td>
-                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
-            </td>
-            <td class="start">{% if (!o.options.autoUpload) { %}
-                <button class="btn btn-primary">
-                    <i class="icon-upload icon-white"></i>
-                    <span>Start</span>
-                </button>
-            {% } %}</td>
-        {% } else { %}
-            <td colspan="2"></td>
-        {% } %}
-        <td class="cancel">{% if (!i) { %}
-            <button class="btn btn-warning">
-                <i class="icon-ban-circle icon-white"></i>
-                <span>Cancel</span>
-            </button>
-        {% } %}</td>
-    </tr>
-{% } %}
-
-    </script>
-
-    <#-- The template to display files available for download (uses tmpl.min.js) -->
-    <#-- lets assume we are working with about span5 amount of space width -->
-    <script id="template-download" type="text/x-tmpl">
-{% for (var i=0, file; file=o.files[i]; i++) { %}
-{% var idx = '' + TDAR.fileupload.getRowId();%}
-{% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
-{% var confclass = (document.location.pathname === "/batch/add") ? "" : "confidential-contact-required" ;%}
-{% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
-    <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
-            <td colspan="4">
-                {% if (file.error) { %}
-                <div class="error"><span class="label label-important">Error</span> {%=file.error%}</div>
-                {% } %}
-
-                <label class="control-label">Filename</label>
-                <div class="controls controls-row">
-                    <div class="span5">
-                        <div><em class="replacement-text "></em></div>
-                        <span class="name uneditable-input subtle inpux-xlarge" title="{%=file.name%}">{%=file.name%}</span>
-                        <span class="help-inline">{%=o.formatFileSize(file.size)%}</span>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <label class="control-label">Restriction</label>
-                    <div class="controls">
-        <@s.select id="proxy{%=idx%}_conf" datarestriction="{%=file.restriction%}" theme="simple" name="fileProxies[{%=idx%}].restriction"
-        style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"
-        onchange="TDAR.fileupload.updateFileAction(this)"
-        cssClass="fileProxyConfidential {%=confclass%}"/>
-                    </div>
-
-                    <label class="control-label" for="">Date Created</label>
-                    <div class="controls controls-row">
-                         <div class="span5">
-	                         <div class="input-append">
-	                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="datepicker" placeholder="mm/dd/yyyy" value="{% if (file['year']) { %}{%=file['month']%}/{%=file['day']%}/{%=file['year'] %}{% } %}" data-date-format="mm/dd/yyyy" >
-	                            <span class="add-on"><i class="icon-th"></i></span>
-	                        </div>
-	                         
-                         </div>
-                    </div>
-
-                    <label class="control-label">Description</label>
-                    <div class="controls controls-row">
-                        <div class="span5">
-                            <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
-                        </div>
-                    </div>
-                </div>
-
-            </td>
-        <td style="width:10%">
-
-            {%if (file.fileId) { %}
-            <@_fileuploadButton label="Replace" id="fileupload{%=idx%}" cssClass="replace-file" buttonCssClass="replace-file-button btn btn-small btn-warning btn-block"/>
-            <button type="button" style="display:none; text-align:left" class="btn btn-small btn-warning undo-replace-button btn-block" title="Restore Original File">Cancel</button>
-            {% } %}
-
-
-                <div class="delete">
-                    <button class="btn btn-danger delete-button btn-small btn-block" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}" style="text-align:left ">
-                        <i class="icon-trash icon-white"></i>
-                        <span>Delete</span>
-                    </button>
-                </div>
-            
-
-            <div class="fileProxyFields">
-                <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
-                <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
-                <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
-                <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
-            </div>
-        </td>
-    </tr>
-{% } %}
-
-    </script>
-    </#macro>
-    <#macro _fileuploadButton id="fileuploadButton" name="" label="" cssClass="" buttonCssClass="">
+ <#macro _fileuploadButton id="fileuploadButton" name="" label="" cssClass="" buttonCssClass="">
     <span class="btn fileinput-button ${buttonCssClass}" id="${id}Wrapper" style="width:6em;text-align:left">
     <i class="icon-refresh icon-white"> </i>
     <span>${label}</span>
@@ -1483,7 +1268,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     </#macro>
 
     <#-- emit a repeatrow table of @registeredUserRow controls -->
-    <#macro listMemberUsers >
+    <#macro listMemberUsers includerights=true>
         <#local _authorizedUsers=authorizedMembers />
         <#if !_authorizedUsers?has_content><#local _authorizedUsers=[blankPerson]></#if>
 
@@ -1496,7 +1281,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <#if user??>
                         <div class="controls-row repeat-row" id="userrow_${user_index}_">
                             <div class="span6">
-                                <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false includeRights=true />
+                                <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false includeRights=includerights />
                             </div>
                             <div class="span1">
                                 <@nav.clearDeleteButton id="user${user_index}"  />
@@ -1626,23 +1411,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <#local val = date?string[format]>
         </#if>
         <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" dynamicAttributes={"data-date-format":"${placeholder}"}/>
-    </#macro>
-
-<#--emit x-tmpl template for use when rendering results menu for person autocomplete fields -->
-    <#macro personAutocompleteTemplate>
-    <script id="template-person-autocomplete-li" type="text/x-tmpl">
-    <li class="{%=o.addnew?'addnew':''%}">
-        <a><#-- person-{id} class used below to allow the test autocomplete to work without having access to email addresses -->
-            <div class="person-{%=o.id%}">
-                <span class="name">{%=o.properName%}</span>
-                {% if(o.email)  %}<span class="email">({%=o.email%})</span>{%
-                %}{% if(o.institution && o.institution.name) { %}, <span class="institution">{%=o.institution.name%}</span> {% } %}
-                {% if(o.addnew) { %}<em>Create a new person record</em> {% } %}
-            </div>
-        </a>
-    </li>
-
-    </script>
     </#macro>
 
     <#macro hiddenStartTime value=.now?long>

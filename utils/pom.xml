@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-         <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
+        <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
 
@@ -35,22 +35,8 @@
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.tdar</groupId>
             <artifactId>search</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tdar</groupId>
-            <artifactId>search</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.mojo</groupId>

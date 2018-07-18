@@ -30,7 +30,7 @@ public enum KeywordType implements Localizable {
         return keywordClass;
     }
 
-    public void setKeywordClass(Class<? extends Keyword> keywordClass) {
+    private void setKeywordClass(Class<? extends Keyword> keywordClass) {
         this.keywordClass = keywordClass;
     }
 

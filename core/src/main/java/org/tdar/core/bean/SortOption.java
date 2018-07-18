@@ -75,7 +75,7 @@ public enum SortOption {
         return options;
     }
 
-    public void setLabel(String label) {
+    private void setLabel(String label) {
         this.label = label;
     }
 
@@ -87,7 +87,7 @@ public enum SortOption {
      * @param reversed
      *            the reversed to set
      */
-    public void setReversed(boolean reversed) {
+    private void setReversed(boolean reversed) {
         this.reversed = reversed;
     }
 
@@ -102,7 +102,7 @@ public enum SortOption {
      * @param luceneSortType
      *            the luceneSortType to set
      */
-    public void setLuceneSortType(int luceneSortType) {
+    private void setLuceneSortType(int luceneSortType) {
         this.luceneSortType = luceneSortType;
     }
 
@@ -117,7 +117,7 @@ public enum SortOption {
      * @param context
      *            the context to set
      */
-    public void setContext(Class<? extends Indexable> context) {
+    private void setContext(Class<? extends Indexable> context) {
         this.context = context;
     }
 

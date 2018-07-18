@@ -660,16 +660,17 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
      * 
      * @param ticketId
      * @param path
+     * @return 
      */
-    public void uploadFileToPersonalFilestore(String ticketId, String path) {
-        uploadFileToPersonalFilestore(ticketId, path, true);
+    public int uploadFileToPersonalFilestore(String ticketId, String path) {
+        return uploadFileToPersonalFilestore(ticketId, path, true);
     }
 
     public void addFileProxyFields(int rowNum, FileAccessRestriction restriction, String filename, Long fileId, FileAction action) {
         createInput("hidden", "fileProxies[" + rowNum + "].restriction", restriction.name());
         createInput("hidden", "fileProxies[" + rowNum + "].action", action.name());
         createInput("hidden", "fileProxies[" + rowNum + "].fileId", Long.toString(fileId));
-        createInput("hidden", "fileProxies[" + rowNum + "].filename", FilenameUtils.getName(filename));
+        createInput("hidden", "fileProxies[" + rowNum + "].name", FilenameUtils.getName(filename));
         createInput("hidden", "fileProxies[" + rowNum + "].sequenceNumber", Integer.toString(rowNum));
 
     }
@@ -682,7 +683,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         return uploadFileToPersonalFilestore(ticketId, path, false);
     }
 
-    private int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
+    protected int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
         int code = 0;
         WebClient client = getWebClient();
         String url = getBaseSecureUrl() + "/upload/upload";
@@ -690,6 +691,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
             List<NameValuePair> parms = new ArrayList<NameValuePair>();
             parms.add(nameValuePair("ticketId", ticketId));
+            parms.add(nameValuePair("unfiled", "true"));
             File file = null;
             if (path != null) {
                 file = new File(path);
@@ -700,7 +702,11 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             Page page = client.getPage(webRequest);
             code = page.getWebResponse().getStatusCode();
             logger.debug("errors: {} ; code: {} ; content: {}", assertNoErrors, code, page.getWebResponse().getContentAsString());
-            Assert.assertTrue(assertNoErrors && (code == HttpStatus.OK.value()));
+            if (assertNoErrors) {
+                Assert.assertEquals(code , HttpStatus.OK.value());
+            } else {
+                Assert.assertNotEquals(code , HttpStatus.OK.value());
+            }
             if (file != null) {
                 assertFileSizes(page, Arrays.asList(new File[] { file }));
             }

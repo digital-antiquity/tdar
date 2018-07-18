@@ -33,7 +33,7 @@ import com.amazonaws.regions.Regions;
  */
 public class TdarConfiguration extends AbstractConfigurationFile {
 
-    public static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
+    static final List<String> STOP_WORDS = Arrays.asList("the", "and", "a", "to", "of", "in", "i", "is", "that", "it", "on", "you", "this", "for",
             "but", "with", "are", "have", "be", "at", "or", "as", "was", "so", "if", "out", "not", "like");
     private static final String JIRA_LINK = "issues.tdar.org/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
     private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
@@ -140,9 +140,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         initializeStopWords();
         intializeCouponCodes();
 
-        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
-            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
-        }
+//        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
+//            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
+//        }
 
         File filestoreLoc = new File(getFileStoreLocation());
         if (!filestoreLoc.exists()) {
@@ -456,7 +456,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
      * @return the theme directory
      */
     public String getThemeDir() {
-        String dir = assistant.getStringProperty("app.theme.dir", "/WEB-INF/themes/tdar/");
+        String dir = assistant.getStringProperty("app.theme.dir", "/WEB-INF/");
         if ((dir.startsWith("/") || dir.startsWith("\\")) && !dir.startsWith("/WEB-INF")) {
             dir = dir.substring(1);
         }
@@ -717,6 +717,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public String getContributorAgreementUrl() {
         return assistant.getStringProperty("contributor.url", "http://www.tdar.org/about/policies/contributors-agreement/");
+    }
+
+    public String getPrivacyPolicyUrl() {
+        return assistant.getStringProperty("privacy.url", "http://www.tdar.org/about/policies/privacy-policy/");
     }
 
     public String getTosUrl() {

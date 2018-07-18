@@ -2,7 +2,7 @@
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
 <#import "/WEB-INF/macros/search-macros.ftl" as search>
-<#import "/${config.themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/settings.ftl" as settings>
 <head>
     <#assign title>Browse all ${resourceType.plural} in ${siteAcronym}</#assign>
     <@search.simpleHeaderLinks />

@@ -44,7 +44,7 @@ public enum DocumentSubType implements HasLabel, Localizable {
         return type;
     }
 
-    public void setType(DocumentType type) {
+    private void setType(DocumentType type) {
         this.type = type;
     }
 

@@ -462,7 +462,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     }
 
     public boolean isEditable() {
-        if (getPersistable().isSystemManaged() && !isAdministrator()) {
+        if (getPersistable().isSystemManaged() && !isEditor()) {
             return false;
         }
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());

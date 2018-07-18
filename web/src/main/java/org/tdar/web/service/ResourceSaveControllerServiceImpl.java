@@ -254,20 +254,20 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
         if (textInputFileProxy != null) {
             fileProxiesToProcess.add(textInputFileProxy);
-        } else
+        } else {
 
-        // 2. async uploads for Image or Document or ...
-        if (multipleFileUploadEnabled) {
-            fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
-
-        } else
-        // 3. single file upload (dataset|coding sheet|ontology)
-        // there could be an incoming file payload, or just a metadata change.
-        {
-            logger.debug("uploaded: {} {}", files, filenames);
-            fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess, auth.getItem(), filenames, files, fileProxies);
+            // 2. async uploads for Image or Document or ...
+            if (multipleFileUploadEnabled) {
+                fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(auth.getItem(),fsw.getAccountId(), fileProxies, ticketId);
+    
+            } else
+            // 3. single file upload (dataset|coding sheet|ontology)
+            // there could be an incoming file payload, or just a metadata change.
+            {
+                logger.debug("uploaded: {} {}", files, filenames);
+                fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess, auth.getItem(), filenames, files, fileProxies);
+            }
         }
-
         return fileProxiesToProcess;
     }
 
@@ -286,7 +286,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         if (CollectionUtils.isEmpty(proxies)) {
             return null;
         }
-        logger.debug("handling uploaded files for {}", item);
+        logger.debug("handling uploaded files for {} {}", ticketId,  item);
         validateFileExtensions(proxies, validFileNames, provider);
         logger.debug("Final proxy set: {}", proxies);
         if (CollectionUtils.isEmpty(proxies)) {
@@ -326,7 +326,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         } else {
             // process a new uploaded file (either ADD or REPLACE)
             setFileProxyAction(persistable, singleFileProxy);
-            singleFileProxy.setFilename(uploadedFilesFileNames.get(0));
+            singleFileProxy.setName(uploadedFilesFileNames.get(0));
             singleFileProxy.setFile(uploadedFiles.get(0));
             toProcess.add(singleFileProxy);
         }
@@ -409,27 +409,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         List<ResourceCollection> shares = rcp.getShares();
         List<ResourceCollection> resourceCollections = rcp.getResourceCollections();
 
-        loadEffectiveResourceCollectionsForSave(authWrapper, retainedSharedCollections, retainedListCollections);
-        logger.debug("retained collections:{}", retainedSharedCollections);
-        logger.debug("retained list collections:{}", retainedListCollections);
-        shares.addAll(retainedSharedCollections);
-        resourceCollections.addAll(retainedListCollections);
-
-        if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
-                Permissions.MODIFY_RECORD)) {
-            resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getManagedResourceCollections(),
-                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
-
-            if (!authorizationService.canEdit(authWrapper.getAuthenticatedUser(), authWrapper.getItem())) {
-                // addActionError("abstractResourceController.cannot_remove_collection");
-                logger.error("user is trying to remove themselves from the collection that granted them rights");
-                // addActionMessage("abstractResourceController.collection_rights_remove");
-            }
-        } else {
-            logger.debug("ignoring changes to rights as user doesn't have sufficient permissions");
-        }
-        resourceCollectionService.saveResourceCollections(authWrapper.getItem(), resourceCollections, authWrapper.getItem().getUnmanagedResourceCollections(),
-                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.UNMANAGED);
+        saveRightsAndCollections(authWrapper, rcp, retainedSharedCollections, retainedListCollections, shares, resourceCollections);
 
         if (rcp.getResource() instanceof SupportsResource) {
             SupportsResource supporting = (SupportsResource) rcp.getResource();
@@ -457,6 +437,31 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
 
         return eto;
 
+    }
+
+    private <R extends Resource> void saveRightsAndCollections(AuthWrapper<Resource> authWrapper, ResourceControllerProxy<R> rcp,
+            List<ResourceCollection> retainedSharedCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
+            List<ResourceCollection> resourceCollections) {
+        loadEffectiveResourceCollectionsForSave(authWrapper, retainedSharedCollections, retainedListCollections);
+        logger.debug("retained collections:{}", retainedSharedCollections);
+        logger.debug("retained list collections:{}", retainedListCollections);
+        shares.addAll(retainedSharedCollections);
+        resourceCollections.addAll(retainedListCollections);
+
+        if (authorizationService.canDo(authWrapper.getAuthenticatedUser(), authWrapper.getItem(), InternalTdarRights.EDIT_ANY_RESOURCE,
+                Permissions.MODIFY_RECORD)) {
+            resourceCollectionService.saveResourceCollections(authWrapper.getItem(), shares, authWrapper.getItem().getManagedResourceCollections(),
+                    authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.MANAGED);
+
+            // if there are no collections that you can edit and you've removed yourself
+            if (!authorizationService.canEdit(authWrapper.getAuthenticatedUser(), authWrapper.getItem()) && CollectionUtils.isEmpty(authWrapper.getItem().getManagedResourceCollections())) {
+                logger.error("user is trying to remove themselves from the collection that granted them rights");
+            }
+        } else {
+            logger.debug("ignoring changes to rights as user doesn't have sufficient permissions");
+        }
+        resourceCollectionService.saveResourceCollections(authWrapper.getItem(), resourceCollections, authWrapper.getItem().getUnmanagedResourceCollections(),
+                authWrapper.getAuthenticatedUser(), rcp.shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, CollectionResourceSection.UNMANAGED);
     }
 
     /*
@@ -636,7 +641,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
             resource.setPublisher(null);
         }
 
-        if (CONFIG.getCopyrightMandatory() && copyrightHolderProxies != null) {
+        if (copyrightHolderProxies != null) {
             ResourceCreator transientCreator = copyrightHolderProxies.getResourceCreator();
             logger.debug("setting copyright holder to:  {} ", transientCreator);
             resource.setCopyrightHolder(entityService.findOrSaveCreator(transientCreator.getCreator()));

@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -81,7 +82,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testBlankExceedingRows() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "Pundo faunal remains.xls"), 509);
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), TestConstants.PUNDO_FAUNAL_REMAINS_XLS), 509);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
         Set<DataTable> dataTables = converter.getDataTables();
@@ -108,7 +109,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testStdeva() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "stdev.xlsx"), 520);
+        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), TestConstants.STDEV_DATASET), 520);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         String msg = null;
         try {

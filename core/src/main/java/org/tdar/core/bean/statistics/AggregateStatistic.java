@@ -98,7 +98,7 @@ public class AggregateStatistic extends AbstractPersistable {
             return label;
         }
 
-        public void setLabel(String label) {
+        private void setLabel(String label) {
             this.label = label;
         }
 

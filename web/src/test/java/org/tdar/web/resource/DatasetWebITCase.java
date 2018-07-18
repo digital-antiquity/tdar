@@ -171,7 +171,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         docValMap.put("fileProxies[0].restriction", FileAccessRestriction.CONFIDENTIAL.name());
         uploadDataset();
 
-        assertTextPresentInPage(TEST_DATASET_NAME);
+        assertTextPresentInCode(TEST_DATASET_NAME);
         Long datasetId = extractTdarIdFromCurrentURL();
         Long ontologyId = testOntologyCreation();
         Long codingSheetId = null;

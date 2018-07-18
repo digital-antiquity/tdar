@@ -15,9 +15,9 @@ public class ResourceCreatorRoleTestCase {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final int ROLE_COUNT_ALL = 17; // counting deprecated
-    private static final int ROLE_COUNT_PERSON = 12; // not counting deprecated
-    private static final int ROLE_COUNT_INSTITUTION = 11; // NOT counting deprecated
+    private static final int ROLE_COUNT_ALL = 18; // counting deprecated
+    private static final int ROLE_COUNT_PERSON = 13; // not counting deprecated
+    private static final int ROLE_COUNT_INSTITUTION = 12; // NOT counting deprecated
 
     @Test
     public void testGetAllRoles() {

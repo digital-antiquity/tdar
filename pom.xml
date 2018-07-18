@@ -34,9 +34,9 @@
 
 
     <properties>
-        <lucene.version>7.2.1</lucene.version>
+        <lucene.version>7.3.1</lucene.version>
         <hibernate.version>5.2.17.Final</hibernate.version>
-        <spring.framework.version>5.0.6.RELEASE</spring.framework.version>
+        <spring.framework.version>5.0.7.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>42.2.1</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
         <aws.java.version>1.11.286</aws.java.version>
@@ -70,7 +70,6 @@
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
-        <apache.cxf.version>3.2.4</apache.cxf.version>
         <poi.version>3.17</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
@@ -78,15 +77,15 @@
         <owlapi.version>5.1.0</owlapi.version>
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
-        <geotools.version>19.0</geotools.version>
-        <tika.version>1.16</tika.version>
-        <rome.version>1.7.4</rome.version>
-        <jackson.version>2.8.10</jackson.version>
-        <pdfbox.version>2.0.9</pdfbox.version>
+        <geotools.version>19.1</geotools.version>
+        <tika.version>1.18</tika.version>
+        <rome.version>1.10.0</rome.version>
+        <jackson.version>2.9.5</jackson.version>
+        <pdfbox.version>2.0.11</pdfbox.version>
         <bouncycastle.version>1.58</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
         <http-client.version>4.5.5</http-client.version>
-        <jackcess.version>2.1.10</jackcess.version>
+        <jackcess.version>2.1.12</jackcess.version>
         <guava.version>23.6-jre</guava.version>
         <jt-utils.version>1.4.0</jt-utils.version>
         <commons-io.version>2.6</commons-io.version>
@@ -103,10 +102,10 @@
         <hamcrest.version>1.3</hamcrest.version>
         <jetty.version>9.4.9.v20180320</jetty.version>
         <struts2.version>2.5.16</struts2.version>
-        <jersey.version>2.26</jersey.version>
+        <jersey.version>2.27</jersey.version>
         <icu4j.version>58.2</icu4j.version>
-        <htmlunit.version>2.29</htmlunit.version>
-        <selenium.version>3.11.0</selenium.version>
+        <htmlunit.version>2.31</htmlunit.version>
+        <selenium.version>3.13.0</selenium.version>
         <dbcp.version>2.2.0</dbcp.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
@@ -438,7 +437,7 @@
             <dependency>
                 <groupId>org.apache.pdfbox</groupId>
                 <artifactId>jbig2-imageio</artifactId>
-                <version>3.0.0</version>
+                <version>3.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -458,12 +457,12 @@
                 <version>${bouncycastle.version}</version>
                 <!-- LICENSE: MIT -->
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.locationtech.jts/jts-core -->
             <dependency>
-                <groupId>com.vividsolutions</groupId>
-                <artifactId>jts</artifactId>
-                <version>1.13</version>
+                <groupId>org.locationtech.jts</groupId>
+                <artifactId>jts-core</artifactId>
+                <version>1.15.0</version>
             </dependency>
-
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-hibernate5</artifactId>
@@ -619,11 +618,6 @@
             <!-- LICENSE: ECLIPSE -->
         </dependency>
         <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-client</artifactId>
-            <version>${apache.cxf.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
             <version>1.5</version>
@@ -651,11 +645,6 @@
            <groupId>org.glassfish</groupId>
            <artifactId>javax.el</artifactId>
            <version>3.0.1-b08</version>
-        </dependency>
-        <dependency>
-            <groupId>org.knowm.xchart</groupId>
-            <artifactId>xchart</artifactId>
-            <version>${xchart.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -700,15 +689,23 @@
             <version>${slf4j.version}</version>
             <!-- LICENSE: MIT -->
         </dependency>
-        <!-- <dependency> HIBERNATE-SPRING - LOGGER (log4j) <groupId>org.slf4j</groupId> 
-            <artifactId>slf4j-log4j12</artifactId> <version>${slf4j.version}</version> 
-            </dependency> -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>javax.mail-api</artifactId>
+            <version>1.6.0</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
         <dependency>
             <groupId>com.mattbertolini</groupId>
             <artifactId>liquibase-slf4j</artifactId>
             <version>2.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -737,157 +734,7 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context-support</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <!-- needed by spring for @Transactional calls -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>${cglib.version}</version>
-            <!-- LICENSE: APACHE 1.1 -->
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
-            <version>1.6.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>activation</artifactId>
-                    <groupId>javax.activation</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>commons-dbutils</groupId>
-            <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${dbcp.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <!-- hibernate and JPA persistence -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.logging</groupId>
-                    <artifactId>jboss-logging</artifactId>
-                </exclusion>
-            </exclusions>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>3.3.1.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-ehcache</artifactId>
-            <version>${hibernate.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-c3p0</artifactId>
-            <version>${hibernate.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>c3p0</artifactId>
-                    <groupId>com.mchange</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.mchange</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>0.9.5.2</version>
-        </dependency>
 
-        <!-- <dependency> -->
-            <!-- this attempts to use the META-INF/ configuraiton for the 
-                right logging source; this allows us to pipe hibernate into slf4j -->
-            <!-- <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>3.2.0.Final</version>
-        </dependency> -->
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
-            <version>6.0.9.Final</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jboss.logging</groupId>
-                    <artifactId>jboss-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml</groupId>
-                    <artifactId>classmate</artifactId>
-                </exclusion>
-            </exclusions>
-            <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
     </dependencies>
     <profiles>
         <profile>

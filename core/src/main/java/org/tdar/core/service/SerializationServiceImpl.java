@@ -40,15 +40,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxies;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.XmlLoggable;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.service.event.EventBusResourceHolder;
@@ -60,6 +63,7 @@ import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
@@ -82,14 +86,12 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
 
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     private boolean useTransactionalEvents = true;
+    private Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class, FileProxies.class, FileProxy.class };
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private JaxbPersistableConverter persistableConverter;
-    
-    @Autowired
-    private GenericDao genericDao;
 
     @Autowired
     private JaxbResourceCollectionRefConverter collectionRefConverter;
@@ -99,10 +101,6 @@ public class SerializationServiceImpl implements TxMessageBus<LoggingObjectConta
         jaxbClasses = ReflectionHelper.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
 
-    @Transactional(readOnly=true)
-    public void markReadOnly(Persistable persistable) {
-        genericDao.markReadOnly(persistable);
-    }
     /*
      * (non-Javadoc)
      * 
