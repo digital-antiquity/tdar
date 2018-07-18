@@ -74,9 +74,9 @@
     </div>
 </div> -->
 
-<section id="pricing">
-    <div class="container d-none d-lg-block mb-4">
-        <div class="row">
+<section class = "" id="pricing">
+    <div class="container mb-4">
+        <div class="row d-none d-lg-flex text-center justify-content-center">
             <div class="col-lg-1">
                 <a href="<@s.url value="/document"/>">
                     <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
@@ -123,8 +123,6 @@
                 </a>
             </div>
         </div>
-
-        <hr>
     </div>
 
     <div class="container d-block d-lg-none">

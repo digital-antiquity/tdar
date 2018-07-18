@@ -744,33 +744,35 @@ View freemarker macros
 
 <#--emit the citation section of a view page (including map depicting bounding box, if bounding box defined) -->
     <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
-    <div class="item <#if count==0>active</#if>">
+    <div class="carousel-item <#if count==0>active</#if>">
         <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${resource.detailUrl}"/></#local>
-        <div class="row-fluid">
-            <div class="col-lg-8 col-md-8 col-sm-8">
-                <p class="title">
-                    <a target="_top" href="${url}">${resource.title} </a><br>
-                    <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
-                        <br></#if>
-                </p>
+        <div class="row">
+            <div class="col-8">
+                <div class = "p-3">
+                    <h4 class="title">
+                        <a target="_top" href="${url}">${resource.title} </a><br>
+                        <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
+                            <br></#if>
+                    </h4>
 
-                <p><@common.truncate resource.description 150 /></p>
+                    <p class = "lead"><@common.truncate resource.description 150 /></p>
 
-                <p>
-                    <a target="_top" href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
-                    Resources</a>
-                </p>
+                    <p class = "lead">
+                        <a target="_top" href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
+                        Resources</a>
+                    </p>
                 </div>
-            <div class="col-lg-4 col-md-4 col-sm-4">
+            </div>
+            <div class="col-4">
                 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-                    <img title="map" alt="map" class="" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
+                    <img title="map" alt="map" class="img-fluid h-100" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
                 <#else>
                     <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
                 </#if>
             </div>
         </div>
-
     </div>
+
     </#macro>
     <#function _staticGoogleMapUrl boundingBox apikey>
         <#local bb=boundingBox>
@@ -807,25 +809,56 @@ View freemarker macros
 
 <#macro featured header="Featured Content" colspan="12" resourceList=featuredResources>
 <#local span = "col-lg-${colspan} col-md-${colspan} col-sm-${colspan}">
-<div class="tdar-slider slider ${span}">
+<#-- <div class="tdar-slider slider ${span}">
     <h3>${header}</h3>
 
     <div id="slider" class="carousel slide">
-        <!-- Carousel items -->
+        <!-- Carousel items --><#--
         <div class="carousel-inner">
             <#list resourceList as featuredResource>
-        <#if featuredResource?has_content>
-                <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
-            </#if>
-        </#list>
+                <#if featuredResource?has_content>
+                    <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
+                </#if>
+            </#list>
         </div>
-        <!-- Carousel nav -->
+        <!-- Carousel nav --><#--
     <#if (resourceList?size > 1) >
         <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>
         <a class="carousel-control right" href="#slider" data-slide="next">&rsaquo;</a>
     </#if>
     </div>
+</div>-->
+
+
+<div class="tdar-slider slider w-100 h-100">
+    <h3>${header}</h3>
+
+    <div id="slider" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#slider" data-slide-to="0" class="active"></li>
+        <li data-target="#slider" data-slide-to="1"></li>
+        <li data-target="#slider" data-slide-to="2"></li>
+        <li data-target="#slider" data-slide-to="3"></li>
+        <li data-target="#slider" data-slide-to="4"></li>
+      </ol>
+      <div class="carousel-inner">
+        <#list resourceList as featuredResource>
+            <#if featuredResource?has_content>
+                <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
+            </#if>
+        </#list>
+      </div>
+      <a class="carousel-control-prev" href="#slider" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#slider" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
 </div>
+
 </#macro>
 
 </#escape>

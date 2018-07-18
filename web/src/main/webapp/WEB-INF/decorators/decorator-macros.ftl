@@ -15,9 +15,7 @@
             <#if (authenticatedUser??) >
                 <p id="welcome-menu" class="welcome  screen ">
                     <@s.text name="menu.welcome_back"/> 
-                        <a href="">${authenticatedUser.properName}
-                        <i class="caret drop-down"></i>
-                    </a>
+                        ${authenticatedUser.properName}
                 </p>
             <#else>
                 <p><a href="/login">Log In</a> or <a href="/account/new">Sign Up</a></p>
@@ -181,7 +179,7 @@
 </a>
 </p> -->
 
-<div class = "container">
+<#-- <div class = "container">
   <div class="alert alert-primary alert-dismissible fade show" role="alert">
     <div class="welcome-drop  screen ">
 
@@ -215,7 +213,9 @@
       </#if>
 
     </div>
-    </#if>
+ -->    </#if>
+
+
       <div class="collapse navbar-collapse" id="tdarNavMenu">
           <ul class="navbar-nav ml-auto">
               <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/saa/">SAA</a></li>
@@ -238,9 +238,9 @@
               </li>
           </ul>
       </div>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+<#--       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
-      </button>
+      </button> -->
   </div>
 </div>
 
