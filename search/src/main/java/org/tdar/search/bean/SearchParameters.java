@@ -32,6 +32,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.AnnotationQueryPart;
 import org.tdar.search.query.part.ContentQueryPart;
+import org.tdar.search.query.part.DataValueQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
@@ -99,7 +100,8 @@ public class SearchParameters {
     private List<String> descriptions = new ArrayList<>();
     private List<String> contents = new ArrayList<>();
     private List<String> filenames = new ArrayList<>();
-
+    private List<DataValue> dataValues = new ArrayList<>();
+    
     private boolean join = false;
     private ResourceCreatorProxy creatorOwner;
     private Set<ResourceCreatorRole> creatorOwnerRoles = new HashSet<>();
@@ -331,6 +333,11 @@ public class SearchParameters {
                     support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
         }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
+        if (CollectionUtils.isNotEmpty(dataValues)) {
+            for (DataValue val : dataValues)  {
+                queryPartGroup.append(new DataValueQueryPart(val));
+            }
+        }
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, support.getText("searchParameters.description"), getOperator(),
                 this.getDescriptions()));
@@ -720,6 +727,14 @@ public class SearchParameters {
 
     public void setActionMessages(List<String> actionMessages) {
         this.actionMessages = actionMessages;
+    }
+
+    public List<DataValue> getDataValues() {
+        return dataValues;
+    }
+
+    public void setDataValues(List<DataValue> dataValues) {
+        this.dataValues = dataValues;
     }
 
 }
