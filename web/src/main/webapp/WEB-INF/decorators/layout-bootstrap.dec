@@ -72,7 +72,58 @@
     
     <script src="${staticHost}/includes/jquery-ui-${jquery_ui_version}.custom/jquery-ui.min.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
-    <#include "/${config.themeDir}/head.dec" />
+    
+    <meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
+<meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
+<meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
+<Meta name = "baidu-site-verification" content = "QBf6pGiSwd" />
+
+<link rel='shortcut icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
+<link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
+
+<#if !(test!false)>
+<script type="text/javascript">
+    (function(d) {
+        var config = {
+                    kitId: 'czp6njc',
+                    scriptTimeout: 3000
+                },
+                h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(
+                        /\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement(
+                        "script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";
+                        tk.src='//use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;
+                        f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+    })(document);
+</script>
+</#if>
+<style>
+    @media screen {
+        /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
+        h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+            font-family: "soleil", sans-serif !important;
+        }
+
+        #home .news li, .cols p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+            font-family: "ff-tisa-web-pro", serif !important;
+        }
+
+    }
+
+    /* for typekit to prevent flash of unstyled content */
+    .wf-loading {
+        font-family: "helvetica";
+        visibility: hidden;
+    }
+
+    .wf-active {
+        visibility: visible;
+    }
+</style>
+    
+    
     <#if whiteLabelCollection??>  
         <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
     </#if>
@@ -267,7 +318,68 @@ ${head}
     
     <footer>
         <div class="container">
-            <#include "/${config.themeDir}/footer.dec" />
+
+<div class="row  screen">
+    <div class="span3">
+        <h4>About</h4>
+        <ul>
+            <li><a href="http://www.tdar.org/news/">News</a></li>
+            <li><a href="http://www.tdar.org/about/staff/">Our Team</a></li>
+            <li><a href="http://www.digitalantiquity.org/">Organization</a></li>
+            <li><a href="http://www.tdar.org/about/contact-us">Contact Us</a></li>
+            <li><a href="http://www.tdar.org/about/history/">History</a></li>
+            <li><a href="http://www.tdar.org/news/tdar-software-update-in-situ/">Current Version of tDAR</a></li>
+        </ul>
+    </div>
+    <div class="span3">
+        <h4>Use</h4>
+        <ul>
+            <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li>
+            <li><a href="http://www.tdar.org/about/help/">Help &amp; Tutorials</a></li>
+            <li><a href="http://www.tdar.org/about/policies/">Policies</a></li>
+            <li><a href="http://www.tdar.org/why-tdar/contribute/">Contributing Resources to tDAR</a></li>
+            <li><a href="http://www.tdar.org/about/pricing/">Pricing</a></li>
+            <li><a href="http://www.tdar.org/why-tdar/compliance/">Compliance</a></li>
+        </ul>
+    </div>
+    <div class="span3">
+        <h4>Contact</h4>
+        <ul>
+            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>
+            </li>
+            <li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
+            <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
+            <li><a href="http://instagram.com/digitalantiquity">Follow @digitalantiquity on Instagram</a></li>
+
+        </ul>
+    </div>
+    <div class="span3">
+        <h4>Start Digging</h4>
+        <ul>
+            <li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
+            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+            <li><a href="<@s.url value="/resource/add"/>">Start a project &amp; add data</a></li>
+            <li><a href="<@s.url value="/login"/>">Log In</a></li>
+            <li><a href="<@s.url value="/account/new"/>">Sign Up</a></li>
+        </ul>
+
+    </div>
+</div>
+<div class="row  screen" id="copyright">
+    <p class="copyright-notice span12">
+
+        tDAR (the Digital Archaeological Record) is the digital repository of the <a href="http://www.digitalantiquity.org/">Center for Digital Antiquity</a>, 
+        a collaborative organization and university Center at <a href="http://www.asu.edu">Arizona State University</a>.
+        Digital Antiquity extends our knowledge of the human past and improves the management of our cultural heritage by 
+        permanently preserving digital archaeological data and supporting their discovery, access, and reuse. Digital Antiquity and tDAR are and have
+        been supported by a number of organizations, including the <a href="http://www.mellon.org">Andrew W. Mellon Foundation</a>, the 
+        <a href="http://www.nsf.gov">National Science Foundation</a>, and the <a href="http://www.neh.gov">National Endowment for the Humanities</a>.  A
+        more complete set of acknowledgements are provided <a href="http://www.tdar.org/about/acknowledgements">here</a>.
+        <br/><br/>
+        Copyright &copy; 2017 Digital Antiquity. <a href="/credit">Design Credits</a>.
+    </p>
+</div>
+
             <div>
                 <p>
                     <small>
@@ -308,7 +420,12 @@ ${head}
         </script>
     </#if>
 
-    <#import "/${config.themeDir}/settings.ftl" as settings />
+<!-- colors for bar charts -->
+<!-- colors for homepage map -->
+<#assign mapColors = ["ebd790","D6B84B","C3AA72","A09D5B","909D5B", "909D5B","DC7612","DC5000","BD3200","BD3200","660000"] />
+
+<#assign helptext = {"name":"mouse", "price":50}>
+
 <script id="c3colors">
  [<#list config.barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
 </script>
@@ -322,7 +439,19 @@ ${head}
 
     <!-- BEGIN-TDAR-FOOTER -->
     
-    <#include "/${config.themeDir}/sub-footer.dec" />
+<div class="container"  style="margin-top:10px;margin-bottom:10px">
+<div class="row">
+    <div class="span12" id="foothumb">
+        <a href="http://www.asu.edu"><img src="/images/logos/asu_veritcal.png" class="image ht"  title="Arizona State University" alt="Arizona State University" /></a>
+        <a href="http://www.mellon.org"><img src="/images/logos/Mellon.png" class="image ht" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a>
+        <a href="http://www.nsf.gov"><img src="/images/logos/nsf.jpg" class="image ht" title="National Science Foundation" alt="National Science Foundation" /></a>
+        <a href="http://www.neh.gov"><img src="/images/logos/neh_logo_stckd.jpg" class="image ht" title="National Endowment for the Humanities" alt="National Endowment for the Humanities" /></a>
+        <a href="http://www.saa.org"><img src="/images/logos/saa-small.png" class="image ht" title="Society for American Archaeology" alt="Society for American Archaeology" /></a>
+        <a href="http://www.archaeological.org"><img src="/images/logos/aia.png" class="image ht" title="Archaeological Institute of America" alt="Archaeological Institute of America" /></a>
+            <span class="stretch"></span>
+    </div>
+</div>
+</div>
 
 </body>
 </html>

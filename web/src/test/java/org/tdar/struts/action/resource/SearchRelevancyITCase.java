@@ -73,7 +73,7 @@ public class SearchRelevancyITCase extends AbstractControllerITCase {
 
     @Before
     // create the necessary information resources needed for our test
-    public void prepareInformationResources() throws TdarActionException {
+    public void prepareInformationResources() throws Exception {
 
         // prep the search controller
         searchIndexService.purgeAll();
@@ -105,7 +105,7 @@ public class SearchRelevancyITCase extends AbstractControllerITCase {
     // assert title match appears before keywordmatch, and keywordmatch before docmatch and docmatch
     @Test
     @Rollback
-    public void testLocationOfPhraseRelevancy() throws IOException, TdarActionException {
+    public void testLocationOfPhraseRelevancy() throws Exception {
         prepareInformationResources();
         runIndex();
         AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);

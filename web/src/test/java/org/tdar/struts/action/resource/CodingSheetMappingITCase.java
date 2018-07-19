@@ -154,7 +154,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testDegenerateCodingSheetWithTabs() throws IOException, TdarActionException {
+    public void testDegenerateCodingSheetWithTabs() throws Exception {
         setIgnoreActionErrors(true);
         CodingSheet codingSheet = setupAndLoadResource("tab_as_csv.csv", CodingSheet.class);
         assertEquals(FileStatus.PROCESSING_ERROR, codingSheet.getFirstInformationResourceFile().getStatus());
@@ -163,7 +163,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    public void testDoubleCoding() throws TdarActionException {
+    public void testDoubleCoding() throws Exception {
         CodingSheet codingSheet = setupAndLoadResource(DOUBLE_CODING, CodingSheet.class);
         Dataset dataset = setupAndLoadResource(DOUBLE_DATASET, Dataset.class);
         DataTable firstTable = dataset.getDataTables().iterator().next();

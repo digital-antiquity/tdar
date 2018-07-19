@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>17.0.0-QUARTZ</version>
+        <version>18.0.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <!-- 3rd party dependencies and libraries -->
@@ -56,6 +56,14 @@
             <artifactId>lucene-core</artifactId>
             <version>${lucene.version}</version>
         </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/org.locationtech.jts/jts-core -->
+        <dependency>
+            <groupId>org.locationtech.jts</groupId>
+            <artifactId>jts-core</artifactId>
+            <version>1.15.0</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-analyzers-common</artifactId>

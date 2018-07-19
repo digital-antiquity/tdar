@@ -140,9 +140,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         initializeStopWords();
         intializeCouponCodes();
 
-        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
-            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
-        }
+//        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
+//            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
+//        }
 
         File filestoreLoc = new File(getFileStoreLocation());
         if (!filestoreLoc.exists()) {
@@ -456,7 +456,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
      * @return the theme directory
      */
     public String getThemeDir() {
-        String dir = assistant.getStringProperty("app.theme.dir", "/WEB-INF/themes/tdar/");
+        String dir = assistant.getStringProperty("app.theme.dir", "/WEB-INF/");
         if ((dir.startsWith("/") || dir.startsWith("\\")) && !dir.startsWith("/WEB-INF")) {
             dir = dir.substring(1);
         }

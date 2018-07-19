@@ -30,7 +30,8 @@ public enum MeasurementUnit implements HasLabel, Localizable {
             "l"),
     DEGREE_LATITUDE("degree lat/long", "deg"),
     PARTS_PER_MILLION("parts per million", "ppm"),
-    YEAR("year", "year");
+    YEAR("year", "year"),
+    OTHER("other", "other");
 
     private String shortName;
     private String fullName;

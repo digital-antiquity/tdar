@@ -8,8 +8,9 @@ import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.GeoRssMode;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
-@JsonAutoDetect
+@JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
 public class LatitudeLongitudeBoxWrapper implements Serializable {
 
     private static final long serialVersionUID = 9175448938321937035L;
