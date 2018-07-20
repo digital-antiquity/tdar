@@ -124,8 +124,6 @@
         visibility: visible;
     }
 </style>
-
-
     <#if whiteLabelCollection??>  
         <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
     </#if>
@@ -187,8 +185,6 @@ ${head}
     <div class="ribbon-green">ALPHA</div>
     </#if>
     <@header.outdatedBrowserWarning />
-
-    
         <header>
             <@dec.layout_header />
         </header>
@@ -201,7 +197,6 @@ ${head}
             <@wdec.searchHeader />
             <div class="container">
         </#if>
-
 <#--         <@dec.subnav />  -->
              <!-- BEGIN-TDAR-CONTENT -->
 

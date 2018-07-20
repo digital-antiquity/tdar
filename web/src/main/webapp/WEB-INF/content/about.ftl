@@ -219,21 +219,21 @@
 <br/>
 <hr />
 <div class="row">
-    <div class="col-lg-6 col-md-6 col-sm-6">
+    <div class="col-12 col-md-6">
 		<#if featuredCollection?has_content>
             <@commonr.featuredCollection featuredCollection />
 		<#else>
-<h3>Getting Started with ${siteAcronym}</h3>
-<ul>
-    <li><a href="${config.documentationUrl}">a tutorial that can help you get started</a>.</li>
-    <li><a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
-    <li><a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
-    <li><a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
-</ul>
-<!--    <a href="<@s.url value="/register"/>" class="button">Register</a> or <a href="<@s.url value="/login"/>" class="button">Log in</a> -->
+        <h3>Getting Started with ${siteAcronym}</h3>
+        <ul class = "list-group list-group-flush">
+            <li class = "list-group-item" ><a href="${config.documentationUrl}">a tutorial that can help you get started</a>.</li>
+            <li class = "list-group-item" ><a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
+            <li class = "list-group-item" ><a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
+            <li class = "list-group-item" ><a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
+        </ul>
+        <!--    <a href="<@s.url value="/register"/>" class="button">Register</a> or <a href="<@s.url value="/login"/>" class="button">Log in</a> -->
 		</#if>
     </div>
-    <div class="col-lg-6 col-md-6 col-sm-6">
+    <div class="col-md-6">
         <@commonr.resourceBarGraph />
     </div>
 </div>
