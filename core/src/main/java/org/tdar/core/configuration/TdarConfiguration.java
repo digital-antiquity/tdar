@@ -456,7 +456,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
      * @return the theme directory
      */
     public String getThemeDir() {
-        String dir = assistant.getStringProperty("app.theme.dir", "/WEB-INF/themes/tdar/");
+        String dir = assistant.getStringProperty("app.theme.dir", "/WEB-INF/");
         if ((dir.startsWith("/") || dir.startsWith("\\")) && !dir.startsWith("/WEB-INF")) {
             dir = dir.substring(1);
         }
