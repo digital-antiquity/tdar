@@ -1,3 +1,4 @@
+
 (function (console, window) {
     'use strict';
 
@@ -166,7 +167,6 @@
         }
     };
 
-
     /**
      * Define dummy console + log methods if not defined by browser.
      */
@@ -182,6 +182,11 @@
     console.warn = console.warn || console.log;
     console.debug = console.debug || console.log;
     console.table = console.table || console.log;
-
-
+    
 })(console, window);
+
+
+module.exports = {
+    TDAR : TDAR
+}
+

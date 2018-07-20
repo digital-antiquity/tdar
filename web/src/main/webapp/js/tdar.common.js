@@ -2,8 +2,8 @@
  * tdar.common.js
  */
 
+import TDAR from 'js/tdar.core';
 import tmpl from 'blueimp-tmpl';//require('script-loader!blueimp-tmpl/js/tmpl.js')
-
 
 /*
  * $Id$

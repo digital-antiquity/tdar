@@ -9,7 +9,8 @@
     "build": "webpack",
     "webpack-dev": "npm run webpack --config webpack.dev.js",
     "webpack-server": "webpack-dev-server --watch --https --port 9000 --mode development --content-base src/main/webapp -d",
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "convert": "npm run webpack --config webpack-convert.config.js"
   },
   "keywords": [],
   "author": "",

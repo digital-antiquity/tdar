@@ -1,6 +1,7 @@
+import "jquery";
+
 TDAR.validate = (function($, ctx, TDAR) {
     "use strict";
-
 
     /**
      * Default settings for form validation in tDAR forms
@@ -15,6 +16,7 @@ TDAR.validate = (function($, ctx, TDAR) {
             $(element).addClass("error");
             $(element).closest("div.control-group").addClass("error");
         },
+        
         unhighlight: function (element, errorClass, validClass) {
             $(element).trigger("unhighlight", [errorClass, validClass]);
             $(element).removeClass("error");
@@ -24,9 +26,11 @@ TDAR.validate = (function($, ctx, TDAR) {
                 $controlGroup.removeClass("error");
             }
         },
+        
         showErrors: function (errorMap, errorList) {
             this.defaultShowErrors();
         },
+        
         //send validation errors to the server  TODO: cap the total number of errors
         invalidHandler: function (event, validator) {
             var form = event.target;
@@ -36,6 +40,7 @@ TDAR.validate = (function($, ctx, TDAR) {
             var totalErrors = $form.data("totalErrors") || 0;
 
             submitCount++;
+           
             //cap the included errors, but show the correct total number of errors
             totalErrors += errors.length;
             $form.data("submitCount", submitCount).data("totalErrors", totalErrors);
