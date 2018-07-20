@@ -304,7 +304,7 @@
                   <div class="card-body">
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
                       <h5 class="card-title">Upload Resources</h5>
-                      <p class="card-text">Contribute documents, data sets , images, and other critical archaeological materials.</p>
+                      <p class="card-text">Contribute documents, datasets, images, and other critical archaeological materials.</p>
                       <a href="#" class="btn btn-secondary">Learn More</a>
                   </div>
               </div>
