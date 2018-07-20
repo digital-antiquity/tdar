@@ -149,7 +149,7 @@
             </div>
         </div>
         <#if config.payPerIngestEnabled >
-            <div class="col-lg-4 text-center">
+            <div class="col-lg-4 text-center my-4">
                 <a href="<@s.url value="/cart/add"/>" class="btn btn-secondary btn-block">tDAR Pricing Information</a>
             </div>
         </#if>
