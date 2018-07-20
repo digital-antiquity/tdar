@@ -27,6 +27,13 @@ input[autocomplete="off"]::-webkit-contacts-auto-fill-button {
 */
 
 
+body.responsive-desktop br.responsive-large-desktop {
+    display:none;
+}
+
+body.responsive-tablet br.responsive-desktop {
+    display:none;
+}
 
 .fileinput-button input {
     cursor: pointer;

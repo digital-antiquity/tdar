@@ -35,7 +35,7 @@
                     <div class=" iwell">
                     <div>
                     <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
-                    Use documents to archive reports, books, PDFs, and other textual materials.
+                    Use <b>Documents</b> to archive reports, books, PDFs, and other textual materials.
                       <p class="center"><a href="/document/add" class="button">Upload</a></p>
                       </div>
                       </div>
@@ -44,7 +44,7 @@
                     <div class=" iwell">
                 <div>
                     <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
-                    Use datasets for data tables, Excel, Access and other tabular data files.
+                    Use <b>Datasets</b> for data tables, Excel, Access and other tabular data files.<br class="responsive-desktop"/><br class="responsive-desktop"/>
                       <p class="center"><a href="/dataset/add" class="button">Upload</a></p>
                 </div>
                 </div>
@@ -53,7 +53,7 @@
                     <div class=" iwell">
                 <div>
                     <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
-                    Use images for drawings, photographs, JPEG, TIFF, and other image files.
+                    Use <b>Images</b> for drawings, photographs, JPEG, TIFF, and other image files.<br/><br/>
                      <p class="center"><a href="/image/add" class="button">Upload</a></p>
                 </div>
                 </div>
@@ -62,7 +62,7 @@
                     <div class=" iwell">
                 <div>
                     <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
-                    Have a 3D scan, a GIS file, or want to create a coding sheet, ontology, or project.
+                    Have a <b>3D Scan</b>, <b>GIS File</b>, or want to create a <b>Coding Sheet</b>, <b>Ontology</b>, or <b>Project</b>?
                      <p class="center"><a href="/contribute" class="button">Upload</a></p>
                 </div>
                 </div>
@@ -76,7 +76,7 @@
                     <div class="iwell">
                         <div>
                             <svg class="svgicon svg-small black  pull-left" style="margin-right: 5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-                            Use a collection organize your resources and manage permissions.
+                            Use <b>Collections</b> organize your resources and manage permissions.<br class="responsive-large-desktop"/><br class="responsive-large-desktop"/>
                              <p class="center"><a href="/collection/add" class="button">Create</a></p>
                         </div>
                     </div>

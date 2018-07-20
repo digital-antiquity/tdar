@@ -16,8 +16,7 @@ public enum MeasurementUnit implements HasLabel, Localizable {
     MILLIGRAM("milligram", "mg"),
     MICROGRAM("microgram", "mcg"),
     KILOMETER("kilometer", "km"),
-    METER("meter",
-            "m"),
+    METER("meter", "m"),
     CENTIMETER("centimeter", "cm"),
     MILLIMETER("millimeter", "mm"),
     SQUAR_METER("square meter", "m2"),
@@ -28,9 +27,10 @@ public enum MeasurementUnit implements HasLabel, Localizable {
     CUBIC_CM("cubic centimeter", "cc"),
     LITRE("liter",
             "l"),
-    DEGREE_LATITUDE("degree lat/long", "deg"),
+    DEGREE_LATITUDE("degree (lat/long)", "deg"),
     PARTS_PER_MILLION("parts per million", "ppm"),
     YEAR("year", "year"),
+    DEGREE("degree (angle)","degree"),
     OTHER("other", "other");
 
     private String shortName;
