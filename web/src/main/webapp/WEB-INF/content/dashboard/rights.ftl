@@ -36,7 +36,7 @@
                         permissions for large numbers of persons and resources.<br/><br/>
                         <a href="/collection/add" class="button tdar-button">Create Collection</a>
                 </div>
-                <div class="span1">  <svg class="svgicon svg100 red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg></div>
+                <div class="span1">  <svg class="svgicon svg100"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg></div>
             </div>
         </div>
     <div class="row">

@@ -25,20 +25,68 @@
     </div>
 
     <div class="span10">
-        <div class="row">
-            <div class="span10">
-                Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!
-                
-                <#if contributor>
-                    The resources you can access are listed below. To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or
-                    <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
-                    above.
-                <hr/>
-                </#if>
-            </div>
+        <h2>Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!</h2>
+        <#if contributor>
+            <div class="row">
+                <div class="span8">
+                    <h4>Upload Resources</h4>
+                    <div class="row">
+                <div class="span2">
+                    <div class=" iwell">
+                    <div>
+                    <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
+                    Use documents to archive reports, books, PDFs, and other textual materials.
+                      <p class="center"><a href="/document/add" class="button">Upload</a></p>
+                      </div>
+                      </div>
+                </div>
+                <div class="span2">
+                    <div class=" iwell">
+                <div>
+                    <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
+                    Use datasets for data tables, Excel, Access and other tabular data files.
+                      <p class="center"><a href="/dataset/add" class="button">Upload</a></p>
+                </div>
+                </div>
+                </div>
+                <div class="span2">
+                    <div class=" iwell">
+                <div>
+                    <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
+                    Use images for drawings, photographs, JPEG, TIFF, and other image files.
+                     <p class="center"><a href="/image/add" class="button">Upload</a></p>
+                </div>
+                </div>
+                </div>
+                <div class="span2">
+                    <div class=" iwell">
+                <div>
+                    <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
+                    Have a 3D scan, a GIS file, or want to create a coding sheet, ontology, or project.
+                     <p class="center"><a href="/contribute" class="button">Upload</a></p>
+                </div>
+                </div>
+                    </div>
+                </div>
+                </div>
+                <div class="span2">
+                    <h4>Organize</h4>
+                <div class="row">
+                <div class="span2">
+                    <div class="iwell">
+                        <div>
+                            <svg class="svgicon svg-small black  pull-left" style="margin-right: 5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                            Use a collection organize your resources and manage permissions.
+                             <p class="center"><a href="/collection/add" class="button">Create</a></p>
+                        </div>
+                    </div>
+                </div>
         </div>
-    
-        <#if (activeResourceCount > 0 )>
+                </div>
+                </div>
+        <br>
+            </#if>
+        <#if (false )>
             <div class="row">
                 <div class="span8">
                     <div class="row">
@@ -70,7 +118,6 @@
                     </div>
                 </div>
             </div>
-        </#if>
     
     
         <div class="row">
@@ -78,6 +125,7 @@
                 <hr/>
             </div>
         </div>
+        </#if>
 
         <div class="">
             <#if contributor>
@@ -88,7 +136,7 @@
                     <@recentlyUpdatedSection />
                 </#if>
 
-                <@emptyProjectsSection />
+                <#--  <@emptyProjectsSection /> -->
                 <@browseResourceSection />
             
             <#else>
@@ -195,7 +243,7 @@
 <#macro gettingStarted>
     <div class="row">
         <div class="span10">
-            <h2>Getting Started</h2>
+            <h3>Getting Started</h3>
             <ol style='list-style-position:inside'>
                 <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
                 <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
@@ -206,14 +254,14 @@
 
 <#macro resourcePieChart>
     <div>
-        <h2>At a glance</h2>
+        <h3>At a glance</h3>
     </div>
 </#macro>
 
 <#macro recentlyUpdatedSection>
     <div class="row">
         <div class="span10">
-            <h2><@s.text name="dashboard.recently_updated"/></h2>
+            <h3><@s.text name="dashboard.recently_updated"/></h3>
             <ol id='recentlyEditedResources'>
                 <#list recentlyEditedResources as res>
                     <li id="li-recent-resource-${res.id?c}">
@@ -238,7 +286,7 @@
     <#if (emptyProjects?? && !emptyProjects.empty )>
         <div class="row">
             <div class="span10" id="divEmptyProjects">
-                <h2>Empty Projects</h2>
+                <h3>Empty Projects</h3>
                 <ol id="emptyProjects">
                     <#list emptyProjects as res>
                         <li id="li-empty-project-${res.id?c}">
@@ -269,7 +317,7 @@
     <@search.reindexingNote />
     <div class="row" id="project-list">
         <div class="span10">
-            <h2>Browse Resources</h2>
+            <h3>Browse Resources</h3>
             <div>   
                 <@edit.resourceDataTable span="span10" />
             </div>

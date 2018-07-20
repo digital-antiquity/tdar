@@ -9,6 +9,19 @@ input[autocomplete="off"]::-webkit-contacts-auto-fill-button {
 }
 
 
+.iwell {
+    border: 1px solid #CCC;
+    background: #EFEFEF;
+    border-radius: 6px;
+}
+
+.iwell div {
+    margin:1em;
+}
+
+.iwell p {
+    margin-top:10px;
+}
 /*
     History: this file represents the original source code as provided by Fervor
 */
