@@ -289,7 +289,7 @@
 <section id="learnMore">
   <div class="container px-5 py-3">
       <div class="row">
-          <div class="col-lg-3 col-md-6 col-12 mb-3">
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
@@ -299,7 +299,7 @@
                   </div>
               </div>
           </div>
-          <div class="col-lg-3 col-md-6 col-12 mb-3">
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
@@ -309,7 +309,7 @@
                   </div>
               </div>
           </div>
-          <div class="col-lg-3 col-md-6 col-12 mb-3">
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
@@ -319,7 +319,7 @@
                   </div>
               </div>
           </div>
-          <div class="col-lg-3 col-md-6 col-12 mb-3">
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />

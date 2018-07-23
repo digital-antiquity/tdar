@@ -33,7 +33,7 @@ Common macros used in multiple contexts
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false mode="horizontal" extra="">
-    <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>col-lg-6 col-md-6 col-sm-6 map mapcontainer<#else> mapcontainer</#if> ${mode}">
+    <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>col-md-6 col-12 map mapcontainer mb-3 mb-md-0<#else> mapcontainer</#if> ${mode}">
             <h3>${siteAcronym} Worldwide</h3>
         <#if (homepageGraphs.mapJson)?has_content>
         <script type="application/json" data-mapdata>

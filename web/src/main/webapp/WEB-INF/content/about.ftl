@@ -75,7 +75,7 @@
 </div> -->
 
 <section class = "" id="pricing">
-    <div class="container mb-4">
+    <div class="container mb-4 d-none d-lg-block">
         <div class="row d-none d-lg-flex text-center justify-content-center">
             <div class="col-lg-1">
                 <a href="<@s.url value="/document"/>">
@@ -123,6 +123,7 @@
                 </a>
             </div>
         </div>
+        <hr>
     </div>
 
     <div class="container d-block d-lg-none">
@@ -175,10 +176,9 @@
                 </a>
             </div>
         </div>
+        <hr>
     </div>
 </section>
-
-<hr>
 
 <div class="row">
     <#include "featured.ftl" />
@@ -192,7 +192,7 @@
     
     <div class="row">
             <@commonr.renderWorldMap />
-        <div class="col-lg-6 col-md-6 col-sm-6 news">
+        <div class="col-12 col-md-6 news">
     
             <h3><a href="${config.newsUrl}">What's New at ${siteAcronym}?</a></h3>
     
@@ -216,10 +216,10 @@
         </div>
     </div>
 </#if>
-<br/>
+
 <hr />
 <div class="row">
-    <div class="col-12 col-md-6">
+    <div class="col-12 col-md-6 mt-2">
 		<#if featuredCollection?has_content>
             <@commonr.featuredCollection featuredCollection />
 		<#else>
