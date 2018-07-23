@@ -1,0 +1,76 @@
+/** set width and height properly **/
+
+.svgicon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.svg-small {
+  height:40px !important;
+  width:40px !important;
+}
+
+
+.svg100 {
+  height:100px !important;
+  width:100px !important;
+}
+
+
+
+.iconbox125 {
+    padding-top:3%;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-bottom: 3%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:0% !Important; 
+    margin-bottom:0% !important;
+    height:125px;
+    width:125px;
+    float: none;
+}
+
+
+.svg-dynamic125 {
+    width:80%;
+    height:80%;
+    margin-top:5%;
+    margin-bottom: 5%;
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+
+
+.iconbox {
+    float: none;
+    padding: 10%;
+     margin-left: auto;
+     margin-right: auto;
+}
+
+.svg-dynamic {
+    width:80%;
+    height:80%;
+    margin-top:15%;
+    margin-bottom: 15%;
+    margin-left:auto;
+    margin-right:auto;
+    display:block;
+}
+
+
+.svg-cartouche {
+    height:1em;
+    width:1em;
+}
+
+.grey {
+    fill-color:#555555;
+    color:#555555;
+}

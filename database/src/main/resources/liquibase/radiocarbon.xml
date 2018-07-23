@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+    context="production,test">
+    <changeSet id="radiocarbon-file-first-1" author="abrin">
+        <createTable tableName="files">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="filename" type="varchar(1024)" />
+            <column name="display_name" type="varchar(1024)" />
+            <column name="local_path" type="varchar(2048)" />
+            <column name="extension" type="varchar(15)" />
+            <column name="file_size" type="bigint" />
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type='bigint' />
+            <column name="width" type="int" />
+            <column name="height" type="int" />
+            <column name="status" type="varchar(50)" />
+        </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_file_parent" referencedTableName="files"
+            baseColumnNames="parent_id" baseTableName="files"
+            referencedColumnNames="id" />
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-2" author="abrin">
+        <addColumn tableName="files">
+            <column name="md5" type="varchar(100)" />
+            <column name="file_type" type="varchar(5)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-3" author="abrin">
+        <addColumn tableName="files">
+            <column name="account_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_account"
+            referencedTableName="pos_account"
+            baseColumnNames="account_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="uploader_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_uploader"
+            referencedTableName="tdar_user"
+            baseColumnNames="uploader_id" baseTableName="files"
+            referencedColumnNames="id" />
+
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-4" author="abrin">
+        <renameColumn tableName="files"
+            oldColumnName="filename" newColumnName="internal_name" />
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-5" author="abrin">
+        <addColumn tableName="files">
+            <column name="resource_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_resource"
+            referencedTableName="resource" baseColumnNames="resource_id"
+            baseTableName="files" referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="curator_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_curator"
+            referencedTableName="tdar_user" baseColumnNames="curator_id"
+            baseTableName="files" referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="reviewer_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_reviewer"
+            referencedTableName="tdar_user"
+            baseColumnNames="reviewer_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="date_reviewed" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+        <addColumn tableName="files">
+            <column name="date_curated" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-6" author="abrin">
+        <addColumn tableName="files">
+            <column name="part_of_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_part" referencedTableName="files"
+            baseColumnNames="part_of_id" baseTableName="files"
+            referencedColumnNames="id" />
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-7" author="abrin">
+        <addColumn tableName="files">
+            <column name="requires_ocr" type="boolean"
+                defaultValueBoolean="false" />
+        </addColumn>
+        <addColumn tableName="files">
+            <column name="note" type="varchar(100)"
+                defaultValueBoolean="false" />
+        </addColumn>
+
+        <createTable tableName="file_comment">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="comment" type="varchar(2048)" />
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="file_id" type='bigint' />
+        </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_comment_file" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="file_comment"
+            referencedColumnNames="id" />
+
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-8" author="abrin">
+        <addColumn tableName="files">
+            <column name="curate" type="boolean"
+                defaultValueBoolean="true" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-9" author="abrin">
+        <addColumn tableName="file_comment">
+            <column name="commentor_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_comment_commentor"
+            referencedTableName="tdar_user"
+            baseColumnNames="commentor_id" baseTableName="file_comment"
+            referencedColumnNames="id" />
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-10" author="abrin">
+        <addColumn tableName="files">
+            <column name="student_reviewer_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_student_reviewer"
+            referencedTableName="tdar_user"
+            baseColumnNames="student_reviewer_id" baseTableName="files"
+            referencedColumnNames="id" />
+        <addColumn tableName="files">
+            <column name="external_reviewer_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_external_reviewer"
+            referencedTableName="tdar_user"
+            baseColumnNames="external_reviewer_id" baseTableName="files"
+            referencedColumnNames="id" />
+
+        <addColumn tableName="files">
+            <column name="date_student_reviewed" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="files">
+            <column name="date_external_reviewed"
+                type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-11" author="abrin">
+
+        <addColumn tableName="pos_account">
+            <column name="external_review" type="boolean"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="pos_account">
+            <column name="student_review" type="boolean"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="pos_account">
+            <column name="full_service" type="boolean"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <sql>
+            update pos_account set full_service=false,
+            student_review=false,
+            external_review=false;
+        </sql>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-12" author="abrin">
+        <addColumn tableName="file_comment">
+            <column type="boolean" name="resolved"
+                defaultValueBoolean="false">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+
+        <addColumn tableName="file_comment">
+            <column name="resolver_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_comment_resolver"
+            referencedTableName="tdar_user"
+            baseColumnNames="resolver_id" baseTableName="file_comment"
+            referencedColumnNames="id" />
+        <addColumn tableName="file_comment">
+            <column name="date_resolved" type="timestamp">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <sql>update file_comment set resolved=false</sql>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-13" author="abrin">
+        <addColumn tableName="pos_account">
+            <column name="file_exipry_days" type="int"
+                defaultValueNumeric="60">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <sql>update pos_account set file_exipry_days=60</sql>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-14" author="abrin">
+    <renameColumn tableName="pos_account" oldColumnName="file_exipry_days" newColumnName="file_expiry_days"/>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-15" author="abrin">
+    <renameColumn tableName="files" oldColumnName="date_student_reviewed" newColumnName="date_initial_reviewed"/>
+    <renameColumn tableName="files" oldColumnName="student_reviewer_id" newColumnName="initial_reviewer_id"/>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-16" author="abrin">
+        <addColumn tableName="files">
+            <column name="curation_state" type="varchar(25)"/>
+        </addColumn>
+        <dropColumn tableName="files" columnName="curate"/>
+    </changeSet>
+    <changeSet id="radiocarbon-file-first-17" author="abrin">
+    <renameColumn tableName="pos_account" oldColumnName="student_review" newColumnName="initial_review"/>
+    </changeSet>
+</databaseChangeLog>
