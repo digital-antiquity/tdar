@@ -10,6 +10,7 @@
     border:1px solid #CCC;
     padding:10px;
     z-index: 1000;
+    line-height:initial;
 }
 /** stop safari from autofilling **/
 input[autocomplete="off"]::-webkit-contacts-auto-fill-button {

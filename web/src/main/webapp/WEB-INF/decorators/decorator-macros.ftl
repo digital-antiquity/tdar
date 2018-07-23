@@ -60,7 +60,7 @@
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
         <li>
             <#if navSearchBoxVisible>
-                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
+                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform form-horizontal seleniumIgnoreForm hidden-phone hidden-tablet  screen">
                 <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
                     <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
                     <input type="hidden" name="_tdar.searchType" value="simple">
@@ -74,25 +74,26 @@
         <label class="control-label">What:</label>
 
         <div class="controls controls-row">
-<label class="radio">
+<label class="radio inline">
   <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE" checked>
   Resources
 </label>
-<label class="radio">
+<label class="radio inline">
   <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION" checked>
   Collections
 </label>
-<label class="radio">
+<label class="radio inline">
   <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE" checked>
   People
 </label>
-<label class="radio">
+<label class="radio inline">
   <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS" checked>
   Institutions
 </label>
                 </div>
                 
                 </div>
+                
                     <div class="searchgroup">
     <div class="groupingSelectDiv control-group fade">
 
@@ -143,9 +144,9 @@
     </optgroup>
     </select>
         <div class="controls controls-row simple multiIndex">
-            <div class="span8 term-container">
+            <div class="span3 term-container">
                             <span class="term retain ALL_FIELDS simple multiIndex">
-                                <input type="text" name="groups[0].allFields[0]" class="input-xxlarge">
+                                <input type="text" name="groups[0].allFields[0]" class="input">
                             </span>
             </div>
             <div class="span1">
