@@ -95,7 +95,7 @@ public class TableXMLDownloadAction extends AbstractAuthenticatableAction implem
         if (dataTableId != null) {
             this.dataTable = dataTableService.find(dataTableId);
             if (persistable == null) {
-                persistable = dataTable.getDataset();
+                persistable = dataTableService.findDatasetForTable(dataTable);
             }
         } else {
             Set<DataTable> dataTables = persistable.getDataTables();

@@ -8,8 +8,8 @@ import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.configuration.TdarConfiguration;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
@@ -17,7 +17,6 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
 public class MockAwsEmailSenderServiceImpl implements AwsEmailSender {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private Regions awsRegion;
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
     private List<Email> messages = new ArrayList<Email>();
 
@@ -29,10 +28,6 @@ public class MockAwsEmailSenderServiceImpl implements AwsEmailSender {
         return new SendEmailResult();
     }
 
-    @Override
-    public void setAwsRegion(Regions region) {
-        this.awsRegion = region;
-    }
 
     @Override
     public SendRawEmailResult sendMultiPartMessage(Email email) throws IOException, MessagingException {

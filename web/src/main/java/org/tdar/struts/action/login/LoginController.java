@@ -14,7 +14,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
@@ -44,7 +44,7 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
+        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.DASHBOARD) })
 @CacheControl
 public class LoginController extends AbstractAuthenticatableAction implements Validateable {
 
@@ -110,7 +110,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
                             @Result(name = TdarActionSupport.NEW, type = TDAR_REDIRECT, location = "/account/new"),
                             @Result(name = TDAR_REDIRECT, type = TDAR_REDIRECT, location = "${internalReturnUrl}"),
                             @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl"),
-                            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.DASHBOARD),
+                            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.DASHBOARD),
                     })
     })
     @HttpsOnly

@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

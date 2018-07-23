@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -23,7 +24,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
 import org.tdar.core.cache.Caches;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
@@ -32,10 +32,10 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.WorkflowResult;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.utils.PersistableUtils;
 
@@ -91,7 +91,7 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
 
         wrapper.processMetadataForFileProxies();
 
-        analyzer.processFiles(wrapper.getFilesToProcess(), resource.getResourceType().isCompositeFilesEnabled());
+        analyzer.processFiles(resource.getResourceType(), wrapper.getFilesToProcess(), resource.getResourceType().isCompositeFilesEnabled());
 
         /*
          * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
@@ -144,7 +144,7 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
                 }
             }
         }
-        analyzer.processFiles(latestVersions, ir.getResourceType().isCompositeFilesEnabled());
+        analyzer.processFiles(ir.getResourceType(), latestVersions, ir.getResourceType().isCompositeFilesEnabled());
         // this is a known case where we need to purge the session
         // getDao().synchronize();
 

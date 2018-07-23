@@ -87,7 +87,6 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         DataTable dt = new DataTable();
         dt.setName("est");
         dataset.getDataTables().add(dt);
-        dt.setDataset(dataset);
         genericService.save(dataset);
         genericService.save(dt);
         DataTableColumn dtc = new DataTableColumn();

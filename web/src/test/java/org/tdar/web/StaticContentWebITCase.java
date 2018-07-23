@@ -5,7 +5,7 @@ import java.io.File;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 public class StaticContentWebITCase extends AbstractAnonymousWebTestCase {
 

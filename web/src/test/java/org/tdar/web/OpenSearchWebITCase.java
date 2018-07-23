@@ -2,7 +2,7 @@ package org.tdar.web;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 /**
  * We set the following four properties in the open search template:

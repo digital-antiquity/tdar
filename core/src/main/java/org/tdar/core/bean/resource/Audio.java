@@ -133,13 +133,4 @@ public class Audio extends InformationResource {
         return result;
     }
 
-    @Override
-    public void updateFromTransientResource(final InformationResource transientAudio) {
-        if (transientAudio == null) {
-            // Should never be here, so perhaps we should do more than return?
-            return;
-        }
-        this.audioCodec = ((Audio) transientAudio).getAudioCodec();
-    }
-
 }

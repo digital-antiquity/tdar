@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.base.HibernateBase;
@@ -25,6 +26,13 @@ public class DataTableDao extends HibernateBase<DataTable> {
 
     public DataTableDao() {
         super(DataTable.class);
+    }
+    
+    public Dataset findDatasetForTable(DataTable dt) {
+        Query<Dataset> query = getCurrentSession().createNamedQuery(QUERY_DATATABLE_DATASET, Dataset.class);
+        getLogger().trace("Searching for linked resources to {}", dt.getId());
+        query.setParameter("dataTableId", dt.getId());
+        return query.uniqueResult();
     }
 
     public List<DataTable> findDataTablesUsingResource(Resource resource) {
@@ -53,7 +61,8 @@ public class DataTableDao extends HibernateBase<DataTable> {
         List<DataTableProxy> proxies = new ArrayList<>();
         for (Object[] obj_ : (List<Object[]>) query.getResultList()) {
             DataTable dataTable = (DataTable) obj_[0];
-            proxies.add(new DataTableProxy(dataTable));
+            Dataset dataset = (Dataset) obj_[1];
+            proxies.add(new DataTableProxy(dataTable, dataset));
         }
         IntegrationDataTableSearchResult result = new IntegrationDataTableSearchResult();
         result.getDataTables().addAll(proxies);

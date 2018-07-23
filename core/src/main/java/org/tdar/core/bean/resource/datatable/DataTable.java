@@ -1,7 +1,6 @@
 package org.tdar.core.bean.resource.datatable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,6 +28,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.db.datatable.ImportTable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "data_table")
 @XmlRootElement
-public class DataTable extends AbstractPersistable {
+public class DataTable extends AbstractPersistable implements ImportTable<DataTableColumn> {
 
     private static final long serialVersionUID = -4875482933981074863L;
 
@@ -77,15 +77,15 @@ public class DataTable extends AbstractPersistable {
     private transient Map<String, DataTableColumn> displayNameToColumnMap;
     private transient int dataTableColumnHashCode = -1;
 
-    @XmlElement(name = "resourceRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public Dataset getDataset() {
-        return dataset;
-    }
-
-    public void setDataset(Dataset dataset) {
-        this.dataset = dataset;
-    }
+//    @XmlElement(name = "resourceRef")
+//    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+//    public Dataset getDataset() {
+//        return dataset;
+//    }
+//
+//    public void setDataset(Dataset dataset) {
+//        this.dataset = dataset;
+//    }
 
     @JsonView(JsonIntegrationFilter.class)
     public String getName() {
@@ -108,25 +108,6 @@ public class DataTable extends AbstractPersistable {
     }
 
     /**
-     * Get the data table columns sorted in the ascending order of column names.
-     * 
-     * @return
-     */
-    @XmlTransient
-    public List<DataTableColumn> getSortedDataTableColumns() {
-        return getSortedDataTableColumns(new Comparator<DataTableColumn>() {
-            @Override
-            public int compare(DataTableColumn a, DataTableColumn b) {
-                int comparison = a.compareTo(b);
-                if (comparison == 0) {
-                    return a.getDisplayName().compareTo(b.getDisplayName());
-                }
-                return comparison;
-            }
-        });
-    }
-
-    /**
      * Get the data table columns sorted in the ascending order of sequence_number which should be the import order if available
      * 
      * @return
@@ -140,65 +121,6 @@ public class DataTable extends AbstractPersistable {
                 return ObjectUtils.compare(a.getSequenceNumber(), b.getSequenceNumber());
             }
         });
-    }
-
-    public List<DataTableColumn> getSortedDataTableColumns(Comparator<DataTableColumn> comparator) {
-        ArrayList<DataTableColumn> sortedDataTableColumns = new ArrayList<DataTableColumn>(dataTableColumns);
-        Collections.sort(sortedDataTableColumns, comparator);
-        return sortedDataTableColumns;
-    }
-
-    /**
-     * <p>
-     * List all the columns in this table and any left-joined tables (including recursively left-joined)
-     * <p>
-     * Consider the following very unlikely scenario:
-     * 
-     * <pre>
-     *   B
-     *  / \
-     * A   C-E-A
-     *  \ /
-     *   D
-     * Table A reference Table B & D, B & D reference the same column in C, and C references E, which in turn references A...
-     * </pre>
-     * <p>
-     * What still needs doing in this method is:
-     * <ol>
-     * <li>Adding a filter that excludes columns that are already in the result set (B-C and D-C). It would be nice if we could include them both using aliases
-     * but that's not possible at this moment in time.
-     * <li>to stop recursing if we detect tables that have already been visited (but if the columns referenced are not in the list of columns, to still add
-     * them)
-     * </ol>
-     * <p>
-     * There is an implicit assumption that the referenced foreign key's are in fact primary keys...
-     * 
-     * <p>
-     * What still needs doing to support this method is:
-     * <ol>
-     * <li>The screen that displays the resultant tables/columns might need to be enhanced to ensure that the user doesn't become confused by columns with the
-     * same name in multiple tables.
-     * <li>The code that generates the SQL queries needs to be updated to perform the required joins.
-     * </ol>
-     * 
-     * @return list of columns
-     */
-    @XmlTransient
-    public List<DataTableColumn> getLeftJoinColumns() {
-        ArrayList<DataTableColumn> leftJoinColumns = new ArrayList<DataTableColumn>(getSortedDataTableColumns());
-        for (DataTableRelationship r : getRelationships()) {
-            // Include fields from related tables unless they're on the "many" side of a one-to-many relationship
-            if (this.equals(r.getLocalTable()) && (r.getType() != DataTableColumnRelationshipType.ONE_TO_MANY)) {
-                // this is the "local" table in a many-to-one or one-to-one relationship,
-                // so including the "foreign" table's fields will not increase the cardinality of this query
-                leftJoinColumns.addAll(r.getForeignTable().getLeftJoinColumns());
-            } else if (this.equals(r.getForeignTable()) && (r.getType() != DataTableColumnRelationshipType.MANY_TO_ONE)) {
-                // this is the "foreign" table in a one-to-many or one-to-one relationship,
-                // so including the "local" table's fields will not increase the cardinality of this query
-                leftJoinColumns.addAll(r.getLocalTable().getLeftJoinColumns());
-            }
-        }
-        return leftJoinColumns;
     }
 
     /**
@@ -240,14 +162,6 @@ public class DataTable extends AbstractPersistable {
         return builder.toString();
     }
 
-    @Transient
-    public List<String> getColumnNames() {
-        List<String> columns = new ArrayList<String>();
-        for (DataTableColumn column : getDataTableColumns()) {
-            columns.add(column.getName());
-        }
-        return columns;
-    }
 
     @Transient
     public DataTableColumn getColumnByName(String name) {
@@ -299,19 +213,15 @@ public class DataTable extends AbstractPersistable {
         return displayName;
     }
 
-    @JsonView(JsonIntegrationDetailsFilter.class)
-    public String getDatasetTitle() {
-        return getDataset().getTitle();
-    }
-
-    @JsonView(JsonIntegrationDetailsFilter.class)
-    public Long getDatasetId() {
-        return getDataset().getId();
-    }
-
-    public String getInternalName() {
-        return getName().replaceAll("^((\\w+)_)(\\d+)(_?)", "");
-    }
+//    @JsonView(JsonIntegrationDetailsFilter.class)
+//    public String getDatasetTitle() {
+//        return getDataset().getTitle();
+//    }
+//
+//    @JsonView(JsonIntegrationDetailsFilter.class)
+//    public Long getDatasetId() {
+//        return getDataset().getId();
+//    }
 
     @Transient
     public List<DataTableColumn> getColumnsWithOntologyMappings() {

@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -51,6 +52,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.HasTables;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -62,17 +64,17 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.excel.ExcelWorkbookWriter;
-import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
-import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.db.conversion.converters.ExcelWorkbookWriter;
+import org.tdar.db.conversion.converters.SheetProxy;
+import org.tdar.db.datatable.ImportTable;
+import org.tdar.db.model.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.VersionType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.XmlEscapeHelper;
@@ -193,8 +195,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
      * 
      * Using a raw SQL update statement to try and simplify the execution here to use as few loops as possible...
      */
-    public void mapColumnToResource(DataTableColumn column, List<String> distinctValues) {
-        Project project = column.getDataTable().getDataset().getProject();
+    public void mapColumnToResource(Dataset dataset, DataTableColumn column, List<String> distinctValues) {
+        Project project = dataset.getProject();
         // for each distinct column value
 
         long timestamp = System.currentTimeMillis();
@@ -418,19 +420,25 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query2.executeUpdate();
     }
 
-    public void cleanupUnusedTablesAndColumns(Dataset dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
+    public void cleanupUnusedTablesAndColumns(HasTables dataset, Collection<DataTable> tablesToRemove, Collection<DataTableColumn> columnsToRemove) {
         logger.info("deleting unmerged tables: {}", tablesToRemove);
         ArrayList<DataTableColumn> columnsToUnmap = new ArrayList<DataTableColumn>();
         if (CollectionUtils.isNotEmpty(columnsToRemove)) {
             for (DataTableColumn column : columnsToRemove) {
                 columnsToUnmap.add(column);
             }
-        }
-        // first unmap all columns from the removed tables
-        unmapAllColumnsInProject(dataset.getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+            // first unmap all columns from the removed tables
+            if (dataset instanceof Dataset) {
+                unmapAllColumnsInProject(((Dataset)dataset).getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+            }
+            for (DataTableColumn column : columnsToRemove) {
+                column.getDataTable().getDataTableColumns().remove(column);
+            }
 
-        delete(columnsToRemove);
+            delete(columnsToRemove);
+        }
         if (CollectionUtils.isNotEmpty(tablesToRemove)) {
+            logger.debug("deleting tables: {}", tablesToRemove);
             dataset.getDataTables().removeAll(tablesToRemove);
         }
 
@@ -461,7 +469,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.getSingleResult();
     }
 
-    public void remapColumns(List<DataTableColumn> columns, Project project) {
+    public void remapColumns(List<DataTableColumn> columns, Dataset dataset, Project project) {
         getLogger().info("remapping columns: {} in {} ", columns, project);
         if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
             resetColumnMappings(project);
@@ -475,7 +483,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column, false));
+                mapColumnToResource(dataset, column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
             }
         }
 
@@ -646,7 +654,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return columnNames;
     }
 
-    public boolean checkExists(DataTable dataTable) {
+    public boolean checkExists(ImportTable dataTable) {
         return tdarDataImportDatabase.checkTableExists(dataTable);
     }
 
@@ -655,4 +663,5 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameter("id", id);
         return query.list();
     }
+
 }

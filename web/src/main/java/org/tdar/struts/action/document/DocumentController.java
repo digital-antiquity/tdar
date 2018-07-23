@@ -62,8 +62,9 @@ public class DocumentController extends AbstractInformationResourceController<Do
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return getAnalyzer().getExtensionsForType(ResourceType.DOCUMENT);
+        return getExtensionsForType(ResourceType.DOCUMENT);
     }
+
 
     public void setDocument(Document document) {
         setPersistable(document);

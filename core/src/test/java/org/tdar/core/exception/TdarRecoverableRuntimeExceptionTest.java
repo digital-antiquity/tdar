@@ -3,6 +3,7 @@ package org.tdar.core.exception;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 
 public class TdarRecoverableRuntimeExceptionTest {
 

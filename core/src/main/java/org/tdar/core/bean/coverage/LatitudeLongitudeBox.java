@@ -29,8 +29,8 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;

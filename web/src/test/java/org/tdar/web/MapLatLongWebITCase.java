@@ -6,12 +6,12 @@ import java.io.FileNotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.collection.CollectionWebITCase;
 

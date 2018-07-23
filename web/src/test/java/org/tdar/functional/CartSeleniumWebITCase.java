@@ -10,7 +10,7 @@ import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
-import static org.tdar.URLConstants.CART_ADD;
+import static org.tdar.UrlConstants.CART_ADD;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.ByLabelText;
 import org.tdar.functional.util.WebElementSelection;
@@ -62,7 +62,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         logger.debug(getCurrentUrl());
         // now we are on the review form (w/ registration/login forms)
         // fill out required user registration fields and submit form
-        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
+        assertThat(getCurrentUrl(), endsWith(UrlConstants.CART_REVIEW_UNAUTHENTICATED));
         UserRegistration reg = createUserRegistration("bob");
         fillOutRegistration(reg);
         // wait for spam check
@@ -87,7 +87,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         // review (note that we navigated here via javascript click handler instead of a link or a form submit, so we need to explicitly wait for pageload)
         waitForPageload();
-        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
+        assertThat(getCurrentUrl(), endsWith(UrlConstants.CART_REVIEW_UNAUTHENTICATED));
         find("#loginUsername").val(CONFIG.getUsername());
         find("#loginPassword").val(CONFIG.getPassword());
         submitForm("#loginForm [type=submit]");
@@ -100,12 +100,12 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         waitForPageload();
 
         // choose
-        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
+        assertThat(getCurrentUrl(), endsWith(UrlConstants.CART_REVIEW_PURCHASE));
         // we aren't testing billing account customization, so we just advance to the next step
         submitForm();
 
         // process payment
-        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
+        assertThat(getCurrentUrl(), endsWith(UrlConstants.CART_PROCESS_PAYMENT_REQUEST));
         // open the popup window
         find("#btnOpenPaymentWindow").click();
         switchToWindow("test/nelnet");

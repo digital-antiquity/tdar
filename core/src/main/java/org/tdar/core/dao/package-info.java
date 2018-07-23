@@ -128,13 +128,16 @@
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_DATASET_CAN_LINK_TO_ONTOLOGY,
                 query = "select code.defaultOntology from DataTable dt inner join dt.dataTableColumns as dtc inner join dtc.defaultCodingSheet as code " +
-                        "where dt.dataset.id=:datasetId"),
+                        "where dt in (select datatable.id from Dataset dataset inner join dataset.dataTables as datatable where dataset.id=:datasetId ) "),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_MAPPED_CODING_RULES,
                 query = "FROM CodingRule WHERE codingSheet.id = :codingSheetId AND term IN (:valuesToMatch)"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLE_RELATED_ID,
-                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology.id=:relatedId  or code=:relatedId) and dt.dataset.status!='DELETED'"),
+                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology.id=:relatedId  or code=:relatedId) and dt.id in (select datatable.id from Dataset dataset inner join dataset.dataTables as datatable where dataset.status!='DELETED') "),
+        @NamedQuery(
+                name = TdarNamedQueries.QUERY_DATATABLE_DATASET,
+                query = "select d FROM Dataset d join d.dataTables as dt where dt.id=:dataTableId"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY,
                 query = "FROM DataTableColumn dtc inner join dtc.defaultCodingSheet as code WHERE dtc.dataTable.dataset.id=:datasetId AND code.defaultOntology IS NOT NULL ORDER BY dtc.id"),
@@ -424,7 +427,7 @@
                 query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic < :dateStart and irf_.dateMadePublic >:dateEnd  and irf_.restriction like 'EMBARGO%' )"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
-                query = "select distinct dt, ds.title " + TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
+                query = "select distinct dt, ds, ds.title " + TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
                         + " order by ds.title, dt.displayName"),
         @NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE_COUNT,

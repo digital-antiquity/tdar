@@ -6,7 +6,6 @@ import javax.mail.MessagingException;
 
 import org.tdar.core.bean.notification.Email;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.simpleemail.model.SendEmailResult;
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 
@@ -29,5 +28,5 @@ public interface AwsEmailSender {
      */
     SendRawEmailResult sendMultiPartMessage(Email email) throws IOException, MessagingException;
 
-    void setAwsRegion(Regions region);
+//    void setAwsRegion(Regions region);
 }

@@ -249,7 +249,42 @@
     <changeSet id="radiocarbon-file-first-17" author="abrin">
     <renameColumn tableName="pos_account" oldColumnName="student_review" newColumnName="initial_review"/>
     </changeSet>
-    
+    <changeSet id="radiocarbon-file-first-18" author="abrin">
+        <addColumn tableName="files">
+            <column name="version_of_id" type="bigint"/>
+        </addColumn>
+        <addColumn tableName="files">
+            <column name="version_type" type="varchar(25)"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_version" referencedTableName="files"
+            baseColumnNames="version_of_id" baseTableName="files"
+            referencedColumnNames="id" />
+
+    </changeSet>
+     <changeSet id="radiocarbon-file-first-19" author="abrin">
+         <addColumn tableName="files">
+            <column name="length" type="int"/>
+        </addColumn>
+         <addColumn tableName="data_table_relationship">
+            <column name="file_id" type="bigint"/>
+        </addColumn>
+         <addColumn tableName="data_table">
+            <column name="file_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_table" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="data_table"
+            referencedColumnNames="id" />
+        <addForeignKeyConstraint
+            constraintName="fk_file_relationship" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="data_table_relationship"
+            referencedColumnNames="id" />
+    </changeSet>
+     <changeSet id="radiocarbon-file-first-20" author="abrin" failOnError="false" >
+            
+        <dropNotNullConstraint tableName="data_table" columnName="dataset_id"/>
+    </changeSet>
     
     <changeSet id="radiocarbon-dataset-search-1"
         author="abrin">
@@ -295,5 +330,4 @@
         author="abrin">
         <renameColumn tableName="page_block" oldColumnName="html" newColumnName="payload"/>
     </changeSet>
-    
-</databaseChangeLog>
+ </databaseChangeLog>

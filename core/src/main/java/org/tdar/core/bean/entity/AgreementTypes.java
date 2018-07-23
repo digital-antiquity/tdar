@@ -1,6 +1,6 @@
 package org.tdar.core.bean.entity;
 
-import org.tdar.core.bean.Localizable;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum AgreementTypes implements Localizable {

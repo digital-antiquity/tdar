@@ -29,7 +29,7 @@ import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericKeywordDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.transform.jsonld.SchemaOrgKeywordTransformer;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;

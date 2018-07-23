@@ -12,14 +12,14 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ClassUtils;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 /**

@@ -17,7 +17,7 @@ import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.filestore.VersionType;
 
 /**
  * @author Adam Brin

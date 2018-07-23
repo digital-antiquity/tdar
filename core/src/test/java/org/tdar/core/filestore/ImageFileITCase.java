@@ -16,22 +16,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.file.FileStatus;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.workflow.MessageService;
 import org.tdar.core.service.workflow.WorkflowResult;
-import org.tdar.core.service.workflow.workflows.ImageWorkflow;
-import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.ImageWorkflow;
+import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.VersionType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 
@@ -49,15 +50,6 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     private MessageService messageService;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Test
-    @Rollback
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.JAI_DISABLED })
-    public void testMissingImageStatus() throws Exception {
-        String filename = "grandcanyon_cmyk.jpg";
-        InformationResourceFile informationResourceFile = testFileProcessing(filename, false);
-        assertEquals(FileStatus.PROCESSING_WARNING, informationResourceFile.getStatus());
-    }
 
     @Test
     @Rollback
@@ -87,8 +79,8 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.JAI_DISABLED })
     public void testImageFormatMissingStatus() throws Exception {
         String filename = "grandcanyon_cmyk.jpg";
-        InformationResourceFile informationResourceFile = testFileProcessing(filename, false);
-        assertEquals(FileStatus.PROCESSING_WARNING, informationResourceFile.getStatus());
+        InformationResourceFile informationResourceFile = testFileProcessing(filename, true);
+        assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
     }
 
     @Test
@@ -99,13 +91,13 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
     }
 
-    // @Test
-    // @Rollback
-    // public void testImageLZW() throws Exception {
-    // String filename = "grandcanyon_lzw.tif";
-    // InformationResourceFile informationResourceFile = testFileProcessing(filename);
-    // assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
-    // }
+     @Test
+     @Rollback
+     public void testImageLZW() throws Exception {
+     String filename = "grandcanyon_lzw.tif";
+     InformationResourceFile informationResourceFile = testFileProcessing(filename, true);
+     assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
+     }
 
     private InformationResourceFile testFileProcessing(File f, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
             Exception {
@@ -113,9 +105,9 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
 
         SensoryData doc = generateAndStoreVersion(SensoryData.class, f.getName(), f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.IMAGE, fileType);
-        Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.IMAGE, originalVersion);
         assertEquals(ImageWorkflow.class, workflow.getClass());
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         FileProxy proxy = new FileProxy(f.getName(), f, VersionType.UPLOADED);

@@ -23,9 +23,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.UserRightsProxy;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 @Component

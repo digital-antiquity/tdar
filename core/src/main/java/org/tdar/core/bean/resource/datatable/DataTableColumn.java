@@ -39,6 +39,8 @@ import org.tdar.core.bean.resource.HasStatic;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.db.datatable.DataTableColumnType;
+import org.tdar.db.datatable.ImportColumn;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
@@ -64,14 +66,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
-public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable, HasStatic {
+public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable, HasStatic, ImportColumn {
 
     private static final long serialVersionUID = 430090539610139732L;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    public static final String TDAR_ID_COLUMN = "id_row_tdar";
 
     public static final DataTableColumn TDAR_ROW_ID = new DataTableColumn() {
 
@@ -532,5 +532,13 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     public void setImportOrder(Integer importOrder) {
         this.importOrder = importOrder;
+    }
+
+    @Override
+    public int compareToBySequenceNumber(ImportColumn b) {
+        if ((sequenceNumber == null) || (b.getSequenceNumber() == null)) {
+            return 0;
+        }
+        return sequenceNumber.compareTo(b.getSequenceNumber());
     }
 }

@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
+import org.tdar.db.datatable.DataTableColumnType;
 
 public class DataTableColumnTest {
 

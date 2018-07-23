@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>18.2.0-RADIOCARBON-SNAPSHOT</version>
+    <version>18.2.0-DATABASE-SEARCH-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -16,8 +16,11 @@
         <!-- contains shared config and setup for all other modules, depends 
             on "database" and "test" -->
         <module>locales</module>
+        <module>parent-base</module>
         <module>base</module>
         <!-- tdar "core" files -->
+        <module>processing/fileprocessing</module>
+        <module>processing/databaseprocessing</module>
         <module>core</module>
         <module>search</module>
         <!-- <module>faims</module> -->
@@ -96,6 +99,7 @@
         <findbugs.version>3.0.0</findbugs.version>
         <ant.version>1.10.1</ant.version>
         <commons-lang3.version>3.7</commons-lang3.version>
+        <commons-lang.version>2.6</commons-lang.version>
         <cglib.version>3.2.5</cglib.version>
         <commons-compress.version>1.14</commons-compress.version>
         <commons-cli.version>1.3</commons-cli.version>
@@ -340,7 +344,7 @@
             <dependency>
                 <groupId>commons-lang</groupId>
                 <artifactId>commons-lang</artifactId>
-                <version>2.6</version>
+                <version>${commons-lang.version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -689,10 +693,22 @@
             <version>${slf4j.version}</version>
             <!-- LICENSE: MIT -->
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
-            <version>1.6.0</version>
+            <version>1.6.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>activation</artifactId>
@@ -733,6 +749,25 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
+        </dependency>
+        <!-- postgres jdbc -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.jdbc.version}</version>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.2.1</version>
+            <!-- LICENSE: LGPL 2 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>postgresql</artifactId>
+                    <groupId>postgresql</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

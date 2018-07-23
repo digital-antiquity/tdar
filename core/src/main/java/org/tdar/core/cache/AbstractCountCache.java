@@ -3,7 +3,7 @@ package org.tdar.core.cache;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.ObjectUtils;
-import org.tdar.utils.DataUtil;
+import org.tdar.db.conversion.converters.DataUtil;
 
 /**
  * Abstract class to help manage the cache data.

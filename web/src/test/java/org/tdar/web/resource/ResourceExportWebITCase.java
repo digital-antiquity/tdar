@@ -6,10 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractAuthenticatedWebTestCase;
 
@@ -29,7 +29,7 @@ public class ResourceExportWebITCase extends AbstractAuthenticatedWebTestCase {
     public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException {
         String accountId = "";
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
-            gotoPage(URLConstants.CART_ADD);
+            gotoPage(UrlConstants.CART_ADD);
             setInput("invoice.numberOfMb", "200");
             setInput("invoice.numberOfFiles", "20");
             submitForm();

@@ -19,11 +19,11 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 

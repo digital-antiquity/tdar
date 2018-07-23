@@ -42,12 +42,12 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
+import org.tdar.db.datatable.DataTableColumnType;
+import org.tdar.db.parser.OwlOntologyConverter;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts_base.action.TdarActionException;
@@ -227,6 +227,13 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
         final Pair<Dataset, CodingSheet> returned = setupMappingsForTest(ont);
         final CodingSheet generatedSheet = returned.getSecond();
         final Collection<InformationResourceFileVersion> latestVersions = ont.getLatestVersions();
+        final Map<String, OntologyNode> displayNameToNode = new HashMap<String, OntologyNode>();
+        for (OntologyNode node : ontologyNodes) {
+            displayNameToNode.put(node.getDisplayName(), node);
+        }
+        final Long otherToolImportOrder = displayNameToNode.get("Other Tool").getImportOrder();
+        final Long toolId = displayNameToNode.get("Tool").getId();
+        final Long coreId = displayNameToNode.get("Core").getId();
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.setId(id);
         controller.prepare();
@@ -247,11 +254,7 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
                 logger.debug("previous ontology nodes: {}", ontologyNodes);
                 logger.debug("updated ontology nodes: {}", updatedOntologyNodes);
                 assertFalse(new TreeSet<OntologyNode>(updatedOntologyNodes).equals(new TreeSet<OntologyNode>(ontologyNodes)));
-                Map<String, OntologyNode> displayNameToNode = new HashMap<String, OntologyNode>();
                 Map<String, OntologyNode> updatedDisplayNameToNode = new HashMap<String, OntologyNode>();
-                for (OntologyNode node : ontologyNodes) {
-                    displayNameToNode.put(node.getDisplayName(), node);
-                }
                 for (OntologyNode updatedNode : updatedOntologyNodes) {
                     updatedDisplayNameToNode.put(updatedNode.getDisplayName(), updatedNode);
                 }
@@ -261,11 +264,11 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
                 assertEquals("original file matches same number of parsed ontologyNodes", originalFileLength, ontologyNodes.size());
                 assertEquals("updated file matches same number of parsed ontologyNodes", updatedFileLength, updatedOntologyNodes.size());
                 assertEquals("Original id was transferred for exact match",
-                        displayNameToNode.get("Tool").getId(),
+                        toolId,
                         updatedDisplayNameToNode.get("Tool").getId());
                 assertEquals("Original id was transferred for exact match",
-                        displayNameToNode.get("Core").getId(), updatedDisplayNameToNode.get("Core").getId());
-                assertThat(displayNameToNode.get("Other Tool").getImportOrder(), is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
+                        coreId, updatedDisplayNameToNode.get("Core").getId());
+                assertThat(otherToolImportOrder, is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
                 assertFalse(latestVersions.equals(ont.getLatestUploadedVersions()));
                 assertEquals("Uploading new ontology didn't preserve coding rule -> ontology node references properly", ont.getNodeByName("Tool"),
                         generatedSheet.getCodingRuleByCode("Tool").getOntologyNode());
@@ -326,6 +329,13 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
 
         controller = super.generateNewInitializedController(OntologyController.class);
         controller.setId(id);
+        Map<String, OntologyNode> displayNameToNode = new HashMap<String, OntologyNode>();
+        for (OntologyNode node : ontologyNodes) {
+            displayNameToNode.put(node.getDisplayName(), node);
+        }
+        Long toolId = displayNameToNode.get("Tool").getId();
+        Long coreId = displayNameToNode.get("Core").getId();
+        Long otherToolImportOrder = displayNameToNode.get("Other Tool").getImportOrder();
         controller.prepare();
         ont = controller.getOntology();
         ontText = readToText(UPDATED_TAB_ONTOLOGY_FILE);
@@ -339,11 +349,7 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
         List<OntologyNode> updatedOntologyNodes = ont.getOntologyNodes();
         logger.debug("previous ontology nodes: " + ontologyNodes);
         logger.debug("updated ontology nodes: " + updatedOntologyNodes);
-        Map<String, OntologyNode> displayNameToNode = new HashMap<String, OntologyNode>();
         Map<String, OntologyNode> updatedDisplayNameToNode = new HashMap<String, OntologyNode>();
-        for (OntologyNode node : ontologyNodes) {
-            displayNameToNode.put(node.getDisplayName(), node);
-        }
         for (OntologyNode updatedNode : updatedOntologyNodes) {
             updatedDisplayNameToNode.put(updatedNode.getDisplayName(), updatedNode);
         }
@@ -351,10 +357,10 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
         getLogger().debug("updatedDisplayNameToNode: " + updatedDisplayNameToNode);
 
         assertTrue("Original id was transferred for exact match",
-                !displayNameToNode.get("Tool").getId().equals(updatedDisplayNameToNode.get("Tool").getId()));
+                toolId.equals(updatedDisplayNameToNode.get("Tool").getId()));
         assertTrue("Original id was transferred for exact match",
-                !displayNameToNode.get("Core").getId().equals(updatedDisplayNameToNode.get("Core").getId()));
-        assertThat(displayNameToNode.get("Other Tool").getImportOrder(), is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
+                coreId.equals(updatedDisplayNameToNode.get("Core").getId()));
+        assertThat(otherToolImportOrder, is(not(updatedDisplayNameToNode.get("Unknown Tool").getImportOrder())));
     }
 
     public Pair<Dataset, CodingSheet> setupMappingsForTest(Ontology ontology) {
@@ -368,7 +374,6 @@ public class OntologyControllerITCase extends AbstractControllerITCase {
         // create data table
         DataTable dataTable = new DataTable();
         dataTable.setName("test");
-        dataTable.setDataset(dataset);
         genericService.save(dataTable);
         // create data table column
         DataTableColumn dataTableColumn = new DataTableColumn();

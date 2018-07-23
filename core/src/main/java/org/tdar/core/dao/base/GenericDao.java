@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
@@ -40,11 +41,10 @@ import org.tdar.core.bean.resource.HasStatic;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /**

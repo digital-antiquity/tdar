@@ -78,9 +78,7 @@ public class SensoryDataController extends AbstractInformationResourceController
 
     @Override
     public Collection<String> getValidFileExtensions() {
-        List<String> validExtensions = new ArrayList<String>();
-        validExtensions.addAll(getAnalyzer().getExtensionsForTypes(ResourceType.SENSORY_DATA, ResourceType.CODING_SHEET));
-        return validExtensions;
+        return getExtensionsForType(ResourceType.SENSORY_DATA, ResourceType.CODING_SHEET);
     }
 
     public List<SensoryDataImage> getSensoryDataImages() {

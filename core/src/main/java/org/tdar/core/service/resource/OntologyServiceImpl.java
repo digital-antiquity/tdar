@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,23 +24,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.OntologySearchFilter;
 import org.tdar.core.dao.resource.OntologyDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
-import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
+import org.tdar.db.parser.OwlApiHierarchyParser;
+import org.tdar.db.parser.OwlOntologyConverter;
+import org.tdar.db.parser.TOntologyNode;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Transactional service providing persistence access to OntologyS as well as OWL access to Ontology files.
@@ -79,8 +82,6 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
     public void shred(Ontology ontology) {
         InformationResourceFileVersion latestUploadedFile = ontology.getLatestUploadedVersion();
         // Collection<InformationResourceFileVersion> latestVersions = ontology.getLatestVersions(VersionType.UPLOADED);
-        // check if the existing ontology had any previously mapped ontology nodes
-        int numberOfMappedValues = getDao().getNumberOfMappedDataValues(ontology);
         List<OntologyNode> existingOntologyNodes = ontology.getOntologyNodes();
         // FIXME: should short-circuit if there's no ontology nodes to reconcile.
         getLogger().debug("FILE: {} {}", latestUploadedFile.getFilename(), latestUploadedFile.getFileVersionType());
@@ -94,25 +95,19 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
             OwlApiHierarchyParser parser;
             try {
                 OwlOntologyConverter converter = new OwlOntologyConverter();
-                parser = new OwlApiHierarchyParser(ontology, converter.toOwlOntology(latestUploadedFile));
+                parser = new OwlApiHierarchyParser(converter.toOwlOntology(latestUploadedFile));
             } catch (FileNotFoundException e) {
                 logger.warn("file not found: {}", e);
                 throw new TdarRecoverableRuntimeException("error.file_not_found", e, Arrays.asList(latestUploadedFile.getFilename()));
             }
-            List<OntologyNode> incomingOntologyNodes = parser.generate();
+            List<TOntologyNode> incomingOntologyNodes = parser.generate();
             getLogger().debug("created {} ontology nodes from {}", incomingOntologyNodes.size(), latestUploadedFile.getFilename());
             // start reconciliation process
-            if (numberOfMappedValues > 0) {
-                getLogger().debug("had mapped values, reconciling {} with {}", existingOntologyNodes, incomingOntologyNodes);
-                reconcile(existingOntologyNodes, incomingOntologyNodes);
-            } else {
-                getLogger().debug("has no mappings... deleting ontology and replacing");
-            }
-            getDao().removeReferencesToOntologyNodes(existingOntologyNodes);
-            getDao().delete(existingOntologyNodes);
-            getDao().saveOrUpdate(incomingOntologyNodes);
+            getLogger().debug("had mapped values, reconciling {} with {}", existingOntologyNodes, incomingOntologyNodes);
+            reconcile(ontology, incomingOntologyNodes);
             logger.debug("existing ontology nodes: {}", ontology.getOntologyNodes());
-            ontology.getOntologyNodes().addAll(incomingOntologyNodes);
+            getDao().saveOrUpdate(existingOntologyNodes);
+
             owlOntologyManager.removeOntology(parser.getOwlOntology());
         }
     }
@@ -125,11 +120,131 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
      * @param existingOntologyNodes
      * @param incomingOntologyNodes
      */
-    private void reconcile(List<OntologyNode> existingOntologyNodes, List<OntologyNode> incomingOntologyNodes) {
+    private void reconcile(Ontology ontology, List<TOntologyNode> incomingOntologyNodes) {
+        List<OntologyNode> existingOntologyNodes = ontology.getOntologyNodes();
         getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
         getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
 
         HashMap<String, OntologyNode> existingSet = new HashMap<>();
+        for (OntologyNode node : ontology.getOntologyNodes()) {
+            existingSet.put(node.getIri(), node);
+        }
+        List<OntologyNode> toRemove = new ArrayList<>();
+        List<Long> seenIds = new ArrayList<>();
+        List<TOntologyNode> incomingList = new ArrayList<>(incomingOntologyNodes);
+        seenIds.addAll(reconcileExistingMatchesByIrI(existingSet, incomingList));
+        seenIds.addAll(reconcileExistingMatchingOnSynonyms(ontology, existingSet,incomingList));
+
+        
+        Iterator<OntologyNode> iterator = ontology.getOntologyNodes().iterator();
+        while (iterator.hasNext()) {
+            OntologyNode node = iterator.next();
+            if (!seenIds.contains(node.getId()) && PersistableUtils.isNotTransient(node)) {
+                toRemove.add(node);
+                iterator.remove();
+            }
+        }
+        getDao().removeReferencesToOntologyNodes(toRemove);
+
+        getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
+        getLogger().debug("removing ontology nodes: {}", toRemove);
+        getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
+        getDao().delete(toRemove);
+    }
+
+    private Set<Long> reconcileExistingMatchingOnSynonyms(Ontology ontology, HashMap<String, OntologyNode> existingSet, List<TOntologyNode> incomingList) {
+        Set<Long> seenIds = new HashSet<>();
+        Iterator<TOntologyNode> iterator = incomingList.iterator();
+        while (iterator.hasNext()) {
+            TOntologyNode incoming = iterator.next();
+            OntologyNode existing = null;
+            for (OntologyNode existing_ : existingSet.values()) {
+                for (String syn : existing_.getSynonyms()) {
+                    if (StringUtils.equals(syn, incoming.getDisplayName()) || incoming.getSynonyms().contains(syn)) {
+                        existing = existing_;
+                        break;
+                    }
+                    if (existing != null) {
+                        break;
+                    }
+                }
+            }
+            
+            if (incoming.getDisplayName().contains("Mandible") || incoming.getDisplayName().contains("Dentary") ) {
+                logger.debug("existing: {}; incoming: {} / {} ",existing, incoming.getIri(), incoming.getDisplayName());
+            }
+            
+            if (existing != null) {
+                Long original = existing.getId();
+                seenIds.add(original);
+                iterator.remove();
+            } else {
+                existing = new OntologyNode();
+                existing.setOntology(ontology);
+                ontology.getOntologyNodes().add(existing);
+            }
+            copyIncomingToExisting(incoming, existing);
+
+            existingSet.remove(incoming.getDisplayName());
+        }
+        return seenIds;
+    }
+
+    private Set<Long> reconcileExistingMatchesByIrI(HashMap<String, OntologyNode> existingSet, List<TOntologyNode> incomingList) {
+        Set<Long> seenIds = new HashSet<>();
+        Iterator<TOntologyNode> iterator = incomingList.iterator();
+        while (iterator.hasNext()) {
+            TOntologyNode incoming = iterator.next();
+            OntologyNode existing = existingSet.get(incoming.getIri());
+            if (incoming.getDisplayName().contains("Mandible") || incoming.getDisplayName().contains("Dentary") ) {
+                logger.debug("existing: {}; incoming: {} / {} ",existing, incoming.getIri(), incoming.getDisplayName());
+            }
+            
+            if (existing != null) {
+                Long original = existing.getId();
+                seenIds.add(original);
+                copyIncomingToExisting(incoming, existing);
+                iterator.remove();
+            }
+
+            existingSet.remove(incoming.getIri());
+        }
+        return seenIds;
+    }
+
+    private void copyIncomingToExisting(TOntologyNode incoming, OntologyNode existing) {
+        existing.setImportOrder(incoming.getImportOrder());
+        existing.setDescription(incoming.getDescription());
+        existing.setDisplayName(incoming.getDisplayName());
+        existing.setIndex(incoming.getIndex());
+        existing.setIri(incoming.getIri());
+        existing.setIntervalStart(incoming.getIntervalStart());
+        existing.setIntervalEnd(incoming.getIntervalEnd());
+        existing.setUri(incoming.getUri());
+        existing.setSynonyms(incoming.getSynonyms());
+    }
+
+    private OntologyNode getExisting(HashMap<String, OntologyNode> existingSet, HashMap<String, OntologyNode> synonymsSet, TOntologyNode incoming) {
+        /*
+         * Equivalency logic is as follows:
+         * test equivalency of incoming and existing. If there is a match (the first match) then take it, and stop evaluating.
+         * A potential problem here is if synonyms have matches to multiple nodes. Look at "Other Tool/Unknown Tool" in
+         * ontology test cases
+         */
+
+        OntologyNode existing = existingSet.get(incoming.getIri());
+        if (existing == null) {
+            // ONLY MAP synonym to node if node remains umapped; e.g. if Dentary is a Synonym of Mandible, and Dentary becomes it's own Node, don't use the
+            // id for Mandible
+            OntologyNode synonym = synonymsSet.get(incoming.getDisplayName());
+            if (synonym != null && existingSet.get(synonym.getIri()) == null) {
+                existing = synonym;
+            }
+        } 
+        return existing;
+    }
+
+    private HashMap<String, OntologyNode> buildSynonyms(List<OntologyNode> existingOntologyNodes, HashMap<String, OntologyNode> existingSet) {
         HashMap<String, OntologyNode> synonymsSet = new HashMap<>();
         for (OntologyNode node : existingOntologyNodes) {
             existingSet.put(node.getIri(), node);
@@ -138,48 +253,7 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
             }
             synonymsSet.put(node.getDisplayName(), node);
         }
-
-        for (int index = 0; index < incomingOntologyNodes.size(); index++) {
-            // check to see if incoming has an equivalent in the existing nodes
-            // if so, steal the ID
-            OntologyNode incoming = incomingOntologyNodes.get(index);
-            /*
-             * Equivalency logic is as follows:
-             * test equivalency of incoming and existing. If there is a match (the first match) then take it, and stop evaluating.
-             * A potential problem here is if synonyms have matches to multiple nodes. Look at "Other Tool/Unknown Tool" in
-             * ontology test cases
-             */
-            OntologyNode existing = existingSet.get(incoming.getIri());
-            if (existing == null) {
-                // ONLY MAP synonym to node if node remains umapped; e.g. if Dentary is a Synonym of Mandible, and Dentary becomes it's own Node, don't use the
-                // id for Mandible
-                OntologyNode synonym = synonymsSet.get(incoming.getDisplayName());
-                if (synonym != null && existingSet.get(synonym.getIri()) == null) {
-                    existing = synonym;
-                }
-            }
-
-            if (existing == null) {
-                continue;
-            }
-            Long original = existing.getId();
-            Long incomingId = incoming.getId();
-            incoming = getDao().merge(incoming, existing);
-
-            getLogger().trace("{} {} -> {} <--> e: {} {} -> {} ", incomingId, incoming.getDisplayName(), incomingId, original, existing.getDisplayName(),
-                    original);
-            incomingOntologyNodes.set(index, incoming);
-            existingOntologyNodes.remove(existing);
-            existingSet.remove(existing.getIri());
-            synonymsSet.remove(existing.getDisplayName());
-            for (String synonym : existing.getSynonyms()) {
-                synonymsSet.remove(synonym);
-            }
-
-        }
-        existingOntologyNodes.removeAll(Collections.singleton(null));
-        getLogger().debug("existing ontology nodes: {}", existingOntologyNodes);
-        getLogger().debug("incoming ontology nodes: {}", incomingOntologyNodes);
+        return synonymsSet;
     }
 
     /*
@@ -284,7 +358,7 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
     @Override
     @Transactional(readOnly = true)
     public String toOwlXml(Long id, String fileTextInput) {
-        OwlOntologyConverter converter = new OwlOntologyConverter();
+        EnhancedOwlOntologyConverter converter = new EnhancedOwlOntologyConverter();
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
     }
 
@@ -313,6 +387,7 @@ public class OntologyServiceImpl extends ServiceInterface.TypedDaoBase<Ontology,
         OntologyNodeWrapper root = null;
         Set<OntologyNodeWrapper> roots = new HashSet<>();
         for (OntologyNode node : nodes) {
+            logger.debug("{}", node);
             OntologyNodeWrapper value = new OntologyNodeWrapper(node);
             if (!node.getIndex().contains(".")) {
                 root = value;

@@ -1,6 +1,6 @@
 package org.tdar.core.bean.coverage;
 
-import org.tdar.core.bean.HasLabel;
+import org.tdar.locale.HasLabel;
 
 /**
  * Enum to help manage the type of Date Information... it manages comparators and controller distinction logic.

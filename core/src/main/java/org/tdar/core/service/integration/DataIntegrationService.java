@@ -10,6 +10,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.UserRightsProxy;
@@ -17,7 +18,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
-import org.tdar.db.model.abstracts.IntegrationDatabase;
+import org.tdar.db.model.IntegrationDatabase;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -61,7 +62,7 @@ public interface DataIntegrationService {
      * @param ontology
      * @return
      */
-    CodingSheet createGeneratedCodingSheet(TextProvider provider, DataTableColumn column, TdarUser submitter, Ontology ontology);
+    CodingSheet createGeneratedCodingSheet(TextProvider provider, Dataset dataset, DataTableColumn column, TdarUser submitter, Ontology ontology);
 
     /**
      * @see #convertCodingSheetToCSV(CodingSheet, Collection)

@@ -35,10 +35,15 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.service.resource.DatasetImportUtils;
 import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.datatable.DataTableUtils;
+import org.tdar.db.datatable.ImportTable;
+import org.tdar.db.datatable.TDataTable;
+import org.tdar.db.datatable.TDataTableRelationship;
 import org.tdar.db.model.PostgresDatabase;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 
@@ -47,8 +52,8 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "rpms_corrected.mdb"), 1224L);
-        for (DataTable table : converter.getDataTables()) {
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "rpms_corrected.mdb"), 1224L);
+        for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
 
@@ -65,8 +70,8 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testSpatialDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "az-paleoindian-point-survey.mdb"), 1129L);
-        for (DataTable table : converter.getDataTables()) {
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR, "az-paleoindian-point-survey.mdb"), 1129L);
+        for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
 
@@ -78,18 +83,18 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     public void testConvertTableToCodingSheet() throws Exception {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
-        DataTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
+        ImportTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
         assertNotNull(dataTable);
 
         // need to solidfy the relationships before passing it onto the list function
-        Dataset dataset = new Dataset();
-        for (DataTable table : converter.getDataTables()) {
-            table.setDataset(dataset);
-        }
-        dataset.setDataTables(converter.getDataTables());
-        dataset.setRelationships(converter.getRelationships());
+//        Dataset dataset = new Dataset();
+//        for (TDataTable table : converter.getDataTables()) {
+//            table.setDataset(dataset);
+//        }
+//        dataset.setDataTables(converter.getDataTables());
+//        dataset.setRelationships(converter.getRelationships());
         logger.info("{}", converter.getRelationships());
-        List<DataTableRelationship> listRelationshipsForColumns = datasetService.listRelationshipsForColumns(dataTable.getColumnByName("basic_int"));
+        List<TDataTableRelationship> listRelationshipsForColumns = DataTableUtils.listRelationshipsForColumns(dataTable.getColumnByName("basic_int"), converter.getRelationships());
         assertEquals(1, listRelationshipsForColumns.size());
         // assertEquals("d_503_spital_abone_database_mdb_basic_int", listRelationshipsForColumns.get(0).getLocalTable().getName());
         // assertEquals("d_503_spital_abone_database_mdb_context_data", listRelationshipsForColumns.get(0).getForeignTable().getName());
@@ -100,11 +105,8 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testFindingRelationships() throws Exception {
-        DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
-        DataTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
         Dataset ds = new Dataset();
-        ds.setId(999L);
         ds.setTitle("test dataset");
         ds.setDescription("test");
         ds.markUpdated(getAdminUser());
@@ -114,11 +116,22 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         col.setName("test");
         col.setDescription("test");
         genericService.saveOrUpdate(col);
+        genericService.saveOrUpdate(ds);
+        
         ds.getManagedResourceCollections().add(col);
         genericService.saveOrUpdate(ds);
-        dataTable.setDataset(ds);
-        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), MessageHelper.getInstance(), dataTable.getColumnByName("basic_int"),
-                dataTable.getColumnByName("basic_int_exp"), null);
+        genericService.synchronize();
+        DatasetConverter converter = setupSpitalfieldAccessDatabase();
+        ImportTable dataTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
+        DataTable dt = new DataTable();
+//        dt.setDataset(ds);
+        dt.setName(dataTable.getName());
+        dt.setDisplayName(dt.getDisplayName());
+        DataTableColumn keyCol = DatasetImportUtils.createDataTableColumn(dataTable.getColumnByName("basic_int"), dt);
+        DataTableColumn valCol = DatasetImportUtils.createDataTableColumn(dataTable.getColumnByName("basic_int_exp"), dt);
+        ds.getDataTables().add(dt);
+        genericService.saveOrUpdate(dt);
+        CodingSheet codingSheet = datasetService.convertTableToCodingSheet(getUser(), MessageHelper.getInstance(), keyCol, valCol, null);
         Map<String, CodingRule> ruleMap = new HashMap<String, CodingRule>();
         for (CodingRule rule : codingSheet.getCodingRules()) {
             ruleMap.put(rule.getCode(), rule);
@@ -137,18 +150,17 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
             throws Exception {
         DatasetConverter converter = setupSpitalfieldAccessDatabase();
 
-        Set<DataTableRelationship> rels = converter.getRelationships();
+        Set<TDataTableRelationship> rels = converter.getRelationships();
         assertTrue(rels.size() > 0);
-        DataTable table = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
+        ImportTable table = converter.getDataTableByOriginalName("spital_abone_database_mdb_basic_int");
         String tableName = table.getName();
-        DataTableRelationship rel = converter.getRelationshipsWithTable(tableName).get(0);
+        TDataTableRelationship rel = converter.getRelationshipsWithTable(tableName).get(0);
         // assertEquals("d_503_spital_abone_database_mdb_basic_int", rel.getLocalTable().getName());
         // assertEquals("d_503_spital_abone_database_mdb_context_data", rel.getForeignTable().getName());
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getLocalColumn().getName());
         assertEquals("basic_int", rel.getColumnRelationships().iterator().next().getForeignColumn().getName());
         logger.info("TABLE:{}", tableName);
-        DataTable mainTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_main_table");
-
+        ImportTable mainTable = converter.getDataTableByOriginalName("spital_abone_database_mdb_main_table");
         tdarDataImportDatabase.selectAllFromTableInImportOrder(mainTable,
                 new ResultSetExtractor<Object>() {
                     @Override
@@ -230,11 +242,10 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testPgmDatabase() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "pgm-tdr-test-docs.mdb"), 1125L);
-        for (DataTable table : converter.getDataTables()) {
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "pgm-tdr-test-docs.mdb"), 1125L);
+        for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
-
         tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("d_1125_pgm_tdr_test_docs_mdb_spec_test"),
                 new ResultSetExtractor<Object>() {
                     @Override
@@ -265,8 +276,8 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDatabaseWithDateTimeAndDuplicateTableNames() throws FileNotFoundException, IOException {
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), "a32mo0296-306-1374-1375-mandan-nd.mdb"), 1224L);
-        for (DataTable table : converter.getDataTables()) {
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  "a32mo0296-306-1374-1375-mandan-nd.mdb"), 1224L);
+        for (TDataTable table : converter.getDataTables()) {
             logger.info("{}", table);
         }
 
@@ -277,12 +288,12 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
 
     public DatasetConverter setupSpitalfieldAccessDatabase() throws IOException {
         spitalIrId++;
-        DatasetConverter converter = convertDatabase(new File(getTestFilePath(), SPITAL_DB_NAME), spitalIrId);
+        DatasetConverter converter = convertDatabase(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  SPITAL_DB_NAME), spitalIrId);
         return converter;
     }
 
     public DatasetConverter convertDatabase(File file, Long irFileId) throws IOException, FileNotFoundException {
-        InformationResourceFileVersion accessDatasetFileVersion = makeFileVersion(file, irFileId);
+        FileStoreFile accessDatasetFileVersion = makeFileStoreFile(file, irFileId);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, accessDatasetFileVersion);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(accessDatasetFileVersion, tdarDataImportDatabase);

@@ -10,6 +10,8 @@ import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 /**
