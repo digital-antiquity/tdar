@@ -250,7 +250,8 @@
 
 <#macro homepageHeader>
 
-<section id="hero" class="container">
+<section id="hero">
+  <div class = "container">  
     <div class="px-5 pb-5 pt-3">
         <div class="container">
             <h2 class="display-3">What can you dig up?</h2>
@@ -267,6 +268,7 @@
             </form>
         </div>
     </div>
+  </div>
 </section>
 
 <#--     <div class="row">

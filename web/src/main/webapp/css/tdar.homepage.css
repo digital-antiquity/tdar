@@ -1,6 +1,7 @@
 #hero,  #jumbo {
         background: url(../images/r4/bg-home.jpg) center;
         background-repeat: no-repeat;
+        background-size: cover;
     }
     .jumbotron {background:none;}
     
