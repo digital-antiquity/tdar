@@ -611,7 +611,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public String getNewsRssFeed() {
-        return assistant.getStringProperty("news.rssFeed", "http://www.tdar.org/feed/");
+        return assistant.getStringProperty("news.rssFeed", "https://www.tdar.org/feed/");
     }
 
     public String getNewsUrl() {

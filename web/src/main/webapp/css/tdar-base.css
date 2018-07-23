@@ -9,11 +9,31 @@ input[autocomplete="off"]::-webkit-contacts-auto-fill-button {
 }
 
 
+.iwell {
+    border: 1px solid #CCC;
+    background: #EFEFEF;
+    border-radius: 6px;
+}
+
+.iwell div {
+    margin:1em;
+}
+
+.iwell p {
+    margin-top:10px;
+}
 /*
     History: this file represents the original source code as provided by Fervor
 */
 
 
+body.responsive-desktop br.responsive-large-desktop {
+    display:none;
+}
+
+body.responsive-tablet br.responsive-desktop {
+    display:none;
+}
 
 .fileinput-button input {
     cursor: pointer;

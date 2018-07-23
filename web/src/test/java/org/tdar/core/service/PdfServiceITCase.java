@@ -37,12 +37,12 @@ public class PdfServiceITCase extends AbstractIntegrationWebTestCase {
         /**
          * setup for jUnit
          */
-        File f = new File("target/tdar-web/WEB-INF/themes/tdar/cover_page.pdf");
+        File f = new File("target/tdar-web/WEB-INF/themes/cover_page.pdf");
         if (!f.exists()) {
-            File dir = new File("target/tdar-web/WEB-INF/themes/tdar/");
+            File dir = new File("target/tdar-web/WEB-INF/");
             dir.mkdirs();
             try {
-                FileUtils.copyFile(new File("src/main/webapp/WEB-INF/themes/tdar/cover_page.pdf"), f);
+                FileUtils.copyFile(new File("src/main/webapp/WEB-INF/cover_page.pdf"), f);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

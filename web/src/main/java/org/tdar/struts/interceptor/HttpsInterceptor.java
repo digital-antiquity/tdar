@@ -82,15 +82,21 @@ public class HttpsInterceptor implements Interceptor {
         response.setHeader("Frame-Options:", "DENY");
 
         if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()
-                || StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:")) {
+                || StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:") || isProxiedSecured(request)) {
             return invocation.invoke();
         }
-        logger.trace(" :: url: {} : {}", request.getRequestURI(), request.getQueryString());
-
+        
+        if (logger.isTraceEnabled()) {
+            logger.trace(" :: url: {}://{}:{}/{}?{}", request.getProtocol(), request.getServerName(), request.getServerPort(),request.getRequestURI(), request.getQueryString());
+        }
         if (request.getMethod().equalsIgnoreCase("get") || request.getMethod().equalsIgnoreCase("head")) {
             // change redirect to be permanent
             response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-            response.setHeader("Location", changeUrlProtocol("https", request));
+            String url_ = changeUrlProtocol("https", request);
+            if (logger.isTraceEnabled()) {
+                logger.trace("redirecting to: {}", url_);
+            }
+            response.setHeader("Location", url_);
 
             return null;
         } else if (invocation.getAction() instanceof TdarActionSupport) {
@@ -100,6 +106,13 @@ public class HttpsInterceptor implements Interceptor {
         }
 
         return TdarActionSupport.BAD_REQUEST;
+    }
+
+    private boolean isProxiedSecured(HttpServletRequest request) {
+        if (StringUtils.containsIgnoreCase(request.getHeader("X-Forwarded-Proto"), "https")) {
+            return true;
+        }
+        return false;
     }
 
     @Override
