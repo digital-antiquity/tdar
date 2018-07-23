@@ -735,4 +735,17 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         return getDao().findAllSorted(string);
     }
 
+    @Override
+    public Set<DataTableColumn> findSearchableColumns(Dataset ds) {
+        Set<DataTableColumn> cols = new HashSet<>();
+        ds.getDataTables().forEach(dt -> {
+            dt.getDataTableColumns().forEach(dtc -> {
+                if (dtc.isVisible() && dtc.isSearchField()) {
+                    cols.add(dtc);
+                }
+                
+            });
+        });
+        return cols;
+    }
 }

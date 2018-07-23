@@ -330,4 +330,10 @@
         author="abrin">
         <renameColumn tableName="page_block" oldColumnName="html" newColumnName="payload"/>
     </changeSet>
+    <changeSet id="radiocarbon-dataset-search-3"
+        author="abrin">
+         <addColumn tableName="data_table_column">
+            <column name="search_field" type="boolean" defaultValueBoolean="true"/>
+        </addColumn>
+    </changeSet>
  </databaseChangeLog>

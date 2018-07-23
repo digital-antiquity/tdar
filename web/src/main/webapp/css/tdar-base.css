@@ -1,3 +1,16 @@
+
+.advanced {
+    position: absolute;
+    top: 70px;
+    right:32px;
+}
+
+.advancedSearchbox {
+    background-color: white;
+    border:1px solid #CCC;
+    padding:10px;
+    z-index: 1000;
+}
 /** stop safari from autofilling **/
 input[autocomplete="off"]::-webkit-contacts-auto-fill-button {
   visibility: hidden;
@@ -248,7 +261,7 @@ header h1 {
 
 header nav, header form {
     float: right;
-    overflow: hidden;
+    /* overflow: hidden; */
     height: 100px;
 }
 
@@ -1036,6 +1049,10 @@ nav ul {
 /* TODO: this is necessary in bootstrap 2.2.2,  but I suspect it will be accounted for in later version  */
 .controls-row > div[class *="span"]:first-child {
     margin-left: 0;
+}
+
+.searchheader {
+    overflow:visible !important;
 }
 
 .searchheader input[type=text] {

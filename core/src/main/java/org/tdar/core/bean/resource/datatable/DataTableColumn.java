@@ -173,6 +173,9 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Column(columnDefinition = "boolean default TRUE")
     private boolean visible = true;
 
+    @Column(name="search_field",columnDefinition = "boolean default TRUE")
+    private boolean searchField = true;
+
     @Transient
     private Map<Long, List<String>> ontologyNodeIdToValuesMap;
 
@@ -540,5 +543,13 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
             return 0;
         }
         return sequenceNumber.compareTo(b.getSequenceNumber());
+    }
+
+    public boolean isSearchField() {
+        return searchField;
+    }
+
+    public void setSearchField(boolean searchField) {
+        this.searchField = searchField;
     }
 }

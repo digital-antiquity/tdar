@@ -65,6 +65,104 @@
                     <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
                     <input type="hidden" name="_tdar.searchType" value="simple">
                 ${(page.properties["div.divSearchContext"])!""}
+                <div class="advanced container">
+                <div class="row">
+                <div class="span6 offset6 advancedSearchbox">
+                <h5>More search options</h5>
+                
+                <div class="control-group">
+        <label class="control-label">What:</label>
+
+        <div class="controls controls-row">
+<label class="radio">
+  <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE" checked>
+  Resources
+</label>
+<label class="radio">
+  <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION" checked>
+  Collections
+</label>
+<label class="radio">
+  <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE" checked>
+  People
+</label>
+<label class="radio">
+  <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS" checked>
+  Institutions
+</label>
+                </div>
+                
+                </div>
+                    <div class="searchgroup">
+    <div class="groupingSelectDiv control-group fade">
+
+        <label class="control-label">Include in results</label>
+
+        <div class="controls controls-row">
+            <select name="groups[0].operator" class="span5" style="display: none;">
+                <option value="AND" selected="">When resource matches ALL terms below</option>
+                <option value="OR">When resource matches ANY terms below</option>
+            </select>
+        </div>
+    </div>
+    <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
+
+    <div id="grouptablerow_0_" class="control-group termrow repeat-row">
+    <select id="group0searchType_0_" name="groups[0].fieldTypes[0]" class="control-label searchType repeatrow-noreset" style="font-size:smaller">
+                <optgroup label="Basic Fields">
+    <option value="ALL_FIELDS">All Fields</option>
+    <option value="TITLE">Title</option>
+    <option value="DESCRIPTION">Description</option>
+    <option value="CONTENTS">Full-Text</option>
+    <option value="RESOURCE_CREATOR_PERSON">Person</option>
+    <option value="RESOURCE_CREATOR_INSTITUTION">Institution</option>
+    <option value="TDAR_ID">Id</option>
+    <option value="COVERAGE_DATE_CALENDAR">Calendar Dates</option>
+    <option value="COVERAGE_DATE_RADIOCARBON">RadioCarbon Dates</option>
+    <option value="PROJECT">Project</option>
+    <option value="COLLECTION">Collection</option>
+    <option value="FILENAME">File Name</option>
+    <option value="DATE_CREATED">Year</option>
+    <option value="DATE_REGISTERED">Date Created</option>
+    <option value="DATE_UPDATED">Date Updated</option>
+                        </optgroup>
+                <optgroup label="Controlled Keywords">
+    <option value="KEYWORD_INVESTIGATION">Investigation Types</option>
+    <option value="KEYWORD_SITE">Site Type(Controlled)</option>
+    <option value="KEYWORD_MATERIAL">Material Types</option>
+    <option value="KEYWORD_CULTURAL">Culture Keywords</option>
+                        </optgroup>
+                <optgroup label="Freeform Keywords">
+    <option value="FFK_GEOGRAPHIC">Geographic Keywords</option>
+    <option value="FFK_SITE">Site Names</option>
+    <option value="FFK_SITE_TYPE">Site Type</option>
+    <option value="FFK_CULTURAL">Culture Keywords</option>
+    <option value="FFK_MATERIAL">Material Keywords</option>
+    <option value="FFK_TEMPORAL">Temporal Keywords</option>
+    <option value="FFK_GENERAL">General Keywords</option>
+    </optgroup>
+    </select>
+        <div class="controls controls-row simple multiIndex">
+            <div class="span8 term-container">
+                            <span class="term retain ALL_FIELDS simple multiIndex">
+                                <input type="text" name="groups[0].allFields[0]" class="input-xxlarge">
+                            </span>
+            </div>
+            <div class="span1">
+    <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1"><i class="icon-trash"></i></button>
+            </div>
+        </div>
+    </div>
+    </div><div class="control-group add-another-control"><div class="controls"><button class="btn addanother" id="groupTable0AddAnotherButton" type="button"><i class="icon-plus-sign"></i>add another search term</button></div></div>
+
+                </div>
+                <script>
+                </script>
+                
+                </div>
+                </div>
+                </div>
+                </div>
                 </form>
             </#if>
         </li>
