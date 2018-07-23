@@ -8,7 +8,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -46,14 +46,14 @@ public class ResourceController extends AbstractAuthenticatableAction {
     @Actions(value = {
             @Action(value = "add",
                     results = {
-                            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.CART_ADD),
-                            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.MY_PROFILE),
                             @Result(name = SUCCESS, location = "add.ftl")
                     }),
             @Action(value = "add/{projectId}",
                     results = {
-                            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.CART_ADD),
-                            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.MY_PROFILE),
                             @Result(name = SUCCESS, location = "add.ftl")
                     })
 

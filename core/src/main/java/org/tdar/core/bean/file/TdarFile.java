@@ -3,7 +3,10 @@ package org.tdar.core.bean.file;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,16 +26,17 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.HasTables;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @DiscriminatorValue(value = "FILE")
-public class TdarFile extends AbstractFile {
+public class TdarFile extends AbstractFile implements HasTables {
 
     private static final long serialVersionUID = 8710509667556337547L;
     @Column(name = "file_size")
@@ -92,15 +96,34 @@ public class TdarFile extends AbstractFile {
     @JoinColumn(name = "resource_id")
     private InformationResource resource;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "file_id", nullable = true)
+    private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "file_id", nullable = true)
+    private Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
+
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = true, name = "part_of_id")
     private List<TdarFile> parts = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(nullable = false, updatable = true, name = "version_of_id")
+    private List<TdarFileVersion> versions = new ArrayList<>();
 
     @Column(name = "part_of_id", updatable = false, insertable = false)
     private Long partOfId;
 
     @Column(name = "resource_id", updatable = false, insertable = false)
     private Long resourceId;
+
+    @Column
+    private Integer length;
+    @Column
+    private Integer height;
+    @Column
+    private Integer width;
 
     public TdarFile() {
     }
@@ -387,4 +410,53 @@ public class TdarFile extends AbstractFile {
         }
         return getResource().getSubmitter();
     }
+
+    public List<TdarFileVersion> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(List<TdarFileVersion> versions) {
+        this.versions = versions;
+    }
+
+    public Set<DataTableRelationship> getRelationships() {
+        return relationships;
+    }
+
+    public void setRelationships(Set<DataTableRelationship> relationships) {
+        this.relationships = relationships;
+    }
+
+    public Set<DataTable> getDataTables() {
+        return dataTables;
+    }
+
+    public void setDataTables(Set<DataTable> dataTables) {
+        this.dataTables = dataTables;
+    }
+
+    public Integer getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
 }

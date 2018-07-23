@@ -28,6 +28,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.RequestCollection;
@@ -37,6 +38,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -52,7 +54,6 @@ import org.tdar.core.bean.statistics.ResourceAccessStatistic;
 import org.tdar.core.cache.Caches;
 import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.cache.HomepageResourceCountCache;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.base.GenericDao;
@@ -64,12 +65,12 @@ import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.transform.MetaTag;
@@ -817,8 +818,9 @@ public class ResourceServiceImpl implements ResourceService {
                 List<DataTable> related = dataTableDao.findDataTablesUsingResource(persistable);
                 if (CollectionUtils.isNotEmpty(related)) {
                     for (DataTable table : related) {
-                        if (!table.getDataset().isDeleted()) {
-                            issue.getRelatedItems().add(table.getDataset());
+                        Dataset dataset = dataTableDao.findDatasetForTable(table);
+                        if (!dataset.isDeleted()) {
+                            issue.getRelatedItems().add(dataset);
                         }
                     }
                     issue.setIssue(provider.getText("abstractSupportingInformationResourceController.remove_mappings"));

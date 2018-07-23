@@ -1,8 +1,7 @@
 package org.tdar.oai;
 
+import java.beans.Transient;
 import java.io.IOException;
-
-import javax.persistence.Transient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,6 @@ public class OaiPmhAppConfiguration extends AbstractAppConfiguration {
 
     private static final long serialVersionUID = 4421598143486325549L;
 
-    @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Bean(name = "AuthenticationProvider")

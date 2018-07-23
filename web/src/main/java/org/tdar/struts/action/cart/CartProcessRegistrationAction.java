@@ -9,7 +9,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
@@ -30,7 +30,7 @@ import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 @Results({
         @Result(name = TdarActionSupport.INPUT, location = "review-unauthenticated.ftl"),
         // route to the billing account selection page for now, even though user has one choice
-        @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.CART_REVIEW_PURCHASE, type = TdarActionSupport.TDAR_REDIRECT)
+        @Result(name = TdarActionSupport.SUCCESS, location = UrlConstants.CART_REVIEW_PURCHASE, type = TdarActionSupport.TDAR_REDIRECT)
 })
 @Namespace("/cart")
 @ParentPackage("default")

@@ -7,7 +7,7 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;

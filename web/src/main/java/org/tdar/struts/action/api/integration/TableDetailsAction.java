@@ -11,10 +11,12 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.DataIntegrationService;
+import org.tdar.core.service.resource.DataTableService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.json.JacksonView;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
@@ -32,6 +34,9 @@ public class TableDetailsAction extends AbstractJsonApiAction implements Validat
 
     @Autowired
     DataIntegrationService integrationService;
+
+    @Autowired
+    DataTableService dataTableService;
 
     @Autowired
     AuthorizationService authorizationService;
@@ -60,8 +65,9 @@ public class TableDetailsAction extends AbstractJsonApiAction implements Validat
         super.validate();
         List<DataTable> tables = getGenericService().findAll(DataTable.class, dataTableIds);
         for (DataTable table : tables) {
-            authorizationService.canView(getAuthenticatedUser(), table.getDataset());
-            getActionErrors().add(getText("tableDetailsAction.cannot_integrate", Arrays.asList(table.getDataset().getTitle())));
+            Dataset ds = dataTableService.findDatasetForTable(table);
+            authorizationService.canView(getAuthenticatedUser(), ds);
+            getActionErrors().add(getText("tableDetailsAction.cannot_integrate", Arrays.asList(ds.getTitle())));
         }
     }
 }

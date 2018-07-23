@@ -124,6 +124,7 @@ public class FileProxyServiceImpl implements FileProxyService {
             FileProxy proxy = iterator.next();
             if (proxy.getTdarFileId() != null) {
                 TdarFile file = genericDao.find(TdarFile.class, proxy.getTdarFileId());
+                proxy.setTdarFile(file);
                 if (file != null) {
                     logger.debug("{}, {} {}", file, file.getName(), file.getLocalPath());
                     proxy.setFile(new File(file.getLocalPath()));

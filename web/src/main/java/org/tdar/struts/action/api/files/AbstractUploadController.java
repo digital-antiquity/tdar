@@ -129,6 +129,7 @@ public abstract class AbstractUploadController extends AbstractJsonApiAction imp
 
         List<TdarFile> hashCodes = new ArrayList<>();
         try {
+            getLogger().debug("uploading: {}", uploadFileFileName);
             hashCodes = filestoreService.store(getAuthenticatedUser(), uploadFile, uploadFileFileName, uploadFileContentType, getTicket(), this,
                     account, parent);
         } catch (FileUploadException fue) {

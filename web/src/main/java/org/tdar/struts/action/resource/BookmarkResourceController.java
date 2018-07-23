@@ -12,7 +12,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -87,7 +87,7 @@ public class BookmarkResourceController extends AbstractAuthenticatableAction im
 
     @Action(value = "bookmark",
             results = {
-                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.BOOKMARKS)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.BOOKMARKS)
             })
     public String bookmarkResourceAction() {
         success = bookmarkResource();
@@ -105,7 +105,7 @@ public class BookmarkResourceController extends AbstractAuthenticatableAction im
 
     @Action(value = "removeBookmark",
             results = {
-                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.BOOKMARKS)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.BOOKMARKS)
             })
     public String removeBookmarkAction() {
         success = removeBookmark();

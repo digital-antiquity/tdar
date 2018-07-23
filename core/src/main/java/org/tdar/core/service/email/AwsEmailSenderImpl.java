@@ -8,8 +8,8 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.EmailRawMessageHelper;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -39,7 +39,7 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final TdarConfiguration config = TdarConfiguration.getInstance();
 
-    private Regions awsRegion = config.getAwsRegion();
+//    private Regions awsRegion = config.getAwsRegion();
 
     @Override
     public SendEmailResult sendMessage(Email awsMessage) {
@@ -63,10 +63,10 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
         return response;
     }
 
-    @Override
-    public void setAwsRegion(Regions region) {
-        this.awsRegion = region;
-    }
+//    @Override
+//    public void setAwsRegion(Regions region) {
+//        this.awsRegion = region;
+//    }
 
     private Content createContent(String content) {
         String characterSet = TdarConfiguration.getInstance().getCharacterSet();
@@ -79,8 +79,16 @@ public class AwsEmailSenderImpl implements AwsEmailSender {
 
     private AmazonSimpleEmailService getSesClient() {
         AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(getAwsCredentials())).withRegion(awsRegion).build();
+                .withCredentials(new AWSStaticCredentialsProvider(getAwsCredentials())).withRegion(getRegion()).build();
         return client;
+    }
+
+    private Regions getRegion() {
+        String awsRegion = config.getAwsRegion();
+        if (awsRegion == null) {
+            return Regions.DEFAULT_REGION;
+        }
+        return Regions.fromName(awsRegion);
     }
 
     @Override

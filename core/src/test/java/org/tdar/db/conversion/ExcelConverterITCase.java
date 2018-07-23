@@ -28,13 +28,14 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ExcelConverter;
+import org.tdar.db.datatable.ImportTable;
+import org.tdar.db.datatable.TDataTable;
+import org.tdar.db.datatable.TDataTableColumn;
 import org.tdar.db.model.PostgresDatabase;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -55,14 +56,13 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDARDATA_SMALL_BATCH })
     public void testBatchImportRows() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "batch-import.xlsx"), 101);
+        FileStoreFile weirdColumnsDataset = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "batch-import.xlsx"), 101);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
-        Set<DataTable> dataTables = converter.getDataTables();
+        Set<TDataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
-        DataTable table = dataTables.iterator().next();
+        TDataTable table = dataTables.iterator().next();
         // List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
-
         Integer total = tdarDataImportDatabase.selectAllFromTable(table, new ResultSetExtractor<Integer>() {
 
             @Override
@@ -82,16 +82,17 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testBlankExceedingRows() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), TestConstants.PUNDO_FAUNAL_REMAINS_XLS), 509);
+        FileStoreFile weirdColumnsDataset = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "Pundo faunal remains.xls"), 509);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
-        Set<DataTable> dataTables = converter.getDataTables();
+        Set<TDataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
-        DataTable table = dataTables.iterator().next();
-        List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
+        TDataTable table = dataTables.iterator().next();
+        List<TDataTableColumn> dataTableColumns = table.getDataTableColumns();
         assertEquals(5, dataTableColumns.size());
         int i = 1; // 0 is the tDAR ID Column which may not be returned
-        for (DataTableColumn col : table.getSortedDataTableColumns()) {
+        List<TDataTableColumn> sorted = table.getSortedDataTableColumns();
+        for (TDataTableColumn col : sorted) {
             logger.trace("{} : {}", col.getSequenceNumber(), col);
             assertEquals(Integer.valueOf(i), col.getSequenceNumber());
             i++;
@@ -101,7 +102,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testPoiInfiniteLoop() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "infinite-loop.xlsx"), 519);
+        FileStoreFile weirdColumnsDataset = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "infinite-loop.xlsx"), 519);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
     }
@@ -109,7 +110,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testStdeva() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), TestConstants.STDEV_DATASET), 520);
+        FileStoreFile weirdColumnsDataset = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "stdev.xlsx"), 520);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         String msg = null;
         try {
@@ -125,12 +126,12 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testBlankExceedingRowsAndExtraColumnAtEnd() throws IOException {
-        importSpreadsheetAndConfirmExceptionIsThrown(new File(getTestFilePath(), "Pundo_degenerate.xls"),
+        importSpreadsheetAndConfirmExceptionIsThrown(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "Pundo_degenerate.xls"),
                 "Appendix 8 (2) - row #49 has more columns (6) than this sheet has column names (5)");
     }
 
     private void importSpreadsheetAndConfirmExceptionIsThrown(File spreadsheet, String expectedErrorMessage) throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(spreadsheet, 529);
+        FileStoreFile weirdColumnsDataset = makeFileStoreFile(spreadsheet, 529);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         try {
             converter.execute();
@@ -143,12 +144,12 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testArtifactDatasetFromFilemaker() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "fmp_artifacts.xlsx"), 505);
+        FileStoreFile weirdColumnsDataset = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "fmp_artifacts.xlsx"), 505);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
-        Set<DataTable> dataTables = converter.getDataTables();
+        Set<TDataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
-        DataTable dataTable = dataTables.iterator().next();
+        TDataTable dataTable = dataTables.iterator().next();
         assertNotNull(dataTable.getColumnByDisplayName("Period"));
         assertNotNull(dataTable.getColumnByName("col_period"));
         assertNotNull(dataTable.getColumnByDisplayName("Stratigraphy"));
@@ -165,12 +166,12 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testColumnNameFormatIssues() throws IOException {
-        InformationResourceFileVersion weirdColumnsDataset = makeFileVersion(new File(getTestFilePath(), "weird_column_headings.xlsx"), 502);
+        FileStoreFile weirdColumnsDataset = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "weird_column_headings.xlsx"), 502);
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, weirdColumnsDataset);
         converter.execute();
-        Set<DataTable> dataTables = converter.getDataTables();
+        Set<TDataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
-        DataTable dataTable = dataTables.iterator().next();
+        TDataTable dataTable = dataTables.iterator().next();
         assertNotNull(dataTable.getColumnByDisplayName("Period"));
         assertNotNull(dataTable.getColumnByDisplayName("SumOfNo"));
         assertNotNull(dataTable.getColumnByDisplayName("1.00"));
@@ -184,13 +185,13 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConverterAllStrings() throws Exception {
-        InformationResourceFileVersion datasetTextOnly = makeFileVersion(new File(getTestFilePath(), "dataset_all_text.xls"), 500);
+        FileStoreFile datasetTextOnly = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "dataset_all_text.xls"), 500);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, datasetTextOnly);
         assertTrue("text file exists", storedFile.exists());
 
         ExcelConverter converter = new ExcelConverter(tdarDataImportDatabase, datasetTextOnly);
         converter.execute();
-        DataTable table = converter.getDataTables().iterator().next();
+        TDataTable table = converter.getDataTables().iterator().next();
         assertTrue("table created", table.getName().indexOf("dataset_all_text") > 0);
 
         // confirm that all the columns in the new table are varchar
@@ -211,16 +212,15 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConverterWithInts() throws Exception {
-        InformationResourceFileVersion datasetWithInts = makeFileVersion(new File(getTestFilePath(), "dataset_with_ints.xls"), 501);
+        FileStoreFile datasetWithInts = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "dataset_with_ints.xls"), 501);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, datasetWithInts);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(datasetWithInts, tdarDataImportDatabase);
 
         converter.execute();
-        DataTable table = converter.getDataTables().iterator().next();
+        TDataTable table = converter.getDataTables().iterator().next();
         assertEquals("table created", -1, table.getName().indexOf("sheet1"));
         assertTrue("table created", table.getName().indexOf("dataset_with_ints") > 0);
-
         // confirm that all the columns in the new table are ints
         tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
                 new ResultSetExtractor<Object>() {
@@ -241,16 +241,15 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConverterWithDates() throws Exception {
-        InformationResourceFileVersion datasetWithDates = makeFileVersion(new File(getTestFilePath(), "dataset_with_dates.xls"), 592);
+        FileStoreFile datasetWithDates = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "dataset_with_dates.xls"), 592);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, datasetWithDates);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(datasetWithDates, tdarDataImportDatabase);
 
         converter.execute();
-        DataTable table = converter.getDataTables().iterator().next();
+        TDataTable table = converter.getDataTables().iterator().next();
         assertEquals("table created", -1, table.getName().indexOf("sheet1"));
         assertTrue("table created", table.getName().indexOf("dataset_with_dates") > 0);
-
         // confirm that all the columns in the new table are dates
         tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
                 new ResultSetExtractor<Object>() {
@@ -282,14 +281,13 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testConverterWithFloats() throws Exception {
-        InformationResourceFileVersion datasetWithFloats = makeFileVersion(new File(getTestFilePath(), "dataset_with_floats.xls"), 502);
+        FileStoreFile datasetWithFloats = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "dataset_with_floats.xls"), 502);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, datasetWithFloats);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(datasetWithFloats, tdarDataImportDatabase);
         converter.execute();
-        DataTable table = converter.getDataTables().iterator().next();
+        ImportTable table = converter.getDataTables().iterator().next();
         assertTrue("table created", table.getName().indexOf("dataset_with_floats") > 0);
-
         // confirm that all the columns in the new table are ints
         tdarDataImportDatabase.selectAllFromTableInImportOrder(table,
                 new ResultSetExtractor<Object>() {
@@ -309,13 +307,13 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testConverterWithMultipleSheetsAndHiddenFields()
             throws Exception {
-        InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(), "england_woods.xlsx"), 503);
+        FileStoreFile datasetWithHiddenFields = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,   "england_woods.xlsx"), 503);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, datasetWithHiddenFields);
         assertTrue("text file exists", storedFile.exists());
         DatasetConverter converter = DatasetConversionFactory.getConverter(datasetWithHiddenFields, tdarDataImportDatabase);
         converter.execute();
-        DataTable dataTable = null;
-        for (DataTable table : converter.getDataTables()) {
+        ImportTable dataTable = null;
+        for (ImportTable table : converter.getDataTables()) {
             if (table.getName().indexOf("englands_woods_catalog") > 0) {
                 dataTable = table;
             }
@@ -340,7 +338,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testMalformedExcelDatasetFromScott() throws IOException {
-        InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(),
+        FileStoreFile datasetWithHiddenFields = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  
                 "PFRAA_fake_Ferengi_trading_post_data_for tDAR test.xls"), 509);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, datasetWithHiddenFields);
         assertTrue("text file exists", storedFile.exists());
@@ -352,23 +350,23 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
             assertTrue(ex.getMessage().contains("row #8 has more columns") || ex.getCause().getMessage().contains("row #8 has more columns"));
             assertTrue(ex.getMessage().contains("IFTI Context codes") || ex.getCause().getMessage().contains("IFTI Context codes"));
         }
-        DataTable about = converter.getDataTableByName("e_509_about");
+        ImportTable about = converter.getDataTableByName("e_509_about");
         assertEquals(2, about.getColumnNames().size());
 
-        DataTable inventory = converter.getDataTableByName("e_509_pfraa_inveontory_data");
+        ImportTable inventory = converter.getDataTableByName("e_509_pfraa_inveontory_data");
         assertEquals(35, inventory.getColumnNames().size());
 
-        DataTable context = converter.getDataTableByName("e_509_ifti_context_codes");
+        ImportTable context = converter.getDataTableByName("e_509_ifti_context_codes");
         assertEquals(6, context.getColumnNames().size());
 
-        DataTable data = converter.getDataTableByName("e_509_pfraa_ifti_data");
+        ImportTable data = converter.getDataTableByName("e_509_pfraa_ifti_data");
         assertEquals(17, data.getColumnNames().size());
     }
 
     @Test
     @Rollback
     public void testMalformedFloatParse() throws IOException {
-        InformationResourceFileVersion datasetWithHiddenFields = makeFileVersion(new File(getTestFilePath(),
+        FileStoreFile datasetWithHiddenFields = makeFileStoreFile(TestConstants.getFile( TestConstants.TEST_DATA_INTEGRATION_DIR,  
                 "test_malformed_parse_float.xlsx"), 511);
         File storedFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, datasetWithHiddenFields);
         assertTrue("text file exists", storedFile.exists());
@@ -382,5 +380,6 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
         }
         assertFalse(exception);
     }
+    
 
 }

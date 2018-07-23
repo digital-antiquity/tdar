@@ -60,8 +60,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.filestore.VersionType;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -987,15 +987,6 @@ public abstract class InformationResource extends Resource {
     @XmlTransient
     public InformationResource getTransientCopyForWorkflow() {
         return null;
-    }
-
-    /**
-     * Override this method to write back the fields that may have been changed in the transient copy
-     * 
-     * @param transientCopy
-     */
-    public void updateFromTransientResource(InformationResource transientCopy) {
-        // Should we throw an exception if we are here ?
     }
 
     public boolean isInheritingIndividualAndInstitutionalCredit() {

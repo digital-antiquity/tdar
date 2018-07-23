@@ -22,6 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.db.parser.OwlApiHierarchyParser;
+import org.tdar.db.parser.TOntologyNode;
 
 /**
  * $Id$
@@ -73,18 +75,18 @@ public class OwlApiHierarchyParserTest {
         OWLOntology owlOntology = getOwlOntology();
         OwlApiHierarchyParser parser = new OwlApiHierarchyParser(owlOntology);
         Map<OWLClass, Set<OWLClass>> hierarchyMap = parser.getOwlHierarchyMap();
-        List<OntologyNode> nodes = parser.generate();
-        Map<OWLClass, OntologyNode> classNodeMap = parser.getOwlClassNodeMap();
+        List<TOntologyNode> nodes = parser.generate();
+        Map<OWLClass, TOntologyNode> classNodeMap = parser.getOwlClassNodeMap();
         assertFalse(nodes.isEmpty());
-        Collections.sort(nodes, new Comparator<OntologyNode>() {
+        Collections.sort(nodes, new Comparator<TOntologyNode>() {
             @Override
-            public int compare(OntologyNode a, OntologyNode b) {
+            public int compare(TOntologyNode a, TOntologyNode b) {
                 return a.getIri().compareTo(b.getIri());
             }
         });
 
         // ensure that all node interval starts are <= node ends
-        for (OntologyNode ontologyNode : nodes) {
+        for (TOntologyNode ontologyNode : nodes) {
             logger.debug(String.format("Label: %s, [%d, %d] (%s)", ontologyNode.getIri(), ontologyNode.getIntervalStart(), ontologyNode.getIntervalEnd(),
                     ontologyNode.getIndex()));
 
@@ -92,9 +94,9 @@ public class OwlApiHierarchyParserTest {
         }
         // ensure root node covers bounds for all nodes
         for (OWLClass rootClass : parser.getRootClasses()) {
-            OntologyNode rootNode = classNodeMap.get(rootClass);
+            TOntologyNode rootNode = classNodeMap.get(rootClass);
             assertNotNull(rootNode);
-            for (OntologyNode ontologyNode : nodes) {
+            for (TOntologyNode ontologyNode : nodes) {
                 if (rootNode.equals(ontologyNode)) {
                     continue;
                 }
@@ -105,9 +107,9 @@ public class OwlApiHierarchyParserTest {
         // test bounds for all children
         for (Map.Entry<OWLClass, Set<OWLClass>> entry : hierarchyMap.entrySet()) {
             OWLClass parentClass = entry.getKey();
-            OntologyNode parent = classNodeMap.get(parentClass);
+            TOntologyNode parent = classNodeMap.get(parentClass);
             for (OWLClass childClass : entry.getValue()) {
-                OntologyNode child = classNodeMap.get(childClass);
+                TOntologyNode child = classNodeMap.get(childClass);
                 assertTrue("parent start should always be less than child start", parent.getIntervalStart() < child.getIntervalStart());
                 assertTrue("parent end should always be greater than child end", parent.getIntervalEnd() > child.getIntervalEnd());
             }

@@ -142,7 +142,7 @@ public class ModernIntegrationDataResult implements Serializable {
             }
         }
         for (DataTable table : integrationContext.getDataTables()) {
-            labels.add(ModernDataIntegrationWorkbook.formatTableName(table));
+            labels.add(ModernDataIntegrationWorkbook.formatTableName(integrationContext.getTableMap().get(table), table));
         }
         return labels;
     }

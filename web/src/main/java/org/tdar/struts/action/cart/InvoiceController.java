@@ -15,7 +15,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
@@ -97,8 +97,8 @@ public class InvoiceController extends AbstractCartController {
     @Action(value = "process-choice",
             results = {
                     @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
-                    @Result(name = SUCCESS_UNAUTHENTICATED, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = UrlConstants.CART_REVIEW_PURCHASE),
+                    @Result(name = SUCCESS_UNAUTHENTICATED, type = TDAR_REDIRECT, location = UrlConstants.CART_REVIEW_UNAUTHENTICATED)
             })
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly

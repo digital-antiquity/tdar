@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -48,13 +49,13 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
+import org.tdar.db.datatable.DataTableColumnType;
+import org.tdar.db.datatable.TDataTable;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -360,10 +361,11 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
     public void testXLSCodingSheetUploadDoesNotGoThroughDatasetWorkflow() throws Exception {
         CodingSheet codingSheet = setupCodingSheet("semidegen.xlsx", TestConstants.TEST_CODING_SHEET_DIR + "semidegen.xlsx", null, null);
         for (InformationResourceFile file : codingSheet.getInformationResourceFiles()) {
-            Dataset transientDataset = (Dataset) file.getWorkflowContext().getTransientResource();
+//            Dataset transientDataset = (Dataset) file.getWorkflowContext().getTransientResource();
+            List<TDataTable> tables = file.getWorkflowContext().getDataTables();
             logger.info("file: {} ", file);
-            logger.info("dataset: {} ", transientDataset);
-            assertTrue((transientDataset == null) || CollectionUtils.isEmpty(transientDataset.getDataTables()));
+            logger.info("dataset: {} ", tables);
+            assertTrue(CollectionUtils.isEmpty(tables));
             assertTrue(CollectionUtils.isEmpty(file.getWorkflowContext().getExceptions()));
         }
     }

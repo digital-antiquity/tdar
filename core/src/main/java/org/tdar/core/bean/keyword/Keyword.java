@@ -5,11 +5,11 @@ import java.util.Set;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.locale.HasLabel;
 
 /**
  * Interface and Abstract Class for all keywords. Unique entities managed outside of resources, and linked to them.

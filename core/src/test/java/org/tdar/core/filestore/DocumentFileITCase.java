@@ -14,18 +14,19 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileStatus;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.workflows.GenericDocumentWorkflow;
-import org.tdar.core.service.workflow.workflows.PDFWorkflow;
-import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.GenericDocumentWorkflow;
+import org.tdar.fileprocessing.workflows.PDFWorkflow;
+import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -50,9 +51,9 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
 
         Document doc = generateAndStoreVersion(Document.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.DOCUMENT, fileType);
-        Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.DOCUMENT, originalVersion);
         assertEquals(PDFWorkflow.class, workflow.getClass());
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
@@ -70,9 +71,9 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
 
         Document doc = generateAndStoreVersion(Document.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.DOCUMENT, fileType);
-        Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.DOCUMENT, originalVersion);
         assertEquals(GenericDocumentWorkflow.class, workflow.getClass());
         logger.info("{}", originalVersion);
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);

@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrInputDocument;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.QueryFieldNames;

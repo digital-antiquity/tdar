@@ -10,9 +10,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * @author Adam Brin

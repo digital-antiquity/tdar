@@ -28,16 +28,17 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.excel.ExcelWorkbookWriter;
-import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.db.conversion.converters.ExcelWorkbookWriter;
+import org.tdar.db.conversion.converters.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.utils.PersistableUtils;
 
@@ -64,9 +65,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot;
     private ModernIntegrationDataResult result;
     private String rawIntegration;
+    private Map<DataTable, Dataset> map;
 
-    public ModernDataIntegrationWorkbook(TextProvider provider, ModernIntegrationDataResult result, String rawIntegration) {
+    public ModernDataIntegrationWorkbook(TextProvider provider, ModernIntegrationDataResult result, String rawIntegration, Map<DataTable,Dataset> map) {
         this.result = result;
+        this.map = map;
         result.setWorkbook(this);
         this.context = result.getIntegrationContext();
         this.person = context.getCreator();
@@ -210,9 +213,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         int max = 2 + increment * count;
         for (DataTable table : context.getDataTables()) {
             max = 2 + increment * count;
-            dataTableNameheader[max] = formatTableName(table);
+            dataTableNameheader[max] = formatTableName(map.get(table), table);
             datasetNameheader[max] = provider.getText("dataIntegrationWorkbook.name_paren_id",
-                    Arrays.asList(table.getDataset().getName(), table.getDataset().getId()));
+                    Arrays.asList(map.get(table).getName(), map.get(table).getId()));
             count++;
             header.addAll(Arrays.asList(provider.getText("dataIntegrationWorkbook.col_name"),
                     provider.getText("dataIntegrationWorkbook.col_name"), provider.getText("dataIntegrationWorkbook.col_description"),
@@ -338,8 +341,8 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         ));
     }
 
-    public static String formatTableName(DataTable table) {
-        return String.format("%s - %s", table.getDataset().getTitle(), table.getDisplayName());
+    public static String formatTableName(Dataset ds, DataTable table) {
+        return String.format("%s - %s", ds.getTitle(), table.getDisplayName());
     }
 
     public Workbook getWorkbook() {

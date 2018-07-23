@@ -2,8 +2,8 @@ package org.tdar.core.service.processes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.configuration.TdarConfiguration;
 
 public abstract class AbstractPersistableScheduledProcess<Q extends Persistable> extends AbstractScheduledProcess {
 

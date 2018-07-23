@@ -18,14 +18,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
-import org.tdar.core.bean.resource.file.HasExtension;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.filestore.HasExtension;
+import org.tdar.filestore.VersionType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,6 +47,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     private FileAction action = FileAction.NONE;
     private Long fileId = -1L;
     private Long tdarFileId = -1L;
+    private TdarFile tdarFile;
     private Long originalFileVersionId = -1L;
     private File file;
     private Long size;
@@ -333,5 +334,13 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     public void setTdarFileId(Long tdarFileId) {
         this.tdarFileId = tdarFileId;
+    }
+
+    public TdarFile getTdarFile() {
+        return tdarFile;
+    }
+
+    public void setTdarFile(TdarFile tdarFile) {
+        this.tdarFile = tdarFile;
     }
 }
