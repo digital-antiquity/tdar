@@ -31,7 +31,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         console.log("config:", config);
         var _fpart = Vue.component('fpart', {
             template : "#fpart-template",
-            props : [ "file", "index", "editable" ],
+            props : [ "file", "index", "abletoupload", "deletedisabled" ],
             data : function() {
                 return {
                     previousDeleteState : '',
@@ -60,7 +60,10 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     return "fileProxies[" + this.index + "].restriction";
                 },
                 inputDisabled : function() {
-                    return !this.editable;
+                    return !this.abletoupload;
+                },
+                deleteDisabled : function() {
+                    return this.deletedisabled;
                 },
                 createdDateFieldName : function() {
                     return "fileProxies[" + this.index + "].fileCreatedDate";
@@ -201,6 +204,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         }
                     }
                     return !this.ableToUpload;
+                },
+                deleteDisabled: function() {
+                    return false;
                 },
                 fileUploadButtonCss: function() {
                     var css = "btn btn-success fileinput-button ";
