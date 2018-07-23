@@ -48,7 +48,7 @@
         </div>
         <div class="col-lg-4 col-md-4 col-sm-4 center" style="margin-top: 10px;">
             <#if config.payPerIngestEnabled >
-                <a href="<@s.url value="/cart/add"/>" class="button">tDAR Pricing Information</a>
+                <a href="<@s.url value="/cart/add"/>" class="button">Archive a file for as low as $5</a>
             </#if>
         </div>
         <div class="col-lg-1 col-md-1 col-sm-1 center">

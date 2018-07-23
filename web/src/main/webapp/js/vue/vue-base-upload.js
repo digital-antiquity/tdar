@@ -27,7 +27,8 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         } else if (progress < 1) {
             $("#uploadstatus").html("");
         } else {
-            $("#uploadstatus").html("Uploading...");
+            $("#uploadstatus").html("Uploading... (" + progress + "%)" );
+            console.log("Uploading... (" + progress + "%)" );
         }
 
     }

@@ -43,6 +43,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             },
             mounted : function() {
                 var $picker = $("input.datepicker", this.el);
+                
                 TDAR.datepicker.applyHidden($picker);
                 var _app = this;
                 $picker.on("datechanged", function(e) {

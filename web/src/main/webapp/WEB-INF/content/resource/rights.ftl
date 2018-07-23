@@ -44,7 +44,6 @@
     </#if>
 </#macro>
 
-<@edit.personAutocompleteTemplate />
 
 <@rights.javascript />
 

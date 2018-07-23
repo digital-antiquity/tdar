@@ -54,7 +54,6 @@
     </#macro>
 
 
-<@edit.personAutocompleteTemplate />
 
 <@rights.javascript />
 

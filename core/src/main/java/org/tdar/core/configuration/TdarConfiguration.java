@@ -140,9 +140,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         initializeStopWords();
         intializeCouponCodes();
 
-        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
-            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
-        }
+//        if (isPayPerIngestEnabled() && !isHttpsEnabled()) {
+//            throw new IllegalStateException("cannot run with pay-per-ingest enabled and https disabled");
+//        }
 
         File filestoreLoc = new File(getFileStoreLocation());
         if (!filestoreLoc.exists()) {
@@ -611,7 +611,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public String getNewsRssFeed() {
-        return assistant.getStringProperty("news.rssFeed", "http://www.tdar.org/feed/");
+        return assistant.getStringProperty("news.rssFeed", "https://www.tdar.org/feed/");
     }
 
     public String getNewsUrl() {

@@ -489,8 +489,6 @@ Auth Info
 </script>
 
 
-    <@edit.personAutocompleteTemplate />
-
 </body>
 
 </#escape>
