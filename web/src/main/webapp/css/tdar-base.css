@@ -5,6 +5,11 @@
     right:32px;
 }
 
+
+.condensed {
+    margin-bottom:5px !important;    
+}
+
 .advancedSearchbox {
     background-color: white;
     border:1px solid #CCC;

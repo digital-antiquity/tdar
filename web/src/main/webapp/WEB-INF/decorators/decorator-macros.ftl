@@ -55,7 +55,6 @@
 <li><a href="https://www.tdar.org/about">About</a></li>
 <li><a href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>
 
-<!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
         <#if ((authenticatedUser.contributor)!true)>
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
         <li>
@@ -69,48 +68,51 @@
                 <div class="row">
                 <div class="span6 offset6 advancedSearchbox" id="advancedsearch" style="display: none">
                 <h5>More search options</h5>
-                <div class="control-group">
+                <div class="control-group condensed">
         <label class="control-label">What:</label>
 
         <div class="controls controls-row">
 			<label class="radio inline">
-			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE" checked>  Resources
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE">  Resources
 			</label>
 			<label class="radio inline">
-			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION" checked>  Collections
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION">  Collections
 			</label>
 			<label class="radio inline">
-			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE" checked>  People
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE">  People
 			</label>
 			<label class="radio inline">
-			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS" checked>  Institutions
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS" >  Institutions
 			</label>
         </div>
                 
     </div>
 
     <div class="searchgroup">
-    <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%">
-    	<div class="control-group" v-for="(row,index) in rows">
+    <div id="groupTable0" class="grouptable condensed repeatLastRow" style="width:100%">
+    	<div class="control-group condensed" v-for="(row,index) in rows">
 			<part :index="index" :row="row" :options="selectOptions" @removerow="removeRow($event)" :totalrows="rows.length"/>
     	</div>
     </div>
 
-    <div class="control-group add-another-control">
+    <div class="control-group condensed add-another-control">
     	<div class="controls">
     		<button class="btn" id="groupTable0AddAnotherButton" type="button" @click="addRow()"><i class="icon-plus-sign"></i>add another search term</button>
 		</div>
 	</div>
     <div class="groupingSelectDiv control-group fade" v-if="rows.length > 0" >
         <label class="control-label">Include in results</label>
-        <div class="controls controls-row">
+        <div class="controls controls-row condensed">
             <select name="groups[0].operator" class="span5" style="display: none;">
                 <option value="AND" selected="">When resource matches ALL terms below</option>
                 <option value="OR">When resource matches ANY terms below</option>
             </select>
         </div>
     </div>
-	<button class="button btn center">Search</button>
+    
+    <p class="text-center">
+	<button class="button btn tdar-button center">Search</button>
+	</p>
 
 
                 </div>
@@ -119,20 +121,34 @@
                 </div>
                 </div>
                 <script type="text/x-template"   id="search-row-template">
+    <div id="grouptablerow_0_" class="control-group termrow condensed ">
 
-    <div id="grouptablerow_0_" class="control-group termrow ">
     <select id="group0searchType_0_" v-model="option" name="groups[0].fieldTypes[0]" class="control-label searchType repeatrow-noreset" style="font-size:smaller">
-        <option v-for="(option, index) in options	" v-bind:value="option"> {{ option }}  </option>
+        <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
+        <option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option"> {{ option.name }}  </option>
+        </optgroup>
     </select>
-        <div class="controls controls-row simple multiIndex">
+        <div class="controls controls-row simple multiIndex condensed">
             <div class="span term-container">
-                            <span class="term">
-                                <input type="text" name="groups[0].allFields[0]" class="input">
-								</span>
+                <span v-if="option.type == 'basic'">
+                    <input type="text" name="groups[0].allFields[0]" class="input">
+                </span>
+                <span v-if="option.type == 'select'">
+                    <select name="name" multiple>
+                        <option v-for="(opt, i) in option.values">{{opt}}</option>
+                    </select>
+                </span>
+                <span v-if="option.type == 'integer'">
+                    <input type="number" name="groups[0].allFields[0]" class="input">
+                </span>
+                <span v-if="option.type == 'date'">
+                    <input type="date" name="groups[0].allFields[0]" class="input">
+                </span>
             </div>
-<div class="row text-center">
-			    			    <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>
-			    			    </div>
+
+            <div class="row text-center">
+    			    <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>
+		    </div>
         </div>
     </div>
 
@@ -142,12 +158,15 @@
                 </div>
                 </form>
                 <script>
+/**
+**/
                $("#searchheader").mouseover(function() {
-	               $("#advancedsearch").show();
+                   $("#advancedsearch").show();
                });
                $("#searchheader").mouseout(function() {
-	               $("#advancedsearch").hide();
+                   $("#advancedsearch").hide();
                });
+                
                 </script>
 
 <script>
@@ -166,6 +185,23 @@ $(document).ready(function() {
             	reset: function() {
             	
             	},
+                getOptionsFor: function(group) {
+                   var ret = new Array();
+                   this.options.forEach(function(e) {
+                     if (group == e.group) {
+                         ret.push(e);
+                     }
+                   });
+                   console.log(ret);
+                   return ret;                
+                },
+                getOptionGroups: function() {
+                   var ret = {};
+                   this.options.forEach(function(e) {
+                     ret[e.group]= 1;
+                   });
+                   return Object.keys(ret);
+                },
 	            clearRow: function() {
 		            console.log(this.index);
 		            if (this.index == 0 && this.totalrows == 1) {
@@ -209,10 +245,22 @@ $(document).ready(function() {
     <option value="FFK_TEMPORAL">Temporal Keywords</option>
     <option value="FFK_GENERAL">General Keywords</option>
     **/
+
         var app = new Vue({
 	            el : "#advancedsearch",
 	            data : {
-	            	selectOptions: ["title","description","full-text","project","collection","site name"],
+	            	selectOptions: [
+                        { name: 'Title', group: 'general', type:'basic' },
+                        { name: 'Description', group: 'general', type:'basic' },
+                        { name: 'Full-Text', group: 'general', type:'basic' },
+                        { name: 'Date', group: 'general', type:'integer' },
+                        { name: 'Date Added', group: 'general', type:'date' },
+                        { name: 'Date Updated', group: 'general', type:'date' },
+                        { name: 'Project', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/resource', autocompleteSuffix: 'resourceTypes[0]=PROJECT' },
+                        { name: 'Collection', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/collection' },
+                        { name: 'Site Name', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=siteName' },
+                        { name: 'Investigation Type', group: 'keywords', type:'select', values:["Archaeological Overview","Architectural Documentation","Architectural Survey","Bioarchaeological Research","Collections Research","Consultation","Data Recovery / Excavation","Environment Research","Ethnographic Research","Ethnohistoric Research","Geophysical Survey","Ground Disturbance Monitoring","Heritage Management","Historic Background Research","Methodology, Theory, or Synthesis","Reconnaissance / Survey","Records Search / Inventory Checking","Remote Sensing","Research Design / Data Recovery Plan","Site Evaluation / Testing","Site Stabilization","Site Stewardship Monitoring","Systematic Survey"]},
+	            	],
 	            	rows: [{option:'',value:''}]
 	            },
 	            computed: {},
@@ -223,7 +271,7 @@ $(document).ready(function() {
 		            removeRow: function(idx) {
 		            	this.rows.splice(idx, 1);
 
-		            }
+		            },
 	            },
             });
 });
