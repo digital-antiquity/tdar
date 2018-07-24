@@ -90,15 +90,6 @@
     </div>
 
     <div class="searchgroup">
-    <div class="groupingSelectDiv control-group fade" v-if="rows.length > 0">
-        <label class="control-label">Include in results</label>
-        <div class="controls controls-row">
-            <select name="groups[0].operator" class="span5" style="display: none;">
-                <option value="AND" selected="">When resource matches ALL terms below</option>
-                <option value="OR">When resource matches ANY terms below</option>
-            </select>
-        </div>
-    </div>
     <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%">
     	<div class="control-group" v-for="(row,index) in rows">
 			<part :index="index" :row="row" :options="selectOptions" @removerow="removeRow($event)" :totalrows="rows.length"/>
@@ -110,13 +101,83 @@
     		<button class="btn" id="groupTable0AddAnotherButton" type="button" @click="addRow()"><i class="icon-plus-sign"></i>add another search term</button>
 		</div>
 	</div>
+    <div class="groupingSelectDiv control-group fade" v-if="rows.length > 0" >
+        <label class="control-label">Include in results</label>
+        <div class="controls controls-row">
+            <select name="groups[0].operator" class="span5" style="display: none;">
+                <option value="AND" selected="">When resource matches ALL terms below</option>
+                <option value="OR">When resource matches ANY terms below</option>
+            </select>
+        </div>
+    </div>
+	<button class="button btn center">Search</button>
 
 
-<script type="text/x-template"   id="search-row-template">
+                </div>
+                
+                
+                </div>
+                </div>
+                <script type="text/x-template"   id="search-row-template">
 
     <div id="grouptablerow_0_" class="control-group termrow ">
-    <select id="group0searchType_0_" name="groups[0].fieldTypes[0]" class="control-label searchType repeatrow-noreset" style="font-size:smaller">
-    <option v-for="(option, index) in options" v-bind:value="option"> {{ option }} </option>
+    <select id="group0searchType_0_" v-model="option" name="groups[0].fieldTypes[0]" class="control-label searchType repeatrow-noreset" style="font-size:smaller">
+        <option v-for="(option, index) in options	" v-bind:value="option"> {{ option }}  </option>
+    </select>
+        <div class="controls controls-row simple multiIndex">
+            <div class="span term-container">
+                            <span class="term">
+                                <input type="text" name="groups[0].allFields[0]" class="input">
+								</span>
+            </div>
+<div class="row text-center">
+			    			    <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>
+			    			    </div>
+        </div>
+    </div>
+
+</script>
+
+                </div>
+                </div>
+                </form>
+                <script>
+               $("#searchheader").mouseover(function() {
+	               $("#advancedsearch").show();
+               });
+               $("#searchheader").mouseout(function() {
+	               $("#advancedsearch").hide();
+               });
+                </script>
+
+<script>
+$(document).ready(function() { 
+        var _fpart = Vue.component('part', {
+            template : "#search-row-template",
+            props : [ "row", "index" , "options", "totalrows" ],
+            data : function() {
+                return {
+                option:'',
+                value:''
+                }
+            },
+            mounted : function() {},
+            methods: {
+            	reset: function() {
+            	
+            	},
+	            clearRow: function() {
+		            console.log(this.index);
+		            if (this.index == 0 && this.totalrows == 1) {
+		            	this.reset();
+		            } else {
+		            	this.$emit("removerow", this.index);
+	            	}
+	            }
+            }
+		});
+		/**
+		
 <!--                 <optgroup label="Basic Fields">
     <option value="TITLE">Title</option>
     <option value="DESCRIPTION">Description</option>
@@ -147,71 +208,17 @@
     <option value="FFK_MATERIAL">Material Keywords</option>
     <option value="FFK_TEMPORAL">Temporal Keywords</option>
     <option value="FFK_GENERAL">General Keywords</option>
-    </optgroup>-->
-    </select>
-        <div class="controls controls-row simple multiIndex">
-            <div class="span term-container">
-                            <span class="term">
-                                <input type="text" name="groups[0].allFields[0]" class="input">
-								</span>
-			    <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>
-            </div>
-        </div>
-    </div>
-
-</script>
-
-                </div>
-                
-                
-                </div>
-                </div>
-                </div>
-                </div>
-                </form>
-                <script>
-               $("#searchheader").mouseover(function() {
-	               $("#advancedsearch").show();
-               });
-               $("#searchheader").mouseout(function() {
-	               $("#advancedsearch").hide();
-               });
-                </script>
-
-<script>
-$(document).ready(function() { 
-        var _fpart = Vue.component('part', {
-            template : "#search-row-template",
-            props : [ "row", "index" , "options", "totalrows" ],
-            data : function() {
-                return {
-                }
-            },
-            mounted : function() {},
-            methods: {
-            	reset: function() {
-            	
-            	},
-	            clearRow: function() {
-		            console.log(this.index);
-		            if (this.index == 0 && this.totalrows == 1) {
-		            	this.reset();
-		            } else {
-		            	this.$emit("removerow", this.index);
-	            	}
-	            }
-            }
-		});
+    **/
         var app = new Vue({
 	            el : "#advancedsearch",
 	            data : {
 	            	selectOptions: ["title","description","full-text","project","collection","site name"],
-	            	rows: [{}]
+	            	rows: [{option:'',value:''}]
 	            },
 	            computed: {},
 	            methods: {
 		            addRow: function() {
-		            	this.rows.push({});
+		            	this.rows.push({option:'',value:''});
 		            },
 		            removeRow: function(idx) {
 		            	this.rows.splice(idx, 1);
