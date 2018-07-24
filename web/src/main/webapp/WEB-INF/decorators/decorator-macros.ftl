@@ -60,45 +60,38 @@
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
         <li>
             <#if navSearchBoxVisible>
-                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform form-horizontal seleniumIgnoreForm hidden-phone hidden-tablet  screen">
+                <form name="searchheader" id="searchheader" action="<@s.url value="/search/results"/>" class="inlineform form-horizontal seleniumIgnoreForm hidden-phone hidden-tablet  screen">
                 <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
                     <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
                     <input type="hidden" name="_tdar.searchType" value="simple">
                 ${(page.properties["div.divSearchContext"])!""}
                 <div class="advanced container">
                 <div class="row">
-                <div class="span6 offset6 advancedSearchbox">
+                <div class="span6 offset6 advancedSearchbox" id="advancedsearch" style="display: none">
                 <h5>More search options</h5>
-                
                 <div class="control-group">
         <label class="control-label">What:</label>
 
         <div class="controls controls-row">
-<label class="radio inline">
-  <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE" checked>
-  Resources
-</label>
-<label class="radio inline">
-  <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION" checked>
-  Collections
-</label>
-<label class="radio inline">
-  <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE" checked>
-  People
-</label>
-<label class="radio inline">
-  <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS" checked>
-  Institutions
-</label>
-                </div>
+			<label class="radio inline">
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE" checked>  Resources
+			</label>
+			<label class="radio inline">
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION" checked>  Collections
+			</label>
+			<label class="radio inline">
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE" checked>  People
+			</label>
+			<label class="radio inline">
+			  <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS" checked>  Institutions
+			</label>
+        </div>
                 
-                </div>
-                
-                    <div class="searchgroup">
-    <div class="groupingSelectDiv control-group fade">
+    </div>
 
+    <div class="searchgroup">
+    <div class="groupingSelectDiv control-group fade" v-if="rows.length > 0">
         <label class="control-label">Include in results</label>
-
         <div class="controls controls-row">
             <select name="groups[0].operator" class="span5" style="display: none;">
                 <option value="AND" selected="">When resource matches ALL terms below</option>
@@ -106,12 +99,25 @@
             </select>
         </div>
     </div>
-    <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0" data-add-another="add another search term">
+    <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%">
+    	<div class="control-group" v-for="(row,index) in rows">
+			<part :index="index" :row="row" :options="selectOptions" @removerow="removeRow($event)" :totalrows="rows.length"/>
+    	</div>
+    </div>
 
-    <div id="grouptablerow_0_" class="control-group termrow repeat-row">
+    <div class="control-group add-another-control">
+    	<div class="controls">
+    		<button class="btn" id="groupTable0AddAnotherButton" type="button" @click="addRow()"><i class="icon-plus-sign"></i>add another search term</button>
+		</div>
+	</div>
+
+
+<script type="text/x-template"   id="search-row-template">
+
+    <div id="grouptablerow_0_" class="control-group termrow ">
     <select id="group0searchType_0_" name="groups[0].fieldTypes[0]" class="control-label searchType repeatrow-noreset" style="font-size:smaller">
-                <optgroup label="Basic Fields">
-    <option value="ALL_FIELDS">All Fields</option>
+    <option v-for="(option, index) in options" v-bind:value="option"> {{ option }} </option>
+<!--                 <optgroup label="Basic Fields">
     <option value="TITLE">Title</option>
     <option value="DESCRIPTION">Description</option>
     <option value="CONTENTS">Full-Text</option>
@@ -141,30 +147,81 @@
     <option value="FFK_MATERIAL">Material Keywords</option>
     <option value="FFK_TEMPORAL">Temporal Keywords</option>
     <option value="FFK_GENERAL">General Keywords</option>
-    </optgroup>
+    </optgroup>-->
     </select>
         <div class="controls controls-row simple multiIndex">
-            <div class="span3 term-container">
-                            <span class="term retain ALL_FIELDS simple multiIndex">
+            <div class="span term-container">
+                            <span class="term">
                                 <input type="text" name="groups[0].allFields[0]" class="input">
-                            </span>
-            </div>
-            <div class="span1">
-    <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1"><i class="icon-trash"></i></button>
+								</span>
+			    <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>
             </div>
         </div>
     </div>
-    </div><div class="control-group add-another-control"><div class="controls"><button class="btn addanother" id="groupTable0AddAnotherButton" type="button"><i class="icon-plus-sign"></i>add another search term</button></div></div>
+
+</script>
 
                 </div>
-                <script>
-                </script>
+                
                 
                 </div>
                 </div>
                 </div>
                 </div>
                 </form>
+                <script>
+               $("#searchheader").mouseover(function() {
+	               $("#advancedsearch").show();
+               });
+               $("#searchheader").mouseout(function() {
+	               $("#advancedsearch").hide();
+               });
+                </script>
+
+<script>
+$(document).ready(function() { 
+        var _fpart = Vue.component('part', {
+            template : "#search-row-template",
+            props : [ "row", "index" , "options", "totalrows" ],
+            data : function() {
+                return {
+                }
+            },
+            mounted : function() {},
+            methods: {
+            	reset: function() {
+            	
+            	},
+	            clearRow: function() {
+		            console.log(this.index);
+		            if (this.index == 0 && this.totalrows == 1) {
+		            	this.reset();
+		            } else {
+		            	this.$emit("removerow", this.index);
+	            	}
+	            }
+            }
+		});
+        var app = new Vue({
+	            el : "#advancedsearch",
+	            data : {
+	            	selectOptions: ["title","description","full-text","project","collection","site name"],
+	            	rows: [{}]
+	            },
+	            computed: {},
+	            methods: {
+		            addRow: function() {
+		            	this.rows.push({});
+		            },
+		            removeRow: function(idx) {
+		            	this.rows.splice(idx, 1);
+
+		            }
+	            },
+            });
+});
+            
+</script>
             </#if>
         </li>
     </ul>

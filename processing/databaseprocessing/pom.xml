@@ -15,7 +15,7 @@
         <groupId>org.tdar</groupId>
         <artifactId>parent-base</artifactId>
          <version>18.2.0-DATABASE-SEARCH-SNAPSHOT</version>
-        <relativePath>../parent-base/pom.xml</relativePath>
+        <relativePath>../../parent-base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
         <dependencies>
