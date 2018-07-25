@@ -14,11 +14,6 @@ nav {
     nav .logIn .tdarLink {
       color: #a72e1d; }
 
-#home .news ul, #home .news li {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  clear: left; }
 #home .news li {
   font-size: 12px;
   line-height: 20px;
@@ -30,7 +25,7 @@ nav {
   border-bottom: 1px solid #e8e3d7;
   min-height: 4em; }
 #home .news li:first-child {
-  padding: 0 0 16px 60px; }
+  padding: 0 0 0px 60px; }
 #home .news span {
   font-weight: 700;
   color: #e3dfd8;

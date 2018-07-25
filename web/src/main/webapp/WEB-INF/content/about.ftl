@@ -193,21 +193,23 @@
     <div class="row">
             <@commonr.renderWorldMap />
         <div class="col-12 col-md-6 news">
-    
+
             <h3><a href="${config.newsUrl}">What's New at ${siteAcronym}?</a></h3>
-    
+
             <#if rssEntries?has_content>
-                <ul>
+                <ul class = "list-unstyled">
                     <#assign maxEntries =6 />
                     <#list rssEntries as entry>
                         <#assign maxEntries = maxEntries -1 />
                         <#if maxEntries == 0>
                             <#break>
                         </#if>
-                        <li>
-                            <span>${entry.publishedDate?string("MMM")?upper_case}<em>${entry.publishedDate?string("dd")}</em></span>
-                            <a href="${entry.link}" class="title">${entry.title}</a>
-                            Posted by ${entry.author}
+                        <li class = "media">
+                            <span class = "mr-3">${entry.publishedDate?string("MMM")?upper_case}<em>${entry.publishedDate?string("dd")}</em></span>
+                            <div class="media-body">
+                                <h6><a href="${entry.link}" class="title">${entry.title}</a></h6>
+                                <p class="text-muted">Posted by ${entry.author}</p>
+                            </div>
                         </li>
                     </#list>
                 </ul>
