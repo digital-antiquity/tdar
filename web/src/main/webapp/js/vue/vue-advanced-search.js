@@ -14,9 +14,18 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             option : function(n, o) {
                 this.reset();
                 if (n.type == 'map') {
+                    this.$refs.fieldselect.classList.remove("span2");
+                    this.$refs.valuearea.classList.remove("span3");
+                    this.$refs.fieldselect.classList.add("span1");
+                    this.$refs.valuearea.classList.add("span4");
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableLeafletMaps();
                     });
+                } else {
+                    this.$refs.fieldselect.classList.remove("span1");
+                    this.$refs.valuearea.classList.remove("span4");
+                    this.$refs.fieldselect.classList.add("span2");
+                    this.$refs.valuearea.classList.add("span3");
                 }
             }
         },
@@ -30,6 +39,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             },
             fieldName: function() {
                 return "fieldName";
+            },
+            valueName: function() {
+                return "valueName";
             },
             getOptionsFor : function(group) {
                 var ret = new Array();

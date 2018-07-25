@@ -50,27 +50,28 @@
 </div>
 <script type="text/x-template"   id="search-row-template">
 <div class="controls-row">
-    <select v-model="option" :name="fieldName" class="span1 control-label" style="font-size:smaller">
+    <select v-model="option" :name="fieldName" class="span2 control-label" style="font-size:smaller" ref='fieldselect'>
         <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
         	<option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option"> {{ option.name }}  </option>
         </optgroup>
     </select>
-    <div class="span4" v-if="option.type == 'basic' || option.type == undefined">
-                  <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.fieldName" v-if="option.autocompleteUrl != undefined" :resultsuffix="option.resultSuffix" ref="autocomplete" :span="'span3'" :name="valueName" />
-                    <input type="text" name="groups[0].allFields[0]" class="span4" v-if="option.autocompleteUrl == undefined">
-    </div>
-    <div class="span4" v-if="option.type == 'select'">
-                    <select name="name" class="span4" multiple>
-                        <option v-for="(opt, i) in option.values">{{opt}}</option>
-                    </select>
+    <div class="span3" ref='valuearea'>
+        <div v-if="option.type == 'basic' || option.type == undefined">
+            <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.fieldName" v-if="option.autocompleteUrl != undefined" :resultsuffix="option.resultSuffix" ref="autocomplete" :span="'span3'" :valuename="valueName()" />
+            <input type="text" name="groups[0].allFields[0]" class="span3" v-if="option.autocompleteUrl == undefined">
+        </div>
+        <div v-if="option.type == 'select'">
+             <select name="name" class="span3" multiple>
+                  <option v-for="(opt, i) in option.values">{{opt}}</option>
+              </select>
  		 </div>
-         <div class="span4" v-if="option.type == 'integer'">
-                    <input type="number" name="groups[0].allFields[0]" class=" span4">
+         <div v-if="option.type == 'integer'">
+                    <input type="number" name="groups[0].allFields[0]" class=" span3">
  		 </div>
-         <div class="span4" v-if="option.type == 'date'">
-                    <input type="date" name="groups[0].allFields[0]" class=" span4">
+         <div v-if="option.type == 'date'">
+                    <input type="date" name="groups[0].allFields[0]" class=" span3">
  		 </div>
-         <div id="latlongoptions" class="span4" v-if="option.type == 'map'">
+         <div id="latlongoptions" v-if="option.type == 'map'">
             <div id='map' class='leaflet-map-editable' data-search="true">
                <span class="latlong-fields">
                     <input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].east" id="maxx" class="ne-lng latLongInput maxx" />
@@ -80,6 +81,7 @@
                </span>
                <div class="mapdiv"></div>
              </div>
+         </div>
          </div>
          <div class="span1">
                     <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>

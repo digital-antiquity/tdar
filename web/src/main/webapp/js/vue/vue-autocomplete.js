@@ -27,7 +27,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           render: {
               type: Object
           },
-          valueprop: {
+          valuename: {
               type: String
           },
           resultsuffix: {
@@ -45,6 +45,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             searchObj: {},
             isLoading: false,
             width: 100,
+            top:'10',
             arrowCounter: 0,
             totalRecords:0,
             recordsPerPage: 25,
@@ -53,7 +54,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
         },
         methods: {
           getStyleWidth: function() {
-            return "width: " + (this.width)+ "px";
+            return "width: " + (this.width - 8)+ "px;";
+          }, 
+          getStyleTop: function() {
+              return "top:" + (this.top) + "px; ";
           }, 
           valueName: function() {
               return this.name;
@@ -193,6 +197,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
         },
         mounted: function() {
           Vue.set(this, 'width',this.$refs['searchfield'].offsetWidth);
+          Vue.set(this, 'top',this.$refs['searchfield'].offsetHeight + this.$refs['searchfield'].offsetTop );
           document.addEventListener("click", this.handleClickOutside);
         },
         destroyed: function() {
