@@ -1,4 +1,4 @@
-TDAR.vuejs.advancedSearch = (function(console, $, ctx, Vue, axios, TDAR) {
+TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
 
     var _part = Vue.component('part', {
@@ -27,6 +27,9 @@ TDAR.vuejs.advancedSearch = (function(console, $, ctx, Vue, axios, TDAR) {
                 if (this.$refs.autocomplete != undefined) {
                     this.$refs.autocomplete.clear();
                 }
+            },
+            fieldName: function() {
+                return "fieldName";
             },
             getOptionsFor : function(group) {
                 var ret = new Array();
@@ -216,4 +219,4 @@ TDAR.vuejs.advancedSearch = (function(console, $, ctx, Vue, axios, TDAR) {
             },
         },
     });
-})(console, jQuery, window, Vue, axios, TDAR);
+})(console, window, Vue, axios, TDAR);

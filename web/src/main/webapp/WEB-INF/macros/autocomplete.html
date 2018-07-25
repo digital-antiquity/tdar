@@ -1,6 +1,6 @@
 <script type="text/x-template" id="autocomplete">
   <div class="autocomplete">
-    <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter" ref="searchfield" class="input" />
+    <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter" ref="searchfield" :class="span" :name="fieldName" />
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
       <li class="loading" v-if="isLoading" :style="getStyleWidth()">
         Loading results...

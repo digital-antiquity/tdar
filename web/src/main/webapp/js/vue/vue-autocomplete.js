@@ -1,4 +1,4 @@
-TDAR.vuejs.advancedSearch = (function(console, $, ctx, Vue, axios, TDAR) {
+TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
     "use strict";
 
     // https://alligator.io/vuejs/vue-autocomplete-component/
@@ -32,7 +32,9 @@ TDAR.vuejs.advancedSearch = (function(console, $, ctx, Vue, axios, TDAR) {
           },
           resultsuffix: {
               type: String
-          }
+          },
+          span:{ type:String},
+          name: {type:String}
         },
     
         data: function() {
@@ -51,8 +53,11 @@ TDAR.vuejs.advancedSearch = (function(console, $, ctx, Vue, axios, TDAR) {
         },
         methods: {
           getStyleWidth: function() {
-            return "width: " + (this.width - 8)+ "px";
+            return "width: " + (this.width)+ "px";
           }, 
+          valueName: function() {
+              return this.name;
+          },
           isCustomRender: function() {
             if (this.render != undefined && typeof this.render  === 'function') {
               return true;
@@ -195,4 +200,4 @@ TDAR.vuejs.advancedSearch = (function(console, $, ctx, Vue, axios, TDAR) {
         }
     });
 
-})(console, jQuery, window, Vue, axios, TDAR);
+})(console, window, Vue, axios);

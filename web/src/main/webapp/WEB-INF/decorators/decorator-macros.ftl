@@ -65,7 +65,6 @@
                     <input type="hidden" name="_tdar.searchType" value="simple">
                 ${(page.properties["div.divSearchContext"])!""}
 
-				<#include "/WEB-INF/content/search/search.html" >
                 </form>
 
             </#if>
@@ -73,6 +72,7 @@
     </ul>
 
 </nav>
+<#include "/WEB-INF/content/search/search.html" >
 
 
 </#macro>

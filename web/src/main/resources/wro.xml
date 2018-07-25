@@ -106,8 +106,6 @@
         <js>/js/maps/tdar.leaflet.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
-        <js>/js/vue/vue-advanced-search.js</js>
-        <js>/js/vue/vue-autocomplete.js</js>
 
         <!--Selectize  -->        
         <js>/components/selectize/dist/js/standalone/selectize.js</js>
@@ -122,6 +120,8 @@
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>
         <js>/js/vue/edit-collection.js</js>
+        <js>/js/vue/vue-advanced-search.js</js>
+        <js>/js/vue/vue-autocomplete.js</js>
 
     </group>
     <group name="ng-integrate">
