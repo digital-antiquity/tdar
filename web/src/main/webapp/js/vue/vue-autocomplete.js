@@ -38,6 +38,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
               type: String
           },
           span:{ type:String},
+          idname: {type:String},
           name: {type:String}
         },
     
@@ -46,6 +47,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             isOpen: false,
             results: [],
             search: "",
+            id: '',
             searchObj: {},
             hasFocus: false,
             mouseFocus: false,
@@ -76,6 +78,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
                 }
                 if (type == 'cursor') {
                     this.cursorFocus = false;
+                }
+                
+                if (this.mouseFocus == false && this.cursorFocus == false) {
                     
                     if (this.allowCreate == false && this.searchObj == undefined) {
                         console.log("clearing ...", this.search, this.searchObj);
@@ -83,9 +88,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
                         this.isOpen = false;
                         this.results = [];
                     }
-                    
+
+                console.log("remove focus: " + type , this.mouseFocus , this.cursorFocus);
                 }
-//                console.log("remove focus: " + type , this.mouseFocus , this.cursorFocus);
             },
           getStyleWidth: function() {
             return "width: " + (this.width - 8)+ "px;";
@@ -181,12 +186,13 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             this.$emit("setvaluelabel", this.search);
             if (result != undefined && result.id != undefined) {
                 this.$emit("setvalueid", result.id);
+                this.id = result.id;
             } else {
                 this.$emit("setvalueid", '');
+                this.id = '';
             }
           },
           clear: function() {
-              this.searchObj = undefined;
               this.search= '';
               this._setResult();
           },
