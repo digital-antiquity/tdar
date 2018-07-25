@@ -27,7 +27,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           render: {
               type: Object
           },
-          valuename: {
+          fieldname: {
               type: String
           },
           allowCreate: {
@@ -98,7 +98,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           getStyleTop: function() {
               return "top:" + (this.top) + "px; ";
           }, 
-          valueName: function() {
+          fieldName: function() {
               return this.name;
           },
           isCustomRender: function() {
