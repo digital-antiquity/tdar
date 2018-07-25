@@ -1,16 +1,14 @@
 <script type="text/x-template" id="autocomplete">
-  <div class="autocomplete">
-    <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter" ref="searchfield" :class="span" :name="valuename"/>
-    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results"  :style="getStyleTop()">
-      <li class="loading" v-if="isLoading" :style="getStyleWidth()">
-        Loading results...
-      </li>
-      <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }" :style="getStyleWidth()">
+  <div class="autocomplete" ref="autocompleteroot" @mouseover="addFocus('mouse')" @mouseout="removeFocus('mouse')">
+    <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter" ref="searchfield" :class="span" :name="valuename" @focus="addFocus('cursor')" @blur="removeFocus('cursor')"/>
+    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results"  :style="getStyleTop()" ref="autoresults">
+      <li v-if="!isLoading" v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }" :style="getStyleWidth()">
       <span v-html="render(result)" v-if="isCustomRender()"></span>
       <span v-if="!isCustomRender()">{{ getDisplay(result) }}  ({{ result.id}})</span>
       </li>
-      <li class="autocomplete-result" v-if="!isLoading" :style="getStyleWidth()">
-        Showing 1-{{recordsPerPage}} of {{totalRecords}}
+      <li class="status text-center center" :style="getStyleWidth()">
+      <span v-if="isLoading">Loading results...</span>
+      <span v-if="!isLoading"> Showing 1-{{recordsPerPage}} of {{totalRecords}}</span>
       </li>
     </ul>
 

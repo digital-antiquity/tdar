@@ -30,6 +30,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           valuename: {
               type: String
           },
+          allowCreate: {
+              type:Boolean,
+              default: true
+          },
           resultsuffix: {
               type: String
           },
@@ -43,6 +47,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             results: [],
             search: "",
             searchObj: {},
+            hasFocus: false,
+            mouseFocus: false,
+            cursorFocus: false,
             isLoading: false,
             width: 100,
             top:'10',
@@ -52,7 +59,34 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             cancelToken: undefined
           }
         },
+        
         methods: {
+            addFocus: function (type) {
+//                console.log("add focus: " + type);
+                if (type == 'mouse') {
+                    this.mouseFocus = true;
+                }
+                if (type == 'cursor') {
+                    this.cursorFocus = true;
+                }
+            },
+            removeFocus: function (type) {
+                if (type == 'mouse') {
+                    this.mouseFocus = false;
+                }
+                if (type == 'cursor') {
+                    this.cursorFocus = false;
+                    
+                    if (this.allowCreate == false && this.searchObj == undefined) {
+                        console.log("clearing ...", this.search, this.searchObj);
+                        this.clear();
+                        this.isOpen = false;
+                        this.results = [];
+                    }
+                    
+                }
+//                console.log("remove focus: " + type , this.mouseFocus , this.cursorFocus);
+            },
           getStyleWidth: function() {
             return "width: " + (this.width - 8)+ "px;";
           }, 
@@ -154,6 +188,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           clear: function() {
               this.searchObj = undefined;
               this.search= '';
+              this._setResult();
           },
           setResult: function(result) {
             this.search = this.getDisplay(result);

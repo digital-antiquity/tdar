@@ -57,7 +57,7 @@
     </select>
     <div class="span3" ref='valuearea'>
         <div v-if="option.type == 'basic' || option.type == undefined">
-            <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.fieldName" v-if="option.autocompleteUrl != undefined" :resultsuffix="option.resultSuffix" ref="autocomplete" :span="'span3'" :valuename="valueName()" />
+            <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.fieldName" v-if="option.autocompleteUrl != undefined" :resultsuffix="option.resultSuffix" ref="autocomplete" :span="'span3'" :valuename="valueName()" :allowCreate="false"/>
             <input type="text" name="groups[0].allFields[0]" class="span3" v-if="option.autocompleteUrl == undefined">
         </div>
         <div v-if="option.type == 'select'">
@@ -72,7 +72,7 @@
                     <input type="date" name="groups[0].allFields[0]" class=" span3">
  		 </div>
          <div id="latlongoptions" v-if="option.type == 'map'">
-            <div id='map' class='leaflet-map-editable' data-search="true">
+            <div id='map' class='leaflet-map-editable' data-search="true" style="height:300px">
                <span class="latlong-fields">
                     <input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].east" id="maxx" class="ne-lng latLongInput maxx" />
                     <input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].south"  id="miny" class="sw-lat latLongInput miny" />
