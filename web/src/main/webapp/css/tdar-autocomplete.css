@@ -1,0 +1,33 @@
+.autocomplete {
+    position: relative;
+    width: 130px;
+}
+
+.autocomplete-results {
+    padding: 0;
+    margin: 0;
+    border: 1px solid #eeeeee;
+    line-height: initial;
+    weight: normal;
+    font-weight: normal;
+    overflow: auto;
+    position: absolute;
+    background: white; //
+    height: 120px; //
+    width: 100%;
+}
+
+.autocomplete-result {
+    list-style: none;
+    text-align: left;
+    padding: 4px 2px;
+    cursor: pointer;
+    line-height: initial;
+    display: inline-block;
+    width: intrinsic;
+}
+
+.autocomplete-result.is-active, .autocomplete-result:hover {
+    background-color: #4aae9b;
+    color: white;
+}

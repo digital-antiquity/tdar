@@ -11,7 +11,10 @@
         <!--  used by jquery.treeview -->
         <js>/includes/jquery.cookie.js</js>
         <css>/css/tdar-svg.css</css>
+        <css>/css/tdar-autocomplete.css</css>
         <js>/components/svgxuse/svgxuse.min.js</js>
+        
+        
         <!-- LICENSE: MIT /GPL 2.0 -->
         <!--  not sure who uses this -->
 <!--    <js>/includes/jquery.metadata.2.1/jquery.metadata.js</js> -->
@@ -103,6 +106,8 @@
         <js>/js/maps/tdar.leaflet.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
+        <js>/js/vue/vue-advanced-search.js</js>
+        <js>/js/vue/vue-autocomplete.js</js>
 
         <!--Selectize  -->        
         <js>/components/selectize/dist/js/standalone/selectize.js</js>
