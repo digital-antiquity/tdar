@@ -49,7 +49,7 @@
 </#if>
 
 <nav>
-    <ul class="hidden-phone-portrait">
+    <ul class="hidden-phone-portrait navmenu">
 <li><a href="https://www.tdar.org/saa/">SAA</a></li>
 <li><a href="https://www.tdar.org/news/">News</a></li>
 <li><a href="https://www.tdar.org/about">About</a></li>
@@ -66,7 +66,7 @@
                 ${(page.properties["div.divSearchContext"])!""}
                 <div class="advanced container">
                 <div class="row">
-                <div class="span6 offset6 advancedSearchbox" id="advancedsearch" style="display: none">
+                <div class="span6 offset6 advancedSearchbox" id="advancedsearch" ignore style="display: none">
                 <h5>More search options</h5>
                 <div class="control-group condensed">
         <label class="control-label">What:</label>
@@ -100,10 +100,10 @@
     		<button class="btn" id="groupTable0AddAnotherButton" type="button" @click="addRow()"><i class="icon-plus-sign"></i>add another search term</button>
 		</div>
 	</div>
-    <div class="groupingSelectDiv control-group fade" v-if="rows.length > 0" >
+    <div class=" control-group " v-if="rows.length > 1" >
         <label class="control-label">Include in results</label>
         <div class="controls controls-row condensed">
-            <select name="groups[0].operator" class="span5" style="display: none;">
+            <select name="groups[0].operator" class="span3" >
                 <option value="AND" selected="">When resource matches ALL terms below</option>
                 <option value="OR">When resource matches ANY terms below</option>
             </select>
@@ -111,7 +111,7 @@
     </div>
     
     <p class="text-center">
-	<button class="button btn tdar-button center">Search</button>
+	<button type="button" class="button btn tdar-button center">Search</button>
 	</p>
 
 
@@ -131,7 +131,9 @@
         <div class="controls controls-row simple multiIndex condensed">
             <div class="span term-container">
                 <span v-if="option.type == 'basic'">
-                    <input type="text" name="groups[0].allFields[0]" class="input">
+                {{option.result}}
+				  <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.fieldName" v-if="option.autocompleteUrl != undefined" :resultsuffix="option.resultSuffix" ref="autocomplete" />
+                    <input type="text" name="groups[0].allFields[0]" class="input" v-if="option.autocompleteUrl == undefined">
                 </span>
                 <span v-if="option.type == 'select'">
                     <select name="name" multiple>
@@ -144,6 +146,20 @@
                 <span v-if="option.type == 'date'">
                     <input type="date" name="groups[0].allFields[0]" class="input">
                 </span>
+                <div v-if="option.type == 'map'">
+                    <div id="latlongoptions">
+				        <div id='map' class='leaflet-map-editable span3' data-search="true">
+				            <span class="latlong-fields">
+				            	<input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].east" id="maxx" class="ne-lng latLongInput maxx" />
+				                <input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].south"  id="miny" class="sw-lat latLongInput miny" />
+				                <input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].west" id="minx" class="sw-lng latLongInput minx" />
+				                <input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].north"  id="maxy" class="ne-lat latLongInput maxy" />
+				            </span>
+				            <div class="mapdiv"></div>
+				        </div>
+			        </div>
+
+                </div>
             </div>
 
             <div class="row text-center">
@@ -154,24 +170,238 @@
 
 </script>
 
+
+<script type="text/x-template" id="autocomplete">
+  <div class="autocomplete">
+    <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter" ref="searchfield" class="input" />
+    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
+      <li class="loading" v-if="isLoading" :style="getStyleWidth()">
+        Loading results...
+      </li>
+      <li v-else v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }" :style="getStyleWidth()">
+      <span v-html="render(result)" v-if="isCustomRender()"></span>
+      <span v-if="!isCustomRender()">{{ getDisplay(result) }}  ({{ result.id}})</span>
+      </li>
+      <li class="autocomplete-result" v-if="!isLoading" :style="getStyleWidth()">
+        Showing 1-{{recordsPerPage}} of {{totalRecords}}
+      </li>
+    </ul>
+
+  </div>
+</script>
+
                 </div>
                 </div>
                 </form>
                 <script>
-/**
-**/
                $("#searchheader").mouseover(function() {
                    $("#advancedsearch").show();
                });
                $("#searchheader").mouseout(function() {
                    $("#advancedsearch").hide();
                });
+/**
+**/
                 
                 </script>
 
 <script>
-$(document).ready(function() { 
-        var _fpart = Vue.component('part', {
+$(document).ready(function() {
+// https://alligator.io/vuejs/vue-autocomplete-component/
+      var autocomplete = Vue.component('autocomplete', {
+  name: "autocomplete",
+  template: "#autocomplete",
+  props: {
+    items: {
+      type: Array,
+      required: false,
+      default: () => []
+    },
+    isAsync: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    url: {
+    	type: String
+    },
+    suffix: {},
+    field: {
+    	type: String,
+    	required: true
+    },
+    render: {
+    	type: Object
+    },
+    valueprop: {
+    	type: String
+    },
+    resultsuffix: {
+    	type: String
+	}
+  },
+
+  data: function() {
+    return {
+      isOpen: false,
+      results: [],
+      search: "",
+      searchObj: {},
+      isLoading: false,
+      width: 100,
+      arrowCounter: 0,
+      totalRecords:0,
+      recordsPerPage: 25,
+      cancelToken: undefined
+    }
+  },
+  methods: {
+    getStyleWidth: function() {
+  	  return "width: " + (this.width - 8)+ "px";
+  	}, 
+  	isCustomRender: function() {
+      if (this.render != undefined && typeof this.render  === 'function') {
+      	return true;
+      }
+      return false;
+    },
+    getDisplay: function(obj) {
+    if (obj == undefined) { return ''; }
+      if (this.valueprop != undefined) {
+      	return obj['valueprop'];
+      }
+      var ret =  "";
+    	if (obj.name != undefined) {
+    		ret =  obj.name;
+		} else if (obj.title != undefined) {
+			ret = obj.title;
+		} else if (obj.label != undefined) {
+			ret = obj.label;
+		} else if (obj.properName != undefined) {
+			ret = obj.properName;
+		};
+		return ret;
+			
+    },
+    onChange: function() { // Let's warn the parent that a change was made
+      this.$emit("input", this.search);
+
+      // Is the data given by an outside ajax request?
+      if (this.isAsync) {
+        this._setResult();
+        var self = this;
+       if (this.search != undefined && this.search.length > 0) {
+        this.isLoading = true;
+        if (this.cancelToken != undefined) {
+        	//console.log('cancelling...', this.cancelToken);
+            this.cancelToken.cancel();
+        }
+        
+        Vue.set(this, "cancelToken" ,axios.CancelToken.source());
+
+        var searchUrl = this.url + "?" + this.field + "=" + this.search + "&" + this.suffix;
+        console.log(searchUrl);
+        Vue.set(self, "totalRecords", 0);
+        Vue.set(self, "recordsPerPage", 25);
+        axios.get(searchUrl, { cancelToken: self.cancelToken.token }).then(function(res) {
+	        Vue.set(self, "isLoading",false);
+	        Vue.set(self, 'results',res.data[self.resultsuffix]);
+	        console.log(res);
+	        Vue.set(self, "totalRecords", res.data.status.totalRecords);
+	        if (res.data.status.totalRecords < res.data.status.recordsPerPage) {
+		        Vue.set(self, "recordsPerPage", self.totalRecords);
+	        } else {
+		        Vue.set(self, "recordsPerPage", res.data.status.recordsPerPage);
+	        }
+        }).catch(function(thrown) {
+            if (axios.isCancel(thrown)) {
+                console.log('First request canceled', thrown.message);
+            } else {
+            	console.error(thrown);
+            }
+        });
+        this.isOpen = true;
+        } else {
+        this.isOpen = false;
+        Vue.set(self, "isLoading",false);
+        Vue.set(self, 'results',[]);
+        
+        }
+      } else {
+        // Let's search our flat array
+        this.filterResults();
+        this.isOpen = true;
+      }
+    },
+    filterResults: function() {
+      // first uncapitalize all the things
+      this.results = this.items.filter(item => {
+        return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+      });
+    },
+    _setResult: function(result) {
+      this.searchObj = result;
+      this.$emit("setvaluelabel", this.search);
+      if (result != undefined && result.id != undefined) {
+	      this.$emit("setvalueid", result.id);
+      } else {
+	      this.$emit("setvalueid", '');
+      }
+	},
+	clear: function() {
+		this.searchObj = undefined;
+		this.search= '';
+	},
+    setResult: function(result) {
+      this.search = this.getDisplay(result);
+      this._setResult(result);
+      console.log(result);
+      this.isOpen = false;
+    },
+    onArrowDown: function(evt) {
+      if (this.arrowCounter < this.results.length) {
+        this.arrowCounter = this.arrowCounter + 1;
+      }
+    },
+    onArrowUp: function() {
+      if (this.arrowCounter > 0) {
+        this.arrowCounter = this.arrowCounter - 1;
+      }
+    },
+    onEnter: function(e) {
+      // make sure you can clear the value with setting 
+      if (this.arrowCounter > -1 || (this.search == '' || this.search == undefined)) {
+        this.setResult( this.results[this.arrowCounter]);
+      }
+      this.isOpen = false;
+      this.arrowCounter = -1;
+    },
+    handleClickOutside: function(evt) {
+      if (!this.$el.contains(evt.target)) {
+        this.isOpen = false;
+        this.arrowCounter = -1;
+      }
+    }
+  },
+  watch: {
+    items: function(val, oldValue) {
+      // actually compare them
+      if (val.length !== oldValue.length) {
+        this.results = val;
+        this.isLoading = false;
+      }
+    }
+  },
+  mounted: function() {
+    Vue.set(this, 'width',this.$refs['searchfield'].offsetWidth);
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  destroyed: function() {
+    document.removeEventListener("click", this.handleClickOutside);
+  }
+});
+
+        var _part = Vue.component('part', {
             template : "#search-row-template",
             props : [ "row", "index" , "options", "totalrows" ],
             data : function() {
@@ -180,10 +410,22 @@ $(document).ready(function() {
                 value:''
                 }
             },
+            watch: {
+            	option: function(n, o) {
+            		this.reset();
+            		if (n.type == 'map') {
+            		Vue.nextTick(function () {
+			            TDAR.leaflet.initEditableLeafletMaps();
+					});
+            		}
+            	}
+            },
             mounted : function() {},
             methods: {
             	reset: function() {
-            	
+            		if (this.$refs.autocomplete != undefined) {
+            			this.$refs.autocomplete.clear();
+            		}
             	},
                 getOptionsFor: function(group) {
                    var ret = new Array();
@@ -192,7 +434,6 @@ $(document).ready(function() {
                          ret.push(e);
                      }
                    });
-                   console.log(ret);
                    return ret;                
                 },
                 getOptionGroups: function() {
@@ -203,7 +444,6 @@ $(document).ready(function() {
                    return Object.keys(ret);
                 },
 	            clearRow: function() {
-		            console.log(this.index);
 		            if (this.index == 0 && this.totalrows == 1) {
 		            	this.reset();
 		            } else {
@@ -254,12 +494,22 @@ $(document).ready(function() {
                         { name: 'Description', group: 'general', type:'basic' },
                         { name: 'Full-Text', group: 'general', type:'basic' },
                         { name: 'Date', group: 'general', type:'integer' },
+                        { name: 'Id', group: 'general', type:'integer' },
                         { name: 'Date Added', group: 'general', type:'date' },
                         { name: 'Date Updated', group: 'general', type:'date' },
-                        { name: 'Project', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/resource', autocompleteSuffix: 'resourceTypes[0]=PROJECT' },
-                        { name: 'Collection', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/collection' },
-                        { name: 'Site Name', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=siteName' },
-                        { name: 'Investigation Type', group: 'keywords', type:'select', values:["Archaeological Overview","Architectural Documentation","Architectural Survey","Bioarchaeological Research","Collections Research","Consultation","Data Recovery / Excavation","Environment Research","Ethnographic Research","Ethnohistoric Research","Geophysical Survey","Ground Disturbance Monitoring","Heritage Management","Historic Background Research","Methodology, Theory, or Synthesis","Reconnaissance / Survey","Records Search / Inventory Checking","Remote Sensing","Research Design / Data Recovery Plan","Site Evaluation / Testing","Site Stabilization","Site Stewardship Monitoring","Systematic Survey"]},
+                        { name: 'Map', group: 'general', type:'map' },
+                        { name: 'Project', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/resource', autocompleteSuffix: 'resourceTypes[0]=PROJECT', fieldName: 'term', resultSuffix: 'resources'  },
+                        { name: 'Collection', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/collection', fieldName: 'term', resultSuffix: 'collections' },
+                        { name: 'Person', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/person', fieldName: 'term', resultSuffix: 'people' },
+                        { name: 'Institution', group: 'general', type:'basic', autocompleteUrl: '/api/lookup/institution', fieldName: 'institution', resultSuffix: 'institutions' },
+                        { name: 'Site Name', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=SiteNameKeyword', fieldName: 'term', resultSuffix: 'items' },
+                        { name: 'Site Type', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=SiteTypeKeyword', fieldName: 'term', resultSuffix: 'items' },
+                        { name: 'Geographic Keywords', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=GeographicKeyword', fieldName: 'term', resultSuffix: 'items' },
+                        { name: 'Culture Keywords', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=CultureKeyword', fieldName: 'term', resultSuffix: 'items' },
+                        { name: 'Material Keywords', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=MaterialKeyword', fieldName: 'term', resultSuffix: 'items' },
+                        { name: 'Temporal Keywords', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=TemporalKeyword', fieldName: 'term', resultSuffix: 'items' },
+                        { name: 'Other Keywords', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=OtherKeyword', fieldName: 'term', resultSuffix: 'items' },
+                        { name: 'Investigation Type', group: 'keywords', type:'basic', autocompleteUrl: '/api/lookup/keyword', autocompleteSuffix: 'keywordType=InvestigationType', fieldName: 'term', resultSuffix: 'items' },
 	            	],
 	            	rows: [{option:'',value:''}]
 	            },
@@ -283,6 +533,44 @@ $(document).ready(function() {
 
 </nav>
 
+<style>
+
+.autocomplete {
+  position: relative;
+  width: 130px;
+}
+
+.autocomplete-results {
+  padding: 0;
+  margin: 0;
+  border: 1px solid #eeeeee;
+  line-height:initial;
+  weight:normal;
+  font-weight:normal;
+  overflow: auto;
+  position:  absolute;
+  background: white;
+  //height: 120px;
+//  width: 100%;
+}
+
+.autocomplete-result {
+  list-style: none;
+  text-align: left;
+  padding: 4px 2px;
+  cursor: pointer;
+  line-height: initial;
+  display: inline-block;
+  width: intrinsic;
+}
+
+.autocomplete-result.is-active,
+.autocomplete-result:hover {
+  background-color: #4aae9b;
+  color: white;
+}
+
+</style>
 
 </#macro>
 

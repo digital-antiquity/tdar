@@ -271,7 +271,7 @@ header nav, header form {
     height: 100px;
 }
 
-header nav ul, header nav li {
+header nav > ul.navmenu, header nav > .navmenu > li {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -296,11 +296,11 @@ header nav a:hover {
     color: #7d7a77;
 }
 
-header nav li.active a {
+header nav > .navmenu > li.active a {
     color: #7a1501;
 }
 
-header nav li.button a {
+header nav > .navmenu > li.button a {
     width: 72px;
     height: 24px;
     display: inline-block;
