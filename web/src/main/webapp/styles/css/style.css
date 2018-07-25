@@ -1,10 +1,7 @@
-#hero {
-  background: url(../../images/r4/bg-home.jpg) no-repeat center;
-  background-size: cover; }
-
 .btn {
   background-color: #a72e1d;
-  color: #fff; }
+  color: #fff;
+  border-radius: 0; }
 
 nav {
   font-weight: bold; }
@@ -14,6 +11,9 @@ nav {
     nav .logIn .tdarLink {
       color: #a72e1d; }
 
+#home #hero {
+  background: url(../../images/r4/bg-home.jpg) no-repeat center;
+  background-size: cover; }
 #home .news li {
   font-size: 12px;
   line-height: 20px;
@@ -47,9 +47,16 @@ nav {
   font-size: 15px;
   font-style: normal;
   display: block; }
+#home .topRight {
+  font-weight: bold;
+  text-transform: uppercase; }
 
 .svgicon {
   max-height: 50px;
   max-width: 50px; }
+
+@media (max-width: 768px) {
+  #home #hero h2 {
+    font-size: 3.5rem; } }
 
 /*# sourceMappingURL=style.css.map */

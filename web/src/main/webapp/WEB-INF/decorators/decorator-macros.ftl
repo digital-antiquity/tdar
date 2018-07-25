@@ -39,10 +39,10 @@
                     </div>
                     <ul class="navbar-nav">
                         <li class="nav-item mr-sm-3">
-                            <a href = "#" class="btn btn-sm btn-outline-secondary">Browse</a>
+                            <a href = "#" class="btn btn-sm topRight">Browse</a>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <a href = "#" class="btn btn-sm btn-outline-secondary">Upload</a>
+                            <a href = "#" class="btn btn-sm topRight">Upload</a>
                         </li>
                         <li class="nav-item">
                             <form class="form-inline">

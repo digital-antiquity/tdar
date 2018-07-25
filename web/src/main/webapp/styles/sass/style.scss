@@ -1,16 +1,11 @@
 $red: #a72e1d;
 $white: #fff;
 
-#hero
-{
-  background: url(../../images/r4/bg-home.jpg) no-repeat center;
-  background-size: cover;
-}
-
 .btn
 {
   background-color: $red;
-  color: $white
+  color: $white;
+  border-radius: 0;
 }
 
 nav
@@ -30,6 +25,12 @@ nav
 
 #home
 {
+  #hero
+  {
+    background: url(../../images/r4/bg-home.jpg) no-repeat center;
+    background-size: cover;
+  }
+
   .news
   {
     li
@@ -83,10 +84,29 @@ nav
       }
     }
   }
+
+  .topRight
+  {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
 }
 
 .svgicon
 {
   max-height: 50px;
   max-width: 50px;
+}
+
+@media(max-width: 768px) {
+  #home
+  {
+    #hero
+    {
+      h2
+      {
+        font-size: 3.5rem;
+      }
+    }
+  }
 }
