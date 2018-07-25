@@ -76,7 +76,7 @@
 
 <section class = "" id="pricing">
     <div class="container mb-4 d-none d-lg-block">
-        <div class="row d-none d-lg-flex text-center justify-content-center">
+        <div class="row d-none d-lg-flex text-center justify-content-center align-items-center">
             <div class="col-lg-1">
                 <a href="<@s.url value="/document"/>">
                     <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>

@@ -7,22 +7,36 @@
                     <img src="${staticHost}/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap">
                 </a>
 
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <div class="d-flex flex-column d-md-none">
+                    <div class = "ml-auto">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
 
-                <div class="d-flex flex-column ml-auto">
-                    <div class="mr-0 d-flex align-items-top justify-content-end">
-                    <#if (authenticatedUser??) >
-                        <p id="welcome-menu" class="welcome  screen ">
-                            <@s.text name="menu.welcome_back"/>
-                                ${authenticatedUser.properName}
-                        </p>
-                    <#else>
-                        <p><a href="/login">Log In</a> or <a href="/account/new">Sign Up</a></p>
-                    </#if>
+                    <form class="form-inline mt-2">
+                        <div class="input-group">
+                            <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
+                            <span class="input-group-append">
+                                        <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
+                                    </span>
+                        </div>
+                    </form>
                 </div>
-                <div class="collapse navbar-collapse d-flex align-items-end" id="tdarNavMenu">
+
+
+                <div class="collapse navbar-collapse d-none d-md-flex align-items-end" id="tdarNavMenu">
+                    <div class="d-flex flex-column ml-auto">
+                        <div class="mr-0 d-flex align-items-top justify-content-end">
+                            <#if (authenticatedUser??) >
+                            <p id="welcome-menu" class="welcome  screen ">
+                                <@s.text name="menu.welcome_back"/>
+                                ${authenticatedUser.properName}
+                            </p>
+                            <#else>
+                            <p class = "logIn"><a class = "tdarLink" href="/login">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
+                        </#if>
+                    </div>
                     <ul class="navbar-nav">
                         <li class="nav-item mr-sm-3">
                             <a href = "#" class="btn btn-sm btn-outline-secondary">Browse</a>
@@ -47,21 +61,17 @@
 
         <nav class="navbar navbar-expand-md navbar-light bg-white">
             <div class = "container">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu2">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="tdarNavMenu2">
+                <div class="collapse navbar-collapse" id="tdarNavMenu">
                     <ul class="navbar-nav">
                         <li class="nav-item mr-sm-3">
-                            <a href="" class="nav-link">SAA</a>
+                            <a href="" class="nav-link align-middle">SAA</a>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <a href="" class="nav-link">News</a>
+                            <a href="" class="nav-link align-middle">News</a>
                         </li>
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</button>
+                                <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <h5 class = "ml-4">About</h5>
                                     <div class="d-flex flex-row">
@@ -83,7 +93,7 @@
                         </li>
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                   Why tDAR?
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -107,7 +117,7 @@
                         </li>
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                   Using tDAR
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -131,38 +141,19 @@
                         </li>
                     </ul>
                     <div class="dropdown ml-auto">
-                        <button class="btn btn-link dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      My Account
-                    </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <#if (authenticatedUser??) >
-                            <h5 class = "ml-4">${authenticatedUser.properName}</h5>
-                            <div class="d-flex flex-row">
-                                <div class="d-flex flex-column">
-                                    <a class="dropdown-item" href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a>
-                                    <a class="dropdown-item" href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a>
-                                    <a class="dropdown-item" href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a>
-                                    <a class="dropdown-item" href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a>
-                                    <br>
-                                    <a class="dropdown-item" href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a>
-                                    <a class="dropdown-item" href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a>
-                                    <form class="seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
-                                        <button type="submit" class="dropdown-item btn-link" name="logout" value="Logout">Sign Out</button>
-                                    </form>
-                                </div>
-                                <div class="d-flex flex-column">
-                                    <a class="dropdown-item" href="#">Dashboard</a>
-                                    <a class="dropdown-item" href="#">Explore</a>
-                                    <a class="dropdown-item" href="#">Search</a>
-                                    <a class="dropdown-item" href="#">Integrate</a>
-                                </div>
-                          </div>
-                        <#else>
-                            <a class="dropdown-item" href="<@s.url value="/account/new" />" rel="nofollow">Sign Up</a>
-                            <a class="dropdown-item" href="<@s.url value="/login" />" rel="nofollow">Log In</a>
-                        </#if>
+                        <div class="d-none d-md-block">
+                            <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                <@dec.myAccountMenu />
+                            </div>
+                        </div>
+                        <div class="d-md-none">
+                            <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <@dec.myAccountMenu />
+                            </div>
+                        </div>
                     </div>
-                </div>
             </div>
         </nav>
     </div>
@@ -215,32 +206,61 @@
     </#if>
 
 
-    <div class="collapse navbar-collapse" id="tdarNavMenu">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/saa/">SAA</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/news/">News</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/about">About</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>
+    <!--<div class="collapse navbar-collapse" id="tdarNavMenu">-->
+        <!--<ul class="navbar-nav ml-auto">-->
+            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/saa/">SAA</a></li>-->
+            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/news/">News</a></li>-->
+            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/about">About</a></li>-->
+            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>-->
 
-    <!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
-            <#if ((authenticatedUser.contributor)!true)>
-                <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li>
-            </#if>
-            <li>
-                <#if navSearchBoxVisible>
-                    <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
-                        <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
-                        <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
-                        <input type="hidden" name="_tdar.searchType" value="simple">
-                        ${(page.properties["div.divSearchContext"])!""}
-                    </form>
-                </#if>
-            </li>
-        </ul>
-    </div>
+    <!--&lt;!&ndash;        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> &ndash;&gt;-->
+            <!--<#if ((authenticatedUser.contributor)!true)>-->
+                <!--<li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li>-->
+            <!--</#if>-->
+            <!--<li>-->
+                <!--<#if navSearchBoxVisible>-->
+                    <!--<form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">-->
+                        <!--<#&#45;&#45; fixme &#45;&#45; boostrap 3/4 should provide a better unstyled way to handle the magnifying glass &ndash;&gt;-->
+                        <!--<input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">-->
+                        <!--<input type="hidden" name="_tdar.searchType" value="simple">-->
+                        <!--${(page.properties["div.divSearchContext"])!""}-->
+                    <!--</form>-->
+                <!--</#if>-->
+            <!--</li>-->
+        <!--</ul>-->
+    <!--</div>-->
     <#--       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button> -->
+</#macro>
+
+<#macro myAccountMenu>
+    <#if (authenticatedUser??) >
+    <h5 class = "ml-4">${authenticatedUser.properName}</h5>
+    <div class="d-flex flex-row">
+        <div class="d-flex flex-column">
+            <a class="dropdown-item" href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a>
+            <a class="dropdown-item" href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a>
+            <a class="dropdown-item" href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a>
+            <a class="dropdown-item" href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a>
+            <br>
+            <a class="dropdown-item" href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a>
+            <a class="dropdown-item" href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a>
+            <form class="seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
+                <button type="submit" class="dropdown-item btn-link" name="logout" value="Logout">Sign Out</button>
+            </form>
+        </div>
+        <div class="d-flex flex-column">
+            <a class="dropdown-item" href="#">Dashboard</a>
+            <a class="dropdown-item" href="#">Explore</a>
+            <a class="dropdown-item" href="#">Search</a>
+            <a class="dropdown-item" href="#">Integrate</a>
+        </div>
+    </div>
+    <#else>
+        <a class="dropdown-item" href="<@s.url value="/account/new" />" rel="nofollow">Sign Up</a>
+        <a class="dropdown-item" href="<@s.url value="/login" />" rel="nofollow">Log In</a>
+    </#if>
 </#macro>
 
 <#macro homepageHeader>

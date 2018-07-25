@@ -1,0 +1,100 @@
+$red: #a72e1d;
+$white: #fff;
+
+#hero
+{
+  background: url(../../images/r4/bg-home.jpg) no-repeat center;
+  background-size: cover;
+}
+
+.btn
+{
+  background-color: $red;
+  color: $white
+}
+
+nav
+{
+  font-weight: bold;
+
+  .logIn
+  {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    .tdarLink
+    {
+      color: $red;
+    }
+  }
+}
+
+#home
+{
+  .news
+  {
+    ul, li
+    {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      clear: left;
+    }
+
+    li
+    {
+      font-size: 12px;
+      line-height: 20px;
+      color: #7d7a77;
+      font-style: italic;
+      display: block;
+      position: relative;
+      padding: 12px 0 26px 60px;
+      border-bottom: 1px solid #e8e3d7;
+      min-height: 4em;
+    }
+
+    li:first-child
+    {
+      padding: 0 0 16px 60px;
+    }
+
+    span
+    {
+      font-weight: 700;
+      color: #e3dfd8;
+      display: block;
+      width: 35px;
+      position: absolute;
+      left: 0;
+      text-align: center;
+      font-size: 16px;
+      line-height: 24px;
+      font-style: normal;
+    }
+
+    em
+    {
+      font-size: 30px;
+      font-style: normal;
+      display: block;
+    }
+
+    a
+    {
+      .title
+      {
+        font-family: helvetica, arial, sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        font-style: normal;
+        display: block;
+      }
+    }
+  }
+}
+
+.svgicon
+{
+  max-height: 50px;
+  max-width: 50px;
+}
