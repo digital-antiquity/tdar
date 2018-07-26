@@ -154,8 +154,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 autocompleteSuffix : 'resourceTypes[0]=PROJECT',
                 searchFieldName : 'term',
                 resultSuffix : 'resources',
-                fieldName: "project[].title",
-                idName: "project[].id",
+                fieldName: "projects[].title",
+                idName: "projects[].id",
                 index: ['resource']
             }, {
                 name : 'Collection',
@@ -164,8 +164,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 autocompleteUrl : '/api/lookup/collection',
                 searchFieldName : 'term',
                 resultSuffix : 'collections',
-                fieldName: "collection[].name",
-                idName: "collection[].id",
+                fieldName: "collections[].name",
+                idName: "collections[].id",
                 index: ['resource']
             }, {
                 name : 'Person',
@@ -265,6 +265,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     option : '',
                     value : ''
                 });
+            },
+            submit: function() {
+                console.log(this.$refs.form);
+                this.$refs.form.submit();
             },
             removeRow : function(idx) {
                 this.rows.splice(idx, 1);

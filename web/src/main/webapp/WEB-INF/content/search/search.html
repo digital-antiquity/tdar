@@ -1,56 +1,57 @@
-<form  v-on:submit.prevent="onSubmit" action="/search/results">
-<div class="advanced container" style="z-index:10000">
-    <div class="row">
-        <div class="span6 offset6 advancedSearchbox" id="advancedsearch" ignore style="display: none">
-        <h5>More search options</h5>
-        <div class="control-group condensed">
-            <label class="control-label">What:</label>
-    
-            <div class="controls controls-row">
-                <label class="radio inline">
-                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE">  Resources
-                </label>
-                <label class="radio inline">
-                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION">  Collections
-                </label>
-                <label class="radio inline">
-                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE">  People
-                </label>
-                <label class="radio inline">
-                  <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS" >  Institutions
-                </label>
-            </div>
-    </div>
+<div class="advanced container" style="z-index: 10000" id="advancedsearch" style="display: none">
+    <form onSubmit="return false" action="/search/results" ref="form">
+        <div class="row">
+            <div class="span6 offset6 advancedSearchbox" >
+                <h5>More search options</h5>
+                <div class="control-group condensed">
+                    <label class="control-label">What:</label>
 
-    <div class="searchgroup">
-        <div id="groupTable0" class="condensed">
-            <div class="condensed" v-for="(row,index) in rows">
-                <part :index="index" :row="row" :options="selectOptions" @removerow="removeRow($event)" :totalrows="rows.length"/>
+                    <div class="controls controls-row">
+                        <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE">
+                            Resources
+                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION">
+                            Collections
+                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE">
+                            People
+                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS">
+                            Institutions
+                        </label>
+                    </div>
+                </div>
+
+                <div class="searchgroup">
+                    <div id="groupTable0" class="condensed">
+                        <div class="condensed" v-for="(row,index) in rows">
+                            <part :index="index" :row="row" :options="selectOptions" @removerow="removeRow($event)" :totalrows="rows.length" />
+                        </div>
+                    </div>
+
+                    <div class="controls-row condensed">
+                        <div class="controls">
+                            <button class="btn" id="groupTable0AddAnotherButton" type="button" @click="addRow()">
+                                <i class="icon-plus-sign"></i>add another search term
+                            </button>
+                        </div>
+                    </div>
+                    <div class=" control-group " v-if="rows.length > 1">
+                        <label class="control-label">Include in results</label>
+                        <div class="controls controls-row condensed">
+                            <select name="groups[0].operator" class="span3">
+                                <option value="AND" selected="">When resource matches ALL terms below</option>
+                                <option value="OR">When resource matches ANY terms below</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="text-center">
+                        <button type="button" class="button btn tdar-button center" @click="submit()">Search</button>
+                    </p>
+                </div>
             </div>
         </div>
-    
-        <div class="controls-row condensed">
-            <div class="controls">
-                <button class="btn" id="groupTable0AddAnotherButton" type="button" @click="addRow()"><i class="icon-plus-sign"></i>add another search term</button>
-            </div>
-        </div>
-        <div class=" control-group " v-if="rows.length > 1" >
-            <label class="control-label">Include in results</label>
-            <div class="controls controls-row condensed">
-                <select name="groups[0].operator" class="span3" >
-                    <option value="AND" selected="">When resource matches ALL terms below</option>
-                    <option value="OR">When resource matches ANY terms below</option>
-                </select>
-            </div>
-        </div>
-        
-        <p class="text-center">
-        <button type="button" class="button btn tdar-button center">Search</button>
-        </p>
-    </div>
+    </form>
 </div>
-</form>
-<script type="text/x-template"   id="search-row-template">
+<script type="text/x-template" id="search-row-template">
 <div class="controls-row">
     <select v-model="option" :name="searchFieldName" class="span2 control-label" style="font-size:smaller" ref='fieldselect'>
         <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
@@ -94,9 +95,8 @@
 </div>
 </script>
 
-<#include "/WEB-INF/macros/autocomplete.html" >
-
-<script>
+<#include "/WEB-INF/macros/autocomplete.html" />
+ <script>
 $(document).ready(function() {
     $("#advancedsearch").show();
 /*     $("#searchheader").mouseover(function() {
