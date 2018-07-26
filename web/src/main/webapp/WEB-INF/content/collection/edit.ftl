@@ -320,7 +320,6 @@
         });
         </script>
         </#noescape>
-        <@edit.personAutocompleteTemplate />
 <div style="display:none"></div>
 </body>
 </#escape>

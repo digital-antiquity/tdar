@@ -175,12 +175,12 @@
 
             <#if !resource.resourceType.project>
                 <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
-	        <span id="publisher-hints" book="Publisher" book_section="Publisher" journal_article="Publisher" conference_presentation="Conference"
+	        <span id="publisher-hints" book="Publisher" report="Publisher" book_section="Publisher" journal_article="Publisher" conference_presentation="Conference"
                   thesis="Institution" other="Publisher">
                 <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
             </span>
 	
-	        <span id="publisherLocation-hints" book="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
+	        <span id="publisherLocation-hints" book="Publisher Loc." report="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
                   conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
                 <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='input-xxlarge' />
             </span>
@@ -414,8 +414,6 @@
             </@edit.submit>
     </@s.form>
 
-<#-- include any JS templates -->
-    <@edit.asyncUploadTemplates />
 
 <#-- include footer on resource page -->
     <#if local_.footer?? && local_.footer?is_macro>
@@ -469,7 +467,7 @@ Auth Info
          };
         var form = $(props.formSelector)[0];
         TDAR.common.initEditPage(form, props);
-            
+        TDAR.vuejs.uploadWidget.main();
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
         </#if>
@@ -490,8 +488,6 @@ Auth Info
         </#noescape>
 </script>
 
-
-    <@edit.personAutocompleteTemplate />
 
 </body>
 

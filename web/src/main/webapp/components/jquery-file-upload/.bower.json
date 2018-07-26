@@ -1,8 +1,8 @@
 {
   "name": "blueimp-file-upload",
-  "version": "8.6.1",
+  "version": "9.22.0",
   "title": "jQuery File Upload",
-  "description": "File Upload widget with multiple file selection, drag&amp;drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads.",
+  "description": "File Upload widget with multiple file selection, drag&amp;drop support, progress bar, validation and preview images.",
   "keywords": [
     "jquery",
     "file",
@@ -40,37 +40,34 @@
     "url": "git://github.com/blueimp/jQuery-File-Upload.git"
   },
   "bugs": "https://github.com/blueimp/jQuery-File-Upload/issues",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://www.opensource.org/licenses/MIT"
-    }
-  ],
+  "license": "MIT",
   "dependencies": {
     "jquery": ">=1.6",
-    "blueimp-tmpl": ">=2.2.1",
-    "blueimp-load-image": ">=1.7.3",
-    "blueimp-canvas-to-blob": ">=2.0.6"
+    "blueimp-tmpl": ">=2.5.4",
+    "blueimp-load-image": ">=1.13.0",
+    "blueimp-canvas-to-blob": ">=2.1.1"
   },
   "main": [
-    "js/vendor/jquery.ui.widget.js",
-    "js/jquery.fileupload-angular.js",
-    "js/jquery.fileupload-audio.js",
-    "js/jquery.fileupload-image.js",
-    "js/jquery.fileupload-process.js",
-    "js/jquery.fileupload-ui.js",
-    "js/jquery.fileupload-validate.js",
-    "js/jquery.fileupload-video.js",
-    "js/jquery.fileupload.js",
-    "js/jquery.iframe-transport.js"
+    "js/jquery.fileupload.js"
   ],
-  "_release": "8.6.1",
+  "ignore": [
+    "/*.*",
+    "/cors",
+    "css/jquery-ui-demo-ie8.css",
+    "css/jquery-ui-demo.css",
+    "css/style.css",
+    "js/app.js",
+    "js/main.js",
+    "server",
+    "test"
+  ],
+  "_release": "9.22.0",
   "_resolution": {
     "type": "version",
-    "tag": "8.6.1",
-    "commit": "d43017e76a80927b01da868a70702a10996c9fe8"
+    "tag": "v9.22.0",
+    "commit": "4c2e15192bbdd38282dfebd9391ae634fcd374e7"
   },
-  "_source": "git://github.com/blueimp/jQuery-File-Upload.git",
-  "_target": "8.6.1",
+  "_source": "https://github.com/blueimp/jQuery-File-Upload.git",
+  "_target": "9.22.0",
   "_originalSource": "jquery-file-upload"
 }

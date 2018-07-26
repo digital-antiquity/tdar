@@ -55,7 +55,6 @@ import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.email.AwsEmailSender;
 import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MathUtils;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.StatsChartGenerator;
 
 import com.amazonaws.services.simpleemail.model.SendRawEmailResult;

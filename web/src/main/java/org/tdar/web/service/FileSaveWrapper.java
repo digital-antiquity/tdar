@@ -17,6 +17,7 @@ public class FileSaveWrapper {
     private boolean multipleFileUploadEnabled;
     private boolean bulkUpload;
     private List<File> uploadedFiles;
+    private Long accountId;
 
     public FileProxy getProxy() {
         return proxy;
@@ -98,6 +99,14 @@ public class FileSaveWrapper {
 
     public void setUploadedFiles(List<File> uploadedFiles) {
         this.uploadedFiles = uploadedFiles;
+    }
+
+    public Long getAccountId() {
+        return accountId;
+    }
+    
+    public void setAccountId(Long accountId) {
+        this.accountId = accountId;
     }
 
 }

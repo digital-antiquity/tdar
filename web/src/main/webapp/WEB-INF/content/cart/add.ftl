@@ -446,7 +446,6 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
     });
 </script>
 
-    <@edit.personAutocompleteTemplate />
 
 </body>
 

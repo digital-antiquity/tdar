@@ -96,6 +96,7 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         // uploadFileAsync(FileAccessRestriction.PUBLIC, TestConstants.getFile(TestConstants.TEST_IMAGE));
         // fill in various text fields
         for (Map.Entry<String, String> entry : docValMap.entrySet()) {
+            logger.debug("{}", entry);
             find(By.name(entry.getKey())).val(entry.getValue());
         }
 

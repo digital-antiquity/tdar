@@ -224,7 +224,7 @@ true for our registration page or our profile page).-->
                     </div>
                     <#if showMore>
                         <div span="${span}">
-                            <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()">show more</a></p>
+                            <p class="text-center"><a href="#"  onClick="$('#sharedPeople .hidden').removeClass('hidden');$(this).hide()"><b>show more</b></a></p>
                         </div>
                     </#if>
                 </div>

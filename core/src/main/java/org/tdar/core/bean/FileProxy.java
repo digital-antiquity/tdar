@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.HasExtension;
@@ -25,6 +26,9 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * $Id$
@@ -42,18 +46,22 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     private FileAction action = FileAction.NONE;
     private Long fileId = -1L;
+    private Long tdarFileId = -1L;
     private Long originalFileVersionId = -1L;
     private File file;
     private Long size;
-    private String filename = "";
+    private String name = "";
     private VersionType versionType = VersionType.UPLOADED;
     private FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
     private Integer sequenceNumber = 0;
     private String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd/yyyy")
     private Date fileCreatedDate;
     // used to help distinguish between user managed proxies and those that may have been created to work around an error
     // private boolean createdByServer = false;
+    @JsonIgnore
     private InformationResourceFile informationResourceFile;
+    @JsonIgnore
     private InformationResourceFileVersion informationResourceFileVersion;
 
     private List<FileProxy> additionalVersions = new ArrayList<FileProxy>();
@@ -74,7 +82,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         // this.informationResourceFile = file;
         if (latestVersion != null) {
             this.originalFileVersionId = latestVersion.getId();
-            this.filename = latestVersion.getFilename();
+            this.name = latestVersion.getFilename();
             this.size = latestVersion.getFileLength();
         } else {
             logger.warn("No version number available for file {}", file);
@@ -86,7 +94,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public FileProxy(String filename, File file, VersionType versionType, FileAction action) {
-        this.filename = filename;
+        this.name = filename;
         this.file = file;
         this.versionType = versionType;
         this.action = action;
@@ -94,10 +102,18 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public FileProxy(String filename, VersionType versionType, FileAccessRestriction restriction) {
-        this.filename = filename;
+        this.name = filename;
         this.versionType = versionType;
         this.action = FileAction.ADD;
         this.restriction = restriction;
+    }
+
+    public FileProxy(TdarFile file2) {
+        this.name = file2.getName();
+        this.versionType = VersionType.UPLOADED;
+        this.action = FileAction.ADD;
+        this.restriction = FileAccessRestriction.PUBLIC;
+        this.tdarFileId = file2.getId();
     }
 
     public FileAction getAction() {
@@ -121,14 +137,14 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.fileId = fileId;
     }
 
-    public String getFilename() {
-        return filename;
+    public String getName() {
+        return name;
     }
 
-    public void setFilename(String filename) {
+    public void setName(String filename) {
         // strips out quotes
         // this.filename = filename.replaceAll("\"", "");
-        this.filename = filename;
+        this.name = filename;
     }
 
     public Long getOriginalFileVersionId() {
@@ -173,7 +189,7 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     @Override
     public String toString() {
         return String.format("%s %s (confidential:%s size:%d fileId:%d InputStream:%s sequence:%d date:%s @desc:%h)",
-                action, filename, restriction, size, fileId, file, sequenceNumber, fileCreatedDate, description);
+                action, name, restriction, size, fileId, file, sequenceNumber, fileCreatedDate, description);
     }
 
     public FileAccessRestriction getRestriction() {
@@ -242,8 +258,8 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     @Override
     public String getExtension() {
-        if (StringUtils.isNotBlank(filename) && filename.contains(".")) {
-            return FilenameUtils.getExtension(filename);
+        if (StringUtils.isNotBlank(name) && name.contains(".")) {
+            return FilenameUtils.getExtension(name);
         }
         return null;
     }
@@ -309,5 +325,13 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
             return true;
         }
         return false;
+    }
+
+    public Long getTdarFileId() {
+        return tdarFileId;
+    }
+
+    public void setTdarFileId(Long tdarFileId) {
+        this.tdarFileId = tdarFileId;
     }
 }
