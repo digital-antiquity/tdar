@@ -36,7 +36,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 public class ProcessPermissonsAction extends AbstractProcessPermissonsAction implements Preparable, PersistableLoadingAction<Resource> {
 
-    private static final String DATE_FORMAT = "MM/dd/yyyy";
+    public static final String DATE_FORMAT = "MM/dd/yyyy";
     private static final long serialVersionUID = 4719778524052804432L;
     private boolean reject = false;
     private String comment;
