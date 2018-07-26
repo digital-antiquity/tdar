@@ -5,11 +5,11 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
     var autocomplete = Vue.component('autocomplete', {
         name: "autocomplete",
         template: "#autocomplete",
-        props: {
+        props: [{
           items: {
             type: Array,
             required: false,
-            default: () => []
+            default: []
           },
           isAsync: {
             type: Boolean,
@@ -40,7 +40,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           span:{ type:String},
           idname: {type:String},
           name: {type:String}
-        },
+        }],
     
         data: function() {
           return {
@@ -177,8 +177,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           },
           filterResults: function() {
             // first uncapitalize all the things
-            this.results = this.items.filter(item => {
-              return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+            this.results = new Array();
+            var self = this;
+            this.items.foreach(function(item){
+              if (item.toLowerCase().indexOf(self.search.toLowerCase()) > -1) {
+                  self.results.add(item);
+              }
             });
           },
           _setResult: function(result) {
