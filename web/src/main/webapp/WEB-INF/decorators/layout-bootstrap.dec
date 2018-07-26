@@ -14,7 +14,7 @@
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.15.1" >
-<#global bootstrapVersion="4.1.2" >
+<#global bootstrapVersion="4.1.3" >
 
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
@@ -54,7 +54,7 @@
     <#else>
         <link rel="stylesheet" href="${staticHost}/components/bootstrap/dist/css/bootstrap.min.css" >
     </#if>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"  crossorigin="anonymous">
 
         <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.min.css">
         <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.theme.min.css">
@@ -467,7 +467,7 @@ ${head}
     <#if useCDN>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/jquery.validate.min.js"></script>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/additional-methods.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/${bootstrapVersion}/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/${bootstrapVersion}/js/bootstrap.min.js"  crossorigin="anonymous"></script>
     <#else>
         <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
         <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
