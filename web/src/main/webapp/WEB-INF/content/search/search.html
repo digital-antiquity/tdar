@@ -1,4 +1,4 @@
-<div class="advanced container" style="z-index: 10000" id="advancedsearch" style="display: none">
+<div class="advanced container" style="z-index: 10000; display: none" id="advancedsearch">
     <form onSubmit="return false" action="/search/results" ref="form">
         <div class="row">
             <div class="span6 offset6 advancedSearchbox" >
@@ -98,13 +98,14 @@
 <#include "/WEB-INF/macros/autocomplete.html" />
  <script>
 $(document).ready(function() {
-    $("#advancedsearch").show();
-/*     $("#searchheader").mouseover(function() {
+//    $("#advancedsearch").show();
+$("#searchheader, #advancedsearch").mouseover(function() {
         $("#advancedsearch").show();
     });
-    $("#searchheader").mouseout(function() {
+    $("#searchheader, #advancedsearch").mouseout(function() {
         $("#advancedsearch").hide();
     });
+/*
  */
 });
             
