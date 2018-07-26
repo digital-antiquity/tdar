@@ -939,13 +939,13 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             </div>
         </div>
 
-        <#if !ableToUploadFiles >
-            <#if ableToAdjustPermissions?? && !ableToAdjustPermissions>
+        <#if !ableToUploadFiles &&  ableToAdjustPermissions?? && !ableToAdjustPermissions>
                 <b>note:</b> you have not been granted permission to upload or modify files<br/>
-            <#else>
+        <#else>
+            <#if !ableToUploadFiles>
                 <b>note:</b> your billing acccount is overdrawn. You must add funds to your account before you can add or replace a file.<br/>
             </#if>
-        <#else>
+
                 <#assign uploadConfigId="uploadConfig"/>
                 <script id="uploadConfig" type="application/json">
                 <#noescape>
