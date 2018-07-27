@@ -750,12 +750,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if> form-row">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
         <div class="form-row">
-            <@s.textfield theme="tdar" cssClass="col-5 ${lookupType} ${requiredClass} trim" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
+            <@s.textfield cssClass="col-5 ${lookupType} ${requiredClass} trim" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
             autocompleteIdElement="#${idIdElement}" autocompleteName="lastName" autocomplete="off"
             name="${strutsPrefix}${personPrefix}.lastName" maxlength="255"
             title="${surnameTitle}"
             />
-            <@s.textfield theme="tdar" cssClass="col-5 ${lookupType} ${requiredClass} trim" placeholder="First Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield cssClass="col-5 ${lookupType} ${requiredClass} trim" placeholder="First Name"  readonly=isDisabled autocomplete="off"
             name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"
@@ -764,10 +764,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
             <#if includeRole || includeRights>
                 <#if includeRole>
-                    <@s.select theme="tdar" name="${strutsPrefix}.role" id="metadataForm_authorshipProxies_${_indexNumber?c}__userrole"  autocomplete="off" listValue='label' list=relevantPersonRoles
+                    <@s.select  theme="tdar" name="${strutsPrefix}.role" id="metadataForm_authorshipProxies_${_indexNumber?c}__userrole"  autocomplete="off" listValue='label' list=relevantPersonRoles
                     cssClass="creator-role-select col-2" />
                 <#else>
-                    <@s.select theme="tdar" cssClass="creator-rights-select col-2" name="${strutsPrefix}.generalPermission" emptyOption='false'
+                    <@s.select  theme="tdar" cssClass="creator-rights-select col-2" name="${strutsPrefix}.generalPermission" emptyOption='false'
                     listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                 <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                     <@s.hidden name="${strutsPrefix}.generalPermission" id="hdn${strutsPrefix}_generalPermission" cssClass="repeat-row-remove" />
@@ -777,10 +777,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </#if>
         </div>
         <div class="form-row">
-            <@s.textfield theme="tdar" cssClass="col-5 ${lookupType} trim" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
+            <@s.textfield  cssClass="col-6 ${lookupType} trim" placeholder="Email (optional)" readonly=isDisabled autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="email" autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${personPrefix}.email" maxlength="255"/>
-                <@s.textfield theme="tdar" cssClass="col-3 ${lookupType} trim" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
+                <@s.textfield cssClass="col-6 ${lookupType} trim" placeholder="Institution Name (Optional)" readonly=isDisabled autocomplete="off"
         autocompleteIdElement="#${idIdElement}"
         autocompleteName="institution"
         autocompleteParentElement="#${rowIdElement}"
@@ -792,7 +792,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#-- emit the custom identifiers section of a resource edit page-->
     <#macro identifiers showInherited=true>
-    <div id="divIdentifiersGlide" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
+    <div id="divIdentifiersGlide" class="col-12" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
         <@helptext.identifiers />
         <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
         <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited sectionId='#divIdentifiers' />
@@ -816,9 +816,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#macro>
     <#macro _displayAnnotation annotation annotation_index=0>
     <div id="resourceAnnotationRow_${annotation_index}_" class="form-row repeat-row">
-        <@s.textfield theme="tdar" placeholder="Name"  maxlength=128 cssClass="annotationAutoComplete col-3" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
-        <@s.textfield theme="tdar" placeholder="Value" cssClass="col-3" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
-        <div class="col-1"><@nav.clearDeleteButton id="resourceAnnotationRow" /></div>
+        <@s.textfield placeholder="Name"  maxlength=128 cssClass="annotationAutoComplete col-5" name='resourceAnnotations[${annotation_index}].resourceAnnotationKey.key' value='${annotation.resourceAnnotationKey.key!""}'  autocomplete="off" />
+        <@s.textfield placeholder="Value" cssClass="col-6" name='resourceAnnotations[${annotation_index}].value'  value='${annotation.value!""}' />
+        <@nav.clearDeleteButton id="resourceAnnotationRow" />
     </div>
     </#macro>
 
@@ -1373,7 +1373,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
         <@s.hidden name='${strutsPrefix}${institutionPrefix}.id' value='${(institution.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"  />
         <div class="form-row">
-            <@s.textfield theme="tdar" cssClass="institutionAutoComplete institution col-4 ${requiredClass} trim" placeholder="Institution Name" autocomplete="off"
+            <@s.textfield cssClass="institutionAutoComplete institution col-10 ${requiredClass} trim" placeholder="Institution Name" autocomplete="off"
             autocompleteIdElement="#${idIdElement}" autocompleteName="name"
             autocompleteParentElement="#${rowIdElement}"
             name="${strutsPrefix}${institutionPrefix}.name" maxlength="255"
@@ -1381,7 +1381,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             />
 
             <#if includeRole>
-                <@s.select theme="tdar" name="${strutsPrefix}.role" id="metadataForm_authorshipProxies_${_indexNumber?c}__institutionrole" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select col-2" />
+                <@s.select  name="${strutsPrefix}.role" id="metadataForm_authorshipProxies_${_indexNumber?c}__institutionrole" listValue='label' list=relevantInstitutionRoles cssClass="creator-role-select col-2" />
             <#else>
             <#-- is includeRole ever false?  if not we should ditch the parm entirely, perhaps the entire macro. -->
                 <div class="col-2">&nbsp;</div>

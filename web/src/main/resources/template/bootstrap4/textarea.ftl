@@ -1,4 +1,3 @@
-  <div class="form-group">
 <#include "/${parameters.templateDir}/${parameters.theme}/controlheader.ftl" />
 <#--
 /*
@@ -52,4 +51,3 @@
 <@s.property value="parameters.nameValue"/><#t/>
 </#if>
 </textarea><#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />
-</div>

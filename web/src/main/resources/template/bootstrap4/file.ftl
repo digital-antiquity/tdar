@@ -1,4 +1,3 @@
-<div class="form-group">
 <#include "/${parameters.templateDir}/${parameters.theme}/controlheader.ftl" />
 <#--
 /*
@@ -46,4 +45,3 @@
 <#include "/${parameters.templateDir}/${parameters.expandTheme}/dynamic-attributes.ftl" />
 />
 <#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />
-</div>

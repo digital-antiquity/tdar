@@ -1,4 +1,3 @@
-<div class="form-group">
 <#include "/${parameters.templateDir}/${parameters.theme}/controlheader.ftl" />
 <#--
 /*
@@ -55,4 +54,3 @@ class="form-control"<#rt/>
 />
 
 <#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />
-</div>

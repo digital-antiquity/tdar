@@ -16,9 +16,12 @@
 <#global jquery_validate_version="1.15.1" >
 <#global bootstrapVersion="4.1.3" >
 
-<style>
 <!-- adam's temp area for added css -->
-.hidden {display:none;visibility:hidden;}
+<style>
+ .hidden {
+ 	display:none; visibility:hidden;
+ }
+
 body {
   position: relative;
 }
