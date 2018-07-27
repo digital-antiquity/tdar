@@ -22,6 +22,8 @@ public class SpatialObfuscationUtil {
         return degMin / oneMile;
     }
 
+    
+    
     /**
      * Special constructor for bypassing "random" in tests
      * 
@@ -35,7 +37,7 @@ public class SpatialObfuscationUtil {
 
         // get the width and height of the LLB
         double userBoxLatLength = latitudeLongitudeBox.getAbsoluteLatLength();
-        double userBoxLongLength = latitudeLongitudeBox.getAbsoluteLongLength();
+        double userBoxLongLength = calculateLongLength(latitudeLongitudeBox.getWest(), latitudeLongitudeBox.getEast());
         boolean obfuscated = false;
 
         // Set how wide you want the bounding box to be if it is obsfucating the original. The box needs to be > 1 mile because if the box approximates 1 mile,
@@ -183,6 +185,42 @@ public class SpatialObfuscationUtil {
 
     }
 
+    
+    
+    public static double calculateLongLength(double start, double end) {
+    	boolean isEastToWest = start > 0 && end < 0;
+    	boolean isEasternHemisphere = start > 0 && end > 0;
+    	boolean isWesternHemisphere = !isEasternHemisphere; 
+    	boolean sameHemisphere = start < 0 && end <0 || start >0 && end > 0;
+    	boolean wrapAround = sameHemisphere  && ((isEasternHemisphere && start > end) || (isWesternHemisphere && start < end));
+    	
+    	//The start point and the end point are in the same hemisphere. 
+    	if(sameHemisphere) {
+    		//if box has wrapped around and come back to the same hemisphere 
+    		if(wrapAround) {
+    			return 360 - Math.abs(start - end);
+    		}
+    		//if the box is in the same direction, then just take the difference between the two.
+    		else {
+    			return Math.abs(end - start);
+    		}
+    	}
+    	else {
+    		//If the box crosses the ante meridian 
+    		if(isEastToWest) {
+    			return (180-start) + (180+end);
+    		}
+    		//if it crosses the prime meridian
+    		else {
+    			return Math.abs(start) + (end);
+    		}
+    	}
+   	
+    }
+    
+    
+    
+    
     /**
      * pockage protected for testing
      * 
