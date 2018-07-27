@@ -17,12 +17,23 @@
 <#global bootstrapVersion="4.1.3" >
 
 <style>
+<!-- adam's temp area for added css -->
 .hidden {display:none;visibility:hidden;}
 body {
   position: relative;
 }
 .static {
 	position: fixed;
+}
+
+
+.section + .section {
+    padding-top: 1em;
+    border-top:1px solid #EEE;
+}
+
+.section , .section + .card {
+    margin-bottom:1em;
 }
 
 #notice {background-color:white;}
@@ -297,7 +308,13 @@ ${head}
         <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
 
         <#if page.properties["div.titlebar"]?has_content>
+        <div class="container">
+        <div class="row">
+        <div class="col-12">
         ${page.properties["div.titlebar"]}
+        </div>
+        </div>
+        </div>
         </#if>
 
         <section class="container">

@@ -264,15 +264,20 @@ View freemarker macros
     </#macro>
 
 <#macro resourceCitationSection resource>
-<h2>Cite this Record</h2>
-<div class="citeMe">
-    <p class="sml">
+<div class="card">
+<div class="card-body">
+<h2 class="card-title">Cite this Record</h2>
+    <p class="sml card-text">
         <#noescape>${resourceCitation.fullCitation!''}</#noescape>
         <#if !resource.externalId?has_content && resource.lessThanDayOld && !resource.citationRecord>
             <br/>
             <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
         </#if>
     </p>
+    <#if openUrl?has_content>
+        <span class="Z3988" title="<#noescape>${openUrl!""}</#noescape>"></span>
+    </#if>
+</div>
 </div>
 
 </#macro>
@@ -375,9 +380,7 @@ View freemarker macros
         </#if>
     <#local alt="${c.properName}"/>
     <#if c.institutionName?has_content><#local alt="${c.properName?xhtml} (${c.institutionName?xhtml})"/></#if>
-    <span class="creator" title="${alt}" alt="${alt}">
         <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
-    </span>
     </#compress>
     </#macro>
 

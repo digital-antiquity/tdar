@@ -59,6 +59,7 @@
 </div>
 
     <@view.pageStatusCallout />
+<div class="section">
 
     <h1 class="view-page-title">${resource.title!"No Title"}</h1>
     <#if hasProject>
@@ -78,7 +79,6 @@
     <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/resource/admin?id=${resource.id?c}"/>">ADMIN</a></div>
     </#if>
 
-<p class="meta">
     <@view.showCreatorProxy proxyList=authorshipProxies />
     <#if resource.date?has_content>
         <#assign dateval = "unknown" />
@@ -91,17 +91,15 @@
     <#if config.copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
         <strong>Primary Copyright Holder:</strong>
         <@view.browse resource.copyrightHolder "copyrightHolder" />
-    </p>
     </#if>
 
-</p>
-
-<p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
-
+</div>
+<div class="section">
 <h2>Summary</h2>
     <@common.description resource.description />
-<hr>
+</div>
 <#list viewableResourceCollections>
+<div class="section">
     <h3>This Resource is Part of the Following Collections</h3>
     <p>
     <ul class="inline">
@@ -118,12 +116,11 @@
     </#items>
 </ul>
 </p>
-<hr>
+</div>
 </#list>
 
 <@view.resourceCitationSection resource />
 
-<hr/>
     <#noescape>
         <#if resource.url! != ''>
         <p><strong>URL: </strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
@@ -139,7 +136,6 @@
     <#if ( resource.hasBrowsableImages && resource.visibleFilesWithThumbnails?size > 0)>
         <@view.imageGallery />
     <br/>
-    <hr/>
     </#if>
 
     <#if resource.resourceType.dataTableSupported>
@@ -162,7 +158,7 @@
             <p><@view.embargoCheck /></p>
 
             <div class="row">
-                <div class="span9">
+                <div class="col-9">
                     <table id="dataTable"
                            data-data-table-selector="#table_select"
                            data-default-data-table-id="${dataTable.id?c}"
@@ -181,13 +177,13 @@
 
         <h3>Data Set Structure</h3>
         <div class="row">
-            <div class="span3"><span class="columnSquare measurement"></span>Measurement Column</div>
-            <div class="span3"><span class="columnSquare count"></span>Count Column</div>
-            <div class="span3"><span class="columnSquare coded"></span>Coded Column</div>
+            <div class="col-3"><span class="columnSquare measurement"></span>Measurement Column</div>
+            <div class="col-3"><span class="columnSquare count"></span>Count Column</div>
+            <div class="col-3"><span class="columnSquare coded"></span>Coded Column</div>
         </div>
         <div class="row">
-            <div class="span3"><span class="columnSquare mapped"></span>Filename Column</div>
-            <div class="span3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
+            <div class="col-3"><span class="columnSquare mapped"></span>Filename Column</div>
+            <div class="col-3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
     <br/>
             <#list resource.sortedDataTables as dataTable>
@@ -306,25 +302,22 @@
         </#if>
     </#if>
 
-    <span class="Z3988" title="<#noescape>${openUrl!""}</#noescape>"></span>
 
     <#if resource.containsActiveKeywords >
+    <div class="section">
+
     <h2>Keywords</h2>
         <#if resource.project?has_content && resource.project.id != -1 && resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
         <em>Note: Inherited values from this project are not available because the project is not active</em>
         </#if>
     <div class="row">
-        <#if (resource.keywordProperties?size > 1)>
-        <div class="span45">
-        <#elseif resource.keywordProperties?size == 1>
-        <div class="span9">
-        </#if>
+        <div class="col">
 
         <#list resource.keywordProperties as prop>
         <#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
             <#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>
             </div>
-            <div class="span45">
+            <div class="col">
             </#if>
             <#if prop == "activeSiteNameKeywords">
                 <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" resource.inheritingSiteInformation!false />
@@ -362,7 +355,7 @@
         </div>
         </#if>
     </div>
-    <hr/>
+    </div>
     </#if>
 
 
@@ -390,6 +383,7 @@
 
 
     <#if (resource.activeLatitudeLongitudeBoxes?has_content) || (userAbleToViewUnobfuscatedMap && geoJson?has_content)>
+    <div class="section">
     <h2>Spatial Coverage <#if editor && resource.inheritingSpatialInformation!false><small>(from project)</small></#if> </h2>
     <div class="title-data">
         <#if (resource.activeLatitudeLongitudeBoxes?has_content) >
@@ -409,7 +403,7 @@
     </div>
 
     <div class="row">
-        <div id='large-map' style="height:300px" class="leaflet-map span9" 
+        <div id='large-map' style="height:300px" class="leaflet-map col-9" 
         <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>data-geojson="#localGeoJson"</#if>
         <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
             <#assign llb = resource.firstActiveLatitudeLongitudeBox />
@@ -432,6 +426,7 @@
             <script id="localGeoJson" type="application/json">${geoJson}</script>
         </#noescape>
     </#if>
+    </div>
     </#if>
     <#if creditProxies?has_content >
     <h3>Individual &amp; Institutional Roles <#if editor && resource.inheritingIndividualAndInstitutionalCredit!false ><small>(from project)</small></#if> </h3>
@@ -440,6 +435,7 @@
     </#if>
 
         <#list allResourceAnnotationKeys>
+        <div class="section">
         <h3>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h3>
 
         <#items as key>
@@ -454,15 +450,17 @@
                 <@view.kvp key=keyLabel val=contents noescape=true />
             </#if>
             </#items>
+            </div>
         </#list>
 
 
     <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber")>
+    <div class="section">
     <h2>Notes <#if editor && resource.inheritingNoteInformation!false ><small>(from project)</small></#if> </h2>
         <#items as resourceNote>
             <@view.kvp key=resourceNote.type.label val=resourceNote.note />
         </#items>
-    <hr/>
+        </div>
         </#list>
 
     <@_relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
