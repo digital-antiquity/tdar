@@ -117,8 +117,9 @@
                         </li>
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  Using tDAR
+                                <button class="btn btn-link  align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  Using tDAR <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg>
+                                  
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <h5 class = "ml-4">Using tDAR</h5>

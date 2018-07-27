@@ -36,6 +36,19 @@ body {
     margin-bottom:1em;
 }
 
+
+.nav-chevron {
+    color: white;
+    fill: white;
+    width: 10px;
+    height: 10px;
+    stroke-width: 5px;
+    stroke-color: white;
+    stroke: white;
+    position: relative;
+    bottom: 2px;
+}
+
 #notice {background-color:white;}
 </style>
 
