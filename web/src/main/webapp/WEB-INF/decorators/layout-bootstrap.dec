@@ -16,6 +16,18 @@
 <#global jquery_validate_version="1.15.1" >
 <#global bootstrapVersion="4.1.3" >
 
+<style>
+.hidden {display:none;visibility:hidden;}
+body {
+  position: relative;
+}
+.static {
+	position: fixed;
+}
+
+#notice {background-color:white;}
+</style>
+
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
     <#assign pageType=actionName>

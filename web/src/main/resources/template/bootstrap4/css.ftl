@@ -20,10 +20,11 @@
 -->
 <#assign partClass><#compress>
 <#-- if we have a css class that defines form-control, then ignore it here -->
-<#if parameters.cssClass?has_content && parameters.cssClass?contains("form-control")>
+<#if parameters.cssClass?has_content && parameters.cssClass?contains("form-")>
 <#else>
 <#switch (parameters.template)>
 	<#case "checkbox">
+	<#case "checkboxlist">
 	<#case "radio">
 	<#case "radiomap">
 	form-check-input

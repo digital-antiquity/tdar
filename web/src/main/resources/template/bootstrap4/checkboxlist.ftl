@@ -28,7 +28,7 @@
 <#assign spanClass = "">
 <#assign hasColumns = _numColumns &gt; 1 />
 <#if hasColumns>
-    <#assign spanClass = "${parameters.spanClass!'col-sm'}" />
+    <#assign spanClass = "${parameters.spanClass!'col'}" />
     <div class="row">
     <div class="${spanClass}">
 </#if>

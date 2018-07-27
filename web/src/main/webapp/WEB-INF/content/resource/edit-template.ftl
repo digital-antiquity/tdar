@@ -33,7 +33,7 @@
 
 </head>
 <body>
-    <@edit.sidebar />
+    <@edit.sidebar>
     <@edit.subNavMenu>
     <#-- include local scrollspy menu details -->
         <#if local_.subNavMenu?? && local_.subNavMenu?is_macro>
@@ -41,6 +41,9 @@
         </#if>
 
     </@edit.subNavMenu>
+    </@edit.sidebar>
+    <div class="row aaaa">
+	<div class="col-12">
 
 <#-- allow for overriding of the page title -->
     <#if  local_.customH1?? && local_.customH1?is_macro>
@@ -74,8 +77,8 @@
         <#if local_.topSection?? && local_.topSection?is_macro>
             <@local_.topSection />
         </#if>
-
-    <div class="well-alt" id="basicInformationSection">
+	</div>
+    <div class="col-12" id="basicInformationSection">
         <h2>Basic Information</h2>
 
         <#if resource.id?? &&  resource.id != -1>
@@ -84,19 +87,19 @@
 
         <@edit.hiddenStartTime />
 
-        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
+        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="form-group">
             <#if editor && !administrator>
                 <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to draft</p>
             </#if>
             <label class="control-label">Status</label>
 
-            <div class="controls">
+            <div class="form-group">
                 <#if config.guestUserId != -1 && config.guestUserId == authenticatedUser.id>
-                    <select name="status">
+                    <select name="status" class="form-control">
                         <option value='DRAFT' selected>Draft</option>
                     </select>
                 <#else>
-                    <@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+                    <@s.select  value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
                 </#if>
                 <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
             </div>
@@ -116,7 +119,7 @@
                  data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.">
                 <@s.textfield label="Title" id="resourceRegistrationTitle"
                 title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
-                cssClass="required descriptiveTitle input-xxlarge trim" required=true maxlength="512"/>
+                cssClass="required descriptiveTitle trim" required=true maxlength="512"/>
             </div>
             <#if resource.resourceType != 'PROJECT'>
                 <div data-tiplabel="Year"
@@ -125,7 +128,7 @@
 	        <#if resource.date?? && resource.date != -1>
                     <#assign dateVal = resource.date?c />
                 </#if>
-	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini trim" required=true
+	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required col-2 trim" required=true
                 maxlength=7 title="Please enter the year this ${resource.resourceType.label} was created" />
                 </div>
             </#if>
@@ -138,10 +141,9 @@
 
     <#-- if we're an editor or administrator, we allow them to set the submitter of the resource to 'not them' -->
         <#if editor>
-            <div class="control-group" id="divSubmitter">
-                <label class="control-label">Submitter</label>
+            <div class="form-group" id="divSubmitter">
+                <label class="">Submitter</label>
 
-                <div class="controls controls-row">
                     <#if submitter?has_content>
                 <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber=''
                     prefix="submitter" includeRights=false includeRepeatRow=false />
@@ -149,7 +151,6 @@
                         <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
                         prefix="submitter" includeRights=false includeRepeatRow=false />
                     </#if>
-                </div>
             </div>
         </#if>
     </div>
@@ -160,7 +161,7 @@
             <@edit.resourceCreators '${rtLabel} Creators' authorshipProxies 'authorship' />
         </#if>
 
-    <div id="citationInformation" class="well-alt">
+    <div id="citationInformation" class="col-12">
         <h2>Additional Citation Information</h2>
         <#if local_.citationInformationToggle?? && local_.citationInformationToggle?is_macro>
             <@local_.citationInformationToggle />
@@ -177,12 +178,12 @@
                 <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
 	        <span id="publisher-hints" book="Publisher" report="Publisher" book_section="Publisher" journal_article="Publisher" conference_presentation="Conference"
                   thesis="Institution" other="Publisher">
-                <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
+                <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution col-12"  />
             </span>
 	
 	        <span id="publisherLocation-hints" book="Publisher Loc." report="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
                   conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
-                <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='input-xxlarge' />
+                <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='col-12' />
             </span>
                 </div>
             </#if>
@@ -199,14 +200,14 @@
             </#if>        
 
             <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
-                <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
+                <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url col-12" placeholder="http://" />
             </div>
 
         </#if>
     </div>
 
         <#if !bulkUpload >
-        <div class="well-alt">
+        <div class="col-12">
             <h2>Abstract / Description</h2>
 
             <div id="t-abstract" class="clear"
@@ -347,7 +348,7 @@
 
         <#if !resource.resourceType.project>
         <#-- emit resourceProvider section -->
-        <div class="well-alt" id="divResourceProvider" data-tiplabel="Resource Provider"
+        <div class="col-12" id="divResourceProvider" data-tiplabel="Resource Provider"
              data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
             <h2>Institution Authorizing Upload of this <@edit.resourceTypeLabel /></h2>
             <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
@@ -488,7 +489,7 @@ Auth Info
         </#noescape>
 </script>
 
-
+</div>
 </body>
 
 </#escape>
