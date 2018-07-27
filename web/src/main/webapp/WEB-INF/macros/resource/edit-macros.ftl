@@ -46,7 +46,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                     <#-- emit a single row of the choose-a-collection section -->
                     <div id="${prefix}Row_${resourceCollection_index}_" class="form-row repeat-row">
                         <@s.hidden name="${prefix}[${resourceCollection_index}].id"  id="${prefix}Row_${resourceCollection_index}_id" />
-                        <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="col-12 collectionAutoComplete "  autocomplete="off"
+                        <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="col-11 collectionAutoComplete "  autocomplete="off"
                         autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
                         collectionType="${collectionType}"
                         autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
@@ -603,7 +603,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document." class="col-12">
         <h2 id="notesInfoSectionLabel">Notes</h2>
         <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited sectionId='#resourceNoteSection'/>
-        <div id="resourceNoteSection" class="form-group repeatLastRow">
+        <div id="resourceNoteSection" class="repeatLastRow">
             <label class="control-label">Type / Contents</label>
             <#list resourceNotes as resourceNote>
                 <#if resourceNote??><@_noteRow resourceNote resourceNote_index/></#if>
@@ -616,18 +616,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro _noteRow proxy note_index=0>
     <div id="resourceNoteRow_${note_index}_" class="repeat-row">
         <div class="controls form-row">
-            <div class="col-6">
-                <div class="form-row">
-                    <@s.select theme="tdar" emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" />
-                </div>
-                <div class="form-row">
-                    <@s.textarea rows="4" theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='col-6 resizable resize-vertical'
-                    maxlength='5000' cols="80" />
-                </div>
-            </div>
-            <div class="col-1">
+                <@s.select  emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" cssClass="col-2" />
+                <@s.textarea rows="4" theme="tdar" name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='col-9 resizable resize-vertical'
+                maxlength='5000' cols="80" />
                 <@nav.clearDeleteButton id="resourceNoteRow" />
-            </div>
         </div>
     </div>
     </#macro>

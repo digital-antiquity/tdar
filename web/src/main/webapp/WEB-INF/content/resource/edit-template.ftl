@@ -253,7 +253,7 @@
 
 
     <#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
-    <div class="" id="organizeSection">
+    <div class="col-12" id="organizeSection">
 			<#-- use 1 beacause we prepend with a blank for -1 -->
 		<#assign showProjects = (potentialParents?has_content && potentialParents?size > 1) />
     	<#if !showProjects && !resource.resourceType.project >
