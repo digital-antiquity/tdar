@@ -27,13 +27,13 @@
             </Route> </Routes> </Routing> -->
     </Appenders>
     <Loggers>
-        <Root level="ERROR">
+        <Root level="DEBUG">
             <AppenderRef ref="Console" />
         </Root>
         <Logger name="org.hibernate.util.JDBCExceptionReporter"
             level="debug" />
         <Logger name="org.liquibase" level="error" />
-        <Logger name="org.tdar" level="DEBUG" />
+        <Logger name="org.tdar" level="TRACE" />
         <Logger name="uk.org" level="debug" />
 
         <!--// log parameterized SQL statements -->

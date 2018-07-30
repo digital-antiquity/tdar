@@ -29,6 +29,15 @@ public class LatitudeLongitudeBoxTest {
     private static final double EPSILON = 0;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    
+    @Test 
+    public void testDistanceWestToEast() {
+    	LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-.4,-.4, .4,.4);
+    	assertLength(llb, .8);
+    }
+    
+    
+    
     @Test
     public void testVerifyDistanceAcrossPrimeMeridian(){
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-.01,-.01,.01,.01);
@@ -41,7 +50,7 @@ public class LatitudeLongitudeBoxTest {
     }
     
     @Test
-    public void testVerifyDistanceAcrossAntiMeridian(){
+    public void testVerifyLargeDistanceAcrossPrimeMeridian(){
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-179.0,-.01,179.0,.01);
         
         double latLen = llb.getAbsoluteLatLength();
@@ -49,8 +58,21 @@ public class LatitudeLongitudeBoxTest {
         logger.debug("long length is {} ",longLen);
         
         assertTrue("Length is .02", latLen == .02);
-        assertTrue("Length is .02", longLen == 2);        
+        assertTrue("Length is 358", longLen == 358);        
     }
+    
+    @Test
+    public void testVerifyDistanceAcrossAnteMeridian(){
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(179.0,-.01,-179.0,.01);
+        
+        double latLen = llb.getAbsoluteLatLength();
+        double longLen = llb.getAbsoluteLongLength();
+        logger.debug("long length is {} ",longLen);
+        
+        assertTrue("Length is .02", latLen == .02);
+        assertTrue("Length is 2", longLen == 2);        
+    }
+    
     
     @Test
     public void testNewObfuscation() {
@@ -270,7 +292,7 @@ public class LatitudeLongitudeBoxTest {
     public void doesObfuscateAtLessThanOneMile() {
         Double slightlyLessThanOneMile = ONE_MILE_IN_DEGREE_MINUTES - 0.00001d;
         Double zero = 0.0;
-        LatitudeLongitudeBox llb  = new LatitudeLongitudeBox(slightlyLessThanOneMile, slightlyLessThanOneMile, zero, zero);
+        LatitudeLongitudeBox llb  = new LatitudeLongitudeBox(zero, zero, slightlyLessThanOneMile, slightlyLessThanOneMile);
         llb.obfuscate();
         assertNotEquals(slightlyLessThanOneMile ,llb.getObfuscatedWest());
         assertNotEquals(zero, llb.getObfuscatedEast());
@@ -519,12 +541,11 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
         SpatialObfuscationUtil.obfuscate(llb);
         
-//        llb.obfuscate();
         logger.debug("{}/ {}", llb.getObfuscatedEast(), llb.getObfuscatedWest());
         assertTrue(llb.getObfuscatedEast() > maximumLongitude);
         assertTrue(llb.getObfuscatedWest() < minimumLongitude);
-        fail("i don't trust this");
     }
+   
     @Test
     public void testObfuscatedWithCenterPrimeMeridian() {
         double minimumLongitude = -.00001d;
@@ -536,9 +557,12 @@ public class LatitudeLongitudeBoxTest {
         
         llb.obfuscate();
         logger.debug("{}/ {}", llb.getObfuscatedEast(), llb.getObfuscatedWest());
-        assertTrue(minimumLongitude < llb.getObfuscatedEast() );
-        assertTrue(llb.getObfuscatedWest() > maximumLongitude);
-        fail("i don't trust this");
+        
+        //Make sure the obfuscated bound is more east than the original
+        assertTrue(maximumLongitude < llb.getObfuscatedEast() );
+        
+        //And the west bound is more west than the original.
+        assertTrue(llb.getObfuscatedWest() < minimumLongitude);
     }
 
     @SuppressWarnings({ "static-method", "deprecation" })
@@ -560,6 +584,10 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(maximumLongitude).equals(llb.getObfuscatedEast()));
         assertTrue(Double.valueOf(minimumLatitude).equals(llb.getObfuscatedSouth()));
         assertTrue(Double.valueOf(maximumLatitude).equals(llb.getObfuscatedNorth()));
+    }
+    
+    private void assertLength(LatitudeLongitudeBox llb, double length) {
+    	assertTrue("Length is "+length, llb.getAbsoluteLongLength()==length);
     }
 
 }

@@ -460,20 +460,74 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     @Deprecated
     public double getAbsoluteLongLength() {
-        
-        /**if(crossesAntiMeridian(getWest(), getEast())){
-            logger.debug("e: {}, w: {}",getEast(), getWest());
-            return Math.abs(MAX_LONGITUDE - getEast()) + Math.abs(MIN_LONGITUDE - getWest());
-        }**/
-        
-        if (crossesPrimeMeridian()) {
-            return Math.abs(getWest() - getEast());
-        }
-        if (crossesDateline()) {
-            logger.debug("e: {}, w: {}",getEast(), getWest());
-            return Math.abs(MIN_LONGITUDE - getEast()) + Math.abs(MAX_LONGITUDE - getWest());
-        }
-        return Math.abs(getEast() - getWest());
+    	double start = this.getWest();
+    	double end = this.getEast();
+    	
+    	
+    	boolean isEastToWest = (start >0 && end <= 0);
+    	boolean isWestToEast = (start <=0 && end > 0);
+    	boolean isOnlyEasternHemisphere = (start > 0 && end > 0);
+    	boolean isOnlyWesternHemisphere = (start <= 0 && end < 0); 
+    	boolean sameHemisphere = isOnlyEasternHemisphere || isOnlyWesternHemisphere;
+    	boolean wrapAround = sameHemisphere  && ((isOnlyEasternHemisphere && start < end) || (isOnlyWesternHemisphere && start > end));
+    	
+    	
+    	double length = 0;
+    	
+    	if(logger.isTraceEnabled()) {
+    		logger.trace("calulateLongLength()");
+    		logger.trace("-------------------------------");
+    		logger.trace("Start is {}, end is {}", start, end);
+    		logger.trace("isSameHemisphere: {}", sameHemisphere);
+    		logger.trace("isWrapAround: {} ",wrapAround);
+    		logger.trace("isEasternHemisphere: {}", isOnlyEasternHemisphere);
+    		logger.trace("isWesternHemisphere: {}", isOnlyWesternHemisphere);
+    		logger.trace("isEastToWest: {}",isEastToWest);
+    		logger.trace("isWestToEast: {}",isWestToEast);
+    		logger.trace("-------------------------------");
+    	}
+    	
+    	
+    	if(start==end) {
+    		logger.trace("The distance is a point");
+    		length =  0;
+    	}
+    	
+    	//The start point and the end point are in the same hemisphere. 
+    	if(sameHemisphere) {
+    		logger.trace("Same Hemisphere");
+    		//if box has wrapped around and come back to the same hemisphere 
+    		if(wrapAround) {
+        		logger.trace("Wrap Around");
+    			length = 360 - Math.abs(start - end);
+    		}
+    		//if the box is in the same direction, then just take the difference between the two.
+    		else {
+        		logger.trace("Not Wraparound");
+    			length = Math.abs(end - start);
+    		}
+    	}
+    	else {
+    			//If the box crosses the ante meridian 
+    		if(isEastToWest) {
+    			logger.trace("Box moves east to west across antemeridian");
+    			length = (180-start) + (180+end);
+    		}
+    			//if it crosses the prime meridian
+    		else if(isWestToEast){
+    			logger.trace("Box moves west to east across prime merdian");
+    			length = Math.abs(start) + (end);
+    		}
+    		else {
+    			logger.trace("Box started at zero. What is the orientation?");
+    			//default
+    			length = Math.abs(end - start);
+    		}
+    	}
+    	
+    	logger.debug("Length is {}", length);
+    	return length;
+    	
     }
 
     public double getArea() {
