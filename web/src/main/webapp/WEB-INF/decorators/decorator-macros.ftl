@@ -39,10 +39,10 @@
                     </div>
                     <ul class="navbar-nav">
                         <li class="nav-item mr-sm-3">
-                            <a href = "#" class="btn btn-sm topRight">Browse</a>
+                            <a href = "#" class="tdarButton btn btn-sm topRight">Browse</a>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <a href = "#" class="btn btn-sm topRight">Upload</a>
+                            <a href = "#" class="tdarButton btn btn-sm topRight">Upload</a>
                         </li>
                         <li class="nav-item">
                             <form class="form-inline">
@@ -59,19 +59,20 @@
             </div>
         </nav>
 
-        <nav class="navbar navbar-expand-md navbar-light bg-white">
+        <nav class="navbar navbar-expand-md navbar-light tdarNav py-0">
             <div class = "container">
                 <div class="collapse navbar-collapse" id="tdarNavMenu">
                     <ul class="navbar-nav">
                         <li class="nav-item mr-sm-3">
-                            <a href="" class="nav-link align-middle">SAA</a>
+                            <a href="" class="nav-link align-middle tdarNavItem">SAA</a>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <a href="" class="nav-link align-middle">News</a>
+                            <a href="" class="nav-link align-middle tdarNavItem">News</a>
                         </li>
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</button>
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About <svg class="svgicon svg-icons_chevron nav-chevron">
+                                    <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <h5 class = "ml-4">About</h5>
                                     <div class="d-flex flex-row">
@@ -93,8 +94,8 @@
                         </li>
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown">
-                                <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  Why tDAR?
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                  Why tDAR? <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg>
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <h5 class = "ml-4">Why tDAR?</h5>
@@ -117,7 +118,7 @@
                         </li>
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown">
-                                <button class="btn btn-link  align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                   Using tDAR <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg>
                                   
                                 </button>
@@ -143,13 +144,13 @@
                     </ul>
                     <div class="dropdown ml-auto">
                         <div class="d-none d-md-block">
-                            <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</button>
+                            <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                                 <@dec.myAccountMenu />
                             </div>
                         </div>
                         <div class="d-md-none">
-                            <button class="btn btn-link dropdown-toggle align-middle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account</button>
+                            <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <@dec.myAccountMenu />
                             </div>

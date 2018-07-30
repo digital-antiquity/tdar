@@ -1,4 +1,4 @@
-.btn {
+.tdarButton {
   background-color: #a72e1d;
   color: #fff;
   border-radius: 0; }
@@ -10,6 +10,18 @@ nav {
     text-transform: uppercase; }
     nav .logIn .tdarLink {
       color: #a72e1d; }
+
+.tdarNav {
+  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
+  background-size: cover; }
+  .tdarNav .tdarNavItem {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    border-right: #a72e1d; }
+  .tdarNav .nav-chevron {
+    stroke-width: 5px;
+    stroke: #a72e1d; }
 
 #home #hero {
   background: url(../../images/r4/bg-home.jpg) no-repeat center;
@@ -57,6 +69,11 @@ nav {
 
 @media (max-width: 768px) {
   #home #hero h2 {
-    font-size: 3.5rem; } }
+    font-size: 3.5rem; }
+
+  nav {
+    background-color: #e4d5bb; }
+    nav .tdarNavItem {
+      padding-left: 0; } }
 
 /*# sourceMappingURL=style.css.map */

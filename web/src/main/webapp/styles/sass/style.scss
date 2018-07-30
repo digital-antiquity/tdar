@@ -1,7 +1,8 @@
 $red: #a72e1d;
 $white: #fff;
+$beige: #e4d5bb;
 
-.btn
+.tdarButton
 {
   background-color: $red;
   color: $white;
@@ -20,6 +21,26 @@ nav
     {
       color: $red;
     }
+  }
+}
+
+.tdarNav
+{
+  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
+  background-size: cover;
+
+  .tdarNavItem
+  {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgba(0,0,0,0.5);
+    border-right: $red;
+  }
+
+  .nav-chevron
+  {
+    stroke-width: 5px;
+    stroke: $red;
   }
 }
 
@@ -107,6 +128,15 @@ nav
       {
         font-size: 3.5rem;
       }
+    }
+  }
+
+  nav
+  {
+    background-color: $beige;
+    .tdarNavItem
+    {
+      padding-left: 0;
     }
   }
 }
