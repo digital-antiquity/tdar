@@ -105,7 +105,7 @@ Common macros used in multiple contexts
     <#macro listAddresses entity=person entityType="person" choiceField="" addressId=-1>
     <div class="row">
         <#list entity.addresses  as address>
-            <div class="span3">
+            <div class="col-3">
                 <#local label = ""/>
                 <#if address.type?has_content>
                     <#local label = address.type.label>

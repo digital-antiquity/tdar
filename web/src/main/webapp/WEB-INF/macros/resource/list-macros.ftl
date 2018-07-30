@@ -459,11 +459,14 @@ bookmark indicator, etc..
                 <h3>View Options</h3>
                 <ul class="tools media-list">
                 <#items as orientation>
-                    <li class="media"><a href="<@s.url includeParams="all">
+                    <li class="media">
+                    <svg class="svgicon mr-3 red icon-height"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${orientation.svg!orientation}"></use></svg>
+                    <div class="media-body">
+
+                    <a href="<@s.url includeParams="all">
                         <@s.param name="orientation">${orientation}</@s.param>
                     </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${orientation.svg!orientation}"></use></svg>
-                    <@s.text name="${orientation.localeKey}"/></a></li>
+                    <@s.text name="${orientation.localeKey}"/></a></div></li>
                     </#items>
                 </ul>
                     </#list>

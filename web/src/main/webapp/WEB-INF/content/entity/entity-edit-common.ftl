@@ -33,10 +33,10 @@
 
             <@s.hidden name="id" />
             <div class="row">
-                <div class="span5">
+                <div class="col-5">
                         <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
                 </div>
-                <div class="span5">
+                <div class="col-5">
                         <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" />
                 </div>
             </div>
@@ -45,7 +45,7 @@
 
 
         <div class="row">
-            <div class="span5">
+            <div class="col-5">
                 <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
     
                 <#if config.privacyControlsEnabled>
@@ -54,7 +54,7 @@
                         engines, spammers, and visitors who are not logged in.</em></p>
                 </#if>
             </div>
-            <div class="span5">
+            <div class="col-5">
                 <@s.textfield name="person.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
             </div>
         </div>
@@ -63,11 +63,11 @@
 
 
             <div class="row">
-                <div class="span5">
+                <div class="col-5">
                     <@s.textfield name="person.orcidId" label="ORCID Id" id="orcidId" cssClass="input-xlarge"  maxlength=50 placeholder="XXXX-XXXX-XXXX-XXXX" />
                     <a href="http://orcid.org/about/what-is-orcid">About ORCID</a>                
                 </div>
-                <div class="span5">
+                <div class="col-5">
                     <#if config.RPAEnabled>
                     <@s.textfield  cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 />
                     <a href="http://rpanet.org/">About RPA</a>                

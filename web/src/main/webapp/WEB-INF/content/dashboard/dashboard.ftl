@@ -44,7 +44,7 @@
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
-                            Use <b>Datasets</b> for data tables, Excel, Access and other tabular data files.<br class="responsive-desktop"/><br class="responsive-desktop"/>
+                            Use <b>Datasets</b> for data tables, Excel, Access and other tabular data files.
                               <p class="center"><a href="/dataset/add" class="button">Upload</a></p>
                         </div>
                         </div>
@@ -53,7 +53,7 @@
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
-                            Use <b>Images</b> for drawings, photographs, JPEG, TIFF, and other image files.<br/><br/>
+                            Use <b>Images</b> for drawings, photographs, JPEG, TIFF, and other image files.
                              <p class="center"><a href="/image/add" class="button">Upload</a></p>
                         </div>
                         </div>
@@ -74,9 +74,11 @@
                 <div class="row">
                 <div class="col">
                     <div class="card">
+                              <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-right: 5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-                            Use <b>Collections</b> organize your resources and manage permissions.<br class="responsive-large-desktop"/><br class="responsive-large-desktop"/>
+                            Use <b>Collections</b> organize your resources and manage permissions.
                              <p class="center"><a href="/collection/add" class="button">Create</a></p>
+                        </div>
                     </div>
                 </div>
         </div>

@@ -9,7 +9,9 @@
 <body>
 
     <@commonCollection.header />
+        <@commonCollection.sidebar />
 
+<div class="row">
         <h1>${resourceCollection.name!"untitled collection"}</h1>
     
     <#if !visible>
@@ -17,7 +19,6 @@
     
     <#else>
 
-        <@commonCollection.sidebar />
 
         <@commonCollection.descriptionSection/>
 
@@ -29,7 +30,7 @@
     </#if>
 
     <@commonCollection.javascript />
-
+</div>
 </body>
 
 </#escape>

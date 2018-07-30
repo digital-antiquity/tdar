@@ -21,10 +21,10 @@
 
 
 <div class="row">
-    <div class="span2">
+    <div class="col-2">
         <@dash.sidebar current="billing" />
     </div>
-    <div class="span10">
+    <div class="col-10">
         <@accountSection />
         <br/>
       <h3>Add Space</h3>
@@ -38,10 +38,10 @@
                         </tr>
                         <tr>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer span1 orderinfo" maxlength=9  />
+                                <@s.textfield name="invoice.numberOfFiles" cssClass="integer orderinfo" maxlength=9  />
                             </td>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer span1 orderinfo" maxlength=9 />
+                                <@s.textfield name="invoice.numberOfMb"  cssClass="integer  orderinfo" maxlength=9 />
                             </td>
                         </tr>
                         <tr>

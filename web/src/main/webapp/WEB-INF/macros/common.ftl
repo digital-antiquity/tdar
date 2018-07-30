@@ -199,13 +199,13 @@ true for our registration page or our profile page).-->
 
 <#macro listUsers users=[] span=10 baseUrl="/entity/user/rights" well=true>
         <div class="<#if well>row</#if>" id="sharedPeople">
-            <div class="<#if well>well</#if> span${span}">
+            <div class="<#if well>well</#if> span-${span}">
                 <div class="row">
                     <#assign showMore=false />
                     <#assign listGroups = [users]>
                     <#if (users?size > (span/2-1))><#assign listGroups =  users?chunk(users?size /(span/2-1) )> </#if>
                     <#list listGroups as row>
-                        <div  class="span2">
+                        <div  class="col">
                             <#list row>
                             <ul class="unstyled">
                             <#items as item>

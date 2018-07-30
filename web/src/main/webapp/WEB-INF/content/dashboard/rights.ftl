@@ -18,32 +18,32 @@
     <h1>Dashboard &raquo; <span class="red">Manage Collections &amp; Permissions</span></h1>
 </div>
 <div class="row">
-    <div class="span2">
+    <div class="col-2">
     <@dash.sidebar current="rights" />
     </div>
-    <div class="span10">
+    <div class="col-10">
     
         <div class="well">
             <div class="row">
-                <div class="span12">
+                <div class="col-12">
                     <h3>Collections</h3>
                 </div>
             </div>
             <div class="row">
-                <div class="span8">
+                <div class="col-10">
                         In ${siteAcronym}, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and
                         hierarchies of resources in any way they find useful. A secondary use of collections allows users to easily administer view and edit
                         permissions for large numbers of persons and resources.<br/><br/>
                         <a href="/collection/add" class="button tdar-button">Create Collection</a>
                 </div>
-                <div class="span1">  <svg class="svgicon svg100"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg></div>
+                <div class="col-2">  <svg class="svgicon svg100"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg></div>
             </div>
         </div>
     <div class="row">
-        <div class="span10">
+        <div class="col-12">
 	    <#if ((findUsersSharedWith?size!0) > 0)>
 	        <h5>Users you've shared with</h5>
-	        <@common.listUsers users=findUsersSharedWith span=10 baseUrl="/entity/user/rights" well=false  />
+	        <@common.listUsers users=findUsersSharedWith span=12 baseUrl="/entity/user/rights" well=false  />
 	
 	    </#if>
 	    <@collectionsSection />
@@ -60,8 +60,6 @@
     </#macro>
 
     <#macro collectionsSection>
-        <div class="row">
-        <div class="span10">
         <table class="table">
             <thead>
             <tr>
@@ -91,8 +89,6 @@
             </#list>
             </tbody>
         </table>
-        </div>
-        </div>
     </#macro>
 
 

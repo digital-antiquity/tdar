@@ -177,14 +177,14 @@
             <#if keywordSectionVisible>
             <!-- <h5>Common Keywords found within this Collection</h5> -->
             <div class="row">
-                <div class="span4">
+                <div class="col">
                 <@_keywordSection "Site Name Keywords" facetWrapper.facetResults['activeSiteNameKeywords']![] "query" />
                 <@_keywordSection "Site Type Keywords" facetWrapper.facetResults['activeSiteTypeKeywords']![] "query" />
                 <@_keywordSection "Other Keywords" facetWrapper.facetResults['activeOtherKeywords']![] "query" />
                 <@_keywordSection "Culture Keywords" facetWrapper.facetResults['activeCultureKeywords']![] "query" />
                 </div>
 
-                <div class="span4">
+                <div class="col">
                 <@_keywordSection "Investigation Types" facetWrapper.facetResults['activeInvestigationTypes']![] "query" />
                 <@_keywordSection "Material Types" facetWrapper.facetResults['activeMaterialKeywords']![] "query" />
                 <@_keywordSection "Temporal Keywords" facetWrapper.facetResults['activeTemporalKeywords']![] "query" />
@@ -198,11 +198,8 @@
 <#macro resultsSection header="Inside This Collection">
 
         <#if results?has_content>
-        <div id="divResultsSortControl">
-            <div class="row">
-                <div class="span12">
+        <div id="divResultsSortControl col-12">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
-                </div>
             </div>
         </div>
         
@@ -241,10 +238,10 @@
 
 <#macro adminSection type="">
         <#if editable>
+        <div class="col-12">
         <h3>Administrative Information</h3>
-
         <div class="row">
-            <div class="span4">
+            <div class="col">
                 <#local _type="Collection"/>
                 <#if resourceCollection.properties.whitelabel>
                    <#local _type="Whitelabel"/>
@@ -252,35 +249,34 @@
 
                 <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)', _type)}" />
             </div>
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />
             </div>
         </div>
         <div class="row">
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Sort By" val=resourceCollection.sortBy.label />
             </div>
-            <div class="span4">
-<#--                <#assign viewed>${viewCount} times</#assign>
-                <@view.kvp key="Viewed" val=viewed /> -->
+            <div class="col">
             </div>
         </div>
         <div class="row">
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Created By" nested=true><a
                         href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
                     on ${resourceCollection.dateCreated?datetime}</@view.kvp>
             </div>
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Updated By" nested=true><a
                         href="<@s.url value="${resourceCollection.updater.detailUrl}"/>">${resourceCollection.updater.properName}</a>
                     on ${resourceCollection.dateUpdated?datetime}</@view.kvp>
             </div>
         </div>
-
+        <div class="row">
             <@_authorizedUsers resourceCollection />
+        </div>
         </#if>
-
+</div>
 </#macro>
 
     <#macro javascript>
@@ -294,7 +290,9 @@
 
 
     <#macro _authorizedUsers collection >
+        <div class="col-12">
         <@rights.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
+        </div>
     </#macro>
 
 </#escape>

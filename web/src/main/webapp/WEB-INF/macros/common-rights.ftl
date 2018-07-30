@@ -207,9 +207,9 @@ $(function() {
                     <#list availablePermissions as permission>
                         <td>
                             <#if (user.generalPermission.effectivePermissions >= permission.effectivePermissions )>
-                                <i class="icon-ok"></i>
+                                <i class="fas fa-check"></i>
                             <#else>
-                                <i class="icon-remove"></i>
+                                <i class="fas fa-times"></i>
                             </#if>
                         </td>
                     </#list>

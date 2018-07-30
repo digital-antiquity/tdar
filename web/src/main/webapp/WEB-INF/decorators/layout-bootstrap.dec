@@ -39,6 +39,19 @@ body {
     margin-bottom:1em;
 }
 
+.dashboard-nav .nav-item {
+text-align:left !important;
+}
+
+.icon-push-down {
+margin-top: .3em
+}
+
+.icon-height {
+margin-top: .4em;
+height:.8em;
+width:.8em;
+}
 
 .nav-chevron {
     color: white;
