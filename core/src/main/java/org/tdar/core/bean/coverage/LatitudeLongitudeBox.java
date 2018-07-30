@@ -469,9 +469,8 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     	boolean isOnlyEasternHemisphere = (start > 0 && end > 0);
     	boolean isOnlyWesternHemisphere = (start <= 0 && end < 0); 
     	boolean sameHemisphere = isOnlyEasternHemisphere || isOnlyWesternHemisphere;
-    	boolean wrapAround = sameHemisphere  && ((isOnlyEasternHemisphere && start < end) || (isOnlyWesternHemisphere && start > end));
-    	
-    	
+    	boolean wrapAround = sameHemisphere && start > end;
+
     	double length = 0;
     	
     	if(logger.isTraceEnabled()) {
