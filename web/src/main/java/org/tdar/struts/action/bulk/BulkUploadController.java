@@ -56,10 +56,10 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private long bulkContentLength;
 
     protected String bulkUploadSave() throws TdarActionException {
+        getGenericService().markReadOnly(getPersistable());
         saveBasicResourceMetadata();
         Status oldStatus = getPersistable().getStatus();
         getPersistable().setStatus(Status.DELETED);
-        getGenericService().markReadOnly(getPersistable());
         getLogger().info("saving batches...");
         getPersistable().setStatus(oldStatus);
         if (PersistableUtils.isNullOrTransient(getTicketId())) {
@@ -80,12 +80,11 @@ public class BulkUploadController extends AbstractInformationResourceController<
         // fsw.setTicketId(getTicketId());
         // fsw.setUploadedFilesFileName(getUploadedFilesFileName());
         // fsw.setUploadedFiles(getUploadedFiles());
-
+        getGenericService().detachFromSession(getPersistable());
         Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, fsw, null);
 
         setupAccountForSaving();
         getCreditProxies().clear();
-        getGenericService().detachFromSession(getPersistable());
         getGenericService().detachFromSession(getAuthenticatedUser());
         // getGenericService().detachFromSession(getPersistable().getResourceCollections());
         // for (ResourceCreator rc : image.getResourceCreators()) {
