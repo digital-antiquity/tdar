@@ -436,6 +436,19 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 inputDisabled : function() {
                     return !this.ableToUpload;
                 },
+                renameEnabled: function() {
+                    console.log('dirName:' , this.dirName, this.dirStack);
+                    if (this.dirStack.length == 0 || this.dirStack[this.dirStack.length - 1].name == 'unfiled') {
+                        return false;
+                    }
+                    return true;
+                },
+                dirActionsEnabledClass: function() {
+                   if (this.renameEnabled) {
+                       return "";
+                   }
+                   return "disabled";
+                },
                 upOne: function() {
                   if (this.dirStack.length < 2) {
                       return undefined;

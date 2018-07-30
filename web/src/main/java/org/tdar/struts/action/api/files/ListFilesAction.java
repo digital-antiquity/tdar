@@ -3,6 +3,7 @@ package org.tdar.struts.action.api.files;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -52,7 +53,7 @@ public class ListFilesAction extends AbstractJsonApiAction {
         List<AbstractFile> files = personalFilestoreService.listFiles(parent, account, getTerm(), sortBy, getAuthenticatedUser());
         if (parent == null) {
             TdarDir dir = personalFilestoreService.findUnfileDir(getAuthenticatedUser());
-            if (dir != null) {
+            if (dir != null && CollectionUtils.isNotEmpty(personalFilestoreService.listFiles(dir, account, null, sortBy, getAuthenticatedUser()))) {
                 files.add(dir);
             }
         }
