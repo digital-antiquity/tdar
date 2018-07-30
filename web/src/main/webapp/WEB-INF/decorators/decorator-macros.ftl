@@ -1,10 +1,10 @@
 <#macro layout_header>
 
     <div id="mdScreenNav">
-        <nav class="navbar navbar-expand-md navbar-light bg-white">
+        <nav class="navbar navbar-expand-md navbar-light">
             <div class = "container">
                 <a href="/" class="navbar-brand">
-                    <img src="${staticHost}/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap">
+                    <img src="${staticHost}/images/r4/bg-logo-transparent.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap">
                 </a>
 
                 <div class="d-flex flex-column d-md-none">
@@ -142,7 +142,7 @@
                             </div>
                         </li>
                     </ul>
-                    <div class="dropdown ml-auto">
+                    <div class="dropdown ml-auto" id = "myAccountNav">
                         <div class="d-none d-md-block">
                             <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">

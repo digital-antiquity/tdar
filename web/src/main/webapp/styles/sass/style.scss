@@ -131,12 +131,37 @@ nav
     }
   }
 
-  nav
+  #mdScreenNav
   {
     background-color: $beige;
+  }
+
+  .tdarNav
+  {
+    background: none;
     .tdarNavItem
     {
       padding-left: 0;
     }
+  }
+
+  #tdarNavMenu, #myAccountNav
+  {
+    li
+    {
+      border-top: 2px solid #D2BF9E;
+    }
+
+    .nav-link, .btn-link
+    {
+      color: #352319;
+      font-size: 24px;
+      font-weight: bold;
+    }
+  }
+
+  .nav-chevron
+  {
+    stroke: #352319;
   }
 }

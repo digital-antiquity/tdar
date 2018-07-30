@@ -71,9 +71,22 @@ nav {
   #home #hero h2 {
     font-size: 3.5rem; }
 
-  nav {
+  #mdScreenNav {
     background-color: #e4d5bb; }
-    nav .tdarNavItem {
-      padding-left: 0; } }
+
+  .tdarNav {
+    background: none; }
+    .tdarNav .tdarNavItem {
+      padding-left: 0; }
+
+  #tdarNavMenu li, #myAccountNav li {
+    border-top: 2px solid #D2BF9E; }
+  #tdarNavMenu .nav-link, #tdarNavMenu .btn-link, #myAccountNav .nav-link, #myAccountNav .btn-link {
+    color: #352319;
+    font-size: 24px;
+    font-weight: bold; }
+
+  .nav-chevron {
+    stroke: #352319; } }
 
 /*# sourceMappingURL=style.css.map */
