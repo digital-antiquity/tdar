@@ -22,6 +22,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.geosearch.GeoSearchDao;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.utils.SpatialObfuscationUtil;
 
 public class GeoSearchITCase extends AbstractIntegrationTestCase {
 
@@ -189,7 +190,9 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         if (!geoSearchService.isEnabled()) {
             return;
         }
+        SpatialObfuscationUtil.obfuscate(latLong);
         assertNotNull(latLong);
+        logger.debug("{}", latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         int found = 0;
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
