@@ -277,7 +277,7 @@
                 <div class="input-group col-md-9">
                     <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
                     <span class="input-group-append" name="_tdar.searchType" value="simple">
-                        <div class="input-group-text bg-white"><i class="fa fa-search"></i></div>
+                        <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
                     </span>
                     <a class="ml-3 align-self-center" href="<@s.url value="/search"/>">advanced</a>
                     <input type="hidden" name="_tdar.searchType" value="simple">
@@ -349,7 +349,6 @@
               </div>
           </div>
       </div>
-      <hr>
   </div>
 </section>
 

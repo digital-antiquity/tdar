@@ -811,7 +811,7 @@ View freemarker macros
     </#macro>
 
 <#macro featured header="Featured Content" colspan="12" resourceList=featuredResources>
-<#local span = "col-lg-${colspan} col-md-${colspan} col-sm-${colspan}">
+<#local span = "col-${colspan}">
 <#-- <div class="tdar-slider slider ${span}">
     <h3>${header}</h3>
 
@@ -833,7 +833,7 @@ View freemarker macros
 </div>-->
 
 
-<div class="tdar-slider slider w-100 h-100">
+<div class="tdar-slider slider ${span} w-100 h-100">
     <h3>${header}</h3>
 
     <div id="slider" class="carousel slide" data-ride="carousel">

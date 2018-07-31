@@ -65,6 +65,15 @@ width:.8em;
     bottom: 2px;
 }
 
+.noborder {
+    border: none;
+}
+
+.rounded-right {
+    border-top-right-radius: .25em;
+    border-top-left-radius: .25em;
+}
+
 #notice {background-color:white;}
 </style>
 
