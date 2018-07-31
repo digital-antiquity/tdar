@@ -5,7 +5,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
     var autocomplete = Vue.component('autocomplete', {
         name: "autocomplete",
         template: "#autocomplete",
-        props: [{
+        props: {
           items: {
             type: Array,
             required: false,
@@ -40,7 +40,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           span:{ type:String},
           idname: {type:String},
           name: {type:String}
-        }],
+        },
     
         data: function() {
           return {
