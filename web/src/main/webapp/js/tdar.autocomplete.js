@@ -3,9 +3,12 @@
  * Autocomplete Support
  */
 
+import TDAR from "tdarcore";
+import "jquery";
+import "jquery-ui";
 
-TDAR.autocomplete = {};
-TDAR.autocomplete = (function (TDAR) {
+//TDAR.autocomplete = {};
+TDAR.autocomplete = function (TDAR) {
     "use strict";
 
     //when a user creates a record manually instead of choosing a menu-item from the autocomplete dropdown, this module
@@ -851,18 +854,9 @@ TDAR.autocomplete = (function (TDAR) {
     }
 
     return {
-        applyPersonAutoComplete: _applyPersonAutoComplete,
-        evaluateAutocompleteRowAsEmpty: _evaluateAutocompleteRowAsEmpty,
-        applyKeywordAutocomplete: _applyKeywordAutocomplete,
-        applyCollectionAutocomplete: _applyCollectionAutocomplete,
-        applyResourceAutocomplete: _applyResourceAutocomplete,
-        applyInstitutionAutocomplete: _applyInstitutionAutocomplete,
-        applyComboboxAutocomplete: _applyComboboxAutocomplete,
-        objectFromAutocompleteParent: _objectFromAutocompleteParent,
-        "delegateCreator": _delegateCreator,
-        "delegateAnnotationKey": _delegateAnnotationKey,
-        "delegateKeyword": _delegateKeyword,
-        "buildRequestData": _buildRequestData,
-        "ObjectCache": ObjectCache
     };
-})(TDAR);
+}
+
+module.exports = {
+        TDAR.autocomplete : TDAR.autocomplete
+}

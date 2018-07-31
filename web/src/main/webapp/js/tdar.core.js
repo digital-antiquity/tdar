@@ -1,5 +1,5 @@
 
-(function (console, window) {
+function (console, window) {
     'use strict';
 
 //define global TDAR object if not defined already
@@ -158,6 +158,7 @@
      * Execute any main() functions found in the API
      */
     TDAR.main = function () {
+        // FIXME: I don't fully work, because some things are 3 levels down in the object tree tdar.vue.upload (e.g.)
         for(var key in TDAR) {
             if(typeof TDAR[key] !== 'object') {continue}
             if(typeof (TDAR[key]['main']) !== 'function' ) {continue}
@@ -183,7 +184,7 @@
     console.debug = console.debug || console.log;
     console.table = console.table || console.log;
     
-})(console, window);
+}
 
 
 module.exports = {
