@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.CollectionResourceSection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.CurationState;
@@ -32,6 +34,7 @@ import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.DirSummary;
 import org.tdar.core.dao.DirSummaryPart;
@@ -40,6 +43,10 @@ import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
+import org.tdar.core.exception.TdarAuthorizationException;
+import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
@@ -57,15 +64,23 @@ import org.tdar.utils.PersistableUtils;
 public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    
-    @Autowired
+
     private GenericDao genericDao;
-
-    @Autowired
     private FileProcessingDao fileProcessingDao;
+    private FileAnalyzer analyzer;
+    private AuthorizationService authorizationService;
+    private ResourceCollectionService resourceCollectionService;
 
     @Autowired
-    private FileAnalyzer analyzer;
+    public PersonalFilestoreServiceImpl(GenericDao genericDao, FileProcessingDao fileProcessingDao, FileAnalyzer analyzer,
+            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService) {
+        this.genericDao = genericDao;
+        this.fileProcessingDao = fileProcessingDao;
+        this.analyzer = analyzer;
+        this.authorizationService = authorizationService;
+        this.resourceCollectionService = resourceCollectionService;
+
+    }
 
     // FIXME: double check that won't leak memory
     private Map<TdarUser, PersonalFilestore> personalFilestoreCache = new WeakHashMap<TdarUser, PersonalFilestore>();
@@ -122,7 +137,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         try {
             // if we're not unfiled then require uniqueness
             if (dir == null || !StringUtils.equals(dir.getName(), TdarDir.UNFILED)) {
-                List<AbstractFile> listFiles = listFiles(dir, account, null,  null, user);
+                List<AbstractFile> listFiles = listFiles(dir, account, null, null, user);
                 for (AbstractFile f : listFiles) {
                     if (StringUtils.equalsIgnoreCase(f.getName(), fileName)) {
                         throw new FileAlreadyExistsException(fileName);
@@ -241,7 +256,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             fileProcessingDao.delete(((TdarFile) file).getParts());
         }
         if (file instanceof TdarDir) {
-            if (CollectionUtils.isNotEmpty(listFiles((TdarDir)file, file.getAccount(), null, null, authenticatedUser))) {
+            if (CollectionUtils.isNotEmpty(listFiles((TdarDir) file, file.getAccount(), null, null, authenticatedUser))) {
                 throw new FileUploadException("personalFilestoreService.directory.not_empty");
             }
         }
@@ -370,7 +385,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Override
     @Transactional(readOnly = false)
     public List<AbstractFile> moveFilesBetweenAccounts(List<AbstractFile> files, BillingAccount account, TdarUser authenticatedUser) {
-        
+
         List<AbstractFile> allFiles = new ArrayList<>();
         List<AbstractFile> toProcess = new ArrayList<>(files);
         // for each of the initial files, set the parent to NULL because we're not moving the "dir"
@@ -381,11 +396,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             AbstractFile file = toProcess.remove(0);
             logger.debug("moving {} to {}", file, account);
             if (file instanceof TdarDir) {
-                List<AbstractFile> listFiles = listFiles((TdarDir)file, file.getAccount(), null, null, authenticatedUser);
+                List<AbstractFile> listFiles = listFiles((TdarDir) file, file.getAccount(), null, null, authenticatedUser);
                 logger.debug("subdir {} ", listFiles);
                 toProcess.addAll(listFiles);
             }
-            
+
             if (file instanceof TdarFile) {
                 for (TdarFile part : ((TdarFile) file).getParts()) {
                     part.setAccount(account);
@@ -398,9 +413,9 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         genericDao.saveOrUpdate(allFiles);
         return allFiles;
     }
-    
+
     @Override
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void renameDirectory(TdarDir file, BillingAccount account, String name, TdarUser authenticatedUser) throws FileAlreadyExistsException {
         List<AbstractFile> listFiles = listFiles(file.getParent(), account, null, null, authenticatedUser);
         for (AbstractFile f : listFiles) {
@@ -411,11 +426,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         file.setInternalName(name);
         file.setFilename(name);
         genericDao.saveOrUpdate(file);
-        
+
     }
-    
+
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser) {
         List<Object[]> resultList = fileProcessingDao.summerizeByAccount(account, date, authenticatedUser);
 
@@ -433,23 +448,22 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         for (Object[] row : resultList) {
             DirSummaryPart part = summary.addPart(row);
             setupPart(dirIdMap, partMap, part);
-            logger.debug("{}, {}", part.getDirPath(),  row);
+            logger.debug("{}, {}", part.getDirPath(), row);
         }
-        // there may be parts that are mid-level directories that are empty, we don't add them, but they should be in the parts array 
+        // there may be parts that are mid-level directories that are empty, we don't add them, but they should be in the parts array
 
         summarizeChildren(dirChildMap, topLevel, partMap, dirIdMap);
 
         summary.getParts().addAll(partMap.values());
         return summary;
     }
-    
+
     @Override
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd, TdarDir dir, TdarUser actor, TdarUser authenticatedUser) {
         return fileProcessingDao.recentByAccount(account, dateStart, dateEnd, dir, actor, authenticatedUser);
-        
+
     }
-    
 
     private void setupPart(Map<Long, TdarDir> dirIdMap, Map<Long, DirSummaryPart> partMap, DirSummaryPart part) {
         part.setDir(dirIdMap.get(part.getId()));
@@ -459,6 +473,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     /**
      * Find all of the children of a given node, also find "top" level nodes
+     * 
      * @param dirs
      * @param dirChildMap
      * @param topLevel
@@ -487,7 +502,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
      * @param topLevel
      * @param partMap
      */
-    private void summarizeChildren(Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel, Map<Long, DirSummaryPart> partMap, Map<Long,TdarDir> dirMap) {
+    private void summarizeChildren(Map<Long, Set<Long>> dirChildMap, Set<Long> topLevel, Map<Long, DirSummaryPart> partMap, Map<Long, TdarDir> dirMap) {
         for (Long id : topLevel) {
             Set<Long> working = new HashSet<>(dirChildMap.getOrDefault((id), new HashSet<>()));
             Set<Long> allChildren = new HashSet<>(working);
@@ -504,15 +519,15 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             }
             DirSummaryPart part = partMap.get(id);
             if (part == null) {
-//                logger.debug("creating part {}",  id);
-//                logger.debug(" chilren      {}",  dirChildMap.get(id));
-                
+                // logger.debug("creating part {}", id);
+                // logger.debug(" chilren {}", dirChildMap.get(id));
+
                 part = new DirSummaryPart(null);
                 part.setId(id);
                 setupPart(dirMap, partMap, part);
             }
-            
-//            part.addAll(allChildren, partMap);
+
+            // part.addAll(allChildren, partMap);
             if (CollectionUtils.isNotEmpty(dirChildMap.get(id))) {
                 summarizeChildren(dirChildMap, dirChildMap.get(id), partMap, dirMap);
             }
@@ -531,6 +546,43 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             d = d.getParent();
         }
         return path.toString();
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void linkCollection(TdarDir file, ResourceCollection collection, TdarUser user) {
+        if (!authorizationService.canAddToCollection(user, collection)) {
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+        }
+        file.setCollection(collection);
+        genericDao.saveOrUpdate(file);
+        updateLinkedCollection(file, user);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void updateLinkedCollection(TdarDir file, TdarUser user) {
+        if (!authorizationService.canAddToCollection(user, file.getCollection())) {
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+        }
+
+        for (AbstractFile f : listFiles(file, file.getAccount(), null, null, user)) {
+            if (f instanceof TdarFile == false) {
+                continue;
+            }
+            TdarFile tdarFile = (TdarFile) f;
+            if (tdarFile.getResource() == null) {
+                continue;
+            }
+            Resource resource = tdarFile.getResource();
+            if (resource.getManagedResourceCollections().contains(file.getCollection())) {
+                continue;
+            }
+            resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), user, true,
+                    ErrorHandling.VALIDATE_WITH_EXCEPTION, file.getCollection(),
+                    CollectionResourceSection.MANAGED);
+        }
+
     }
 
 }

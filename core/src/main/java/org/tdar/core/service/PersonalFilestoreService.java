@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.CurationState;
@@ -127,5 +128,9 @@ public interface PersonalFilestoreService {
     DirSummary summarizeAccountBy(BillingAccount account, Date date, TdarUser authenticatedUser);
 
     RecentFileSummary recentByAccount(BillingAccount account, Date dateStart, Date dateEnd,  TdarDir dir, TdarUser actor, TdarUser authenticatedUser);
+
+    void linkCollection(TdarDir file, ResourceCollection collection, TdarUser user);
+
+    void updateLinkedCollection(TdarDir file, TdarUser user);
 
 }
