@@ -49,32 +49,32 @@
         <@s.select label='Language'  emptyOption='false' name='resourceLanguage'  listValue="label" list='%{languages}' cssClass="right-shortfield "/>
     </div>
 
-    <div class="doctypeToggle journal_article other report control-group" id="t-vol">
+    <div class="doctypeToggle journal_article other report form-group" id="t-vol">
         <label class="control-label">Volume Information</label>
 
-        <div class="controls controls-row">
-            <@s.textfield id='volume' theme="tdar" placeholder='Volume' name='document.volume' cssClass="span2"   maxlength=255 />
-        <@s.textfield id='journalNumber' theme="tdar" placeholder='Issue Number' name='document.journalNumber' cssClass="span2"  maxlength=255 />
+        <div class="controls form-row">
+            <@s.textfield id='volume'  placeholder='Volume' name='document.volume' cssClass="col-2"   maxlength=255 />
+        <@s.textfield id='journalNumber'placeholder='Issue Number' name='document.journalNumber' cssClass="col-2"  maxlength=255 />
         </div>
     </div>
 
-    <div class='doctypeToggle book_section book other report control-group' id="t-series">
+    <div class='doctypeToggle book_section book other report form-group' id="t-series">
         <label class="control-label">Series Information</label>
 
-        <div class="controls controls-row">
-            <@s.textfield id='seriesName' theme="tdar" placeholder='Series Title' name='document.seriesName' cssClass="span4"  maxlength=255 />
-            <@s.textfield id='seriesNumber' theme="tdar" placeholder='Series #' name='document.seriesNumber' cssClass="span1"  maxlength=255 />
-            <@s.textfield id='edition' theme="tdar" placeholder='Edition' name='document.edition' cssClass="span1"  maxlength=255 />
+        <div class="controls form-row">
+            <@s.textfield id='seriesName' placeholder='Series Title' name='document.seriesName' cssClass="col-4"  maxlength=255 />
+            <@s.textfield id='seriesNumber' placeholder='Series #' name='document.seriesNumber' cssClass="col-1"  maxlength=255 />
+            <@s.textfield id='edition' placeholder='Edition' name='document.edition' cssClass="col-1"  maxlength=255 />
         </div>
     </div>
 
     <div class="doctypeToggle book_section journal_article other report" id="t-start-end">
-        <div class="control-group">
+        <div class="form-group">
             <label class="control-label">Start/End Page</label>
 
-            <div class="controls controls-row">
-                <@s.textfield theme="tdar" id='startPage' placeholder="Start#" name='document.startPage' cssClass="span1" maxlength=9/>
-                <@s.textfield theme="tdar" id='endPage'  placeholder="End#" name='document.endPage' cssClass="span1" maxlength=9 />
+            <div class="controls form-row">
+                <@s.textfield  id='startPage' placeholder="Start#" name='document.startPage' cssClass="col-1" maxlength=9/>
+                <@s.textfield id='endPage'  placeholder="End#" name='document.endPage' cssClass="col-1" maxlength=9 />
             </div>
         </div>
     </div>

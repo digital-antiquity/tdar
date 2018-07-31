@@ -689,8 +689,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#if proxy??>
         <div id="${prefix}Row_${proxy_index}_" class="repeat-row row">
             <#assign creatorType = proxy.actualCreatorType!"PERSON" />
-            <!-- fixme: careful with this styling -->
-            <div class="control-label col-3">
+            <div class="col-3">
                 <div class="btn-group creator-toggle-button btn-group-toggle" data-toggle="buttons-radio">
                     <#if type_override == 'PERSON' || (creatorType=='PERSON' && type_override=='NONE') >
                         <#local selectedType="PERSON"/>
@@ -713,22 +712,20 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                     </button>
                 </div>
             </div>
-            <#--assuming we are in a col-9 and that a controls-div is 2 cells narrower, our width should be span 7 -->
-                <div class="col-8">
-                    <@_userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies"
-                    includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION")
-                    required=(required) leadTitle="${leadTitle}"/>
+            <div class="col-8">
+                <@_userRow person=proxy.person _indexNumber=proxy_index _personPrefix="person" prefix="${prefix}Proxies"
+                includeRole=includeRole hidden=(creatorType =='INSTITUTION' || type_override == "INSTITUTION")
+                required=(required) leadTitle="${leadTitle}"/>
 
                 <@institutionRow institution=proxy.institution _indexNumber=proxy_index includeRole=includeRole _institutionPrefix="institution"
                 prefix="${prefix}Proxies" hidden=(type_override == "PERSON" || (creatorType=='PERSON' && type_override=='NONE'))
                 required=(required) leadTitle="${leadTitle}"/>
-                </div>
-                <div class="col-1">
-                    <#if showDeleteButton>
-                        <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1"><i class="icon-trash"></i></button>
-                    </#if>
-                </div>
-        </div>
+            
+            </div>
+            
+            <#if showDeleteButton>
+                <button class="btn btn-mini form-control col-1 repeat-row-delete" type="button" tabindex="-1"><i class="fas fa-trash-alt"></i></button>
+            </#if>
         </#if>
     </#macro>
     <#macro _userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
@@ -747,7 +744,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#local requiredClass><#if required>required</#if></#local>
         <#local firstnameTitle>A ${leadTitle}first name<#if required> is required</#if></#local>
         <#local surnameTitle>A ${leadTitle}last name<#if required> is required</#if></#local>
-    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if> form-row">
+    <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()" autocompleteParentElement="#${rowIdElement}"   />
         <div class="form-row">
             <@s.textfield cssClass="col-5 ${lookupType} ${requiredClass} trim" placeholder="Last Name"  readonly=isDisabled autocompleteParentElement="#${rowIdElement}"
@@ -858,7 +855,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 Date             
                         <div class="input-append">
    						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yyyy"} />
-                          <span class="add-on"><i class="icon-th"></i></span>
+                          <span class="add-on"><i class="far fa-calendar-alt"></i></span>
                         </div>
                 Description      <@s.textarea cssClass="input-block-level resizable resize-vertical" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
@@ -1422,7 +1419,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <div class="controls">
                             <div class="input-append">
                                 <input class="col-2 datepicker" size="16" type="text" value="12-02-2016" id="dp3" data-date-format="mm/dd/yyyy" >
-                                <span class="add-on"><i class="icon-th"></i></span>
+                                <span class="add-on"><i class="far fa-calendar-alt"></i></span>
                             </div>
                         </div>
                     </div>

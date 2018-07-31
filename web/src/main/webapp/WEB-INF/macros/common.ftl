@@ -207,7 +207,7 @@ true for our registration page or our profile page).-->
                     <#list listGroups as row>
                         <div  class="col">
                             <#list row>
-                            <ul class="unstyled">
+                            <ul class="list-unstyled">
                             <#items as item>
                                 <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>">
 	                           <#if authenticatedUser?has_content>

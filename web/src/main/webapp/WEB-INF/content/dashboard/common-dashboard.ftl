@@ -33,7 +33,7 @@ class="<#if current == test>active<#else></#if> nav-link"
 
 <#macro headerNotifications>
     <#list currentNotifications as notification>
-        <div class="${notification.messageType} alert" id="note_${notification.id?c}">
+        <div class="${notification.messageType} alert alert-warning" id="note_${notification.id?c}" role="alert">
         <button type="button" id="close_note_${notification.id?c}" class="close" data-dismiss="alert" data-dismiss-id="${notification.id?c}" >&times;</button>
         <#if notification.messageDisplayType.normal>
         <@s.text name="${notification.messageKey}"/> [${notification.dateCreated?date?string.short}]

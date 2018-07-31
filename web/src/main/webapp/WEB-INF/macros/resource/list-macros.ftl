@@ -354,14 +354,14 @@ bookmark indicator, etc..
                 </#if>
                 <#if _resource.bookmarked>
                     <#local state = "bookmarked" />
-                    <#local icon = "icon-star" />
+                    <#local icon = "fas fa-star" />
                 <#else>
                     <#local state = "bookmark" />
-                    <#local icon = "icon-star-empty" />
+                    <#local icon = "far fa-star" />
                 </#if>
 
                   <button class="btn btn-mini btn-link bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
-                        <i title="bookmark or unbookmark" class="${icon} bookmarkicon"></i>
+                        <i title="bookmark or unbookmark" class="${icon} bookmarkicon icon-push-down mr-3"></i>
                       <#if showLabel>
                           <span class="bookmark-label">${label}</span>
                       </#if>
@@ -381,14 +381,14 @@ bookmark indicator, etc..
                 </#if>
                 <#if _resource.bookmarked>
                     <#local state = "bookmarked" />
-                    <#local icon = "icon-star" />
+                    <#local icon = "fas fa-star" />
                 <#else>
                     <#local state = "bookmark" />
-                    <#local icon = "icon-star-empty" />
+                    <#local icon = "far fa-star" />
                 </#if>
 
             <li class="media bookmark-container">
-                    <i title="bookmark or unbookmark" class="${icon} bookmarkicon pull-left"></i>
+                    <i title="bookmark or unbookmark" class="${icon} bookmarkicon icon-push-down mr-3"></i>
                 <div class="media-body">
                   <a class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}" >
                           <span class="bookmark-label">${label}</span>
