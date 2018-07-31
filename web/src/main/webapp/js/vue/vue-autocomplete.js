@@ -187,7 +187,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           },
           _setResult: function(result) {
             this.searchObj = result;
-            this.$emit("setvaluelabel", this.search);
+            this.$emit("autocompletevalueset", result);
             if (result != undefined && result.id != undefined) {
                 this.$emit("setvalueid", result.id);
                 this.id = result.id;

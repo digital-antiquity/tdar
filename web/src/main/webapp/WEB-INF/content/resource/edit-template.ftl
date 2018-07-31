@@ -488,7 +488,6 @@ Auth Info
         </#noescape>
 </script>
 
-
 </body>
 
 </#escape>
