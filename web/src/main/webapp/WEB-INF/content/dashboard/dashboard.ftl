@@ -316,10 +316,10 @@
 <#macro browseResourceSection>
     <@search.reindexingNote />
     <div class="row" id="project-list">
-        <div class="col-10">
+        <div class="col-12">
             <h3>Browse Resources</h3>
             <div>   
-                <@edit.resourceDataTable span="col-10" />
+                <@edit.resourceDataTable span="col-12" />
             </div>
         </div>
     </div>

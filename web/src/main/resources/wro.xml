@@ -7,7 +7,7 @@
         <css>/css/famfamfam.css</css>
         <css>/components/jquery.treeview/jquery.treeview.css</css>
         <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
-        <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css</css>
+        <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/4/dataTables.bootstrap.css</css>
         <!--  used by jquery.treeview -->
         <js>/includes/jquery.cookie.js</js>
         <css>/css/tdar-svg.css</css>

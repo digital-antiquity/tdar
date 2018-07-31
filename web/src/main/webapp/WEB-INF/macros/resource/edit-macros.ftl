@@ -996,7 +996,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     
                 <div id="divAdvancedFilters${idAddition}" class="collapse">
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col">
                             <label class="" for="project-selector${idAddition}">Project</label>
                             
                             <select id="project-selector${idAddition}" name="_tdar.project" class="input-block-level">
@@ -1021,7 +1021,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             </select>
                         </div>
         
-                        <div class="col-4">
+                        <div class="col">
                             <label class="" for="collection-selector${idAddition}">Collection</label>
                             <#local selectedId=-1/>
                             <#-- limit to just this collection
@@ -1044,13 +1044,13 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     </div>
         
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col">
                             <label class="">Status</label>
                             <@s.select theme="tdar" id="statuses${idAddition}" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
                             list='%{statuses}' cssClass="input-block-level"/>
                         </div>
         
-                        <div class="col-4">
+                        <div class="col">
                             <label class="">Resource Type</label>
                             <@s.select theme="tdar" id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
                             listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
@@ -1058,7 +1058,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     </div> <#--End row-->
         
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col">
                             <label class="">Sort by</label>
         
                             <div class="">
@@ -1066,7 +1066,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 value="ID_REVERSE" cssClass="input-block-level"/>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col">
                         </div>
                     </div>
                 </div>

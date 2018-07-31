@@ -717,8 +717,7 @@ TDAR.datatable = function() {
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
-            // "sDom": "<'row'<'span9'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
-            "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
+            "sDom" : "<'row'<'col-6'l><'pull-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>", // no text filter!
             "sAjaxDataProp" : 'resources',
             "oLanguage": {
                 "sZeroRecords": "No records found. <span id='fltrTxt'>Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a></span>"
@@ -893,7 +892,7 @@ TDAR.datatable = function() {
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
-            "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
+            "sDom" : "<'row'<'col-6'l><'pull-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>", // no text filter!
             sAjaxDataProp : 'resources',
             "oLanguage": {
                 	"sZeroRecords": "No records found. <span id='fltrTxt'>Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a></span>"
@@ -1209,7 +1208,7 @@ TDAR.datatable = function() {
         var settings = {
             tableSelector : '#dataTable',
             sAjaxSource : TDAR.uri() + 'api/lookup/person',
-            "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
+            "sDom" : "<'row'<'col-6'l><'col-6'f>r>t<'row'<'col-4'i><'col-5'p>>",
             sPaginationType : "bootstrap",
             "bLengthChange" : true,
             "bFilter" : true,
@@ -1321,7 +1320,7 @@ TDAR.datatable = function() {
         var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
         var options = {
             "sAjaxDataProp" : "results",
-            "sDom" : "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
+            "sDom" : "<'row'<'col-6'l><'col-3'>r>t<'row'<'col-4'i><'col-5'p>>",
             "bProcessing" : true,
             "bServerSide" : true,
             "bScrollInfinite" : false,

@@ -33,7 +33,7 @@ Common macros used in multiple contexts
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false mode="horizontal" extra="">
-    <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>col-md-6 col-12 map mapcontainer mb-3 mb-md-0<#else> mapcontainer</#if> ${mode}">
+    <div class=" <#if mode == 'vertical'>col-7<#elseif mode == 'horizontal'>col-md-6 col-12 map mapcontainer mb-3 mb-md-0<#else> mapcontainer</#if> ${mode}">
             <h3>${siteAcronym} Worldwide</h3>
         <#if (homepageGraphs.mapJson)?has_content>
         <script type="application/json" data-mapdata>
@@ -49,7 +49,7 @@ Common macros used in multiple contexts
              <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="" <#if (keyword.code)?has_content>data-code="${(keyword.code)!""}"</#if>>
              </div>
         <#if mode =='vertical'></div></#if>
-             <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="span4 offset1"<#else>style="width:100%"</#if>>
+             <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="col-4 offset-1"<#else>style="width:100%"</#if>>
         <#if mode =='vertical'><br/><br/></#if>
                  <h5 id="mapGraphHeader"></h5>
                  <div id='mapgraphpie'>                 
@@ -123,7 +123,7 @@ Common macros used in multiple contexts
                 </@printAddress>
             </div>
         </#list>
-        <div class="span3">
+        <div class="col-3">
             <#local retUrl><@s.url includeParams="all"/></#local>
             <a class="button btn btn-primary submitButton" href="/entity/address/${entity.id?c}/add?returnUrl=${retUrl?url}">Add Address</a>
         </div>
