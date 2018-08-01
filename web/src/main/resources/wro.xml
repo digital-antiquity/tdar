@@ -3,14 +3,12 @@
 <groups xmlns="http://www.isdc.ro/wro">
     <group name='default'>
         <!-- <css>/css/tdar-bootstrap.css</css> -->
-        <css>/css/tdar.dashboard.css</css>
-        <css>/css/famfamfam.css</css>
         <css>/components/jquery.treeview/jquery.treeview.css</css>
         <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
         <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/4/dataTables.bootstrap.css</css>
         <!--  used by jquery.treeview -->
         <js>/includes/jquery.cookie.js</js>
-        <css>/css/tdar-svg.css</css>
+        
         <js>/components/svgxuse/svgxuse.min.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
         <!--  not sure who uses this -->
@@ -73,16 +71,6 @@
         <js>/js/tdar.validate.js</js>
         <js>/js/tdar.messages_en.js</js>
         <js>/js/tdar.d3tree.js</js>
-        <css>/css/tdar.homepage.css</css>
-        <css>/css/tdar.d3tree.css</css>
-        <css>/css/tdar.c3graph.css</css>
-        <css>/css/tdar.leaflet.css</css>
-        <css>/css/tdar.worldmap.css</css>
-        <css>/css/tdar.datatablemapping.css</css>
-        <css>/css/tdar.sprites.css</css>
-        <css>/css/tdar.datatables.css</css>
-        <css>/css/tdar.searchresults.css</css>
-        <css>/css/tdar.invoice.css</css>
         <js>/js/tdar.datatable.js</js>
         <js>/js/tdar.dataset-metadata.js</js>
         <js>/js/tdar.ontology-mapping.js</js>
@@ -121,7 +109,6 @@
     </group>
     <group name="ng-integrate">
 
-        <css>/css/tdar-integration.css</css>
 
 <!--          <js minimize="false">https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js</js> -->
         <!-- LICENSE: MIT -->
