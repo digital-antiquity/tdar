@@ -205,6 +205,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
               }
             });
           },
+          focus: function() {
+              this.$refs.searchfield.focus();
+          },
           _setResult: function(result) {
             this.searchObj = result;
             this.$emit("autocompletevalueset", result);

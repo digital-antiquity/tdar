@@ -8,7 +8,13 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 {val: "biology"} , 
                 {val: "chemistry"},
                 {val: "physics"} ],
-                separator: ";" },
+                separator: ";" ,
+                autocompleteUrl:'https://localhost:8443/api/lookup/resource',
+                autocompletesuffix:'',
+                resultsuffix:'resources',
+                allowCreate:true,
+                nameField: 'title',
+                idField: 'id' },
         mounted: function() {
         },
         methods: {
@@ -16,15 +22,26 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                  this.values.splice(index,1);
             },
             addEntry: function(input) {
-                this._addEntry(input);
-                var $input = this.$refs.input;
-                $input.reset();
+                if (this.allowCreate == true) {
+//                    console.log("allowCreate: ", this.allowCreate, input);
+                    this._addEntry(input);
+                    var $input = this.$refs.input;
+                    $input.reset();
+                }
+            },
+            focus: function() {
+                this.$refs.input.focus();
             },
             addAutocompleteValue: function(result) {
                 if (result != undefined) {
-                    console.log(result);
-                    this._addEntry(result.title, result.id);
-                    this.$refs.input.reset();
+//                    console.log("allowCreate: ", this.allowCreate, result, result.title);
+                    if (this.allowCreate == false && result[this.idField] != undefined) {
+                        this._addEntry(result[this.nameField], result[this.idField]);
+                        this.$refs.input.reset();
+                    } else {
+                        this._addEntry(result[this.nameField], result[this.idField]);
+                        this.$refs.input.reset();
+                    }
                 }
             },
             _addEntry: function(entry, id) {
@@ -42,14 +59,15 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 }
             },
             watchEntry: function() {
+                if (this.allowCreate == false) {
+                    return;
+                }
                 var $input = this.$refs.input;
                 var val = $input.getValue();
-//                console.log("watch:", val);
                 var sepPos = val.indexOf(this.separator);
                 while (sepPos > -1) {
                     var part = val.substring(0, sepPos);
                     var quotes = part.split("\"");
-                    console.log(part, quotes, (quotes.length -1 ) % 2);
                     if ((quotes.length -1 ) % 2 == 0) {
                         this._addEntry(part);
                         $input.setValue( val.substring(sepPos + 1).trim());
