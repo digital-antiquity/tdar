@@ -59,6 +59,10 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
         return SUCCESS;
     }
 
+    public void setName(String name) {
+        this.institution = name;
+    }
+    
     public String getInstitution() {
         return institution;
     }

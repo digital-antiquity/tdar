@@ -1,6 +1,7 @@
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
     "use strict";
 
+    if (document.getElementById("autocomplete") != undefined ) {
     // https://alligator.io/vuejs/vue-autocomplete-component/
     var autocomplete = Vue.component('autocomplete', {
         name: "autocomplete",
@@ -42,7 +43,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           name: {type:String},
           deletekey: {type: Function},
           enterkey: {type: Function},
-          anykey: {type: Function}
+          anykey: {type: Function},
+          customcreatenew: {type:Function},
+          createnewtext: {type:String, default:'Create New'} 
         },
     
         data: function() {
@@ -66,6 +69,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
         },
         
         methods: {
+            createNew: function() {
+                this.reset();
+                this.customcreatenew();
+            },
             getValue: function() {
                 return this.search;
             },
@@ -272,5 +279,5 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           document.removeEventListener("click", this.handleClickOutside);
         }
     });
-
+    }
 })(console, window, Vue, axios);

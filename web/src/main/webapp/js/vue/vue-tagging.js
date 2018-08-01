@@ -1,6 +1,7 @@
 TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
-    
+
+    if (document.getElementById("sel") != undefined) {
     var app = new Vue({
         el : "#sel",
         data : {values: [ 
@@ -23,7 +24,6 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
             },
             addEntry: function(input) {
                 if (this.allowCreate == true) {
-//                    console.log("allowCreate: ", this.allowCreate, input);
                     this._addEntry(input);
                     var $input = this.$refs.input;
                     $input.reset();
@@ -34,13 +34,12 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
             },
             addAutocompleteValue: function(result) {
                 if (result != undefined) {
-//                    console.log("allowCreate: ", this.allowCreate, result, result.title);
-                    if (this.allowCreate == false && result[this.idField] != undefined) {
+                    if (this.allowCreate == false && result[this.idField] != undefined || this.allowCreate == true) {
                         this._addEntry(result[this.nameField], result[this.idField]);
                         this.$refs.input.reset();
-                    } else {
-                        this._addEntry(result[this.nameField], result[this.idField]);
-                        this.$refs.input.reset();
+//                    } else {
+//                        this._addEntry(result[this.nameField], result[this.idField]);
+//                        this.$refs.input.reset();
                     }
                 }
             },
@@ -63,14 +62,16 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     return;
                 }
                 var $input = this.$refs.input;
-                var val = $input.getValue();
-                var sepPos = val.indexOf(this.separator);
+                var sepPos = $input.getValue().indexOf(this.separator);
                 while (sepPos > -1) {
+                    var val = $input.getValue();
+//                    console.log(val, sepPos);
                     var part = val.substring(0, sepPos);
                     var quotes = part.split("\"");
                     if ((quotes.length -1 ) % 2 == 0) {
                         this._addEntry(part);
                         $input.setValue( val.substring(sepPos + 1).trim());
+//                        console.log("setting to:", $input.getValue());
                         sepPos = $input.getValue().indexOf(this.separator );
                     } else {
                         sepPos = $input.getValue().indexOf(this.separator, sepPos + 1 );
@@ -86,6 +87,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     this.remove(this.values.length -1);
                 }
             }
-        }                   
+        }
     });
+    }
 })(console, window, Vue, axios);
