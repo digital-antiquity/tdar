@@ -122,6 +122,7 @@
         <js>/js/vue/edit-collection.js</js>
         <js>/js/vue/vue-advanced-search.js</js>
         <js>/js/vue/vue-autocomplete.js</js>
+        <js>/js/vue/vue-tagging.js</js>
 
     </group>
     <group name="ng-integrate">

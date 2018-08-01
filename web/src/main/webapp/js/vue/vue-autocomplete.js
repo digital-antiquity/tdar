@@ -9,7 +9,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           items: {
             type: Array,
             required: false,
-            default: []
+            default: function() {return new Array();}
           },
           isAsync: {
             type: Boolean,
@@ -39,7 +39,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           },
           span:{ type:String},
           idname: {type:String},
-          name: {type:String}
+          name: {type:String},
+          deletekey: {type: Function},
+          enterkey: {type: Function},
+          anykey: {type: Function}
         },
     
         data: function() {
@@ -55,7 +58,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             isLoading: false,
             width: 100,
             top:'10',
-            arrowCounter: 0,
+            arrowCounter: -1,
             totalRecords:0,
             recordsPerPage: 25,
             cancelToken: undefined
@@ -63,13 +66,33 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
         },
         
         methods: {
+            getValue: function() {
+                return this.search;
+            },
+            setValue: function(val) {
+                Vue.set(this,"search", val);
+            },
             addFocus: function (type) {
-//                console.log("add focus: " + type);
                 if (type == 'mouse') {
                     this.mouseFocus = true;
                 }
                 if (type == 'cursor') {
                     this.cursorFocus = true;
+                }
+            },
+            deleteKey: function() {
+                if (this.deletekey != undefined) {
+                    this.deletekey(this.$refs.searchfield);
+                }
+            },
+            enterKey: function() {
+                if (this.enterkey != undefined && this.arrowCounter < 0) {
+                    this.enterkey(this.search);
+                }
+            },
+            anyKey: function() {
+                if (this.anykey != undefined) {
+                    this.anykey(this.$refs.searchfield);
                 }
             },
             removeFocus: function (type) {
@@ -84,13 +107,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
                     
                     if (this.allowCreate == false && this.searchObj == undefined) {
                         console.log("clearing ...", this.search, this.searchObj);
-                        this.clear();
-                        this.isOpen = false;
-                        this.results = [];
+                        this.reset();
                     }
-
-                console.log("remove focus: " + type , this.mouseFocus , this.cursorFocus);
                 }
+            },
+            reset: function() {
+                this.clear();
+                this.isOpen = false;
+                this.results = [];
             },
           getStyleWidth: function() {
             return "width: " + (this.width - 8)+ "px;";
@@ -135,14 +159,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
              if (this.search != undefined && this.search.length > 0) {
               this.isLoading = true;
               if (this.cancelToken != undefined) {
-                  // console.log('cancelling...', this.cancelToken);
                   this.cancelToken.cancel();
               }
               
               Vue.set(this, "cancelToken" ,axios.CancelToken.source());
     
               var searchUrl = this.url + "?" + this.field + "=" + this.search + "&" + this.suffix;
-              console.log(searchUrl);
               Vue.set(self, "totalRecords", 0);
               Vue.set(self, "recordsPerPage", 25);
               axios.get(searchUrl, { cancelToken: self.cancelToken.token }).then(function(res) {
@@ -156,9 +178,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
                       Vue.set(self, "recordsPerPage", res.data.status.recordsPerPage);
                   }
               }).catch(function(thrown) {
-                  if (axios.isCancel(thrown)) {
-                      console.log('First request canceled', thrown.message);
-                  } else {
+                  if (!axios.isCancel(thrown)) {
                       console.error(thrown);
                   }
               });
@@ -203,7 +223,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           setResult: function(result) {
             this.search = this.getDisplay(result);
             this._setResult(result);
-            console.log(result);
+            console.log(this.search, result);
             this.isOpen = false;
           },
           onArrowDown: function(evt) {
