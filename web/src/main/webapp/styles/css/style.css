@@ -13,7 +13,8 @@ nav {
 
 .tdarNav {
   background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
-  background-size: cover; }
+  /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
+  border-bottom: 1px solid #CCC; }
   .tdarNav .tdarNavItem {
     text-transform: uppercase;
     font-weight: bold;
@@ -66,6 +67,18 @@ nav {
 .svgicon {
   max-height: 50px;
   max-width: 50px; }
+
+h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+  font-family: "soleil", sans-serif !important;
+  font-weight: 700; }
+
+#home .news li, .cols p,
+.tableFormat td, header form input.searchbox,
+header .welcome-drop a,
+.hero input.searchbox,
+#slider p,
+#slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+  font-family: "ff-tisa-web-pro", serif !important; }
 
 @media (max-width: 768px) {
   #home #hero h2 {

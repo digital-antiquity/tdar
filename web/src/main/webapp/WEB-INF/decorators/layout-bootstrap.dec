@@ -148,7 +148,7 @@ width:.8em;
 <link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
 <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
-<#if !(test!false)>
+
 <script type="text/javascript">
     (function(d) {
         var config = {
@@ -162,7 +162,7 @@ width:.8em;
                         f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
     })(document);
 </script>
-</#if>
+
 <style>
     @media screen {
         /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
@@ -355,7 +355,7 @@ ${head}
         </div>
         </#if>
 
-        <section class="container">
+        <section class="container ${part}">
             <div class="row">
             <#if showLeftSidebar()>
                 <aside class="col-3">
@@ -571,6 +571,7 @@ ${head}
 <script>
     $(TDAR.main);
 </script>
+<script src = "../../js/mannyScript.js"></script>
 
     <!-- BEGIN-TDAR-FOOTER -->
     
