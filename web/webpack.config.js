@@ -12,7 +12,7 @@ module.exports = {
   //devtool: 'eval-source-map',
   entry: { 
      // jquery : ['jquery'],
-      main: './src/main/webapp/js/webpack/index.js' 
+      main: './src/main/webapp/js/webpack/tdar-entry-point.js' 
   },
   output: {
         path: path.resolve(__dirname, "./src/main/webapp/dist/"),

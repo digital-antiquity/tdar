@@ -2,8 +2,9 @@
  * tdar.common.js
  */
 
-import TDAR from 'js/tdar.core';
+var TDAR = require("./tdar.core.js");
 import tmpl from 'blueimp-tmpl';//require('script-loader!blueimp-tmpl/js/tmpl.js')
+import "jquery";
 
 /*
  * $Id$
@@ -24,7 +25,7 @@ TDAR.ellipsify = function _ellipsify(text, n, useWordBoundary) {
         var toLong = text.length > n, s_ = toLong ? text.substr(0, n - 1) : text;
         s_ = useWordBoundary && toLong ? s_.substr(0, s_.lastIndexOf(' ')) : s_;
         return  toLong ? s_ + '...' : s_;
-    }
+}
 
 
 jQuery.extend({
@@ -64,7 +65,7 @@ jQuery.extend({
  * trying to move these functions out of global scope and apply strict parsing.
  */
 
-TDAR.common = function (TDAR, fileupload, jQuery, tmpl) {
+//TDAR.common = function (TDAR, fileupload, jQuery, tmpl) {
     "use strict";
 
     var self = {};
@@ -970,8 +971,7 @@ TDAR.common = function (TDAR, fileupload, jQuery, tmpl) {
         });
     }
 
-
-    $.extend(self, {
+   module.exports = {
         "initEditPage": _initEditPage,
         "initRightsPage" : _initRightsPage,
         "applyTreeviews": _applyTreeviews,
@@ -1006,8 +1006,7 @@ TDAR.common = function (TDAR, fileupload, jQuery, tmpl) {
         "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions,
         "initFormNavigate": _initFormNavigate,
         "main": _init
-    });
-
-    return self;
-}(TDAR, TDAR.fileupload,jQuery, tmpl);
+    }
+    
+//(TDAR, TDAR.fileupload,jQuery, tmpl);
 

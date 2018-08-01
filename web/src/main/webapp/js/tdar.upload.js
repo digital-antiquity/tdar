@@ -3,7 +3,11 @@
  * tdar.fileupload
  * */
 
-TDAR.fileupload = (function (TDAR, $) {
+import $ from "jquery";
+const datepicker = require("./tdar.datepicker");
+const core = require("./tdar.core");
+
+//TDAR.fileupload = (function (TDAR, $) {
     "use strict";
     /* how long to display error messages prior to removing a failed file upload from the files table (in millis) */
     var ERROR_TIMEOUT = 5000;
@@ -78,7 +82,7 @@ TDAR.fileupload = (function (TDAR, $) {
             //send files in a single http request (singleFileUploads==false). See TDAR-2763 for more info      
             singleFileUploads: false,
 
-            url: TDAR.uri('upload/upload'),
+            url: common.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: $(document).data("maxUploadFiles"),
             getNumberOfFiles: function () {
@@ -135,7 +139,7 @@ TDAR.fileupload = (function (TDAR, $) {
                     file.context = $(this);
                     return file;
                 }).get();
-                TDAR.datepicker.applyHidden($(".new-file input.datepicker"));
+                datepicker.applyHidden($(".new-file input.datepicker"));
                 $(".new-file").on("datechanged",function(e){
                     console.log(this);
                     console.log(e.target);
@@ -176,7 +180,7 @@ TDAR.fileupload = (function (TDAR, $) {
         });
 
         
-        TDAR.datepicker.bind($("input.datepicker",$filesContainer));
+        datepicker.bind($("input.datepicker",$filesContainer));
 
 
         
@@ -513,7 +517,7 @@ TDAR.fileupload = (function (TDAR, $) {
     }
 
     var _applyDateInputs = function ($elements) {
-        TDAR.datepicker.apply($elements);
+        datepicker.apply($elements);
     }
 
     /**
@@ -534,10 +538,10 @@ TDAR.fileupload = (function (TDAR, $) {
     }
 
     //expose public elements
-    return {
+   module.exports = {
         "registerUpload": _registerUpload,
         "updateFileAction": _updateFileAction,
         "getRowId": _getRowId,
         "getRowVisibility": _getRowVisibility
     };
-})(TDAR, jQuery);
+//})(TDAR, jQuery);
