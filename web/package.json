@@ -19,7 +19,7 @@
     "imports-loader": "^0.8.0",
     "jasmine-core": "^2.9.9",
     "jasmine-webpack-plugin": "^0.1.1",
-    "karma": "^2.0.4",
+    "karma": "^2.0.5",
     "karma-chrome-launcher": "^1.0.1",
     "karma-clear-screen-reporter": "^1.0.0",
     "karma-coverage": "^1.0.0",

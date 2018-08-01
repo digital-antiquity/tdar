@@ -1,53 +1,59 @@
 /**
- * tdar.autocomplete.js
- * Autocomplete Support
+ * tdar.autocomplete.js Autocomplete Support
  */
 
-import TDAR from "tdarcore";
+const TDAR = require("./tdar.core.js");
 import "jquery";
 import "jquery-ui";
 
-//TDAR.autocomplete = {};
-TDAR.autocomplete = function (TDAR) {
     "use strict";
 
-    //when a user creates a record manually instead of choosing a menu-item from the autocomplete dropdown, this module
-    //stores the record in the object cache.  If the user later fills out similar autocomplete fields,   we add
-    //these cached records to the autocomplete dropdown.  This allows the user to save some time in situations where
-    //a new value may appear several times on a form (e.g. a new person record  that should be listed as an 'author',
+    // when a user creates a record manually instead of choosing a menu-item
+	// from the autocomplete dropdown, this module
+    // stores the record in the object cache. If the user later fills out
+	// similar autocomplete fields, we add
+    // these cached records to the autocomplete dropdown. This allows the user
+	// to save some time in situations where
+    // a new value may appear several times on a form (e.g. a new person record
+	// that should be listed as an 'author',
     // 'editor', and 'contact'.
     var _caches = {};
 
     /**
-     * Autocomplete "object cache".  Some autocomplete fields allow for the adhoc creation of new values.  When the user
-     * creates new adhoc records they are stored in the object cache.   If the user performs subsequent autocomplete
-     * lookups, the results of the server lookup are combined with a search of the records of the object cache and
-     * any matching records in the cache are included in the autocomplete results list.  This makes data entry
-     * easier for situations where a user intends make repeated references to an adhoc record in a form.
-     *
-     *
-     * @param acOptions
-     *  url: the url used by the ajax lookup - used to filter which adhoc records are returned by a search
-     *  objectMapper:  function used to map an a set of form fields to record object
-     *
-     * @constructor
-     */
-    function ObjectCache(acOptions) {
+	 * Autocomplete "object cache". Some autocomplete fields allow for the adhoc
+	 * creation of new values. When the user creates new adhoc records they are
+	 * stored in the object cache. If the user performs subsequent autocomplete
+	 * lookups, the results of the server lookup are combined with a search of
+	 * the records of the object cache and any matching records in the cache are
+	 * included in the autocomplete results list. This makes data entry easier
+	 * for situations where a user intends make repeated references to an adhoc
+	 * record in a form.
+	 * 
+	 * 
+	 * @param acOptions
+	 *            url: the url used by the ajax lookup - used to filter which
+	 *            adhoc records are returned by a search objectMapper: function
+	 *            used to map an a set of form fields to record object
+	 * 
+	 * @constructor
+	 */
+    export function ObjectCache(acOptions) {
         this.acOptions = acOptions;
         this.namespace = acOptions.url || "root";
         this.parentMap = {};
         this.objectMapper = acOptions.objectMapper || _objectFromAutocompleteParent;
 
-        //_caches[this.namespace] = this;
+        // _caches[this.namespace] = this;
     };
 
     ObjectCache.prototype = {
 
-        //register the fields inside this parent as an 'extra record'. When caller invokes getValues(), this class
-        //will generate records based for all the registeredRecords
+        // register the fields inside this parent as an 'extra record'. When
+		// caller invokes getValues(), this class
+        // will generate records based for all the registeredRecords
         register: function (parentElem) {
             var self = this, parentId = parentElem.id;
-            //prevent dupe registration
+            // prevent dupe registration
             if ($(parentElem).hasClass("autocomplete-new-record")) {
                 return;
             }
@@ -61,7 +67,7 @@ TDAR.autocomplete = function (TDAR) {
 
             $(parentElem).addClass("autocomplete-new-record");
 
-            //if user removes the row then unregister the associated record
+            // if user removes the row then unregister the associated record
             $(parentElem).bind("remove", function () {
                 self.unregister(parentId);
             });
@@ -72,7 +78,7 @@ TDAR.autocomplete = function (TDAR) {
         },
 
         getValues: function () {
-            //var keys = Object.keys(this.parentMap).sort();
+            // var keys = Object.keys(this.parentMap).sort();
             var values = [];
             for (var parentId in this.parentMap) {
                 var elem = this.parentMap[parentId];
@@ -81,17 +87,23 @@ TDAR.autocomplete = function (TDAR) {
             return values;
         },
 
-        //by default search does nothing
+        // by default search does nothing
         search: function _noop(){return []}
     };
 
     /**
-     * return subset of getValues() for any partial matches of term in object[key].  If key not supplied,  search all fields in each object for a partial match
-     * @param term search term
-     * @param key name of the property to compare to the search term. if no key supplied, this function
-     *      evaluates all fields properties
-     * @returns {*} array of objects that have partial matches to the specified term and key
-     */
+	 * return subset of getValues() for any partial matches of term in
+	 * object[key]. If key not supplied, search all fields in each object for a
+	 * partial match
+	 * 
+	 * @param term
+	 *            search term
+	 * @param key
+	 *            name of the property to compare to the search term. if no key
+	 *            supplied, this function evaluates all fields properties
+	 * @returns {*} array of objects that have partial matches to the specified
+	 *          term and key
+	 */
     ObjectCache.basicSearch = function (term, key) {
         var values = this.getValues();
         var ret = $.grep(values, function (obj) {
@@ -112,11 +124,13 @@ TDAR.autocomplete = function (TDAR) {
     };
 
     /**
-     * grab cache for specified url or create one
-     * @param options options object used in objectCache constructor
-     * @returns {ObjectCache}
-     * @private
-     */
+	 * grab cache for specified url or create one
+	 * 
+	 * @param options
+	 *            options object used in objectCache constructor
+	 * @returns {ObjectCache}
+	 * @private
+	 */
     function _getCache(options) {
         if (!_caches[options.url]) {
             _caches[options.url] = new ObjectCache(options);
@@ -125,31 +139,42 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * construct a jsobject to be used as the 'data' parameter used for the autocomplete ajax request
-     * @param element  any element contained by an "autocomplete parent"
-     * @returns {{}} jsobject
-     * @private
-     */
+	 * construct a jsobject to be used as the 'data' parameter used for the
+	 * autocomplete ajax request
+	 * 
+	 * @param element
+	 *            any element contained by an "autocomplete parent"
+	 * @returns {{}} jsobject
+	 * @private
+	 */
     function _buildRequestData(element) {
         var data = {};
 
-        //    console.log("autocompleteParentElement: " + element.attr("autocompleteParentElement"));
+        // console.log("autocompleteParentElement: " +
+		// element.attr("autocompleteParentElement"));
         if (element.attr("autocompleteParentElement")) {
             $("[autocompleteName]", element.attr("autocompleteParentElement")).each(function (index, elem) {
                 var $elem = $(elem);
                 data[$elem.attr("autocompleteName")] = $.trim($(elem).val());
-                //                            console.log("autocompleteName: " + $val.attr("autocompleteName") + "==" + $val.val());
+                // console.log("autocompleteName: " +
+				// $val.attr("autocompleteName") + "==" + $val.val());
             });
         }
         return data;
     }
 
     /**
-     * translate item property values to form fiends contained in a autocompleteParentElement
-     * @param element any .ui-autocomplete-input field contained by the autocompleteParent element
-     * @param item the source object. the function copies the item property values to the input fields under the parent
-     * @private
-     */
+	 * translate item property values to form fiends contained in a
+	 * autocompleteParentElement
+	 * 
+	 * @param element
+	 *            any .ui-autocomplete-input field contained by the
+	 *            autocompleteParent element
+	 * @param item
+	 *            the source object. the function copies the item property
+	 *            values to the input fields under the parent
+	 * @private
+	 */
     function _applyDataElements(element, item) {
         var $element = $(element);
         if ($element.attr("autocompleteParentElement") != undefined) {
@@ -170,7 +195,9 @@ TDAR.autocomplete = function (TDAR) {
                     }
 
                     $val.val(valueToSet);
-                    //                         console.log("setting: " + val.name +  "["+$val.attr("autocompleteName")+"]" + ":" + valueToSet);
+                    // console.log("setting: " + val.name +
+					// "["+$val.attr("autocompleteName")+"]" + ":" +
+					// valueToSet);
                     $val.attr("autoVal", valueToSet);
                 }
             });
@@ -179,7 +206,7 @@ TDAR.autocomplete = function (TDAR) {
             }
         }
 
-        //if id element defined,  set it's value
+        // if id element defined, set it's value
         if ($element.attr("autocompleteIdElement")) {
             var $idElement = $($element.attr("autocompleteIdElement"));
 
@@ -187,19 +214,26 @@ TDAR.autocomplete = function (TDAR) {
                 $idElement.val(item["id"]);
             }
         } else {
-            //TODO:  confirm  $element.closest('.autocomplete-id-element') will work for all use cases.
+            // TODO: confirm $element.closest('.autocomplete-id-element') will
+			// work for all use cases.
         }
 
     }
 
     /**
-     * Determines if the fields representing an autocomplete control should be interpreted as "empty". For example,
-     * if all of the fields in a person autocomplete fieldset have empty value attributes, this function would return true.
-     *
-     * @param element any child element contained by an autocomplete parent
-     * @param ignoredFields property names to exclude when evaluating which properties are non-blank
-     * @returns {boolean} true if the function determines the autcomplete control to be "empty"
-     */
+	 * Determines if the fields representing an autocomplete control should be
+	 * interpreted as "empty". For example, if all of the fields in a person
+	 * autocomplete fieldset have empty value attributes, this function would
+	 * return true.
+	 * 
+	 * @param element
+	 *            any child element contained by an autocomplete parent
+	 * @param ignoredFields
+	 *            property names to exclude when evaluating which properties are
+	 *            non-blank
+	 * @returns {boolean} true if the function determines the autcomplete
+	 *          control to be "empty"
+	 */
     function _evaluateAutocompleteRowAsEmpty(element, ignoredFields) {
         var req = _buildRequestData($(element));
         var total = 0;
@@ -222,7 +256,8 @@ TDAR.autocomplete = function (TDAR) {
                 nonempty++;
             }
         }
-        //    console.log("req size:" + total + " nonEmpty:" + nonempty + " ignored:" + ignored);
+        // console.log("req size:" + total + " nonEmpty:" + nonempty + "
+		// ignored:" + ignored);
         if (nonempty == 0) {
             return true;
         }
@@ -235,11 +270,15 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * if user tabs away from autocomplete field instead of selecting valid menu item,  register as new record
-     * @param objectCache objectCache that will hold the new record
-     * @param elem any child element contained by an autocomplete parent element
-     * @private
-     */
+	 * if user tabs away from autocomplete field instead of selecting valid menu
+	 * item, register as new record
+	 * 
+	 * @param objectCache
+	 *            objectCache that will hold the new record
+	 * @param elem
+	 *            any child element contained by an autocomplete parent element
+	 * @private
+	 */
     function _registerOnBlur(objectCache, elem) {
         var parentid = $(elem).attr("autocompleteparentelement");
         var $parentElem = $(parentid);
@@ -254,45 +293,52 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * disable all the child form elements of the specified element
-     * @param $parent
-     * @private
-     */
+	 * disable all the child form elements of the specified element
+	 * 
+	 * @param $parent
+	 * @private
+	 */
     function _disable($parent) {
-        //fixme: commenting out for now. disable() must be called on actual autocomplete, not merely a parent of one.
-        ////$parent.find(".ui-autocomplete-input").autocomplete("disable");
-        //$parent.find(".ui-autocomplete-input").each(function () {
-        //    $(this).data("autocomplete").disabled = true;
-        //});
+        // fixme: commenting out for now. disable() must be called on actual
+		// autocomplete, not merely a parent of one.
+        // //$parent.find(".ui-autocomplete-input").autocomplete("disable");
+        // $parent.find(".ui-autocomplete-input").each(function () {
+        // $(this).data("autocomplete").disabled = true;
+        // });
     }
 
     /**
-     * enable child elements underneath parent
-     * @param $parent
-     * @private
-     */
+	 * enable child elements underneath parent
+	 * 
+	 * @param $parent
+	 * @private
+	 */
     function _enable($parent) {
-        //$parent.autocomplete("enable");
+        // $parent.autocomplete("enable");
     }
 
     /**
-     * Register a selection of elements as autocomplete fields.
-     *
-     * @param $elements jquery selection of input fields to initialize as autocomplete fields.
-     * @param opts initialization options:
-     *          addCustomValuesToReturn: function(term){}  callback used to add additional items  to the end of the
-     *                                          ajax autocomplete results (default: add objectCach search results),
-     *          requestData: {} additional name/val request data to include in ajax request,
-     *          url:  url for ajax request,
-     *          showCreate: boolean.  if true,  allow user to create a new record by specifying value that cannot be
-     *                              found on the server.
-     *
-     *
-     */
+	 * Register a selection of elements as autocomplete fields.
+	 * 
+	 * @param $elements
+	 *            jquery selection of input fields to initialize as autocomplete
+	 *            fields.
+	 * @param opts
+	 *            initialization options: addCustomValuesToReturn:
+	 *            function(term){} callback used to add additional items to the
+	 *            end of the ajax autocomplete results (default: add objectCach
+	 *            search results), requestData: {} additional name/val request
+	 *            data to include in ajax request, url: url for ajax request,
+	 *            showCreate: boolean. if true, allow user to create a new
+	 *            record by specifying value that cannot be found on the server.
+	 * 
+	 * 
+	 */
     function _applyGenericAutocomplete($elements, opts) {
         var options = $.extend({
 
-            //callback function that returns list of extra items to include in dropdown: function(options, requestData)
+            // callback function that returns list of extra items to include in
+			// dropdown: function(options, requestData)
             addCustomValuesToReturn: function (term) {
                 return cache.search(term);
             }
@@ -300,7 +346,7 @@ TDAR.autocomplete = function (TDAR) {
 
         var cache = _getCache(options);
 
-        //set allowNew attribute for each element's corresponding 'id' element
+        // set allowNew attribute for each element's corresponding 'id' element
         $elements.each(function () {
             if (options.showCreate) {
                 var $idElement = $($(this).attr("autocompleteIdElement"));
@@ -308,21 +354,23 @@ TDAR.autocomplete = function (TDAR) {
             }
         });
 
-        //register the autocomplete for each element
+        // register the autocomplete for each element
         var autoResult = $elements.autocomplete({
             source: function (request, response) {
                 var $elem = $(this.element);
 
-                //is another ajax request in flight?
+                // is another ajax request in flight?
                 var oldResponseHolder = $elem.data('responseHolder');
                 if (oldResponseHolder) {
-                    //cancel the previous search
-                    //                        console.log("cancelling previous search");
+                    // cancel the previous search
+                    // console.log("cancelling previous search");
                     oldResponseHolder.callback({});
 
-                    //swap out the no-op before the xhrhhtp.success callback calls it
+                    // swap out the no-op before the xhrhhtp.success callback
+					// calls it
                     oldResponseHolder.callback = function () {
-                        //                            console.log("an ajax success callback just called a now-defunct response callback");
+                        // console.log("an ajax success callback just called a
+						// now-defunct response callback");
                     };
                 }
 
@@ -352,8 +400,10 @@ TDAR.autocomplete = function (TDAR) {
                     options.enhanceRequestData(requestData, request);
                 }
 
-                //add a closure to ajax request that wraps the response callback. This way we can swap it out for a no-op if a new source() request
-                //happens before the existing is complete.
+                // add a closure to ajax request that wraps the response
+				// callback. This way we can swap it out for a no-op if a new
+				// source() request
+                // happens before the existing is complete.
                 var responseHolder = {};
                 responseHolder.callback = response;
                 $elem.data('responseHolder', responseHolder);
@@ -369,18 +419,22 @@ TDAR.autocomplete = function (TDAR) {
                             return;
                         }
 
-                        // if there's a custom dataMap function, use that, otherwise not
+                        // if there's a custom dataMap function, use that,
+						// otherwise not
                         if (options.customDisplayMap == undefined) {
                             options.customDisplayMap = function (item) {
                                 if (item.name != undefined && options.dataPath != 'person') {
-                                    // there is no need to escape this because we're rendering as plain text
+                                    // there is no need to escape this because
+									// we're rendering as plain text
                                     item.label = item.name;
                                 }
                                 return item;
                             };
                         }
 
-                        //tdar lookup returns an object that wraps the results - the property with the results is specified by options.dataPath
+                        // tdar lookup returns an object that wraps the results
+						// - the property with the results is specified by
+						// options.dataPath
                         var dataItems = typeof options.dataPath === "function" ? options.dataPath(data) : data[options.dataPath];
                         var values = $.map(dataItems, options.customDisplayMap);
 
@@ -392,14 +446,17 @@ TDAR.autocomplete = function (TDAR) {
                                 values = values.concat(extraValues);
                             }
                         }
-                        // console.log(options.dataPath + " autocomplete returned " + values.length);
+                        // console.log(options.dataPath + " autocomplete
+						// returned " + values.length);
 
 
-                        // if one of the results matches the search term exactly,  omit the "create new" option.
+                        // if one of the results matches the search term
+						// exactly, omit the "create new" option.
                         var exactMatch = false;
                         $.each(values, function(idx, item) {
                             exactMatch = item.name === $.trim(request.term);
-                            //if we find an exact match, return false to 'break' this loop.
+                            // if we find an exact match, return false to
+							// 'break' this loop.
                             return !exactMatch;
                         });
 
@@ -427,8 +484,11 @@ TDAR.autocomplete = function (TDAR) {
 
             change: function(event, ui) {
                 var $element = $(this);
-                // if the existing autocomplete value stored in the "autoVal" attribute does is not undefined and is not the same as the current
-                // evaluate it for being significant (important when trying to figure out if a minimum set of fields have been filled in
+                // if the existing autocomplete value stored in the "autoVal"
+				// attribute does is not undefined and is not the same as the
+				// current
+                // evaluate it for being significant (important when trying to
+				// figure out if a minimum set of fields have been filled in
                 var autovalChanged = $element.attr("autoVal") !== $element.val();
                 var rowIsEmpty = _evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? [] : options.ignoreRequestOptionsWhenEvaluatingEmptyRow);
                 if (autovalChanged | rowIsEmpty) {
@@ -445,7 +505,7 @@ TDAR.autocomplete = function (TDAR) {
                 $elem.data('autocompleteSelectedItem', ui.item.value);
                 _applyDataElements(this, ui.item);
 
-                //cancel any pending searches once the user selects an item
+                // cancel any pending searches once the user selects an item
                 var responseHolder = $elem.data('responseHolder');
                 if (responseHolder) {
                     responseHolder.callback();
@@ -453,10 +513,11 @@ TDAR.autocomplete = function (TDAR) {
                     };
                 }
 
-                //if user selects 'create new' option, add it to the new item cache and stop trying to find matches.
+                // if user selects 'create new' option, add it to the new item
+				// cache and stop trying to find matches.
                 if (ui.item.isNewItem) {
                     var $parent = $($elem.attr("autocompleteparentelement"));
-                    //$parent.autocomplete("disable");
+                    // $parent.autocomplete("disable");
 
                 }
             },
@@ -489,7 +550,8 @@ TDAR.autocomplete = function (TDAR) {
             _registerOnBlur(cache, this);
         });
 
-        //if autocomplete is in a repeatable, register if they clicked 'addnew' after filling out a transient record
+        // if autocomplete is in a repeatable, register if they clicked 'addnew'
+		// after filling out a transient record
         var repeatables = [];
         $elements.closest(".repeatLastRow").filter(function () {
             if (repeatables.indexOf(this) > -1) {
@@ -513,13 +575,18 @@ TDAR.autocomplete = function (TDAR) {
     };
 
     /**
-     * initialize selection of elements as autocomplete fields
-     *
-     * @param selector jquery selection of text inputs to become autocomplete fields
-     * @param lookupType type of keywords to be searched (e.g. material keywords, geographic keywords, etc)
-     * @param extraData additional name/value data
-     * @param newOption boolean true if users are allowed to create new keyword values
-     */
+	 * initialize selection of elements as autocomplete fields
+	 * 
+	 * @param selector
+	 *            jquery selection of text inputs to become autocomplete fields
+	 * @param lookupType
+	 *            type of keywords to be searched (e.g. material keywords,
+	 *            geographic keywords, etc)
+	 * @param extraData
+	 *            additional name/value data
+	 * @param newOption
+	 *            boolean true if users are allowed to create new keyword values
+	 */
     function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
         var options = {};
         options.url = "api/lookup/" + lookupType;
@@ -548,21 +615,26 @@ TDAR.autocomplete = function (TDAR) {
 
                 return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(item.label) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + extra + " </a>").appendTo(ul);
             };
-//            options.customHeader = function() {
-//                return $("<li class='header-auto'>Term <span class='header-auto pull-right'>Suggested (# of ocur.)</span></li>");
-//            }
+// options.customHeader = function() {
+// return $("<li class='header-auto'>Term <span class='header-auto
+// pull-right'>Suggested (# of ocur.)</span></li>");
+// }
         };
         _applyGenericAutocomplete($(selector), options);
     }
 
     /**
-     * initialize person autocomplete elements
-     *
-     * @param $elements jquery selection of elements to initialize as autocomplete fields
-     * @param usersOnly if true, limit results to registered tDAR users.
-     * @param showCreate if true, allow for the creation of new person records if the specified person
-     *              cannot be found on the server
-     */
+	 * initialize person autocomplete elements
+	 * 
+	 * @param $elements
+	 *            jquery selection of elements to initialize as autocomplete
+	 *            fields
+	 * @param usersOnly
+	 *            if true, limit results to registered tDAR users.
+	 * @param showCreate
+	 *            if true, allow for the creation of new person records if the
+	 *            specified person cannot be found on the server
+	 */
     function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
         var options = {
             url: "api/lookup/person",
@@ -592,14 +664,20 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * Initialize ResourceCollection autocomplete fields.
-     *
-     * @param $elements jquery selection of text inputs to initialize as autocomplete fields
-     * @param options additional initialization optionss (see applyGenericAutocomplete for more info)
-     * @param extraData additional name/val request data to include in ajax request
-     */
+	 * Initialize ResourceCollection autocomplete fields.
+	 * 
+	 * @param $elements
+	 *            jquery selection of text inputs to initialize as autocomplete
+	 *            fields
+	 * @param options
+	 *            additional initialization optionss (see
+	 *            applyGenericAutocomplete for more info)
+	 * @param extraData
+	 *            additional name/val request data to include in ajax request
+	 */
     function _applyCollectionAutocomplete($elements, options, extraData) {
-        //FIXME: HACK: this is a bandaid.  need better way to not bind multiple autocompletes
+        // FIXME: HACK: this is a bandaid. need better way to not bind multiple
+		// autocompletes
         if ($elements.data("autocompleteApplied")) {
             return;
         }
@@ -641,11 +719,13 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * autocomplete render callback used by applyResourceAutocomplete when displaying search results menu
-     * @param item
-     * @returns {*}
-     * @private
-     */
+	 * autocomplete render callback used by applyResourceAutocomplete when
+	 * displaying search results menu
+	 * 
+	 * @param item
+	 * @returns {*}
+	 * @private
+	 */
     function _displayResourceAutocomplete(item) {
         var label = "";
         if (item.name) {
@@ -659,10 +739,14 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * initialize tDAR resource autocomplete fields
-     * @param $elements jquery selection of text fields to initialize as autocomplete fields
-     * @param type resource type (e.g. "document", "coding-sheet", "image")
-     */
+	 * initialize tDAR resource autocomplete fields
+	 * 
+	 * @param $elements
+	 *            jquery selection of text fields to initialize as autocomplete
+	 *            fields
+	 * @param type
+	 *            resource type (e.g. "document", "coding-sheet", "image")
+	 */
     function _applyResourceAutocomplete($elements, type) {
         var options = {};
         options.url = "api/lookup/resource";
@@ -691,11 +775,15 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * initalize institution autocomplete fields
-     *
-     * @param $elements jquery selection of text inputs to initialize as autocomplete fields
-     * @param newOption if true, allow user to create new records if specified value not found on server
-     */
+	 * initalize institution autocomplete fields
+	 * 
+	 * @param $elements
+	 *            jquery selection of text inputs to initialize as autocomplete
+	 *            fields
+	 * @param newOption
+	 *            if true, allow user to create new records if specified value
+	 *            not found on server
+	 */
     function _applyInstitutionAutocomplete($elements, newOption) {
 
         var options = {};
@@ -712,31 +800,37 @@ TDAR.autocomplete = function (TDAR) {
     };
 
     /**
-     * click handler - used to implement an autocomplete that has a "show-all" button, e.g. a combobox
-     * @private
-     */
+	 * click handler - used to implement an autocomplete that has a "show-all"
+	 * button, e.g. a combobox
+	 * 
+	 * @private
+	 */
     function _autocompleteShowAll() {
         $(this).siblings('input[type=text]').focus().autocomplete("search", "");
     }
 
     /**
-     * initialize "combobox" style autocompletes.  These are similar to autocomplete fields,  however, they include
-     * a "show all" button beside the control that displays all possible values.  As a result, this is not ideal
-     * for lookups that return relatively small numbers of results (e.g. list of U.S. States).
-     *
-     * @param $elements jquery selection of elements to convert into comboboxes
-     * @param type resource type name (e.g "document", "coding-sheet".
-     */
+	 * initialize "combobox" style autocompletes. These are similar to
+	 * autocomplete fields, however, they include a "show all" button beside the
+	 * control that displays all possible values. As a result, this is not ideal
+	 * for lookups that return relatively small numbers of results (e.g. list of
+	 * U.S. States).
+	 * 
+	 * @param $elements
+	 *            jquery selection of elements to convert into comboboxes
+	 * @param type
+	 *            resource type name (e.g "document", "coding-sheet".
+	 */
     function _applyComboboxAutocomplete($elements, type) {
 
-        //register autocomplete text box
+        // register autocomplete text box
         _applyResourceAutocomplete($elements, type);
 
         $elements.each(function () {
-            //the autocomplete text field
+            // the autocomplete text field
             var $elem = $(this);
 
-            //register "show-all" click
+            // register "show-all" click
             var $controls = $(this).closest('.controls');
             var $textInput = $controls.find("input[type=text]");
             var $button = $controls.find("button.show-all");
@@ -744,26 +838,29 @@ TDAR.autocomplete = function (TDAR) {
                 $textInput.focus().autocomplete("search", "");
             });
 
-            //override the default change-event listener
+            // override the default change-event listener
             $elem.autocomplete("option", "change", function(event){
-                //the most recent menu item that the user selected
+                // the most recent menu item that the user selected
                 var item = $elem.data('autocompleteSelectedItem');
 
-                //the hidden input that holds the ID for the associated record in tdar
+                // the hidden input that holds the ID for the associated record
+				// in tdar
                 var $idElem = $($elem.attr("autocompleteIdElement"));
 
-                //if user deletes the contents of the text field, we also clear the ID field value
+                // if user deletes the contents of the text field, we also clear
+				// the ID field value
                 if($elem.val() === "") {
                     $idElem.val("");
                 }
 
-                //if the user manually changed the value (as opposed to using the autocomplete menu), clear the ID field value
+                // if the user manually changed the value (as opposed to using
+				// the autocomplete menu), clear the ID field value
                 if(item && $elem.val() !== item) {
                     $idElem.val("");
                 }
             });
 
-            //prime the initial value of the 'previously selected' menu item
+            // prime the initial value of the 'previously selected' menu item
             if($elem.val() !== "") {
                 $elem.data('autocompleteSelectedItem', $elem.val());
             }
@@ -771,15 +868,22 @@ TDAR.autocomplete = function (TDAR) {
     }
 
     /**
-     * delegate listener that enables autocomplete for creator input fields when a user clicks in a crator field.
-     * @param id parent element to receive delegated events
-     * @param user if true, use applyPersonAutocomplete, otherwise use applyInstitutionAutocomplete
-     * @param showCreate show a "create new" option at the end of the list.
-     */
+	 * delegate listener that enables autocomplete for creator input fields when
+	 * a user clicks in a crator field.
+	 * 
+	 * @param id
+	 *            parent element to receive delegated events
+	 * @param user
+	 *            if true, use applyPersonAutocomplete, otherwise use
+	 *            applyInstitutionAutocomplete
+	 * @param showCreate
+	 *            show a "create new" option at the end of the list.
+	 */
     var _delegateCreator = function (id, user, showCreate) {
         if (user == undefined || user == false) {
             $(id).delegate(".nameAutoComplete", "focusin", function () {
-                        // TODO: these calls re-regester every row after a row is
+                        // TODO: these calls re-regester every row after a row
+						// is
                         // created,
                         // change so that only the new row is registered.
                         _applyPersonAutoComplete($(".nameAutoComplete", id), false, showCreate);
@@ -795,13 +899,18 @@ TDAR.autocomplete = function (TDAR) {
     };
 
     /**
-     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
-     * field.
-     * @param id id of parent element to receive delegated events.
-     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
-     * @param delim  lookupType to send in ajax request ot search provider
-     * @private
-     */
+	 * delegate listener that enables autocomplete for annotationKey input
+	 * fields when a user clicks in that field.
+	 * 
+	 * @param id
+	 *            id of parent element to receive delegated events.
+	 * @param prefix
+	 *            prefix of classname to use in selector when selecting input
+	 *            fields inside of the parent
+	 * @param delim
+	 *            lookupType to send in ajax request ot search provider
+	 * @private
+	 */
     var _delegateAnnotationKey = function (id, prefix, delim) {
         $(id).delegate("." + prefix + "AutoComplete", "focusin", function () {
             _applyGenericAutocomplete($("." + prefix + "AutoComplete"), {
@@ -818,12 +927,18 @@ TDAR.autocomplete = function (TDAR) {
     };
 
     /**
-     * delegate listener that enables autocomplete for annotationKey input fields when a user clicks in that
-     * @param id id of parent element to receive delegated events.
-     * @param prefix prefix of classname to use in selector when selecting input fields inside of the parent
-     * @param type keyword type
-     * @private
-     */
+	 * delegate listener that enables autocomplete for annotationKey input
+	 * fields when a user clicks in that
+	 * 
+	 * @param id
+	 *            id of parent element to receive delegated events.
+	 * @param prefix
+	 *            prefix of classname to use in selector when selecting input
+	 *            fields inside of the parent
+	 * @param type
+	 *            keyword type
+	 * @private
+	 */
     var _delegateKeyword = function (id, prefix, type) {
         $(id).delegate(".keywordAutocomplete", "focusin", function () {
             // TODO: these calls re-register every row after a row is created,
@@ -837,13 +952,15 @@ TDAR.autocomplete = function (TDAR) {
     };
 
     /**
-     * return an object from any autocomplete input elements inside the specified parentElem elment. This function
-     * maps every .autocomplete-ui-input  into a property of the returned object.  The property name is based on the
-     * value of the "autocompletename" attribute of the input element (or the value of the 'name' attribute, if no
-     * autocompletename attribute specified.
-     *
-     * @param parentElem
-     */
+	 * return an object from any autocomplete input elements inside the
+	 * specified parentElem elment. This function maps every
+	 * .autocomplete-ui-input into a property of the returned object. The
+	 * property name is based on the value of the "autocompletename" attribute
+	 * of the input element (or the value of the 'name' attribute, if no
+	 * autocompletename attribute specified.
+	 * 
+	 * @param parentElem
+	 */
     function _objectFromAutocompleteParent(parentElem) {
         var obj = {};
         $(parentElem).find(".ui-autocomplete-input").each(function () {
@@ -853,10 +970,19 @@ TDAR.autocomplete = function (TDAR) {
         return obj;
     }
 
-    return {
-    };
-}
 
-module.exports = {
-        TDAR.autocomplete : TDAR.autocomplete
-}
+module.exports =  {
+    applyPersonAutoComplete: _applyPersonAutoComplete,
+    evaluateAutocompleteRowAsEmpty: _evaluateAutocompleteRowAsEmpty,
+    applyKeywordAutocomplete: _applyKeywordAutocomplete,
+    applyCollectionAutocomplete: _applyCollectionAutocomplete,
+    applyResourceAutocomplete: _applyResourceAutocomplete,
+    applyInstitutionAutocomplete: _applyInstitutionAutocomplete,
+    applyComboboxAutocomplete: _applyComboboxAutocomplete,
+    objectFromAutocompleteParent: _objectFromAutocompleteParent,
+    "delegateCreator": _delegateCreator,
+    "delegateAnnotationKey": _delegateAnnotationKey,
+    "delegateKeyword": _delegateKeyword,
+    "buildRequestData": _buildRequestData,
+    "ObjectCache": ObjectCache
+};

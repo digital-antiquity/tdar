@@ -7,8 +7,9 @@ const path = require('path');
 // webpack.autoProvidejQuery();
 
 module.exports = {
+ context: __dirname,
+
   mode: 'development',
-  context: __dirname,
   devtool: 'eval-source-map',
   entry: { 
       main: './src/main/webapp/js/webpack/tdar22-entry-point.js' 
