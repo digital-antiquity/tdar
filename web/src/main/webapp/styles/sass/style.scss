@@ -134,7 +134,33 @@ header .welcome-drop a,
   font-family: "ff-tisa-web-pro", serif !important;
 }
 
+.dropdown-menu:after {
+  bottom: 100%;
+  left: 10%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
 
+.dropdown-menu-right:after {
+  left: 80% !important;
+}
+
+.dropdown-menu:after {
+  border-color: rgba(0,0,0,0);
+  border-bottom-color: white;
+  border-width: 10px;
+  margin-left: -10px;
+}
+.dropdown-menu:before {
+  border-color: rgba(0,0,0,0);
+  border-bottom-color: white;
+  border-width: 16.5px;
+  margin-left: -16.5px;
+}
 
 @media(max-width: 768px) {
   #home
