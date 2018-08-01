@@ -527,7 +527,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
             }
         }
         
-        logger.debug("Length is {}", length);
+        logger.trace("Length is {}", length);
         return length;
     }
 
@@ -539,16 +539,16 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @return
      */
     public boolean crossesDateline() {
-//        if (getObfuscatedEast() == null) {
-//            updateObfuscatedValues();
-//        }
+        if (getObfuscatedEast() == null) {
+            updateObfuscatedValues();
+        }
         return LatitudeLongitudeBox.crossesDateline(getWest(), getEast());
     }
 
     public boolean crossesPrimeMeridian() {
-//        if (getObfuscatedEast() == null) {
-//            updateObfuscatedValues();
-//        }
+        if (getObfuscatedEast() == null) {
+            updateObfuscatedValues();
+        }
         return LatitudeLongitudeBox.crossesPrimeMeridian(getWest(), getEast());
     }
     
