@@ -1,3 +1,4 @@
+
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
     "use strict";
 
@@ -41,6 +42,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           span:{ type:String},
           idname: {type:String},
           name: {type:String},
+          disabled: {type:Boolean},
           deletekey: {type: Function},
           enterkey: {type: Function},
           anykey: {type: Function},

@@ -1,21 +1,21 @@
-
-<div class="sandbox" id="sel">
+<script type="text/x-template" id="tagging-template">
+<div :class="rootClass">
     <input type="text" id="input-tags3" tabindex="-1"
-        style="display: none;"> <span
-        v-for="(value, index) in values">
+        style="display: none;"> 
+        <span v-for="(value, index) in values">
         <div class="item label" :value="value">
-            {{value.val}} <a href="#" class="remove" tabindex="-1"
+            <span>{{ getLabel(value) }} </span> <a href="#" class="remove" tabindex="-1"
                 title="Remove" @click="remove(index)">×</a>
         </div>
     </span>
-    <autocomplete :url="autocompleteUrl"
-        :suffix="autocompletesuffix" field="term" allowCreate="false"
-        :resultsuffix="resultsuffix" :deletekey="deleteLast"
+    <autocomplete :url="autocomplete_url"
+        :suffix="autocomplete_suffix" field="term"
+        :resultsuffix="result_suffix" :deletekey="deleteLast" :disabled="disabled"
         :enterkey="addEntry" :anykey="watchEntry"
         @autocompletevalueset="addAutocompleteValue" ref="input"
-        fieldname="title" allowCreate="true" idname="id" />
+        fieldname="title" :allowCreate="allow_create" idname="id" />
 </div>
-
+</script>
 
 <style>
 .sandbox {
@@ -51,6 +51,15 @@
 .sandbox .autocomplete, .item {
     display: inline-block;
 }
+
+.sandbox.disabled {
+    background: #EEE;
+}
+
+.sandbox.disabled * {
+    color: #DDD;
+}
+
 
 .sandbox .autocomplete input {
     border: none;
