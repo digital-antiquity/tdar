@@ -35,6 +35,9 @@ public class HtmlValidator {
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
             "missing </a> before <h3>",
+            "Warning: discarding unexpected part",
+            "missing </div> before <style>\n",
+            "<style> isn't allowed in <div> elements",
             "discarding unexpected </div",
             "missing </fieldset> before </div>" , 
             "missing </form> before </div>\n" , 
