@@ -9,7 +9,7 @@
 <h1>Explore ${siteAcronym}</h1>
 
 <h2>Browse Resources by Title</h2>
-<ul class="inline">
+<ul class="list-inline">
     <#list alphabet as letter>
 	     <@searchFor "groups[0].startingLetter" letter letter "li"/>
 	 </#list>
@@ -20,10 +20,10 @@
 <h2>Resources by ${siteAcronym} Year</h2>
 
 <div>
-    <ul class="inline">
+    <ul class="list-inline">
         <#list scholarData?sort_by("key") as key>
             <#assign tdarYear = key.key?substring(3) />
-            <li class="bullet"><a href="<@s.url value="/scholar/scholar?year=${key.key?c}"/>">${key.key?c}</a></li>
+            <li class="bullet list-inline-item"><a href="<@s.url value="/scholar/scholar?year=${key.key?c}"/>">${key.key?c}</a></li>
         </#list>
 
     </ul>
@@ -35,9 +35,9 @@
 <h2>Resources by Type</h2>
 
 <div>
-    <ul class="inline">
+    <ul class="list-inline">
         <#list resourceTypes as rt>
-        <li><a href="/${rt.urlNamespace}">${rt.plural}</a></li>
+        <li class="list-inline-item"><a href="/${rt.urlNamespace}">${rt.plural}</a></li>
         </#list>
     </ul>
     <br/>
@@ -49,7 +49,7 @@
 </div>
 
 <div class="row">
-    <div class="span12">
+    <div class="col-12">
          <@commonr.resourceBarGraph /> 
     </div>
 </div>
@@ -62,20 +62,20 @@
 
 
 <div class="row">
-    <div class="span6">
+    <div class="col">
         <h2>Most Popular in the Past Week</h2>
         <ul>
             <#list featuredResources as resource>
-                <li><a href="<@s.url value="${resource.detailUrl}"/>">${resource.title}</a></li>
+                <li class="list-inline-item"><a href="<@s.url value="${resource.detailUrl}"/>">${resource.title}</a></li>
             </#list>
         </ul>
     </div>
-    <div class="span6">
+    <div class="col">
         <h2>Recently Added Resources</h2>
         <ul>
             <#list recentResources as resource>
                 <#if resource??>
-                    <li><a href="<@s.url value="${resource.detailUrl}"/>">${resource.title}</a></li>
+                    <li class="list-inline-item"><a href="<@s.url value="${resource.detailUrl}"/>">${resource.title}</a></li>
                 </#if>
             </#list>
         </ul>
@@ -84,21 +84,21 @@
 
 
 <h2>Browse by Investigation Type</h2>
-<ul class="inline">
+<ul class="list-inline">
     <#list investigationTypes?sort as keyword>
         <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
 <h2>Browse by Site Type</h2>
-<ul class="inline">
+<ul class="list-inline">
     <#list siteTypeKeywords?sort as keyword>
         <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
 </ul>
 
 <h2>Browse by ${config.culturalTermsLabel!"Culture"}</h2>
-<ul class="inline">
+<ul class="list-inline">
     <#list cultureKeywords?sort as keyword>
         <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
@@ -106,7 +106,7 @@
 
 
 <h2>Browse by Material Type</h2>
-<ul class="inline">
+<ul class="list-inline">
     <#list materialTypes?sort as keyword>
         <@search.searchFor keyword=keyword asList=true showOccurrence=true />
      </#list>
@@ -117,7 +117,7 @@
         <#if term?is_number>
             <#local term_ = term?c/>
         </#if>
-    <${wrappingTag} class="bullet"><a href="<@s.url value="/search/results?${queryParam}=${term_}&explore=true"/>">${displayTerm}
+    <${wrappingTag} class="bullet list-inline-item"><a href="<@s.url value="/search/results?${queryParam}=${term_}&explore=true"/>">${displayTerm}
         <#if occurrence?has_content && occurrence != 0 >(${occurrence?c})</#if>
     </a></${wrappingTag}>
     </#macro>

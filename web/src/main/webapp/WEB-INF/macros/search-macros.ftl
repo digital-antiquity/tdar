@@ -136,7 +136,7 @@
     </#macro>
 
     <#macro paginationLink startRecord path linkText>
-    <span class="paginationLink">
+    <span class="page-link">
         <@searchLink path linkText>
         <#if startRecord != 0>
             <@s.param name="startRecord" value="${startRecord?c}" />
@@ -155,48 +155,35 @@
     </#macro>
 
     <#macro pagination path="results" helper=paginationHelper>
-    <div id="divPaginationSection" class="">
+    <nav id="divPaginationSection" class="">
         <#if (helper.totalNumberOfItems >0)>
-            <table class="pagin">
-                <tr>
+                        <ul class="pagination">
                     <#if helper.hasPrevious()>
-                        <td class="prev">
+                        <li class="page-item">
                             <@paginationLink startRecord=helper.previousPageStartRecord path=path linkText="Previous" />
-                        </td>
                     </#if>
-                    <td class="page">
-                        <ul>
                             <#if (0 < helper.minimumPageNumber) >
-                                <li>
+                                <li class="page-item">
                                     <@paginationLink startRecord=0 path=path linkText="First" />
                                 </li>
-                                <li>...</li>
+                                <li class="page-item disabled ">...</li>
                             </#if>
                             <#list helper.minimumPageNumber..helper.maximumPageNumber as i>
-                                <li>
-                                    <#if i == helper.currentPage>
-                                        <span class="currentResultPage">${i + 1}</span>
-                                    <#else>
-                                        <@paginationLink startRecord=(i * helper.itemsPerPage) path=path linkText=(i + 1) />
-                                    </#if>
+                                <li class="page-item <#if i == helper.currentPage>active</#if>">
+                                    <@paginationLink startRecord=(i * helper.itemsPerPage) path=path linkText=(i + 1) />
                                 </li>
                             </#list>
                             <#if (helper.maximumPageNumber < (helper.pageCount - 1))>
-                                <li>...</li>
-                                <li>
+                                <li class="page-item disabled"><span class="page-link">...</li>
+                                <li class="page-item">
                                     <@paginationLink startRecord=helper.lastPage path=path linkText="Last" />
                                 </li>
                             </#if>
-                        </ul>
-                    </td>
                     <#if (helper.hasNext()) >
-                        <td class="next">
                             <@paginationLink startRecord=helper.nextPageStartRecord path=path linkText="Next" />
-                        </td>
                     </#if>
-                </tr>
-            </table>
-        </div>
+            </ul>
+        </nav>
         </#if>
     </#macro>
 
@@ -343,25 +330,19 @@
 
             <h2 class="totalRecords">Search Options</h2>
             <ul class="tools media-list">
-                <li class="media"><a href="<@refineUrl/>" rel="noindex"><i class="search-magnify-icon-red"></i> Refine your search &raquo;</a></li>
+                <li class="media">
+                    <i class="mr-3 search-magnify-icon-red"></i> 
+                    <div class="media-body">
 
-                <#if (contextualSearch!false)>
-                    <#if projectId??>
-                        <li class="media"><@s.a href="/project/${projectId?c}"><i class="icon-project icon-red"></i> Return to project page &raquo;</@s.a></li>
-                    <#else>
-                        <li class="media"><@s.a href="/collection/${collectionId?c}"><i class="icon-collection icon-red"></i> Return To collection
-                            page &raquo;</@s.a></li>
-                    </#if>
-                </#if>
+                <a href="<@refineUrl/>" rel="noindex">Refine your search &raquo;</a>
+                </div>
+                </li>
 
                 <!--        <li>Subscribe via &raquo;
                 <a class="subscribe"  href="${rssUrl}">RSS</a>
             </li> -->
             </ul>
 
-        </div>
-        <div class="visible-phone">
-            <a href="<@refineUrl />">Refine your search &raquo;</a>
         </div>
         </#if>
 
@@ -483,7 +464,7 @@
     
 <#-- Create a search-link for a keyword -->
     <#macro searchFor keyword=keyword asList=true showOccurrence=false>
-        <#if asList><li class="bullet"></#if>
+        <#if asList><li class="bullet list-inline-item"></#if>
             <a href="<@s.url value="${keyword.detailUrl}" />">${keyword.label}
             <#if showOccurrence && keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
             </a>

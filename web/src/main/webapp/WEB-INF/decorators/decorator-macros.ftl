@@ -14,7 +14,7 @@
                         </button>
                     </div>
 
-                    <form class="form-inline mt-2">
+                    <form class="form-inline mt-2" action="/search/results" method="GET">
                         <div class="input-group">
                             <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
                             <span class="input-group-append">
@@ -45,7 +45,7 @@
                             <a href = "#" class="tdarButton btn btn-sm topRight">Upload</a>
                         </li>
                         <li class="nav-item">
-                            <form class="form-inline">
+                            <form class="form-inline" action="/search/results" method="GET">
                                 <div class="input-group">
                                     <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
                                     <span class="input-group-append">

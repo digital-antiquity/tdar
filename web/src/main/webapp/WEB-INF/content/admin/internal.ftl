@@ -84,7 +84,7 @@
 
 <#if administrator>
 <div class="row">
-    <div class="span4">
+    <div class="col">
     
     <h4>Rebuild Caches</h4>
     <form action="/admin/rebuildCaches" method="POST">
@@ -98,7 +98,7 @@
     
     
     </div>
-    <div class="span4">
+    <div class="col">
     
     <h4>Manually run weekly tasks</h4>
     <form action="/admin/runWeekly" method="POST">

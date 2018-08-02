@@ -42,24 +42,36 @@
 
             <h2 class="totalRecords">Search Options</h2>
             <ul class="tools media-list">
-                <li class="media"><a href="<@search.refineUrl/>" rel="noindex">
-                <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_find"></use></svg>
-                 Refine your search &raquo;</a></li>
+                <li class="media">
+                    <i class="mr-3 fas fa-search red"></i> 
+                    <div class="media-body">
+
+                <a href="<@search.refineUrl/>" rel="noindex">Refine your search &raquo;</a>
+                </div>
+                </li>
 
                 <#if (contextualSearch!false)>
                     <#if projectId??>
-                        <li class="media"><@s.a href="/project/${projectId?c}">
-                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
-                            Return to project page &raquo;</@s.a></li>
+                        <li class="media">
+                        <i class="mr-3 icon-project icon-red"></i>
+                        <div class="media-body">
+                        <@s.a href="/project/${projectId?c}">Return to project page &raquo;</@s.a>
+                        </div>
+                        </li>
                     <#else>
-                        <li class="media"><@s.a href="/collection/${collectionId?c}">
-                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
-                            Return To collection page &raquo;</@s.a></li>
+                        <li class="media">
+                        <i class="mr-3 icon-collection icon-red"></i>
+                        <div class="media-body">
+
+                        <@s.a href="/collection/${collectionId?c}"> Return To collection
+                            page &raquo;</@s.a>
+                        </div>
+                        </li>
                     </#if>
                 </#if>
-
-                <li class="media">
-                <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_download"></use></svg>
+                        <li class="media">
+                <svg class="mr-3 svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_download"></use></svg>
+                    <div class="media-body">
                 <span>Download these results &raquo;
                     <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
                         <@search.searchLink "download" "to Excel" />
@@ -70,11 +82,13 @@
                     <#else>
                         Login
                     </#if></span>
+                    </div>
                     </li>
             
                 <#if editor>        
                     <li class="media">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                    <svg class="mr-3 svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                    <div class="media-body">
                     <span>Save these results &raquo;
                         <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
                             
@@ -86,11 +100,19 @@
                         <#else>
                             Login
                         </#if></span>
+                        </div>
                     </li>
                 </#if>
+                <li class="media">
+                    <i class="mr-3 fas fa-sort-alpha-down"></i>
+                    <div class="media-body">
+                        <#if !hideFacetsAndSort>
+                            <@search.sortFields />
+                        </#if>
+                    </div>
+                    </li>
             </ul>
                 <@rlist.displayWidget />
-                
             <form>
             <#--
             <@search.facetBy facetlist=collectionTypeFacets currentValues=collectionTypes label="Collection Type(s)" facetParam="collectionTypes" />-->
@@ -101,49 +123,25 @@
             <@search.facetBy facetlist=fileAccessFacets currentValues=fileAccess label="File Access" facetParam="fileAccess" />
             </form>
     </div>
-    <div class="visible-phone">
-        <a href="<@search.refineUrl />">Refine your search &raquo;</a>
-    </div>
     </#if>
-
-        <#if (referrer?? && referrer == 'TAG')>
-        <div class="notice">
-            <b>Welcome TAG Users</b><br>
-            If you'd like to perform an integration:
-            <ol>
-                <#if !sessionData?? || !sessionData.authenticated>
-                    <#assign returnurl><@s.url value="/search/search?url=" includeParams="all" /></#assign>
-                    <li><a href="<@s.url value="/login"/>?url=${returnurl?url}">Login or Register</a></li>
-                </#if>
-                <li>Bookmark datasets you'd like to integrate</li>
-                <li>Visit your workspace to begin the integration process</li>
-            </ol>
-            <a href="${config.integrationDocumentationUrl}">visit ${siteAcronym} documentation for more details</a>
-        </div>
-        </#if>
 
     <div id="divResultsSortControl">
         <div class="row">
-            <div class="span3">
+            <div class="col-9">
                 <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
             </div>
-            <div class="span6 form-inline">
-                <div class="pull-right">
-                    <div class="control-group"></div>
+            <div class="col-3">
                     <label>Records Per Page
                         <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
                         list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
                     </label>
-                    <#if !hideFacetsAndSort>
-                        <@search.sortFields />
-                    </#if>
-                </div>
+
             </div>
         </div>
     </div>
 
     <div class="tdarresults">
-                <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+                <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="b" orientation=orientation mapPosition="top" mapHeight="450"/>
         
 
     </div>
