@@ -63,8 +63,17 @@
                 <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
                     <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
                     <input type="hidden" name="_tdar.searchType" value="simple">
-                ${(page.properties["div.divSearchContext"])!""}
-
+                    <div id="divSearchContext">
+                        <#if namespace?contains("collection") >
+                            <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
+                            <label for="cbctxid">Search within this collection</label>
+                        </#if>
+                        <#if namespace?contains("project") >
+                            <input id="cbctxid" type="checkbox" name="projectId" value="${id?c}">
+                            <label for="cbctxid">Search within this project</label>
+                        </#if>
+                        <a href="#" onClick="$('#advancedsearch').show(); return false;">More Options</a>
+                    </div>
                 </form>
 
             </#if>

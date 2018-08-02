@@ -2,6 +2,7 @@
     <form onSubmit="return false" action="/search/results" ref="form">
         <div class="row">
             <div class="span6 offset6 advancedSearchbox" >
+    <a href="#" onClick="$('#advancedsearch').hide();return false;" class='pull-right'>close <b>X</b></a>
                 <h5>More search options</h5>
                 <div class="control-group condensed">
                     <label class="control-label">What:</label>
@@ -99,13 +100,13 @@
  <script>
 $(document).ready(function() {
 //    $("#advancedsearch").show();
-$("#searchheader, #advancedsearch").mouseover(function() {
+/*     $("#searchheader, #advancedsearch").mouseover(function() {
         $("#advancedsearch").show();
-    });
-    $("#searchheader, #advancedsearch").mouseout(function() {
+    }); */
+/*     $("#searchheader, #advancedsearch").mouseout(function() {
         $("#advancedsearch").hide();
     });
-/*
+ *//*
  */
 });
             
