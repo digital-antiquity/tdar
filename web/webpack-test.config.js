@@ -5,49 +5,27 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 // webpack.autoProvidejQuery();
 module.exports = {
-        mode: 'development',
+    mode: 'development',
     context: __dirname,
     //devtool: 'eval-source-map',
-  entry: { 
+    entry: { 
      // jquery : ['jquery'],
-      main: './src/main/webapp/dist/main.bundle.js' 
-  },
-  output: {
+      main: './src/main/webapp/tdar-entry-point.js' 
+    },
+    output: {
       path: path.resolve(__dirname, "./src/main/webapp/dist/"),
       filename: '[name].bundle.js',
       chunkFilename: "[id].bundle.js"
-  },
+    },
   
-  // externals: ['axios'], this is a way to use an extenral version of jquery, whatever is referecned here should probably be a 'dev' dependency too
-  module: {
-    rules: [
-        /*{
-            test: require.resolve("jquery-validation"),
-            use: "imports-loader?$=jquery,this=>window,define=>false"
-        }*/
-    ]
-  }
-  ,
-  /**
-  optimization: {
-    runtimeChunk: false,
-
-    splitChunks: {
-        chunks: a
-      cacheGroups: {
-        //default: false,
-        commons: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendor_app',
-          chunks: 'all',
-          minChunks: 2
-        }
-      }
+    module: {
+        rules: []
     }
-  },**/
+  ,
   
   plugins: [
-     new BundleAnalyzerPlugin(),
+      /**Don't need to use the analyzer for tests**/
+     //new BundleAnalyzerPlugin(),
      new webpack.ProvidePlugin({
          $: "jquery",
          $j : "jquery",
@@ -67,9 +45,11 @@ module.exports = {
   // this seemed to make a difference: 
   // https://github.com/webpack/webpack.js.org/issues/63
   resolve: {
-        // alias: {
-        //     jquery: "jquery/dist/jquery"
-        // }
+         alias: {
+           //  jquery: "jquery/dist/jquery"
+             JS : path.resolve(__dirname,'src/main/webapp/js/')
+             
+         }
   }
 };
 

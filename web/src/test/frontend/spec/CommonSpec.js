@@ -1,4 +1,7 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
+import TDAR from "JS/tdar.core";
+import $ from "jquery";
+
 
 describe("CommonSpec.js: edit page tests", function () {
     "use strict";

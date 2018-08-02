@@ -842,7 +842,7 @@ jQuery.extend({
      * @param type
      * @private
      */
-    function _switchLabel(field, type) {
+    var _switchLabel = function(field, type) {
         var $field =  $(field);
         var $fieldId = "#" + $(field).attr("id");
         var label =  $fieldId + '-label';
@@ -863,7 +863,7 @@ jQuery.extend({
      * @param elem
      * @private
      */
-    function _coordinatesCheckboxClicked(elem) {
+    var _coordinatesCheckboxClicked = function(elem) {
         $('#explicitCoordinatesDiv').toggle(elem.checked);
     }
 
@@ -880,7 +880,7 @@ jQuery.extend({
      * @param num
      * @returns {string}
      */
-    function _formatNumber(num) {
+    var _formatNumber = function(num) {
         var numparts = Math.floor(num).toString().split('.');
         var r = num % 1;
         var str = numparts[0].split('').reverse().join('').replace(/(\d{3})\B/g, '$1,').split('').reverse().join('');
@@ -901,7 +901,7 @@ jQuery.extend({
      * @param si true if description should be in SI units (e.g. kilobyte, megabyte) vs. IEC (e.g. kibibyte, mebibyte)
      * @returns {string} size as human readable equivalent of specified bytecount
      */
-    function _humanFileSize(bytes) {
+    var _humanFileSize = function(bytes) {
         var thresh = 1000;
         if (bytes < thresh) {
             return bytes + ' B';
@@ -924,7 +924,7 @@ jQuery.extend({
      * big lists, and binding of analytics events.
      * @private
      */ 
-    function _initImageGallery() {
+    var _initImageGallery = function() {
         //init bootstrap image gallery (if found)
         $(".image-carousel").each(function(idx, divGallery) {
             //for big galleries, defer the loading of thumbnails that can't be seen yet
@@ -954,7 +954,7 @@ jQuery.extend({
      *
      *
      */
-    function _checkWindowSize() {
+    var _checkWindowSize = function() {
         var width = $(window).width()
         var new_class = _determineResponsiveClass(width);
         $(document.body).removeClass('responsive-large-desktop responsive-desktop responsive-tablet responsive-phone responsive-phone-portrait').addClass(new_class);
@@ -964,7 +964,7 @@ jQuery.extend({
      * Main entrypoint - TDAR.main() will call this function on every pageload.
      * @private
      */
-    function _init() {
+    var _init = function(){
         $(function() {
             $(window).resize(_checkWindowSize).resize();
             _sessionTimeoutWarning();
