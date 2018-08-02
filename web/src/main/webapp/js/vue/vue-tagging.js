@@ -31,7 +31,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     type:Boolean,
                     default: true
                 },
-                disabled: {
+                disabled_initially: {
                     type:Boolean,
                     default: false
                 },
@@ -42,10 +42,13 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
             },
             data: function() {
                 return {
-                    
+                    disabled: false
                 }
             },
         mounted: function() {
+            if (this.disabled_initially) {
+                this.disabled = true;
+            }
         },
         computed: {
             rootClass: function() {
@@ -103,13 +106,21 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 }
             },
             reset: function() {
-                Vue.set(this, "values", []);
+                this.values.length = 0;
             },
-            setValues: function(values) {
-                console.log("setting values to:", values);
+            disable: function() {
+                this.disabled = true;
+                Vue.set(this, "disabled", true);
+            },
+            enable: function() {
+                this.disabled = false;
+                Vue.set(this, "disabled", false);
+            },
+            setValues: function(newvalues) {
+                console.log("setting values to:", newvalues);
                 this.reset();
-                for (var i =0; i < values.length; i++) {
-                    this.values.push(values[i]);
+                for (var i =0; i < newvalues.length; i++) {
+                    this.values.push(newvalues[i]);
                 }
             },
             watchEntry: function() {

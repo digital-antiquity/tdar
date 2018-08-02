@@ -18,7 +18,7 @@
         <h5>Culture Keywords</h5>
         <b>inherit from project <input type="checkbox" v-model="inhertCulture" /></b>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="culture" 
-            name_field="label" autocomplete_suffix="keywordType=CultureKeyord" 
+            name_field="label" autocomplete_suffix="keywordType=CultureKeyword" 
             result_suffix="items"  />
     </div>
     <div>
@@ -45,8 +45,8 @@
     <div>
         <h5>Investigation Type</h5>
         <b>inherit from project <input type="checkbox" v-model="inhertInvestigationType" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="investigartionType"
-            name_field="label" autocomplete_suffix="keywordType=InvestigartionType" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="investigationType"
+            name_field="label" autocomplete_suffix="keywordType=InvestigationType" 
             result_suffix="items"  />
     </div>
     <div>
@@ -82,49 +82,36 @@ $(document).ready(function() {
                 project: {}},
                 watch: {
                     inhertInvestigationType: function(o, b) {
-                        if (this.project.activeInvestigationTypes!= undefined && o == true) {
-                            this.$refs.investigartionType.setValues(this.project.activeInvestigationTypes); 
-                            this.$refs.investigartionType.disabled = true;
-                        }
+                        this.inherit(o,b,'investigationType', 'activeInvestigationTypes');
                     },
                     inhertSiteName: function(o, b) {
-                        if (this.project.activeSiteNameKeywords != undefined && o == true)  {
-                            this.$refs.siteName.setValues(this.project.activeSiteNameKeywords); 
-                            this.$refs.siteName.disabled = true;
-                        }
+                        this.inherit(o,b,'siteName', 'activeSiteNameKeywords');
                     },
                     inhertSiteType: function(o, b) {
-                        if (this.project.activeSiteTypeKeywords != undefined && o == true) {
-                            this.$refs.siteType.setValues(this.project.activeSiteTypeKeywords); 
-                            this.$refs.siteType.disabled = true;
-                        }
+                        this.inherit(o,b,'siteType', 'activeSiteTypeKeywords');
                     },
                     inhertTemporal: function(o, b) {
-                        if (this.project.activeTemporalKeywords != undefined && o == true) {
-                            this.$refs.temporal.setValues(this.project.activeTemporalKeywords);
-                            this.$refs.temporal.disabled = true;
-                        }
+                        this.inherit(o,b,'temporal', 'activeTemporalKeywords');
                     },
                     inhertCulture: function(o, b) {
-                        if (this.project.activeCultureKeywords != undefined && o == true) {
-                            this.$refs.culture.setValues(this.project.activeCultureKeywords); 
-                            this.$refs.culture.disabled = true;
-                        }
+                        this.inherit(o,b,'culture', 'activeCultureKeywords');
                     },
                     inhertSpatial: function(o, b) {
-                        if (this.project.activeGeographicKeywords != undefined && o == true) {
-                            this.$refs.geographic.setValues(this.project.activeGeographicKeywords); 
-                            this.$refs.geographic.disabled = true;
-                        }
+                        this.inherit(o,b,'geographic', 'activeGeographicKeywords');
                     },
                     inhertOther: function(o, b) {
-                        if (this.project.activeOtherKeywords != undefined && o == true) {
-                            this.$refs.other.setValues(this.project.activeOtherKeywords); 
-                            this.$refs.other.disabled = true;
-                        }
-                    }
+                        this.inherit(o,b,'other', 'activeOtherKeywords');
+                    },
                 },
                 methods: {
+                    inherit: function(o, b, ref, vals) {
+                        if (this.project[vals] != undefined && o == true) {
+                            this.$refs[ref].setValues(this.project[vals]); 
+                            this.$refs[ref].disable();
+                        } else {
+                            this.$refs[ref].enable();
+                        }
+                    },
                     selectProject: function(val) {
                         console.log("project:", val);
                         if (val == undefined) {
