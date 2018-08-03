@@ -70,7 +70,7 @@
                             <a href="" class="nav-link align-middle tdarNavItem">News</a>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <div class="dropdown">
+                            <div class="dropdown tdarDropdown">
                                 <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About <svg class="svgicon svg-icons_chevron nav-chevron">
                                     <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -93,7 +93,7 @@
                             </div>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <div class="dropdown">
+                            <div class="dropdown tdarDropdown">
                                 <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                   Why tDAR? <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg>
                                 </button>
@@ -117,7 +117,7 @@
                           </div>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <div class="dropdown">
+                            <div class="dropdown tdarDropdown">
                                 <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                   Using tDAR <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg>
                                   
