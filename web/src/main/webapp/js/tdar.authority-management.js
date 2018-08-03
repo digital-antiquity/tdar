@@ -3,6 +3,10 @@
  * @type {{}}
  */
 
+const core = require("./tdar.core");
+const datatable = require("./tdar.datatable");
+const common = require("./tdar.common");
+
     var searchControls;
     var selEntityType;
     var dataTable = null;
@@ -11,7 +15,7 @@
     var g_settingsMap = {
         person: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: TDAR.uri() + 'api/lookup/person',
+            sAjaxSource: core.uri() + 'api/lookup/person',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -29,7 +33,7 @@
         },
         institution: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: TDAR.uri() + 'api/lookup/institution',
+            sAjaxSource: core.uri() + 'api/lookup/institution',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -50,7 +54,7 @@
         },
         keyword: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: TDAR.uri() + 'api/lookup/keyword',
+            sAjaxSource: core.uri() + 'api/lookup/keyword',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -81,7 +85,7 @@
         var lookupType = selEntityType.data('lookupType');
         var settings = g_settingsMap[lookupType];
         settings.rowSelectionCallback = _renderSelectedDupes;
-        dataTable = TDAR.datatable.registerLookupDataTable(settings);
+        dataTable = datatable.registerLookupDataTable(settings);
     }
 
     /**
@@ -137,7 +141,7 @@
      * @returns {{minLookupLength: number}}
      * @private
      */
-    _getPersonSearchData = function() {
+    var _getPersonSearchData = function() {
         var data = {minLookupLength: 0};
         $.each($(':text', '#divPersonSearchControl'), function (ignored, txtElem) {
             data[txtElem.name] = $(txtElem).val();
@@ -194,7 +198,7 @@
         if (selEntityType != undefined) {
             searchControls = $('.searchControl');
             selEntityType.change(_updateSearchControl).change();
-            TDAR.common.applyWatermarks(document);
+            common.applyWatermarks(document);
             $('span.button').button().click(_clearDupeList);
         }
     }

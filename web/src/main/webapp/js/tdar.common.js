@@ -3,7 +3,13 @@
  */
 
 const core = require("./tdar.core.js");
+const common = require("./tdar.common.js");
 const tmpl = require('blueimp-tmpl');//require('script-loader!blueimp-tmpl/js/tmpl.js')
+const fileupload = require("./tdar.upload");
+const repeatrow = require("./tdar.repeatrow");
+const autocomplete = require("./tdar.autocomplete");
+const contexthelp = require("./tdar.contexthelp");
+const inheritance = require("./tdar.inheritance");
 
 /*
  * $Id$
@@ -65,7 +71,7 @@ var _setAdhocTarget = function (elem, selector) {
     var adhocTarget = $(elem).closest(_selector);
     $('body').data("adhocTarget", adhocTarget);
     //expose target for use by child window
-    TDAR.common.adhocTarget = adhocTarget;
+    common.adhocTarget = adhocTarget;
     //return false;
 }
 
@@ -88,7 +94,7 @@ var _populateTarget = function (obj) {
     $('input[type=hidden]', adhocTarget).val(obj.id);
     $('input[type=text]', adhocTarget).val(obj.title);
     $body.removeData("adhocTarget");
-    TDAR.common.adhocTarget = null;
+    common.adhocTarget = null;
 }
 
 // FIXME: refactor.  needs better name and it looks brittle
@@ -210,7 +216,7 @@ var _initEditPage = function (form, props) {
         //init fileupload
         var id = $('input[name=id]').val();
         if (props.ableToUpload && props.multipleUpload) {
-            TDAR.fileupload.registerUpload({
+            fileupload.registerUpload({
                 informationResourceId: id,
                 acceptFileTypes: props.acceptFileTypes,
                 formSelector: props.formSelector,
@@ -239,7 +245,7 @@ var _initEditPage = function (form, props) {
     });
 
     //init repeatrows
-    TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+    repeatrow.registerRepeatable(".repeatLastRow");
 
     //init person/institution buttons
     $(".creatorProxyTable").on("click", '.creator-toggle-button', function (event) {
@@ -261,28 +267,28 @@ var _initEditPage = function (form, props) {
     });
 
     //wire up autocompletes
-    TDAR.autocomplete.delegateCreator("#authorshipTable", false, true);
-    TDAR.autocomplete.delegateCreator("#creditTable", false, true);
-    TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
-    TDAR.autocomplete.delegateCreator("#divSubmitter", true, false);
-    TDAR.autocomplete.delegateCreator("#copyrightHolderTable", false, true);
-    TDAR.autocomplete.delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
-    TDAR.autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
-    TDAR.autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
-    TDAR.autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
-    TDAR.autocomplete.delegateKeyword("#uncontrolledMaterialKeywordsRepeatable", "material", "MaterialKeyword");
-    TDAR.autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
-    TDAR.autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
-    TDAR.autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
-    TDAR.autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
-    TDAR.autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
+    autocomplete.delegateCreator("#authorshipTable", false, true);
+    autocomplete.delegateCreator("#creditTable", false, true);
+    autocomplete.delegateCreator("#divAccessRights", true, false);
+    autocomplete.delegateCreator("#divSubmitter", true, false);
+    autocomplete.delegateCreator("#copyrightHolderTable", false, true);
+    autocomplete.delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
+    autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
+    autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
+    autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+    autocomplete.delegateKeyword("#uncontrolledMaterialKeywordsRepeatable", "material", "MaterialKeyword");
+    autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
+    autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
+    autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
+    autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
+    autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
     $('#resourceCollectionTable').on("focus", ".collectionAutoComplete", function () {
-        TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
+        autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
     });
 
     $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
     	console.debug("Applying collection autocomplete to ",$(this));
-        TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
+        autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
     });
 
     // prevent "enter" from submitting
@@ -305,7 +311,7 @@ var _initEditPage = function (form, props) {
         });
     });
 
-    TDAR.contexthelp.initializeTooltipContent(form);
+    contexthelp.initializeTooltipContent(form);
     _applyWatermarks(form);
 
     // prevent "enter" from submitting
@@ -369,7 +375,7 @@ var _initEditPage = function (form, props) {
     // delete/clear .repeat-row element and fire event
     $('#copyrightHolderTable').on("click", ".row-clear", function (e) {
         var rowElem = $(this).parents(".repeat-row")[0];
-        TDAR.repeatrow.deleteRow(rowElem);
+        repeatrow.deleteRow(rowElem);
     });
 
     _applyTreeviews();
@@ -380,7 +386,7 @@ var _initEditPage = function (form, props) {
         var $row = $select.closest('.controls-row');
         $('.view-project', $row).remove();
         if ($select.val().length > 0 && $select.val() !== "-1") {
-            var href = TDAR.uri('project/' + $select.val());
+            var href = core.uri('project/' + $select.val());
             var $button = '<a class="view-project btn btn-small" target="_project" href="' + href + '">View project in new window</a>';
             $row.append($button);
         }
@@ -391,7 +397,7 @@ var _initEditPage = function (form, props) {
 
 
     if (props.includeInheritance) {
-        TDAR.inheritance.applyInheritance(props.formSelector);
+        inheritance.applyInheritance(props.formSelector);
     }
 
 
@@ -406,7 +412,7 @@ var _initEditPage = function (form, props) {
         _updateReminderVisibility();
     });
 
-    TDAR.inheritance.registerClearSectionButtons(form);
+    inheritance.registerClearSectionButtons(form);
     _initFormNavigate(form);
 };
 
@@ -447,7 +453,7 @@ var _initializeView = function () {
 var _initRightsPage = function(){
     $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
     	console.debug("Applying collection autocomplete to ",$(this));
-        TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_SHARE"});
+        autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_SHARE"});
     });
 }
 
@@ -648,7 +654,7 @@ var _sessionTimeoutWarning = function () {
         if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
             $("#timeoutDialog").html("<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
         } else {
-            setTimeout(TDAR.common.sessionTimeoutWarning, 60000);
+            setTimeout(common.sessionTimeoutWarning, 60000);
         }
     }
 }
@@ -787,7 +793,7 @@ var _changeSubcategory = function (categoryIdSelect, subCategoryIdSelect) {
     var $subCategoryIdSelect = $(subCategoryIdSelect);
     $subCategoryIdSelect.empty();
     $categoryIdSelect.siblings(".waitingSpinner").show();
-    $.get(TDAR.uri() + "api/resource/column-metadata-subcategories", {
+    $.get(core.uri() + "api/resource/column-metadata-subcategories", {
         "categoryVariableId": $categoryIdSelect.val()
     }, function (data, textStatus) {
         var result = "";

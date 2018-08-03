@@ -3,8 +3,7 @@
  */
 
 const TDAR = require("./tdar.core.js");
-import "jquery";
-import "jquery-ui";
+//import "jquery-ui";
 
 "use strict";
 

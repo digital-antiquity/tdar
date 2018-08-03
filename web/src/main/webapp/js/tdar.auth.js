@@ -1,7 +1,3 @@
-import "jquery";
-
-    'use strict';
-
     var _initLogin = function () {
         $('#loginForm').validate({
             messages: {

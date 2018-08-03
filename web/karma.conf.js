@@ -60,7 +60,6 @@ module.exports = function(config) {
                
                 // specs
                 //"src/test/frontend/spec/**/*.js",
-               //"src/test/frontend/spec/AdvancedSearchSpec.js",
                 "src/test/frontend/spec/CommonSpec.js",
                 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test

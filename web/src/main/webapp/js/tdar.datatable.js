@@ -1,7 +1,8 @@
-TDAR.namespace("datatable");
 
 const core = require("./tdar.core");
 const common = require("./tdar.common");
+
+core.namespace("datatable");
 
     /**
      * Register a new dtatable control. By default, the datatable populates with resources editable by the user. Most of the initialization options required by

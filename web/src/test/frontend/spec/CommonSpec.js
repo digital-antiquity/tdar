@@ -3,6 +3,8 @@
 //import TDAR from "JS/tdar.core";
 //import "jquery";
 
+const TDAR = require("JS/tdar.master");
+
 
 describe("CommonSpec.js: edit page tests", function () {
     "use strict";

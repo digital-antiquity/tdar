@@ -21,7 +21,7 @@ TDAR.ontologyMapping = require("./tdar.ontology-mapping");
 TDAR.pricing         = require("./tdar.pricing");
 TDAR.repeatrow       = require("./tdar.repeatrow");
 TDAR.sensoryData     = require("./tdar.sensorydata");
-
+TDAR.inheritance     = require("./tdar.inheritance");
 
 require("./tdar.messages_en");
 

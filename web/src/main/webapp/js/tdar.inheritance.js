@@ -1,6 +1,3 @@
-TDAR.inheritance = (function () {
-    "use strict";
-
     /*
      * DOWNWARD INHERITANCE SUPPORT
      */
@@ -8,6 +5,12 @@ TDAR.inheritance = (function () {
     var TYPE_PERSON = "PERSON";
     var TYPE_INSTITUTION = "INSTITUTION";
     var select2 = false;
+    
+    const core = require("./tdar.core");
+    const validate = require("./tdar.validate");
+    const common = require("./tdar.common");
+    const repeatrow = require("./tdar.repeatrow");
+    
     /**
      * convenience function for $.populate()
      *
@@ -507,7 +510,7 @@ TDAR.inheritance = (function () {
             var $sel = $(this);
             if ($sel.val() !== '' && $sel.val() > 0) {
                 $.ajax({
-                    url: TDAR.uri() + "project/json/" + $sel.val() ,
+                    url: core.uri() + "project/json/" + $sel.val() ,
                     dataType: "jsonp",
                     success: _projectChangedCallback,
                     error: function (msg) {
@@ -620,7 +623,7 @@ TDAR.inheritance = (function () {
                     _enableSection($section);
                     $section.find(".coverageTypeSelect").each(function (i, elem) {
                     	//FIXME: required?
-                        TDAR.validate.prepareDateFields(elem);
+                        validate.prepareDateFields(elem);
                     });
                 }
 
@@ -882,7 +885,7 @@ TDAR.inheritance = (function () {
         var labelText = "Inherit values from parent project";
         var selectedProjectName = "Select a project above to enable inheritance";
         if (jsonid > 0) {
-            labelText = 'Inherit values from parent project "' + TDAR.ellipsify(projectJson.title, 60) + '"';
+            labelText = 'Inherit values from parent project "' + core.ellipsify(projectJson.title, 60) + '"';
             selectedProjectName = "Inherit metadata from " + projectJson.title;
         }
 
@@ -1044,7 +1047,7 @@ TDAR.inheritance = (function () {
         var $firstRow = $('.repeat-row', repeatableSelector);
         _resetIndexedAttributes($firstRow);
         for (var i = 0; i < newSize - 1; i++) {
-            TDAR.repeatrow.cloneSection($('.repeat-row:last', repeatableSelector)[0]);
+            repeatrow.cloneSection($('.repeat-row:last', repeatableSelector)[0]);
         }
     };
 
@@ -1121,7 +1124,7 @@ TDAR.inheritance = (function () {
                     _options.inheritSectionCallback();
                 } else {
                     //not safe!  ask the user for confirmation
-                    _confirm("Inheriting from '" + TDAR.common.htmlEncode(TDAR.inheritance.project.title) + "' will overwrite existing values. Continue?", function () {
+                    _confirm("Inheriting from '" + common.htmlEncode(TDAR.inheritance.project.title) + "' will overwrite existing values. Continue?", function () {
                                 _options.inheritSectionCallback();
                             }, function () {
                                 $cb.prop("checked", false);
@@ -1149,7 +1152,7 @@ TDAR.inheritance = (function () {
         });
 
         //now remove the repeatrows  (sorry, 'reset' not an option)
-        $section.find(".repeat-row").each(function() {TDAR.repeatrow.deleteRow(this);});
+        $section.find(".repeat-row").each(function() {repeatrow.deleteRow(this);});
     }
 
     function _registerClearSectionButtons(formSelector) {
@@ -1172,7 +1175,7 @@ TDAR.inheritance = (function () {
         });
     }
 
-    return{
+    module.exports = {
         resetRepeatable: resetRepeatable,
         resetKeywords: resetKeywords,
         registerInheritSection: registerInheritSection,
@@ -1180,4 +1183,3 @@ TDAR.inheritance = (function () {
         clearSection: _clearSection,
         registerClearSectionButtons: _registerClearSectionButtons,
     };
-})();

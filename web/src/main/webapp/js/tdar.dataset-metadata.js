@@ -197,7 +197,7 @@ const autocomplete = require("./tdar.autocomplete");
     }
 
     // expose public elements
-    modules.export = {
+    module.exports = {
         "init": _init,
         "gotoColumn": _gotoColumn,
         "updateSummaryTable": _updateSummaryTable,

@@ -314,7 +314,7 @@ const d3 = require("d3");
     // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
     var zoomListener = d3.behavior.zoom().scaleExtent([ 1.3, 1.3 ]).on("zoom", _zoom);
 
-    modules.export = {
+    module.exports = {
         "init" : _init,
         "clearSearch": _clearSearch,
         "allNodes": allNodes
