@@ -1,5 +1,3 @@
-import 'js/tdar.common';
-import 'js/tdar.upload';
-
+const TDAR = require("JS/tdar.master.js");
 TDAR.main();
 

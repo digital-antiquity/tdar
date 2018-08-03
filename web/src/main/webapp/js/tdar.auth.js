@@ -1,4 +1,5 @@
-(function (TDAR, $) {
+import "jquery";
+
     'use strict';
 
     var _initLogin = function () {
@@ -45,10 +46,7 @@
     };
 
     
-    TDAR.auth = {
+    module.exports = {
         "initLogin": _initLogin,
         "initRegister": _initRegister
     };
-
-    
-})(TDAR, jQuery);

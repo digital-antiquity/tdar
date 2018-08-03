@@ -3,6 +3,7 @@ var webpack = require("webpack");
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
+
 // webpack.autoProvidejQuery();
 module.exports = {
     mode: 'development',
@@ -10,7 +11,7 @@ module.exports = {
     //devtool: 'eval-source-map',
     entry: { 
      // jquery : ['jquery'],
-      main: './src/main/webapp/tdar-entry-point.js' 
+      main: './src/main/webapp/js/webpack/tdar-entry-point.js' 
     },
     output: {
       path: path.resolve(__dirname, "./src/main/webapp/dist/"),
@@ -34,7 +35,7 @@ module.exports = {
         // jquery: "jquery",
          c3: "c3",
          d3: "d3",
-         // TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
+         TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.master'),
          // axios:"axios",
          Vue : 'vue',
          // Vue : 'Vue'
@@ -46,9 +47,7 @@ module.exports = {
   // https://github.com/webpack/webpack.js.org/issues/63
   resolve: {
          alias: {
-           //  jquery: "jquery/dist/jquery"
              JS : path.resolve(__dirname,'src/main/webapp/js/')
-             
          }
   }
 };

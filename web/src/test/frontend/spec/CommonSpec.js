@@ -1,6 +1,7 @@
+
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
-import TDAR from "JS/tdar.core";
-import $ from "jquery";
+//import TDAR from "JS/tdar.core";
+//import "jquery";
 
 
 describe("CommonSpec.js: edit page tests", function () {
@@ -25,11 +26,6 @@ describe("CommonSpec.js: edit page tests", function () {
           
         loadFixtures("document-add-form.html", "fileupload-templates.html");
         var form = document.getElementById('metadataForm');
-        
-        console.debug("OK!!!!");
-        console.debug(" __FORM PROPS__ ", formProps);
-        
-        console.debug($().jquery);
         
         expect($("#template-upload")).toHaveLength(1);
         expect($j("#metadataForm")).toHaveLength(1);

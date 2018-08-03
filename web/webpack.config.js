@@ -52,13 +52,10 @@ module.exports = {
          jQuery: "jquery",
          'global.jQuery': 'jquery',
          axios:"Axios",
-         // jquery: "jquery",
          c3: "c3",
          d3: "d3",
-         // TDAR : path.resolve(__dirname,'src/main/webapp/js/tdar.core'),
-         // axios:"axios",
+         TDAR : "JS/tdar.master",
          Vue : 'vue',
-         // Vue : 'Vue'
          LatLon: 'js/latLongUtil-1.0'
      })
   ],
@@ -69,7 +66,7 @@ module.exports = {
       alias : {
           "jquery-ui": path.join(__dirname, "src/main/webapp/includes/jquery-ui-1.11.4.custom/jquery-ui.js"), 
           modules: path.join(__dirname, "node_modules"),
-          js: path.resolve(__dirname,'src/main/webapp/js/')
+          JS: path.resolve(__dirname,'src/main/webapp/js/')
       }
       
         // alias: {
