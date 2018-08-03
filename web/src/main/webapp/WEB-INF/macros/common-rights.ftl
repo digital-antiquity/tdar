@@ -8,39 +8,39 @@
 	    <p><i>Use this to share this resource with someone who's not currently a tDAR user</i></p>
     </div>
             <div class="row">
-                <div class="span6" id="invites">
+                <div class="col-6" id="invites">
 	                <div class="controls-row" >
-	                	<div class="span2"><b>First Name</b></div>
-	                    <div class="span4">
-	                        <@s.textfield name="invites[0].firstName" cssClass="span4 inviteForm" id="firstName" />
+	                	<div class="col-2"><b>First Name</b></div>
+	                    <div class="col-4">
+	                        <@s.textfield name="invites[0].firstName" cssClass="col-4 inviteForm" id="firstName" />
 	                    </div>
 	                </div>
                     
 	                <div class="controls-row" >
-	                	<div class="span2"><b>Last Name</b></div>
-    	                <div class="span4">
-        	                <@s.textfield name="invites[0].lastName" cssClass="span4 inviteForm" id="lastName" />
+	                	<div class="col-2"><b>Last Name</b></div>
+    	                <div class="col-4">
+        	                <@s.textfield name="invites[0].lastName" cssClass="col-4 inviteForm" id="lastName" />
             	        </div>
 	                </div>
                     
 	                <div class="controls-row" >
-	                	<div class="span2"><b>Email</b></div>
-	                    <div class="span4">
-	                        <@s.textfield name="invites[0].email" cssClass="span4 inviteForm" id="email" />
+	                	<div class="col-2"><b>Email</b></div>
+	                    <div class="col-4">
+	                        <@s.textfield name="invites[0].email" cssClass="col-4 inviteForm" id="email" />
 	                    </div>
 	                </div>
                     
 	                <div class="controls-row" >
-	                	<div class="span2"><b>Permission</b></div>
-	                    <div class="span4">
-	                        <@s.select theme="tdar" cssClass="controls creator-rights-select span4" name="invites[0].permission" emptyOption='false'
+	                	<div class="col-2"><b>Permission</b></div>
+	                    <div class="col-4">
+	                        <@s.select theme="tdar" cssClass="controls creator-rights-select col-4" name="invites[0].permission" emptyOption='false'
 	                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
 	                    </div>
 	                </div>
                     
 	                <div class="controls-row" >
-	                	<div class="span2"><b>Expires?</b></div>
-	                    <div class=" span4">
+	                	<div class="col-2"><b>Expires?</b></div>
+	                    <div class=" col-4">
 	                        <div class="input-append">
 	                              <input class="controls datepicker" name="invites[0].until" style="width:6em" 
 	                                size="16" type="text" value="" data-date-format="mm-dd-yyyy" >
@@ -50,10 +50,10 @@
 	                    </div>
                     </div>
                 </div>
-                <div class="span6">
+                <div class="col-6">
 	                <div class="controls-row" >
 	                <p><b>Add a Note</b></p>
-	                <@s.textarea name="invites[0].note" cssClass="span4" rows=5 />
+	                <@s.textarea name="invites[0].note" cssClass="col-4" rows=5 />
 	                </div>
                 </div>
             </div>
@@ -66,18 +66,18 @@
     <h3>Add / Modify User(s)</h3>
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
     <div class="row">
-        <div class='span6'>
+        <div class='col-6'>
         <b>User or Email </b>
         </div>
-        <div class="span2">
+        <div class="col-2">
          <b>Permissions</b>
         </div>
         <#if showDate>
-        <div class='span2'>
+        <div class='col-2'>
         <b>Remove access after</b>
         </div>
         </#if>
-                <div class='span1'>
+                <div class='col-1'>
         </div>
 
     </div>
@@ -99,13 +99,13 @@
                 <div class="">
                         <div class=" control-group repeat-row" id="authorizedUsersRow_${proxy_index}_">
                             <div class="controls-row" >
-                                <div class="span6">
+                                <div class="col-6">
                                     <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
                                         <input type="hidden" name="proxies[${proxy_index}].inviteId" value="<#if proxy.inviteId?has_content>${(proxy.inviteId!-1)?c}</#if>">
 
                                         <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
                                         <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''} <#if proxy.inviteId?has_content> (invite) </#if>" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
-                                                 class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
+                                                 class="col-6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
                                                  <#if proxy.inviteId?has_content> disabled=true </#if>
                                                  
                                                  autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
@@ -114,12 +114,12 @@
                                                  autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
                                     </div>
                                 </div>
-                                <div class="span2">
-                                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="proxies[${proxy_index}].permission" emptyOption='false'
+                                <div class="col-2">
+                                    <@s.select theme="tdar" cssClass="creator-rights-select col-2" name="proxies[${proxy_index}].permission" emptyOption='false'
                                         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                                 </div>
                                 <#if showDate>
-                                <div class=" span2">
+                                <div class=" col-2">
                                     <div class="input-append">
                                     <#local val=""/>
                                     <#if proxy.until?has_content>
@@ -133,7 +133,7 @@
                                 </div>
                                 </#if>
 
-                                <div class="span1">
+                                <div class="col-1">
                                     <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
                                 </div>
                             </div>

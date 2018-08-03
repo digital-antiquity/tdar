@@ -20,10 +20,10 @@
 
 </div>
 <div class="row">
-<div class="span2">
+<div class="col-2">
     <@dash.sidebar current="bookmarks" />
 </div>
-<div class="span10">
+<div class="col-10">
     <@bookmarksSection />
         </div>
 </div>

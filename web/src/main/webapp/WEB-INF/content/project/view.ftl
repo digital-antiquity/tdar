@@ -29,7 +29,7 @@
 
         <div id="divResultsSortControl">
             <div class="row">
-                <div class="span12">
+                <div class="col-12">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header="Inside this Project" />
                 </div>
             </div>

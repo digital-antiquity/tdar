@@ -42,7 +42,7 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
 <h3>Emails to be Reviewed</h3>
 
 <div class="row">
-    <div class="span2">
+    <div class="col-2">
         <@s.select name="emailAction" list=emailActions listValue=name label="Change Status To"/>
         <@s.submit name="submit" />
     </div>

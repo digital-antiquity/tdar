@@ -46,7 +46,7 @@
                     <#assign fromId = authenticatedUser.id />
                 </#if>
                 <@s.hidden name="fromId" value="${authenticatedUser.id?c}" /> 
-                <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="span5 required" cols="80" />
+                <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="col-5 required" cols="80" />
 
                 <p><b>Note:</b> Your message will be sent to the designated contact of this digital resource in tDAR. 
                 Please use "<i>suggest correction</i>" if you would like to recommend changes to the metadata.  

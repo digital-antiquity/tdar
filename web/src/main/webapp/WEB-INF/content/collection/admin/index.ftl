@@ -11,13 +11,13 @@
 <h1>Collection Admin: <span class="red small">${collection.name}</span></h1>
 
 <div class="row">
-<div class="span12">
+<div class="col-12">
             <@common.resourceUsageInfo />
 </div>
 </div>
 
 <div class="row">
-<div class="span9">
+<div class="col-9">
 
 
 
@@ -81,7 +81,7 @@
     </table>
 
 </div>
-          <div class="span3">
+          <div class="col-3">
           <h5>Search</h5>
           <@s.form action="" method="GET">
               <input type="search" class="form-control" placeholder="Search... " name="term"  value="${term!''}" />

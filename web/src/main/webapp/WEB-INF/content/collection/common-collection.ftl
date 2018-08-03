@@ -21,7 +21,8 @@
 <#macro sidebar minimal=false>
 
     <!-- Don't show header if header doesn't exist -->
-    <div id="sidebar-right" parse="true">
+    <div id="sidebar-right" parse="true" class="row">
+    	<div class="col-10 offset-2">
         <br/><br/>
         <#if !minimal>
             <#if (logoAvailable && ((resourceCollection.properties.whitelabel)!false || ((resourceCollection.properties.customHeaderEnabled)!false) == false)) >
@@ -72,6 +73,7 @@
         </li>
     </ul>
 
+    </div>
     </div>
 </#macro>
 
@@ -227,7 +229,7 @@
 
 
             <#nested />
-            <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
+            <@list.listResources resourcelist=results sortfield=sortField titleTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
                     orientation=orientation    mapPosition="top" mapHeight=mapSize />
         </div>
             <@search.basicPagination "Records" />
@@ -276,7 +278,7 @@
             <@_authorizedUsers resourceCollection />
         </div>
         </#if>
-</div>
+
 </#macro>
 
     <#macro javascript>

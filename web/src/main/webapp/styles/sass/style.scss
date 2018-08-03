@@ -3,6 +3,18 @@ $white: #fff;
 $beige: #e4d5bb;
 
 
+.view .sidebar, .dashboard .sidebar {
+background: url(/images/r4/bg-cols-right.png) top left repeat-y;
+margin-left: 0px;
+padding-left: 0px;
+}
+
+
+.noleftmargin {
+    margin-left:0px;
+    padding-left:0px;
+}
+
 aside li {
 font-size: 13px;
 line-height: 17px;
@@ -18,9 +30,32 @@ a {
     color: $red;
 }
 
+
+.serif {
+ font-family: "ff-tisa-web-pro", serif !important;
+}   
+
 .black {
-    color: #000;
+    color:#000;
 }
+
+.white {
+   color:white;
+   fill:white !important;
+   svg, svg * {
+       color:white;
+       fill: white !important;
+   }
+}
+
+.beige {
+   background-color: #E3E0D8;
+}
+
+.white-border-bottom {
+    border-bottom:4px solid white;
+}
+
 .tdarButton
 {
   background-color: $red;
@@ -75,6 +110,21 @@ nav
   {
     background: url(../../images/r4/bg-home.jpg) no-repeat center;
     background-size: cover;
+
+      h2 {
+        font-weight: 700;
+        font-size: 60px;
+        line-height: 50px;
+        letter-spacing: -2px;
+        margin: 50px 0 0 0;
+        }
+        
+         p {
+        margin: 18px 0;
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 24px;
+        }
   }
 
   .news
@@ -138,11 +188,11 @@ nav
   }
 }
 
-.svgicon
-{
-  max-height: 50px;
-  max-width: 50px;
-}
+//.svgicon
+//{
+//  max-height: 50px;
+//  max-width: 50px;
+//}
 
 h1, h2, h3, header {
   font-family: "soleil", sans-serif !important;
@@ -319,8 +369,16 @@ header .welcome-drop a,
 }
 
 .svg-dynamic {
-    width:80%;
-    height:80%;
+    max-width: 80% !important;
+    max-height: 80% !important;
+    margin-top: 15%;
+    margin-bottom: 15%;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    height: 100%;
+    width: 100%;
+    
     margin-top:15%;
     margin-bottom: 15%;
     margin-left:auto;
@@ -344,4 +402,314 @@ header .welcome-drop a,
 .grey {
     fill-color:#555555;
     color:#555555;
+}
+
+
+
+
+/******** GRAPHING **********/
+.barChart .c3-text {
+    fill:black !important
+}
+
+
+.barGraph {
+    position: relative;
+}
+
+
+
+/*** WORLDMAP *****/
+
+
+#mapgraphdata {
+    text-align:center;
+    height: 100px;
+}
+
+#worldmap.leaflet-container {
+    background-color: #D5F0FD;
+    border: 1px solid #AAA;
+}
+#worldmap .info {
+    background-color:#fff;
+    opacity:.8;
+    padding:2px;
+}
+
+#worldmap .legend {
+    background-color:#fff;
+    float:right;
+}
+
+
+#worldmap .leaflet-control-attribution {
+    display:none;
+    
+}
+
+.worldmap {
+    border: 1px solid #aaa;
+}
+
+#map_legend {
+    position: absolute;
+    display: block;
+    width: 300px;
+    height: 1.8em;
+    bottom: 0px;
+    /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
+    right: 100px;
+}
+
+.mapcontainer .legendText {
+    padding-top: 0px !important;
+    margin-left: 5px;
+    margin-right: 5px
+}
+
+.mapcontainer .legendBox, .mapcontainer .legendText {
+    clear: none;
+    float: left;
+}
+
+.mapcontainer .legendBox {
+    border: 1px solid #666666;
+    width: 10px;
+    margin-top: 3px;
+    height: 10px;
+    padding: 2px;
+}
+
+div.mapcontainer {
+    position: relative;
+}
+
+div.mapcontainer img {
+    height: 304px !Important;
+    right: 0px;
+    display: block;
+    position: relative;
+}
+
+.mapcontainer #data {
+    font-weight:bold;
+}
+
+#mapGraphZoomOut,#mapGraphZoomOut *,#mapGraphSearch, #mapGraphSearch * {
+     cursor: hand;
+     cursor: pointer;
+}
+
+.mapcontainer.mini h3, .mapcontainer.mini #mapgraphdata {display:none}
+.mini #worldmap.leaflet-container {
+    border:none;
+    background-color:#fff;
+}
+
+.mini .leaflet-interactive {
+    cursor: default;
+}
+
+/**** VIEW ****/
+
+
+.view-deleted-file {
+    background-color: #edd87b;
+    text-decoration: line-through;
+    display: none;
+}
+
+.view-hidden-extra-files {
+    display: none;
+}
+
+/* contextual help styling - based off of 'downloads' box on view page */
+#notice {
+    font-family: 'ff-tisa-web-pro', serif;
+    background-color: #f0eeeb;
+}
+
+#notice h2 {
+    font-size: 15px;
+}
+
+
+/*use in column-sized div to scale image if width exceeds parent width */
+img.responsive-image {
+    max-width: 100%;
+    height: auto;
+}
+
+#downloadsMoreArea {
+    background-color: #ddd;
+    padding-left: 35px;
+}
+
+.view aside {
+ li strong {
+    font-weight: 700;
+    font-size: 12px;
+    color: #1b1a18;
+    letter-spacing: 1px;
+    line-height: 14px;
+    text-transform: uppercase;
+}
+
+ h3.downloads {
+    font-family: helvetica, arial, sans-serif;
+    font-size: 16px;
+    color: #fff;
+    height: 45px;
+    line-height: 45px;
+    margin: 0 !important;
+    padding: 0 10px;
+    background: #7a1501;
+    -webkit-border-radius: 2px 2px 0 0;
+    border-radius: 2px 2px 0 0;
+    border-bottom: none;
+}
+
+ h3.downloads span.downloadNumber {
+    display: inline-block;
+    float: right;
+    font-size: 13px;
+    line-height: 22px !important;
+    background: #641b11;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    width: 22px;
+    text-align: center;
+    margin-top: 11px;
+    -webkit-border-radius: 2px 2px 0 0;
+    border-radius: 2px 2px 0 0;
+}
+
+h3 {
+font-size: 16px;
+line-height: 22px;
+border-bottom: 1px solid #e5e5e5;
+padding-bottom: 5px;
+margin: 20px 0;
+}
+
+ ul.downloads,  ul.downloads li {
+    background: #f0eeeb;
+    margin: 0 !important;
+}
+
+ul.downloads li {
+    color: #7d7a77;
+    padding: 14px 10px 14px 32px;
+    border-bottom: 1px solid #fff;
+}
+
+li strong {
+font-weight: 700;
+font-size: 12px;
+color: #1b1a18;
+letter-spacing: 1px;
+line-height: 14px;
+text-transform: uppercase;
+}
+
+li {
+font-size: 13px;
+line-height: 17px;
+color: #7d7a77;
+margin-top: 15px;
+}
+
+}
+
+
+
+/*** ALPHA **/
+
+
+.ribbon-green {
+  z-index:1000;
+  font: bold 15px Sans-Serif;
+  color: #333;
+  text-align: center;
+  text-shadow: rgba(255,255,255,0.5) 0px 1px 0px;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform:    rotate(-45deg);
+  -ms-transform:     rotate(-45deg);
+  -o-transform:      rotate(-45deg);
+  position: fixed;
+  padding: 7px 0;
+  left: -34px;
+  top: 11px;
+  width: 120px;
+  background-color: #BFDC7A;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#BFDC7A), to(#8EBF45)); 
+  background-image: -webkit-linear-gradient(top, #BFDC7A, #8EBF45); 
+  background-image:    -moz-linear-gradient(top, #BFDC7A, #8EBF45); 
+  background-image:     -ms-linear-gradient(top, #BFDC7A, #8EBF45); 
+  background-image:      -o-linear-gradient(top, #BFDC7A, #8EBF45); 
+  color: #6a6340;
+  -webkit-box-shadow: 0px 0px 3px rgba(0,0,0,0.3);
+  -moz-box-shadow:    0px 0px 3px rgba(0,0,0,0.3);
+  box-shadow:         0px 0px 3px rgba(0,0,0,0.3);
+}
+
+.ribbon-green:before, .ribbon-green:after {
+  content: "";
+  border-top:   3px solid #6e8900;   
+  border-left:  3px solid transparent;
+  border-right: 3px solid transparent;
+  position:absolute;
+  bottom: -3px;
+}
+
+.ribbon-green:before {
+  left: 0;
+}
+.ribbon-green:after {
+  right: 0;
+}
+
+
+/********** LEAFLET **************/
+/** leaflet maps - **/
+.disable-map .leaflet-draw {
+	display:none;
+	visibility:hidden;
+}
+
+.disable-map .leaflet-container, .leaflet-container.disable-map {
+	opacity:.5;
+}
+
+
+
+/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
+#large-google-map img, .google-map img {
+    border: inherit;
+    height: auto;
+    max-width: inherit;
+}
+
+.tdar-map-large, #large-google-map {
+    height: 450px;
+}
+
+#large-google-map label, .google-map label {
+    width: auto;
+    display: inline;
+}
+
+.tdar-gmap-control button:disabled {
+    display: none;
+}
+
+
+form.leaflet-control-geocoder-form {
+    padding:0px;
+    margin:0px;
+}
+
+.treeview li {
+    margin-top:0px !important;
 }

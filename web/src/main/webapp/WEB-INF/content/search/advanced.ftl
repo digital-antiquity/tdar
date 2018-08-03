@@ -162,21 +162,21 @@
             <span class="creatorPerson " id="group_${groupid}_row_${fieldIndex}_parent">
                 <div class="controls-row">
                     <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
-                    <@s.textfield cssClass="span2 nameAutoComplete" placeholder="Last Name"  theme="tdar"
+                    <@s.textfield cssClass="col-2 nameAutoComplete" placeholder="Last Name"  theme="tdar"
                 autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" />
-                    <@s.textfield cssClass="span2 nameAutoComplete" placeholder="First Name" theme="tdar"
+                    <@s.textfield cssClass="col-2 nameAutoComplete" placeholder="First Name" theme="tdar"
                 autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255"  />
-                    <@s.select theme="tdar"  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select span3" />
+                    <@s.select theme="tdar"  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select col-3" />
                 </div>
                 <div class="controls-row">
                     <#if authenticated>
-                        <@s.textfield cssClass="span3 nameAutoComplete" placeholder="Email (Optional)" theme="tdar"
+                        <@s.textfield cssClass="col-3 nameAutoComplete" placeholder="Email (Optional)" theme="tdar"
                         autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                         name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255" />
                     </#if>
-                <@s.textfield cssClass="nameAutoComplete span3" placeholder="Institution Name (Optional)" theme="tdar"
+                <@s.textfield cssClass="nameAutoComplete col-3" placeholder="Institution Name (Optional)" theme="tdar"
                 autocompleteName="institution" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.institution.name" maxlength="255" />
                 </div>
@@ -189,7 +189,7 @@
             <span class="creatorInstitution" id="group_${groupid}_${fieldIndex}_institution_parent">
                 <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.id" id="group_${groupid}_${fieldIndex}_institution_id"/>
                 <div class="controls-row">
-                    <@s.textfield theme="tdar" cssClass="span4 institutionAutoComplete institution" placeholder="Institution Name" theme="tdar"
+                    <@s.textfield theme="tdar" cssClass="col-4 institutionAutoComplete institution" placeholder="Institution Name" theme="tdar"
                     autocompleteName="name" autocompleteIdElement="#group_${groupid}_${fieldIndex}_institution_id" autocompleteParentElement="#group_${groupid}_${fieldIndex}_institution_parent"
                     name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" />
                 <@s.select theme="tdar" name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" theme="tdar"
@@ -201,24 +201,24 @@
             <!-- FIXME: refactor to not repeat the same block -->
             <#elseif fieldType = 'DATE_CREATED'>
             <div class="term retain ${fieldType} controls-row">
-                <div class="span3">
+                <div class="col-3">
                     <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
                 </div>
             </div>
 
             <#elseif fieldType?starts_with("DATE_")>
             <div class="term retain ${fieldType} controls-row">
-                <div class="span3">
+                <div class="col-3">
                     <div class="input-append">
 	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"
 	                    	 dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
                 </div>
-                <div class="span3">
+                <div class="col-3">
                     <div class="input-append">
 	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"
 	                    dynamicAttributes={"data-date-format":"mm/dd/yy"} />
@@ -274,7 +274,7 @@
         <label class="control-label">Include in results</label>
 
         <div class="controls controls-row">
-            <select name="groups[${groupid}].operator" class="span5">
+            <select name="groups[${groupid}].operator" class="col-5">
                 <option value="AND" <#if defaultOperator=="AND">selected</#if>>When resource matches ALL terms below</option>
                 <option value="OR" <#if defaultOperator=="OR">selected</#if>>When resource matches ANY terms below</option>
             </select>
@@ -289,10 +289,10 @@
                     <div id="grouptablerow_0_" class="control-group termrow repeat-row">
                         <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
                         <div class="controls controls-row">
-                            <div class="span8 term-container">
+                            <div class="col-8 term-container">
                                 <@fieldTemplate fieldType=fieldType fieldIndex=fieldType_index groupid=groupid />
                             </div>
-                            <div class="span1">
+                            <div class="col-1">
                                 <@removeRowButton />
                             </div>
                         </div>
@@ -311,12 +311,12 @@
     <div id="${idAttr}" class="control-group termrow repeat-row">
         <@searchTypeSelect />
         <div class="controls controls-row simple multiIndex">
-            <div class="span8 term-container">
+            <div class="col-8 term-container">
                             <span class="term retain ALL_FIELDS simple multiIndex">
                                 <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge"/>
                             </span>
             </div>
-            <div class="span1">
+            <div class="col-1">
                 <@removeRowButton />
             </div>
         </div>

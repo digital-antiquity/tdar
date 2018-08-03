@@ -16,10 +16,10 @@
     <#if results?has_content>
     <div id="divResultsSortControl">
         <div class="row">
-            <div class="span4">
+            <div class="col-4">
                 <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Collection"/>
             </div>
-            <div class="span5">
+            <div class="col-5">
                 <#if !hideFacetsAndSort>
                     <div class="form-horizontal pull-right">
                         <@search.sortFields true/>

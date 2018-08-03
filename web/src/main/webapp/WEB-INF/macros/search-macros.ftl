@@ -6,7 +6,7 @@
         <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge" maxlength="512" />
         
         <#if showPersonField && editor>
-          <@s.select id="personSearchOption" numColumns=4 spanClass="span2" name='personSearchOption' list='personSearchOptions'  listValue='label' label="Search By"/>
+          <@s.select id="personSearchOption" numColumns=4 spanClass="col-2" name='personSearchOption' list='personSearchOptions'  listValue='label' label="Search By"/>
         </#if>
         
         <#if showAdvancedLink>
@@ -24,10 +24,10 @@
     <#macro narrowAndSort>
     <h2>Narrow Your Search</h2>
 
-        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
+        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="col-2" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
 
         <#if authenticated>
-        <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="span2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
+        <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="col-2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
         </#if>
 
     <h4>Limit by geographic region:</h4>
@@ -78,7 +78,7 @@
     </div>
     </#macro>
 
-    <#macro sortFields label="Sort By">
+    <#macro sortFields label="Sort">
     <label>${label}
         <select name="sortField" class="input-large" id="sortField">
         <#list sortOptions as sort>
@@ -166,7 +166,7 @@
                                 <li class="page-item">
                                     <@paginationLink startRecord=0 path=path linkText="First" />
                                 </li>
-                                <li class="page-item disabled ">...</li>
+                                <li class="page-item disabled"><span class="page-link">...</li>
                             </#if>
                             <#list helper.minimumPageNumber..helper.maximumPageNumber as i>
                                 <li class="page-item <#if i == helper.currentPage>active</#if>">
@@ -212,7 +212,7 @@
     </#macro>
 
 
-    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools" liCssClass="media" action=actionName link=true icon=true pictoralIcon=false>
+    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools ml-0 pl-0" liCssClass="media" action=actionName link=true icon=true pictoralIcon=false>
         <#if (facetlist?has_content && !facetlist.empty)>
             <#if label != ''>
                 <h4>${label}:</h4>
@@ -306,7 +306,7 @@
                                     <#nested>
                                     -->
                                 </@s.url></#local>
-                <ul class="media-list tools">
+                <ul class="media-list tools ml-0 pl-0">
                     <li class="media">
                         <span class="media-body">
                             <a rel="noindex" id="${facetParam}${facet.name()}" href="${removeUrl?trim}">
@@ -329,7 +329,7 @@
         <div id="sidebar-left" parse="true" class="options hidden-phone">
 
             <h2 class="totalRecords">Search Options</h2>
-            <ul class="tools media-list">
+            <ul class="tools media-list ml-0 pl-0">
                 <li class="media">
                     <i class="mr-3 search-magnify-icon-red"></i> 
                     <div class="media-body">
@@ -348,10 +348,10 @@
 
     <div id="divResultsSortControl">
         <div class="row">
-            <div class="span3">
+            <div class="col-3">
                 <@totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
             </div>
-            <div class="span6 form-inline">
+            <div class="col-6 form-inline">
                 <div class="pull-right">
                     <div class="control-group"></div>
                     <label>Records Per Page

@@ -51,7 +51,7 @@
 	<@auth.loginWarning />
 
     <div class="row">
-        <div class="span9" id="divRegistrationSection">
+        <div class="col-9" id="divRegistrationSection">
             <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed tdarvalidate"
                     enctype='multipart/form-data' action="/filestore/process-download-registration" dynamicAttributes={"data-validate-method":"initRegForm"}>
 
@@ -73,7 +73,7 @@
 
         </div>
 
-        <div class="span3" id="divLoginSection">
+        <div class="col-3" id="divLoginSection">
             <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate form-condensed"
                     enctype='multipart/form-data' action="process-download-login">
                 <fieldset>

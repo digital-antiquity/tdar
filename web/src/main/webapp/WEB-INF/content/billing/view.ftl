@@ -135,7 +135,7 @@
 	<p>Voucher codes can be used to allow another tDAR user to use files or space without providing them full access to this account.  Simply create a voucher below by specifying either the number of MB or files <b> To redeem a voucher, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
     <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
         <div class="row">
-            <div class="span4">
+            <div class="col-4">
 	            <@s.hidden name="id" value="${account.id?c!-1}" />
 	            <#if editor>
     	            <@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
@@ -148,19 +148,19 @@
                 <label class="control-label">Date Expires</label>
                  <div class="controls">
 	                <div class="input-append">
-	   		          <input name="expires" class="input-small span2 datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
+	   		          <input name="expires" class="input-small col-2 datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
 	                  <span class="add-on"><i class="icon-th"></i></span>
 	                </div>
 				</div>
 				</div>
 
             </div>
-            <div class="span4">
+            <div class="col-4">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
             </div>
         </div>
         <div class="row">
-            <div class="span8">
+            <div class="col-8">
                 <div class="control-group">
                     <div class="controls">
                         <@s.submit name="_tdar.submit" value="Create Voucher" cssClass="button submit-btn btn" />

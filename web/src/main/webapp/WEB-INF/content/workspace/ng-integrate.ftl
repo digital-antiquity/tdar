@@ -20,7 +20,7 @@
 
     <form id="frmIntegrationEdit" class="form-horizontal form-condensed" ng-init="ctrl.loadJSON()">
         <div class="row-fluid">
-            <div class="span9">
+            <div class="col-9">
                <div class="control-group">
                    <label class="control-label">
                        Integration Name
@@ -37,7 +37,7 @@
                    </div>
                </div>
             </div>
-            <div class="span3">
+            <div class="col-3">
                 <button type="button" class="btn btn-primary btn-primary-integrate" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.submitIntegration()">Integrate</button>
                 <#--<button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>-->
 
@@ -60,11 +60,11 @@
 
         <div id="divSelectedItemsSection">
             <div class="row-fluid">
-                <div class="span12">
+                <div class="col-12">
                     <div class="control-group">
                         <label class="control-label">Datasets & Ontologies</label>
                         <div class="controls controls-row">
-                            <div class="span5">
+                            <div class="col-5">
                                 <table class="table table-condensed table-hover selected-datasets">
                                     <thead>
                                         <tr>
@@ -97,7 +97,7 @@
 
 
                         </div>
-                            <div class="span3">
+                            <div class="col-3">
                                 <table class="table table-condensed table-hover">
                                     <thead>
                                         <tr><th colspan="2">Available Ontologies</th></tr>
@@ -156,7 +156,7 @@
         
         <div id="divColumnSection">
             <div class="row-fluid">
-                <div class="span12">
+                <div class="col-12">
 
                     <div class="control-group" ng-show="ctrl.integration.columns.length">
                         <label class="control-label">
@@ -332,7 +332,7 @@
 
 <tdar-modal ng-controller="ModalDialogController"></tdar-modal>
 
-<!-- Note: this modal is about span10 wide. Form-horizontal labels are ~span3 wide, leaving you ~span7 for controls. -->
+<!-- Note: this modal is about col-10 wide. Form-horizontal labels are ~col-3 wide, leaving you ~col-7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">
     <div id="divModalContainer" class="modal modal-big hide fade" tabindex="-1" role="dialog">
         <div class="modal-header alert-info">
@@ -344,7 +344,7 @@
         </div>
         <div class="modal-body">
             <div class="row-fluid">
-                <div class="span12">
+                <div class="col-12">
                     <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur':0, 'click':0} }">
                         <div>
                             <div class="control-group">
@@ -356,14 +356,14 @@
                             <div class="control-group">
                                 <label class="control-label">Belongs to</label>
                                 <div class="controls controls-row">
-                                    <div class="span3">
+                                    <div class="col-3">
                                         <select name="searchFilter.projectId" class="input-block-level"
                                                 ng-model="filter.projectId" ng-options="project.id as project.title for project in projects"
                                                 ng-change="updateFilter()">
                                             <option value="">Any project</option>
                                         </select>
                                     </div>
-                                    <div class="span3">
+                                    <div class="col-3">
                                         <select name="searchFilter.collectionId" class="input-block-level"
                                                 ng-model="filter.collectionId" ng-options="collection.id as collection.title for collection in collections"
                                                 ng-change="updateFilter()">
@@ -430,15 +430,15 @@
         </div>
         <div class="modal-footer">
             <div class="row-fluid">
-                <div class="span4 text-left">
+                <div class="col-4 text-left">
                     <span ng-show="results.length"> Displaying records {{startRecord() + 1| number}} - {{endRecord()  | number}} of {{modalTotalResults}} </span>
                 </div>
-                <div class="span4 text-center">
+                <div class="col-4 text-center">
                     <button type="button" class="btn btn-mini" id="btnPrevious" ng-click="previousPage()" ng-disabled="!hasPreviousPage()">previous</button>
                     <button type="button" class="btn btn-mini" id="btnNext" ng-click="nextPage()" ng-disabled="!hasNextPage()">next</button>
 
                 </div>
-                <div class="span4">
+                <div class="col-4">
                     <ng-pluralize count="selectedItems.length"
                                   when="{'0': 'No datasets selected',
                                 '1': '1 dataset selected',                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
@@ -451,7 +451,7 @@
 
 
             <div class="row-fluid">
-                <div class="span12">
+                <div class="col-12">
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                     <button class="btn btn-primary btn-primary-add" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
                 </div>
@@ -484,7 +484,7 @@
         </div>
         <div class="modal-body">
             <div class="row-fluid">
-                <div class="span12">
+                <div class="col-12">
                     
                     <div role="tabpanel">
                     
@@ -515,7 +515,7 @@
         <div class="modal-footer">
 
             <div class="row-fluid">
-                <div class="span12">
+                <div class="col-12">
                     <a type="button" ng-disabled="downloadDisabled" class="btn" ng-click="downloadClicked()" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                 </div>

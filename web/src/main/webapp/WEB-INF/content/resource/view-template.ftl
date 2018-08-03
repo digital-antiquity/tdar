@@ -534,7 +534,8 @@
                 <#include 'vue-collection-widget.html' />
     </div>
 
-<div id="sidebar-right" parse="true">
+<div id="sidebar-right" parse="true" class="row">
+	<div class="col-10 offset-2">
     <div class="beige white-border-bottom">
         <div class="iconbox">
             <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${resource.resourceType?lower_case}"></use></svg>
@@ -553,7 +554,7 @@
             <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
         </#if>
     </#if>
-        <ul class="media-list">
+        <ul class="media-list pl-0 ml-0">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media">
                 <i class="fas fa-comment-alt icon-push-down mr-3"></i>
@@ -582,7 +583,7 @@
 
     <p>
 
-    <ul class="unstyled-list">
+    <ul class="list-unstyled">
         <#if resource.resourceProviderInstitution?? && resource.resourceProviderInstitution.id != -1>
             <li>
                 <strong>Resource Provider</strong><br>
@@ -631,6 +632,7 @@
         ${resource.id?c}
         </li>
     </ul>
+</div>
 </div>
 
 

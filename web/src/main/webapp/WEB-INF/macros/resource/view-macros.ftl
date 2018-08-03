@@ -434,37 +434,37 @@ View freemarker macros
 
             <@common.resourceUsageInfo />
         <div>
-            <dl class="dl-horizontal">
-                <dt>
+            <dl class="row">
+                <dt class="col-2">
                 <p><strong>Created by</strong></p></dt>
-                <dd><p><a
+                <dd class="col-4"><p><a
                         href="<@s.url value="${resource.submitter.detailUrl}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
                     on ${resource.dateCreated}</#if></p></dd>
                 <#if resource.submitter.id != resource.uploader.id>
-                    <dt>
+                    <dt class="col-2">
                     <p><strong>Uploaded by</strong></p></dt>
-                    <dd><p><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
+                    <dd class="col-4"><p><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
                     </p></dd>
                 </#if>
                 <#if resource.account?has_content && (administrator || editable) >
-                    <dt>
+                    <dt class="col-2">
                     <p><strong>Account</strong></p></dt>
-                    <dd><p><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></p></dd>
+                    <dd class="col-4"><p><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></p></dd>
                 </#if>
 
                 <#if administrator>
-                    <dt>
+                    <dt class="col-2">
                     <p><strong>Status</strong></p></dt>
-                    <dd><p>${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>
+                    <dd class="col-4"><p>${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>
                         (${resource.previousStatus.label})</#if></p></dd>
                 </#if>
-                <dt>
+                <dt class="col-2">
                 <p><strong>Last Updated by</strong></p></dt>
-                <dd><p><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
+                <dd class="col-4"><p><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
                     on ${resource.dateUpdated?date!""}</p></dd>
-                <dt>
+                <dt class="col-2">
                 <p><strong>Viewed</strong></p></dt>
-                <dd><p>${resource.transientAccessCount!"0"} time(s)</p></dd>
+                <dd class="col-4"><p>${resource.transientAccessCount!"0"} time(s)</p></dd>
             </dl>
         </div>
 
@@ -553,7 +553,7 @@ View freemarker macros
                         <div class="item pagination-centered <#if irfile_index == 0>active</#if>"> <#t>
                         <div class="row-fluid"> <#t>
                         </#if>
-                        <div class="span3"> <#t>
+                        <div class="col-3"> <#t>
                           <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>"> <#t>
                               <span class="thumbnail-center-spacing "></span> <#t>
                               <img class="thumbnailLink img-polaroid"<#t>

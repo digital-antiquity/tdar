@@ -271,10 +271,10 @@
   <div class = "container">  
     <div class="px-5 pb-5 pt-3">
         <div class="container">
-            <h2 class="display-3">What can you dig up?</h2>
-            <p class="lead"><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive for archaeological information.</p>
+            <h2 >What can you dig up?</h2>
+            <p class="lead"><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
-                <div class="input-group col-md-9">
+                <div class="input-group col-md-9 noleftmargin">
                     <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
                     <span class="input-group-append" name="_tdar.searchType" value="simple">
                         <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
@@ -354,7 +354,7 @@
 
 
 <#-- <div class="row">
-    <div class="span3 bucket">
+    <div class="col-3 bucket">
         <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
 
         <h3><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h3>
@@ -365,7 +365,7 @@
             <a href="http://www.tdar.org/why-tdar/data-access/" class="button">Learn More</a>
         </p>
     </div>
-    <div class="span3 bucket">
+    <div class="col-3 bucket">
         <img src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
 
         <h3><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h3>
@@ -376,7 +376,7 @@
             <a href="http://www.tdar.org/why-tdar/preservation/" class="button">Learn More</a>
         </p>
     </div>
-    <div class="span3 bucket">
+    <div class="col-3 bucket">
         <img src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
 
         <h3><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h3>
@@ -387,7 +387,7 @@
             <a href="http://www.tdar.org/why-tdar/contribute/" class="button">Learn More</a>
         </p>
     </div>
-    <div class="span3 bucket">
+    <div class="col-3 bucket">
         <img src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
 
         <h3><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h3>
@@ -406,7 +406,7 @@
 <div class="subnav-section">
     <div class="container">
         <div class="row">
-            <div class="span12 subnav">
+            <div class="col-12 subnav">
                 <ul class="subnav-lft">
                     <li><a href="<@s.url value="/search"/>"><@s.text name="menu.search"/></a></li>
                     <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>

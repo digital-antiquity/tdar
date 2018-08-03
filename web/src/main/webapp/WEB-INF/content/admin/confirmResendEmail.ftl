@@ -14,7 +14,7 @@
 <@s.hidden name="emailId" />
 
 <div class="row">
-    <div class="span10">
+    <div class="col-10">
         <p>
         Are you sure you want to resend this email <b>${email.subject}</b> to  <b>${email.to}</b>.<br />
         <br />

@@ -36,7 +36,7 @@
     <#-- set default ; add map wrapper -->
         <#if orientation == "GRID">
             <#local listTag_="div"/>
-            <#local itemClass = "span2"/>
+            <#local itemClass = "col-2"/>
             <#local itemTag_="div"/>
         <#elseif orientation == "MAP" >
             <#local listTag_="ol"/>
@@ -45,7 +45,7 @@
             <#if mapPosition=="top" || mapPosition == "right">
                 <@_mapDiv mapPosition mapHeight />
             </#if>
-        <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
+        <div class="<#if mapPosition=='left' || mapPosition=="right">col-3<#else>col-12</#if>">
         </#if>
 
         <#local rowCount = -1 />
@@ -125,15 +125,7 @@
     </#macro>
 
     <#macro _mapDiv mapPosition mapHeight>
-        <#local spans = 12 />
-        <#if (mapPosition == 'left' || mapPosition == 'right')>
-            <#local spans = 9 />
-        </#if>
-
-        <#if ((rightSidebar!false) || (leftSidebar!false)) >
-            <#local spans = spans - 3 />
-        </#if>
-        <div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
+        <div class="col-12 leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
         <#if id?has_content && namespace=="/collection">
         data-infinite-url="/api/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
         </#if>
@@ -167,7 +159,7 @@
                 </div>    </div>
                 <hr/>
                 <div class=" ${orientation} resource-list row">
-                <div class="span2">
+                <div class="col-2">
                 </#if>
             </#if>
         </#if>
@@ -457,7 +449,7 @@ bookmark indicator, etc..
     <#macro displayWidget>
             <#list availableOrientations>
                 <h3>View Options</h3>
-                <ul class="tools media-list">
+                <ul class="tools media-list ml-0 pl-0"">
                 <#items as orientation>
                     <li class="media">
                     <svg class="svgicon mr-3 red icon-height"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${orientation.svg!orientation}"></use></svg>

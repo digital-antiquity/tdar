@@ -41,7 +41,7 @@
         <div id="sidebar-left" parse="true" class="options hidden-phone">
 
             <h2 class="totalRecords">Search Options</h2>
-            <ul class="tools media-list">
+            <ul class="tools media-list ml-0 pl-0">
                 <li class="media">
                     <i class="mr-3 fas fa-search red"></i> 
                     <div class="media-body">

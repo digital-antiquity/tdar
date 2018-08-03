@@ -9,16 +9,16 @@
 
 
 <div class="row">
-<div class="span2">
+<div class="col-2">
 <@dash.sidebar current="export" />
 </div>
-<div class="span10">
+<div class="col-10">
 
 <h3>Select a Billing Account or Collection to export from</h3>
 <br/>
 <@s.form method=POST action="perform" class="form-horizontal">
 <div class="row">
-    <div class="span8">
+    <div class="col-8">
         <div class="control-group" >
             <label class="control-label" for="collectionName">Account</label>
             <div class="">
@@ -28,7 +28,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="span8">
+    <div class="col-8">
         <div id="parentIdContainer" class="control-group">
             <label class="control-label" for="collectionName">Collection</label>
             <div class="controls">

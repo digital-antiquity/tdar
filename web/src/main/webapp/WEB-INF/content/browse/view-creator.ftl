@@ -212,7 +212,7 @@
 
                 <div class="row">
                     <#list creator.addresses  as address>
-                        <div class="span3">
+                        <div class="col-3">
                             <@commonr.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
                         </div>
                     </#list>
@@ -238,10 +238,10 @@
 
                     <#if creator.registered?? >
                         <div class="row">
-                            <div class="span6">
+                            <div class="col-6">
                                 <@common.billingAccountList accounts />
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                             <#if editor>
                                 <h2>Group Membership</h2>
                                 <ul>
@@ -256,7 +256,7 @@
                         <#if editor>
                             <#list ownerCollections![]>
                         <div class="row">
-                            <div class="span12">
+                            <div class="col-12">
                                 <h2>Collection Membership</h2>
                                 <ul>
 					        		<#items as collection>
@@ -282,10 +282,10 @@
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">  
         <div class="row">
-            <div class="span4">
+            <div class="col-4">
                 <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
             </div>
-            <div class="span5">
+            <div class="col-5">
                 <#if !hideFacetsAndSort>
                     <div class="form-horizontal pull-right">
                         <@search.sortFields true/>

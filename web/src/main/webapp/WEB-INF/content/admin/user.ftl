@@ -32,7 +32,7 @@
 
 <h3>User Agreement Stats</h3>
 <div class="row">
-    <div class="span6">
+    <div class="col-6">
         <table class="table table-bordered table-condensed table-hover">
             <colgroup>
                 <col style="width:40%">
@@ -51,7 +51,7 @@
 
 <h3>User Affiliation Stats</h3>
 <div class="row">
-    <div class="span6">
+    <div class="col-6">
         <h4>All Users</h4>
         <table class="table table-bordered table-condensed table-hover">
             <colgroup>
@@ -67,7 +67,7 @@
         </table>
     </div>
 
-    <div class="span6">
+    <div class="col-6">
         <h4>Contributors</h4>
         <table class="table table-bordered table-condensed table-hover">
             <colgroup>

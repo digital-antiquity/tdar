@@ -29,7 +29,7 @@ TDAR.authority = function () {
             sAjaxDataProp: 'people',
             selectableRows: true,
             requestCallback: _getPersonSearchData,
-            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
+            "sDom": "<'row'<'col-6'l><'pull-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>"
         },
         institution: {
             tableSelector: '#dupe_datatable',
@@ -40,7 +40,7 @@ TDAR.authority = function () {
                 {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
                 {sTitle: "Name", mDataProp: "name", tdarSortOption: 'CREATOR_NAME'}
             ],
-            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>",  //no text filter!
+            "sDom": "<'row'<'col-6'l><'pull-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>",  //no text filter!
             sPaginationType: "bootstrap",
             sAjaxDataProp: 'institutions',
             selectableRows: true,
@@ -69,7 +69,7 @@ TDAR.authority = function () {
                     term: $('#txtKeyword').val()
                 };
             },
-            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
+            "sDom": "<'row'<'col-6'l><'pull-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>"
         }
     };
 

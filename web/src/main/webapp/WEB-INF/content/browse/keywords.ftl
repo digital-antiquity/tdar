@@ -58,7 +58,7 @@
     <#if ( results?? && results?size > 0) >
         <div id="divResultsSortControl">
             <div class="row">
-                <div class="span4">
+                <div class="col-4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"  />
                 </div>
             </div>

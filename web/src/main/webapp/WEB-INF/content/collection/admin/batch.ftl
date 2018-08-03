@@ -16,12 +16,12 @@ textarea {height:10rem;}
 <h1>Collection Admin: <span class="red small">${collection.name}</span></h1>
 
 <div class="row">
-<div class="span12">
+<div class="col-12">
             <@common.resourceUsageInfo />
 </div>
 </div>
 <div class="row">
-    <div class="span12">
+    <div class="col-12">
         <@s.form cssClass="form-horizontal" action="save" method="POST">
 
 <div class="row">
@@ -48,13 +48,13 @@ textarea {height:10rem;}
                 <@s.hidden name="ids[${res_index}]" value="${res.id?c}" cssClass="resource-id-field" />
                 
                 <svg class="svgicon svg-small red pull-left" style="position:absolute"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${res.resourceType?lower_case}"></use></svg>                 
-                <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8 resource-title-field" />
+                <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge col-8 resource-title-field" />
                 <#if res.resourceType.project>
                     <@s.hidden name="dates[${res_index}]" value="-1" label="Date" cssClass="input" /> 
                 <#else>
                     <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
                 </#if>
-                <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge span8 resource-description-field" />
+                <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge col-8 resource-description-field" />
             </#items>
         </#list>
         <@edit.submit fileReminder=false />

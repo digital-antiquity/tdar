@@ -20,10 +20,10 @@
 
 </div>
 <div class="row">
-<div class="span2">
+<div class="col-2">
     <@dash.sidebar current="collections" />
 </div>
-<div class="span10">
+<div class="col-10">
         <div class="table">
             <table class="table ">
             <thead>

@@ -8,7 +8,7 @@
 
 
     <div class="row">
-        <div class="span9">
+        <div class="col-9">
                 <a href="<@s.url value="/workspace/integrate"/>" class="button tdar-button">Start a New Integration</a>
             <#list workflows?sort_by('dateUpdated')?reverse>
                 <h3>Saved Integrations</h3>
@@ -46,7 +46,7 @@
                 <@learn />
             </#list>
         </div>
-        <div class="span3">
+        <div class="col-3">
         <#if workflows?size != 0>
             <@learn />
         </#if>

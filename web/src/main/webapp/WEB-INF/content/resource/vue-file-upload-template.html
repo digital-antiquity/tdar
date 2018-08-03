@@ -14,14 +14,14 @@
 
     <br />
     <div class="row">
-    <div class="span2">
+    <div class="col-2">
     <!-- The fileinput-button span is used to style the file input field as button -->
     <label :class="fileUploadButtonCss" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
         class="glyphicon glyphicon-plus"></i> <span>Select files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label> 
     </div>
-    <div class="span6">
+    <div class="col-6">
         <div id="progress" class="progress progress-striped" style="margin-top:5px">
             <div class="progress-bar progress-bar-success bar"></div>
         </div>
@@ -61,7 +61,7 @@ ${vueFilesFallback!'{{ files }}'}
 <tr v-bind:id="rowId">
     <td><label class="control-label">Filename</label>
         <div class="controls controls-row">
-            <div class="span5">
+            <div class="col-5">
                 <div>
                     <em class="replacement-text "></em>
                 </div>
@@ -92,7 +92,7 @@ ${vueFilesFallback!'{{ files }}'}
             </div>
             <label class="control-label" for="">Date Created</label>
             <div class="controls controls-row">
-                <div class="span5">
+                <div class="col-5">
                     <div class="input-append">
                         <input type="text" :name="createdDateFieldName" :disabled="inputDisabled"
                             class="datepicker" placeholder="mm/dd/yyyy"
@@ -105,7 +105,7 @@ ${vueFilesFallback!'{{ files }}'}
             </div>
             <label class="control-label">Description</label>
             <div class="controls controls-row">
-                <div class="span5">
+                <div class="col-5">
                     <textarea class="input-block-level" :disabled="inputDisabled"
                         :name="descriptionFieldName" rows="2"
                         placeholder="Enter a description here"

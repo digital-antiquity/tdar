@@ -3,7 +3,7 @@
 <h1>Processing Payment</h1>
 
 <div class="row" >
-    <div class="span8" style="height:450px">
+    <div class="col-8" style="height:450px">
         <div class="cartpane" style="height:420px">
             <h3>Instructions</h3>
             <p>
@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div class="span4">
+    <div class="col-4">
         <img alt="nelnet exmaple" src="<@s.url value="/includes/nellnet_screenshot.png"/>" title="Nellnet Screenshot"
              class="img-polaroid responsive-image">
     </div>
@@ -36,7 +36,7 @@
 
 
 <div class="row">
-    <div class="span12">
+    <div class="col-12">
         <span class="badge pull-right" id="polling-status" data-invoiceid="${invoice.id?c}"></span>
         <div class="form-actions">
             <a class="button" id="btnOpenPaymentWindow" href="<#noescape>${redirectUrl}</#noescape>" target="_blank">Click Here To Begin Payment Process</a>

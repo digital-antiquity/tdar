@@ -38,9 +38,9 @@
             <#list codingRules as rule>
                 <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}" data-idx="${rule_index?c}">
                     <@s.hidden name='codingRules[${rule_index?c}].id' />
-                    <@s.textfield theme="simple" name='codingRules[${rule_index?c}].formattedTerm' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
+                    <@s.textfield theme="simple" name='codingRules[${rule_index?c}].formattedTerm' size='50' readonly=true cssClass="col-4 codingSheetTerm"/>
 
-                    <div class="span1">
+                    <div class="col-1">
                         <img src="<@s.url value='/images/arrow_right.png' />" alt="right arrow"/>
                     </div>
 
@@ -48,7 +48,7 @@
                         <@s.hidden name="codingRules[${rule_index?c}].ontologyNode.id" id="ontologyNodeId_${rule_index?c}" />
                         <div class="input-append">
                             <@s.textfield theme="simple" name="codingRules[${rule_index?c}].ontologyNode.displayName" id="autocomp_${rule_index?c}"
-                            cssClass="manualAutocomplete ontologyValue span4" autocompleteIdElement="#ontologyNodeId_${rule_index?c}"/>
+                            cssClass="manualAutocomplete ontologyValue col-4" autocompleteIdElement="#ontologyNodeId_${rule_index?c}"/>
                             <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
                         </div>
                     </div>
@@ -62,9 +62,9 @@
                 <div class="controls controls-row mappingPair ${rule.code}" id="row_s_${rule.code}" data-idx="${(10000 + rule_index)?c}">
                     <@s.hidden name='specialRules[${rule_index?c}].id' />
                     <@s.hidden name='specialRules[${rule_index?c}].code'  />
-                    <@s.textfield theme="simple" name='specialRules[${rule_index?c}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
+                    <@s.textfield theme="simple" name='specialRules[${rule_index?c}].term' size='50' readonly=true cssClass="col-4 codingSheetTerm"/>
 
-                    <div class="span1">
+                    <div class="col-1">
                         <img src="<@s.url value='/images/arrow_right.png' />" alt="right arrow"/>
                     </div>
 
@@ -72,7 +72,7 @@
                         <@s.hidden name="specialRules[${rule_index?c}].ontologyNode.id" id="ontologyNodeId_s_${rule_index?c}" />
                         <div class="input-append">
                             <@s.textfield theme="simple" name="specialRules[${rule_index?c}].ontologyNode.displayName" id="autocomp_${(10000 + rule_index)?c}"
-                            cssClass="manualAutocomplete ontologyValue span4" autocompleteIdElement="#ontologyNodeId_s_${rule_index?c}"/>
+                            cssClass="manualAutocomplete ontologyValue col-4" autocompleteIdElement="#ontologyNodeId_s_${rule_index?c}"/>
                             <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
                         </div>
                     </div>
