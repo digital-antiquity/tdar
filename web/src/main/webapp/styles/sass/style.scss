@@ -713,3 +713,128 @@ form.leaflet-control-geocoder-form {
 .treeview li {
     margin-top:0px !important;
 }
+
+
+
+.hidden {
+    display:none; visibility:hidden;
+ }
+
+body {
+  position: relative;
+}
+.static {
+    position: fixed;
+}
+
+
+.section + .section {
+    padding-top: 1em;
+    border-top:1px solid #EEE;
+}
+
+.section , .section + .card {
+    margin-bottom:1em;
+}
+
+.dashboard-nav .nav-item {
+text-align:left !important;
+}
+
+.icon-push-down {
+margin-top: .3em
+}
+
+.icon-height {
+margin-top: .4em;
+height:.8em;
+width:.8em;
+}
+
+.nav-chevron {
+    color: white;
+    fill: white;
+    width: 10px;
+    height: 10px;
+    stroke-width: 5px;
+    stroke-color: white;
+    stroke: white;
+    position: relative;
+    bottom: 2px;
+}
+
+.noborder {
+    border: none;
+}
+
+.rounded-right {
+    border-top-right-radius: .25em;
+    border-top-left-radius: .25em;
+}
+
+#notice {background-color:white;}
+
+
+@media screen {
+        /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
+        h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+            font-family: "soleil", sans-serif !important;
+        }
+
+        #home .news li, .cols p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+            font-family: "ff-tisa-web-pro", serif !important;
+        }
+
+}
+
+/* for typekit to prevent flash of unstyled content */
+.wf-loading {
+        font-family: "helvetica";
+        visibility: hidden;
+}
+
+.wf-active {
+        visibility: visible;
+}
+
+footer {
+    margin-top: 60px;
+    #footer {
+    padding: 50px 0;
+        background: url(/images/r4/bg-footer.png) repeat;
+    }
+
+h4 {
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    margin: 0 0 15px 0;
+}
+
+ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    clear: left;
+    font-size: 13px;
+    line-height: 22px;
+}
+
+ a {
+    color: #fff;
+}
+
+ a:hover {
+    color: #f1d9bf;
+}
+
+}
+
+#ajaxIndicator {
+    position: fixed;
+    width: 25%;
+    z-index: 10001;
+    right: 5px;
+    bottom: 5px;
+    opacity: .9;
+}

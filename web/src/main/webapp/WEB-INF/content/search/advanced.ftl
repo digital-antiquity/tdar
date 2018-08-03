@@ -160,23 +160,23 @@
             <div class="term RESOURCE_CREATOR_PERSON">
                 <!-- FIXME: REPLACE WITH REFERENCE TO EDIT-MACROS -->
             <span class="creatorPerson " id="group_${groupid}_row_${fieldIndex}_parent">
-                <div class="controls-row">
+                <div class="form-row">
                     <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
-                    <@s.textfield cssClass="col-2 nameAutoComplete" placeholder="Last Name"  theme="tdar"
+                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="Last Name"  theme="tdar"
                 autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" />
-                    <@s.textfield cssClass="col-2 nameAutoComplete" placeholder="First Name" theme="tdar"
+                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="First Name" theme="tdar"
                 autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255"  />
                     <@s.select theme="tdar"  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select col-3" />
                 </div>
                 <div class="controls-row">
                     <#if authenticated>
-                        <@s.textfield cssClass="col-3 nameAutoComplete" placeholder="Email (Optional)" theme="tdar"
+                        <@s.textfield cssClass="col-5 nameAutoComplete" placeholder="Email (Optional)" theme="tdar"
                         autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                         name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255" />
                     </#if>
-                <@s.textfield cssClass="nameAutoComplete col-3" placeholder="Institution Name (Optional)" theme="tdar"
+                <@s.textfield cssClass="nameAutoComplete col-5" placeholder="Institution Name (Optional)" theme="tdar"
                 autocompleteName="institution" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.institution.name" maxlength="255" />
                 </div>
@@ -265,7 +265,7 @@
 
 
     <#macro searchGroup groupid group_ >
-    <div class="groupingSelectDiv control-group fade">
+    <div class="groupingSelectDiv form-row fade">
         <#assign defaultOperator = "AND"/>
         <#if (group_?is_hash && group_.or ) >
             <#assign defaultOperator="OR" />
@@ -286,7 +286,7 @@
         <#if group_?is_hash >
             <#list group_.fieldTypes as fieldType >
                 <#if fieldType??>
-                    <div id="grouptablerow_0_" class="control-group termrow repeat-row">
+                    <div id="grouptablerow_0_" class="form-row termrow repeat-row">
                         <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
                         <div class="controls controls-row">
                             <div class="col-8 term-container">
@@ -308,7 +308,7 @@
 
     <#--render an empty "all fields" form input element -->
     <#macro blankRow groupid=0 fieldType_index=0 idAttr="grouptablerow_${groupid}_">
-    <div id="${idAttr}" class="control-group termrow repeat-row">
+    <div id="${idAttr}" class="form-row termrow repeat-row">
         <@searchTypeSelect />
         <div class="controls controls-row simple multiIndex">
             <div class="col-8 term-container">

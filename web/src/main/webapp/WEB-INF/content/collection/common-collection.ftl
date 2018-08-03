@@ -32,7 +32,7 @@
             <hr class="light"/>
             <@commonr.renderWorldMap mode="mini" />
             <hr class="light"/>
-                <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
+                <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="list-unstyled" pictoralIcon=true />
     <i class="icon-document-red"></i>
             </#if>
 		<#else>
@@ -49,7 +49,7 @@
 		<@list.displayWidget />
 
             <hr/>
-        <ul class="media-list">
+        <ul class="media-list ml-0 pl-0">
         <#if false >
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
@@ -63,7 +63,7 @@
         </ul>
             <hr/>
 
-            <ul class="unstyled-list">
+            <ul class="list-unstyled">
             <li>
                 <strong>Submitter</strong><br>
                     <a href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
@@ -177,7 +177,6 @@
 
 <#macro keywordSection>
             <#if keywordSectionVisible>
-            <!-- <h5>Common Keywords found within this Collection</h5> -->
             <div class="row">
                 <div class="col">
                 <@_keywordSection "Site Name Keywords" facetWrapper.facetResults['activeSiteNameKeywords']![] "query" />
@@ -198,11 +197,10 @@
 </#macro>
 
 <#macro resultsSection header="Inside This Collection">
-
+<div class="row">
         <#if results?has_content>
         <div id="divResultsSortControl col-12">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
-            </div>
         </div>
         
         
@@ -222,20 +220,21 @@
 
         <div class="tdarresults">
             <#assign itemsPerRow = 5 />
-        <#if ((rightSidebar!false) || (leftSidebar!false)) >
-            <#assign itemsPerRow = 4 />
-        </#if>
+            <#if ((rightSidebar!false) || (leftSidebar!false)) >
+                <#assign itemsPerRow = 4 />
+            </#if>
 
 
 
             <#nested />
             <@list.listResources resourcelist=results sortfield=sortField titleTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
                     orientation=orientation    mapPosition="top" mapHeight=mapSize />
-        </div>
+            </div>
             <@search.basicPagination "Records" />
         <#else>
         This collection is either empty or you do not currently have permissions to view the contents.
         </#if>
+        </div> 
 </#macro>
 
 <#macro adminSection type="">
@@ -276,6 +275,7 @@
         </div>
         <div class="row">
             <@_authorizedUsers resourceCollection />
+        </div>
         </div>
         </#if>
 
