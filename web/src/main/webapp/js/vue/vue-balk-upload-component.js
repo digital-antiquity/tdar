@@ -430,6 +430,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 renameVisible: false,
                 reportsVisible: false,
                 balkVisible: true,
+                collection: {},
                 path : "" }
             },
             computed : {
@@ -515,6 +516,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         });
                     });
                     this.cancelRename();
+                },
+                selectCollection: function(result){
+                    Vue.set(this,"collection", result);
                 },
                 cancelRename: function() {
                     Vue.set(this,"renameVisible", false);
@@ -633,6 +637,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                     });
                     return ret;
+                },
+                currentDir: function() {
+                    if (this.dirStack.length > 0) {
+                        return this.dirStack[this.dirStack.length -1];
+                    }
+                    return undefined;
                 },
                 _cannotSelect: function() {
                     if (this.selectedFiles == undefined || this.selectedFiles.length == 0 || this.selectedFiles.length > MAX_SELECTED_FILES) {
@@ -818,7 +828,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": dirName, accountId: _app.accountId}
                     ).done(function(msg) {
                         _app.files.push(msg);
-                        Vue.set(this,'dirName','');
+                        Vue.set(_app,'dirName','');
                     });
                 },
                 moveUI: function() {
@@ -828,6 +838,22 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                       console.log(_app.dirTree);
                       $("#move-template-modal").modal('show');
                   });
+                },
+                linkCollection: function() {
+                    var data = {
+                            id: this.currentDir().id,
+                            collectionId: this.collection.id
+                    }
+                    $.post("/api/file/linkCollection", data
+                    ).done(function(msg) {
+                        console.log(msg);
+                    });
+
+                },
+                collectionUI: function() {
+                    // show the move UI
+                    var _app = this;
+                    $("#collection-modal").modal('show');
                 },
                 createRecordFromSelected: function() {
                     window.location.href = this._createRecordFromSelected();
