@@ -13,12 +13,12 @@
  * 
  * 
  */
- TDAR.c3graph = {};
- 
-TDAR.c3graph = (function(console, $, ctx, c3, TDAR) {
-    "use strict";
 
-    var _getColors = function() {
+const c3 = require("c3");
+const c3graphsupport = require("./tdar.c3graphsupport");
+const common = require("./tdar.common");
+
+var _getColors = function() {
         var c3colors = $("#c3colors");
         var c3colorsobj = undefined;
 
@@ -273,8 +273,8 @@ TDAR.c3graph = (function(console, $, ctx, c3, TDAR) {
             cdata.data.onclick = window[clickname];
         }
 
-        if ($.isFunction(TDAR.c3graphsupport[clickname])) {
-            cdata.data.onclick = TDAR.c3graphsupport[clickname];
+        if ($.isFunction(c3graphsupport[clickname])) {
+            cdata.data.onclick = c3graphsupport[clickname];
         }
         if ($parent.data("legend-position") != undefined) {
             if (cdata.legend == undefined) {
@@ -361,7 +361,7 @@ TDAR.c3graph = (function(console, $, ctx, c3, TDAR) {
                 tooltip : {
                     format : {
                         value : function(value, ratio, id, index) {
-                            return TDAR.common.formatNumber(value) + " (" + (ratio * 100.00).toFixed(2) + "%)";
+                            return common.formatNumber(value) + " (" + (ratio * 100.00).toFixed(2) + "%)";
                         }
                     }
                 }
@@ -408,7 +408,7 @@ TDAR.c3graph = (function(console, $, ctx, c3, TDAR) {
         });
     }
 
-    return {
+    module.exports =  {
         initPieChart : _initPieChart,
         initLineGraph : _initLineGraph,
         initBarChart : _initBarChart,
@@ -422,4 +422,3 @@ TDAR.c3graph = (function(console, $, ctx, c3, TDAR) {
             TDAR.c3graph.initGaugeChart();
         }
     }
-})(console, jQuery, window, c3, TDAR);

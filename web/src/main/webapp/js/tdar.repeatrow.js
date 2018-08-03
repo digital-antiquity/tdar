@@ -1,9 +1,3 @@
-
-/**
- * TDAR.repeatrow
- */
-TDAR.repeatrow = function (TDAR, $) {
-    "use strict";
     /**
      * Register a "repeatable container". That is, a table element (or any other block-level element) which
      * contains form fields that the user may duplicate one row at a time.
@@ -252,12 +246,10 @@ TDAR.repeatrow = function (TDAR, $) {
         return $(html);
     };
 
-    return {
+    module.exports =  {
         registerRepeatable: registerRepeatable,
         registerDeleteButtons: registerDeleteButtons,
         cloneSection: cloneSection,
         deleteRow: deleteRow,
         clearInputs: _clearInputs
     };
-
-}(TDAR, jQuery);

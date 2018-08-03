@@ -2,10 +2,6 @@
  * TDAR  authority-management library.  Used by the Authority-management (aka record-deduper) pages.
  * @type {{}}
  */
-TDAR.authority = {};
-TDAR.authority = function () {
-    "use strict";
-    var self = {};
 
     var searchControls;
     var selEntityType;
@@ -77,7 +73,7 @@ TDAR.authority = function () {
      * initialize a datatable that will display search results for the currently selected search type
      * @private
      */
-    function _registerDataTable() {
+    var _registerDataTable = function() {
         if (dataTable) {
             dataTable.fnDestroy();
             dataTable.empty();
@@ -91,7 +87,7 @@ TDAR.authority = function () {
     /**
      * show the correct search control based on the value of the 'entity type' dropdown
      */
-    function _updateSearchControl() {
+    var _updateSearchControl = function() {
         searchControls.hide();
         selEntityType = $('#selEntityType');
         var entityTypeVal = selEntityType.val();
@@ -124,7 +120,7 @@ TDAR.authority = function () {
      * @returns {string} lookupType value to include in keyword lookup request
      * @private
      */
-    function _getKeywordType(enumVal) {
+    var _getKeywordType = function(enumVal) {
         return {
             KEYWORD_CULTURE_KEYWORD: 'CultureKeyword',
             KEYWORD_GEOGRAPHIC_KEYWORD: 'GeographicKeyword',
@@ -141,7 +137,7 @@ TDAR.authority = function () {
      * @returns {{minLookupLength: number}}
      * @private
      */
-    function _getPersonSearchData() {
+    _getPersonSearchData = function() {
         var data = {minLookupLength: 0};
         $.each($(':text', '#divPersonSearchControl'), function (ignored, txtElem) {
             data[txtElem.name] = $(txtElem).val();
@@ -158,7 +154,7 @@ TDAR.authority = function () {
      * @param ignored3
      * @private
      */
-    function _renderSelectedDupes(ignored1, ignored2, ignored3) {
+    var _renderSelectedDupes = function(ignored1, ignored2, ignored3) {
         $('#frmDupes ul').remove();
         var $ul = $(document.createElement('ul'));
         var dupeCount = 0;
@@ -183,7 +179,7 @@ TDAR.authority = function () {
      * clear current list of selected dupelicates.
      * @returns {boolean} false.  because.
      */
-    function _clearDupeList() {
+    var _clearDupeList = function() {
         dataTable.data('selectedRows', {});
         $('input[type=checkbox]', dataTable).prop('checked', false);
         _renderSelectedDupes(null, null, null);
@@ -193,7 +189,7 @@ TDAR.authority = function () {
     /**
      * Initialize form controls, event listeners.
      */
-    function _initAuthTable() {
+    var _initAuthTable = function() {
         var selEntityType = $("#selEntityType");
         if (selEntityType != undefined) {
             searchControls = $('.searchControl');
@@ -201,12 +197,10 @@ TDAR.authority = function () {
             TDAR.common.applyWatermarks(document);
             $('span.button').button().click(_clearDupeList);
         }
-
     }
 
-    return {
+    module.exports =  {
         clearDupeList: _clearDupeList,
         updateSearchControl: _updateSearchControl,
         initAuthTable: _initAuthTable
     };
-}();

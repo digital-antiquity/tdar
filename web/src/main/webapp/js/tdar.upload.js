@@ -2,13 +2,9 @@
  * 
  * tdar.fileupload
  * */
-
-import $ from "jquery";
 const datepicker = require("./tdar.datepicker");
 const core = require("./tdar.core");
 
-//TDAR.fileupload = (function (TDAR, $) {
-    "use strict";
     /* how long to display error messages prior to removing a failed file upload from the files table (in millis) */
     var ERROR_TIMEOUT = 5000;
 
@@ -286,7 +282,7 @@ const core = require("./tdar.core");
         return $.map(fileProxies, function (proxy, i) {
             var file = $.extend({
                 name: proxy.filename,
-                url: TDAR.uri("filestore/" + proxy.originalFileVersionId),
+                url: core.uri("filestore/" + proxy.originalFileVersionId),
                 thumbnail_url: null,
                 delete_url: null,
                 delete_type: "DELETE",
@@ -544,4 +540,3 @@ const core = require("./tdar.core");
         "getRowId": _getRowId,
         "getRowVisibility": _getRowVisibility
     };
-//})(TDAR, jQuery);

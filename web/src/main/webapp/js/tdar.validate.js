@@ -1,7 +1,5 @@
-import "jquery";
-
-TDAR.validate = (function($, ctx, TDAR) {
-    "use strict";
+const common  = require("./tdar.common");
+const fileupload = require("./tdar.upload");
 
     /**
      * Default settings for form validation in tDAR forms
@@ -44,7 +42,7 @@ TDAR.validate = (function($, ctx, TDAR) {
             //cap the included errors, but show the correct total number of errors
             totalErrors += errors.length;
             $form.data("submitCount", submitCount).data("totalErrors", totalErrors);
-            errors = errors.slice(0 - TDAR.common.maxJavascriptValidationMessages);
+            errors = errors.slice(0 - common.maxJavascriptValidationMessages);
 
             //todo: we really only need to build the dom when the submit is finally successful
             $form.find("#divClientValidationInfo").remove();
@@ -54,7 +52,7 @@ TDAR.validate = (function($, ctx, TDAR) {
 
             $.each(errors, function (idx, error) {
                 var key = "error_" + idx;
-                var msg = TDAR.common.htmlEncode("" + error.element.id + ": " + error.message);
+                var msg = common.htmlEncode("" + error.element.id + ": " + error.message);
                 var $input = $(template(key, msg));
                 $input.val(msg);
                 $clientInfo.append($input);
@@ -156,7 +154,7 @@ TDAR.validate = (function($, ctx, TDAR) {
 
         var fileValidator;
         if ($form.data("multiple-upload")) {
-            fileValidator = new TDAR.fileupload.FileuploadValidator($form);
+            fileValidator = new fileupload.FileuploadValidator($form);
             fileValidator.addRule("nodupes");
     
             //fixme: (TDAR-4722) prohibit file replacements on 'add' pages. Due to bug, UI may display 'replace' option even when it shouldn't.
@@ -166,13 +164,13 @@ TDAR.validate = (function($, ctx, TDAR) {
                 fileValidator.addRule("noreplacements");
             }
     
-            TDAR.fileupload.validator = fileValidator;
+            fileupload.validator = fileValidator;
         }
         
         
         if ($form.data("datatable")) {
             if (fileValidator) {
-                TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+                fileupload.addDataTableValidation(fileupload.validator);
             } else {
                 console.error("no file validator defined");
             }
@@ -181,7 +179,7 @@ TDAR.validate = (function($, ctx, TDAR) {
         
         var _type = $form.data("type");
         if (_type == 'GEOSPATIAL') {
-            TDAR.fileupload.addGisValidation(fileValidator);
+            fileupload.addGisValidation(fileValidator);
         }
         
 
@@ -387,7 +385,7 @@ TDAR.validate = (function($, ctx, TDAR) {
     };
 
 
-    return {
+    module.exports = {
         "init" : _init,
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
@@ -395,7 +393,9 @@ TDAR.validate = (function($, ctx, TDAR) {
         "initRightsForm": _initRightsForm,
         "prepareDateFields": _prepareDateFields,
         main : function() {
-            TDAR.validate.init();
+            init();
         }
     }
-})(jQuery, window, TDAR);
+    
+    
+//})(jQuery, window, TDAR);

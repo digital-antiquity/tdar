@@ -2,9 +2,8 @@
  * tdar.common.js
  */
 
-var TDAR = require("./tdar.core.js");
-import tmpl from 'blueimp-tmpl';//require('script-loader!blueimp-tmpl/js/tmpl.js')
-import "jquery";
+const core = require("./tdar.core.js");
+const tmpl = require('blueimp-tmpl');//require('script-loader!blueimp-tmpl/js/tmpl.js')
 
 /*
  * $Id$
@@ -13,19 +12,6 @@ import "jquery";
  * Mostly have to do with adding new rows for multi-valued fields, etc.
  */
 
-/**
- * Returns a copy of a string, terminated by ellipsis if input string exceeds max length
- * @param str input string
- * @param maxlength maximum length of the copy string.
- * @param useWordBoundary should we ellipsify in the middle of a word?
- * @returns {*} copy of string no longer than maxlength.
- */
-TDAR.ellipsify = function _ellipsify(text, n, useWordBoundary) {
-        /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
-        var toLong = text.length > n, s_ = toLong ? text.substr(0, n - 1) : text;
-        s_ = useWordBoundary && toLong ? s_.substr(0, s_.lastIndexOf(' ')) : s_;
-        return  toLong ? s_ + '...' : s_;
-}
 
 
 jQuery.extend({

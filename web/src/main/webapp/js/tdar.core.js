@@ -168,6 +168,21 @@ var windowLocation = function(url) {
 	window.location = url;
 };
 
+
+/**
+ * Returns a copy of a string, terminated by ellipsis if input string exceeds max length
+ * @param str input string
+ * @param maxlength maximum length of the copy string.
+ * @param useWordBoundary should we ellipsify in the middle of a word?
+ * @returns {*} copy of string no longer than maxlength.
+ */
+var _ellipsify = function(text, n, useWordBoundary) {
+        /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
+        var toLong = text.length > n, s_ = toLong ? text.substr(0, n - 1) : text;
+        s_ = useWordBoundary && toLong ? s_.substr(0, s_.lastIndexOf(' ')) : s_;
+        return  toLong ? s_ + '...' : s_;
+}
+
 /**
  * Execute any main() functions found in the API
  */
@@ -214,4 +229,5 @@ module.exports = {
 	assetsUri : assetsUri,
 	windowLocation: windowLocation,
 	namespace: namespace,
+	ellipsify: _ellipsify
 }

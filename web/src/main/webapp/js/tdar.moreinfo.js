@@ -1,9 +1,6 @@
 /***
  * tdar.moreinfo.js
  */
-(function (TDAR, $) {
-    'use strict';
-
     var _init = function() {
         $(".moreInfo").each(function() {
             var $t = $(this);
@@ -26,12 +23,9 @@
     }
     
     //expose public elements
-    TDAR.moreInfo = {
+    module.exports = {
         "init": _init,
         main : function() {
             TDAR.moreInfo.init();
         }
-
     };
-
-})(TDAR, jQuery);

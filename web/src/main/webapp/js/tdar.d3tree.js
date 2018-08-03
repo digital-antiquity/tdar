@@ -1,8 +1,6 @@
-TDAR.d3tree = (function(console, $, ctx, d3) {
-    "use strict";
+const d3 = require("d3");
 
     // var d3 = window.d3 ? window.d3 : typeof require !== 'undefined' ? require("d3") : undefined;
-    
     // basically a way to get the path to an object
 
     function searchTree(obj, search, path) {
@@ -14,8 +12,6 @@ TDAR.d3tree = (function(console, $, ctx, d3) {
         });
         return found;
     }
-
-
 
 
     /** "package private" variables - used by functions in this module but not publically accessible **/
@@ -318,9 +314,8 @@ TDAR.d3tree = (function(console, $, ctx, d3) {
     // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
     var zoomListener = d3.behavior.zoom().scaleExtent([ 1.3, 1.3 ]).on("zoom", _zoom);
 
-    return {
+    modules.export = {
         "init" : _init,
         "clearSearch": _clearSearch,
         "allNodes": allNodes
     };
-})(console, jQuery, window, d3);

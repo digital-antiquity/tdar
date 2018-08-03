@@ -1,11 +1,6 @@
 /**
  * tdar.datepicker.js
  */
-import $ from "jquery";
-
-//(function (TDAR, $) {
-    'use strict';
-
     var _defaults = {dateFormat: "mm/dd/yyyy"}
     //scan for any inputs with .datepicker class and initialize them.
     var _init = function() {
@@ -44,5 +39,3 @@ import $ from "jquery";
         "defaults": _defaults,
         main : _init
     };
-
-//})(TDAR, jQuery);

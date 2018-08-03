@@ -697,7 +697,7 @@ function _applyCollectionAutocomplete($elements, options, extraData) {
  * @returns {*}
  * @private
  */
-function _displayResourceAutocomplete(item) {
+var _displayResourceAutocomplete = function(item) {
     var label = "";
     if (item.name) {
         label = item.name;
@@ -717,7 +717,7 @@ function _displayResourceAutocomplete(item) {
  * @param type
  *            resource type (e.g. "document", "coding-sheet", "image")
  */
-function _applyResourceAutocomplete($elements, type) {
+var _applyResourceAutocomplete = function($elements, type) {
     var options = {};
     options.url = "api/lookup/resource";
     options.dataPath = "resources";
@@ -752,7 +752,7 @@ function _applyResourceAutocomplete($elements, type) {
  * @param newOption
  *            if true, allow user to create new records if specified value not found on server
  */
-function _applyInstitutionAutocomplete($elements, newOption) {
+var _applyInstitutionAutocomplete = function($elements, newOption) {
 
     var options = {};
     options.url = "api/lookup/institution";
@@ -785,7 +785,7 @@ function _autocompleteShowAll() {
  * @param type
  *            resource type name (e.g "document", "coding-sheet".
  */
-function _applyComboboxAutocomplete($elements, type) {
+var _applyComboboxAutocomplete = function($elements, type) {
 
     // register autocomplete text box
     _applyResourceAutocomplete($elements, type);
@@ -916,7 +916,7 @@ var _delegateKeyword = function (id, prefix, type) {
  * 
  * @param parentElem
  */
-function _objectFromAutocompleteParent(parentElem) {
+var _objectFromAutocompleteParent = function(parentElem) {
     var obj = {};
     $(parentElem).find(".ui-autocomplete-input").each(function () {
         var key = $(this).attr("autocompleteName") || this.name;

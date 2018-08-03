@@ -1,9 +1,6 @@
 /**
  * TDAR.bulk.js
  */
-
-(function (TDAR, $) {
-    'use strict';
     var asyncUrl;
     var gPercentDone = 0;
     var TIMEOUT = 1000 / 2; //2fps is all we need.
@@ -16,7 +13,6 @@
         _updateProgressBar(0);
         //fixme: for testing purposes, call fqn of updateProgress instead of _updateProgress
         setTimeout(TDAR.bulk.updateProgress, TIMEOUT);
-
         return {asyncUrl: asyncUrl, percentDone: gPercentDone, timeout: TIMEOUT};
     };
 
@@ -25,6 +21,7 @@
         $(".progress-bar").html(valeur + "%");
         $(".progress-bar").css("width",valeur+'%');
     }
+    
     var _updateProgress = function () {
         //console.log("updating progress");
         if (gPercentDone >= 100) {
@@ -63,9 +60,7 @@
         //console.log("registered ajax callback");
     };
     //expose public elements
-    TDAR.bulk = {
+    module.exports = {
         "updateProgress": _updateProgress,
         "init": _init
     };
-
-})(TDAR, jQuery);
