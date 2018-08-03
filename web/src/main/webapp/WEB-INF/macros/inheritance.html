@@ -7,53 +7,61 @@
         @autocompletevalueset="selectProject" ref="input"
         fieldname="title" allowCreate="false" idname="id" />
         </div>
+        {{resource}}
     <div>
         <h5>Other Keywords</h5>
-        <b>inherit from project <input type="checkbox" v-model="inhertOther" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" 
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertOther" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" 
             name_field="label" autocomplete_suffix="keywordType=OtherKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Culture Keywords</h5>
-        <b>inherit from project <input type="checkbox" v-model="inhertCulture" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="culture" 
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertCulture" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="culture"  :values="resource.cultureKeywords" 
             name_field="label" autocomplete_suffix="keywordType=CultureKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Temporal Keywords</h5>
-        <b>inherit from project <input type="checkbox" v-model="inhertTemporal" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" 
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertTemporal" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" 
             name_field="label" autocomplete_suffix="keywordType=TemporalKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Site Name</h5>
-        <b>inherit from project <input type="checkbox" v-model="inhertSiteName" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName"
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteName" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteNameKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Site Type</h5>
-        <b>inherit from project <input type="checkbox" v-model="inhertSiteType" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType"
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteType" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteTypeKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Investigation Type</h5>
-        <b>inherit from project <input type="checkbox" v-model="inhertInvestigationType" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="investigationType"
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertInvestigationType" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="investigationType" :values="resource.investigationTypes" 
             name_field="label" autocomplete_suffix="keywordType=InvestigationType" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Geographic</h5>
-        <b>inherit from project <input type="checkbox" v-model="inhertSpatial" /></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic"
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSpatial" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" 
             name_field="label" autocomplete_suffix="keywordType=GeographicKeyword" 
+            result_suffix="items"  />
+    </div>
+    <div>
+        <h5>Material</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertMaterial" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.materialKeywords" 
+            name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" 
             result_suffix="items"  />
     </div>
     {{project}}
@@ -72,14 +80,18 @@ $(document).ready(function() {
                 nameField: 'title',
                 idField: 'id',
                 projectId: undefined,
+                inheritanceDisabled: true,
                 inhertSiteName: false,
                 inhertSiteType: false,
                 inhertTemporal: false,
                 inhertCulture: false,
                 inhertSpatial: false,
+                inhertMaterial: false,
                 inhertOther: false,
                 inhertInvestigationType: false,
-                project: {}},
+                project: {},
+                resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[]}
+                },
                 watch: {
                     inhertInvestigationType: function(o, b) {
                         this.inherit(o,b,'investigationType', 'activeInvestigationTypes');
@@ -93,6 +105,9 @@ $(document).ready(function() {
                     inhertTemporal: function(o, b) {
                         this.inherit(o,b,'temporal', 'activeTemporalKeywords');
                     },
+                    inhertMaterial: function(o, b) {
+                        this.inherit(o,b,'material', 'activeMaterialKeywords');
+                    },
                     inhertCulture: function(o, b) {
                         this.inherit(o,b,'culture', 'activeCultureKeywords');
                     },
@@ -102,6 +117,14 @@ $(document).ready(function() {
                     inhertOther: function(o, b) {
                         this.inherit(o,b,'other', 'activeOtherKeywords');
                     },
+                },
+                computed: {
+                    inheritanceDisabledClass: function() {
+                        if (this.inheritanceDisabled == true) {
+                            return "disabled";
+                            }
+                        return "";
+                    }
                 },
                 methods: {
                     inherit: function(o, b, ref, vals) {
@@ -122,6 +145,7 @@ $(document).ready(function() {
                         axios.get("/project/json/" + val.id).then(function(res) {
                             //Vue.set(self, "isLoading",false);
                             Vue.set(self, 'project',res.data);
+                            Vue.set(self, 'inheritanceDisabled',false);
                         }).catch(function(thrown) {
                             if (!axios.isCancel(thrown)) {
                                 console.error(thrown);
