@@ -35,9 +35,15 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     type:Boolean,
                     default: false
                 },
+                prefix: {type: String,
+                    default: ""},
                 name_field: {
                     type: String,
                     default: "name"
+                },
+                id_field: {
+                    type: String,
+                    default: "id"
                 }
             },
             data: function() {
@@ -60,6 +66,31 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
             }
         },
         methods: {
+            nameField: function(idx) {
+                var ret = "";
+                if (this.prefix != undefined) {
+                    ret = ret + this.prefix;
+                }
+
+                ret = ret + "[" + idx + "]";
+                
+                if (this.prefix != undefined) {
+                    ret = ret + + ".";
+                }
+                
+                
+                ret = ret + this.name_field;
+                return ret;
+            },
+            idField: function(idx) {
+                var ret = "";
+                if (this.prefix != undefined) {
+                    ret = ret + this.prefix + ".";
+                }
+                ret = ret + this.id_field;
+                return ret;
+
+            },
             getLabel: function(value) {
                 return value[this.name_field];
             },
@@ -80,11 +111,11 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
             },
             addAutocompleteValue: function(result) {
                 if (result != undefined) {
-                    if (this.allow_create == false && result[this.idField] != undefined || this.allow_create == true) {
-                        this._addEntry(result[this.name_field], result[this.idField]);
+                    if (this.allow_create == false && result[this.id_field] != undefined || this.allow_create == true) {
+                        this._addEntry(result[this.name_field], result[this.id_field]);
                         this.$refs.input.reset();
                      } else {
-                         this._addEntry(result[this.name_field], result[this.idField]);
+                         this._addEntry(result[this.name_field], result[this.id_field]);
                          this.$refs.input.reset();
                      }
                 }
@@ -100,7 +131,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     }
                 });
                 if (!seen) {
-                    var val = {id: id};
+                    val[this.id_field] = id;
                     val[this.name_field] = entry.trim();
                     this.values.push(val);
                 }

@@ -9,58 +9,89 @@
         </div>
         {{resource}}
     <div>
+        <h5>Notes</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertNotes" :disabled="inheritanceDisabled"/></b>
+        <div v-for="(note, idx) in resource.resourceNotes" class="row">
+              <div class="repeat-row">
+        <div class="controls controls-row">
+            <div class="span6">
+                <div class="controls-row">
+                    <select :name="'resourceNotes[' + idx + '].type'" v-model="resource.resourceNotes[idx].type">
+                        <option v-for="(opt, idx) in noteTypes" :value="opt.value">{{opt.name}}</option>
+                    </select>
+                </div>
+                <div class="controls-row">
+                    <textarea  :name="'resourceNotes[' + idx + '].note'" v-model="resource.resourceNotes[idx].note" cols="80" rows="4" 
+                        class="span6 resizable resize-vertical" maxlength="5000" placeholder="enter note contents"></textarea>
+                </div>
+            </div>
+            <div class="span1">
+    <button class="btn btn-mini " @click="removeNote(idx)" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="control-group add-another-control">
+    <div class="controls">
+        <button class="btn addanother" @click="resource.resourceNotes.push({})" type="button"><i class="icon-plus-sign"></i>add another</button>
+    </div>
+</div>
+        </div>
+    </div>
+    <div>
         <h5>Other Keywords</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertOther" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" prefix="resource.otherKeywords" 
             name_field="label" autocomplete_suffix="keywordType=OtherKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Culture Keywords</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertCulture" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="culture"  :values="resource.cultureKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="culture"  :values="resource.cultureKeywords" prefix="resource.cultureKeywords" 
             name_field="label" autocomplete_suffix="keywordType=CultureKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Temporal Keywords</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertTemporal" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" prefix="resource.temporalKeywords" 
             name_field="label" autocomplete_suffix="keywordType=TemporalKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Site Name</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteName" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" prefix="resource.siteNameKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteNameKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Site Type</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteType" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" prefix="resource.siteTypeKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteTypeKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Investigation Type</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertInvestigationType" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="investigationType" :values="resource.investigationTypes" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="investigationType" :values="resource.investigationTypes" prefix="resource.investigationTypes" 
             name_field="label" autocomplete_suffix="keywordType=InvestigationType" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Geographic</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSpatial" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" prefix="resource.geographicKeywords"
             name_field="label" autocomplete_suffix="keywordType=GeographicKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Material</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertMaterial" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.materialKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.materialKeywords" prefix="resource.materialKeywords"  
             name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" 
             result_suffix="items"  />
     </div>
@@ -88,9 +119,17 @@ $(document).ready(function() {
                 inhertSpatial: false,
                 inhertMaterial: false,
                 inhertOther: false,
+                inhertNotes: false,
                 inhertInvestigationType: false,
                 project: {},
-                resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[]}
+                noteTypes: [
+                    {value:"GENERAL", name:"General Note"},
+                    {value:"REDACTION", name:"Redaction Note"},
+                    {value:"RIGHTS_ATTRIBUTION", name:"Rights & Attribution"},
+                    {value:"ADMIN", name:"Administration Note"}
+                    ],
+                resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
+                    resourceNotes: [{}]}
                 },
                 watch: {
                     inhertInvestigationType: function(o, b) {
@@ -117,6 +156,17 @@ $(document).ready(function() {
                     inhertOther: function(o, b) {
                         this.inherit(o,b,'other', 'activeOtherKeywords');
                     },
+                    inhertNotes: function(o, b) {
+                        this.resource.resourceNotes.length = 0;
+                        var _app = this;
+                        this.project.activeResourceNotes.forEach(function(n) {
+                            console.log(n);
+                            _app.resource.resourceNotes.push(JSON.parse(JSON.stringify(n)) );
+                        });
+                        if (this.resource.resourceNotes.length == 0) {
+                            this.resource.resourceNotes.push({});
+                        }
+                    }
                 },
                 computed: {
                     inheritanceDisabledClass: function() {
@@ -127,9 +177,21 @@ $(document).ready(function() {
                     }
                 },
                 methods: {
+                    removeNote: function(idx) {
+                        if (this.resource.resourceNotes.length > 1) {
+                            this.resource.resourceNotes.splice(idx,1);
+                        }
+                        if (this.resource.resourceNotes.length == 0) {
+                            this.resource.resourceNotes.push({});
+                        }
+                        if (this.resource.resourceNotes.length == 1) {
+                            this.resource.resourceNotes[0]= {};
+                        }
+                        
+                    },
                     inherit: function(o, b, ref, vals) {
                         if (this.project[vals] != undefined && o == true) {
-                            this.$refs[ref].setValues(this.project[vals]); 
+                            this.$refs[ref].setValues(this.project[JSON.parse(JSON.stringify(vals)) ]); 
                             this.$refs[ref].disable();
                         } else {
                             this.$refs[ref].enable();
