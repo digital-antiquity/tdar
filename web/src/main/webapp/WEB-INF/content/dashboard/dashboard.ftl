@@ -36,7 +36,7 @@
                               <div class="card-body">
                             <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
                             Use <b>Documents</b> to archive reports, books, PDFs, and other textual materials.
-                              <p class="center"><a href="/document/add" class="button">Upload</a></p>
+                              <p class="center"><a href="/document/add" class="button tdarButton">Upload</a></p>
                               </div>
                               </div>
                         </div>
@@ -45,7 +45,7 @@
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
                             Use <b>Datasets</b> for data tables, Excel, Access and other tabular data files.
-                              <p class="center"><a href="/dataset/add" class="button">Upload</a></p>
+                              <p class="center"><a href="/dataset/add" class="button tdarButton">Upload</a></p>
                         </div>
                         </div>
                         </div>
@@ -54,7 +54,7 @@
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
                             Use <b>Images</b> for drawings, photographs, JPEG, TIFF, and other image files.
-                             <p class="center"><a href="/image/add" class="button">Upload</a></p>
+                             <p class="center"><a href="/image/add" class="button tdarButton">Upload</a></p>
                         </div>
                         </div>
                         </div>
@@ -63,7 +63,7 @@
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
                             Have a <b>3D Scan</b>, <b>GIS File</b>, or want to create a <b>Coding Sheet</b>, <b>Ontology</b>, or <b>Project</b>?
-                             <p class="center"><a href="/contribute" class="button">Upload</a></p>
+                             <p class="center"><a href="/contribute" class="button tdarButton">Upload</a></p>
                         </div>
                         </div>
                     </div>
@@ -77,7 +77,7 @@
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-right: 5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
                             Use <b>Collections</b> organize your resources and manage permissions.
-                             <p class="center"><a href="/collection/add" class="button">Create</a></p>
+                             <p class="center"><a href="/collection/add" class="button tdarButton">Create</a></p>
                         </div>
                     </div>
                 </div>
@@ -260,21 +260,23 @@
 
 <#macro recentlyUpdatedSection>
     <div class="row">
-        <div class="col-10">
+        <div class="col-12">
             <h3><@s.text name="dashboard.recently_updated"/></h3>
             <ol id='recentlyEditedResources'>
                 <#list recentlyEditedResources as res>
                     <li id="li-recent-resource-${res.id?c}">
-                        <span class="fixed">
+                        <div class="row">
+                        	<div class="col-9">
                             <@commonr.cartouche res true>
-                                <div class="btn-group pull-right recent-nav">
-                                    <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
-                                    <a class="btn btn-mini" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
-                                </div>
                                 <small>[ID: ${res.id?c}]</small> 
                                 <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
                             </@commonr.cartouche>
-                        </span>
+                            </div>
+                            <div class="col-3">
+                                    <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
+                                    <a class="btn btn-mini" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+                        	</div>
+                        </div>
                     </li>
                 </#list>
             </ol>

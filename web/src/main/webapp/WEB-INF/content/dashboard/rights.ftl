@@ -23,7 +23,8 @@
     </div>
     <div class="col-10">
     
-        <div class="well">
+        <div class="card mb-10">
+        <div class="card-body">
             <div class="row">
                 <div class="col-12">
                     <h3>Collections</h3>
@@ -38,6 +39,7 @@
                 </div>
                 <div class="col-2">  <svg class="svgicon svg100"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg></div>
             </div>
+        </div>
         </div>
     <div class="row">
         <div class="col-12">

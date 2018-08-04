@@ -7,7 +7,7 @@
     <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
     
     
-    <#macro _itemOpen itemTag_ itemClass rowCount resource>
+    <#macro _itemOpen itemTag_ itemClass rowCount resource orientation>
                 <${itemTag_} class="listItem ${itemClass!''} "
             <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content>
             
@@ -86,7 +86,7 @@
                 <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
                 <#-- printing item tag start / -->
 				<#if (orientation != 'GRID' || first ||  rowCount % itemsPerRow != 0 )>
-				<@_itemOpen itemTag_ itemClass rowCount resource />
+				<@_itemOpen itemTag_ itemClass rowCount resource orientation />
 				</#if>
                 <#-- if we're at a new row; close the above tag and re-open it (bug) -->
                     <@_printDividerBetweenResourceRows itemTag_ itemClass resource first rowCount itemsPerRow orientation />
@@ -165,7 +165,7 @@
                 </div> 
                 <hr />
                 <div class=" ${orientation} resource-list row">
-                <@_itemOpen itemTag_ itemClass rowCount resource />
+                <@_itemOpen itemTag_ itemClass rowCount resource orientation />
                 </#if>
             </#if>
         </#if>
