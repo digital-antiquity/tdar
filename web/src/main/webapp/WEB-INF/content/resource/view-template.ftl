@@ -102,7 +102,7 @@
 <div class="section">
     <h3>This Resource is Part of the Following Collections</h3>
     <p>
-    <ul class="inline">
+    <ul class="list-inline">
     <#items as collection>
         <li>
             <a class="sml moreInfo" data-type="collection" data-size="${(((collection.managedResources![])?size!0) + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 

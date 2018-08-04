@@ -220,7 +220,7 @@ View freemarker macros
         <#if (resource.totalNumberOfFiles!0) == 0 >
             <h3 class="downloads">Find a Copy</h3>
             <div id="fileSummaryContainer">
-                <ul class="downloads media-list">
+                <ul class="downloads media-list  pl-0 ml-0">
                     <li class="citationNote"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
                     at ${resource.copyLocation}.</#if></li>
                 </ul>
@@ -231,7 +231,7 @@ View freemarker macros
                 <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles!0?c}</span>
             </h3>
             <div id="fileSummaryContainer">
-                <ul class="downloads media-list">
+                <ul class="downloads media-list  pl-0 ml-0">
                     <#if ((resource.totalNumberOfFiles!0) > 0) >
 
                         <#if resource.hasConfidentialFiles()>
@@ -264,7 +264,7 @@ View freemarker macros
     </#macro>
 
 <#macro resourceCitationSection resource>
-<div class="card">
+<div class="card lightbeige">
 <div class="card-body">
 <h2 class="card-title">Cite this Record</h2>
     <p class="sml card-text">
@@ -752,16 +752,16 @@ View freemarker macros
         <div class="row">
             <div class="col-8">
                 <div class = "p-3">
-                    <h4 class="title">
+                    <p class="title">
                         <a target="_top" href="${url}">${resource.title} </a><br>
                         <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
                             <br></#if>
-                    </h4>
+                    </p>
 
                     <p class = "lead"><@common.truncate resource.description 150 /></p>
 
                     <p class = "lead">
-                        <a target="_top" href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
+                        <a target="_top" href="${url}" class="tdarButton">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
                         Resources</a>
                     </p>
                 </div>
@@ -852,11 +852,11 @@ View freemarker macros
         </#list>
       </div>
       <a class="carousel-control-prev" href="#slider" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="carousel-control left" aria-hidden="true"></span>
         <span class="sr-only">Previous</span>
       </a>
       <a class="carousel-control-next" href="#slider" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="carousel-control right" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
       </a>
     </div>

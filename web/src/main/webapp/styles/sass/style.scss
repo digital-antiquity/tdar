@@ -1,6 +1,8 @@
 $red: #a72e1d;
+$darkRed: #7a1501;
 $white: #fff;
-$beige: #e4d5bb;
+$beige: #E3E0D8;
+$lightBeige: rgba(227, 224, 216, .2);
 
 
 .view .sidebar, .dashboard .sidebar {
@@ -23,11 +25,11 @@ margin-top: 15px;
 }
 
 a {
-    color: $red;
+    color: $darkRed;
 }
 
 .red {
-    color: $red;
+    color: $darkRed;
 }
 
 
@@ -49,18 +51,47 @@ a {
 }
 
 .beige {
-   background-color: #E3E0D8;
+   background-color: $beige;
+}
+
+.lightbeige {
+    background-color: $lightBeige;
 }
 
 .white-border-bottom {
     border-bottom:4px solid white;
 }
 
-.tdarButton
-{
-  background-color: $red;
-  color: $white;
-  border-radius: 0;
+
+a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
+        font-family: helvetica, arial, sans-serif;
+        height: 35px;
+        display: inline-block;
+        background: $darkRed;
+        margin: 0 4px 0 0;
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
+        font-weight: 700;
+        font-size: 12px;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: center;
+        -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src=/images/hIEfix.png, sizingMethod=crop )";
+        zoom: 1;
+        padding-left: 8px;
+        padding-right: 8px;
+        cursor: pointer;
+        border: none;
+        padding-top:.6em;
+        vertical-align:middle;
+        padding-bottom:0;
+      background-color: $darkRed;
+      color: $white;
+      border-radius: 0;
+      :focus {
+          background-color: $red;
+      };
 }
 
 nav
@@ -73,7 +104,7 @@ nav
     text-transform: uppercase;
     .tdarLink
     {
-      color: $red;
+      color: $darkRed;
     }
   }
 }
@@ -89,13 +120,13 @@ nav
     text-transform: uppercase;
     font-weight: bold;
     color: rgba(0,0,0,0.5);
-    border-right: $red;
+    border-right: $darkRed;
   }
 
   .nav-chevron
   {
     stroke-width: 5px;
-    stroke: $red;
+    stroke: $darkRed;
   }
   
   .show .nav-chevron
@@ -104,99 +135,117 @@ nav
   }
 }
 
-#home
-{
-  #hero
-  {
-    background: url(../../images/r4/bg-home.jpg) no-repeat center;
-    background-size: cover;
-
-      h2 {
-        font-weight: 700;
-        font-size: 60px;
-        line-height: 50px;
-        letter-spacing: -2px;
-        margin: 50px 0 0 0;
-        }
-        
-         p {
-        margin: 18px 0;
-        font-weight: 500;
-        font-size: 18px;
-        line-height: 24px;
-        }
-  }
-
-  .news
-  {
-    li
-    {
-      font-size: 12px;
-      line-height: 20px;
-      color: #7d7a77;
-      font-style: italic;
-      display: block;
-      position: relative;
-      padding: 12px 0 26px 60px;
-      border-bottom: 1px solid #e8e3d7;
-      min-height: 4em;
-    }
-
-    li:first-child
-    {
-      padding: 0 0 0px 60px;
-    }
-
-    span
-    {
-      font-weight: 700;
-      color: #e3dfd8;
-      display: block;
-      width: 35px;
-      position: absolute;
-      left: 0;
-      text-align: center;
-      font-size: 16px;
-      line-height: 24px;
-      font-style: normal;
-    }
-
-    em
-    {
-      font-size: 30px;
-      font-style: normal;
-      display: block;
-    }
-
-    a
-    {
-      .title
-      {
-        font-family: helvetica, arial, sans-serif;
-        font-weight: 700;
+.tdar-slider {
+    h4 {a {
+        cursor: auto;
+        font-family: ff-tisa-web-pro, serif;
         font-size: 15px;
-        font-style: normal;
-        display: block;
-      }
-    }
-  }
-
-  .topRight
-  {
-    font-weight: bold;
-    text-transform: uppercase;
-  }
+        font-weight: bold;
+        height: auto;
+        line-height: 19px;
+    }}
+    
 }
 
-//.svgicon
-//{
-//  max-height: 50px;
-//  max-width: 50px;
-//}
+p.lead {
+        min-height: 4em;
+        color: rgb(125, 122, 119);
+        display: block;
+        font-family: ff-tisa-web-pro, serif;
+        font-size: 13px;
+
+}
+
+.carousel, .image-carousel.carousel {
+    .carousel-inner {
+        padding-left:6em;
+        padding-right:6em;
+    }
+
+
+    .carousel-control {
+        display: block;
+        width: 24px;
+        height: 38px;
+        background: url(/images/r4/btns-slider.png) 0 0;
+        background-repeat: no-repeat;
+        text-indent: -999em;
+        opacity: 0.5;
+        transition: opacity 0.1s ease-out;
+    }
+
+    .car-btn:hover {
+        opacity: 1;
+    }
+
+    .carousel-control.left {
+        left: 0;
+    }
+
+    .carousel-control.right {
+        right: 0;
+        background-position: -24px 0;
+    }
+    
+
+    /* Changes the position of the indicators */
+    .carousel-indicators {
+        width: 100%;
+        top: auto;
+        bottom: 0px;
+        /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
+        /*margin-right: -19px;*/
+        position: inherit !important;
+        margin: 1em 0 0 0;
+    }
+
+.carousel-indicators .active {
+        background: #333333;
+    }
+
+    .carousel-indicators span {
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        padding: 4px;
+        margin: 1pt;
+        width: 3px;
+        height: 3px;
+        display: inline-block;
+        background: #c0c0c0;
+    }
+    
+}
+
+/* Removes the default 20px margin and creates some padding space for the indicators and controls */
+.image-carousel.carousel {
+    margin-bottom: 10px;
+    padding: 0 40px 10px 40px;
+}
+
+
+h1, h2, h3, h4, h5
+{
+    
+ a {
+        color: black;
+}
+}
+
+h1 {
+    font-size: 30px;
+    line-height: 34px;
+}
+
+
 
 h1, h2, h3, header {
   font-family: "soleil", sans-serif !important;
   font-weight: 700;
+}
+
+header {
+    margin-bottom: 3.5em;
 }
 
  .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
@@ -236,7 +285,7 @@ header .welcome-drop a,
   {
     .flex-column:first-child
     {
-      border-right: 2px solid $red;
+      border-right: 2px solid $darkRed;
     }
   }
   .dropdown-menu:after {
@@ -316,209 +365,6 @@ header .welcome-drop a,
 }
 
 
-
-
-
-/*********** SVG **********/
-
-/** set width and height properly **/
-
-.svgicon {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-}
-
-.svg-small {
-  height:40px !important;
-  width:40px !important;
-}
-
-
-.svg100 {
-  height:100px !important;
-  width:100px !important;
-}
-
-
-
-.iconbox125 {
-    padding-top:3%;
-    padding-left: 10%;
-    padding-right: 10%;
-    padding-bottom: 3%;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top:0% !Important; 
-    margin-bottom:0% !important;
-    height:125px;
-    width:125px;
-    float: none;
-}
-
-
-.svg-dynamic125 {
-    width:80%;
-    height:80%;
-    margin-top:5%;
-    margin-bottom: 5%;
-    margin-left:auto;
-    margin-right:auto;
-    display:block;
-}
-
-
-
-.iconbox {
-    float: none;
-    padding: 10%;
-     margin-left: auto;
-     margin-right: auto;
-}
-
-.svg-dynamic {
-    max-width: 80% !important;
-    max-height: 80% !important;
-    margin-top: 15%;
-    margin-bottom: 15%;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-    height: 100%;
-    width: 100%;
-    
-    margin-top:15%;
-    margin-bottom: 15%;
-    margin-left:auto;
-    margin-right:auto;
-    display:block;
-}
-
-
-.svg-cartouche {
-    height:1em;
-    width:1em;
-    margin:0 auto;
-    display:block;
-    margin-right:3px;
-}
-
-.flex {
-    display:flex;
-}
-
-.grey {
-    fill-color:#555555;
-    color:#555555;
-}
-
-
-
-
-/******** GRAPHING **********/
-.barChart .c3-text {
-    fill:black !important
-}
-
-
-.barGraph {
-    position: relative;
-}
-
-
-
-/*** WORLDMAP *****/
-
-
-#mapgraphdata {
-    text-align:center;
-    height: 100px;
-}
-
-#worldmap.leaflet-container {
-    background-color: #D5F0FD;
-    border: 1px solid #AAA;
-}
-#worldmap .info {
-    background-color:#fff;
-    opacity:.8;
-    padding:2px;
-}
-
-#worldmap .legend {
-    background-color:#fff;
-    float:right;
-}
-
-
-#worldmap .leaflet-control-attribution {
-    display:none;
-    
-}
-
-.worldmap {
-    border: 1px solid #aaa;
-}
-
-#map_legend {
-    position: absolute;
-    display: block;
-    width: 300px;
-    height: 1.8em;
-    bottom: 0px;
-    /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
-    right: 100px;
-}
-
-.mapcontainer .legendText {
-    padding-top: 0px !important;
-    margin-left: 5px;
-    margin-right: 5px
-}
-
-.mapcontainer .legendBox, .mapcontainer .legendText {
-    clear: none;
-    float: left;
-}
-
-.mapcontainer .legendBox {
-    border: 1px solid #666666;
-    width: 10px;
-    margin-top: 3px;
-    height: 10px;
-    padding: 2px;
-}
-
-div.mapcontainer {
-    position: relative;
-}
-
-div.mapcontainer img {
-    height: 304px !Important;
-    right: 0px;
-    display: block;
-    position: relative;
-}
-
-.mapcontainer #data {
-    font-weight:bold;
-}
-
-#mapGraphZoomOut,#mapGraphZoomOut *,#mapGraphSearch, #mapGraphSearch * {
-     cursor: hand;
-     cursor: pointer;
-}
-
-.mapcontainer.mini h3, .mapcontainer.mini #mapgraphdata {display:none}
-.mini #worldmap.leaflet-container {
-    border:none;
-    background-color:#fff;
-}
-
-.mini .leaflet-interactive {
-    cursor: default;
-}
 
 /**** VIEW ****/
 
@@ -680,44 +526,7 @@ margin-top: 15px;
 }
 
 
-/********** LEAFLET **************/
-/** leaflet maps - **/
-.disable-map .leaflet-draw {
-	display:none;
-	visibility:hidden;
-}
 
-.disable-map .leaflet-container, .leaflet-container.disable-map {
-	opacity:.5;
-}
-
-
-
-/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
-#large-google-map img, .google-map img {
-    border: inherit;
-    height: auto;
-    max-width: inherit;
-}
-
-.tdar-map-large, #large-google-map {
-    height: 450px;
-}
-
-#large-google-map label, .google-map label {
-    width: auto;
-    display: inline;
-}
-
-.tdar-gmap-control button:disabled {
-    display: none;
-}
-
-
-form.leaflet-control-geocoder-form {
-    padding:0px;
-    margin:0px;
-}
 
 .treeview li {
     margin-top:0px !important;
@@ -731,7 +540,30 @@ form.leaflet-control-geocoder-form {
 
 body {
   position: relative;
+  font-family: helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
 }
+
+
+.tableFormat {
+
+    font-size: 11px;
+    line-height: 14px;
+    margin: 0;
+    padding: 8px 10px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    text-align: left;
+    
+    
+}
+
+p {
+    font-size: 16px;
+    line-height: 23px;
+}
+
 .static {
     position: fixed;
 }
@@ -784,6 +616,11 @@ width:.8em;
 #notice {background-color:white;}
 
 
+#fileSummaryContainer {
+    overflow: hidden;
+    
+}
+
 @media screen {
         /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
         h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
@@ -806,6 +643,13 @@ width:.8em;
         visibility: visible;
 }
 
+
+#foothumb .ht {
+max-height: 75px;
+min-height: 75px;
+padding-left: 20px;
+padding-right: 20px;
+}
 footer {
     margin-top: 60px;
     #footer {
@@ -813,7 +657,7 @@ footer {
         background: url(/images/r4/bg-footer.png) repeat;
     }
 
-h4 {
+h6, h4 {
     font-weight: 700;
     font-size: 16px;
     color: #fff;

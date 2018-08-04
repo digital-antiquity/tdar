@@ -51,7 +51,7 @@
             </div>
             <#if config.payPerIngestEnabled >
                 <div class="col-lg-4 text-center">
-                    <a href="<@s.url value="/cart/add"/>" class="btn btn-secondary btn-block">tDAR Pricing Information</a>
+                    <a href="<@s.url value="/cart/add"/>" class="btn tdarButton btn-block">ARCHIVE A FILE FOR AS LOW AS $5</a>
                 </div>
             </#if>
             <div class="col-lg-1 text-center">

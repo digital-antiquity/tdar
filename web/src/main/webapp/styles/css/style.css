@@ -14,10 +14,10 @@ aside li {
   margin-top: 15px; }
 
 a {
-  color: #a72e1d; }
+  color: #7a1501; }
 
 .red {
-  color: #a72e1d; }
+  color: #7a1501; }
 
 .serif {
   font-family: "ff-tisa-web-pro", serif !important; }
@@ -35,13 +35,40 @@ a {
 .beige {
   background-color: #E3E0D8; }
 
+.lightbeige {
+  background-color: rgba(227, 224, 216, 0.2); }
+
 .white-border-bottom {
   border-bottom: 4px solid white; }
 
-.tdarButton {
-  background-color: #a72e1d;
+a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
+  font-family: helvetica, arial, sans-serif;
+  height: 35px;
+  display: inline-block;
+  background: #7a1501;
+  margin: 0 4px 0 0;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src=/images/hIEfix.png, sizingMethod=crop )";
+  zoom: 1;
+  padding-left: 8px;
+  padding-right: 8px;
+  cursor: pointer;
+  border: none;
+  padding-top: .6em;
+  vertical-align: middle;
+  padding-bottom: 0;
+  background-color: #7a1501;
   color: #fff;
   border-radius: 0; }
+  a.tdarButton :focus, .tdar-button :focus, input.tdar-button[type=submit] :focus {
+    background-color: #a72e1d; }
 
 nav {
   font-weight: bold; }
@@ -49,7 +76,7 @@ nav {
     font-size: 0.85rem;
     text-transform: uppercase; }
     nav .logIn .tdarLink {
-      color: #a72e1d; }
+      color: #7a1501; }
 
 .tdarNav {
   background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
@@ -59,67 +86,88 @@ nav {
     text-transform: uppercase;
     font-weight: bold;
     color: rgba(0, 0, 0, 0.5);
-    border-right: #a72e1d; }
+    border-right: #7a1501; }
   .tdarNav .nav-chevron {
     stroke-width: 5px;
-    stroke: #a72e1d; }
+    stroke: #7a1501; }
   .tdarNav .show .nav-chevron {
     transform: rotate(180deg); }
 
-#home #hero {
-  background: url(../../images/r4/bg-home.jpg) no-repeat center;
-  background-size: cover; }
-  #home #hero h2 {
-    font-weight: 700;
-    font-size: 60px;
-    line-height: 50px;
-    letter-spacing: -2px;
-    margin: 50px 0 0 0; }
-  #home #hero p {
-    margin: 18px 0;
-    font-weight: 500;
-    font-size: 18px;
-    line-height: 24px; }
-#home .news li {
-  font-size: 12px;
-  line-height: 20px;
-  color: #7d7a77;
-  font-style: italic;
-  display: block;
-  position: relative;
-  padding: 12px 0 26px 60px;
-  border-bottom: 1px solid #e8e3d7;
-  min-height: 4em; }
-#home .news li:first-child {
-  padding: 0 0 0px 60px; }
-#home .news span {
-  font-weight: 700;
-  color: #e3dfd8;
-  display: block;
-  width: 35px;
-  position: absolute;
-  left: 0;
-  text-align: center;
-  font-size: 16px;
-  line-height: 24px;
-  font-style: normal; }
-#home .news em {
-  font-size: 30px;
-  font-style: normal;
-  display: block; }
-#home .news a .title {
-  font-family: helvetica, arial, sans-serif;
-  font-weight: 700;
+.tdar-slider h4 a {
+  cursor: auto;
+  font-family: ff-tisa-web-pro, serif;
   font-size: 15px;
-  font-style: normal;
-  display: block; }
-#home .topRight {
   font-weight: bold;
-  text-transform: uppercase; }
+  height: auto;
+  line-height: 19px; }
+
+p.lead {
+  min-height: 4em;
+  color: #7d7a77;
+  display: block;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 13px; }
+
+.carousel, .image-carousel.carousel {
+  /* Changes the position of the indicators */ }
+  .carousel .carousel-inner, .image-carousel.carousel .carousel-inner {
+    padding-left: 6em;
+    padding-right: 6em; }
+  .carousel .carousel-control, .image-carousel.carousel .carousel-control {
+    display: block;
+    width: 24px;
+    height: 38px;
+    background: url(/images/r4/btns-slider.png) 0 0;
+    background-repeat: no-repeat;
+    text-indent: -999em;
+    opacity: 0.5;
+    transition: opacity 0.1s ease-out; }
+  .carousel .car-btn:hover, .image-carousel.carousel .car-btn:hover {
+    opacity: 1; }
+  .carousel .carousel-control.left, .image-carousel.carousel .carousel-control.left {
+    left: 0; }
+  .carousel .carousel-control.right, .image-carousel.carousel .carousel-control.right {
+    right: 0;
+    background-position: -24px 0; }
+  .carousel .carousel-indicators, .image-carousel.carousel .carousel-indicators {
+    width: 100%;
+    top: auto;
+    bottom: 0px;
+    /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
+    /*margin-right: -19px;*/
+    position: inherit !important;
+    margin: 1em 0 0 0; }
+  .carousel .carousel-indicators .active, .image-carousel.carousel .carousel-indicators .active {
+    background: #333333; }
+  .carousel .carousel-indicators span, .image-carousel.carousel .carousel-indicators span {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding: 4px;
+    margin: 1pt;
+    width: 3px;
+    height: 3px;
+    display: inline-block;
+    background: #c0c0c0; }
+
+/* Removes the default 20px margin and creates some padding space for the indicators and controls */
+.image-carousel.carousel {
+  margin-bottom: 10px;
+  padding: 0 40px 10px 40px; }
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+  color: black; }
+
+h1 {
+  font-size: 30px;
+  line-height: 34px; }
 
 h1, h2, h3, header {
   font-family: "soleil", sans-serif !important;
   font-weight: 700; }
+
+header {
+  margin-bottom: 3.5em; }
 
 .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
   font-family: "soleil", sans-serif !important; }
@@ -150,7 +198,7 @@ header .welcome-drop a,
 
 @media (min-width: 991.98px) {
   .tdarDropdown .flex-column:first-child {
-    border-right: 2px solid #a72e1d; }
+    border-right: 2px solid #7a1501; }
 
   .dropdown-menu:after {
     bottom: 100%;
@@ -181,7 +229,7 @@ header .welcome-drop a,
     font-size: 3.5rem; }
 
   #mdScreenNav {
-    background-color: #e4d5bb; }
+    background-color: #E3E0D8; }
 
   .tdarNav {
     background: none; }
@@ -197,162 +245,6 @@ header .welcome-drop a,
 
   .nav-chevron {
     stroke: #352319; } }
-/*********** SVG **********/
-/** set width and height properly **/
-.svgicon {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  fill: currentColor; }
-
-.svg-small {
-  height: 40px !important;
-  width: 40px !important; }
-
-.svg100 {
-  height: 100px !important;
-  width: 100px !important; }
-
-.iconbox125 {
-  padding-top: 3%;
-  padding-left: 10%;
-  padding-right: 10%;
-  padding-bottom: 3%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 0% !Important;
-  margin-bottom: 0% !important;
-  height: 125px;
-  width: 125px;
-  float: none; }
-
-.svg-dynamic125 {
-  width: 80%;
-  height: 80%;
-  margin-top: 5%;
-  margin-bottom: 5%;
-  margin-left: auto;
-  margin-right: auto;
-  display: block; }
-
-.iconbox {
-  float: none;
-  padding: 10%;
-  margin-left: auto;
-  margin-right: auto; }
-
-.svg-dynamic {
-  max-width: 80% !important;
-  max-height: 80% !important;
-  margin-top: 15%;
-  margin-bottom: 15%;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  height: 100%;
-  width: 100%;
-  margin-top: 15%;
-  margin-bottom: 15%;
-  margin-left: auto;
-  margin-right: auto;
-  display: block; }
-
-.svg-cartouche {
-  height: 1em;
-  width: 1em;
-  margin: 0 auto;
-  display: block;
-  margin-right: 3px; }
-
-.flex {
-  display: flex; }
-
-.grey {
-  fill-color: #555555;
-  color: #555555; }
-
-/******** GRAPHING **********/
-.barChart .c3-text {
-  fill: black !important; }
-
-.barGraph {
-  position: relative; }
-
-/*** WORLDMAP *****/
-#mapgraphdata {
-  text-align: center;
-  height: 100px; }
-
-#worldmap.leaflet-container {
-  background-color: #D5F0FD;
-  border: 1px solid #AAA; }
-
-#worldmap .info {
-  background-color: #fff;
-  opacity: .8;
-  padding: 2px; }
-
-#worldmap .legend {
-  background-color: #fff;
-  float: right; }
-
-#worldmap .leaflet-control-attribution {
-  display: none; }
-
-.worldmap {
-  border: 1px solid #aaa; }
-
-#map_legend {
-  position: absolute;
-  display: block;
-  width: 300px;
-  height: 1.8em;
-  bottom: 0px;
-  /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
-  right: 100px; }
-
-.mapcontainer .legendText {
-  padding-top: 0px !important;
-  margin-left: 5px;
-  margin-right: 5px; }
-
-.mapcontainer .legendBox, .mapcontainer .legendText {
-  clear: none;
-  float: left; }
-
-.mapcontainer .legendBox {
-  border: 1px solid #666666;
-  width: 10px;
-  margin-top: 3px;
-  height: 10px;
-  padding: 2px; }
-
-div.mapcontainer {
-  position: relative; }
-
-div.mapcontainer img {
-  height: 304px !Important;
-  right: 0px;
-  display: block;
-  position: relative; }
-
-.mapcontainer #data {
-  font-weight: bold; }
-
-#mapGraphZoomOut, #mapGraphZoomOut *, #mapGraphSearch, #mapGraphSearch * {
-  cursor: hand;
-  cursor: pointer; }
-
-.mapcontainer.mini h3, .mapcontainer.mini #mapgraphdata {
-  display: none; }
-
-.mini #worldmap.leaflet-container {
-  border: none;
-  background-color: #fff; }
-
-.mini .leaflet-interactive {
-  cursor: default; }
-
 /**** VIEW ****/
 .view-deleted-file {
   background-color: #edd87b;
@@ -478,35 +370,6 @@ img.responsive-image {
 .ribbon-green:after {
   right: 0; }
 
-/********** LEAFLET **************/
-/** leaflet maps - **/
-.disable-map .leaflet-draw {
-  display: none;
-  visibility: hidden; }
-
-.disable-map .leaflet-container, .leaflet-container.disable-map {
-  opacity: .5; }
-
-/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
-#large-google-map img, .google-map img {
-  border: inherit;
-  height: auto;
-  max-width: inherit; }
-
-.tdar-map-large, #large-google-map {
-  height: 450px; }
-
-#large-google-map label, .google-map label {
-  width: auto;
-  display: inline; }
-
-.tdar-gmap-control button:disabled {
-  display: none; }
-
-form.leaflet-control-geocoder-form {
-  padding: 0px;
-  margin: 0px; }
-
 .treeview li {
   margin-top: 0px !important; }
 
@@ -515,7 +378,23 @@ form.leaflet-control-geocoder-form {
   visibility: hidden; }
 
 body {
-  position: relative; }
+  position: relative;
+  font-family: helvetica, arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px; }
+
+.tableFormat {
+  font-size: 11px;
+  line-height: 14px;
+  margin: 0;
+  padding: 8px 10px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  text-align: left; }
+
+p {
+  font-size: 16px;
+  line-height: 23px; }
 
 .static {
   position: fixed; }
@@ -559,6 +438,9 @@ body {
 #notice {
   background-color: white; }
 
+#fileSummaryContainer {
+  overflow: hidden; }
+
 @media screen {
   /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
   h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
@@ -574,12 +456,18 @@ body {
 .wf-active {
   visibility: visible; }
 
+#foothumb .ht {
+  max-height: 75px;
+  min-height: 75px;
+  padding-left: 20px;
+  padding-right: 20px; }
+
 footer {
   margin-top: 60px; }
   footer #footer {
     padding: 50px 0;
     background: url(/images/r4/bg-footer.png) repeat; }
-  footer h4 {
+  footer h6, footer h4 {
     font-weight: 700;
     font-size: 16px;
     color: #fff;

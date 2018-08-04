@@ -1,0 +1,121 @@
+
+
+#home .card p, p.lead {
+        min-height: 4em;
+        color: rgb(125, 122, 119);
+        display: block;
+        font-family: ff-tisa-web-pro, serif;
+        font-size: 13px;
+
+}
+
+#home
+{
+    .card {
+         p {
+             line-height: 18px;
+             margin-bottom: 13px;
+             margin-left: 0px;
+             margin-right: 0px;
+             margin-top: 0px;
+             min-height: 52px;
+             text-align: center;
+        }
+        h5 {
+            min-height: 2em;
+            font-weight:bold;
+            font-size:24px;
+        }
+    }
+  #hero
+  {
+    background: url(../../images/r4/bg-home.jpg) no-repeat center;
+    background-size: cover;
+
+      h2 {
+        font-weight: 700;
+        font-size: 60px;
+        line-height: 50px;
+        letter-spacing: -2px;
+        margin: 50px 0 0 0;
+        }
+        
+         p {
+        margin: 18px 0;
+        font-weight: 500;
+        font-size: 18px;
+        line-height: 24px;
+        }
+  }
+
+
+  .title {
+      display: block;
+      font-family: helvetica,arial,sans-serif;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 700;
+  }
+
+
+  .news
+  {
+      
+    li
+    {
+      font-size: 12px;
+      line-height: 20px;
+      color: #7d7a77;
+      font-style: italic;
+      display: block;
+      position: relative;
+      padding: 12px 0 26px 60px;
+      border-bottom: 1px solid #e8e3d7;
+      min-height: 4em;
+    }
+
+    li:first-child
+    {
+      padding: 0 0 0px 60px;
+    }
+
+    span
+    {
+      font-weight: 700;
+      color: #e3dfd8;
+      display: block;
+      width: 35px;
+      position: absolute;
+      left: 0;
+      text-align: center;
+      font-size: 16px;
+      line-height: 24px;
+      font-style: normal;
+    }
+
+    em
+    {
+      font-size: 30px;
+      font-style: normal;
+      display: block;
+    }
+
+    a
+    {
+      .title
+      {
+        font-family: helvetica, arial, sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        font-style: normal;
+        display: block;
+      }
+    }
+  }
+
+  .topRight
+  {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+}

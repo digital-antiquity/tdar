@@ -272,7 +272,7 @@
     <div class="px-5 pb-5 pt-3">
         <div class="container">
             <h2 >What can you dig up?</h2>
-            <p class="lead"><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
+            <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
                 <div class="input-group col-md-9 noleftmargin">
                     <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
@@ -312,9 +312,9 @@
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
-                      <h5 class="card-title">Access & Use</h5>
+                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h5>
                       <p class="card-text">Broadening the access to archaeological data through simple search and browse functionality.</p>
-                      <a href="http://www.tdar.org/why-tdar/data-access/" class="btn btn-secondary">Learn More</a>
+                      <a href="http://www.tdar.org/why-tdar/data-access/" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>
@@ -322,9 +322,9 @@
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
-                      <h5 class="card-title">Upload Resources</h5>
+                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h5>
                       <p class="card-text">Contribute documents, datasets, images, and other critical archaeological materials.</p>
-                      <a href="#" class="btn btn-secondary">Learn More</a>
+                      <a href="#" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>
@@ -332,9 +332,9 @@
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
-                      <h5 class="card-title">Preservation</h5>
+                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h5>
                       <p class="card-text">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
-                      <a href="#" class="btn btn-secondary">Learn More</a>
+                      <a href="#" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>
@@ -342,9 +342,9 @@
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
-                      <h5 class="card-title">Who Uses tDAR</h5>
+                      <h5 class="card-title"><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h5>
                       <p class="card-text">Researchers like you. Uncover knowledge of the past, and preserve and protect resources.</p>
-                      <a href="#" class="btn btn-secondary">Learn More</a>
+                      <a href="#" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>
@@ -353,52 +353,7 @@
 </section>
 
 
-<#-- <div class="row">
-    <div class="col-3 bucket">
-        <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
 
-        <h3><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h3>
-
-        <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
-
-        <p>
-            <a href="http://www.tdar.org/why-tdar/data-access/" class="button">Learn More</a>
-        </p>
-    </div>
-    <div class="col-3 bucket">
-        <img src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
-
-        <h3><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h3>
-
-        <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
-
-        <p>
-            <a href="http://www.tdar.org/why-tdar/preservation/" class="button">Learn More</a>
-        </p>
-    </div>
-    <div class="col-3 bucket">
-        <img src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
-
-        <h3><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h3>
-
-        <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
-
-        <p>
-            <a href="http://www.tdar.org/why-tdar/contribute/" class="button">Learn More</a>
-        </p>
-    </div>
-    <div class="col-3 bucket">
-        <img src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
-
-        <h3><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h3>
-
-        <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
-
-        <p>
-            <a href="http://www.tdar.org/using-tdar/" class="button">Learn More</a>
-        </p>
-    </div>
-</div> -->
 </#macro>
 
 <#macro subnav>
