@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
 <#macro sidebar current="dashboard">
     <ul class="nav nav-pills nav-fill nav-list nav-stacked dashboard-nav">
-        <li class="nav-header"><b>Dashboard</b></li>
+<!--        <li class="nav-header"><b>Dashboard</b></li> -->
 
         <li class="nav-item"><a  <@activeIf current "dashboard" /> href="/dashboard">Resources</a></li>
 <!--        <li class="nav-item"><a  <@activeIf current "collections" /> href="/dashboard/collections">Collections</a></li> -->

@@ -31,13 +31,16 @@
     <#if creator?? >
     
         <#if  creatorFacetMap?has_content || keywordFacetMap?has_content >
-        <div id="sidebar-right" parse="true">
+        <div id="sidebar-right" parse="true" class="row">
+        <div class="col-10 offset-2">
             <div class="sidebar-spacer">
                 <#list creatorFacetMap?values >
                     <div id="related-creators">
                         <h3>Related Creators</h3>
-                        <ul>
+                        <ul class="list-unstyled ml-0 pl-0">
+                        <#assign count = 0 />
                             <#items as collab>
+		                        <#assign count = count + 1 />
                                 <li>
                                    <#if authenticatedUser?has_content>
                                     <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
@@ -45,6 +48,9 @@
                                         ${collab.label}
                                     </#if>
                                 </li>
+                                <#if (count > results?size / 2) >
+                                 <#break>
+                                </#if>
                             </#items>
                         </ul>
                     </div>
@@ -53,8 +59,10 @@
                 <#list keywordFacetMap?values >
                     <div id="related-keywords">
                         <h3>Related Keywords</h3>
-                        <ul>
+                        <ul class="list-unstyled ml-0 pl-0">
+                        <#assign count = 0 />
                             <#items as collab>
+		                        <#assign count = count + 1 />
                                 <li>
                                    <#if authenticatedUser?has_content>
                                     <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
@@ -62,6 +70,9 @@
                                         ${collab.label}
                                     </#if>
                                 </li>
+                                <#if (count > results?size / 2) >
+                                 <#break>
+                                </#if>
                             </#items>
                         </ul>
                     </div>
@@ -73,6 +84,7 @@
                     </small>
                 </div>
             </div>
+        </div>
         </div>
         </#if>
 
@@ -300,7 +312,7 @@
         </#if>
 
     <div class="tdarresults">
-        <@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" orientation="LIST"/>
+        <@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="b" orientation="LIST"/>
     </div>
         <@search.basicPagination "Results"/>
     <#else>

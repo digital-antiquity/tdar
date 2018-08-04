@@ -402,8 +402,7 @@
         </#if>
     </div>
 
-    <div class="row">
-        <div id='large-map' style="height:300px" class="leaflet-map col-9" 
+        <div id='large-map' style="height:300px" class="leaflet-map col-12" 
         <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>data-geojson="#localGeoJson"</#if>
         <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
             <#assign llb = resource.firstActiveLatitudeLongitudeBox />
@@ -420,7 +419,6 @@
         </#if> -->
         </#if>
         ></div>
-    </div>
     <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>
         <#noescape>
             <script id="localGeoJson" type="application/json">${geoJson}</script>
@@ -429,9 +427,10 @@
     </div>
     </#if>
     <#if creditProxies?has_content >
+        <div class="section">
     <h3>Individual &amp; Institutional Roles <#if editor && resource.inheritingIndividualAndInstitutionalCredit!false ><small>(from project)</small></#if> </h3>
         <@view.showCreatorProxy proxyList=creditProxies />
-    <hr/>
+        </div>
     </#if>
 
         <#list allResourceAnnotationKeys>

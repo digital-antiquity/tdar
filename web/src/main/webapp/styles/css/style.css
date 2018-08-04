@@ -47,7 +47,6 @@ a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
   display: inline-block;
   background: #7a1501;
   margin: 0 4px 0 0;
-  -webkit-border-radius: 2px;
   border-radius: 2px;
   font-weight: 700;
   font-size: 12px;
@@ -91,7 +90,8 @@ nav {
     stroke-width: 5px;
     stroke: #7a1501; }
   .tdarNav .show .nav-chevron {
-    transform: rotate(180deg); }
+    -webkit-transform: rotate(180deg);
+            transform: rotate(180deg); }
 
 .tdar-slider h4 a {
   cursor: auto;
@@ -121,6 +121,7 @@ p.lead {
     background-repeat: no-repeat;
     text-indent: -999em;
     opacity: 0.5;
+    -webkit-transition: opacity 0.1s ease-out;
     transition: opacity 0.1s ease-out; }
   .carousel .car-btn:hover, .image-carousel.carousel .car-btn:hover {
     opacity: 1; }
@@ -140,8 +141,6 @@ p.lead {
   .carousel .carousel-indicators .active, .image-carousel.carousel .carousel-indicators .active {
     background: #333333; }
   .carousel .carousel-indicators span, .image-carousel.carousel .carousel-indicators span {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
     border-radius: 10px;
     padding: 4px;
     margin: 1pt;
@@ -245,6 +244,311 @@ header .welcome-drop a,
 
   .nav-chevron {
     stroke: #352319; } }
+#home .card p, p.lead {
+  min-height: 4em;
+  color: #7d7a77;
+  display: block;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 13px; }
+
+#home .card p {
+  line-height: 18px;
+  margin-bottom: 13px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 52px;
+  text-align: center; }
+#home .card h5 {
+  min-height: 2em;
+  font-weight: bold;
+  font-size: 24px; }
+#home #hero {
+  background: url(../../images/r4/bg-home.jpg) no-repeat center;
+  background-size: cover; }
+  #home #hero h2 {
+    font-weight: 700;
+    font-size: 60px;
+    line-height: 50px;
+    letter-spacing: -2px;
+    margin: 50px 0 0 0; }
+  #home #hero p {
+    margin: 18px 0;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px; }
+#home .title {
+  display: block;
+  font-family: helvetica,arial,sans-serif;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700; }
+#home .news li {
+  font-size: 12px;
+  line-height: 20px;
+  color: #7d7a77;
+  font-style: italic;
+  display: block;
+  position: relative;
+  padding: 12px 0 26px 60px;
+  border-bottom: 1px solid #e8e3d7;
+  min-height: 4em; }
+#home .news li:first-child {
+  padding: 0 0 0px 60px; }
+#home .news span {
+  font-weight: 700;
+  color: #e3dfd8;
+  display: block;
+  width: 35px;
+  position: absolute;
+  left: 0;
+  text-align: center;
+  font-size: 16px;
+  line-height: 24px;
+  font-style: normal; }
+#home .news em {
+  font-size: 30px;
+  font-style: normal;
+  display: block; }
+#home .news a .title {
+  font-family: helvetica, arial, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  font-style: normal;
+  display: block; }
+#home .topRight {
+  font-weight: bold;
+  text-transform: uppercase; }
+
+/********** LEAFLET **************/
+/** leaflet maps - **/
+.disable-map .leaflet-draw {
+  display: none;
+  visibility: hidden; }
+
+.disable-map .leaflet-container, .leaflet-container.disable-map {
+  opacity: .5; }
+
+/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
+#large-google-map img, .google-map img {
+  border: inherit;
+  height: auto;
+  max-width: inherit; }
+
+.tdar-map-large, #large-google-map {
+  height: 450px; }
+
+#large-google-map label, .google-map label {
+  width: auto;
+  display: inline; }
+
+.tdar-gmap-control button:disabled {
+  display: none; }
+
+form.leaflet-control-geocoder-form {
+  padding: 0px;
+  margin: 0px; }
+
+/* Error banners are a more attention-grabbing form of user notifications. */
+.error-banner {
+  background: url(../images/caution.gif) 0.2em 0.2em;
+  background-repeat: no-repeat;
+  background-size: 1.5em;
+  margin-top: 3em;
+  padding: 0.2em 0.2em 0.2em 2em;
+  border: 2px solid #444;
+  color: black; }
+
+.error-banner h1, .error-banner h2, .error-banner h3, .error-banner h4 {
+  color: #7a1501; }
+
+.bg-red {
+  background-color: #7a1501; }
+
+/* Put error codes in a block-level container w/ class of  .pull-right.error-codes to inset them in the
+upper-right corner. Individual codes should be wrapped in span.error-code elements */
+.error-banner > .pull-right.error-codes {
+  position: relative;
+  margin-left: -15px;
+  margin-top: 5px;
+  font-size: 8pt;
+  border-radius: 2px;
+  padding: 1px 3px 1px 3px;
+  border: 1px solid #dcc;
+  color: #555; }
+
+.error-banner .error-code {
+  font-family: monospace;
+  padding-right: 1em; }
+
+.error-code:last-child {
+  padding-right: inherit; }
+
+/* Overide bootstrap default error alert color. Note: avoid modifying anything other than fonts and colors, as the styles here
+are governed by several media queries and thus easy to screw up the formatting of various responsive profiles. */
+.alert.alert-error {
+  background-color: #fffecc; }
+
+.alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
+  color: #000; }
+
+/** set width and height properly **/
+.svgicon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  fill: currentColor; }
+
+.svg-small {
+  height: 40px !important;
+  width: 40px !important; }
+
+.svg100 {
+  height: 100px !important;
+  width: 100px !important; }
+
+.iconbox125 {
+  padding-top: 3%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-bottom: 3%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0% !Important;
+  margin-bottom: 0% !important;
+  height: 125px;
+  width: 125px;
+  float: none; }
+
+.svg-dynamic125 {
+  width: 80%;
+  height: 80%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; }
+
+.iconbox {
+  float: none;
+  padding: 10%;
+  margin-left: auto;
+  margin-right: auto; }
+
+.svg-dynamic {
+  max-width: 80% !important;
+  max-height: 80% !important;
+  margin-top: 15%;
+  margin-bottom: 15%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  height: 100%;
+  width: 100%;
+  margin-top: 15%;
+  margin-bottom: 15%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; }
+
+.svg-cartouche {
+  height: 1em;
+  width: 1em;
+  margin: 0 auto;
+  display: block;
+  margin-right: 3px; }
+
+.flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex; }
+
+.grey {
+  fill-color: #555555;
+  color: #555555; }
+
+/*** WORLDMAP *****/
+#mapgraphdata {
+  text-align: center;
+  height: 100px; }
+
+#worldmap.leaflet-container {
+  background-color: #D5F0FD;
+  border: 1px solid #AAA; }
+
+#worldmap .info {
+  background-color: #fff;
+  opacity: .8;
+  padding: 2px; }
+
+#worldmap .legend {
+  background-color: #fff;
+  float: right; }
+
+#worldmap .leaflet-control-attribution {
+  display: none; }
+
+.worldmap {
+  border: 1px solid #aaa; }
+
+#map_legend {
+  position: absolute;
+  display: block;
+  width: 300px;
+  height: 1.8em;
+  bottom: 0px;
+  /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
+  right: 100px; }
+
+.mapcontainer .legendText {
+  padding-top: 0px !important;
+  margin-left: 5px;
+  margin-right: 5px; }
+
+.mapcontainer .legendBox, .mapcontainer .legendText {
+  clear: none;
+  float: left; }
+
+.mapcontainer .legendBox {
+  border: 1px solid #666666;
+  width: 10px;
+  margin-top: 3px;
+  height: 10px;
+  padding: 2px; }
+
+div.mapcontainer {
+  position: relative; }
+
+div.mapcontainer img {
+  height: 304px !Important;
+  right: 0px;
+  display: block;
+  position: relative; }
+
+.mapcontainer #data {
+  font-weight: bold; }
+
+#mapGraphZoomOut, #mapGraphZoomOut *, #mapGraphSearch, #mapGraphSearch * {
+  cursor: hand;
+  cursor: pointer; }
+
+.mapcontainer.mini h3, .mapcontainer.mini #mapgraphdata {
+  display: none; }
+
+.mini #worldmap.leaflet-container {
+  border: none;
+  background-color: #fff; }
+
+.mini .leaflet-interactive {
+  cursor: default; }
+
+/******** GRAPHING **********/
+.barChart .c3-text {
+  fill: black !important; }
+
+.barGraph {
+  position: relative; }
+
 /**** VIEW ****/
 .view-deleted-file {
   background-color: #edd87b;
@@ -287,7 +591,6 @@ img.responsive-image {
   margin: 0 !important;
   padding: 0 10px;
   background: #7a1501;
-  -webkit-border-radius: 2px 2px 0 0;
   border-radius: 2px 2px 0 0;
   border-bottom: none; }
 .view aside h3.downloads span.downloadNumber {
@@ -296,19 +599,11 @@ img.responsive-image {
   font-size: 13px;
   line-height: 22px !important;
   background: #641b11;
-  -webkit-border-radius: 2px;
   border-radius: 2px;
   width: 22px;
   text-align: center;
   margin-top: 11px;
-  -webkit-border-radius: 2px 2px 0 0;
   border-radius: 2px 2px 0 0; }
-.view aside h3 {
-  font-size: 16px;
-  line-height: 22px;
-  border-bottom: 1px solid #e5e5e5;
-  padding-bottom: 5px;
-  margin: 20px 0; }
 .view aside ul.downloads, .view aside ul.downloads li {
   background: #f0eeeb;
   margin: 0 !important; }
@@ -328,6 +623,45 @@ img.responsive-image {
   line-height: 17px;
   color: #7d7a77;
   margin-top: 15px; }
+.view aside h3 {
+  font-size: 16px;
+  line-height: 22px;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 5px;
+  margin: 20px 0; }
+
+.section + .section {
+  padding-top: 1em;
+  border-top: 1px solid #EEE; }
+
+.section, .section + .card {
+  margin-bottom: 1em; }
+
+.resource-list .listItem b {
+  font-size: 112%; }
+
+div.tdarresults {
+  border-top: double #222;
+  border-bottom: double #222;
+  padding-bottom: 3em;
+  padding-top: 1em;
+  margin-bottom: 0.1em; }
+
+.LIST.list-unstyled li, .MAP li {
+  line-height: 20px;
+  margin-bottom: 10px; }
+
+.page-item.active .page-link {
+  background-color: #7a1501;
+  border-color: #7a1501; }
+  .page-item.active .page-link a {
+    color: #fff; }
+
+.nav-pills .nav-item {
+  width: 100%; }
+.nav-pills .nav-link.active {
+  background-color: #7a1501;
+  color: #fff; }
 
 /*** ALPHA **/
 .ribbon-green {
@@ -346,14 +680,9 @@ img.responsive-image {
   top: 11px;
   width: 120px;
   background-color: #BFDC7A;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#BFDC7A), to(#8EBF45));
-  background-image: -webkit-linear-gradient(top, #BFDC7A, #8EBF45);
-  background-image: -moz-linear-gradient(top, #BFDC7A, #8EBF45);
-  background-image: -ms-linear-gradient(top, #BFDC7A, #8EBF45);
   background-image: -o-linear-gradient(top, #BFDC7A, #8EBF45);
   color: #6a6340;
   -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
   box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3); }
 
 .ribbon-green:before, .ribbon-green:after {
@@ -369,9 +698,6 @@ img.responsive-image {
 
 .ribbon-green:after {
   right: 0; }
-
-.treeview li {
-  margin-top: 0px !important; }
 
 .hidden {
   display: none;
@@ -393,18 +719,11 @@ body {
   text-align: left; }
 
 p {
-  font-size: 16px;
+  font-size: 14px;
   line-height: 23px; }
 
 .static {
   position: fixed; }
-
-.section + .section {
-  padding-top: 1em;
-  border-top: 1px solid #EEE; }
-
-.section, .section + .card {
-  margin-bottom: 1em; }
 
 .dashboard-nav .nav-item {
   text-align: left !important; }
@@ -491,5 +810,20 @@ footer {
   right: 5px;
   bottom: 5px;
   opacity: .9; }
+
+.fileinput-button input {
+  cursor: pointer;
+  direction: ltr;
+  filter: alpha(opacity=0);
+  font-size: 23px;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  right: 0;
+  /*     top: 0; */
+  -webkit-transform: translate(-300px, 0) scale(4);
+          transform: translate(-300px, 0) scale(4); }
 
 /*# sourceMappingURL=style.css.map */

@@ -127,15 +127,16 @@
 
     <div id="divResultsSortControl">
         <div class="row">
-            <div class="col-9">
+            <div class="col-7">
                 <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
             </div>
-            <div class="col-3">
+            <div class="col-5">
+            	<p class="align-text-bottom float-right">
                     <label>Records Per Page
                         <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
                         list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
                     </label>
-
+				</p>
             </div>
         </div>
     </div>

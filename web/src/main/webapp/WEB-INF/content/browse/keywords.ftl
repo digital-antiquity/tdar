@@ -64,7 +64,7 @@
             </div>
         </div>
         <div class="tdarresults">
-            <@list.listResources resourcelist=results  listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+            <@list.listResources resourcelist=results  listTag="span" itemTag="span" titleTag="b" orientation=orientation mapPosition="top" mapHeight="450"/>
         </div>
     
     </#if>

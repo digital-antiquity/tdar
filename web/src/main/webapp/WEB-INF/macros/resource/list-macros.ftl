@@ -5,6 +5,30 @@
     <#import "../search-macros.ftl" as search>
     <#assign DEFAULT_SORT = 'RELEVANCE' />
     <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
+    
+    
+    <#macro _itemOpen itemTag_ itemClass rowCount resource>
+                <${itemTag_} class="listItem ${itemClass!''} "
+            <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content>
+            
+                <#local box = resource.firstActiveLatitudeLongitudeBox />
+                data-scale="${box.scale?c}"
+                <#if resource.latLongVisible >
+                    data-lat="${box.obfuscatedCenterLatitude?c}"
+                    data-long="${box.obfuscatedCenterLongitude?c}"
+                    data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
+                    data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
+                </#if>
+                <#-- disabled for Obsidian 
+                <#if editor || resource.confidentialViewable  >
+                    data-real-lat="${box.centerLatitude?c}"
+                    data-real-long="${box.centerLongitude?c}"
+                    data-real-lat-length="${box.absoluteLatLength?c}"
+                    data-real-long-length="${box.absoluteLongLength?c}"
+                </#if> -->
+                </#if>
+            id="resource-${resource.id?c}">
+    </#macro>
 
 <#-- emit a list of resource summary information (e.g. for a a search results page, or a resource collection view page
     @param resourcelist:list<Persistable> List of Resources or Collections. Required.
@@ -19,7 +43,7 @@
     @param mapPositon: where to show the map in relation to the result list
     @param mapHeight: how high the map should be
 -->
-    <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
+    <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=5
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
 
         <#local showProject = false />
@@ -36,7 +60,7 @@
     <#-- set default ; add map wrapper -->
         <#if orientation == "GRID">
             <#local listTag_="div"/>
-            <#local itemClass = "col-2"/>
+            <#local itemClass = "col"/>
             <#local itemTag_="div"/>
         <#elseif orientation == "MAP" >
             <#local listTag_="ol"/>
@@ -59,31 +83,13 @@
                     <#local rowCount= rowCount+1 />
 
                 <#-- list headers are displayed when sorting by specific fields ResourceType and Project -->
-                    <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
+                <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
                 <#-- printing item tag start / -->
-                    <${itemTag_} class="listItem ${itemClass!''}"
-                    <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content>
-                    
-                        <#local box = resource.firstActiveLatitudeLongitudeBox />
-                        data-scale="${box.scale?c}"
-                        <#if resource.latLongVisible >
-                            data-lat="${box.obfuscatedCenterLatitude?c}"
-                            data-long="${box.obfuscatedCenterLongitude?c}"
-                            data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
-                            data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
-                        </#if>
-                        <#-- disabled for Obsidian 
-                        <#if editor || resource.confidentialViewable  >
-                            data-real-lat="${box.centerLatitude?c}"
-                            data-real-long="${box.centerLongitude?c}"
-                            data-real-lat-length="${box.absoluteLatLength?c}"
-                            data-real-long-length="${box.absoluteLongLength?c}"
-                        </#if> -->
-                        </#if>
-                    id="resource-${resource.id?c}">
-
+				<#if (orientation != 'GRID' || first ||  rowCount % itemsPerRow != 0 )>
+				<@_itemOpen itemTag_ itemClass rowCount resource />
+				</#if>
                 <#-- if we're at a new row; close the above tag and re-open it (bug) -->
-                    <@_printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
+                    <@_printDividerBetweenResourceRows itemTag_ itemClass resource first rowCount itemsPerRow orientation />
 
                 <#-- add grid thumbnail -->
                     <#if isGridLayout>
@@ -149,17 +155,17 @@
     </#macro>
 
 <#-- divider between the sections of results -->
-    <#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
+    <#macro _printDividerBetweenResourceRows itemTag_ itemClass resource first rowCount itemsPerRow orientation>
         <#if itemTag_?lower_case != 'li'>
         <#-- if not first result -->
             <#if !first>
                 <#if (!isGridLayout)>
                 <hr/>
                 <#elseif rowCount % itemsPerRow == 0>
-                </div>    </div>
-                <hr/>
+                </div> 
+                <hr />
                 <div class=" ${orientation} resource-list row">
-                <div class="col-2">
+                <@_itemOpen itemTag_ itemClass rowCount resource />
                 </#if>
             </#if>
         </#if>
@@ -193,7 +199,7 @@
                 <#if isGridLayout>
                     <div class='resource-list row ${orientation}'>
                 <#else>
-                    <#if listTag_ == 'ul'><#local styling="unstyled"><#else><#local styling=""></#if>
+                    <#if listTag_ == 'ul'><#local styling="list-unstyled"><#else><#local styling=""></#if>
                     <${listTag_} class="resource-list ${orientation} ${styling}">
                 </#if>
             </#if>
@@ -225,7 +231,7 @@
             <#if orientation == 'LIST_FULL'>
                 <div class="listItemPart">
                     <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
-                        <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
+                        <span class='badge badge-dark' title="Citation only; this record has no attached files.">Citation</span>
                     </#if>
                     
                     <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i> </#if><#if permissionsCache?has_content && permissionsCache.isManaged(resource.id) == false>[not managed]</#if></@commonr.cartouche>
@@ -267,7 +273,7 @@ bookmark indicator, etc..
     @param titleTag:String  name of the html tag that will wrap the actual resource title (e.g. "li", "div", "td")
  -->
     <#macro searchResultTitleSection result titleTag >
-        <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
+        <#local titleCssClass="srt search-result-title-${result.status!('ACTIVE')}" />
 <#--        <@bookmark result false/>  --> 
         <#if titleTag?has_content>
             <${titleTag} class="${titleCssClass}">

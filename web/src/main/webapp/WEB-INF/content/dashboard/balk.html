@@ -1,4 +1,4 @@
-<div class="span10" id="filesTool">
+<div class="col-10" id="filesTool">
 
     <balk />
     
@@ -29,12 +29,12 @@
     <div :class="commentClass" v-if="comment != undefined">
     <pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
 {{comment.comment}} 
-   <span v-if="comment.resolved != undefined" class="pull-right">
+   <span v-if="comment.resolved != undefined" class="float-right">
         <label v-if="comment.resolved == false"  @click="resolveComment()"><input type="checkbox" @click="resolveComment()"/> resolve</label>
         <i v-if="comment.resolved" :alt="comment.resolverName" :title="comment.resolverName">resolved {{formatDate(comment.dateResolved)}}</i>
     </span> 
 
-   <span v-if="comment.undoAction != undefined" class="pull-right">
+   <span v-if="comment.undoAction != undefined" class="float-right">
         <label  @click="undo()"><input type="checkbox" @click="undo()"/> undo</label></span>
 
     </span> 
@@ -90,7 +90,7 @@
 <form class="form-horizontal" >
 <div id="balkTemplate" v-show="balkVisible">
 <div class="row">
-    <div class="span6">
+    <div class="col-8">
     <label  style="display:inline">Account:
         <select name="account" id="accountId" v-model="accountId">
                 <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
@@ -98,8 +98,8 @@
     </label>
 	<a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
     </div>
-    <div class="span4">
-        <input type="search" class="search input pull-right" placeholder="search" v-model="search" />
+    <div class="col-4">
+        <input type="search" class="search input float-right" placeholder="search" v-model="search" />
     </div>
 </div>
 
@@ -124,7 +124,7 @@
 <span class="link" @click="cd(undefined)">/ </span> <span v-for="(dir, index) in dirStack">
 		<span v-if="index != 0"> / </span> <span class="link" @click="cd(dir)">{{dir.name}}</span>
 </span>
-<span class="pull-right" v-if="dirStack.length > 0">
+<span class="float-right" v-if="dirStack.length > 0">
 	<span class="link" id="renamePlaceholder" @click="showRename()" v-show="renameVisible == false">(rename)</span>
 	<div id="renamePart" v-show="renameVisible">
 		<input name="rename" id="rename" type="text" v-model="rename" />
@@ -181,7 +181,7 @@
     </div>
 
     <!-- The global progress bar -->
-    <div id="progress" class="progress progress-striped span6" style="margin-top:5px">
+    <div id="progress" class="progress progress-striped col-6" style="margin-top:5px">
         <div class="progress-bar progress-bar-success bar"></div>
     </div>
     <div id="uploadstatus"></div>
@@ -294,13 +294,13 @@
   <div class="tab-pane" id="recent">
 
 <div v-if='recent != undefined' class='row'>
-    <div class="span3">
+    <div class="col">
             <select name="userId" id="userId" v-model="userId">
                     <option>All Users</option>
                     <option v-for="(option, index) in recent.userMap" v-bind:value="option.id"> {{ option.name }} </option>
             </select>
     </div>
-    <div class="span3">
+    <div class="col">
         <div class="input-append" >
             <label for="dateStart" style="display:inline">From:
             <input v-model="dateStart" type="text" name="dateStart" id="dateStart" class="placeholdered " data-date-format="mm/dd/yy" placeholder="mm/dd/yy">
@@ -308,7 +308,7 @@
             </label>
         </div>
     </div>
-    <div class="span3">
+    <div class="col">
         <div class="input-append" >
             <label for="dateEnd" style="display:inline">To:
             <input v-model="dateEnd" type="text" name="dateEnd" id="dateEnd" class="placeholdered " data-date-format="mm/dd/yy" placeholder="mm/dd/yy">
