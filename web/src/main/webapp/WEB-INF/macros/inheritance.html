@@ -92,7 +92,7 @@
     </div>
     
     
-        <div id='large-map2' style="height:300px" class="leaflet-map-editable span9" data-search="true">
+        <div id='vueeditablemap' style="height:300px" class=" span9" data-search="true">
             <div id="divManualCoordinateEntry2" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
                 <input type="checkbox" id="viewCoordinatesCheckbox2" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
                 <div id='explicitCoordinatesDiv' style='text-align:center;'>
@@ -175,7 +175,7 @@ $(document).ready(function() {
                     {value:"ADMIN", name:"Administration Note"}
                     ],
                 resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
-                    resourceNotes: [{}],  latitudeLongitudeBoxes: [{}]}
+                    resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ] }
                 },
                 watch: {
                     inhertInvestigationType: function(o, b) {
@@ -223,7 +223,15 @@ $(document).ready(function() {
                     }
                 },
                 mounted: function() {
-                    //TDAR.leaflet.initEditableLeafletMaps();
+                    var self = this.resource.latitudeLongitudeBoxes[0];
+                    Vue.nextTick(function() {
+                        TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
+                            Vue.set(self, "west", e.minx);
+                            Vue.set(self, "east", e.maxx);
+                            Vue.set(self, "north", e.maxy);
+                            Vue.set(self, "south", e.miny);
+                            });
+                    });
                 },
                 methods: {
                     removeNote: function(idx) {
