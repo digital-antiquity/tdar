@@ -435,6 +435,9 @@ ${head}
 </#if>
 <script>
     $(TDAR.main);
+    $(document).ready(function(){
+    	TDAR.common.initializeView();
+	});
 </script>
 
     <!-- BEGIN-TDAR-FOOTER -->
