@@ -430,7 +430,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var div = $el.find('div.mapdiv')[0];
         //var div = document.createElement("div");
         //$el.append(div);
-
+        if (div == undefined) {
+            return undefined;
+        }
         // copy styles
         div.setAttribute("style", $el.attr("style"));
         $el.attr("style", "");

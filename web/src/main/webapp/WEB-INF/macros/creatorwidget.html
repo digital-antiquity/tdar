@@ -11,8 +11,8 @@
         </div>
     </div>
     <div class="span4">
-        <input type="hidden" name="getRootPrefix('id')" v-model="id" class="toggleValue">
-        <input type="hidden" :name="getPrefix('id')" :value="creatorId">        
+        <input type="hidden" name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
+        <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id">
         <div v-if="toggle == 'PERSON'">
             <div v-if="!showEditPerson">
                 <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
@@ -22,12 +22,12 @@
             </div>
             <div class="" v-show="showEditPerson">
                 <div class="controls-row">
-                    <input type="text" id="ln" :name="getPrefix('lastName')" maxlength="255" v-model="creator.lastName" class="span2 trim" title="A last name" placeholder="Last Name">
-                    <input type="text" :name="getPrefix('firstName')" maxlength="255" v-model="creator.firstName" class="span2  trim " title="A first name" placeholder="First Name">
+                    <input type="text" id="ln" :name="getPrefix('lastName')" maxlength="255" v-model="resourcecreator.creator.lastName" class="span2 trim" title="A last name" placeholder="Last Name">
+                    <input type="text" :name="getPrefix('firstName')" maxlength="255" v-model="resourcecreator.creator.firstName" class="span2  trim " title="A first name" placeholder="First Name">
                 </div>
                 <div class="controls-row">
-                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="span2  trim" placeholder="Email (optional)">
-                    <input type="text" :name="getPrefix('institution.name')" maxlength="255" v-model="creator.institution.name" class="span2 trim" placeholder="Institution Name (Optional)">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="resourcecreator.creator.email" class="span2  trim" placeholder="Email (optional)">
+                    <input type="text" :name="getPrefix('institution.name')" maxlength="255" v-model="resourcecreator.creator.institution.name" class="span2 trim" placeholder="Institution Name (Optional)">
                 </div>
             </div>
         </div>
@@ -40,15 +40,15 @@
             </div>
             <div v-if="showEditInstitution">
                 <div class="controls-row">
-                    <input type="text" :name="getPrefix('name')" maxlength="255" v-model="creator.name" class="span2 trim" placeholder="Institution Name (Optional)">
-                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="span2  trim" placeholder="Email (optional)">
+                    <input type="text" :name="getPrefix('name')" maxlength="255" v-model="resourcecreator.creator.name" class="span2 trim" placeholder="Institution Name (Optional)">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="resourcecreator.creator.email" class="span2  trim" placeholder="Email (optional)">
                 </div>
             </div>
         </div>
     </div>
     <div class="span2">
     
-    <select :name="getRootPrefix('role')" class="creator-role-select span2" v-model="role">
+    <select :name="getRootPrefix('role')" class="creator-role-select span2" v-model="resourcecreator.role">
         <option v-for="(value, index) in roles">{{value}}</option>
     </select>
     </div>

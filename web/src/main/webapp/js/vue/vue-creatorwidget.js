@@ -2,25 +2,18 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
     "use strict";
 
     if (document.getElementById("creatorwidget-template") != undefined ) {
-        var autocomplete = Vue.component('creatorrolelookup', {
+        var creatorlookup = Vue.component('creatorrolelookup', {
             name: "creatorrolelookup",
             template: "#creatorwidget-template",
             props: {
-                creator : {
+                resourcecreator : {
                     type: Object,
-                    default: { institution:{ name: undefined}} 
+                    default:  function() {return { creator: { institution:{ name: undefined}}}} 
                 },
                 row: {
                     type:Number,
                     default: 0
                 },
-                id: {
-                    type: Number,
-                    default: 0
-                },
-                role: {
-                    type:String,
-                }
             },
             data: function() {
                 return {
@@ -31,14 +24,12 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 toggle: "PERSON"
                 }
             },
-            mounted: function() {
-            },
             computed: {
                 creatorId: function() {
-                    if (this.creator == undefined || this.creator.id == undefined || this.creator.id == -1) {
+                    if (this.resourcecreator.creator == undefined || this.resourcecreator.creator.id == undefined || this.resourcecreator.creator.id == -1) {
                         return -1;
                     }
-                    return this.creator.id;  
+                    return this.resourcecreator.creator.id;  
                 },
                 personClass: function() {
                     var ret = "btn btn-small personButton";
@@ -55,13 +46,13 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     return ret;
                 },
                 editClass: function() {
-                    if (this.creator != undefined && this.creator.id != undefined) {
+                    if (this.resourcecreator.creator != undefined && this.resourcecreator.creator.id != undefined) {
                         return "";
                     }
                     return "disabled";
                 },
                 deleteClass: function() {
-                    if (this.creator != undefined) {
+                    if (this.resourcecreator.creator != undefined) {
                         return "";
                     }
                     return "disabled";
@@ -89,7 +80,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     return ret;
                 },
                 reset: function() {
-                    Vue.set(this,"creator", { institution:{ name: undefined}});
+                    Vue.set(this.resourcecreator,"creator", { institution:{ name: undefined}});
                     Vue.set(this,"showEditPerson", false);
                     Vue.set(this,"showEditInstitution", false);
                     if (this.$refs.inputperson != undefined) {
@@ -101,7 +92,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 },
                 addAutocompleteValue: function(result) {
                     if (result != undefined && result.id != undefined) {
-                        Vue.set(this,"creator", result);
+                        Vue.set(this.resourcecreator,"creator", result);
                     }
                 },
                 clickEdit: function() {

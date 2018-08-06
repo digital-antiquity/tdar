@@ -38,8 +38,14 @@
 </div>
         </div>
     </div>
-    
-    <creatorrolelookup :creator="resource.individualInstitutionalRoles[0]" />
+
+<div>
+        <h5>Individual and Institutional Roles</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertCreators" :disabled="inheritanceDisabled"/></b>
+        <div v-for="(creator, idx) in resource.individualInstitutionalRoles" class="row">
+                    <creatorrolelookup :resourcecreator="creator" :row="idx"  />
+    </div>    
+</div>    
     
     <div>
         <h5>Other Keywords</h5>
@@ -163,6 +169,7 @@ $(document).ready(function() {
                 inhertSiteName: false,
                 inhertSiteType: false,
                 inhertTemporal: false,
+                inhertCreators: false,
                 inhertCulture: false,
                 inhertSpatial: false,
                 inhertMaterial: false,
@@ -178,7 +185,7 @@ $(document).ready(function() {
                     ],
                 resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
                     resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
-                    individualInstitutionalRoles: [{institution:{ name: undefined}}] }
+                    individualInstitutionalRoles: [{id: undefined, role: undefined , creator: {institution:{ name: undefined}}, id: undefined}] }
                 },
                 watch: {
                     inhertInvestigationType: function(o, b) {
@@ -192,6 +199,13 @@ $(document).ready(function() {
                     },
                     inhertTemporal: function(o, b) {
                         this.inherit(o,b,'temporal', 'activeTemporalKeywords');
+                    },
+                    inhertCreators: function(o, b) {
+                        this.resource.individualInstitutionalRoles.length = 0;
+                        var self = this;
+                        this.project.activeIndividualAndInstitutionalCredit.forEach(function(role) {
+                            self.resource.individualInstitutionalRoles.push(role);
+                        });
                     },
                     inhertMaterial: function(o, b) {
                         this.inherit(o,b,'material', 'activeMaterialKeywords');
