@@ -27,6 +27,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -124,8 +125,9 @@ public class BulkUploadServiceImpl implements BulkUploadService {
             Activity activity = registerActivity(fileProxies, submitter);
 
             logger.info("bulk: processing files, and then persisting");
-            processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver, resources);
-            updateAccountQuotas(accountId, resources, asyncUpdateReceiver, submitter);
+            List<TdarFile> files = processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver, resources);
+
+            updateAccountQuotas(accountId, resources, asyncUpdateReceiver, submitter, files);
 
             ResourceCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
             completeBulkUpload(accountId, asyncUpdateReceiver, activity, ticketId);
@@ -165,12 +167,13 @@ public class BulkUploadServiceImpl implements BulkUploadService {
      */
     @Override
     @Transactional
-    public void processFileProxiesIntoResources(Collection<FileProxy> fileProxies, InformationResource image, TdarUser authenticatedUser,
+    public List<TdarFile> processFileProxiesIntoResources(Collection<FileProxy> fileProxies, InformationResource image, TdarUser authenticatedUser,
             AsyncUpdateReceiver asyncUpdateReceiver, List<Resource> resources) {
         int count = 0;
         image.setSubmitter(authenticatedUser);
         Map<String, FileProxy> map = new HashMap<>();
         Map<String, InformationResource> rMap = new HashMap<>();
+        List<TdarFile> files = new ArrayList<>();
         for (FileProxy fileProxy : fileProxies) {
             logger.trace("processing: {}", fileProxy);
             try {
@@ -203,6 +206,12 @@ public class BulkUploadServiceImpl implements BulkUploadService {
                 informationResource = importService.bringObjectOntoSession(informationResource, authenticatedUser, Arrays.asList(fileProxy), null, false);
                 genericDao.saveOrUpdate(informationResource);
                 informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
+                TdarFile file = genericDao.find(TdarFile.class, fileProxy.getTdarFileId());
+                if (file != null) {
+                    file.setResource(informationResource);
+                    files.add(file);
+                }
+
                 asyncUpdateReceiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileProxy.getName()));
                 resources.add(informationResource);
             } catch (Exception e) {
@@ -210,6 +219,7 @@ public class BulkUploadServiceImpl implements BulkUploadService {
                 asyncUpdateReceiver.addError(e);
             }
         }
+        return files;
     }
 
     /**
@@ -217,11 +227,14 @@ public class BulkUploadServiceImpl implements BulkUploadService {
      * 
      * @param updateReciever
      */
-    private void updateAccountQuotas(Long accountId, List<Resource> resources, AsyncUpdateReceiver updateReciever, TdarUser user) {
+    private void updateAccountQuotas(Long accountId, List<Resource> resources, AsyncUpdateReceiver updateReciever, TdarUser user, List<TdarFile> files) {
         try {
             logger.info("bulk: finishing quota work");
             if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
                 BillingAccount account = genericDao.find(BillingAccount.class, accountId);
+                for (TdarFile file: files) {
+                    file.setAccount(account);
+                }
                 accountService.updateQuota(account, resources, user);
             }
         } catch (Throwable t) {

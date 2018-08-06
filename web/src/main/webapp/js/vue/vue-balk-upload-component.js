@@ -430,12 +430,43 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 renameVisible: false,
                 reportsVisible: false,
                 balkVisible: true,
+                collection: {},
                 path : "" }
             },
             computed : {
                 inputDisabled : function() {
                     return !this.ableToUpload;
                 },
+                renameEnabled: function() {
+                    console.log('dirName:' , this.dirName, this.dirStack);
+                    if (this.dirStack.length == 0 || this.dirStack[this.dirStack.length - 1].name == 'unfiled') {
+                        return false;
+                    }
+                    return true;
+                },
+                dirActionsEnabledClass: function() {
+                   if (this.renameEnabled) {
+                       return "";
+                   }
+                   return "disabled";
+                },
+                dirActionsEnabledLinkClass: function() {
+                    var ret = this.dirActionsEnabledClass;
+                    var dir = this.dirStack[this.dirStack.length -1];
+                    if (ret == '' && dir.collection == undefined) {
+                        return "";
+                    }
+                    return "disabled";
+                },
+                dirActionsEnabledUnlinkClass: function() {
+                    var ret = this.dirActionsEnabledClass;
+                    var dir = this.dirStack[this.dirStack.length -1];
+                    if (ret == '' && dir.collection != undefined) {
+                        return "";
+                    }
+                    return "disabled";
+                },
+                
                 upOne: function() {
                   if (this.dirStack.length < 2) {
                       return undefined;
@@ -502,6 +533,9 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         });
                     });
                     this.cancelRename();
+                },
+                selectCollection: function(result){
+                    Vue.set(this,"collection", result);
                 },
                 cancelRename: function() {
                     Vue.set(this,"renameVisible", false);
@@ -620,6 +654,12 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                         }
                     });
                     return ret;
+                },
+                currentDir: function() {
+                    if (this.dirStack.length > 0) {
+                        return this.dirStack[this.dirStack.length -1];
+                    }
+                    return undefined;
                 },
                 _cannotSelect: function() {
                     if (this.selectedFiles == undefined || this.selectedFiles.length == 0 || this.selectedFiles.length > MAX_SELECTED_FILES) {
@@ -805,7 +845,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                   $.post("/api/file/mkdir", {"parentId": _app.parentId, "name": dirName, accountId: _app.accountId}
                     ).done(function(msg) {
                         _app.files.push(msg);
-                        Vue.set(this,'dirName','');
+                        Vue.set(_app,'dirName','');
                     });
                 },
                 moveUI: function() {
@@ -815,6 +855,39 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                       console.log(_app.dirTree);
                       $("#move-template-modal").modal('show');
                   });
+                },
+                linkCollection: function() {
+                    var data = {
+                            id: this.currentDir().id,
+                            collectionId: this.collection.id
+                    }
+                    $.post("/api/file/linkCollection", data
+                    ).done(function(msg) {
+                        console.log(msg);
+                    });
+                },
+                updateLinkedCollection: function() {
+                    var data = {
+                            id: this.currentDir().id
+                    }
+                    $.post("/api/file/updateDirCollection", data
+                    ).done(function(msg) {
+                        console.log(msg);
+                    });
+                },
+                unlinkCollection: function() {
+                    var data = {
+                            id: this.currentDir().id
+                    }
+                    $.post("/api/file/unlinkDirCollection", data
+                    ).done(function(msg) {
+                        console.log(msg);
+                    });
+                },
+                collectionUI: function() {
+                    // show the move UI
+                    var _app = this;
+                    $("#collection-modal").modal('show');
                 },
                 createRecordFromSelected: function() {
                     window.location.href = this._createRecordFromSelected();

@@ -27,6 +27,7 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -166,6 +167,15 @@ public class TdarFile extends AbstractFile {
         return resource;
     }
 
+    @XmlElement(name = "projectRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public Project getProject() {
+        if (resource != null && resource.getProject() != Project.NULL) {
+            return resource.getProject();
+        }
+        return Project.NULL;
+    }
+
     public String getResourceUrl() {
         if (resource != null) {
             return "/" + resource.getAbsoluteUrl();
@@ -173,9 +183,23 @@ public class TdarFile extends AbstractFile {
         return null;
     }
 
+    public String getProjectUrl() {
+        if (resource != null && resource.getProject() != Project.NULL) {
+            return "/" + resource.getProject().getAbsoluteUrl();
+        }
+        return null;
+    }
+
     public Long getResourceId() {
         if (resource != null) {
             return resource.getId();
+        }
+        return null;
+    }
+
+    public Long getProjectId() {
+        if (resource != null && resource.getProject() != Project.NULL) {
+            return resource.getProject().getId();
         }
         return null;
     }

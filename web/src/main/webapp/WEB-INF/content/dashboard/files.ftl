@@ -44,6 +44,7 @@
 <div class="span2">
     <@dash.sidebar current="files" />
 </div>
+<#include "/WEB-INF/macros/autocomplete.html" />
 <#include "balk.html" />
 </div>
 
