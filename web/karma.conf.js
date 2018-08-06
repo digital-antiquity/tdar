@@ -47,7 +47,9 @@ module.exports = function(config) {
                
                 'node_modules/moxios/dist/moxios.js',
                 //"src/main/webapp/dist/main.bundle.js",
-                //   {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
+                
+                
+                {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},

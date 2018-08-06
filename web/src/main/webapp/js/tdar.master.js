@@ -33,4 +33,5 @@ if (TDAR['vuejs'] == undefined) {
 	TDAR['vuejs'] = {};
 }
 
+
 module.exports = TDAR;
