@@ -1,3 +1,41 @@
+<script type="text/x-template" id="person-template">
+<div>
+            <div v-if="!showEditPerson">
+                <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
+                resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="span4"
+                :customcreatenew="clickNew" createnewtext="Create New Person" :init_id="creator.id" :init_val="creator.properName"
+                                ref="inputperson" fieldname="properName" :allowCreate="false" idname="id" /> 
+            </div>
+            <div class="" v-show="showEditPerson">
+                <div class="controls-row">
+                    <input type="text" id="ln" :name="getPrefix('lastName')" maxlength="255" v-model="creator.lastName" class="span2 trim" title="A last name" placeholder="Last Name">
+                    <input type="text" :name="getPrefix('firstName')" maxlength="255" v-model="creator.firstName" class="span2  trim " title="A first name" placeholder="First Name">
+                </div>
+                <div class="controls-row">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="span2  trim" placeholder="Email (optional)">
+                    <input type="text" :name="getPrefix('institution.name')" maxlength="255" v-model="creator.institution.name" class="span2 trim" placeholder="Institution Name (Optional)">
+                </div>
+            </div>
+
+</div>
+</script>
+<script type="text/x-template" id="institution-template">
+<div>
+            <div class="" v-if="!showEditInstitution">
+                <autocomplete url="https://localhost:8443/api/lookup/institution" suffix=""  field="institution"   
+                resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="span4"
+                :customcreatenew="clickNew" createnewtext="Create New Institution" :init_id="creator.id" :init_val="creator.properName"
+                ref="inputinstitution" fieldname="properName" :allowCreate="false" idname="id" />
+            </div>
+            <div v-if="showEditInstitution">
+                <div class="controls-row">
+                    <input type="text" :name="getPrefix('name')" maxlength="255" v-model="creator.name" class="span2 trim" placeholder="Institution Name (Optional)">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="span2  trim" placeholder="Email (optional)">
+                </div>
+            </div>
+</div>
+</script>
+
 <script type="text/x-template" id="creatorwidget-template">
 
 <div class="row" id="autotool">
@@ -14,36 +52,10 @@
         <input type="hidden" name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
         <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id">
         <div v-if="toggle == 'PERSON'">
-            <div v-if="!showEditPerson">
-                <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
-                resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="span4"
-                :customcreatenew="clickNew" createnewtext="Create New Person" 
-                                ref="inputperson" fieldname="properName" :allowCreate="false" idname="id" /> 
-            </div>
-            <div class="" v-show="showEditPerson">
-                <div class="controls-row">
-                    <input type="text" id="ln" :name="getPrefix('lastName')" maxlength="255" v-model="resourcecreator.creator.lastName" class="span2 trim" title="A last name" placeholder="Last Name">
-                    <input type="text" :name="getPrefix('firstName')" maxlength="255" v-model="resourcecreator.creator.firstName" class="span2  trim " title="A first name" placeholder="First Name">
-                </div>
-                <div class="controls-row">
-                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="resourcecreator.creator.email" class="span2  trim" placeholder="Email (optional)">
-                    <input type="text" :name="getPrefix('institution.name')" maxlength="255" v-model="resourcecreator.creator.institution.name" class="span2 trim" placeholder="Institution Name (Optional)">
-                </div>
-            </div>
+			<person :creator="resourcecreator.creator" />
         </div>
         <div v-if="toggle == 'INSTITUTION'">
-            <div class="" v-if="!showEditInstitution">
-                <autocomplete url="https://localhost:8443/api/lookup/institution" suffix=""  field="institution"   
-                resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="span4"
-                :customcreatenew="clickNew" createnewtext="Create New Institution" 
-                ref="inputinstitution" fieldname="properName" :allowCreate="false" idname="id" />
-            </div>
-            <div v-if="showEditInstitution">
-                <div class="controls-row">
-                    <input type="text" :name="getPrefix('name')" maxlength="255" v-model="resourcecreator.creator.name" class="span2 trim" placeholder="Institution Name (Optional)">
-                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="resourcecreator.creator.email" class="span2  trim" placeholder="Email (optional)">
-                </div>
-            </div>
+			<institution :creator="resourcecreator.creator" />
         </div>
     </div>
     <div class="span2">
@@ -57,3 +69,4 @@
     </div>
 </div>
 </script>
+

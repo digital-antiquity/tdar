@@ -24,6 +24,17 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 toggle: "PERSON"
                 }
             },
+            created: function() {
+                if (this.resourcecreator.creator.firstName == undefined) {
+                    this.toggle = 'INSTITUTION';
+                    Vue.set(this, "toggle", 'INSTITUTION');
+                }
+            },
+            watch: {
+                resourcecreator: function(n, o) {
+//                    console.log("creatorchange:", n, o);
+                }
+            },
             computed: {
                 creatorId: function() {
                     if (this.resourcecreator.creator == undefined || this.resourcecreator.creator.id == undefined || this.resourcecreator.creator.id == -1) {
@@ -40,7 +51,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 },
                 institutionClass: function() {
                     var ret = "btn btn-small institutionButton";
-                    if (this.toggle == 'institution') {
+                    if (this.toggle == 'INSTITUTION') {
                         ret = ret+ " btn-active active"
                     };
                     return ret;
@@ -109,5 +120,140 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 }
             }
         });
+        
+        
+
+        var creatorlookup = Vue.component('person', {
+            name: "person",
+            template: "#person-template",
+            props: {
+                creator : {
+                    type: Object,
+                    default:  function() {return { institution:{ name: undefined}}} 
+                },
+                row: {
+                    type:Number,
+                    default: 0
+                },
+            },
+            data: function() {
+                return {
+                roles: ['AUTHOR','EDITOR'],
+                showEditPerson: false,
+                prefix: "authorishipProxies",
+                }
+            },
+            beforeMount: function() {
+                if (this.creator.institution == undefined) {
+                    this.creator.institution  ={};
+                }
+            },
+            computed: {
+                deleteClass: function() {
+                    if (this.creator != undefined) {
+                        return "";
+                    }
+                    return "disabled";
+                }
+            },
+            methods: {
+                getPrefix: function(part) {
+                    var ret = this.prefix;
+                    if (this.row != undefined) {
+                        ret = ret + "[" + this.row + "]";
+                    }
+                    ret = ret + ".person." + part;
+                    return ret;
+                },
+                getRootPrefix: function(part) {
+                    var ret = this.prefix;
+                    if (this.row != undefined) {
+                        ret = ret + "[" + this.row + "]";
+                    }
+                    ret = ret + "." + part;
+                    return ret;
+                },
+                addAutocompleteValue: function(result) {
+                    if (result != undefined && result.id != undefined) {
+                        Vue.set(this,"creator", result);
+                    }
+                },
+                clickEdit: function() {
+                        Vue.set(this, "showEditPerson",true);
+                },
+                clickNew: function() {
+                    this.reset();
+                    this.clickEdit();
+                }
+            }
+        });
+
+
+        var creatorlookup = Vue.component('institution', {
+            name: "institution",
+            template: "#institution-template",
+            props: {
+                creator : {
+                    type: Object,
+                    default:  function() {return { }} 
+                },
+                row: {
+                    type:Number,
+                    default: 0
+                },
+            },
+            data: function() {
+                return {
+                roles: ['AUTHOR','EDITOR'],
+                showEditInstitution: false,
+                prefix: "authorishipProxies",
+                }
+            },
+            beforeMount: function() {
+//                console.log('beforeMount:',this.creator);
+            },
+            computed: {
+                deleteClass: function() {
+                    if (this.creator != undefined) {
+                        return "";
+                    }
+                    return "disabled";
+                }
+            },
+            methods: {
+                getPrefix: function(part) {
+                    var ret = this.prefix;
+                    if (this.row != undefined) {
+                        ret = ret + "[" + this.row + "]";
+                    }
+                    ret = ret + ".institution." + part;
+                    return ret;
+                },
+                getRootPrefix: function(part) {
+                    var ret = this.prefix;
+                    if (this.row != undefined) {
+                        ret = ret + "[" + this.row + "]";
+                    }
+                    ret = ret + "." + part;
+                    return ret;
+                },
+                addAutocompleteValue: function(result) {
+                    if (result != undefined && result.id != undefined) {
+                        Vue.set(this,"creator", result);
+                    }
+                },
+                clickEdit: function() {
+                        Vue.set(this, "showEditInstitution",true);
+                },
+                clickNew: function() {
+                    this.reset();
+                    this.clickEdit();
+                }
+            }
+        });
+
     }
+    
+    
+    
 })(console, window, Vue, axios);
