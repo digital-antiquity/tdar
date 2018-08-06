@@ -140,9 +140,9 @@
     <li :class="dirActionsEnabledClass">
        <a id="renamePlaceholder" @click="showRename()" >(rename)</a>
     </li>
-  <li :class="dirActionsEnabledClass" @click="collectionUI()"><a tabindex="-1" href="#">Link to Collection</a></li>
-  <li :class="dirActionsEnabledUnlinkClass" ><a tabindex="-1" href="#">Update Linked Collection</a></li>
-  <li :class="dirActionsEnabledUnlinkClass" ><a tabindex="-1" href="#">Unlink</a></li>
+  <li :class="dirActionsEnabledLinkClass"><a   @click="collectionUI()" tabindex="-1" href="#">Link to Collection</a></li>
+  <li :class="dirActionsEnabledUnlinkClass" ><a tabindex="-1"  @click="updateLinkedCollection()" href="#">Update Linked Collection</a></li>
+  <li :class="dirActionsEnabledUnlinkClass" ><a tabindex="-1"  @click="unlinkCollection()" href="#">Unlink</a></li>
 </ul>
 </span>
 </div>

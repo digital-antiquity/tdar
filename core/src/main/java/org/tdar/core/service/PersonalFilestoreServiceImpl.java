@@ -585,4 +585,15 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     }
 
+    @Override
+    @Transactional(readOnly = false)
+    public void unlinkLinkedCollection(TdarDir file, TdarUser user) {
+        if (!authorizationService.canAddToCollection(user, file.getCollection())) {
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+        }
+        
+        file.setCollection(null);
+        genericDao.saveOrUpdate(file);
+    }
+
 }

@@ -450,6 +450,23 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                    }
                    return "disabled";
                 },
+                dirActionsEnabledLinkClass: function() {
+                    var ret = this.dirActionsEnabledClass;
+                    var dir = this.dirStack[this.dirStack.length -1];
+                    if (ret == '' && dir.collection == undefined) {
+                        return "";
+                    }
+                    return "disabled";
+                },
+                dirActionsEnabledUnlinkClass: function() {
+                    var ret = this.dirActionsEnabledClass;
+                    var dir = this.dirStack[this.dirStack.length -1];
+                    if (ret == '' && dir.collection != undefined) {
+                        return "";
+                    }
+                    return "disabled";
+                },
+                
                 upOne: function() {
                   if (this.dirStack.length < 2) {
                       return undefined;
@@ -848,7 +865,24 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     ).done(function(msg) {
                         console.log(msg);
                     });
-
+                },
+                updateLinkedCollection: function() {
+                    var data = {
+                            id: this.currentDir().id
+                    }
+                    $.post("/api/file/updateDirCollection", data
+                    ).done(function(msg) {
+                        console.log(msg);
+                    });
+                },
+                unlinkCollection: function() {
+                    var data = {
+                            id: this.currentDir().id
+                    }
+                    $.post("/api/file/unlinkDirCollection", data
+                    ).done(function(msg) {
+                        console.log(msg);
+                    });
                 },
                 collectionUI: function() {
                     // show the move UI

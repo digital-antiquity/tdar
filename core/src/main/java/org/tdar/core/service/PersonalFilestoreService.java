@@ -133,4 +133,6 @@ public interface PersonalFilestoreService {
 
     void updateLinkedCollection(TdarDir file, TdarUser user);
 
+    void unlinkLinkedCollection(TdarDir file, TdarUser authenticatedUser);
+
 }
