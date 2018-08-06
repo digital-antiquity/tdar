@@ -47,6 +47,7 @@ a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
   display: inline-block;
   background: #7a1501;
   margin: 0 4px 0 0;
+  -webkit-border-radius: 2px;
   border-radius: 2px;
   font-weight: 700;
   font-size: 12px;
@@ -90,8 +91,7 @@ nav {
     stroke-width: 5px;
     stroke: #7a1501; }
   .tdarNav .show .nav-chevron {
-    -webkit-transform: rotate(180deg);
-            transform: rotate(180deg); }
+    transform: rotate(180deg); }
 
 .tdar-slider h4 a {
   cursor: auto;
@@ -121,7 +121,6 @@ p.lead {
     background-repeat: no-repeat;
     text-indent: -999em;
     opacity: 0.5;
-    -webkit-transition: opacity 0.1s ease-out;
     transition: opacity 0.1s ease-out; }
   .carousel .car-btn:hover, .image-carousel.carousel .car-btn:hover {
     opacity: 1; }
@@ -141,6 +140,8 @@ p.lead {
   .carousel .carousel-indicators .active, .image-carousel.carousel .carousel-indicators .active {
     background: #333333; }
   .carousel .carousel-indicators span, .image-carousel.carousel .carousel-indicators span {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
     border-radius: 10px;
     padding: 4px;
     margin: 1pt;
@@ -165,10 +166,14 @@ h1, h2, h3, header {
   font-family: "soleil", sans-serif !important;
   font-weight: 700; }
 
-header {
-  margin-bottom: 3.5em; }
-  header .navbar button {
-    font-size: 14px; }
+header .navbar button {
+  font-size: 14px; }
+
+header + section {
+  margin-top: 3.5em; }
+
+header + #hero {
+  margin-top: 0em !important; }
 
 .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
   font-family: "soleil", sans-serif !important; }
@@ -461,8 +466,6 @@ are governed by several media queries and thus easy to screw up the formatting o
   margin-right: 3px; }
 
 .flex {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex; }
 
 .grey {
@@ -593,6 +596,7 @@ img.responsive-image {
   margin: 0 !important;
   padding: 0 10px;
   background: #7a1501;
+  -webkit-border-radius: 2px 2px 0 0;
   border-radius: 2px 2px 0 0;
   border-bottom: none; }
 .view aside h3.downloads span.downloadNumber {
@@ -601,10 +605,12 @@ img.responsive-image {
   font-size: 13px;
   line-height: 22px !important;
   background: #641b11;
+  -webkit-border-radius: 2px;
   border-radius: 2px;
   width: 22px;
   text-align: center;
   margin-top: 11px;
+  -webkit-border-radius: 2px 2px 0 0;
   border-radius: 2px 2px 0 0; }
 .view aside ul.downloads, .view aside ul.downloads li {
   background: #f0eeeb;
@@ -682,9 +688,14 @@ div.tdarresults {
   top: 11px;
   width: 120px;
   background-color: #BFDC7A;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#BFDC7A), to(#8EBF45));
+  background-image: -webkit-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image: -moz-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image: -ms-linear-gradient(top, #BFDC7A, #8EBF45);
   background-image: -o-linear-gradient(top, #BFDC7A, #8EBF45);
   color: #6a6340;
   -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
   box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3); }
 
 .ribbon-green:before, .ribbon-green:after {
@@ -825,8 +836,7 @@ footer {
   height: 1px;
   right: 0;
   /*     top: 0; */
-  -webkit-transform: translate(-300px, 0) scale(4);
-          transform: translate(-300px, 0) scale(4); }
+  transform: translate(-300px, 0) scale(4); }
 
 .mb-10 {
   margin-bottom: 1.5rem; }

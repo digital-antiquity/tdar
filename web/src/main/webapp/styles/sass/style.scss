@@ -245,11 +245,17 @@ h1, h2, h3, header {
 }
 
 header {
-    margin-bottom: 3.5em;
-    
     .navbar button {
         font-size:14px;
     }
+}
+
+header + section {
+    margin-top: 3.5em;
+}
+
+header + #hero {
+    margin-top: 0em !important;
 }
 
  .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
