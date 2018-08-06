@@ -4,7 +4,7 @@
         <nav class="navbar navbar-expand-md navbar-light">
             <div class = "container">
                 <a href="/" class="navbar-brand">
-                    <img src="${staticHost}/images/r4/bg-logo-transparent.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap">
+                    <img src="${staticHost}/images/r4/bg-logo-transparent.png" title="tDAR - the Digital Archaeological Record" alt="tDAR - the Digital Archaeological Record"  usemap="#tdarmap">
                 </a>
 
                 <div class="d-flex flex-column d-md-none">
@@ -14,7 +14,7 @@
                         </button>
                     </div>
 
-                    <form class="form-inline mt-2" action="/search/results" method="GET">
+                    <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
                         <div class="input-group">
                             <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
                             <span class="input-group-append">
@@ -39,7 +39,7 @@
                     </div>
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <form class="form-inline" action="/search/results" method="GET">
+                            <form  name="searchheader"  class="form-inline seleniumIgnoreForm" action="/search/results" method="GET">
                                 <div class="input-group">
                                     <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
                                     <span class="input-group-append">
@@ -137,79 +137,7 @@
     </div>
 
 
-    <#if (authenticatedUser??) >
 
-        <#-- <p id="welcome-menu" class="welcome  screen ">
-            <@s.text name="menu.welcome_back"/>
-            <a href="">${authenticatedUser.properName}
-                <i class="caret drop-down"></i>
-            </a>
-        </p> -->
-
-        <#-- <div class = "container">
-          <div class="alert alert-primary alert-dismissible fade show" role="alert">
-            <div class="welcome-drop  screen ">
-
-              <p><strong>${authenticatedUser.properName}</strong></p>
-
-              <ul class = "list-unstyled">
-                  <li><a href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a></li>
-                  <li><a href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a></li>
-                  <li><a href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a></li>
-                  <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
-                  <li><a href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a></li>
-              </ul>
-
-              <ul class = "list-unstyled">
-                  <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
-                  <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
-                  <li>
-                       <form class="form-complete-inline seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
-                          <button type="submit" class="btn btn-link tdar-btn-link serif" name="logout" value="Logout">Logout</button>
-                       </form>
-                   </li>
-              </ul>
-
-              <#if administrator>
-                  <ul class = "list-unstyled">
-                      <li><@s.text name="menu.admin_header"/></li>
-                      <li><a href="<@s.url value='/admin'/>"><@s.text name="menu.admin_main"/></a></li>
-                      <li><a href="<@s.url value='/admin/system/activity'/>"><@s.text name="menu.admin_activity"/></a></li>
-                      <li><a href="<@s.url value='/admin/searchindex/build'/>"><@s.text name="menu.admin_reindex"/></a></li>
-                  </ul>
-              </#if>
-
-            </div>
-         -->
-    </#if>
-
-
-    <!--<div class="collapse navbar-collapse" id="tdarNavMenu">-->
-        <!--<ul class="navbar-nav ml-auto">-->
-            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/saa/">SAA</a></li>-->
-            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/news/">News</a></li>-->
-            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/about">About</a></li>-->
-            <!--<li class="nav-item"><a class="nav-link" href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>-->
-
-    <!--&lt;!&ndash;        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> &ndash;&gt;-->
-            <!--<#if ((authenticatedUser.contributor)!true)>-->
-                <!--<li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li>-->
-            <!--</#if>-->
-            <!--<li>-->
-                <!--<#if navSearchBoxVisible>-->
-                    <!--<form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">-->
-                        <!--<#&#45;&#45; fixme &#45;&#45; boostrap 3/4 should provide a better unstyled way to handle the magnifying glass &ndash;&gt;-->
-                        <!--<input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">-->
-                        <!--<input type="hidden" name="_tdar.searchType" value="simple">-->
-                        <!--${(page.properties["div.divSearchContext"])!""}-->
-                    <!--</form>-->
-                <!--</#if>-->
-            <!--</li>-->
-        <!--</ul>-->
-    <!--</div>-->
-    <#--       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button> -->
 </#macro>
 
 <#macro myAccountMenu>
