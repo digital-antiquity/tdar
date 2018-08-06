@@ -64,11 +64,11 @@
                     <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
                     <input type="hidden" name="_tdar.searchType" value="simple">
                     <div id="divSearchContext">
-                        <#if namespace?contains("collection") >
+                        <#if namespace?contains("collection") && id?has_content >
                             <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
                             <label for="cbctxid">Search within this collection</label>
                         </#if>
-                        <#if namespace?contains("project") >
+                        <#if namespace?contains("project")  && id?has_content >
                             <input id="cbctxid" type="checkbox" name="projectId" value="${id?c}">
                             <label for="cbctxid">Search within this project</label>
                         </#if>

@@ -407,17 +407,19 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      * Returns list of promises with size equal to number of maps on page.  Each promise resolves after leaflet loads and initializes the map.
      */
     function _initEditableMaps() {
-        return $(".leaflet-map-editable").map(function() {
-            _initEditableMap(this, undefined);
+//        var app = this;
+        return $(".leaflet-map-editable").map(function(i,el) {
+            return _initEditableMap($(el));
         });
     }
 
     function _initEditableMap($target, onChange) {
         
         var $el = $target;
-        $el._onChange = onChange;
-        $el.data("_onChange", onChange);
-        console.log($el, onChange);
+        if ($el != undefined && onChange != undefined) {
+            $el.data("_onChange", onChange);
+        }
+        
         // we create a div just before the div and copy the styles from the container. This is so that we can bind to class seletion for the fields.
         // Currently, this is a bit of overkill but it would enable multiple forms on the same page
 
@@ -430,9 +432,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var div = $el.find('div.mapdiv')[0];
         //var div = document.createElement("div");
         //$el.append(div);
-        if (div == undefined) {
-            return undefined;
-        }
         // copy styles
         div.setAttribute("style", $el.attr("style"));
         $el.attr("style", "");
@@ -627,11 +626,13 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         console.log("west(set): " + $(".d_minx").val() + " east(set):" + $(".d_maxx").val());
         $(".d_maxy", $el).val(bnds.getNorth());
         
-        var $change = $el.data("_onChange");
-        console.log($el, $change);
-        if ($change != undefined ) {
-            console.log("change");
-            $change({maxx:$(".d_maxx", $el).val(), maxy:$(".d_maxy", $el).val(), minx: $(".d_minx", $el).val(), miny: $(".d_miny", $el).val() });
+        if ($el != undefined) {
+            var $change = $el.data("_onChange");
+            console.log($el, $change);
+            if ($change != undefined ) {
+                console.log("change");
+                $change({maxx:$(".d_maxx", $el).val(), maxy:$(".d_maxy", $el).val(), minx: $(".d_minx", $el).val(), miny: $(".d_miny", $el).val() });
+            }
         }
         return bnds;
     }
