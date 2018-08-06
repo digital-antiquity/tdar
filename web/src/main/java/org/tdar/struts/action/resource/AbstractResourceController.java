@@ -191,6 +191,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public String save(Resource resource) {
+        if (isBulkUpload()) {
+            getGenericService().markReadOnly(getPersistable());
+        }
         getLogger().debug("calling save");
         String toReturn = SUCCESS;
         if (resource instanceof InformationResource) {

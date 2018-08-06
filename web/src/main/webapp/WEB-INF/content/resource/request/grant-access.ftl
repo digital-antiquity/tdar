@@ -40,7 +40,7 @@
         <label class="control-label" for="dp3">Grant Access Until</label>
     <div class="controls">
         <div class="input-append">
-          <input class="span2 datepicker" size="16" type="text" name="expiresString" value="" id="dp3" data-date-format="yyyy-mm-dd" >
+          <input class="span2 datepicker" size="16" type="text" name="expiresString" value="" id="dp3" data-date-format="mm/dd/yyyy" >
           <span class="add-on"><i class="icon-th"></i></span>
         </div>
     </div>

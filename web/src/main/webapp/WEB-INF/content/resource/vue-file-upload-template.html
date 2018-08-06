@@ -8,7 +8,7 @@
         </thead>
         <tbody v-if="files.length > 0" v-for="(file,index) in files">
             <tr class="template-download fade existing-file in"
-                is="fpart" :index="index" :file="file" :editable="ableToUpload"></tr>
+                is="fpart" :index="index" :file="file" :abletoupload="ableToUpload" :deletedisabled="deleteDisabled"></tr>
         </tbody>
     </table>
 
@@ -17,18 +17,14 @@
     <div class="span2">
     <!-- The fileinput-button span is used to style the file input field as button -->
     <label :class="fileUploadButtonCss" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
-        class="glyphicon glyphicon-plus"></i> <span>Select
-            files...</span> <!-- The file input field used as target for the file upload widget -->
+        class="glyphicon glyphicon-plus"></i> <span>Select files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label> 
     </div>
-    <div id="progress" class="progress progress-striped span6" style="margin-top:5px">
-        <div class="progress-bar progress-bar-success bar"></div>
-    </div>
-    </div>
-    <br> <br>
-
-
+    <div class="span6">
+        <div id="progress" class="progress progress-striped" style="margin-top:5px">
+            <div class="progress-bar progress-bar-success bar"></div>
+        </div>
     <div id="fileUploadErrors" class="fileuploaderrors controls controls-row" >
         
         <ul v-for="(error,index) in errors"  class="unstyled">
@@ -46,6 +42,11 @@
     </div>
     <!-- The global progress bar -->
     <div id="uploadstatus"></div>
+    </div>
+    </div>
+    <br> <br>
+
+
     <!-- The container for the uploaded files -->
     <div id="files" class="files"></div>
     <!-- the following textarea is designed to handle the 'files' when a 'submit' is hit and then to support the issue when input is returned -->
@@ -131,7 +132,7 @@ ${vueFilesFallback!'{{ files }}'}
 
 
         <div class="delete">
-            <button v-if="file.action != 'DELETE'" :disabled="inputDisabled" type="button"
+            <button v-if="file.action != 'DELETE'" :disabled="deleteDisabled" type="button"
                 class="btn btn-danger delete-button btn-small btn-block"
                 @click="deleteFile" data-type="DELETE"
                 style="text-align: left">

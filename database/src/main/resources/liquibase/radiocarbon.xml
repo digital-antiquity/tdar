@@ -235,12 +235,12 @@
         <sql>update pos_account set file_exipry_days=60</sql>
     </changeSet>
     <changeSet id="radiocarbon-file-first-14" author="abrin">
-    <renameColumn tableName="pos_account" oldColumnName="file_exipry_days" newColumnName="file_expiry_days"/>
+        <renameColumn tableName="pos_account" oldColumnName="file_exipry_days" newColumnName="file_expiry_days"/>
     </changeSet>
     <changeSet id="radiocarbon-file-first-15" author="abrin">
-    <renameColumn tableName="files" oldColumnName="date_student_reviewed" newColumnName="date_initial_reviewed"/>
-    <renameColumn tableName="files" oldColumnName="student_reviewer_id" newColumnName="initial_reviewer_id"/>
-    </changeSet>
+        <renameColumn tableName="files" oldColumnName="date_student_reviewed" newColumnName="date_initial_reviewed"/>
+        <renameColumn tableName="files" oldColumnName="student_reviewer_id" newColumnName="initial_reviewer_id"/>
+        </changeSet>
     <changeSet id="radiocarbon-file-first-16" author="abrin">
         <addColumn tableName="files">
             <column name="curation_state" type="varchar(25)"/>
@@ -248,9 +248,21 @@
         <dropColumn tableName="files" columnName="curate"/>
     </changeSet>
     <changeSet id="radiocarbon-file-first-17" author="abrin">
-    <renameColumn tableName="pos_account" oldColumnName="student_review" newColumnName="initial_review"/>
+        <renameColumn tableName="pos_account" oldColumnName="student_review" newColumnName="initial_review"/>
     </changeSet>
     <changeSet id="radiocarbon-file-first-18" author="abrin">
+        <addColumn tableName="files">
+            <column name="collection_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_dir_collection"
+            referencedTableName="collection" baseColumnNames="collection_id"
+            baseTableName="files" referencedColumnNames="id" />
+
+    </changeSet>
+
+
+    <changeSet id="radiocarbon-fileprocessing-1" author="abrin">
         <addColumn tableName="files">
             <column name="version_of_id" type="bigint"/>
         </addColumn>
@@ -263,7 +275,7 @@
             referencedColumnNames="id" />
 
     </changeSet>
-     <changeSet id="radiocarbon-file-first-19" author="abrin">
+     <changeSet id="radiocarbon-fileprocessing-2" author="abrin">
          <addColumn tableName="files">
             <column name="length" type="int"/>
         </addColumn>
@@ -282,8 +294,8 @@
             baseColumnNames="file_id" baseTableName="data_table_relationship"
             referencedColumnNames="id" />
     </changeSet>
-     <changeSet id="radiocarbon-file-first-20" author="abrin" failOnError="false" >
+     <changeSet id="radiocarbon-fileprocessing-3" author="abrin" failOnError="false" >
             
         <dropNotNullConstraint tableName="data_table" columnName="dataset_id"/>
     </changeSet>
- </databaseChangeLog>
+</databaseChangeLog>
