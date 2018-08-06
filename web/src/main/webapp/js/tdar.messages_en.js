@@ -3,6 +3,8 @@
  * Locale: EN
  */
 
+require("jquery-validation/dist/jquery.validate");
+require("jquery-validation/dist/additional-methods");
 
 $(document).ready(function(){
     jQuery.extend(jQuery.validator.messages, {

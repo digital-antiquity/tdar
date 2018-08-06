@@ -22,6 +22,9 @@ TDAR.pricing         = require("./tdar.pricing");
 TDAR.repeatrow       = require("./tdar.repeatrow");
 TDAR.sensoryData     = require("./tdar.sensorydata");
 TDAR.inheritance     = require("./tdar.inheritance");
+TDAR.leaflet         = require("./maps/tdar.leaflet");
+TDAR.worldmap        = require("./maps/tdar.worldmap");
+
 
 require("./tdar.messages_en");
 

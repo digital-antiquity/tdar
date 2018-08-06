@@ -23,10 +23,16 @@ module.exports = {
   // externals: ['axios'], this is a way to use an extenral version of jquery, whatever is referecned here should probably be a 'dev' dependency too
   module: {
     rules: [
-        /*{
-            test: require.resolve("jquery-validation"),
-            use: "imports-loader?$=jquery,this=>window,define=>false"
-        }*/
+        {
+            test: require.resolve('jquery'),
+            use: [{
+              loader: 'expose-loader',
+              options: 'jQuery'
+            },{
+              loader: 'expose-loader',
+              options: '$'
+            }]
+          }
     ]
   }
   ,
@@ -51,12 +57,14 @@ module.exports = {
          $j : "jquery",
          jQuery: "jquery",
          'global.jQuery': 'jquery',
+         
          axios:"Axios",
          c3: "c3",
          d3: "d3",
          TDAR : "JS/tdar.master",
          Vue : 'vue',
-         LatLon: 'js/latLongUtil-1.0'
+         LatLon: 'JS/latLongUtil-1.0',
+         L: 'leaflet'
      })
   ],
  

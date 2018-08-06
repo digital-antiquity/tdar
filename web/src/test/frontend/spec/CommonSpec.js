@@ -248,7 +248,7 @@ describe("CommonSpec.js: edit page tests", function () {
                 + '<input type="text" name="parentTitle" value="">'));
             setFixtures($container);
             //sanity check: did we really add this to dom?
-            $expect('input').toHaveLength(2);
+            expect('input').toHaveLength(2);
     
             $('body').data('adhocTarget', $container[0]);
             expect($container).toHaveLength(1);

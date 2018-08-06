@@ -11,14 +11,15 @@ const autocomplete = require("./tdar.autocomplete");
 const contexthelp = require("./tdar.contexthelp");
 const inheritance = require("./tdar.inheritance");
 
+require('./../includes/jquery.watermark-3.1.3.min.js');
+require('./../includes/jquery.treeview/jquery.treeview.js');
+
 /*
  * $Id$
  * 
  * Common JS functions used in tDAR (with dependency on JQuery).  
  * Mostly have to do with adding new rows for multi-valued fields, etc.
  */
-
-
 
 jQuery.extend({
     /**

@@ -36,7 +36,6 @@ import './../../includes/jquery.treeview/jquery.treeview.js';
 
 //import './../../includes/blueimp-tmpl/js/tmpl.min.js';
 require('script-loader!blueimp-tmpl/js/tmpl.js');
-
 require('script-loader!./../../includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js');
 
 
@@ -89,6 +88,8 @@ import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
 import "jquery-validation/dist/jquery.validate";
 import "jquery-validation/dist/additional-methods";
 
+
+/*
 import './../tdar.datepicker';
 import './../tdar.moreinfo';
 import './../tdar.upload';
@@ -122,11 +123,13 @@ import './../tdar.formValidateExtensions';
 import './../../includes/bindWithDelay';
 import './../tdar.bookmark';
 import './../maps/tdar.leaflet';
+**/
+
 
 import './../../includes/js-emca-5.1-polyfill.js';
 import 'selectize/dist/js/standalone/selectize.js';
 
-import './../maps/tdar.worldmap';
+//import './../maps/tdar.worldmap';
 
 import "vue";
 //import 'axios/dist/axios.min.js';

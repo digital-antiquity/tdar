@@ -4,6 +4,12 @@
  * */
 const datepicker = require("./tdar.datepicker");
 const core = require("./tdar.core");
+require('script-loader!blueimp-file-upload/js/vendor/jquery.ui.widget.js');
+require('script-loader!blueimp-file-upload/js/jquery.iframe-transport.js');
+require('script-loader!blueimp-file-upload/js/jquery.fileupload.js');
+require('script-loader!blueimp-file-upload/js/jquery.fileupload-process.js');
+require('script-loader!blueimp-file-upload/js/jquery.fileupload-validate.js');
+require('script-loader!blueimp-file-upload/js/jquery.fileupload-ui.js');
 
     /* how long to display error messages prior to removing a failed file upload from the files table (in millis) */
     var ERROR_TIMEOUT = 5000;
@@ -78,7 +84,7 @@ const core = require("./tdar.core");
             //send files in a single http request (singleFileUploads==false). See TDAR-2763 for more info      
             singleFileUploads: false,
 
-            url: common.uri('upload/upload'),
+            url: core.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: $(document).data("maxUploadFiles"),
             getNumberOfFiles: function () {
