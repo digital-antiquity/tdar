@@ -1,23 +1,35 @@
 TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
     "use strict";
 
-    if (document.getElementById("autotool") != undefined ) {
-        var app = new Vue({
-            el : "#autotool",
-            data : {
-                creator: { institution:{ name: undefined}},
-                row: 0,
+    if (document.getElementById("creatorwidget-template") != undefined ) {
+        var autocomplete = Vue.component('creatorrolelookup', {
+            name: "creatorrolelookup",
+            template: "#creatorwidget-template",
+            props: {
+                creator : {
+                    type: Object,
+                    default: { institution:{ name: undefined}} 
+                },
+                row: {
+                    type:Number,
+                    default: 0
+                },
+                id: {
+                    type: Number,
+                    default: 0
+                },
+                role: {
+                    type:String,
+                }
+            },
+            data: function() {
+                return {
                 roles: ['AUTHOR','EDITOR'],
                 showEditInstitution: false,
                 showEditPerson: false,
                 prefix: "authorishipProxies",
-                toggle: "PERSON",
-                lastName: undefined,
-                firstName: undefined,
-                institutionName: undefined,
-                email: undefined,
-                id: undefined,
-                role: undefined
+                toggle: "PERSON"
+                }
             },
             mounted: function() {
             },

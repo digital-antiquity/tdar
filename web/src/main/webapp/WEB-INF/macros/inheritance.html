@@ -30,8 +30,7 @@
             </div>
         </div>
     </div>
-    
-    
+        
     <div class="control-group add-another-control">
     <div class="controls">
         <button class="btn addanother" @click="resource.resourceNotes.push({})" type="button"><i class="icon-plus-sign"></i>add another</button>
@@ -39,6 +38,9 @@
 </div>
         </div>
     </div>
+    
+    <creatorrolelookup :creator="resource.individualInstitutionalRoles[0]" />
+    
     <div>
         <h5>Other Keywords</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertOther" :disabled="inheritanceDisabled"/></b>
@@ -101,28 +103,28 @@
                         <tbody><tr>
                             <td></td>
                             <td>
-<input type="text" name="latitudeLongitudeBoxes[0].north"size="14" value="" class="maxy float latLong ne-lat" title="Please enter a valid Maximum Latitude" >
-                                <input type="text" placeholder="Latitude (max)" class="ne-lat-display span2 d_maxy"  v-model="resource.latitudeLongitudeBoxes[0].north" >
+<input type="text" name="latitudeLongitudeBoxes[0].north"size="14" value="" class="maxy float latLong ne-lat hidden" title="Please enter a valid Maximum Latitude" v-model="resource.latitudeLongitudeBoxes[0].north">
+                                <input type="text" placeholder="Latitude (max)" class="ne-lat-display span2 d_maxy"   >
                             </td>
                             <td></td>
                         </tr>
                         <tr>
                             <td style="width:33%;text-align:center">
-<input type="text" name="latitudeLongitudeBoxes[0].west" size="14" value=""  class="minx float latLong sw-lng" title="Please enter a valid Minimum Longitude" > 
-                               <input type="text"  placeholder="Longitude (min)" class="sw-lng-display span2 d_minx" v-model="resource.latitudeLongitudeBoxes[0].west" >
+<input type="text" name="latitudeLongitudeBoxes[0].west" size="14" value=""  class="minx float latLong sw-lng hidden" title="Please enter a valid Minimum Longitude" v-model="resource.latitudeLongitudeBoxes[0].west"> 
+                               <input type="text"  placeholder="Longitude (min)" class="sw-lng-display span2 d_minx"  >
                             </td>
                             <td style="width:33%;text-align:center">
-                                <input type="button" id="locate" value="Locate" class="btn locateCoordsButton">
+                                <input type="button" id="locate" ref="updateMap" value="Locate" class="btn locateCoordsButton">
                             </td>
                             <td style="width:33%;text-align:center">
-<input type="text" name="latitudeLongitudeBoxes[0].east" v-model="resource.latitudeLongitudeBoxes[0].east" size="14" value="" class="maxx float latLong ne-lng" title="Please enter a valid Maximum Longitude" >
+<input type="text" name="latitudeLongitudeBoxes[0].east" v-model="resource.latitudeLongitudeBoxes[0].east" size="14" class="maxx float latLong ne-lng hidden" title="Please enter a valid Maximum Longitude" >
                                 <input type="text" placeholder="Longitude (max)" class="d_maxx ne-lng-display span2">
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td>
-<input type="text" name="latitudeLongitudeBoxes[0].south" v-model="resource.latitudeLongitudeBoxes[0].south" size="14" value="" class="miny float latLong sw-lat" title="Please enter a valid Minimum Latitude" >
+<input type="text" name="latitudeLongitudeBoxes[0].south" v-model="resource.latitudeLongitudeBoxes[0].south" size="14"  class="miny float latLong sw-lat hidden" title="Please enter a valid Minimum Latitude" >
                                 <input type="text"  placeholder="Latitude (min)" class="d_miny sw-lat-display span2">
                             </td>
                             <td></td>
@@ -175,7 +177,8 @@ $(document).ready(function() {
                     {value:"ADMIN", name:"Administration Note"}
                     ],
                 resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
-                    resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ] }
+                    resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
+                    individualInstitutionalRoles: [{institution:{ name: undefined}}] }
                 },
                 watch: {
                     inhertInvestigationType: function(o, b) {
@@ -198,6 +201,14 @@ $(document).ready(function() {
                     },
                     inhertSpatial: function(o, b) {
                         this.inherit(o,b,'geographic', 'activeGeographicKeywords');
+                        this.resource.latitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
+                        this.resource.latitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
+                        this.resource.latitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
+                        this.resource.latitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
+                        console.log(this.resource.latitudeLongitudeBoxes[0]);
+                        Vue.nextTick(function() {
+                            $(".locateCoordsButton").click();
+                        });
                     },
                     inhertOther: function(o, b) {
                         this.inherit(o,b,'other', 'activeOtherKeywords');

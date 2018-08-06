@@ -1,3 +1,5 @@
+<script type="text/x-template" id="creatorwidget-template">
+
 <div class="row" id="autotool">
     <div class="span2">
         <div class="control-label">
@@ -16,7 +18,7 @@
                 <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
                 resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="span4"
                 :customcreatenew="clickNew" createnewtext="Create New Person" 
-                                ref="inputperson" fieldname="properName" allowCreate="false" idname="id" /> 
+                                ref="inputperson" fieldname="properName" :allowCreate="false" idname="id" /> 
             </div>
             <div class="" v-show="showEditPerson">
                 <div class="controls-row">
@@ -34,7 +36,7 @@
                 <autocomplete url="https://localhost:8443/api/lookup/institution" suffix=""  field="institution"   
                 resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="span4"
                 :customcreatenew="clickNew" createnewtext="Create New Institution" 
-                ref="inputinstitution" fieldname="properName" allowCreate="false" idname="id" />
+                ref="inputinstitution" fieldname="properName" :allowCreate="false" idname="id" />
             </div>
             <div v-if="showEditInstitution">
                 <div class="controls-row">
@@ -54,3 +56,4 @@
         <a href="#" :class="deleteClass" @click="reset"><i class='icon-trash'></i></a>
     </div>
 </div>
+</script>
