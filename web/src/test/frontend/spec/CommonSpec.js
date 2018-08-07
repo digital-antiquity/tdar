@@ -131,9 +131,6 @@ describe("CommonSpec.js: edit page tests", function () {
     describe("TDAR.common: session timeout tests", function() {
         var sessionTimeout;
         beforeEach(function(){
-            console.debug("TDAR is ",TDAR);
-            console.debug("JQuery Dialog: ",$.fn.dialog);
-            console.debug("$.fn", $.fn)
             //intercept calls to setTimeout() and $.fn.dialog(). Confirm that our function called them later. 
             spyOn(window, 'setTimeout');
             //spyOn($.fn, 'dialog');

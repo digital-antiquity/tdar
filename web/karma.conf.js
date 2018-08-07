@@ -73,8 +73,8 @@ module.exports = function(config) {
             wroFiles,
             [
                 // specs
-                //specFiles,
-                "src/test/frontend/spec/CommonSpec.js",
+                specFiles,
+                //"src/test/frontend/spec/CommonSpec.js",
 
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test

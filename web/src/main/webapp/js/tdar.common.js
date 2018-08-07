@@ -16,6 +16,7 @@ const inheritance = require("./tdar.inheritance");
 
 require('./../includes/jquery.watermark-3.1.3.min.js');
 require('./../includes/jquery.treeview/jquery.treeview.js');
+require('./jquery.FormNavigate');
 
 
 jQuery.extend({
@@ -272,28 +273,28 @@ jQuery.extend({
         });
 
         //wire up autocompletes
-        TDAR.autocomplete.delegateCreator("#authorshipTable", false, true);
-        TDAR.autocomplete.delegateCreator("#creditTable", false, true);
-        TDAR.autocomplete.delegateCreator("#divAccessRights", true, false);
-        TDAR.autocomplete.delegateCreator("#divSubmitter", true, false);
-        TDAR.autocomplete.delegateCreator("#copyrightHolderTable", false, true);
-        TDAR.autocomplete.delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
-        TDAR.autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
-        TDAR.autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
-        TDAR.autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
-        TDAR.autocomplete.delegateKeyword("#uncontrolledMaterialKeywordsRepeatable", "material", "MaterialKeyword");
-        TDAR.autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
-        TDAR.autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
-        TDAR.autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
-        TDAR.autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
-        TDAR.autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
+        autocomplete.delegateCreator("#authorshipTable", false, true);
+        autocomplete.delegateCreator("#creditTable", false, true);
+        autocomplete.delegateCreator("#divAccessRights", true, false);
+        autocomplete.delegateCreator("#divSubmitter", true, false);
+        autocomplete.delegateCreator("#copyrightHolderTable", false, true);
+        autocomplete.delegateAnnotationKey("#resourceAnnotationsTable", "annotation", "annotationkey");
+        autocomplete.delegateKeyword("#siteNameKeywordsRepeatable", "sitename", "SiteNameKeyword");
+        autocomplete.delegateKeyword("#uncontrolledSiteTypeKeywordsRepeatable", "siteType", "SiteTypeKeyword");
+        autocomplete.delegateKeyword("#uncontrolledCultureKeywordsRepeatable", "culture", "CultureKeyword");
+        autocomplete.delegateKeyword("#uncontrolledMaterialKeywordsRepeatable", "material", "MaterialKeyword");
+        autocomplete.delegateKeyword("#temporalKeywordsRepeatable", "temporal", "TemporalKeyword");
+        autocomplete.delegateKeyword("#otherKeywordsRepeatable", "other", "OtherKeyword");
+        autocomplete.delegateKeyword("#geographicKeywordsRepeatable", "geographic", "GeographicKeyword");
+        autocomplete.applyInstitutionAutocomplete($('#txtResourceProviderInstitution'), true);
+        autocomplete.applyInstitutionAutocomplete($('#publisher'), true);
         $('#resourceCollectionTable').on("focus", ".collectionAutoComplete", function () {
-            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
+            autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
         });
 
         $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
         	console.debug("Applying collection autocomplete to ",$(this));
-            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
+            autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_COLLECTION"});
         });
 
         // prevent "enter" from submitting
@@ -458,7 +459,7 @@ jQuery.extend({
     var _initRightsPage = function(){
         $('#sharesTable').on("focus", ".collectionAutoComplete", function () {
         	console.debug("Applying collection autocomplete to ",$(this));
-            TDAR.autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_SHARE"});
+            autocomplete.applyCollectionAutocomplete($(this), {showCreate: true, showCreatePhrase: "Create a new collection"}, {permission: "ADD_TO_SHARE"});
         });
     }
     

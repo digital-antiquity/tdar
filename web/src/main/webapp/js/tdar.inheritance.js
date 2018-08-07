@@ -6,6 +6,8 @@
     var TYPE_INSTITUTION = "INSTITUTION";
     var select2 = false;
     
+    var _project = null;
+    
     const core = require("./tdar.core");
     const validate = require("./tdar.validate");
     const common = require("./tdar.common");
@@ -324,11 +326,11 @@
         //console.debug("_inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
         _clearFormSection($(sectionId));
         if (tableId !== undefined) {
-            TDAR.inheritance.resetRepeatable("#" + 'uncontrolled' + tableId + 'Repeatable', json['uncontrolled' + tableId].length);
-            TDAR.inheritance.resetRepeatable("#" + 'approved' + tableId + 'Repeatable', json['approved' + tableId].length);
+            _resetRepeatable("#" + 'uncontrolled' + tableId + 'Repeatable', json['uncontrolled' + tableId].length);
+            _resetRepeatable("#" + 'approved' + tableId + 'Repeatable', json['approved' + tableId].length);
             var simpleId = tableId;
             simpleId = simpleId[0].toLowerCase() + simpleId.substr(1);
-            TDAR.inheritance.resetRepeatable("#" + simpleId + 'Repeatable', json[simpleId].length);
+            _resetRepeatable("#" + simpleId + 'Repeatable', json[simpleId].length);
         }
         _populateSection(formId, json);
         _disableSection($(sectionId));
@@ -339,7 +341,7 @@
         var $section = $(sectionId);
 
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable("#otherKeywordsRepeatable", json.otherInformation.otherKeywords.length);
+        _resetRepeatable("#otherKeywordsRepeatable", json.otherInformation.otherKeywords.length);
         _populateSection(formId, json.otherInformation);
         _populateSelect2Keywords($section, json.otherInformation.otherKeywords);
         _disableSection($(sectionId));
@@ -350,8 +352,8 @@
     function _inheritSiteInformation(formId, json) {
     	var $section = $('#divSiteInformation');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#siteNameKeywordsRepeatable', json.siteInformation['siteNameKeywords'].length);
-        TDAR.inheritance.resetRepeatable('#uncontrolledSiteTypeKeywordsRepeatable', json.siteInformation['uncontrolledSiteTypeKeywords'].length);
+        _resetRepeatable('#siteNameKeywordsRepeatable', json.siteInformation['siteNameKeywords'].length);
+        _resetRepeatable('#uncontrolledSiteTypeKeywordsRepeatable', json.siteInformation['uncontrolledSiteTypeKeywords'].length);
         _populateSection(formId, json.siteInformation);
         _populateSelect2Keywords($('#siteNameKeywordsRepeatable').parent(), json.siteInformation.siteNameKeywords);
         _populateSelect2Keywords($('#uncontrolledSiteTypeKeywordsRepeatable').parent(), json.siteInformation.uncontrolledSiteTypeKeywords);
@@ -362,7 +364,7 @@
     function _inheritCulturalInformation(formId, json) {
     	var $section = $('#divCulturalInformation');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#uncontrolledCultureKeywordsRepeatable', json.culturalInformation['uncontrolledCultureKeywords'].length);
+        _resetRepeatable('#uncontrolledCultureKeywordsRepeatable', json.culturalInformation['uncontrolledCultureKeywords'].length);
         _populateSection(formId, json.culturalInformation);
         _populateSelect2Keywords($section, json.culturalInformation.uncontrolledCultureKeywords);
         _disableSection($section);
@@ -371,7 +373,7 @@
     function _inheritMaterialInformation(formId, json) {
     	var $section = $('#allMaterialInformation');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#uncontrolledMaterialKeywordsRepeatable', json.materialInformation['uncontrolledMaterialKeywords'].length);
+        _resetRepeatable('#uncontrolledMaterialKeywordsRepeatable', json.materialInformation['uncontrolledMaterialKeywords'].length);
         _populateSection(formId, json.materialInformation);
         _populateSelect2Keywords($section, json.materialInformation.uncontrolledMaterialKeywords);
         _disableSection($section);
@@ -380,7 +382,7 @@
     function _inheritIdentifierInformation(formId, json) {
     	var $section = $('#divIdentifiers');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#resourceAnnotationsTable', json.resourceAnnotations.length);
+        _resetRepeatable('#resourceAnnotationsTable', json.resourceAnnotations.length);
         _populateSection(formId, json);
         _disableSection($section);
     }
@@ -388,8 +390,8 @@
     function _inheritCollectionInformation(formId, json) {
     	var $section = $('#relatedCollectionsSection');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#divSourceCollectionControl', json.collectionInformation.sourceCollections.length);
-        TDAR.inheritance.resetRepeatable('#divRelatedComparativeCitationControl', json.collectionInformation.sourceCollections.length);
+        _resetRepeatable('#divSourceCollectionControl', json.collectionInformation.sourceCollections.length);
+        _resetRepeatable('#divRelatedComparativeCitationControl', json.collectionInformation.sourceCollections.length);
         _populateSection(formId, json.collectionInformation);
         _disableSection($section);
     }
@@ -397,7 +399,7 @@
     function _inheritNoteInformation(formId, json) {
     	var $section = $('#resourceNoteSection');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#resourceNoteSection', json.noteInformation['resourceNotes'].length);
+        _resetRepeatable('#resourceNoteSection', json.noteInformation['resourceNotes'].length);
         _populateSection(formId, json.noteInformation);
         _disableSection($section);
     }
@@ -421,7 +423,7 @@
         console.log("inherit spatial information(%s, %s)", formId, json);
         var $section = $('#divSpatialInformation');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
+        _resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
         _populateSection(formId, json.spatialInformation);
         _populateSelect2Keywords($section, json.spatialInformation['geographicKeywords']);
         _disableSection($section);
@@ -440,8 +442,8 @@
     function _inheritTemporalInformation(formId, json) {
         var $section = $('#divTemporalInformation');
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords.length);
-        TDAR.inheritance.resetRepeatable('#coverageDateRepeatable', json.temporalInformation.coverageDates.length);
+        _resetRepeatable('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords.length);
+        _resetRepeatable('#coverageDateRepeatable', json.temporalInformation.coverageDates.length);
         _populateSection(formId, json.temporalInformation);
         _populateSelect2Keywords($section, json.temporalInformation.temporalKeywords);
         _disableSection($section);
@@ -450,7 +452,7 @@
     function _inheritCreditInformation(divSelector, creators) {
     	var $section = $(divSelector);
         _clearFormSection($section);
-        TDAR.inheritance.resetRepeatable(divSelector, creators.length);
+        _resetRepeatable(divSelector, creators.length);
         if (creators.length > 0) {
             _populateSection(divSelector, {creditProxies: creators});
             //now set the correct toggle state for eachrow
@@ -489,19 +491,19 @@
 
         //hack:  formId is no longer global, and updateInheritableSections() needs it...
         var formId = $(formSelector).attr("id");
-        if(TDAR.inheritance.project == undefined) {
-            TDAR.inheritance.project = _getBlankProject();
+        if(_project == undefined) {
+            _project = _getBlankProject();
         };
-        TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
+        _json = _convertToFormJson(_project);
 
         console.log("applying inheritance to:" + formSelector);
         // if we are editing, set up the initial form values
         var $projectId = $('#projectId',formSelector);
         var pid = $projectId.val();
         if (pid != undefined && pid > -1) {
-            TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
-            console.log(TDAR.inheritance.json);
-            _updateInheritableSections(formId, TDAR.inheritance.json);
+            _json = _convertToFormJson(_project);
+            console.log(_json);
+            _updateInheritableSections(formId, _json);
         }
 
         // update the inherited form values when project selection changes.
@@ -519,9 +521,9 @@
                     waitMessage: "Loading project information"
                 });
             } else {
-                TDAR.inheritance.project = _getBlankProject();
-                TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
-                _updateInheritableSections(formId, TDAR.inheritance.json);
+                _project = _getBlankProject();
+                _json = _convertToFormJson(_project);
+                _updateInheritableSections(formId, _json);
             }
             _enableOrDisableInheritAllSection();
             _updateInheritanceCheckboxes();
@@ -537,7 +539,7 @@
 
         $cbSelectAllInheritance.click(_selectAllInheritanceClicked);
 
-        _projectChangedCallback(TDAR.inheritance.project);
+        _projectChangedCallback(_project);
     }
 
 //return skeleton project
@@ -575,15 +577,15 @@
 
 //update the project json variable and update the inherited sections
     function _projectChangedCallback(data) {
-        TDAR.inheritance.project = data;
+        _project = data;
         // if user picked blank option, then clear the sections
-        if (!TDAR.inheritance.project.id || TDAR.inheritance.project.id == -1) {
-            TDAR.inheritance.project = _getBlankProject();
+        if (!_project.id || _project.id == -1) {
+            _project = _getBlankProject();
         }
 
-        TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
+        _json = _convertToFormJson(_project);
         var formId = $('#projectId').closest('form').attr("id");
-        _updateInheritableSections(formId, TDAR.inheritance.json);
+        _updateInheritableSections(formId, _json);
     }
 
     function _processInheritance(formId) {
@@ -596,15 +598,15 @@
                 divSelector: '#siteSection',
                 mappedData: "siteInformation", // curently not used 
                 isSafeCallback: function () {
-                    var allKeywords = TDAR.inheritance.json.siteInformation.siteNameKeywords.concat(TDAR.inheritance.json.siteInformation.uncontrolledSiteTypeKeywords);
-                    return _inheritingCheckboxesIsSafe('#divSiteInformation', TDAR.inheritance.json.siteInformation.approvedSiteTypeKeywordIds)
-                        && _inheritingRepeatRowsIsSafe('#siteNameKeywordsRepeatable', TDAR.inheritance.json.siteInformation.siteNameKeywords)
-                        && _inheritingRepeatRowsIsSafe('#uncontrolledSiteTypeKeywordsRepeatable', TDAR.inheritance.json.siteInformation.uncontrolledSiteTypeKeywords)
+                    var allKeywords = _json.siteInformation.siteNameKeywords.concat(_json.siteInformation.uncontrolledSiteTypeKeywords);
+                    return _inheritingCheckboxesIsSafe('#divSiteInformation', _json.siteInformation.approvedSiteTypeKeywordIds)
+                        && _inheritingRepeatRowsIsSafe('#siteNameKeywordsRepeatable', _json.siteInformation.siteNameKeywords)
+                        && _inheritingRepeatRowsIsSafe('#uncontrolledSiteTypeKeywordsRepeatable', _json.siteInformation.uncontrolledSiteTypeKeywords)
                         ;
 
                 },
                 inheritSectionCallback: function () {
-                    _inheritSiteInformation("#siteSection", TDAR.inheritance.json);
+                    _inheritSiteInformation("#siteSection", _json);
                 }
             },
             {
@@ -613,10 +615,10 @@
                 divSelector: '#temporalSection',
                 mappedData: "temporalInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingRepeatRowsIsSafe('#temporalKeywordsRepeatable', TDAR.inheritance.json.temporalInformation.temporalKeywords) && _inheritingDatesIsSafe('#divTemporalInformation', TDAR.inheritance.json.temporalInformation);
+                    return _inheritingRepeatRowsIsSafe('#temporalKeywordsRepeatable', _json.temporalInformation.temporalKeywords) && _inheritingDatesIsSafe('#divTemporalInformation', _json.temporalInformation);
                 },
                 inheritSectionCallback: function () {
-                    _inheritTemporalInformation("#temporalSection", TDAR.inheritance.json);
+                    _inheritTemporalInformation("#temporalSection", _json);
                 },
                 enableSectionCallback: function () {
                 	var $section = $('#temporalSection');
@@ -634,11 +636,11 @@
                 divSelector: '#allMaterialInformation',
                 mappedData: "materialInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingCheckboxesIsSafe('#allMaterialInformation', TDAR.inheritance.json.materialInformation.approvedMaterialKeywordIds) &&
-                            _inheritingRepeatRowsIsSafe('#uncontrolledMaterialKeywordsRepeatable', TDAR.inheritance.json.materialInformation.uncontrolledMaterialKeywords);
+                    return _inheritingCheckboxesIsSafe('#allMaterialInformation', _json.materialInformation.approvedMaterialKeywordIds) &&
+                            _inheritingRepeatRowsIsSafe('#uncontrolledMaterialKeywordsRepeatable', _json.materialInformation.uncontrolledMaterialKeywords);
                 },
                 inheritSectionCallback: function () {
-                    _inheritMaterialInformation('#allMaterialInformation', TDAR.inheritance.json);
+                    _inheritMaterialInformation('#allMaterialInformation', _json);
                 }
             },
             {
@@ -647,11 +649,11 @@
                 divSelector: '#divCulturalInformation',
                 mappedData: "culturalInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingCheckboxesIsSafe('#divCulturalInformation', TDAR.inheritance.json.culturalInformation.approvedCultureKeywordIds) && 
-                    _inheritingRepeatRowsIsSafe('#uncontrolledCultureKeywordsRepeatable', TDAR.inheritance.json.culturalInformation.uncontrolledCultureKeywords);
+                    return _inheritingCheckboxesIsSafe('#divCulturalInformation', _json.culturalInformation.approvedCultureKeywordIds) && 
+                    _inheritingRepeatRowsIsSafe('#uncontrolledCultureKeywordsRepeatable', _json.culturalInformation.uncontrolledCultureKeywords);
                 },
                 inheritSectionCallback: function () {
-                    _inheritCulturalInformation('#divCulturalInformation', TDAR.inheritance.json);
+                    _inheritCulturalInformation('#divCulturalInformation', _json);
                 }
             },
             {
@@ -660,10 +662,10 @@
                 divSelector: '#divOtherInformation',
                 mappedData: "otherInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingRepeatRowsIsSafe('#otherKeywordsRepeatable', TDAR.inheritance.json.otherInformation.otherKeywords);
+                    return _inheritingRepeatRowsIsSafe('#otherKeywordsRepeatable', _json.otherInformation.otherKeywords);
                 },
                 inheritSectionCallback: function () {
-                    _inheritOtherInformation('#divOtherInformation', TDAR.inheritance.json, "#divOtherInformation", "otherKeywords");
+                    _inheritOtherInformation('#divOtherInformation', _json, "#divOtherInformation", "otherKeywords");
                 }
             },
             {
@@ -672,10 +674,10 @@
                 divSelector: '#divInvestigationInformation',
                 mappedData: "investigationInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingCheckboxesIsSafe('#divInvestigationInformation', TDAR.inheritance.json.investigationInformation.investigationTypeIds);
+                    return _inheritingCheckboxesIsSafe('#divInvestigationInformation', _json.investigationInformation.investigationTypeIds);
                 },
                 inheritSectionCallback: function () {
-                    _inheritInformation('#divInvestigationInformation', TDAR.inheritance.json.investigationInformation, '#divInvestigationInformation');
+                    _inheritInformation('#divInvestigationInformation', _json.investigationInformation, '#divInvestigationInformation');
                 }
             },
             {
@@ -685,7 +687,7 @@
                 mappedData: "noteInformation", // curently not used 
                 isSafeCallback: function () {
                     var $resourceNoteSection = $('#resourceNoteSection');
-                    var projectNotes = TDAR.inheritance.json.noteInformation.resourceNotes;
+                    var projectNotes = _json.noteInformation.resourceNotes;
 
                     //it's always safe to overwrite an empty section
                     var $textareas = $resourceNoteSection.find('textarea');
@@ -714,7 +716,7 @@
 
                 },
                 inheritSectionCallback: function () {
-                    _inheritNoteInformation('#resourceNoteSection', TDAR.inheritance.json);
+                    _inheritNoteInformation('#resourceNoteSection', _json);
                 }
             },
             {
@@ -734,17 +736,17 @@
                         formVals.push($.trim(this.value));
                     });
 
-                    projectVals = projectVals.concat($.map(TDAR.inheritance.json.collectionInformation.sourceCollections, function (obj) {
+                    projectVals = projectVals.concat($.map(_json.collectionInformation.sourceCollections, function (obj) {
                         return obj.text;
                     }));
-                    projectVals = projectVals.concat($.map(TDAR.inheritance.json.collectionInformation.relatedComparativeCollections, function (obj) {
+                    projectVals = projectVals.concat($.map(_json.collectionInformation.relatedComparativeCollections, function (obj) {
                         return obj.text;
                     }));
 
                     return $.compareArray(formVals, projectVals, true);
                 },
                 inheritSectionCallback: function () {
-                    _inheritCollectionInformation('#relatedCollectionsSection', TDAR.inheritance.json);
+                    _inheritCollectionInformation('#relatedCollectionsSection', _json);
                 }
             },
             {
@@ -756,7 +758,7 @@
                     // flatten json to array of values [key, val, key, val, ...], and
                     // compare to field values.
                     var vals = [];
-                    $.each(TDAR.inheritance.json.resourceAnnotations, function (i, annotation) {
+                    $.each(_json.resourceAnnotations, function (i, annotation) {
                         vals.push(annotation.resourceAnnotationKey.key); // identifier
                         // key
                         vals.push(annotation.value); // identifier value;
@@ -764,7 +766,7 @@
                     return _inheritingRepeatRowsIsSafe('#divIdentifiers', vals);
                 },
                 inheritSectionCallback: function () {
-                    _inheritIdentifierInformation('#divIdentifiers', TDAR.inheritance.json);
+                    _inheritIdentifierInformation('#divIdentifiers', _json);
                 }
             },
             {
@@ -773,11 +775,11 @@
                 divSelector: '#divSpatialInformation',
                 mappedData: "collectionInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingMapIsSafe(TDAR.inheritance.json.spatialInformation) && 
-                    _inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', TDAR.inheritance.json.spatialInformation.geographicKeywords);
+                    return _inheritingMapIsSafe(_json.spatialInformation) && 
+                    _inheritingRepeatRowsIsSafe('#geographicKeywordsRepeatable', _json.spatialInformation.geographicKeywords);
                 },
                 inheritSectionCallback: function () {
-                    _inheritSpatialInformation("#divSpatialInformation", TDAR.inheritance.json);
+                    _inheritSpatialInformation("#divSpatialInformation", _json);
                 },
                 enableSectionCallback: function () {
                     _enableSection($('#divSpatialInformation'));
@@ -792,7 +794,7 @@
                 mappedData: "creditProxies",
                 isSafeCallback: _inheritingCreditInfoIsSafe,
                 inheritSectionCallback: function () {
-                    _inheritCreditInformation('#creditTable', TDAR.inheritance.json.creditProxies);
+                    _inheritCreditInformation('#creditTable', _json.creditProxies);
 
                 }
             }
@@ -801,7 +803,7 @@
 
         $.each(optionsList, function (idx, options) {
             console.log("register inheritance:"+ options.divSelector);
-            TDAR.inheritance.registerInheritSection(options);
+            registerInheritSection(options);
 //            $(options.cbSelector).change();
         });
 
@@ -816,7 +818,7 @@
 
     function _inheritingCreditInfoIsSafe() {
         var $creditRows = $("#creditTable > .repeat-row");
-        var array1 = $.map(TDAR.inheritance.json.creditProxies,function(obj){
+        var array1 = $.map(_json.creditProxies,function(obj){
             return obj.id;
         });
 
@@ -878,8 +880,8 @@
         //HACK: temporary fix for TDAR-2268 - our form populate js is overwriting the ID field with data.id
         var jsonid = projectJson.id;
 //    console.log(json);
-        TDAR.inheritance.id = null;
-        delete(TDAR.inheritance.id);
+        _id = null;
+        delete(_id);
 
         // indicate in each section which project the section will inherit from.
         var labelText = "Inherit values from parent project";
@@ -1104,7 +1106,7 @@
                 return true;
             },
             inheritSectionCallback: function () {
-                _inheritInformation(formId, TDAR.inheritance.json[_options.mappedData]);
+                _inheritInformation(formId, _json[_options.mappedData]);
             },
             enableSectionCallback: _enableSection 
         };
@@ -1124,7 +1126,7 @@
                     _options.inheritSectionCallback();
                 } else {
                     //not safe!  ask the user for confirmation
-                    _confirm("Inheriting from '" + common.htmlEncode(TDAR.inheritance.project.title) + "' will overwrite existing values. Continue?", function () {
+                    _confirm("Inheriting from '" + common.htmlEncode(_project.title) + "' will overwrite existing values. Continue?", function () {
                                 _options.inheritSectionCallback();
                             }, function () {
                                 $cb.prop("checked", false);

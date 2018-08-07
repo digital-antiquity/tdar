@@ -2,6 +2,11 @@ const common = require("./tdar.common");
 const repeatrow = require("./tdar.repeatrow");
 const autocomplete = require("./tdar.autocomplete");
 const core = require("./tdar.core");
+const datepicker = require("./tdar.datepicker");
+
+window.$ = window.jQuery = require('jquery'); // was import $ from 'jquery';
+require('./../includes/jquery-ui-1.11.4.custom/jquery-ui');
+
 
 
 function _disableCheckbox($box) {
