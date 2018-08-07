@@ -265,13 +265,13 @@ ${head}
         <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
 
         <#if page.properties["div.titlebar"]?has_content>
-        <div class="container">
+        <section class="container titlesection">
         <div class="row">
         <div class="col-12">
         ${page.properties["div.titlebar"]}
         </div>
         </div>
-        </div>
+        </section>
         </#if>
 
         <section class="container ${part}">

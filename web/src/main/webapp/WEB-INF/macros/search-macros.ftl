@@ -403,10 +403,10 @@
 
 <#macro toolbar>
     <ul class="nav nav-tabs" id="myTab">
-        <li class="${activeWhen('basic,advanced,results')}"><a href="advanced">Resource</a></li>
-        <li class="${activeWhen('collection,collections')}"><a href="/search/collection">Collection</a></li>
-        <li class="${activeWhen('institution,institutions')}"><a href="/search/institution">Institution</a></li>
-        <li class="${activeWhen('person,people')}"><a href="/search/person">Person</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('basic,advanced,results')}" href="advanced">Resource</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('collection,collections')}" href="/search/collection">Collection</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('institution,institutions')}" href="/search/institution">Institution</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('person,people')}" href="/search/person">Person</a></li>
     </ul>
 </#macro>
 

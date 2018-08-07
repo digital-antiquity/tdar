@@ -149,7 +149,7 @@
     <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/collection/admin/${id?c}"/>">ADMIN</a></div>
     </#if>
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.formattedDescription?? || collections??>
-        <div>
+        <div class="col-12">
             <#if resourceCollection.parent??><p><b>Part of:</b>
                     <@formatCollectionLink resourceCollection.parent />
                 <#if resourceCollection.alternateParent?has_content>
@@ -177,7 +177,8 @@
 
 <#macro keywordSection>
             <#if keywordSectionVisible>
-            <div class="row">
+            <!-- <div class="col-12">
+            <div class="row"> -->
                 <div class="col">
                 <@_keywordSection "Site Name Keywords" facetWrapper.facetResults['activeSiteNameKeywords']![] "query" />
                 <@_keywordSection "Site Type Keywords" facetWrapper.facetResults['activeSiteTypeKeywords']![] "query" />
@@ -191,21 +192,21 @@
                 <@_keywordSection "Temporal Keywords" facetWrapper.facetResults['activeTemporalKeywords']![] "query" />
                 <@_keywordSection "Geographic Keywords" facetWrapper.facetResults['activeGeographicKeywords']![] "query" />
                 </div>
-            </div>
+<!--            </div>
+            </div> -->
             <hr/>
             </#if>
 </#macro>
 
 <#macro resultsSection header="Inside This Collection">
-<div class="row">
-        <#if results?has_content>
-        <div id="divResultsSortControl col-12">
+<div class="col-12">
+		<div class="">
+	        <#if results?has_content>
+    		    <div id="divResultsSortControl" class="">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
-        </div>
+		        </div>
         
-        
-        
-        <div class="collection-facets">
+        <div class="collection-facets col-12">
             <#assign mapSize="450" />
 <#-- for when map orientiation is 'left' or 'right'  
             <#if (totalRecords > 10)>
@@ -227,13 +228,18 @@
 
 
             <#nested />
-            <@list.listResources resourcelist=results sortfield=sortField titleTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
+            <@list.listResources resourcelist=results sortfield=sortField titleTag="b"  headerTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
                     orientation=orientation    mapPosition="top" mapHeight=mapSize />
             </div>
             <@search.basicPagination "Records" />
         <#else>
+        <div class="col-12">
+        <hr>
         This collection is either empty or you do not currently have permissions to view the contents.
+        <hr>
+        </div> 
         </#if>
+        </div> 
         </div> 
 </#macro>
 

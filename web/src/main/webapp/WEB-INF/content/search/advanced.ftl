@@ -30,7 +30,7 @@
     </div>
 
     <div class="tab-content">
-        <div id="resource" class="tab-pane active">
+        <div id="resource" class="tab-pane active col-12">
                 <input type="hidden" name="_tdar.searchType" value="advanced">
 
                 <div class="searchgroup">
@@ -99,7 +99,7 @@
             </div>
             <#elseif fieldType.simple>
             <div class="term retain  ${fieldType} simple <#if fieldType.multiIndex>multiIndex</#if>">
-                <@s.textfield theme="tdar" type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="input-xxlarge" />
+                <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="col-8" />
             </div>
             <#elseif fieldType="COVERAGE_DATE_RADIOCARBON" || fieldType="COVERAGE_DATE_CALENDAR" >
             <div class="term ${fieldType} controls-row">
@@ -244,7 +244,7 @@
     </#macro>
 
     <#macro searchTypeSelect id="0" init="" groupid="0" >
-    <select id="group${groupid}searchType_${id}_" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType repeatrow-noreset" style="font-size:smaller">
+    <select id="group${groupid}searchType_${id}_" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType repeatrow-noreset col-2" style="font-size:smaller">
         <#assign groupName = ""/>
         <#list allSearchFieldTypes as fieldType>
             <#if !fieldType.hidden>
@@ -288,8 +288,8 @@
                 <#if fieldType??>
                     <div id="grouptablerow_0_" class="form-row termrow repeat-row">
                         <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
-                        <div class="controls controls-row">
-                            <div class="col-8 term-container">
+                        <div class="controls ">
+                            <div class="col-10 term-container">
                                 <@fieldTemplate fieldType=fieldType fieldIndex=fieldType_index groupid=groupid />
                             </div>
                             <div class="col-1">
@@ -310,16 +310,14 @@
     <#macro blankRow groupid=0 fieldType_index=0 idAttr="grouptablerow_${groupid}_">
     <div id="${idAttr}" class="form-row termrow repeat-row">
         <@searchTypeSelect />
-        <div class="controls controls-row simple multiIndex">
-            <div class="col-8 term-container">
+        <div class="col-8 term-container">
+        <div class=" controls controls-row simple multiIndex ">
                             <span class="term retain ALL_FIELDS simple multiIndex">
-                                <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="input-xxlarge"/>
+                                <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="col-8"/>
                             </span>
             </div>
-            <div class="col-1">
-                <@removeRowButton />
             </div>
-        </div>
+                <@removeRowButton />
     </div>
     </#macro>
 
@@ -338,7 +336,7 @@
     <#macro templateProject fieldIndex="{termid}" groupid="{groupid}">
     <div class="term PROJECT">
         <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
-            <@common.combobox cssClass="input-xxlarge-combo projectcombo" name="groups[${groupid}].projects[${fieldIndex}].title"
+            <@common.combobox cssClass="input-xxlarge-combo projectcombo col-8" name="groups[${groupid}].projects[${fieldIndex}].title"
     autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id"
     target="" label="" placeholder="enter project name"  bootstrapControl=false />
     </div>
@@ -355,7 +353,7 @@
     <div class="term ${type?upper_case}">
         <@s.hidden name="groups[${groupid}].${prefix}[${fieldIndex}].id" id="${prefix}_${groupid}_${fieldIndex}_id" />
             <@common.combobox name="groups[${groupid}].${prefix}[${fieldIndex}].name" id="${prefix}_${groupid}_${fieldIndex}_name"
-    cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#${prefix}_${groupid}_${fieldIndex}_id"
+    cssClass="col-8 input-xxlarge-combo collectioncombo" autocompleteIdElement="#${prefix}_${groupid}_${fieldIndex}_id"
     target="" label="" placeholder="enter ${type} name" bootstrapControl=false collectionType="${collectionType}"/>
     </div>
     </#macro>

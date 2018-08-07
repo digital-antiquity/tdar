@@ -12,8 +12,9 @@
         <@commonCollection.sidebar />
 
 <div class="row">
+<div class="col-12">
         <h1>${resourceCollection.name!"untitled collection"}</h1>
-    
+    </div>
     <#if !visible>
     This collection is not accessible
     

@@ -1,3 +1,4 @@
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#escape _untrusted as _untrusted?html>
 
 
@@ -66,7 +67,7 @@
     <h3>Add / Modify User(s)</h3>
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
     <div class="row">
-        <div class='col-6'>
+        <div class='col-<#if showDate>5<#else>7</#if>'>
         <b>User or Email </b>
         </div>
         <div class="col-2">
@@ -96,31 +97,24 @@
 
     <#macro _proxy proxy_index proxy showDate=true>
     
-                <div class="">
                         <div class=" control-group repeat-row" id="authorizedUsersRow_${proxy_index}_">
-                            <div class="controls-row" >
-                                <div class="col-6">
-                                    <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
+                            <div class="form-row"  id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
                                         <input type="hidden" name="proxies[${proxy_index}].inviteId" value="<#if proxy.inviteId?has_content>${(proxy.inviteId!-1)?c}</#if>">
 
                                         <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
                                         <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''} <#if proxy.inviteId?has_content> (invite) </#if>" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
-                                                 class="col-6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
+                                                 class="col-<#if showDate>5<#else>7</#if> userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
                                                  <#if proxy.inviteId?has_content> disabled=true </#if>
                                                  
                                                  autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
                                                  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."
                                                  autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
                                                  autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
-                                    </div>
-                                </div>
-                                <div class="col-2">
-                                    <@s.select theme="tdar" cssClass="creator-rights-select col-2" name="proxies[${proxy_index}].permission" emptyOption='false'
+
+                                                                        <@s.select cssClass="creator-rights-select col-4" name="proxies[${proxy_index}].permission" emptyOption='false'
                                         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
-                                </div>
                                 <#if showDate>
-                                <div class=" col-2">
-                                    <div class="input-append">
+                                    <div class="input-append col-2">
                                     <#local val=""/>
                                     <#if proxy.until?has_content>
                                         <#local val=proxy.until />
@@ -130,16 +124,10 @@
 
                                           <span class="add-on"><i class="icon-th"></i></span>
                                     </div>
-                                </div>
                                 </#if>
-
-                                <div class="col-1">
-                                    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
-                                </div>
+									<@nav.clearDeleteButton  />
                             </div>
-
-            </div>
-        </div>
+			        </div>
     </#macro>
     
     <#macro javascript>
