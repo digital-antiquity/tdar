@@ -192,11 +192,11 @@ Common macros used in multiple contexts
             <label class="control-label">${label}</label>
         <div class="controls">
         </#if>
-        <div class="input-append">
+        <div class="input-group">
         <#--if 'value' is not a string,  omit the 'value' attribute so that we don't override the
         s.textfield default (i.e. the value described by the 'name' attribute) -->
             <#if value?is_string>
-                <@s.textfield theme="simple" name="${name}"  target="${target}"
+                <@s.textfield  name="${name}"  target="${target}"
                 label="${label}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
@@ -204,18 +204,20 @@ Common macros used in multiple contexts
                 collectionType="${collectionType}"
                 value="${value}"  />
             <#else>
-                <@s.textfield theme="simple" name="${name}"  target="${target}"
+                <@s.textfield name="${name}"  target="${target}"
                 label="${label}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
                 collectionType="${collectionType}"
                 placeholder="${placeholder}" cssClass="${cssClass}" />
             </#if>
-            <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
+            <span class="input-group-append">
+            <button type="button" class="btn show-all form-control input-group-button "><i class="fas fa-chevron-down"></i></button>
             <#if addNewLink?has_content>
-                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn show-all"
+                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn form-control input-group-button show-all"
                    target="_blank">add new</a>
             </#if>
+            </span>
         </div>
         <#if bootstrapControl>
         </div>

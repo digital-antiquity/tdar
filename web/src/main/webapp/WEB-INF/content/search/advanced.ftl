@@ -109,8 +109,8 @@
             </#if>
                 <@s.hidden name="groups[${groupid}].coverageDates[${fieldIndex}].dateType" value="${type}" cssClass="coverageDateType" />
     
-                <@s.textfield  theme="tdar" placeholder="Start Year" cssClass="coverageStartYear" name="groups[${groupid}].coverageDates[${fieldIndex}].startDate" maxlength="10" /> 
-                <@s.textfield  theme="tdar" placeholder="End Year" cssClass="coverageEndYear" name="groups[${groupid}].coverageDates[${fieldIndex}].endDate" maxlength="10" />
+                <@s.textfield  placeholder="Start Year" cssClass="coverageStartYear" name="groups[${groupid}].coverageDates[${fieldIndex}].startDate" maxlength="10" /> 
+                <@s.textfield  placeholder="End Year" cssClass="coverageEndYear" name="groups[${groupid}].coverageDates[${fieldIndex}].endDate" maxlength="10" />
             </div>
             <#elseif fieldType="KEYWORD_INVESTIGATION">
             <div class="term KEYWORD_INVESTIGATION">
@@ -162,21 +162,23 @@
             <span class="creatorPerson " id="group_${groupid}_row_${fieldIndex}_parent">
                 <div class="form-row">
                     <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
-                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="Last Name"  theme="tdar"
+                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="Last Name"  
                 autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" />
-                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="First Name" theme="tdar"
+                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="First Name" 
                 autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255"  />
-                    <@s.select theme="tdar"  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select col-3" />
+                    <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select col-3" />
                 </div>
                 <div class="controls-row">
+                    <#local icol = 10/>
                     <#if authenticated>
-                        <@s.textfield cssClass="col-5 nameAutoComplete" placeholder="Email (Optional)" theme="tdar"
+                    <#local icol = 5/>
+                        <@s.textfield cssClass="col-5 nameAutoComplete" placeholder="Email (Optional)" 
                         autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                         name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255" />
                     </#if>
-                <@s.textfield cssClass="nameAutoComplete col-5" placeholder="Institution Name (Optional)" theme="tdar"
+                <@s.textfield cssClass="nameAutoComplete col-${icol}" placeholder="Institution Name (Optional)" 
                 autocompleteName="institution" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.institution.name" maxlength="255" />
                 </div>
@@ -188,11 +190,11 @@
             <div class="term retain RESOURCE_CREATOR_INSTITUTION">
             <span class="creatorInstitution" id="group_${groupid}_${fieldIndex}_institution_parent">
                 <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.id" id="group_${groupid}_${fieldIndex}_institution_id"/>
-                <div class="controls-row">
-                    <@s.textfield theme="tdar" cssClass="col-4 institutionAutoComplete institution" placeholder="Institution Name" theme="tdar"
+                <div class="form-row">
+                    <@s.textfield  cssClass="col-8 institutionAutoComplete institution" placeholder="Institution Name" 
                     autocompleteName="name" autocompleteIdElement="#group_${groupid}_${fieldIndex}_institution_id" autocompleteParentElement="#group_${groupid}_${fieldIndex}_institution_parent"
                     name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" />
-                <@s.select theme="tdar" name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" theme="tdar"
+                <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" cssClass="col-4" 
                 emptyOption=true listValue='label' placeholder="Role " list=relevantInstitutionRoles />
                 </div>
             </span>
@@ -201,26 +203,26 @@
             <!-- FIXME: refactor to not repeat the same block -->
             <#elseif fieldType = 'DATE_CREATED'>
             <div class="term retain ${fieldType} controls-row">
-                <div class="col-3">
-                    <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
+                <div class="col">
+                    <@s.textfield cssClass="placeholdered number" placeholder='yyyy' labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
                 </div>
-                <div class="col-3">
-                    <@s.textfield cssClass="placeholdered number" theme="tdar" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
+                <div class="col">
+                    <@s.textfield cssClass="placeholdered number" placeholder='yyyy'labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
                 </div>
             </div>
 
             <#elseif fieldType?starts_with("DATE_")>
             <div class="term retain ${fieldType} controls-row">
-                <div class="col-3">
+                <div class="col">
                     <div class="input-append">
-	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"
+	                    <@s.textfield cssClass="placeholdered datepicker" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"
 	                    	 dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
                 </div>
-                <div class="col-3">
+                <div class="col">
                     <div class="input-append">
-	                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"
+	                    <@s.textfield cssClass="placeholdered datepicker" placeholder="mm/dd/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"
 	                    dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                           <span class="add-on"><i class="icon-th"></i></span>
                         </div>
@@ -322,7 +324,7 @@
     </#macro>
 
     <#macro removeRowButton>
-    <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1"><i class="icon-trash"></i></button>
+    <button class="btn btn-mini form-control col-1 repeat-row-delete" type="button" tabindex="-1"> <i class="fas fa-trash-alt"></i></button>
     </#macro>
 
 

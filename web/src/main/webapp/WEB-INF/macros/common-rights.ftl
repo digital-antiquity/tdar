@@ -10,38 +10,38 @@
     </div>
             <div class="row">
                 <div class="col-6" id="invites">
-	                <div class="controls-row" >
-	                	<div class="col-2"><b>First Name</b></div>
-	                    <div class="col-4">
-	                        <@s.textfield name="invites[0].firstName" cssClass="col-4 inviteForm" id="firstName" />
+	                <div class="form-row" >
+	                	<div class="col-4"><b>First Name</b></div>
+	                    <div class="col-8">
+	                        <@s.textfield name="invites[0].firstName" cssClass="col-8 inviteForm" id="firstName" />
 	                    </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="col-2"><b>Last Name</b></div>
-    	                <div class="col-4">
-        	                <@s.textfield name="invites[0].lastName" cssClass="col-4 inviteForm" id="lastName" />
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Last Name</b></div>
+    	                <div class="col-8">
+        	                <@s.textfield name="invites[0].lastName" cssClass="col-8 inviteForm" id="lastName" />
             	        </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="col-2"><b>Email</b></div>
-	                    <div class="col-4">
-	                        <@s.textfield name="invites[0].email" cssClass="col-4 inviteForm" id="email" />
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Email</b></div>
+	                    <div class="col-8">
+	                        <@s.textfield name="invites[0].email" cssClass="col-8 inviteForm" id="email" />
 	                    </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="col-2"><b>Permission</b></div>
-	                    <div class="col-4">
-	                        <@s.select theme="tdar" cssClass="controls creator-rights-select col-4" name="invites[0].permission" emptyOption='false'
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Permission</b></div>
+	                    <div class="col-8">
+	                        <@s.select  cssClass="controls creator-rights-select col-8" name="invites[0].permission" emptyOption='false'
 	                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
 	                    </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="col-2"><b>Expires?</b></div>
-	                    <div class=" col-4">
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Expires?</b></div>
+	                    <div class=" col-8">
 	                        <div class="input-append">
 	                              <input class="controls datepicker" name="invites[0].until" style="width:6em" 
 	                                size="16" type="text" value="" data-date-format="mm-dd-yyyy" >
@@ -52,9 +52,9 @@
                     </div>
                 </div>
                 <div class="col-6">
-	                <div class="controls-row" >
+	                <div class="form-row" >
 	                <p><b>Add a Note</b></p>
-	                <@s.textarea name="invites[0].note" cssClass="col-4" rows=5 />
+	                <@s.textarea name="invites[0].note" cssClass="col-12" rows=5 />
 	                </div>
                 </div>
             </div>

@@ -547,6 +547,13 @@ div.mapcontainer img {
 .mini .leaflet-interactive {
   cursor: default; }
 
+ul.treeview li {
+  margin-top: 0px !important; }
+ul.treeview ul {
+  margin-top: 0px !important; }
+ul.treeview label {
+  margin-bottom: 0px !important; }
+
 /******** GRAPHING **********/
 .barChart .c3-text {
   fill: black !important; }
