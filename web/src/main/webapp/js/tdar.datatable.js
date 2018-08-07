@@ -1280,7 +1280,7 @@ core.namespace("datatable");
                 title : title
             });
 
-            $("#datatable-child").dialog({
+            /*$("#datatable-child").dialog({
                 resizable : false,
                 modal : true,
                 buttons : {
@@ -1293,7 +1293,9 @@ core.namespace("datatable");
                         $(this).dialog("close");
                     }
                 }
-            });
+            });*/
+            
+            
         }
     }
 

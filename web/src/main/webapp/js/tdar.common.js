@@ -641,7 +641,7 @@ var _sessionTimeoutWarning = function () {
             console.log("remaining time in session:" + remainingTime);
         }
         if (remainingTime == 300) {
-            var dialog = $('<div id=timeoutDialog></div>').html("<B>Warning!</B><br/>Your session will timeout in 5 minutes, please save the document you're currently working on").dialog({
+           /* var dialog = $('<div id=timeoutDialog></div>').html("<B>Warning!</B><br/>Your session will timeout in 5 minutes, please save the document you're currently working on").dialog({
                         modal: true,
                         title: "Session Timeout Warning",
                         closeText: "Ok",
@@ -650,7 +650,9 @@ var _sessionTimeoutWarning = function () {
                                 $(this).dialog("close");
                             }
                         }
-                    });
+                    });*/
+            
+            alert("Your session will timeout in 5 minutes, please save the document you're currently working on");
         }
         if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
             $("#timeoutDialog").html("<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");

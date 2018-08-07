@@ -8,7 +8,7 @@ const core = require("./tdar.core");
 window.$ = window.jQuery = require('jquery'); // was import $ from 'jquery';
 require('./../includes/jquery-ui-1.11.4.custom/jquery-ui');
 
-require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/vendor/jquery.ui.widget.js');
+//require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/vendor/jquery.ui.widget.js');
 require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/jquery.iframe-transport.js');
 require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/jquery.fileupload.js');
 

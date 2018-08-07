@@ -136,7 +136,7 @@ describe("CommonSpec.js: edit page tests", function () {
             console.debug("$.fn", $.fn)
             //intercept calls to setTimeout() and $.fn.dialog(). Confirm that our function called them later. 
             spyOn(window, 'setTimeout');
-            spyOn($.fn, 'dialog');
+            //spyOn($.fn, 'dialog');
             setFixtures('<div id="timeoutDialog"></div>');
             sessionTimeout = $(document).data("sessionTimeout");
         });
@@ -145,14 +145,14 @@ describe("CommonSpec.js: edit page tests", function () {
             $(document).data("sessionTimeout", sessionTimeout);
         });
     
-        it("shows a warning when you your session has nearly expired", function() {
+        /*it("shows a warning when you your session has nearly expired", function() {
             $(document).data("sessionTimeout", 960);
             $(document).data("currentTime", 600);
             TDAR.common.sessionTimeoutWarning();
             //verify that sessionTimeoutwarning() opened a dialog with the title 'session timeout warning'
             expect($.fn.dialog.calls.count()).toBe(1);
             expect($.fn.dialog.calls.argsFor(0)[0].title).toContain('Session Timeout Warning');
-        });
+        });*/
     
         it("notifies user when session has timed out", function () {
             $(document).data("sessionTimeout", 90 * 60);
