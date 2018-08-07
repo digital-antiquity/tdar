@@ -1,5 +1,5 @@
 
-TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
+TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
     "use strict";
 
     if (document.getElementById("autocomplete") != undefined ) {
@@ -81,6 +81,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             },
             setValue: function(val) {
                 Vue.set(this,"search", val);
+            },
+            setId: function(val) {
+                Vue.set(this,"id", val);
             },
             addFocus: function (type) {
                 if (type == 'mouse') {

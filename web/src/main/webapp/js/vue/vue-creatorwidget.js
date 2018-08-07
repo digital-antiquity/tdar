@@ -26,9 +26,36 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
             },
             created: function() {
                 if (this.resourcecreator.creator.firstName == undefined) {
+                    this.toggle = 'PERSON';
+                    Vue.set(this, "toggle", 'PERSON');
+                }
+            },
+            beforeUpdate: function(e) {
+                var creator = this.resourcecreator.creator;
+                if (this.resourcecreator.init == undefined) {
+                    return;
+                } 
+                console.log("updated", creator);
+                this.resourcecreator.init = undefined;
+                if (creator.firstName == undefined) {
                     this.toggle = 'INSTITUTION';
                     Vue.set(this, "toggle", 'INSTITUTION');
+                    if (this.$refs.inputinstitution != undefined) {
+                        this.$refs.inputinstitution.setValue(creator.properName);
+                        this.$refs.inputinstitution.setId(creator.id);
+                    }
+                } else {
+                    this.toggle = 'PERSON';
+                    if (creator.institution == undefined || creator.institution == null) {
+                        creator.institution = {};
+                    }
+                    Vue.set(this, "toggle", 'PERSON');
+                    if (this.$refs.inputperson != undefined) {
+                        this.$refs.inputperson.setValue(creator.properName);
+                        this.$refs.inputperson.setId(creator.id);
+                    }
                 }
+                
             },
             watch: {
                 resourcecreator: function(n, o) {
@@ -71,8 +98,12 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
             },
             methods: {
                 toggleValue: function(key) {
+//                    this.toggling = true;
+//                    Vue.set(this,"toggling",true);
+                    this.reset(key);
                     Vue.set(this,"toggle",key);
-                    this.reset();
+//                    Vue.set(this,"toggling",false);
+//                    this.toggling = false;
                 },
                 getPrefix: function(part) {
                     var ret = this.prefix;
@@ -90,8 +121,15 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     ret = ret + "." + part;
                     return ret;
                 },
-                reset: function() {
-                    Vue.set(this.resourcecreator,"creator", { institution:{ name: undefined}});
+                reset: function(type) {
+                    if (type == undefined) {
+                        type = this.toggle;
+                    }
+                    if (type == 'PERSON') {
+                        Vue.set(this.resourcecreator,"creator", { institution:{ name: undefined}});
+                    } else {
+                        Vue.set(this.resourcecreator,"creator", {});
+                    }
                     Vue.set(this,"showEditPerson", false);
                     Vue.set(this,"showEditInstitution", false);
                     if (this.$refs.inputperson != undefined) {
@@ -184,6 +222,15 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 clickNew: function() {
                     this.reset();
                     this.clickEdit();
+                },
+                clear: function() {
+                    this.$refs.input.clear();
+                },
+                setValue: function(val) {
+                    this.$refs.input.setValue(val);
+                },
+                setId: function(val) {
+                    this.$refs.input.setId(val);
                 }
             }
         });
@@ -248,6 +295,15 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 clickNew: function() {
                     this.reset();
                     this.clickEdit();
+                },
+                clear: function() {
+                    this.$refs.input.clear();
+                },
+                setValue: function(val) {
+                    this.$refs.input.setValue(val);
+                },
+                setId: function(val) {
+                    this.$refs.input.setId(val);
                 }
             }
         });

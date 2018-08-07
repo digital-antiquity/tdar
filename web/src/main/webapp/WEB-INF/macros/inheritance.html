@@ -203,7 +203,9 @@ $(document).ready(function() {
                     inhertCreators: function(o, b) {
                         this.resource.individualInstitutionalRoles.length = 0;
                         var self = this;
-                        this.project.activeIndividualAndInstitutionalCredit.forEach(function(role) {
+                        this.project.activeIndividualAndInstitutionalCredit.forEach(function(role_) {
+                            var role = JSON.parse(JSON.stringify(role_));
+                            role.init = "";
                             self.resource.individualInstitutionalRoles.push(role);
                         });
                     },

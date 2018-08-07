@@ -4,7 +4,7 @@
                 <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
                 resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="span4"
                 :customcreatenew="clickNew" createnewtext="Create New Person" :init_id="creator.id" :init_val="creator.properName"
-                                ref="inputperson" fieldname="properName" :allowCreate="false" idname="id" /> 
+                                ref="input" fieldname="properName" :allowCreate="false" idname="id" /> 
             </div>
             <div class="" v-show="showEditPerson">
                 <div class="controls-row">
@@ -25,7 +25,7 @@
                 <autocomplete url="https://localhost:8443/api/lookup/institution" suffix=""  field="institution"   
                 resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="span4"
                 :customcreatenew="clickNew" createnewtext="Create New Institution" :init_id="creator.id" :init_val="creator.properName"
-                ref="inputinstitution" fieldname="properName" :allowCreate="false" idname="id" />
+                ref="input" fieldname="properName" :allowCreate="false" idname="id" />
             </div>
             <div v-if="showEditInstitution">
                 <div class="controls-row">
@@ -52,10 +52,10 @@
         <input type="hidden" name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
         <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id">
         <div v-if="toggle == 'PERSON'">
-			<person :creator="resourcecreator.creator" />
+			<person :creator="resourcecreator.creator" ref="inputperson" />
         </div>
         <div v-if="toggle == 'INSTITUTION'">
-			<institution :creator="resourcecreator.creator" />
+			<institution :creator="resourcecreator.creator" ref="inputinstitution" />
         </div>
     </div>
     <div class="span2">
