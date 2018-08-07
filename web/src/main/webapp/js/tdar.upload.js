@@ -552,9 +552,10 @@ require('imports-loader?define=>false&exports=>false&$=jquery!./../components/bl
     }
 
     //expose public elements
-   module.exports = {
+    module.exports = {
         "registerUpload": _registerUpload,
         "updateFileAction": _updateFileAction,
         "getRowId": _getRowId,
         "getRowVisibility": _getRowVisibility
     };
+

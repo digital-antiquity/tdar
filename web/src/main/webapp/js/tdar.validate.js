@@ -1,7 +1,4 @@
-TDAR.validate = (function($, ctx) {
-    "use strict";
-
-
+const common = require("./tdar.common");
     /**
      * Default settings for form validation in tDAR forms
      *
@@ -39,7 +36,7 @@ TDAR.validate = (function($, ctx) {
             //cap the included errors, but show the correct total number of errors
             totalErrors += errors.length;
             $form.data("submitCount", submitCount).data("totalErrors", totalErrors);
-            errors = errors.slice(0 - TDAR.common.maxJavascriptValidationMessages);
+            errors = errors.slice(0 - common.maxJavascriptValidationMessages);
 
             //todo: we really only need to build the dom when the submit is finally successful
             $form.find("#divClientValidationInfo").remove();
@@ -49,7 +46,7 @@ TDAR.validate = (function($, ctx) {
 
             $.each(errors, function (idx, error) {
                 var key = "error_" + idx;
-                var msg = TDAR.common.htmlEncode("" + error.element.id + ": " + error.message);
+                var msg = common.htmlEncode("" + error.element.id + ": " + error.message);
                 var $input = $(template(key, msg));
                 $input.val(msg);
                 $clientInfo.append($input);
@@ -382,7 +379,7 @@ TDAR.validate = (function($, ctx) {
     };
 
 
-    return {
+    module.exports = {
         "init" : _init,
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
@@ -393,5 +390,4 @@ TDAR.validate = (function($, ctx) {
             TDAR.validate.init();
         }
     }
-})(jQuery, window);
 

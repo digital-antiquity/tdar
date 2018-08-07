@@ -2,10 +2,8 @@
  * Autocomplete Support
  */
 
-
-TDAR.autocomplete = {};
-TDAR.autocomplete = (function () {
-    "use strict";
+const core = require("./tdar.core");
+const common = require("./tdar.common");
 
     //when a user creates a record manually instead of choosing a menu-item from the autocomplete dropdown, this module
     //stores the record in the object cache.  If the user later fills out similar autocomplete fields,   we add
@@ -355,7 +353,7 @@ TDAR.autocomplete = (function () {
                 $elem.data('responseHolder', responseHolder);
 
                 var ajaxRequest = {
-                    url: TDAR.uri() + options.url,
+                    url: core.uri() + options.url,
                     dataType: "jsonp",
                     data: requestData,
                     success: function (data) {
@@ -542,7 +540,7 @@ TDAR.autocomplete = (function () {
                 }
                 var extra = "<span class='pull-right'>" + star + ocur + " " + "&nbsp;&nbsp;</span>";
 
-                return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(item.label) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + extra + " </a>").appendTo(ul);
+                return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + common.htmlDecode(item.label) + "\">" + common.htmlDoubleEncode(item.value) + extra + " </a>").appendTo(ul);
             };
 //            options.customHeader = function() {
 //                return $("<li class='header-auto'>Term <span class='header-auto pull-right'>Suggested (# of ocur.)</span></li>");
@@ -658,7 +656,7 @@ TDAR.autocomplete = (function () {
             if (item.id != -1) {
                 idpart = " ("+item.id+")";
             }
-            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>" +idpart).appendTo(ul);
+            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + common.htmlDecode(description) + "\">" + common.htmlDoubleEncode(item.value) + link + "</a>" +idpart).appendTo(ul);
         };
 
         _applyGenericAutocomplete($elements, $.extend({}, defaults, _options));
@@ -707,7 +705,7 @@ TDAR.autocomplete = (function () {
                 description = item.description;
             }
             var link = "";
-            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(description) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
+            return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + common.htmlDecode(description) + "\">" + common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
         };
 
         _applyGenericAutocomplete($elements, options);
@@ -877,7 +875,7 @@ TDAR.autocomplete = (function () {
         return obj;
     }
 
-    return {
+    module.exports = {
         applyPersonAutoComplete: _applyPersonAutoComplete,
         evaluateAutocompleteRowAsEmpty: _evaluateAutocompleteRowAsEmpty,
         applyKeywordAutocomplete: _applyKeywordAutocomplete,
@@ -892,4 +890,4 @@ TDAR.autocomplete = (function () {
         "buildRequestData": _buildRequestData,
         "ObjectCache": ObjectCache
     };
-})();
+

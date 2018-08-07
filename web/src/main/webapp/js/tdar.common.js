@@ -5,19 +5,17 @@
  * Mostly have to do with adding new rows for multi-valued fields, etc.
  */
 
-/**
- * Returns a copy of a string, terminated by ellipsis if input string exceeds max length
- * @param str input string
- * @param maxlength maximum length of the copy string.
- * @param useWordBoundary should we ellipsify in the middle of a word?
- * @returns {*} copy of string no longer than maxlength.
- */
-TDAR.ellipsify = function _ellipsify(text, n, useWordBoundary) {
-        /* from: http://stackoverflow.com/questions/1199352/smart-way-to-shorten-long-strings-with-javascript */
-        var toLong = text.length > n, s_ = toLong ? text.substr(0, n - 1) : text;
-        s_ = useWordBoundary && toLong ? s_.substr(0, s_.lastIndexOf(' ')) : s_;
-        return  toLong ? s_ + '...' : s_;
-    }
+const core = require("./tdar.core.js");
+const common = require("./tdar.common.js");
+const tmpl = require('blueimp-tmpl');//require('script-loader!blueimp-tmpl/js/tmpl.js')
+const fileupload = require("./tdar.upload");
+const repeatrow = require("./tdar.repeatrow");
+const autocomplete = require("./tdar.autocomplete");
+const contexthelp = require("./tdar.contexthelp");
+const inheritance = require("./tdar.inheritance");
+
+require('./../includes/jquery.watermark-3.1.3.min.js');
+require('./../includes/jquery.treeview/jquery.treeview.js');
 
 
 jQuery.extend({
@@ -31,7 +29,7 @@ jQuery.extend({
      */
     compareArray: function (arrayA, arrayB, ignoreOrder) {
         //FIXME: break this into two functions (no bool args!)
-        //FIXME: no need to extend jquery, just add to tdar.common.
+        //FIXME: no need to extend jquery, just add to common.
         if (arrayA.length !== arrayB.length) {
             return false;
         }
@@ -57,9 +55,6 @@ jQuery.extend({
  * trying to move these functions out of global scope and apply strict parsing.
  */
 
-TDAR.common = function (TDAR, fileupload) {
-    "use strict";
-
     var self = {};
 
 
@@ -81,7 +76,7 @@ TDAR.common = function (TDAR, fileupload) {
         var adhocTarget = $(elem).closest(_selector);
         $('body').data("adhocTarget", adhocTarget);
         //expose target for use by child window
-        TDAR.common.adhocTarget = adhocTarget;
+        common.adhocTarget = adhocTarget;
         //return false;
     }
 
@@ -104,7 +99,7 @@ TDAR.common = function (TDAR, fileupload) {
         $('input[type=hidden]', adhocTarget).val(obj.id);
         $('input[type=text]', adhocTarget).val(obj.title);
         $body.removeData("adhocTarget");
-        TDAR.common.adhocTarget = null;
+        common.adhocTarget = null;
     }
 
     // FIXME: refactor.  needs better name and it looks brittle
@@ -130,7 +125,7 @@ TDAR.common = function (TDAR, fileupload) {
      * @private
      */
     var _sortFilesAlphabetically = function () {
-        //FIXME:  implement this and migrate to tdar.fileupload
+        //FIXME:  implement this and migrate to fileupload
     }
 
     
@@ -226,7 +221,7 @@ TDAR.common = function (TDAR, fileupload) {
             //init fileupload
             var id = $('input[name=id]').val();
             if (props.ableToUpload && props.multipleUpload) {
-//                TDAR.fileupload.registerUpload({
+//                fileupload.registerUpload({
 //                    informationResourceId: id,
 //                    acceptFileTypes: props.acceptFileTypes,
 //                    formSelector: props.formSelector,
@@ -255,7 +250,7 @@ TDAR.common = function (TDAR, fileupload) {
         });
 
         //init repeatrows
-        TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+        repeatrow.registerRepeatable(".repeatLastRow");
 
         //init person/institution buttons
         $(".creatorProxyTable").on("click", '.creator-toggle-button', function (event) {
@@ -321,7 +316,7 @@ TDAR.common = function (TDAR, fileupload) {
             });
         });
 
-        TDAR.contexthelp.initializeTooltipContent(form);
+        contexthelp.initializeTooltipContent(form);
         _applyWatermarks(form);
 
         // prevent "enter" from submitting
@@ -385,7 +380,7 @@ TDAR.common = function (TDAR, fileupload) {
         // delete/clear .repeat-row element and fire event
         $('#copyrightHolderTable').on("click", ".row-clear", function (e) {
             var rowElem = $(this).parents(".repeat-row")[0];
-            TDAR.repeatrow.deleteRow(rowElem);
+            repeatrow.deleteRow(rowElem);
         });
 
         _applyTreeviews();
@@ -396,7 +391,7 @@ TDAR.common = function (TDAR, fileupload) {
             var $row = $select.closest('.controls-row');
             $('.view-project', $row).remove();
             if ($select.val().length > 0 && $select.val() !== "-1") {
-                var href = TDAR.uri('project/' + $select.val());
+                var href = core.uri('project/' + $select.val());
                 var $button = '<a class="view-project btn btn-small" target="_project" href="' + href + '">View project in new window</a>';
                 $row.append($button);
             }
@@ -407,7 +402,7 @@ TDAR.common = function (TDAR, fileupload) {
 
 
         if (props.includeInheritance) {
-            TDAR.inheritance.applyInheritance(props.formSelector);
+            inheritance.applyInheritance(props.formSelector);
         }
 
 
@@ -422,7 +417,7 @@ TDAR.common = function (TDAR, fileupload) {
             _updateReminderVisibility();
         });
 
-        TDAR.inheritance.registerClearSectionButtons(form);
+        inheritance.registerClearSectionButtons(form);
         _initFormNavigate(form);
     };
 
@@ -664,7 +659,7 @@ TDAR.common = function (TDAR, fileupload) {
             if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
                 $("#timeoutDialog").html("<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
             } else {
-                setTimeout(TDAR.common.sessionTimeoutWarning, 60000);
+                setTimeout(common.sessionTimeoutWarning, 60000);
             }
         }
     }
@@ -803,7 +798,7 @@ TDAR.common = function (TDAR, fileupload) {
         var $subCategoryIdSelect = $(subCategoryIdSelect);
         $subCategoryIdSelect.empty();
         $categoryIdSelect.siblings(".waitingSpinner").show();
-        $.get(TDAR.uri() + "api/resource/column-metadata-subcategories", {
+        $.get(core.uri() + "api/resource/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
         }, function (data, textStatus) {
             var result = "";
@@ -965,7 +960,7 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
 
-    $.extend(self, {
+    module.exports = {
         "initEditPage": _initEditPage,
         "initRightsPage" : _initRightsPage,
         "applyTreeviews": _applyTreeviews,
@@ -997,8 +992,6 @@ TDAR.common = function (TDAR, fileupload) {
         "suppressKeypressFormSubmissions": _suppressKeypressFormSubmissions,
         "initFormNavigate": _initFormNavigate,
         "main": _init
-    });
+    };
 
-    return self;
-}(TDAR, TDAR.fileupload);
 

@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --mode development --open -d",
@@ -65,7 +64,7 @@
     "selectize": "^0.12.4",
     "svgxuse": "^1.1.23",
     "vue": "^2.5.16",
-    "vue-resource": "^1.5.1"
+    "vue-resource": "^1.5.1",
     "bower": "^1.8.4",
     "grunt-cli": "~1.2.0"
   },
