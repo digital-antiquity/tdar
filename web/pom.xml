@@ -24,7 +24,7 @@
         <version>18.1.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
-
+ 
     <prerequisites>
         <maven>3.1.0</maven>
     </prerequisites>
@@ -350,6 +350,24 @@
                 </executions>
             </plugin>
             <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>properties-maven-plugin</artifactId>
+              <version>1.0.0</version>
+              <executions>
+                <execution>
+                  <phase>validate</phase>
+                  <goals>
+                    <goal>read-project-properties</goal>
+                  </goals>
+                  <configuration>
+                    <files>
+                      <file>target/hg.properties</file>
+                    </files>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-version}</version>
@@ -358,6 +376,82 @@
                         /usr -->
                     <!-- note - npm, bower, karma and other tools
                         are installed globally on build -->
+<!--                    <execution>
+                        <id>exec-yarn-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>npm</executable>
+                             <arguments>
+                                <argument>i</argument>
+                                <argument>yarn</argument>
+                                <argument>\-\-save \-\-cache-min 9999999</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                
+                    <execution>
+                        <id>exec-run-yarn</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>./node_modules/.bin/yarn</executable>
+                            <arguments>
+                                <argument>install</argument>
+                                <argument>\-\-force</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+    -->                    
+                    <execution>
+                        <id>exec-install-npm</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    
+                    <execution>
+                        <id>exec-run-webpack</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run-script</argument>
+                                <argument>build</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    
+                    
+                </executions>
+            </plugin>
+            <!-- plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec-maven-version}</version>
+                <executions>
+                    <! - - note, this may have some issues with symlinks in 
+                        /usr 
+                     note - npm, bower, karma and other tools
+                        are installed globally on build - ->
                     <execution>
                         <id>exec-npm-install</id>
                         <phase>generate-sources</phase>
@@ -366,7 +460,7 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>install</argument>
-                                <argument>--cache-min 9999999</argument>
+                                <argument> - -cache-min 9999999</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -374,7 +468,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -619,7 +713,7 @@
                          </execution>
                        </executions>
                      </plugin>
-                    <plugin>
+                      <plugin>
                         <groupId>ro.isdc.wro4j</groupId>
                         <artifactId>wro4j-maven-plugin</artifactId>
                         <version>${wro4j.version}</version>
@@ -666,7 +760,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
                 </plugins>
             </build>
         </profile>
@@ -780,7 +873,6 @@
                         </executions>
                         <configuration>
                             <configFile>karma.conf.js</configFile>
-                            <browsers>PhantomJS</browsers>
                             <autoWatch>false</autoWatch>
                             <singleRun>true</singleRun>
                             <colors>true</colors>

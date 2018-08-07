@@ -1,7 +1,3 @@
-(function (TDAR, $) {
-    'use strict';
-
-
     //show relevant fields based on scan type value.
 
     function showRelevantSurveyFields(scanType) {
@@ -138,8 +134,6 @@
     }
 
     //expose public elements
-    TDAR.sensoryData = {
+    module.export = {
         "initEdit": _initEdit
     };
-
-})(TDAR, jQuery);

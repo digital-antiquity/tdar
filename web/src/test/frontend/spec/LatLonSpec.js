@@ -1,5 +1,8 @@
 /* global describe, it, expect, $, $j, jasmine */
 
+
+
+
 describe("LatLonSpec.js: latlong tests", function () {
     "use strict";
     var RADIUS_EARTH = 6371;
@@ -12,6 +15,7 @@ describe("LatLonSpec.js: latlong tests", function () {
     function _approx(a, b) {
         return Math.abs(a-b) < _ff;
     }
+    
 
     //FIXME:  RTFM Jim, you may learn something: https://github.com/jasmine/jasmine/blob/master/src/core/matchers/toBeCloseTo.js
     // Custom matcher that assumes that any two points/magnitudes within 20km of each other are 'approximately'

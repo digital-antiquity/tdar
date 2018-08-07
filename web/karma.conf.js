@@ -1,4 +1,5 @@
 // Karma configuration
+var webpackConfig = require('./webpack-test.config.js');
 var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
 
@@ -11,7 +12,7 @@ function buildFilesFromWro(profile) {
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles
-            .concat(wroconfig[profile].jsFiles)
+           // .concat(wroconfig[profile].jsFiles)
             .map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
@@ -38,7 +39,7 @@ if (process.argv != undefined  && process.argv.length > 0) {
 module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     config.set({
-
+        webpack: webpackConfig,
         browserConsoleLogOptions: {terminal:false},
 
         // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -52,10 +53,10 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                'node_modules/es6-promise/dist/es6-promise.js',
+                /*'node_modules/es6-promise/dist/es6-promise.js',
                 'node_modules/es6-promise/dist/es6-promise.auto.js',
                 'node_modules/vue/dist/vue.js',
-                'node_modules/axios/dist/axios.js',
+                'node_modules/axios/dist/axios.js',*/
                 'node_modules/moxios/dist/moxios.js',
                 {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
@@ -72,7 +73,9 @@ module.exports = function(config) {
             wroFiles,
             [
                 // specs
-                specFiles,
+                //specFiles,
+                "src/test/frontend/spec/CommonSpec.js",
+
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
@@ -111,7 +114,9 @@ module.exports = function(config) {
             //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js']
-            ,'src/main/webapp/js/**/*.js': ['coverage']
+            ,'src/main/webapp/js/**/*.js': ['coverage'],
+            'src/test/frontend/spec/**/*.js' : ['webpack']
+
         },
 
         // test results reporter to use
@@ -143,8 +148,8 @@ module.exports = function(config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
 
-        // browsers: ['ChromeHeadless'],
-        browsers: ['PhantomJS'],
+         browsers: ['ChromeHeadless'],
+        //browsers: ['PhantomJS'],
         // concurrency: Infinity,
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits

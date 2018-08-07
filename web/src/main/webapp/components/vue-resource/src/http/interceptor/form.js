@@ -3,19 +3,15 @@
  */
 
 import Url from '../../url/index';
-import { isObject, isFormData } from '../../util';
+import {isObject, isFormData} from '../../util';
 
-export default function (request, next) {
+export default function (request) {
 
     if (isFormData(request.body)) {
-
         request.headers.delete('Content-Type');
-
     } else if (isObject(request.body) && request.emulateJSON) {
-
         request.body = Url.params(request.body);
         request.headers.set('Content-Type', 'application/x-www-form-urlencoded');
     }
 
-    next();
 }

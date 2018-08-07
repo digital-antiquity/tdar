@@ -38,20 +38,20 @@
   ],
   "dependencies": {
     "jquery": ">=1.7.0",
-    "sifter": "0.5.x",
-    "microplugin": "0.0.x"
+    "microplugin": "0.0.x",
+    "sifter": "0.5.x"
   },
   "devDependencies": {
     "bootstrap2": "bootstrap#2",
     "bootstrap3": "bootstrap#3.2"
   },
   "homepage": "https://github.com/selectize/selectize.js",
-  "version": "0.12.4",
-  "_release": "0.12.4",
+  "version": "0.12.5",
+  "_release": "0.12.5",
   "_resolution": {
     "type": "version",
-    "tag": "v0.12.4",
-    "commit": "47e048662d865c4f1ea3b2337de5e06e92fd9530"
+    "tag": "v0.12.5",
+    "commit": "5870b8a7ce8ecdfca66f54b5ea90d4241126601b"
   },
   "_source": "https://github.com/selectize/selectize.js.git",
   "_target": "~0.12.4",

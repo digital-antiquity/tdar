@@ -1,6 +1,3 @@
-(function (TDAR, $, ctx) {
-    'use strict';
-
     var rePrefix = /^[-| ]*/;
     var reSynonyms = /\((.*?)\)/;
     var ontology;
@@ -138,10 +135,8 @@
     }
 
     //expose public elements
-    TDAR.ontologyMapping = {
+    module.exports = {
         "initMapping": _initMapping,
         "clearAll": _clearall,
         "autoSuggest": _autosuggest
     };
-
-})(TDAR, jQuery, window);

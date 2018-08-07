@@ -1,4 +1,15 @@
-TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios) {
+/**TDAR
+ * view-collection-widget.js
+ * 
+ * This module is used to add/remove resources from the jQuery datatable. 
+ */
+
+
+import Vue from "vue";
+import "Axios";
+import "jquery";
+
+TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue, axios, TDAR) {
     "use strict";
 
 //These are the default options for selectize. They are merged when the selectize box is created. 
@@ -85,7 +96,10 @@ var _init = function(appId) {
 	    //This is called when vue is instantiated and is set up. 
 	    mounted: function() {
 	        var $e = $(this.$el);
-	        console.log("Calling mounting functions");
+	        
+	        console.debug("$e is ",this.$el);
+	        
+	        console.log("Calling mounting functions for Vue-collection-widget");
 	        
 	        if($e.data('resourceId')!=null){
 	          	Vue.set(this, 'administrator',$e.data('administrator'));
@@ -474,4 +488,4 @@ return {
         }
     }
 }
-})(console, jQuery, window, Vue,axios);
+})(console, jQuery, window, Vue, axios, TDAR);

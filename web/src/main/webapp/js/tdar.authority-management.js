@@ -2,10 +2,10 @@
  * TDAR  authority-management library.  Used by the Authority-management (aka record-deduper) pages.
  * @type {{}}
  */
-TDAR.authority = {};
-TDAR.authority = function () {
-    "use strict";
-    var self = {};
+
+const core = require("./tdar.core");
+const datatable = require("./tdar.datatable");
+const common = require("./tdar.common");
 
     var searchControls;
     var selEntityType;
@@ -15,7 +15,7 @@ TDAR.authority = function () {
     var g_settingsMap = {
         person: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: TDAR.uri() + 'api/lookup/person',
+            sAjaxSource: core.uri() + 'api/lookup/person',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -33,7 +33,7 @@ TDAR.authority = function () {
         },
         institution: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: TDAR.uri() + 'api/lookup/institution',
+            sAjaxSource: core.uri() + 'api/lookup/institution',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -54,7 +54,7 @@ TDAR.authority = function () {
         },
         keyword: {
             tableSelector: '#dupe_datatable',
-            sAjaxSource: TDAR.uri() + 'api/lookup/keyword',
+            sAjaxSource: core.uri() + 'api/lookup/keyword',
             "bLengthChange": true,
             "bFilter": true,
             aoColumns: [
@@ -77,7 +77,7 @@ TDAR.authority = function () {
      * initialize a datatable that will display search results for the currently selected search type
      * @private
      */
-    function _registerDataTable() {
+    var _registerDataTable = function() {
         if (dataTable) {
             dataTable.fnDestroy();
             dataTable.empty();
@@ -85,13 +85,13 @@ TDAR.authority = function () {
         var lookupType = selEntityType.data('lookupType');
         var settings = g_settingsMap[lookupType];
         settings.rowSelectionCallback = _renderSelectedDupes;
-        dataTable = TDAR.datatable.registerLookupDataTable(settings);
+        dataTable = datatable.registerLookupDataTable(settings);
     }
 
     /**
      * show the correct search control based on the value of the 'entity type' dropdown
      */
-    function _updateSearchControl() {
+    var _updateSearchControl = function() {
         searchControls.hide();
         selEntityType = $('#selEntityType');
         var entityTypeVal = selEntityType.val();
@@ -124,7 +124,7 @@ TDAR.authority = function () {
      * @returns {string} lookupType value to include in keyword lookup request
      * @private
      */
-    function _getKeywordType(enumVal) {
+    var _getKeywordType = function(enumVal) {
         return {
             KEYWORD_CULTURE_KEYWORD: 'CultureKeyword',
             KEYWORD_GEOGRAPHIC_KEYWORD: 'GeographicKeyword',
@@ -141,7 +141,7 @@ TDAR.authority = function () {
      * @returns {{minLookupLength: number}}
      * @private
      */
-    function _getPersonSearchData() {
+    var _getPersonSearchData = function() {
         var data = {minLookupLength: 0};
         $.each($(':text', '#divPersonSearchControl'), function (ignored, txtElem) {
             data[txtElem.name] = $(txtElem).val();
@@ -158,7 +158,7 @@ TDAR.authority = function () {
      * @param ignored3
      * @private
      */
-    function _renderSelectedDupes(ignored1, ignored2, ignored3) {
+    var _renderSelectedDupes = function(ignored1, ignored2, ignored3) {
         $('#frmDupes ul').remove();
         var $ul = $(document.createElement('ul'));
         var dupeCount = 0;
@@ -183,7 +183,7 @@ TDAR.authority = function () {
      * clear current list of selected dupelicates.
      * @returns {boolean} false.  because.
      */
-    function _clearDupeList() {
+    var _clearDupeList = function() {
         dataTable.data('selectedRows', {});
         $('input[type=checkbox]', dataTable).prop('checked', false);
         _renderSelectedDupes(null, null, null);
@@ -193,20 +193,18 @@ TDAR.authority = function () {
     /**
      * Initialize form controls, event listeners.
      */
-    function _initAuthTable() {
+    var _initAuthTable = function() {
         var selEntityType = $("#selEntityType");
         if (selEntityType != undefined) {
             searchControls = $('.searchControl');
             selEntityType.change(_updateSearchControl).change();
-            TDAR.common.applyWatermarks(document);
+            common.applyWatermarks(document);
             $('span.button').button().click(_clearDupeList);
         }
-
     }
 
-    return {
+    module.exports =  {
         clearDupeList: _clearDupeList,
         updateSearchControl: _updateSearchControl,
         initAuthTable: _initAuthTable
     };
-}();

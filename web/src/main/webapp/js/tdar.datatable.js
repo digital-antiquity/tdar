@@ -1,6 +1,8 @@
-TDAR.namespace("datatable");
-TDAR.datatable = function() {
-    "use strict";
+
+const core = require("./tdar.core");
+const common = require("./tdar.common");
+
+core.namespace("datatable");
 
     /**
      * Register a new dtatable control. By default, the datatable populates with resources editable by the user. Most of the initialization options required by
@@ -625,7 +627,7 @@ TDAR.datatable = function() {
     function fnRenderTitle(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
+        var html = '<a href="' + core.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
                 '</a>';
         html += ' (ID: ' + objResource.id
         if (objResource.status != 'ACTIVE') {
@@ -644,7 +646,7 @@ TDAR.datatable = function() {
      */
     function fnRenderTitleAndDescription(oObj) {
         var objResource = oObj.aData;
-        return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.ellipsify(objResource.description, 80)) + '</p>';
+        return fnRenderTitle(oObj) + '<br /> <p>' + common.htmlEncode(core.ellipsify(objResource.description, 80)) + '</p>';
     }
 
     /**
@@ -713,7 +715,7 @@ TDAR.datatable = function() {
         
         _registerLookupDataTable({
             tableSelector : '#resource_datatable',
-            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
+            sAjaxSource : core.uri( 'api/lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -889,7 +891,7 @@ TDAR.datatable = function() {
         var $dataTable = $(selector);
         _registerLookupDataTable({
             tableSelector : selector,
-            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
+            sAjaxSource : core.uri( 'api/lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -1202,13 +1204,13 @@ TDAR.datatable = function() {
     function _fnRenderPersonId(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + TDAR.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
+        var html = '<a href="' + core.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
         return html;
     }
     function _registerUserLookupDatatable() {
         var settings = {
             tableSelector : '#dataTable',
-            sAjaxSource : TDAR.uri() + 'api/lookup/person',
+            sAjaxSource : core.uri() + 'api/lookup/person',
             "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             sPaginationType : "bootstrap",
             "bLengthChange" : true,
@@ -1278,7 +1280,7 @@ TDAR.datatable = function() {
                 title : title
             });
 
-            $("#datatable-child").dialog({
+            /*$("#datatable-child").dialog({
                 resizable : false,
                 modal : true,
                 buttons : {
@@ -1291,7 +1293,9 @@ TDAR.datatable = function() {
                         $(this).dialog("close");
                     }
                 }
-            });
+            });*/
+            
+            
         }
     }
 
@@ -1318,7 +1322,7 @@ TDAR.datatable = function() {
         });
 
         var offset = 0;
-        var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
+        var browseUrl = core.uri("datatable/browse?id=" + dataTableId);
         var options = {
             "sAjaxDataProp" : "results",
             "sDom" : "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
@@ -1340,7 +1344,7 @@ TDAR.datatable = function() {
                 "sName" : "id_row_tdar",
                 "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
                 "fnRender" : function(obj) {
-                    return '<a href="' + TDAR.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] ) +
+                    return '<a href="' + core.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] ) +
                             '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                 }
             });
@@ -1358,7 +1362,7 @@ TDAR.datatable = function() {
                     "tdarIdx" : size + offset -1,
                     "fnRender" : function(obj) {
                         var val = obj.aData[this.tdarIdx];
-                        var str = TDAR.common.htmlEncode(val);
+                        var str = common.htmlEncode(val);
                         return str;
                     }
                 });
@@ -1467,7 +1471,7 @@ TDAR.datatable = function() {
     }
     
 
-    return {
+    module.exports = {
         extendSorting : _extendSorting,
         registerLookupDataTable : _registerLookupDataTable,
         initUserDataTable : _registerUserLookupDatatable,
@@ -1482,4 +1486,3 @@ TDAR.datatable = function() {
         initDataTableBrowser: _initDataTableBrowser,
         removePendingChange: _removePendingChange
     };
-}();

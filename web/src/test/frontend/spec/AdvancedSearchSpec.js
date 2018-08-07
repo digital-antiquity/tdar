@@ -4,6 +4,7 @@ describe("AdvancedSearchSpec.js: advanced search form", function() {
     var submitCallback, $map, $form, $autosave;
 
     beforeEach(function(){
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
         loadFixtures('advanced-search.html', 'advanced-search-template.html');
         submitCallback = spyOn(document.forms.searchGroups, 'submit').and.returnValue(false);
         $map = $('#large-google-map');

@@ -20,7 +20,7 @@
     "bower_components",
     "htdocs",
     "spec",
-    "src",
+    "src/**/*.js",
     "package.json",
     "component.json",
     "Gruntfile.*"
@@ -28,12 +28,12 @@
   "dependencies": {
     "d3": "~3.5.0"
   },
-  "version": "0.4.11",
-  "_release": "0.4.11",
+  "version": "0.4.23",
+  "_release": "0.4.23",
   "_resolution": {
     "type": "version",
-    "tag": "0.4.11",
-    "commit": "a4caece97c676d2049fd770a74a83b62f8a1b625"
+    "tag": "v0.4.23",
+    "commit": "6b9299f825c36b876e4068a7304524ee66bcb7e7"
   },
   "_source": "https://github.com/masayuki0812/c3.git",
   "_target": "~0.4.11",

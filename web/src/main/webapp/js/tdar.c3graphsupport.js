@@ -1,6 +1,9 @@
-TDAR.c3graphsupport = {};
+/**
+ * tdar.c3graphsupport
+ */
 
-TDAR.c3graphsupport = (function(console, $, ctx) {
+const core = require("./tdar.core");
+
     var _resourceBarGraphClick = function(d, element) {
         var $parent = $("#resourceBarGraph");
         var source = JSON.parse($($parent.data("source")).html());
@@ -16,7 +19,7 @@ TDAR.c3graphsupport = (function(console, $, ctx) {
         if (clickPath != undefined && clickPath.length > 0) {
             uri = clickPath.attr('href') + uri;
         } else {
-            uri = TDAR.uri( uri );
+            uri = core.uri( uri );
         }
         return uri;
     }
@@ -24,20 +27,19 @@ TDAR.c3graphsupport = (function(console, $, ctx) {
     var _dashboardResourcePieChartClick = function(d, element) {
         var $parent = $("#resourceTypeChart");
         var source = JSON.parse($($parent.data("columns")).html());
-        window.location.href = TDAR.uri("/search/results?useSubmitterContext=true&types=RESOURCE&resourceTypes=" + source[d.index][2]);
+        window.location.href = core.uri("/search/results?useSubmitterContext=true&types=RESOURCE&resourceTypes=" + source[d.index][2]);
     }
 
     var _dashboardStatusPieChartClick = function(d, element) {
         var $parent = $("#statusChart");
         var source = JSON.parse($($parent.data("columns")).html());
-        window.location.href = TDAR.uri( "/search/results?useSubmitterContext=true&types=RESOURCE&status=" + source[d.index][2]);
+        window.location.href = core.uri( "/search/results?useSubmitterContext=true&types=RESOURCE&status=" + source[d.index][2]);
     }
     
-    return {
+    module.exports =  {
         resourceBarGraphClick : _resourceBarGraphClick,
         dashboardStatusPieChartClick : _dashboardStatusPieChartClick,
         dashboardResourcePieChartClick : _dashboardResourcePieChartClick,
         getClickPath : _getClickPath
     }
     
-})(console, jQuery, window);

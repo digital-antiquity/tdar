@@ -1,4 +1,10 @@
-TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
+/**TDAR edit-collection.js */
+
+
+import Vue from "vue";
+import axios from "Axios";
+
+TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
 	"use strict";
 
 	var _init = function(params) {
@@ -131,4 +137,4 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 				TDAR.vuejs.editcollectionapp.init(appId);
 		}
 	}
-})(console, jQuery, window, Vue, axios);
+})(console, jQuery, window, Vue, axios, TDAR);

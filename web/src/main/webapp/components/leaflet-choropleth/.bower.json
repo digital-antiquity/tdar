@@ -28,6 +28,5 @@
   },
   "_source": "https://github.com/timwis/leaflet-choropleth.git",
   "_target": "~1.0.3",
-  "_originalSource": "leaflet-choropleth",
-  "_direct": true
+  "_originalSource": "leaflet-choropleth"
 }

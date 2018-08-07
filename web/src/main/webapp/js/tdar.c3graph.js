@@ -1,5 +1,6 @@
-TDAR.c3graph = {};
 /**
+ * TDAR.c3graph
+ * 
  * This library is designed to provide a pass-through translation between the c3 graphing library and tDAR. In general, all configuration is done through data
  * attributes on DIV elements
  * 
@@ -12,10 +13,12 @@ TDAR.c3graph = {};
  * 
  * 
  */
-TDAR.c3graph = (function(console, $, ctx) {
-    "use strict";
 
-    var _getColors = function() {
+const c3 = require("c3");
+const c3graphsupport = require("./tdar.c3graphsupport");
+const common = require("./tdar.common");
+
+var _getColors = function() {
         var c3colors = $("#c3colors");
         var c3colorsobj = undefined;
 
@@ -270,8 +273,8 @@ TDAR.c3graph = (function(console, $, ctx) {
             cdata.data.onclick = window[clickname];
         }
 
-        if ($.isFunction(TDAR.c3graphsupport[clickname])) {
-            cdata.data.onclick = TDAR.c3graphsupport[clickname];
+        if ($.isFunction(c3graphsupport[clickname])) {
+            cdata.data.onclick = c3graphsupport[clickname];
         }
         if ($parent.data("legend-position") != undefined) {
             if (cdata.legend == undefined) {
@@ -358,7 +361,7 @@ TDAR.c3graph = (function(console, $, ctx) {
                 tooltip : {
                     format : {
                         value : function(value, ratio, id, index) {
-                            return TDAR.common.formatNumber(value) + " (" + (ratio * 100.00).toFixed(2) + "%)";
+                            return common.formatNumber(value) + " (" + (ratio * 100.00).toFixed(2) + "%)";
                         }
                     }
                 }
@@ -405,7 +408,7 @@ TDAR.c3graph = (function(console, $, ctx) {
         });
     }
 
-    return {
+    module.exports =  {
         initPieChart : _initPieChart,
         initLineGraph : _initLineGraph,
         initBarChart : _initBarChart,
@@ -419,4 +422,3 @@ TDAR.c3graph = (function(console, $, ctx) {
             TDAR.c3graph.initGaugeChart();
         }
     }
-})(console, jQuery, window);

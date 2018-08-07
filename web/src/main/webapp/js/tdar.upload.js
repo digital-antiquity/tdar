@@ -1,7 +1,24 @@
-/* ASYNC FILE UPLOAD SUPPORT */
+/* ASYNC FILE UPLOAD SUPPORT 
+ * 
+ * tdar.fileupload
+ * */
+const datepicker = require("./tdar.datepicker");
+const core = require("./tdar.core");
 
-TDAR.fileupload = (function (TDAR, $) {
-    "use strict";
+window.$ = window.jQuery = require('jquery'); // was import $ from 'jquery';
+require('./../includes/jquery-ui-1.11.4.custom/jquery-ui');
+
+//require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/vendor/jquery.ui.widget.js');
+require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/jquery.iframe-transport.js');
+require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/jquery.fileupload.js');
+
+//require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/vendor/jquery.ui.widget.js');
+//require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.iframe-transport.js');
+//require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.fileupload.js');
+//require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.fileupload-process.js');
+//require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.fileupload-validate.js');
+//require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.fileupload-ui.js');
+
     /* how long to display error messages prior to removing a failed file upload from the files table (in millis) */
     var ERROR_TIMEOUT = 5000;
 
@@ -79,7 +96,7 @@ TDAR.fileupload = (function (TDAR, $) {
             //send files in a single http request (singleFileUploads==false). See TDAR-2763 for more info      
             singleFileUploads: false,
 
-            url: TDAR.uri('upload/upload'),
+            url: core.uri('upload/upload'),
             autoUpload: true,
             maxNumberOfFiles: $(document).data("maxUploadFiles"),
             getNumberOfFiles: function () {
@@ -136,7 +153,7 @@ TDAR.fileupload = (function (TDAR, $) {
                     file.context = $(this);
                     return file;
                 }).get();
-                TDAR.datepicker.applyHidden($(".new-file input.datepicker"));
+                datepicker.applyHidden($(".new-file input.datepicker"));
                 $(".new-file").on("datechanged",function(e){
                     console.log(this);
                     console.log(e.target);
@@ -177,7 +194,7 @@ TDAR.fileupload = (function (TDAR, $) {
         });
 
         
-        TDAR.datepicker.bind($("input.datepicker",$filesContainer));
+        datepicker.bind($("input.datepicker",$filesContainer));
 
 
         
@@ -283,7 +300,7 @@ TDAR.fileupload = (function (TDAR, $) {
         return $.map(fileProxies, function (proxy, i) {
             var file = $.extend({
                 name: proxy.filename,
-                url: TDAR.uri("filestore/" + proxy.originalFileVersionId),
+                url: core.uri("filestore/" + proxy.originalFileVersionId),
                 thumbnail_url: null,
                 delete_url: null,
                 delete_type: "DELETE",
@@ -514,7 +531,7 @@ TDAR.fileupload = (function (TDAR, $) {
     }
 
     var _applyDateInputs = function ($elements) {
-        TDAR.datepicker.apply($elements);
+        datepicker.apply($elements);
     }
 
     /**
@@ -535,10 +552,9 @@ TDAR.fileupload = (function (TDAR, $) {
     }
 
     //expose public elements
-    return {
+   module.exports = {
         "registerUpload": _registerUpload,
         "updateFileAction": _updateFileAction,
         "getRowId": _getRowId,
         "getRowVisibility": _getRowVisibility
     };
-})(TDAR, jQuery);

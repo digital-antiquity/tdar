@@ -1,9 +1,10 @@
-TDAR.advancedSearch = {}
-TDAR.advancedSearch = (function () {
-    "use strict";
+const common = require("./tdar.common");
+const repeatrow = require("./tdar.repeatrow");
+const autocomplete = require("./tdar.autocomplete");
+const core = require("./tdar.core");
 
-    
-    function _disableCheckbox($box) {
+
+function _disableCheckbox($box) {
         $box.attr('disabled', true);
         $box.parent().addClass("disabled");
     }
@@ -17,7 +18,7 @@ TDAR.advancedSearch = (function () {
      * Initialize the "advanced search" page (including form validation,  autocompletes, term UI, backbutton safety)
      */
     function _initAdvancedSearch() {
-        TDAR.repeatrow.registerRepeatable(".repeatLastRow");
+        repeatrow.registerRepeatable(".repeatLastRow");
         $("#sortField .resource").removeAttr('disabled');
         var $groups = $("#searchGroups");
 
@@ -134,7 +135,7 @@ TDAR.advancedSearch = (function () {
      * @private
      */
     function _initializeSection(containerElem) {
-        TDAR.common.applyWatermarks(containerElem);
+        common.applyWatermarks(containerElem);
 
         // HACK: registering datetype fields if any were created. We should just
 //        // make a smarter validator rule
@@ -151,13 +152,13 @@ TDAR.advancedSearch = (function () {
         // the 'create person' option)
         var $personAutoFields = $('.nameAutoComplete', containerElem);
         if ($personAutoFields.length) {
-            TDAR.autocomplete.applyPersonAutoComplete($personAutoFields, false, false);
+            autocomplete.applyPersonAutoComplete($personAutoFields, false, false);
         }
 
         // similar setup for institution autocompletes
         var $institutionAutoFields = $('.institutionAutoComplete', containerElem);
         if ($institutionAutoFields.length) {
-            TDAR.autocomplete.applyInstitutionAutocomplete($institutionAutoFields, false);
+            autocomplete.applyInstitutionAutocomplete($institutionAutoFields, false);
         }
 
         var picker = $('.datepicker', containerElem).datepicker();
@@ -166,8 +167,8 @@ TDAR.advancedSearch = (function () {
         });
 
         // collection, project combo boxes
-        TDAR.autocomplete.applyResourceAutocomplete($('.projectcombo', containerElem), "PROJECT");
-        TDAR.autocomplete.applyCollectionAutocomplete($('.collectioncombo', containerElem), {
+        autocomplete.applyResourceAutocomplete($('.projectcombo', containerElem), "PROJECT");
+        autocomplete.applyCollectionAutocomplete($('.collectioncombo', containerElem), {
             minLength: 0
         }, {});
 
@@ -310,8 +311,10 @@ TDAR.advancedSearch = (function () {
             if (url.indexOf("?") != 0) {
                 prefix = "?";
             }
+            
             url = prefix + url + "&recordsPerPage=" + $('#recordsPerPage').val();
-            TDAR.windowLocation(url);
+            core.windowLocation(url);
+            
         });
 
         if ($(".objectTypes li").size() > 0) {
@@ -329,6 +332,7 @@ TDAR.advancedSearch = (function () {
                 $("#sortField .resource").attr('disabled','disabled');
             }
         }
+        
         $("#sortField").change(function () {
             var url = window.location.search.replace(/([?&]+)sortField=([^&]+)/g, "");
             //are we adding a querystring or merely appending a name/value pair, i.e. do we need a '?' or '&'?
@@ -337,15 +341,14 @@ TDAR.advancedSearch = (function () {
                 prefix = "?";
             }
             url = prefix + url + "&sortField=" + $('#sortField').val();
-            TDAR.windowLocation(url);
+            core.windowLocation(url);
         });
 
     }
     
-    return {
+    module.exports = {
         serializeFormState: _serializeFormState,
         initAdvancedSearch: _initAdvancedSearch,
         "initializeResultsPage" : _initializeResultsPage
     };
-})();
 

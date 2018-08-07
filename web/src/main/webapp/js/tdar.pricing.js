@@ -1,6 +1,3 @@
-(function (TDAR, $) {
-    'use strict';
-
     var POLLING_INTERVAL = 1500; //poll every 1.5s
 
     //parse string to integer.  replace blank and NaN with 0.
@@ -227,12 +224,9 @@
         });
     }
     
-    TDAR.pricing = {
+    module.exports = {
         "initPricing": _initPricing,
         "updateProgress": _updateProgress,
         "initPolling": _initPolling,
         "initBillingChoice": _initBillingChoice
     };
-
-    
-})(TDAR, jQuery);
