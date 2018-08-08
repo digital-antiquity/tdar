@@ -30,7 +30,7 @@ core.namespace("datatable");
             isAdmin: false,
             
             rowSelectionCallback : doNothingCallback,
-            "sAjaxSource" : TDAR.uri( 'api/lookup/resource'),
+            "sAjaxSource" : core.uri( 'api/lookup/resource'),
             "sAjaxDataProp" : 'resources',
             "bJQueryUI" : false,
             "sScrollY" : "350px",

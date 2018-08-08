@@ -27,16 +27,21 @@ module.exports = {
             use : [ {
                 loader : 'expose-loader',
                 options : 'window.jQuery'
-            }, {
+            }, 
+            {
                 loader : 'expose-loader',
                 options : '$'
-            }, {
+            }, 
+            {
                 loader : 'expose-loader',
                 options : "global.jQuery",
-            }, {
+            }, 
+            {
                 loader : 'expose-loader',
                 options : "$j",
-            } ]
+            }
+            ]
+            
         }
         
         ]

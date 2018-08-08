@@ -1,6 +1,9 @@
+/**
+ * Note tdar.upload.js is no longer being used. 
+ */
+
 const TDAR          = require("./tdar.core");
 TDAR.common         = require("./tdar.common");
-TDAR.upload         = require("./tdar.upload");
 TDAR.auth           = require("./tdar.auth");
 TDAR.advancedSearch = require("./tdar.advanced-search");
 TDAR.validate       = require("./tdar.validate");

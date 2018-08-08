@@ -1,4 +1,7 @@
 /* global describe, it, expect */
+
+const helper = require("./SpecHelper");
+
 describe("AuthoritySpec.js: tests for TDAR.authority methods", function() {
 
     var responses = {
@@ -351,7 +354,7 @@ describe("AuthoritySpec.js: tests for TDAR.authority methods", function() {
 
         //after returning results, the table should have stuff in it.
         var request = jasmine.Ajax.requests.mostRecent();
-        var response = jsonpEncode(responses['/api/lookup/institution'], request);
+        var response = helper.jsonpEncode(responses['/api/lookup/institution'], request);
         jasmine.Ajax.requests.mostRecent().respondWith({
             status:200,
             contentType: 'text/json',
@@ -365,7 +368,8 @@ describe("AuthoritySpec.js: tests for TDAR.authority methods", function() {
     it("lists selected dupes", function(){
         TDAR.authority.initAuthTable();
         var request = jasmine.Ajax.requests.mostRecent();
-        var response = jsonpEncode(responses['/api/lookup/institution'], request);
+        console.debug(helper);
+        var response = helper.jsonpEncode(responses['/api/lookup/institution'], request);
         jasmine.Ajax.requests.mostRecent().respondWith({
             status:200,
             contentType: 'text/json',

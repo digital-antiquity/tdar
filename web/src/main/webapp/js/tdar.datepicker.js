@@ -1,6 +1,3 @@
-(function (TDAR, $) {
-    'use strict';
-
     var _defaults = {format: "mm/dd/yyyy"}
     //scan for any inputs with .datepicker class and initialize them.
     var _init = function() {
@@ -30,11 +27,9 @@
     var _applyHidden = function(el) {
         el.datepicker(_defaults).on('changeDate', _handleEvent).datepicker("hide");
     }
-
-    
     
     //expose public elements
-    TDAR.datepicker = {
+    module.exports = {
         "init": _init,
         "bind": _bind,
         "apply": _apply,
@@ -45,5 +40,3 @@
         }
 
     };
-
-})(TDAR, jQuery);

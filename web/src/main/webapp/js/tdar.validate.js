@@ -1,4 +1,9 @@
 const common = require("./tdar.common");
+
+//Add jQuery Plugins for validation
+require('./../includes/jquery.validate-1.13.1/jquery.validate.js');
+require("./tdar.formValidateExtensions");
+
     /**
      * Default settings for form validation in tDAR forms
      *

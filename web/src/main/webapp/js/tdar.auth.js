@@ -1,3 +1,5 @@
+
+
     var _initLogin = function () {
         $('#loginForm').validate({
             messages: {

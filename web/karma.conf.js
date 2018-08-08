@@ -58,24 +58,25 @@ module.exports = function(config) {
                 'node_modules/vue/dist/vue.js',
                 'node_modules/axios/dist/axios.js',*/
                 'node_modules/moxios/dist/moxios.js',
-                {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
+                
+                /*{pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},
+                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},*/
                 {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
-                {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
+                {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false},
 
 
             ],
             //files specified in wro.xml 
             wroFiles,
             [
-                // specs
-                specFiles,
-                //"src/test/frontend/spec/CommonSpec.js",
-
+                
+                //specs
+                //specFiles,
+                "src/test/frontend/spec/AuthoritySpec.js",
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
