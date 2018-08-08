@@ -114,7 +114,7 @@
                     labelposition='left' size='40' dynamicAttributes={
                         "data-rule-extension":"jpg,tiff,jpeg,png"
                     }/>
-                    <button name="clear" type="button" id="clearButton" class="button btn btn-mini">clear</button>
+                    <button name="clear" type="button" id="clearButton" class="button btn btn-sm">clear</button>
                 </div>
             </div>
         </#if>

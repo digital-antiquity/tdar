@@ -42,16 +42,6 @@
 
     </@edit.subNavMenu>
     </@edit.sidebar>
-    <div class="row aaaa">
-	<div class="col-12">
-
-<#-- allow for overriding of the page title -->
-    <#if  local_.customH1?? && local_.customH1?is_macro>
-        <@local_.customH1 />
-    <#else>
-        <#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
-    <h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
-    </#if>
 
     <#assign fileReminder=true />
     <#assign prefix="${resource.resourceType.label?lower_case}" />
@@ -72,6 +62,16 @@
         <@s.token name='struts.csrf.token' />
         <@s.hidden name="epochTimeUpdated" />
         <@s.hidden name="doubleSubmitKey" />
+    <div class="row">
+	<div class="col-12">
+
+<#-- allow for overriding of the page title -->
+    <#if  local_.customH1?? && local_.customH1?is_macro>
+        <@local_.customH1 />
+    <#else>
+        <#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
+    <h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
+    </#if>
 
     <#-- custom section ahead of the basic information -->
         <#if local_.topSection?? && local_.topSection?is_macro>
@@ -218,6 +218,7 @@
         </div>
         </#if>
 
+
     <#-- if tdarConfiguration has copyright holders enabled -->
         <#if resource.resourceType.label?lower_case != 'project'>
             <@edit.copyrightHolders 'Primary Copyright Holder' copyrightHolderProxies />
@@ -249,7 +250,6 @@
         <#if local_.localSection?? && local_.localSection?is_macro>
             <@local_.localSection />
         </#if>
-
 
 
     <#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
@@ -293,7 +293,7 @@
                                     <option selected="selected" value="${resource.project.id?c}">${resource.project.title}</option>
                                 </#if>
                             </select>
-                            <button type="button" class="btn btn-mini btn-clear-select" id="btnClearProjectId"><i class="icon-trash"> </i></button>
+                            <button type="button" class="btn btn-sm btn-clear-select" id="btnClearProjectId"><i class="icon-trash"> </i></button>
                         </div>
 
                         </div>
@@ -366,8 +366,8 @@
                     <@edit._inheritsection checkboxId="cbInheritingCreditRoles" name='resource.inheritingIndividualAndInstitutionalCredit' sectionId='#creditTable' />
                 </#if>
             </@edit.resourceCreators>
-        </#if>
         <@helptext.resourceCreator />
+        </#if>
 
         <#if !(hideKeywordsAndIdentifiersSection??)>
             <@edit.identifiers inheritanceEnabled />

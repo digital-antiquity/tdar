@@ -324,7 +324,7 @@
     </#macro>
 
     <#macro removeRowButton>
-    <button class="btn btn-mini form-control col-1 repeat-row-delete" type="button" tabindex="-1"> <i class="fas fa-trash-alt"></i></button>
+    <button class="btn btn-sm form-control col-1 repeat-row-delete" type="button" tabindex="-1"> <i class="fas fa-trash-alt"></i></button>
     </#macro>
 
 

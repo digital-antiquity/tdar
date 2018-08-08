@@ -358,7 +358,7 @@ bookmark indicator, etc..
                     <#local icon = "far fa-star" />
                 </#if>
 
-                  <button class="btn btn-mini btn-link bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
+                  <button class="btn btn-sm btn-link bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
                         <i title="bookmark or unbookmark" class="${icon} bookmarkicon icon-push-down mr-3"></i>
                       <#if showLabel>
                           <span class="bookmark-label">${label}</span>

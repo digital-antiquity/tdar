@@ -73,7 +73,7 @@
                                                     Please use less than {{maxDataTables}} datasets.
                                                 </div>
 
-                                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly() || isBusy()"
+                                                <button type="button" class="btn btn-sm"  id="btnAddDataset" ng-disabled="isReadOnly() || isBusy()"
                                                         ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
 
                                         </th></tr>
@@ -86,7 +86,7 @@
                                                 <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
                                             </td>
                                             <td style="width:10%">
-                                                <a class="btn btn-mini delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)" ng-disabled="isReadOnly()">X</a>
+                                                <a class="btn btn-sm delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)" ng-disabled="isReadOnly()">X</a>
                                             </td>
 
                                         </tr>
@@ -130,7 +130,7 @@
 
                             <div class="btn-group">
                                 <div class="btn-group" >
-                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
+                                    <a class="btn btn-sm dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
                                         Add Integration Column
                                         <span class="caret"></span>
                                     </a>
@@ -139,12 +139,12 @@
                                                 ><a ng-disabled="isReadOnly()" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 </div>
-                                <button type="button" class="btn btn-mini" id="btnAddDisplayColumn"
+                                <button type="button" class="btn btn-sm" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
                                         ng-disabled="!ctrl.integration.ontologies.length || isBusy() || isReadOnly()"
                                         >Add Display Column</button>
 
-                                <button type="button" class="btn btn-mini" id="btnAddCountColumn"
+                                <button type="button" class="btn btn-sm" id="btnAddCountColumn"
                                         ng-click="ctrl.addCountColumnClicked()"
                                         ng-disabled="ctrl.isCountColumnDisabled() || isBusy() || isReadOnly()"
                                         >Add Count Column</button>
@@ -192,8 +192,8 @@
                                                             <div class="pull-right">
                                                                 Select values that appear in
                                                                 <div class="btn-group">
-                                                                    <button class="btn btn-mini" type="button" ng-click="selectMatchingNodes('some')">Any column</button>
-                                                                    <button class="btn btn-mini" type="button" ng-click="selectMatchingNodes('every')">Every column</button>
+                                                                    <button class="btn btn-sm" type="button" ng-click="selectMatchingNodes('some')">Any column</button>
+                                                                    <button class="btn btn-sm" type="button" ng-click="selectMatchingNodes('every')">Every column</button>
                                                                 </div>
                                                             </div>
                                                             <div>Node Value</div>
@@ -434,8 +434,8 @@
                     <span ng-show="results.length"> Displaying records {{startRecord() + 1| number}} - {{endRecord()  | number}} of {{modalTotalResults}} </span>
                 </div>
                 <div class="col-4 text-center">
-                    <button type="button" class="btn btn-mini" id="btnPrevious" ng-click="previousPage()" ng-disabled="!hasPreviousPage()">previous</button>
-                    <button type="button" class="btn btn-mini" id="btnNext" ng-click="nextPage()" ng-disabled="!hasNextPage()">next</button>
+                    <button type="button" class="btn btn-sm" id="btnPrevious" ng-click="previousPage()" ng-disabled="!hasPreviousPage()">previous</button>
+                    <button type="button" class="btn btn-sm" id="btnNext" ng-click="nextPage()" ng-disabled="!hasNextPage()">next</button>
 
                 </div>
                 <div class="col-4">

@@ -58,7 +58,7 @@
 </div>
 
     <#macro moremenu collection>
-            <a href="<@s.url value="/collection/${collection.id?c}/edit"/>"class="btn btn-mini">Edit</a>
+            <a href="<@s.url value="/collection/${collection.id?c}/edit"/>"class="btn btn-sm">Edit</a>
 
     </#macro>
 

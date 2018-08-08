@@ -249,7 +249,7 @@ navigation freemarker macros
 
     <#-- emit "delete" button for use with repeatable form field rows -->
     <#macro clearDeleteButton id="" disabled=false title="delete this item from the list">
-    <button class="btn btn-mini form-control col-1 repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>> <i class="fas fa-trash-alt"></i></button>
+    <button class="btn btn-sm form-control col-1 repeat-row-delete" type="button" tabindex="-1" title="${title}" <#if disabled> disabled="disabled"</#if>> <i class="fas fa-trash-alt float-right"></i></button>
     </#macro>
     
     <#-- emit the share sidebar components without the ul  -->

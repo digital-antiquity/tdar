@@ -29,7 +29,7 @@
 	<@s.form action='process-payment-request' method='post'>
     <div class="form-actions">
     	<@s.token name='struts.csrf.token' />
-        <button type='submit' class='btn btn-mini tdar-button'>Pay now</button>
+        <button type='submit' class='btn btn-sm tdar-button'>Pay now</button>
     </div>
     </@s.form>        
 <#else>

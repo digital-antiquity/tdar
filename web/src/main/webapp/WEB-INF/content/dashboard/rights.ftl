@@ -82,8 +82,8 @@
                 <td>
                 <#if collection.editable!false>
                     <div class="btn-group inline">
-                      <a class="btn btn-mini" href="/collection/${collection.id?c}/edit">edit</a>
-                      <a class="btn btn-mini" href="/collection/delete?id=${collection.id?c}">delete</a>
+                      <a class="btn btn-sm" href="/collection/${collection.id?c}/edit">edit</a>
+                      <a class="btn btn-sm" href="/collection/delete?id=${collection.id?c}">delete</a>
                     </div>
                 </#if>
                  </td>

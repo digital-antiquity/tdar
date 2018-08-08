@@ -64,7 +64,7 @@
                             <@commonFields />
                         </div>
                         <div class="form-actions" style="background-color: transparent">
-                            <input type="submit" class="btn btn-mini submitButton tdar-button" name="submitAction" value="Register and Download" >
+                            <input type="submit" class="btn btn-sm submitButton tdar-button" name="submitAction" value="Register and Download" >
                         </div>
                     </div>
                 </fieldset>
@@ -85,7 +85,7 @@
                             </@auth.login>
                         </div>
                         <div class="form-actions">
-                            <input type="submit" name="submit" class="btn btn-mini submitButton tdar-button" value="Login and Download">
+                            <input type="submit" name="submit" class="btn btn-sm submitButton tdar-button" value="Login and Download">
                         </div>
                     </div>
                 </fieldset>

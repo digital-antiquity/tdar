@@ -36,8 +36,8 @@
     <#macro moremenu>
     <div class="moremenu pull-right">
         <div class="btn-group">
-            <button class="btn btn-mini">View</button>
-            <button class="btn btn-mini">Edit</button>
+            <button class="btn btn-sm">View</button>
+            <button class="btn btn-sm">Edit</button>
             </div>
     </div>
 

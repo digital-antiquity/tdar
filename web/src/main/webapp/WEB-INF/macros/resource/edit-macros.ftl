@@ -154,7 +154,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <@helptext.geo />
             <h4>Geographic Region</h4>
 
-        <div id='large-map' style="height:300px" class="leaflet-map-editable col-9" data-search="true">
+        <div id='large-map' style="height:300px" class="leaflet-map-editable col-12" data-search="true">
             <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
                 <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
                 <div id='explicitCoordinatesDiv' style='text-align:center;'>
@@ -574,7 +574,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div class="form-group alwaysEnabled">
                 <div class="controls">
                     <#if editor!false>
-                        <button type="button" class="btn btn-mini btn-danger clear-section pull-right"
+                        <button type="button" class="btn btn-sm btn-danger clear-section pull-right"
                                 data-clear-target="${sectionId}"
                                 title="Admin only: reset checkboxes and remove multi-value fields in this inheritance section."
                                 >Reset Section</button>
@@ -626,9 +626,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#-- emit account information section -->
     <#macro accountSection>
+        <div class="col-12" id="accountsection">
         <#if config.payPerIngestEnabled>
             <#if activeAccounts?size == 1>
-            <div class="col-12" id="accountsection">
                 <h2>Billing Account Information</h2>
 
                 <div class="form-group">
@@ -641,16 +641,14 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                         </#list>
                     </div>
                 </div>
-            </div>
             <#else>
-            <div class="col-12" id="accountsection">
                 <h2>Choose an account to bill from</h2>
                 <@s.select name="accountId" list="%{activeAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required"/>
-            </div>
             </#if>
         <#else>
         <i>Charging is disabled (TESTING), re-enable in tdar.properties</i>    
         </#if>
+            </div>
     </#macro>
 
     <#-- emit a section for entering a list of resource creators associated with a particular reslurce.  This macro renders this section as a 'repeat-row'
@@ -663,6 +661,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="col-12" data-tiplabel="${sectionTitle}"
          id="${prefix}Section"
          data-tooltipcontent="#divResourceCreatorsTip">
+
         <h2 id="${prefix}InfoSectionLabel">${sectionTitle}</h2>
         <#nested>
         <div id="${prefix}Table" class="repeatLastRow">
@@ -671,7 +670,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 				<#else>
         		<@creatorProxyRow blankCreatorProxy  prefix 0/>
 	        </#list>
-        </div>
+            </div>
     </div> <!-- section -->
     </#macro>
 
@@ -724,8 +723,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
             
             <#if showDeleteButton>
-                <button class="btn btn-mini form-control col-1 repeat-row-delete" type="button" tabindex="-1"><i class="fas fa-trash-alt"></i></button>
+                <button class="btn btn-sm form-control col-1 repeat-row-delete" type="button" tabindex="-1"><i class="fas fa-trash-alt float-right"></i></button>
             </#if>
+            </div>
         </#if>
     </#macro>
     <#macro _userRow person=person _indexNumber=0 isDisabled=false prefix="authorizedMembers" required=false _personPrefix="" includeRole=false
@@ -977,7 +977,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='col-8'
                             placeholder="Enter a full or partial title to filter results" />
                             <div>
-                                <button type="button" class="btn btn-mini pull-left" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
+                                <button type="button" class="btn btn-sm pull-left" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
                                     More/Less options...
                                 </button>
                                 

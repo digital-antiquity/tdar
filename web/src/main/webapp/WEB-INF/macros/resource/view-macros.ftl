@@ -702,7 +702,7 @@ View freemarker macros
                 <td>${resource.id?c}
                 <td><a href="<@s.url value="${resource.detailUrl}"/>" target="_b">${(resource.title)!""}</a>
             <td>
-                <button class="btn btn-mini" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
+                <button class="btn btn-sm" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
             </#list>
         </tbody>
     </table>

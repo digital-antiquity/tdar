@@ -110,8 +110,8 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
             <td>${email.subject!'no subject'}</td>
             <td>
                 <div class="btn-group inline">
-                    <a class="btn btn-mini" href="javascript:showMessage(${email.id?c})">Show/Hide</a>
-                    <a class="btn btn-mini" href="javascript:sendMessage(${email.id?c})">Resend Email</a>
+                    <a class="btn btn-sm" href="javascript:showMessage(${email.id?c})">Show/Hide</a>
+                    <a class="btn btn-sm" href="javascript:sendMessage(${email.id?c})">Resend Email</a>
                 </div>
             </td>
         </tr>
