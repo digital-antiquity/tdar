@@ -6,7 +6,7 @@
  * This integrates Selectize with Vue so it can be used as a component.
  */
 
-import Vue from "vue";
+require("vue");
 
 Vue.component('selectize', {
     props : [ 'options', 'value' ],

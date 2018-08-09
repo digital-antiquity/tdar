@@ -5,12 +5,11 @@
  */
 
 
-import Vue from "vue";
-import "Axios";
-import "jquery";
+const Vue = require("vue");
+require("Axios");
+require("jquery");
 
-TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue, axios, TDAR) {
-    "use strict";
+//require("./vue-selectize");
 
 //These are the default options for selectize. They are merged when the selectize box is created. 
 var _getSelectizeOpts = function() {
@@ -478,14 +477,16 @@ var _init = function(appId) {
       return app2;
 }
 
-return {
+module.exports = {
     init: _init,
     collectionSelectizeOptions : _getSelectizeOpts,
     main : function() {
         var appId = '#add-resource-form';
         if ($(appId).length  >0 ) {
-            TDAR.vuejs.collectionwidget.init(appId);
+            _init(appId);
         }
     }
 }
-})(console, jQuery, window, Vue, axios, TDAR);
+
+//TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue, axios, TDAR) {
+//})(console, jQuery, window, Vue, axios, TDAR);

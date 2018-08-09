@@ -1,7 +1,13 @@
-TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
-    "use strict";
-    var ERROR_TIMEOUT = 5000;
+const core = require("./../tdar.core.js");
+const datepicker = require("./../tdar.datepicker");
+const Vue = require("vue").default;
 
+const vuejsupload = require("./vue-base-upload");
+
+console.debug("Vue is : ");
+console.debug(Vue);
+
+    var ERROR_TIMEOUT = 5000;
 
     var _init = function(widgetId) {
 
@@ -11,7 +17,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         
         var config = {
             files : [],
-            url : TDAR.uri('upload/upload'),
+            url : core.uri('upload/upload'),
             ticketId : -1,
             resourceId : -1,
             userId : -1,
@@ -29,6 +35,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             $.extend(config, JSON.parse($($(widgetId).data('config')).text()));
         }
         console.log("config:", config);
+        
         var _fpart = Vue.component('fpart', {
             template : "#fpart-template",
             props : [ "file", "index", "abletoupload", "deletedisabled" ],
@@ -44,7 +51,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             mounted : function() {
                 var $picker = $("input.datepicker", this.el);
                 
-                TDAR.datepicker.applyHidden($picker);
+                datepicker.applyHidden($picker);
                 var _app = this;
                 $picker.on("datechanged", function(e) {
                     console.log("changing date", $picker.val());
@@ -130,7 +137,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         Vue.set(this.file, "replaceFile", undefined);
                         Vue.set(this.file, "name", this.originalFileName);
                         Vue.set(this.file, "size", this.originalFileSize);
-                        TDAR.vuejs.upload.setProgress(0);
+                        vuejsupload.setProgress(0);
                         Vue.set(this.file, "progress", undefined);
                     }
                 },
@@ -240,7 +247,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     return currentNumberOfFiles;
                 },
                 validatePackage : function() {
-                    return TDAR.vuejs.upload.validatePackage(this.files, this.requiredOptionalPairs, this);
+                    return vuejsupload.validatePackage(this.files, this.requiredOptionalPairs, this);
                 },
                 addPackageMessage: function(msg) {
                     this.packageMessages.push(msg);  
@@ -258,16 +265,16 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                   return a + "" + b;  
                 },
                 validateAdd : function(file, replace) {
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
+                    return vuejsupload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
                 },
                 reValidateAllFilesWithChangedFile: function(file) {
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, file.name, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
+                    return vuejsupload.validateAdd(file, this.files, file.name, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
                     var _app = this;
                     if (data.files != undefined) {
-                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "name");
+                        var active = vuejsupload._matching(data.files, _app.files, "name");
                         active.forEach(function(pair) {
                             var file = pair[0];
                             var fileContainer = pair[1];
@@ -286,7 +293,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log('fileUploadAdd:', e, data);
                     _app._disable();
                     var $upload = $('#fileupload');
-                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, _app);
+                    return vuejsupload.fileUploadAdd($upload, data, _app);
                 },
                 addFile: function(file) {
                     this.files.push(file);
@@ -316,7 +323,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     // complete the add action
                     var _app = this;
                     this._enable();
-                    return TDAR.vuejs.upload.fileUploadAddDone(data,_app.files, _app);
+                    return vuejsupload.fileUploadAddDone(data,_app.files, _app);
                 }
             },
             mounted : function() {
@@ -372,7 +379,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     },
                     progressall : function(e, data) {
                         var progress = parseInt(data.loaded / data.total * 100, 10);
-                        TDAR.vuejs.upload.setProgress(progress);
+                        vuejsupload.setProgress(progress);
                     }
                 }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
                 var _app = this;
@@ -400,7 +407,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         return app;
     }
 
-    return {
+    module.exports = {
         init : _init,
         main : function() {
             var appId = '#uploadWidget';
@@ -409,4 +416,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             }
         }
     }
-})(console, jQuery, window, Vue);
+    
+//TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
+//    "use strict";    
+//})(console, jQuery, window, Vue);

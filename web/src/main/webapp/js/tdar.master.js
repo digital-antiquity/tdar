@@ -27,13 +27,21 @@ TDAR.sensoryData     = require("./tdar.sensorydata");
 TDAR.inheritance     = require("./tdar.inheritance");
 TDAR.leaflet         = require("./maps/tdar.leaflet");
 TDAR.worldmap        = require("./maps/tdar.worldmap");
+TDAR.vuejs = {};
 
+TDAR.vuejs.collectionwidget =   require("./vue/view-collection-widget.js");
+TDAR.vuejs.uploadWidget     =   require("./vue/vue-edit-file-upload-component");
+TDAR.vuejs.upload           =   require("./vue/vue-base-upload");
+TDAR.vuejs.balk             =   require("./vue/vue-balk-upload-component");
+TDAR.advancedSearch         =   require("./vue/vue-autocomplete");
 require("./tdar.messages_en");
 
 window.TDAR = TDAR;
 if (TDAR['vuejs'] == undefined) {
 	TDAR['vuejs'] = {};
 }
+
+
 
 
 module.exports = TDAR;

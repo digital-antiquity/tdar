@@ -76,7 +76,7 @@ module.exports = {
         c3 : "c3",
         d3 : "d3",
         TDAR : "JS/tdar.master",
-        Vue : 'vue',
+        //Vue : 'vue',
         LatLon : 'JS/latLongUtil-1.0',
         L : 'leaflet'
     }) ],
