@@ -1,7 +1,7 @@
 /* global describe, it, expect, beforeEach, jasmine */
 
     //custom jasmine matchers and common setup/teardown go here
-    var self ;//= this;
+    var self = window;//this;
     
         
     /**

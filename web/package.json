@@ -48,9 +48,11 @@
     "blueimp-load-image": "^2.19.0",
     "blueimp-tmpl": "^2.2.1",
     "bootstrap-2.3.2": "^1.0.0",
+    "bower": "^1.8.4",
     "c3": "^0.4.23",
     "d3": "^3.5.17",
     "es6-promise": "^4.2.4",
+    "grunt-cli": "~1.2.0",
     "jquery": "^1.11.3",
     "jquery-validation": "^1.15.1",
     "jquery.expect": "^0.2.0",
@@ -64,9 +66,7 @@
     "selectize": "^0.12.4",
     "svgxuse": "^1.1.23",
     "vue": "^2.5.16",
-    "vue-resource": "^1.5.1",
-    "bower": "^1.8.4",
-    "grunt-cli": "~1.2.0"
+    "vue-resource": "^1.5.1"
   },
   "ignored": {
     "karma-phantomjs-launcher": "^1.0.4",
