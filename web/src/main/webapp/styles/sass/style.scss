@@ -619,3 +619,32 @@ ul, li {
 #titlebar {
     margin-bottom:1.5rem;
 }
+
+
+.btn-group-xs > .btn, .btn-xs {
+    padding: .4rem;
+    font-size: 80%;
+    line-height: .5;
+    border-radius: .2rem;
+}
+
+.divInheritSection button.clear-section {
+    display:none;
+}
+.divInheritSection:hover button.clear-section {
+    display:inline-block;
+}
+
+
+.addAnother {
+    margin-left: 1em !important;
+    font-weight: bold;
+}
+
+.mb-p5 {
+    margin-bottom: .3rem;
+}
+
+.col-form-label {
+    font-weight:bold;
+}

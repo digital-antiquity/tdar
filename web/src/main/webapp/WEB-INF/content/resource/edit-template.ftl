@@ -87,22 +87,20 @@
 
         <@edit.hiddenStartTime />
 
-        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="form-group">
+        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="form-group row">
             <#if editor && !administrator>
                 <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to draft</p>
             </#if>
-            <label class="control-label">Status</label>
+            <label class="col-2 col-form-label">Status</label>
 
-            <div class="form-group">
                 <#if config.guestUserId != -1 && config.guestUserId == authenticatedUser.id>
-                    <select name="status" class="form-control">
+                    <select name="status" class="form-control col-3">
                         <option value='DRAFT' selected>Draft</option>
                     </select>
                 <#else>
-                    <@s.select  value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+                    <@s.select  value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}' cssClass="col-3"/>
                 </#if>
                 <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
-            </div>
         </div>
 
         <@helptext.status />
@@ -110,14 +108,14 @@
     <#-- the bulk upload hides some common fields, but the validator requires them, so we set the values to hidden ones -->
         <#if bulkUpload >
 
-            <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
-            <@s.hidden labelposition='left' id='dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
+            <@s.hidden id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
+            <@s.hidden 'dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
             <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 
         <#else>
             <div data-tiplabel="Title"
                  data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.">
-                <@s.textfield label="Title" id="resourceRegistrationTitle"
+                <@s.textfield label="Title" id="resourceRegistrationTitle" labelposition="left"
                 title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
                 cssClass="required descriptiveTitle trim" required=true maxlength="512"/>
             </div>
@@ -128,7 +126,7 @@
 	        <#if resource.date?? && resource.date != -1>
                     <#assign dateVal = resource.date?c />
                 </#if>
-	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required col-2 trim" required=true
+	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required col-2 trim" required=true labelposition="left"
                 maxlength=7 title="Please enter the year this ${resource.resourceType.label} was created" />
                 </div>
             </#if>
@@ -141,21 +139,22 @@
 
     <#-- if we're an editor or administrator, we allow them to set the submitter of the resource to 'not them' -->
         <#if editor>
-            <div class="form-group" id="divSubmitter">
-                <label class="">Submitter</label>
-
+            <div class="form-group row" id="divSubmitter">
+                <label class="col-form-label col-2">Submitter</label>
+                <div class="form-row">
                     <#if submitter?has_content>
-                <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber=''
+                <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-5"
                     prefix="submitter" includeRights=false includeRepeatRow=false />
  	        <#else>
                         <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
                         prefix="submitter" includeRights=false includeRepeatRow=false />
                     </#if>
             </div>
+            </div>
         </#if>
     </div>
 
-        <@edit.accountSection />
+        <@_accountSection />
 
         <#if !resource.resourceType.project>
             <@edit.resourceCreators '${rtLabel} Creators' authorshipProxies 'authorship' />
@@ -178,12 +177,12 @@
                 <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
 	        <span id="publisher-hints" book="Publisher" report="Publisher" book_section="Publisher" journal_article="Publisher" conference_presentation="Conference"
                   thesis="Institution" other="Publisher">
-                <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution col-12"  />
+                <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution" labelposition="left"  />
             </span>
 	
-	        <span id="publisherLocation-hints" book="Publisher Loc." report="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
-                  conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
-                <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='col-12' />
+	        <span id="publisherLocation-hints" book="Publisher Location" report="Publisher Location" book_section="Publisher Location" journal_article="Publisher Location"
+                  conference_presentation="Conference Location" thesis="Department" other="Publisher Location">
+                <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Location" name='${itemPrefix}.publisherLocation'  labelposition="left" cssClass="" />
             </span>
                 </div>
             </#if>
@@ -200,7 +199,7 @@
             </#if>        
 
             <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
-                <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url col-12" placeholder="http://" />
+                <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url" placeholder="http://" />
             </div>
 
         </#if>
@@ -279,7 +278,7 @@
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
             <#if select2SingleEnabled>
                 <div class="control-group">
-                    <label class="control-label">Project</label>
+                    <label class="col-form-label">Project</label>
                     <div class="controls">
                         <div class="">
                             <select id="projectId" name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
@@ -491,5 +490,33 @@ Auth Info
 
 </div>
 </body>
+
+
+<#-- emit account information section -->
+    <#macro _accountSection>
+        <div class="col-12" id="accountsection">
+        <#if config.payPerIngestEnabled>
+            <#if activeAccounts?size == 1>
+                <h2>Billing Account Information</h2>
+
+                <div class="form-group row">
+                    <label class="col-form-label col-2">Account Name</label>
+
+                    <div class="controls">
+                        <#list activeAccounts as activeAccount>
+                            <span class="uneditable-input">${activeAccount.name}</span>
+                            <@s.hidden name="accountId" value="${activeAccounts?first.id}" />
+                        </#list>
+                    </div>
+                </div>
+            <#else>
+                <h2>Choose an account to bill from</h2>
+                <@s.select name="accountId" list="%{activeAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required" labelposition="left" cssClass="col-5"/>
+            </#if>
+        <#else>
+        <i>Charging is disabled (TESTING), re-enable in tdar.properties</i>    
+        </#if>
+            </div>
+    </#macro>
 
 </#escape>

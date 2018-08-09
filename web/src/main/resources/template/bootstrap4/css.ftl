@@ -29,13 +29,11 @@
 	<#case "radiomap">
 	form-check-input
 	<#break>
-	form-check-input
-	<#break>
 	<#case "file">
 	form-control-file
 	<#break>
 	<#default>
-	form-control
+	form-control <#if parameters.labelposition?exists && parameters.labelposition == 'left' && (parameters.cssClass?has_content == false || parameters.cssClass?has_content && (parameters.cssClass?contains("col-") == false)) >col-10 </#if>
 </#switch>
 </#if>
 </#compress></#assign>

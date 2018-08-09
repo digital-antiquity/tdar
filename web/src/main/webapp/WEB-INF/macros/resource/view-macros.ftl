@@ -37,7 +37,7 @@ View freemarker macros
                 <#if (size >= previewSize)>
                     <div id='divOntologyShowMore' class="alert">
                         <span>Showing first ${previewSize?c} ontology nodes.</span>
-                        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
+                        <button type="button" class="btn btn-sm" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
                     </div>
                 </#if>
             </#if>

@@ -200,11 +200,11 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
             <tr>
                 <th class="borderRight"></th>
                 <td><div class="center">
-            <button class="btn btn-small  tdar-button" type="button">select</button></div></td>
+            <button class="btn btn-sm  tdar-button" type="button">select</button></div></td>
                 <td><div class="center">
-            <button class="btn btn-small  tdar-button" type="button">select</button></div></td>
+            <button class="btn btn-sm  tdar-button" type="button">select</button></div></td>
                 <td><div class="center">
-            <button class="btn btn-small  tdar-button" type="button">select</button>
+            <button class="btn btn-sm  tdar-button" type="button">select</button>
             </div></td>
             </tr>
             </tbody>

@@ -117,7 +117,7 @@ ${vueFilesFallback!'{{ files }}'}
     <!--  only show replace when we have an originalFileVersionId (which means we round-tripped to the server) -->
     <span v-if="file.originalFileVersionId != undefined ">
     <label
-        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled" :for="fileuploadId" v-if="file.replaceFile == undefined"
+        class="btn fileinput-button replace-file-button btn btn-sm btn-warning btn-block" :disabled="inputDisabled" :for="fileuploadId" v-if="file.replaceFile == undefined"
         :id="wrapperId" style="width: 6em; text-align: left"> <i
             class="icon-refresh icon-white"> </i> <span>Replace</span> 
             <input :disabled="inputDisabled"
@@ -126,20 +126,20 @@ ${vueFilesFallback!'{{ files }}'}
     </label>
         <button type="button" style="text-align: left" :disabled="inputDisabled"
             v-if="file.replaceFile != undefined" @click="undoReplace"
-            class="btn btn-small btn-warning undo-replace-button btn-block"
+            class="btn btn-sm btn-warning undo-replace-button btn-block"
             title="Restore Original File">Cancel</button>
       </span>
 
 
         <div class="delete">
             <button v-if="file.action != 'DELETE'" :disabled="deleteDisabled" type="button"
-                class="btn btn-danger delete-button btn-small btn-block"
+                class="btn btn-danger delete-button btn-sm btn-block"
                 @click="deleteFile" data-type="DELETE"
                 style="text-align: left">
                 <i class="icon-trash icon-white"></i> <span>Delete</span>
             </button>
             <button v-if="file.action == 'DELETE'" :disabled="inputDisabled" type="button"
-                class="btn btn-warning delete-button btn-small btn-block"
+                class="btn btn-warning delete-button btn-sm btn-block"
                 @click="unDeleteFile" data-type="DELETE"
                 style="text-align: left">
                 <i class="icon-trash icon-white"></i> <span>Undelete</span>

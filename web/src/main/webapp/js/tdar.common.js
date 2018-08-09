@@ -262,14 +262,20 @@ TDAR.common = function (TDAR, fileupload) {
             var $this = $(this);
             var $top = $this.closest(".repeat-row");
             if ($top == undefined) {
-                $top = $this.closest(".control-group");
+                $top = $this.closest(".control-row");
             }
+            console.log($top);
             var $toggle = $(".creator-toggle-button input:hidden", $this);
+            console.log($toggle);
             if ($(event.target).hasClass("personButton")) {
                 $(".creatorPerson", $top).removeClass("hidden");
                 $(".creatorInstitution", $top).removeClass("hidden").addClass("hidden");
+                $(".personButton",$top).addClass("btn-dark").addClass("active").removeClass("btn-secondary");
+                $(".institutionButton",$top).removeClass("btn-dark").removeClass("active").addClass("btn-secondary");
                 $toggle.val("PERSON");
             } else {
+                $(".institutionButton",$top).addClass("btn-dark").addClass("active").removeClass("btn-secondary");
+                $(".personButton",$top).removeClass("btn-dark").removeClass("active").addClass("btn-secondary");
                 $(".creatorPerson", $top).removeClass("hidden").addClass("hidden");
                 $(".creatorInstitution", $top).removeClass("hidden");
                 $toggle.val("INSTITUTION");
@@ -397,7 +403,7 @@ TDAR.common = function (TDAR, fileupload) {
             $('.view-project', $row).remove();
             if ($select.val().length > 0 && $select.val() !== "-1") {
                 var href = TDAR.uri('project/' + $select.val());
-                var $button = '<a class="view-project btn btn-small" target="_project" href="' + href + '">View project in new window</a>';
+                var $button = '<a class="view-project btn btn-sm" target="_project" href="' + href + '">View project in new window</a>';
                 $row.append($button);
             }
         }).change();
