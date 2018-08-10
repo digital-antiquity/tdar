@@ -47,7 +47,7 @@ id="${parameters.id?html}"<#rt/>
 <#if parameters.title??>
 title="${parameters.title?html}"<#rt/>
 </#if>
-class="form-control"<#rt/>
+<#include "/${parameters.templateDir}/${parameters.expandTheme}/css.ftl" />
 <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
 <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
 <#include "/${parameters.templateDir}/simple/dynamic-attributes.ftl" />

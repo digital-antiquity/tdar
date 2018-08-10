@@ -648,3 +648,13 @@ ul, li {
 .col-form-label {
     font-weight:bold;
 }
+
+.repeat-row + .repeat-row {
+    margin-top:.8rem;
+}
+
+div + .add-another-control {
+    top: -.6rem;
+    padding-bottom:.5rem;
+    position: relative;
+}

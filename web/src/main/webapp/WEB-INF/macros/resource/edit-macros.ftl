@@ -38,10 +38,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     
     <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
         <#if (ableToAdjustPermissions?? && ableToAdjustPermissions) || resource.resourceType.project || rightsPage!false >
-            <div id="${prefix}Table" class="form-group repeatLastRow" addAnother="add another ${label}">
-                <label class="col-form-label">${label} Name(s)</label>
+            <div id="${prefix}Table" class="form-group row repeatLastRow" addAnother="add another ${label}">
+                <label class="col-form-label col-2">${label}</label>
 
-                <div class="controls">
+                <div class="col-10">
                     <#list _resourceCollections as resourceCollection>
                     <#-- emit a single row of the choose-a-collection section -->
                     <div id="${prefix}Row_${resourceCollection_index}_" class="form-row repeat-row">
@@ -96,48 +96,29 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 -->
     <#macro keywordRows label keywordList keywordField className showDelete=true addAnother="add another keyword">
     
-		<#if useSelect2>
-                <@select2 label keywordList keywordField className />
-        <#else>
-            <div class="form-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
-                <label class="col-form-label">${label}</label>
-                <#list keywordList as keyword>
-                    <@_keywordRow keywordField keyword_index showDelete />
-                <#else>
-                    <@_keywordRow keywordField />
-                </#list>
-            </div>
-		</#if>
+        <div class="form-group row repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
+            <label class="col-form-label col-2">${label}</label>
+            <div class="form-group col-10">
+            <#list keywordList as keyword>
+                <@_keywordRow keywordField keyword_index showDelete />
+            <#else>
+                <@_keywordRow keywordField />
+            </#list>
+	        </div>
+        </div>
 
     
     </#macro>
 
     <#macro _keywordRow keywordField keyword_index=0 showDelete=true>
-    <div class="controls form-row" id='${keywordField}Row_${keyword_index}_'>
+    <div class="controls repeat-row form-row" id='${keywordField}Row_${keyword_index}_'>
         <@s.textfield name='${keywordField}[${keyword_index}]'  maxlength=255 cssClass='col-11 keywordAutocomplete' placeholder="enter keyword" includeGroup=false />
         <#if showDelete>
         <@nav.clearDeleteButton id="${keywordField}Row" />
         </#if>
-        <div class="col-7">
-        </div>
     </div>
     </#macro>
 
-    <#macro select2 title array prefix type>
-    <div class="form-group">
-        <label class="col-form-label">${title}</label>
-        <div class="controls">
-            <select class="keyword-autocomplete form-control select2-hidden-accessible col-12" multiple="multiple" tabindex="-1" aria-hidden="true"
-                name="${prefix}" data-ajax--url="/api/lookup/keyword?keywordType=${type?url}" id="${prefix}select2" style="width:100%">
-                <#list array![] as term>
-                    <#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
-                </#list>
-            </select>
-            <span class="help-block">Use  <kbd>&semi;</kbd> or <kbd>|</kbd> to separate multiple keywords.</span>
-        </div>
-    </div>
-
-    </#macro>
 
 
 <#-- render the "spatial information" section:geographic keywords, map, coordinates, etc. -->
@@ -288,10 +269,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div id="divSiteInformation">
             <@keywordRows "Site Name / Number" siteNameKeywords 'siteNameKeywords' "SiteNameKeyword" />
 
-            <div class="form-group">
-                <label class="col-form-label">Site Type</label>
+            <div class="form-group row">
+                <label class="col-form-label col-2">Site Type</label>
 
-                <div class="controls">
+                <div class="controls col-10">
                     <@s.checkboxlist theme="hier" name="approvedSiteTypeKeywordIds" keywordList="approvedSiteTypeKeywords" />
                 </div>
             </div>
@@ -314,7 +295,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited sectionId='#allMaterialInformation' />
 		<div id="allMaterialInformation">
 	        <div id="divMaterialInformation">
-	            <@s.checkboxlist name='approvedMaterialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)"
+	            <@s.checkboxlist name='approvedMaterialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)" labelposition="left"
 	            spanClass="col" numColumns="3" />
     	    </div>
 
@@ -335,10 +316,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h2 id="culturalInfoSectionLabel">${culturalTermsLabel!"Cultural Terms"}</h2>
         <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited sectionId='#divCulturalInformation'/>
         <div id="divCulturalInformation">
-            <div class="form-group">
-                <label class="col-form-label">${culturalTermsLabel!"Culture"}</label>
+            <div class="form-group row">
+                <label class="col-form-label col-2">${culturalTermsLabel!"Culture"}</label>
 
-                <div class="controls">
+                <div class="controls col-10">
                     <@s.checkboxlist theme="hier" name="approvedCultureKeywordIds" keywordList="approvedCultureKeywords" />
                 </div>
             </div>
@@ -359,7 +340,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited sectionId='#divInvestigationInformation' />
         <div id="divInvestigationInformation">
 
-            <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="col"
+            <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="col" labelposition="left"
                  label="Select Type(s)" listTitle="definition" />
         </div>
     </div>
@@ -576,7 +557,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class='divInheritSection'>
         <#if showInherited>
             <div class="form-group alwaysEnabled">
-                <div class="controls">
+                <div class="controls offset-2">
                     <#if editor!false>
                         <button type="button" class="btn btn-xs btn-danger clear-section float-right"
                                 data-clear-target="${sectionId}"
@@ -607,23 +588,27 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document." class="col-12">
         <h2 id="notesInfoSectionLabel">Notes</h2>
         <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited sectionId='#resourceNoteSection'/>
-        <div id="resourceNoteSection" class="repeatLastRow">
-            <label class="col-form-label">Type / Contents</label>
+        <div id="resourceNoteSection" class="repeatLastRow row">
+            <label class="col-form-label col-2">Type / Contents</label>
+            <div class='col-10'>
             <#list resourceNotes as resourceNote>
                 <#if resourceNote??><@_noteRow resourceNote resourceNote_index/></#if>
 				<#else>
 				<@_noteRow blankResourceNote resourceNote_index/>
             </#list>
+	        </div>
         </div>
     </div>
     </#macro>
     <#macro _noteRow proxy note_index=0>
     <div id="resourceNoteRow_${note_index}_" class="repeat-row">
         <div class="controls form-row">
-                <@s.select  emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" cssClass="col-2" />
-                <div class="col-9">
-                <@s.textarea rows="4"  name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass='ml-2  resizable resize-vertical'
+                <div class="col-11">
+               	<div class="row">
+                <@s.select  emptyOption='false' name='resourceNotes[${note_index}].type' list='%{noteTypes}' listValue="label" cssClass="col-4" />
+                <@s.textarea rows="4"  name='resourceNotes[${note_index}].note' placeholder="enter note contents" cssClass=' resizable resize-vertical'
                 maxlength='5000' cols="80" />
+                </div>
                 </div>
                 <@nav.clearDeleteButton id="resourceNoteRow" />
         </div>
@@ -781,10 +766,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
         <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited sectionId='#divIdentifiers' />
         <div id="divIdentifiers" class="repeatLastRow">
-            <div class="form-group">
-                <label class="col-form-label">Name / Value</label>
+            <div class="form-group row">
+                <label class="col-form-label col-2">Name / Value</label>
 
-                <div class="controls">
+                <div class="col-10">
                     <div id="resourceAnnotationsTable" addAnother="add another identifier">
                         <#list resourceAnnotations as annotation>
                         	<@_displayAnnotation annotation annotation_index/>

@@ -19,7 +19,8 @@ vim:sts=2:sw=2:filetype=jsp
 </#if>
 <h1>Log in to ${siteAcronym}</h1>
 
-<div class="well">
+<div class="card">
+<div class="card-body">
 <@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal">
 	<@auth.loginWarning />
     <@auth.login>    
@@ -36,6 +37,7 @@ vim:sts=2:sw=2:filetype=jsp
     </@auth.login>
 </@s.form>
     <div id="error"></div>
+</div>
 </div>
 <#include "/WEB-INF/notice.ftl">
 

@@ -244,7 +244,7 @@ TDAR.repeatrow = function (TDAR, $) {
         if (!id) {
             buttonId = "btn" + label.replace(" ", "").toLowerCase();
         }
-        var html = "<div class='control-group add-another-control'>" + "<div class='controls offset-3'>" + "<button class='btn btn-xs addanother' id='" + buttonId + "' type='button'><i class=\"fas fa-plus-circle\"></i> " + label + "</button>" + "</div>" + "</div>";
+        var html = "<div class='control-group add-another-control'>" + "<div class='controls offset-3'>" + "<button class=' btn-xs  btn btn-light addanother' id='" + buttonId + "' type='button'><i class=\"fas fa-plus-circle\"></i> " + label + "</button>" + "</div>" + "</div>";
         return $(html);
     };
 

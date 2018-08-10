@@ -27,6 +27,7 @@
 <#assign itemCount = 0/>
 <#assign spanClass = "">
 <#assign hasColumns = _numColumns &gt; 1 />
+    <#if parameters.labelposition?exists && parameters.labelposition.equalsIgnoreCase("left") ><div class="col-10"></#if>
 <#if hasColumns>
     <#assign spanClass = "${parameters.spanClass!'col'}" />
     <div class="row">
@@ -103,5 +104,6 @@
     <#else>
   &nbsp;
 </#if>
+<#if parameters.labelposition?exists && parameters.labelposition.equalsIgnoreCase("left") ></div></#if>
 
 <#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />

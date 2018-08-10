@@ -268,7 +268,6 @@
                         <div class="row">
                         	<div class="col-9">
                             <@commonr.cartouche res true>
-                                <small>[ID: ${res.id?c}]</small> 
                                 <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
                             </@commonr.cartouche>
                             </div>

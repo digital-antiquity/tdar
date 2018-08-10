@@ -263,7 +263,7 @@
 
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <!-- <h4>Add to a Collection</h4> -->
-            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
+            <@edit.resourceCollectionSection prefix="shares" label="Collection" list=shares />
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
                 <#assign _projectId = request.getParameter('projectId')!'' />
@@ -350,7 +350,7 @@
         <div class="col-12" id="divResourceProvider" data-tiplabel="Resource Provider"
              data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
             <h2>Institution Authorizing Upload of this <@edit.resourceTypeLabel /></h2>
-            <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
+            <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255' labelposition="left"/>
             <br/>
         </div>
             <#if config.licensesEnabled?? && config.licensesEnabled || resource.licenseType?has_content>

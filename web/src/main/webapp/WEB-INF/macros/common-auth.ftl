@@ -7,7 +7,7 @@
      verbosity:string  relative amount of detail to capture (minimal|extended|verbose)
      columns: maximum width consumed by this section, assuming 12-column grid layout
 -->
-<#macro registrationFormFields detail="verbose" cols=12 beanPrefix="reg" showSubmit=true source="cart">
+<#macro registrationFormFields detail="minimal" cols=12 beanPrefix="reg" showSubmit=true source="cart">
     <@common.chromeAutofillWorkaround />
     <@antiSpam  />
 
@@ -18,8 +18,8 @@
     </#if>
 <#local showMinimal = (level == 1) />
 <#local showVerbose = (3 <= level) />
-<#local spanfull = "span${cols}" />
-<#local spanhalf = "span${cols/2}"/>
+<#local spanfull = "col-${cols}" />
+<#local spanhalf = "col-${cols/2}"/>
 
 <div class="row">
     <div class="col-8">
@@ -70,7 +70,7 @@
 
 <div class="row">
     <div class="col-4">
-        <@s.textfield labelposition='left' label='Organization' name='${beanPrefix}.institutionName' id='institutionName' cssClass="input-xlarge"/>
+        <@s.textfield labelposition='top' label='Organization' name='${beanPrefix}.institutionName' id='institutionName' cssClass="input-xlarge"/>
     </div>
     <div class="col-4">
     <#-- listValueKey="localeKey"	       theme="tdar" -->
@@ -105,7 +105,7 @@
 <#if (level > 1)>
 <div class="row">
     <div class="col-4">
-        <@s.textfield label='Work phone' labelposition='left' name='${beanPrefix}.person.phone' id='phone' cssClass=" input-xlarge"/>
+        <@s.textfield label='Work phone' labelposition='top' name='${beanPrefix}.person.phone' id='phone' cssClass=" input-xlarge"/>
     </div>
 </div>
 </#if>
@@ -113,16 +113,12 @@
 <div class="row">
     <div class="${spanfull}">
         <#if showMinimal>
-            <#if source == "cart">
             <label class="checkbox">
                 <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUseAndContributorAgreement" id="tou-id"  />
                 I have read and accept the ${siteAcronym}
                 <@s.a href="${config.tosUrl}" target="_blank" title="click to open contributor agreement in another window">User Agreement</@s.a> and
                 <@s.a href="${config.contributorAgreementUrl}" target="_blank" title="click to open contributor agreement in another window">Contributor Agreement</@s.a>
             </label>
-            <#else>
-                <@tos beanPrefix=beanPrefix />
-            </#if>
         <#else>
             <@tos beanPrefix=beanPrefix />
             <div class="control-group">
@@ -141,27 +137,25 @@
                     
                 </div>
             </div>
-            <#if (level > 1)>
-            <div id='contributorReasonTextArea'>
-                <label class="control-label">Contributor information</label>
-                <div class="control-group">
-                    <div class="controls">
-                    <span class="help-block">
-                        Please briefly describe the geographical areas, time periods, or other subjects for which you
-                        would like to contribute information
-                    </span>
-                        <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge"
-                            name='${beanPrefix}.contributorReason' id='contributorReasonId'  cols="80"
-                            dynamicAttributes={
-                                "data-rule-maxlength":"512",
-                                "data-msg-maxlength": "Please limit your summary to less than 512 characters"
-                            }
-                        />
-                    </div>
+        </#if>
+        <div id='contributorReasonTextArea' class="hidden" >
+            <label class="control-label">Contributor information</label>
+            <div class="control-group">
+                <div class="controls">
+                <span class="help-block">
+                    Please briefly describe the geographical areas, time periods, or other subjects for which you
+                    would like to contribute information
+                </span>
+                    <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge"
+                        name='${beanPrefix}.contributorReason' id='contributorReasonId'  cols="80"
+                        dynamicAttributes={
+                            "data-rule-maxlength":"512",
+                            "data-msg-maxlength": "Please limit your summary to less than 512 characters"
+                        }
+                    />
                 </div>
             </div>
-            </#if>
-        </#if>
+        </div>
 
         <#if showSubmit>
         <div class="form-actions">
@@ -183,8 +177,8 @@
         <legend>Login</legend>
     </#if>
     <@s.token name='struts.csrf.token' />
-    <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus"/>
-    <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" />
+    <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus" labelposition="left" cssClass="col-4"/>
+    <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" labelposition="left"  cssClass="col-4"/>
 
     <#nested />
     <script type="text/javascript">

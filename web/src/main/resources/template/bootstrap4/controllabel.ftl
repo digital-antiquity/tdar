@@ -6,10 +6,10 @@
 <#if parameters.id?exists>
         for="${parameters.id?html}" <#t/>
 </#if>
-class="<#t/> col-form-label
+class="<#t/> col-form-label 
 <#if hasFieldErrors>errorLabel </#if><#t/>
 <#if parameters.labelposition?exists && parameters.labelposition.equalsIgnoreCase('left')> col-2 </#if><#t/>
-<#if parameters.labelposition?exists && parameters.labelposition.equalsIgnoreCase('top')>toplabel</#if>"><#t/>
+<#if parameters.labelposition?exists && parameters.labelposition.equalsIgnoreCase('top')> toplabel </#if>"><#t/>
 <#if parameters.required?default(false) && parameters.requiredposition?default("right") != 'right'>
         <span class="required">*</span><#t/>
 </#if>

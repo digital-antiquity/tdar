@@ -78,7 +78,7 @@
 
         <div class="col-10">
             <div class="controls form-row">
-                <@s.textfield  id='startPage' placeholder="Start#" name='document.startPage' cssClass="col-2" maxlength=9/>
+                <@s.textfield  id='startPage' placeholder="Start#" name='document.startPage' cssClass="col-2 mr-2" maxlength=9/>
                 <@s.textfield id='endPage'  placeholder="End#" name='document.endPage' cssClass="col-2" maxlength=9 />
             </div>
             </div>
