@@ -131,6 +131,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     }
                 });
                 if (!seen) {
+                    var val = {};
                     val[this.id_field] = id;
                     val[this.name_field] = entry.trim();
                     this.values.push(val);

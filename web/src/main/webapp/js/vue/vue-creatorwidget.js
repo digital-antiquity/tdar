@@ -220,11 +220,13 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                         Vue.set(this, "showEditPerson",true);
                 },
                 clickNew: function() {
-                    this.reset();
+                    this.clear();
                     this.clickEdit();
                 },
                 clear: function() {
-                    this.$refs.input.clear();
+                    if (this.$refs.input != undefined) {
+                        this.$refs.input.clear();
+                    }
                 },
                 setValue: function(val) {
                     this.$refs.input.setValue(val);
@@ -293,11 +295,13 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                         Vue.set(this, "showEditInstitution",true);
                 },
                 clickNew: function() {
-                    this.reset();
+                    this.clear();
                     this.clickEdit();
                 },
                 clear: function() {
-                    this.$refs.input.clear();
+                    if (this.$refs.input != undefined) {
+                        this.$refs.input.clear();
+                    }
                 },
                 setValue: function(val) {
                     this.$refs.input.setValue(val);
