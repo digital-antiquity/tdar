@@ -75,8 +75,8 @@ module.exports = function(config) {
             [
                 
                 //specs
-                //specFiles,
-                "src/test/frontend/spec/VueFileUploadSpec.js",
+               // specFiles,
+                "src/test/frontend/spec/AutocompleteSpec.js",
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},

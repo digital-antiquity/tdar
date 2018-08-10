@@ -4,9 +4,6 @@ const Vue = require("vue").default;
 
 const vuejsupload = require("./vue-base-upload");
 
-console.debug("Vue is : ");
-console.debug(Vue);
-
     var ERROR_TIMEOUT = 5000;
 
     var _init = function(widgetId) {

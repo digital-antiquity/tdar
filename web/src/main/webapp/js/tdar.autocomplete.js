@@ -5,6 +5,7 @@
 const core = require("./tdar.core");
 const common = require("./tdar.common");
 
+
     //when a user creates a record manually instead of choosing a menu-item from the autocomplete dropdown, this module
     //stores the record in the object cache.  If the user later fills out similar autocomplete fields,   we add
     //these cached records to the autocomplete dropdown.  This allows the user to save some time in situations where
@@ -656,6 +657,8 @@ const common = require("./tdar.common");
             if (item.id != -1) {
                 idpart = " ("+item.id+")";
             }
+            
+            var common = require("./tdar.common");
             return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + common.htmlDecode(description) + "\">" + common.htmlDoubleEncode(item.value) + link + "</a>" +idpart).appendTo(ul);
         };
 
@@ -705,6 +708,7 @@ const common = require("./tdar.common");
                 description = item.description;
             }
             var link = "";
+            var common = require("./tdar.common");
             return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + common.htmlDecode(description) + "\">" + common.htmlDoubleEncode(item.value) + link + "</a>").appendTo(ul);
         };
 

@@ -1,4 +1,7 @@
 /* global describe, it, expect */
+
+const TDAR = require("JS/tdar.master");
+
 describe("AdvancedSearchSpec.js: advanced search form", function() {
     "use strict";
     var submitCallback, $map, $form, $autosave;
@@ -18,6 +21,8 @@ describe("AdvancedSearchSpec.js: advanced search form", function() {
         //Same goes for dom artifacts added by the map renderer.
         $('#large-google-map').append('<div>remove me</div>');
 
+        console.debug(TDAR.advancedSearch);
+        
         TDAR.advancedSearch.serializeFormState();
         $form.submit();
 

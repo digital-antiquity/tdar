@@ -54,7 +54,7 @@ const Vue = require("vue").default;
             } else {
                 fileContainer.status = 'error';
             }
-            console.log("file<-->container",file,fileContainer);
+            //console.log("file<-->container",file,fileContainer);
             Vue.set(fileContainer, "dateCreated", file.dateCreated);
             Vue.set(fileContainer, "size", file.size);
             Vue.set(fileContainer, "id", file.id );
