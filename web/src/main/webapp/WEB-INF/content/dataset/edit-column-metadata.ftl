@@ -163,12 +163,9 @@
                     <hr/></#if>
 
                 <div class="datatablecolumn col-12" id="columnDiv_${column_index}">
-                    <h3>
                         <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions"
-                              class="columnSquare"><span>&nbsp;</span></span>
-                        <!-- Column: -->
-                        <span class="displayName">${column.displayName}</span>
-                        </h3>
+                              class="columnSquare"><span>&nbsp;</span>
+                    <h3 class="displayName">${column.displayName}</h3>
 
     <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
         <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
