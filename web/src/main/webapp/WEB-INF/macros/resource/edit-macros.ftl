@@ -1298,7 +1298,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
-        <!-- <div class="form-row"> -->
             
             <@s.textfield  cssClass="${lookupType} ${requiredClass} ${textfieldCssClass!'col-10'}" placeholder="Name"  readonly=isDisabled autocomplete="off"
             name="${properNameField}" maxlength="255" autocompleteName="properName"
@@ -1318,10 +1317,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 listValue='label' list='%{availablePermissions}' disabled=isDisabled />
             <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                 <@s.hidden id="${strutsPrefix}hdnGeneralPermission" name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
-            <#else>
-                <span class="col-2">&nbsp;</span>
             </#if>
-        <!-- </div> -->
     </div>
     </#macro>
 

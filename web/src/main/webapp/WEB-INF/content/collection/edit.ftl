@@ -43,12 +43,13 @@
         <#assign newRecord = true />
     </#if>
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
+        <div class="row">
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
         <h2>Basic Information</h2>
 
-        <div class="" id="basicInformationSection" data-tiplabel="Basic Information"
+        <div class="col-12" id="basicInformationSection" data-tiplabel="Basic Information"
              data-tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent
     collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
             <#if resourceCollection.id?? &&  resourceCollection.id != -1>
@@ -57,16 +58,18 @@
             <@edit.hiddenStartTime />
             <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
 
-            <div id="parentIdContainer" class="control-group">
-                <label class="control-label">Parent Collection</label>
+            <div id="parentIdContainer" class="form-group row">
+                <label class="col-form-label col-2">Parent Collection</label>
 
-                <div class="controls">
+                <div class="controls col-10">
+                <div class="row">
                     <@s.hidden name="parentId"  id="hdnParentId" cssClass=""
                     autocompleteParentElement="#parentIdContainer"  />
-            <@s.textfield theme="simple" name="parentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+            <@s.textfield name="parentCollectionName" cssClass="col-12 collectionAutoComplete"  autocomplete="off"
                 autocompleteIdElement="#hdnParentId" maxlength=255 autocompleteParentElement="#parentIdContainer" autocompleteName="name"
                 placeholder="parent collection name" id="txtParentCollectionName"
                 />
+                </div>
                 </div>
             </div>
 
@@ -75,15 +78,15 @@
 
         <#if editor>
             <h4>Admin Options</h4>
-            <div class="control-group row" id="divSubmitter">
-                <label class="control-label form-col-label col-2">Submitter</label>
+            <div class="form-group row" id="divSubmitter">
+                <label class="control-label col-form-label col-2">Submitter</label>
 				<div class="col-10">
-                <div class="controls controls-row">
+                <div class="row">
                     <#if owner?has_content>
-                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
+                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8"
                     prefix="owner" includeRights=false includeRepeatRow=false />
 	 	        <#else>
-                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
+                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''  textfieldCssClass="col-8"
                         prefix="owner" includeRights=false includeRepeatRow=false />
                     </#if>
                 </div>
@@ -91,7 +94,7 @@
             </div>
             
             <div id="altParentIdContainer" class="control-group row">
-                <label class="control-label form-col-label col-2">Secondary Parent Collection (No rights)</label>
+                <label class="control-label col-form-label col-2">Secondary Parent Collection (No rights)</label>
                 <div class="col-10">
                 <div class="row">
                     <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
@@ -137,7 +140,7 @@
 
         
             <div class="row">
-                <label class="form-col-label col-2">Hide this collection?</label>
+                <label class="col-form-label col-2">Hide this collection?</label>
                 <div class="col-10">
 					<div class="form-row">
 						<div  class="col-2">    
@@ -284,7 +287,7 @@
 			</p>
             </@edit.submit>
         </@s.form>
-
+        </div>
         <#noescape>
         <script type='text/javascript'>
         
