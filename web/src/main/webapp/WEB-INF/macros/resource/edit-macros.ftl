@@ -514,22 +514,26 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h2 id="relatedCollectionInfoSectionLabel">Museum or Archive Collections</h2>
         <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited sectionId='#relatedCollectionsSection'/>
         <div id="relatedCollectionsSection">
-            <div id="divSourceCollectionControl" class="form-group repeatLastRow">
-                <label class="col-form-label">Source Collections</label>
+            <div id="divSourceCollectionControl" class="form-group repeatLastRow row">
+                <label class="col-form-label col-2">Source Collections</label>
+                <div class="col-10">
                 <#list sourceCollections as sourceCollection>
                     <@_sourceCollectionRow sourceCollection "sourceCollection" sourceCollection_index/>
 					<#else>
 	                    <@_sourceCollectionRow blankSourceCollection "sourceCollection" sourceCollection_index/>
                 </#list>
+	            </div>
             </div>
 
-            <div id="divRelatedComparativeCitationControl" class="form-group repeatLastRow">
-                <label class="col-form-label">Related or Comparative Collections</label>
+            <div id="divRelatedComparativeCitationControl" class="form-group repeatLastRow row">
+                <label class="col-form-label col-2">Related or Comparative Collections</label>
+                <div class="col-10">
                 <#list relatedComparativeCollections as relatedComparativeCollection>
                     <@_sourceCollectionRow relatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
     				<#else>
                     <@_sourceCollectionRow blankRelatedComparativeCollection "relatedComparativeCollection" relatedComparativeCollection_index/>
                 </#list>
+                </div>
             </div>
             <@helptext.sourceRelatedCollection />
         </div>
@@ -539,16 +543,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- emit source collections section-->
     <#macro _sourceCollectionRow sourceCollection prefix index=0>
         <#local plural = "${prefix}s" />
-    <div class="controls form-row repeat-row" id="${prefix}Row_${index}_">
-        <div class="col-6">
-        <#-- <@s.hidden name="${plural}[${index}].id" cssClass="dont-inherit" /> -->
-            <div class="form-row">
-                <@s.textarea rows="4" cols="80" theme="tdar" name='${plural}[${index}].text' cssClass="col-6 resizable resize-vertical" />
-            </div>
-        </div>
-        <div class="col-1">
+    <div class="controls repeat-row row" id="${prefix}Row_${index}_">
+                <@s.textarea rows="4" cols="80" name='${plural}[${index}].text' cssClass="col-11 resizable resize-vertical" />
             <@nav.clearDeleteButton id="${prefix}Row${index}" />
-        </div>
     </div>
     </#macro>
 
@@ -1303,7 +1300,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
         <!-- <div class="form-row"> -->
             
-            <@s.textfield  cssClass="${lookupType} ${requiredClass} ${textfieldCssClass!} col-10" placeholder="Name"  readonly=isDisabled autocomplete="off"
+            <@s.textfield  cssClass="${lookupType} ${requiredClass} ${textfieldCssClass!'col-10'}" placeholder="Name"  readonly=isDisabled autocomplete="off"
             name="${properNameField}" maxlength="255" autocompleteName="properName"
             autocompleteIdElement="#${idIdElement}"
             autocompleteParentElement="#${rowIdElement}"

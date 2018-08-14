@@ -75,9 +75,9 @@
 
         <#if editor>
             <h4>Admin Options</h4>
-            <div class="control-group" id="divSubmitter">
-                <label class="control-label">Submitter</label>
-
+            <div class="control-group row" id="divSubmitter">
+                <label class="control-label form-col-label col-2">Submitter</label>
+				<div class="col-10">
                 <div class="controls controls-row">
                     <#if owner?has_content>
                 <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
@@ -87,17 +87,20 @@
                         prefix="owner" includeRights=false includeRepeatRow=false />
                     </#if>
                 </div>
+                </div>
             </div>
             
-            <div id="altParentIdContainer" class="control-group">
-                <label class="control-label">Secondary Parent Collection (No rights)</label>
-                <div class="controls">
+            <div id="altParentIdContainer" class="control-group row">
+                <label class="control-label form-col-label col-2">Secondary Parent Collection (No rights)</label>
+                <div class="col-10">
+                <div class="row">
                     <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
                     autocompleteParentElement="#altParentIdContainer"  />
-            <@s.textfield theme="simple" name="alternateParentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+            <@s.textfield  name="alternateParentCollectionName" cssClass="col-12 collectionAutoComplete"  autocomplete="off"
                 autocompleteIdElement="#hdnAltParentId" maxlength=255 autocompleteParentElement="#altParentIdContainer" autocompleteName="name"
                 placeholder="parent collection name" id="txtAltParentCollectionName"
                 />
+                </div>
                 </div>
             </div>
 
@@ -133,22 +136,32 @@
             <h2>Browse and Display Options</h2>
 
         
-            <div class="control-group">
-                <label class="control-label">Hide this collection?</label>
-
-                <div class="controls">
-                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
-                                                                            value="true" <@commonr.checkedif resourceCollection.hidden true /> />Yes</label>
-                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
-                                                                             value="false" <@commonr.checkedif resourceCollection.hidden false /> />No</label>
+            <div class="row">
+                <label class="form-col-label col-2">Hide this collection?</label>
+                <div class="col-10">
+					<div class="form-row">
+						<div  class="col-2">    
+		                    <label for="rdoVisibleTrue" class="form-check-label radio "><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
+								class="form-check-input" value="true" <@commonr.checkedif resourceCollection.hidden true /> />Yes</label>
+		                </div>
+						<div  class="col-2">    
+		                    <label for="rdoVisibleFalse" class="radio form-check-label"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
+								class="form-check-input" value="false" <@commonr.checkedif resourceCollection.hidden false /> />No</label>
+		                </div>
+	                </div>
                 </div>
             </div>
     
+    		<div class="row">
+    		<div class="col">
             <@s.select labelposition='top' label='When Browsing Sort Resource By' name='resourceCollection.sortBy'
             listValue='label' list='%{sortOptions}' title="Sort resource by" />
-
+			</div>
+    		<div class="col">
             <@s.select labelposition='top' label='Display Collection as' name='resourceCollection.orientation'
             list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
+	        </div>
+	        </div>
         </div>
 
         <div id="divCollectionAccessRightsTips" style="display:none">
