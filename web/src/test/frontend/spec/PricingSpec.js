@@ -2,6 +2,7 @@
 describe("PricingSpec.js: tests for TDAR.pricing methods", function() {
 
     beforeEach(function(){
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
         loadFixtures("pricing.html");
     });
 

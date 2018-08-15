@@ -293,7 +293,6 @@ describe("LeafletSpec.js", function() {
                 var data = JSON.parse($j('#dataPage1').text());
 
                 var startRecord = 0;
-
                 //get the original map bounds, then call update w/ marker coords
                 var bounds1 = map.getBounds();
                 TDAR.leaflet.update(map, markers, data, startRecord, true);
