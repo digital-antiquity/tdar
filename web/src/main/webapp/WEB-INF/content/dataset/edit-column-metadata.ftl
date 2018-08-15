@@ -170,7 +170,7 @@
                     ${column.displayName}</h3>
 
     <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
-        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
+        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:" inline=true
         cssClass="columnEncoding" target="#columnDiv_${column_index}" labelposition="left"
         listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
     </span>
