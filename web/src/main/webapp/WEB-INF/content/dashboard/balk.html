@@ -1,4 +1,4 @@
-<div class="span10" id="filesTool">
+<div class="col-10" id="filesTool">
 
     <balk />
     
@@ -29,12 +29,12 @@
     <div :class="commentClass" v-if="comment != undefined">
     <pentry :initials="comment.commentorInitials" :date="comment.dateCreated" :name="comment.commentorName" ></pentry>
 {{comment.comment}} 
-   <span v-if="comment.resolved != undefined" class="pull-right">
+   <span v-if="comment.resolved != undefined" class="float-right">
         <label v-if="comment.resolved == false"  @click="resolveComment()"><input type="checkbox" @click="resolveComment()"/> resolve</label>
         <i v-if="comment.resolved" :alt="comment.resolverName" :title="comment.resolverName">resolved {{formatDate(comment.dateResolved)}}</i>
     </span> 
 
-   <span v-if="comment.undoAction != undefined" class="pull-right">
+   <span v-if="comment.undoAction != undefined" class="float-right">
         <label  @click="undo()"><input type="checkbox" @click="undo()"/> undo</label></span>
 
     </span> 
@@ -45,7 +45,7 @@
 
 <script type="text/x-template" id="file-entry-template">
 <tr v-bind:id="rowId" v-if="file != undefined" :class="curationStatus">
-    <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
+    <td> <input type="checkbox" name="select" class="form-check-input" v-model="file.selected" @click="select()"/> {{ 1 + index}}</td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
          <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label" 
          data-toggle="tooltip" data-placement="top" :title="partNames"
@@ -92,16 +92,17 @@
 <form class="form-horizontal" >
 <div id="balkTemplate" v-show="balkVisible">
 <div class="row">
-    <div class="span6">
-    <label  style="display:inline">Account:
-        <select name="account" id="accountId" v-model="accountId">
+    <div class="col-6">
+     <div class="form-row">
+    <label class="col-form-label col-2">Account:</label>
+        <select name="account" id="accountId" v-model="accountId" class="form-control col-4">
                 <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
         </select>
-    </label>
-	<a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
+	<a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="mt-2 ml-2 fas fa-info-circle"></i></a>
     </div>
-    <div class="span4">
-        <input type="search" class="search input pull-right" placeholder="search" v-model="search" />
+    </div>
+    <div class="col-4 offset-2">
+        <input type="search" class="search input form-control float-right" placeholder="search" v-model="search" />
     </div>
 </div>
 
@@ -128,13 +129,13 @@
 		<span v-if="index != 0"> / </span> <span class="link" @click="cd(dir)">{{dir.name}}</span>
 </span> 
 
-<div class="pull-right">
+<div class="float-right">
 <span v-if="currentDir() != undefined && currentDir().collection != undefined"> (linked to <a :href="currentDir().collection.detailUrl" target=_blank>{{ currentDir().collection.name }}</a>) </span>
 
 <span class="dropdown" >
     <!-- Link or button to toggle dropdown -->
   <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-    <i class="icon-tasks"></i>
+    <i class="fas fa-cog"></i>
   </a>
     <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" >
     <li :class="dirActionsEnabledClass">
@@ -161,7 +162,7 @@
             <td></td>
             <td> <span class="link" @click="cd(upOne)"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
-            <tr class="template-download fade existing-file in" v-for="(file,index) in files"
+            <tr class="template-download existing-file" v-for="(file,index) in files"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload"
 				 @cd="cd($event)" @toggleselect="toggleSelect($event)"
 				 @showcomments="showComments($event)"  @deletefile="deleteFile($event)"  
@@ -173,7 +174,7 @@
 </table>
 
 <div class="row">
-    <div class="span7">
+    <div class="col-8">
         <div class="btn-group">
             <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
             <button class="btn" type="button" id="create" @click="createRecordFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button>
@@ -181,18 +182,20 @@
         </div>
         <span class="label" data-toggle="tooltip" data-placement="top" :title="selectedFileNames"> {{selectedFiles.length}} selected </span>
     </div>
-    <div class="span3">
-        <div class="input-append">
-            <input class="span2" id="dirName" name="dirName" ref="dirName" type="text" v-model="dirName">
-            <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
+    <div class="col-4">
+        <div class="input-group row">
+            <input class="col-6" id="dirName" name="dirName" ref="dirName" type="text" v-model="dirName">
+            <div class="input-group-append">
+                <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
+            </div>
         </div>
     </div>
    </div>
 <br/><br/>
 <div class="row">
 <div class="span2">
-    <label class="btn btn-success fileinput-button" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
-        class="glyphicon glyphicon-plus"></i> <span>Upload 
+    <label class="btn btn-success fileinput-button" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> 
+<i class="fas fa-plus-circle"></i> <span>Upload 
             files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label>
@@ -254,7 +257,7 @@
         </p>
             
          <p v-if="this.accounts.length > 1">Or, select an account to move files there</p>
-            <select name="account" v-model="moveAccountId">
+            <select name="account" v-model="moveAccountId" class="form-control">
                     <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
             </select>
          
