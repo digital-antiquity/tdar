@@ -228,7 +228,7 @@ View freemarker macros
         <#else>
             <h3 class="downloads">
                 Downloads
-                <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles!0?c}</span>
+                <span class="downloadNumber d-none d-md-block">${resource.totalNumberOfActiveFiles!0?c}</span>
             </h3>
             <div id="fileSummaryContainer">
                 <ul class="downloads media-list  pl-0 ml-0">

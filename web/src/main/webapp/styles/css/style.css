@@ -27,10 +27,7 @@ a {
 
 .white {
   color: white;
-  fill: white !important; }
-  .white svg, .white svg * {
-    color: white;
-    fill: white !important; }
+  fill: white; }
 
 .beige {
   background-color: #E3E0D8; }
