@@ -19,13 +19,11 @@
             <h2 id="profile">Personal Details</h2>
         
             <#if editor>
-                <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
-                    <label class="control-label">Status</label>
+                <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group ">
+                    <label class="control-label col-form-label">Status</label>
 
-                    <div class="controls">
-                        <@s.select theme="tdar" cssClass="input-xlarge" value="person.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+                        <@s.select cssClass="input-xlarge  col-5" value="person.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
                         <span class="label label-important">admin option</span>
-                    </div>
                 </div>
             </#if>
 
@@ -33,10 +31,10 @@
 
             <@s.hidden name="id" />
             <div class="row">
-                <div class="col-5">
+                <div class="col-6">
                         <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
                 </div>
-                <div class="col-5">
+                <div class="col-6">
                         <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" />
                 </div>
             </div>
@@ -45,7 +43,7 @@
 
 
         <div class="row">
-            <div class="col-5">
+            <div class="col-6">
                 <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
     
                 <#if config.privacyControlsEnabled>
@@ -54,7 +52,7 @@
                         engines, spammers, and visitors who are not logged in.</em></p>
                 </#if>
             </div>
-            <div class="col-5">
+            <div class="col-6">
                 <@s.textfield name="person.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
             </div>
         </div>
@@ -63,11 +61,11 @@
 
 
             <div class="row">
-                <div class="col-5">
+                <div class="col-6">
                     <@s.textfield name="person.orcidId" label="ORCID Id" id="orcidId" cssClass="input-xlarge"  maxlength=50 placeholder="XXXX-XXXX-XXXX-XXXX" />
                     <a href="http://orcid.org/about/what-is-orcid">About ORCID</a>                
                 </div>
-                <div class="col-5">
+                <div class="col-6">
                     <#if config.RPAEnabled>
                     <@s.textfield  cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 />
                     <a href="http://rpanet.org/">About RPA</a>                
@@ -77,7 +75,9 @@
     </#macro>
 
     <#macro hidden>
-            <@s.checkbox label='Hide page from logged-out users' name="persistable.hidden" id="hidden-page"  labelposition="left"/>
+            <br/>
+            <@s.checkbox label='Hide page from logged-out users' name="persistable.hidden" id="hidden-page"  />
+            <br/>
     </#macro>
 
     <#macro contactInfo>
@@ -126,10 +126,11 @@
             <@basicInformation>
                 <#if person.username?has_content>
                     <div class="control-group">
-                        <label class="control-label">Username</label>
+                        <label class="col-form-label">Username</label>
 
                         <div class="controls">
-                            <span class="uneditable-input input-xlarge"> ${person.username}</span>
+                        <input type="text" class="disabled form-control col-5" readonly value="${person.username}" />
+
                         </div>
                     </div>
                 </#if>
@@ -139,6 +140,7 @@
 
             <@uploadForm />
             <h3>Contributor</h3>
+            
             <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />
             <p><i>Note: after selecting this, you will be prompted to review and agree to our contributor's policy</i></p>
 

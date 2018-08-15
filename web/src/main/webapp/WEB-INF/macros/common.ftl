@@ -123,20 +123,31 @@
     <#macro billingAccountList accountList>
         <#if (config.payPerIngestEnabled!false)>
         <h2 id="billingSection">Billing Accounts</h2>
+        <div class="row">
+        <div class="col">
         <ul>
+        <#local itemCount = 0/>
+
             <#list accountList as account>
                 <#if account.active>
                 <li>
                     <a href="<@s.url value="/billing/${account.id?c}"  />">${account.name!"unamed"}</a>
                 </li>
                 </#if>
+       <#if (itemCount > 2 && accountList?size / 2 == itemCount ) >
+         </ul></div><div class="col"><ul>
+       </#if>
+        <#local itemCount = itemCount + 1/>
+
             </#list>
 <#--
             <#if billingManager>
                 <li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
             </#if> -->
-            <li><a href="/cart/add">Create a new account or add more to an existing one</a></li>
         </ul>
+        </div>
+        </div>
+        <a href="/cart/add">Create a new account or add more to an existing one</a>
         </#if>
     </#macro>
 

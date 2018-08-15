@@ -1,3 +1,4 @@
+<div class="form-check">
 <#include "/${parameters.templateDir}/${parameters.theme}/controlheader.ftl" />
 <#--
 /*
@@ -48,3 +49,4 @@
  />
 </#if>
 <#include "/${parameters.templateDir}/${parameters.theme}/controlfooter.ftl" />
+</div>
