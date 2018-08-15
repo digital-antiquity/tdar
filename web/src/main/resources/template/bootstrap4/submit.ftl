@@ -34,6 +34,8 @@
 </#if>
 <#if parameters.cssClass?has_content>
  class="${parameters.cssClass?html}"<#rt/>
+<#else>
+ class="btn btn-primary"
 </#if>
 <#if parameters.cssStyle?has_content>
  style="${parameters.cssStyle?html}"<#rt/>

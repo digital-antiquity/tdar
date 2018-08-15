@@ -45,7 +45,7 @@
 
 <script type="text/x-template" id="file-entry-template">
 <tr v-bind:id="rowId" v-if="file != undefined" :class="curationStatus">
-    <td>{{ 1 + index}} <input type="checkbox" name="select" v-model="file.selected" @click="select()"/></td>
+    <td><input type="checkbox" class="form-check-input" name="select" v-model="file.selected" @click="select()"/> {{ 1 + index}} </td>
     <td> <span v-if="file.size == undefined " class="link" @click="cd(file)"><i class="icon-folder-close"></i> {{file.name}} </span> 
          <span v-if="file.size != undefined "><a :href="downloadUrl">{{file.name }}</a>  <span v-if="file.parts != undefined && file.parts.length > 0" class="label" 
          data-toggle="tooltip" data-placement="top" :title="partNames"
@@ -91,15 +91,16 @@
 <div id="balkTemplate" v-show="balkVisible">
 <div class="row">
     <div class="col-8">
-    <label  style="display:inline">Account:
-        <select name="account" id="accountId" v-model="accountId">
+    <div class="row">
+    <label  class="col-form-label col-2">Account:</label>
+        <select name="account" id="accountId" v-model="accountId" class="form-control col-4">
                 <option v-for="(option, index) in accounts" v-bind:value="option.id"> {{ option.name }} </option>
         </select>
-    </label>
-	<a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="icon-info-sign"></i></a>
+	<a v-if="selectedAccount != undefined" :href="selectedAccount.detailUrl"><i class="mt-2 ml-2 fas fa-info-circle"></i></a>
+    </div>
     </div>
     <div class="col-4">
-        <input type="search" class="search input float-right" placeholder="search" v-model="search" />
+        <input type="search" class="search input float-right form-control" placeholder="search" v-model="search" />
     </div>
 </div>
 
@@ -139,7 +140,7 @@
             <td></td>
             <td> <span class="link" @click="cd(upOne)"><i class="icon-folder-close"></i> .. </span>  </td>
             </tr>
-            <tr class="template-download fade existing-file in" v-for="(file,index) in files"
+            <tr class="template-download existing-file" v-for="(file,index) in files"
                 is="fileEntry" :index="index" :file="file" :editable="ableToUpload"
 				 @cd="cd($event)" @toggleselect="toggleSelect($event)"
 				 @showcomments="showComments($event)"  @deletefile="deleteFile($event)"  
@@ -150,15 +151,16 @@
         </tbody>
 </table>
 
-<div class="">
-    <label class="btn btn-success fileinput-button" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
-        class="glyphicon glyphicon-plus"></i> <span>Upload 
+<div class="row">
+    <label class="btn btn-success fileinput-button" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i class="fas fa-plus-circle"></i> <span>Upload 
             files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label>
-    <div class="input-append">
-    <input class="span2" id="dirName" name="dirName" type="text" v-model="dirName">
+    <div class="input-group">
+        <input class="col-2" id="dirName" name="dirName" type="text" v-model="dirName">
+          <div class="input-group-append">
         <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
+        </div>
     </div>
     <div class="btn-group">
         <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 

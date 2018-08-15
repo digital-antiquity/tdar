@@ -24,28 +24,26 @@
                     <#list maps>
                         <h4>External Relations</h4>
                         <#items as map>
-                            <div id="mapping_row_${map_index}_" class="repeat-row">
-                                <div class="control-group">
-                                    <label class="control-label">Relation / Type</label>
-                                    <div class="controls controls-row">
+                            <div id="mapping_row_${map_index}_" class="repeat-row row">
+                                    <label class="col-form-label col-2">Relation / Type</label>
+                                    <div class="col-10">
+                                        <div class="row">
                                         <div class="col-6">
                                            <@s.hidden name="mappings[${map_index}].id" />
                                            <@s.textfield name="mappings[${map_index}].relation"
                                                 placeholder="Relation URL e.g. www.example.com?id=12345"
                                                 cssClass="url input-xxlarge"/>
                                         </div>
-                                        <div class="col-2">
-                                          <@s.textfield theme="tdar" name="mappings[${map_index}].label" maxlength=255 
+                                        <div class="col-3">
+                                          <@s.textfield  name="mappings[${map_index}].label" maxlength=255 
                                               />
                                         </div>
                                         <div class="col-2">
-                                          <@s.select theme="tdar" name="mappings[${map_index}].relationType"
+                                          <@s.select  name="mappings[${map_index}].relationType"
                                             list="relationTypes" listValue="term" cssClass="input-medium" emptyOption="true"
                                               />
                                         </div>
-                                        <div class="col-1">
                                            <@nav.clearDeleteButton id="mapping_row" />
-                                        </div>
                                     </div>
                                 </div>
                             </div>

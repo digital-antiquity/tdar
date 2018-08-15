@@ -9,12 +9,12 @@
 		<h2 id="resources">Resources and Collections ${user.properName} Has Access to</h2>
 <div class="row">
 <div class="col-2">
-       <ul class="nav nav-list nav-stacked dashboard-nav">
+       <ul class="nav nav-list nav-pills nav-stacked dashboard-nav">
         <li class="nav-header">Items</li>
-        <li><a href="#resources">Resources (${findResourcesSharedWith?size})</a></li>
-        <li><a href="#collections">Collections (${findCollectionsSharedWith?size})</a></li>
-        <li><a href="#integrations">Integrations (${integrations?size})</a></li>
-        <li><a href="#accounts">Billing Accounts (${(accounts![])?size})</a></li>
+        <li class="nav-item"><a  class="nav-link" href="#resources">Resources (${findResourcesSharedWith?size})</a></li>
+        <li class="nav-item"><a  class="nav-link" href="#collections">Collections (${findCollectionsSharedWith?size})</a></li>
+        <li class="nav-item"><a  class="nav-link" href="#integrations">Integrations (${integrations?size})</a></li>
+        <li class="nav-item"><a  class="nav-link" href="#accounts">Billing Accounts (${(accounts![])?size})</a></li>
 </ul>
 </div>
 <div class="col-10">

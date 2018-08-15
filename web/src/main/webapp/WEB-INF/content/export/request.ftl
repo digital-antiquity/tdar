@@ -18,28 +18,24 @@
 <br/>
 <@s.form method=POST action="perform" class="form-horizontal">
 <div class="row">
-    <div class="col-8">
-        <div class="control-group" >
-            <label class="control-label" for="collectionName">Account</label>
-            <div class="">
-                <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" emptyOption='true' />
-            </div>
+    <div class="col-12">
+        <div class="form-row mb-2" >
+            <label class="col-form-label col-2" for="collectionName">Account</label>
+            <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" emptyOption='true' cssClass="col-6"/>
         </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-8">
-        <div id="parentIdContainer" class="control-group">
-            <label class="control-label" for="collectionName">Collection</label>
-            <div class="controls">
+    <div class="col-12">
+        <div id="parentIdContainer" class="form-row mb-2">
+            <label class="col-form-label col-2" for="collectionName">Collection</label>
+                <input type="text" name="collectionName" maxlength="255" value="" id="txtParentCollectionName" class="col-6 form-control collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="parent collection name">
                 <input type="hidden" name="collectionId" value="" id="hdnParentId" autocompleteparentelement="#parentIdContainer">
-                <input type="text" name="collectionName" maxlength="255" value="" id="txtParentCollectionName" class="input-xxlarge collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="parent collection name">
-            </div>
         </div>
     </div>
 </div>
 
-<@s.submit class="button btn-primary" />
+<@s.submit class="btn btn-primary" />
 
 </@s.form>
 </div>

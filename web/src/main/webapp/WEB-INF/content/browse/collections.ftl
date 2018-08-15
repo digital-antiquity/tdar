@@ -29,7 +29,7 @@
         </div>
     </div>
     <div class="tdarresults">
-        <@list.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation='LIST_LONG' mapPosition="top" mapHeight="450"/>
+        <@list.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="b" orientation='LIST_LONG' mapPosition="top" mapHeight="450"/>
     </div>
 
 

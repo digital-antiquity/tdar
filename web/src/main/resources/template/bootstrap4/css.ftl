@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
--->
+-->${parameters.template}
 <#assign partClass><#compress>
 <#-- if we have a css class that defines form-control, then ignore it here -->
 <#if parameters.cssClass?has_content && parameters.cssClass?contains("form-")>
@@ -26,6 +26,9 @@
 	<#case "checkbox">
 	<#case "checkboxlist">
 	<#case "radio">
+	<#case "submit">
+	button btn
+	<#break>
 	<#case "radiomap">
 	form-check-input
 	<#break>
