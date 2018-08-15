@@ -12,32 +12,28 @@
      data-max-output-columns="${maxOutputColumns?c}"
 >
     <div id="divIntegrationHeader">
-        <h2 class="compact">Dataset Integration</h2>
+        <h2>Dataset Integration</h2>
     </div>
     <div id="divStatusMessage" class="alert alert-{{alert.kind}}" ng-show="alert.message !==''" >
     {{alert.message}}
     </div>
 
     <form id="frmIntegrationEdit" class="form-horizontal form-condensed" ng-init="ctrl.loadJSON()">
-        <div class="row-fluid">
-            <div class="col-9">
-               <div class="control-group">
-                   <label class="control-label">
+        <div class="row">
+            <div class="col-10">
+               <div class="control-group row">
+                   <label class="col-form-label col-2">
                        Integration Name
                    </label>
-                   <div class="controls">
-                       <input type="text" class="input-block-level" name="integration.title" ng-model="ctrl.integration.title" ng-disabled="isReadOnly()">
-                   </div>
+                       <input type="text" class="col-10 form-control" name="integration.title" ng-model="ctrl.integration.title" ng-disabled="isReadOnly()">
                </div>
-               <div class="control-group">
-                   <label class="control-label">Description</label>
-                   <div class="controls">
-                       <textarea name="integration.description" class="input-block-level" cols="80" rows="2" ng-disabled="isReadOnly()"
+               <div class="control-group row">
+                   <label class="col-form-label col-2">Description</label>
+                       <textarea name="integration.description" class="col-10 form-control" cols="80" rows="2" ng-disabled="isReadOnly()"
                                  ng-model="ctrl.integration.description"></textarea>
-                   </div>
                </div>
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <button type="button" class="btn btn-primary btn-primary-integrate" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.submitIntegration()">Integrate</button>
                 <#--<button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>-->
 
@@ -59,12 +55,10 @@
         </div>
 
         <div id="divSelectedItemsSection">
-            <div class="row-fluid">
-                <div class="col-12">
-                    <div class="control-group">
-                        <label class="control-label">Datasets & Ontologies</label>
-                        <div class="controls controls-row">
-                            <div class="col-5">
+            <div class="row">
+                        <label class="col-form-label col-2">Datasets & Ontologies</label>
+                        <div class="controls form-row">
+                            <div class="col-6">
                                 <table class="table table-condensed table-hover selected-datasets">
                                     <thead>
                                         <tr>
@@ -92,12 +86,8 @@
                                         </tr>
                                     </tbody>
                                 </table>
-
-
-
-
                         </div>
-                            <div class="col-3">
+                            <div class="col-6">
                                 <table class="table table-condensed table-hover">
                                     <thead>
                                         <tr><th colspan="2">Available Ontologies</th></tr>
@@ -114,23 +104,20 @@
 
                             </div>
                         </div>
-                    </div>
-                </div>
             </div>
         </div>
         </form>
         <form>
                 <div id="divActionsSection">
                     <div class="control-group">
-                        <label class="control-label">Actions</label>
+                        <label class="col-form-label">Actions</label>
                         <div class="controls">
                             <div id="divStatusMessage" class="alert alert-warn" ng-show="ctrl.integration.columns.length > maxOutputColumns" >
                                 Please use less than {{maxOutputColumns}} output columns.
                             </div>
 
                             <div class="btn-group">
-                                <div class="btn-group" >
-                                    <a class="btn btn-sm dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
+                                    <a class="btn btn-outline-secondary btn-sm dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
                                         Add Integration Column
                                         <span class="caret"></span>
                                     </a>
@@ -138,13 +125,12 @@
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
                                                 ><a ng-disabled="isReadOnly()" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
-                                </div>
-                                <button type="button" class="btn btn-sm" id="btnAddDisplayColumn"
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
                                         ng-disabled="!ctrl.integration.ontologies.length || isBusy() || isReadOnly()"
                                         >Add Display Column</button>
 
-                                <button type="button" class="btn btn-sm" id="btnAddCountColumn"
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnAddCountColumn"
                                         ng-click="ctrl.addCountColumnClicked()"
                                         ng-disabled="ctrl.isCountColumnDisabled() || isBusy() || isReadOnly()"
                                         >Add Count Column</button>
@@ -155,19 +141,19 @@
         </div>
         
         <div id="divColumnSection">
-            <div class="row-fluid">
+            <div class="row">
                 <div class="col-12">
 
                     <div class="control-group" ng-show="ctrl.integration.columns.length">
-                        <label class="control-label">
+                        <label class="col-form-label">
                             Configure Columns
                         </label>
                         <div class="controls">
 
                             <div id="tabControl">
-                                <ul class="nav nav-tabs">
-                                    <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" ng-class="{active: ctrl.isTabSet($index)}" >
-                                        <a href="#tab{{$index}}" id="tabtab{{$index}}">
+                                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                    <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" class="nav-item" >
+                                        <a href="#tab{{$index}}" id="tabtab{{$index}}" ng-class="{active: ctrl.isTabSet($index)} nav-link">
                                         {{column.name}}
                                             <input type="hidden" name="column.name{{$index}}" ng-model="column.name" />
                                             <button class="close" ng-click="ctrl.closeTab($index)">x</button>
@@ -236,7 +222,7 @@
                                                         </td>
                                                         <td ng-repeat="columnSelection in outputColumn.selectedDataTableColumns track by $index">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" id="cbx-{{::columnSelection.dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(columnSelection.dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="fas fa-check" id="cbx-{{::columnSelection.dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(columnSelection.dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -334,7 +320,9 @@
 
 <!-- Note: this modal is about col-10 wide. Form-horizontal labels are ~col-3 wide, leaving you ~col-7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">
-    <div id="divModalContainer" class="modal modal-big hide fade" tabindex="-1" role="dialog">
+    <div id="divModalContainer" class="modal modal-big " tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+
         <div class="modal-header alert-info">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <div id="#modalAjaxIndicator" class="pull-right">
@@ -348,23 +336,23 @@
                     <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur':0, 'click':0} }">
                         <div>
                             <div class="control-group">
-                                <label class="control-label">Title contains</label>
+                                <label class="col-form-label">Title contains</label>
                                 <div class="controls">
-                                    <input type="text" ng-model="filter.title" class="input-block-level" name="searchFilter.title" ng-change="updateFilter()"> </input>
+                                    <input type="text" ng-model="filter.title" class="form-control" name="searchFilter.title" ng-change="updateFilter()"> </input>
                                 </div>
                             </div>
                             <div class="control-group">
-                                <label class="control-label">Belongs to</label>
+                                <label class="col-form-label">Belongs to</label>
                                 <div class="controls controls-row">
                                     <div class="col-3">
-                                        <select name="searchFilter.projectId" class="input-block-level"
+                                        <select name="searchFilter.projectId" class="form-control"
                                                 ng-model="filter.projectId" ng-options="project.id as project.title for project in projects"
                                                 ng-change="updateFilter()">
                                             <option value="">Any project</option>
                                         </select>
                                     </div>
                                     <div class="col-3">
-                                        <select name="searchFilter.collectionId" class="input-block-level"
+                                        <select name="searchFilter.collectionId" class="form-control"
                                                 ng-model="filter.collectionId" ng-options="collection.id as collection.title for collection in collections"
                                                 ng-change="updateFilter()">
                                             <option value="">Any collection</option>
@@ -374,7 +362,7 @@
                             </div>
 
                             <div class="control-group" ng-show="categoryFilter">
-                                <label class="control-label">Category</label>
+                                <label class="col-form-label">Category</label>
                                 <div class="controls">
                                     <select name="searchFilter.categoryId" class="input-xlarge"
                                             ng-model="filter.categoryId" ng-options="category.id as category.name group by category.parent_name for category in categories"
@@ -385,7 +373,7 @@
                             </div>
 
                             <div class="control-group">
-                                <label class="control-label">Other Filters</label>
+                                <label class="col-form-label">Other Filters</label>
                                 <div class="controls form-inline">
                                     <label class="checkbox inline"><input type="checkbox" name="searchFilter.bookmarked" ng-model="filter.bookmarked" ng-change="updateFilter()">Bookmarked Items</label>
                                     <label class="checkbox inline"><input type="checkbox" name="searchFilter.integrationCompatible" ng-model="filter.integrationCompatible" value="true" ng-change="updateFilter()">Integration-compatible</label>
@@ -459,6 +447,7 @@
 
 
 
+        </div>
         </div>
     </div>
 </script>

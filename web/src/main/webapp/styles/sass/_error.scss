@@ -14,11 +14,12 @@
 }
 
 .error-banner h1, .error-banner h2, .error-banner h3, .error-banner h4 {
-    color: #7a1501 /* "tDAR red" */
+    color: $darkRed /* "tDAR red" */
 }
 
 .bg-red {
-    background-color: #7a1501;
+    background-color: $darkRed;
+    color:white;
 }
 
 /* Put error codes in a block-level container w/ class of  .pull-right.error-codes to inset them in the
@@ -51,4 +52,8 @@ are governed by several media queries and thus easy to screw up the formatting o
 
 .alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
     color: #000;
+}
+
+.modal-dialog {
+    background: white;
 }

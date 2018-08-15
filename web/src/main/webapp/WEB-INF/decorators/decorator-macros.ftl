@@ -157,10 +157,10 @@
             </form>
         </div>
         <div class="d-flex flex-column">
-            <a class="dropdown-item" href="#">Dashboard</a>
-            <a class="dropdown-item" href="#">Explore</a>
-            <a class="dropdown-item" href="#">Search</a>
-            <a class="dropdown-item" href="#">Integrate</a>
+            <a class="dropdown-item" href="/dashboard">Dashboard</a>
+            <a class="dropdown-item" href="/browse/explore">Explore</a>
+            <a class="dropdown-item" href="/search">Search</a>
+            <a class="dropdown-item" href="/workspace/list">Integrate</a>
         </div>
     </div>
     <#else>

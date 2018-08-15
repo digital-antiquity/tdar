@@ -202,7 +202,8 @@ form.leaflet-control-geocoder-form {
   color: #7a1501; }
 
 .bg-red {
-  background-color: #7a1501; }
+  background-color: #7a1501;
+  color: white; }
 
 /* Put error codes in a block-level container w/ class of  .pull-right.error-codes to inset them in the
 upper-right corner. Individual codes should be wrapped in span.error-code elements */
@@ -230,6 +231,9 @@ are governed by several media queries and thus easy to screw up the formatting o
 
 .alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
   color: #000; }
+
+.modal-dialog {
+  background: white; }
 
 .d3tree svg {
   border: 1px solid #CCC; }
@@ -1036,5 +1040,75 @@ h3.displayName {
 
 div#ontologyTarget {
   background-color: #efefef; }
+
+/***** NAV *******/
+/* resource navigation toolbar */
+.resource-nav {
+  height: 40px;
+  margin: 40px 0px 40px 0px;
+  background: #f0eeeb; }
+
+.resource-nav ul {
+  position: relative;
+  left: -10px; }
+
+.resource-nav ul, .resource-nav li, .inline-menu li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: inline-block; }
+
+.resource-nav li a {
+  float: left; }
+
+.resource-nav li span.disabled {
+  display: inline-block; }
+
+.resource-nav li a, .resource-nav li span.disabled {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 11px;
+  color: #7d7a77;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 16px 10px 9px 10px;
+  border-right: 1px solid #fff; }
+
+.resource-nav li span.disabled {
+  color: #ccc !important; }
+
+.lt-ie10 .resource-nav li a {
+  padding: 15px 20px 14px 40px !important; }
+
+.resource-nav li a:hover, .resource-nav li.active a {
+  color: #fff;
+  background: #7a1501;
+  text-decoration: none; }
+
+.resource-nav li.disabled a:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+  text-decoration: none; }
+
+.resource-nav li.edit a {
+  background-position-y: -40px; }
+
+.resource-nav li.delete a {
+  background-position-y: -95px; }
+
+.resource-nav li.bookmark a {
+  background-position-y: -150px; }
+
+.resource-nav li.un-bookmark a {
+  background-position-y: -300px; }
+
+.resource-nav li.disabled.bookmark a {
+  background-position-y: -300px; }
+
+.resource-nav li.columns a {
+  background-position-y: -203px; }
+
+.resource-nav li.mapping a {
+  background-position: 12px -258px; }
 
 /*# sourceMappingURL=style.css.map */

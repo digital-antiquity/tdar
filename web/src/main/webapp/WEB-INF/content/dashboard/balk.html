@@ -223,6 +223,8 @@
 
     <!--  COMMENT MODAL -->
     <div class="modal hide fade" id="comments-template-modal" v-if="commentFile != undefined">
+      <div class="modal-dialog modal-lg" role="document">
+
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 v-if="commentFile != undefined">Comments for {{commentFile.name}}</h3>
@@ -240,10 +242,12 @@
         <a href="#" data-dismiss="modal" class="btn">Close</a>
       </div>
     </div>
+    </div>
 
 
     <!--  MOVE MODAL -->
     <div class="modal hide fade" id="move-template-modal">
+      <div class="modal-dialog modal-lg" role="document">
       <div class="modal-header">
         <button type="button" class="close"  @click="cancelMove()" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 v-if="selectedFiles != undefined ">Move File(s): {{selectedFiles.length }}</h3>
@@ -267,9 +271,11 @@
         <a  data-dismiss="modal" @click="cancelMove()" class="btn">Cancel</a>
       </div>
     </div>
+    </div>
 
     <!--  COLLECTION MODAL -->
     <div class="modal hide fade" id="collection-modal">
+      <div class="modal-dialog modal-lg" role="document">
       <div class="modal-header">
         <button type="button" class="close"  data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3>Link {{currentDir.name}}</h3>
@@ -291,6 +297,7 @@
         <a  data-dismiss="modal" @click="linkCollection()" class="btn-active btn">Link</a>
         <a  data-dismiss="modal" href="#" class="btn">Cancel</a>
       </div>
+    </div>
     </div>
 
 

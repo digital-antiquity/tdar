@@ -25,7 +25,8 @@ navigation freemarker macros
             </#if>
         </#if>
         <#if (sessionData.authenticated)!false>
-        <div class="col-12 resource-nav  screen " id="toolbars" parse="true">
+        <div class="container" id="toolbars" parse="true">
+        <div class="col-12 resource-nav  screen " >
             <ul>
                 <#if persistable??>
 			        <@makeLink namespace "view" "view" "view" current />
@@ -50,6 +51,7 @@ navigation freemarker macros
 			    <#nested>
 			</ul>
 		</div>
+		</div>
 		</#if>
     </#macro>
 
@@ -57,7 +59,8 @@ navigation freemarker macros
     <#macro collectionToolbar namespace current="view">
         <#if persistable??>
         <#if (sessionData.authenticated)!false>
-        <div class="col-12 resource-nav  screen " id="toolbars" parse="true">
+        <div class="container" id="toolbars" parse="true">
+        <div class="col-12 resource-nav  screen " >
             <ul>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
@@ -77,6 +80,7 @@ navigation freemarker macros
         <#nested>
 			</ul>
 		</div>
+		</div>
 
 			</#if>
 		</#if>
@@ -86,7 +90,8 @@ navigation freemarker macros
     <#macro billingToolbar namespace current="view">
         <#if persistable??>
         <#if (sessionData.authenticated)!false>
-        <div class="col-12 resource-nav  screen " id="toolbars" parse="true">
+        <div class="container" id="toolbars" parse="true">
+        <div class="col-12 resource-nav  screen ">
             <ul>
 	        	<@makeLink namespace "view" "view" "view" current />
     		    <#if editable>
@@ -106,6 +111,7 @@ navigation freemarker macros
 		        </#if>
                 <@makeLink namespace "transfer/${persistable.id?c}" "transfer" "transfer" current true edit />
 			</ul>
+		</div>
 		</div>
 
 			</#if>
@@ -129,7 +135,8 @@ navigation freemarker macros
             </#if>
 
             <#if (sessionData.authenticated)!false>
-            <div class="col-12 resource-nav  screen" id="toolbars" parse="true">
+        <div class="container" id="toolbars" parse="true">
+            <div class="col-12 resource-nav  screen">
                 <ul>
                     <@makeLink "browse" "creators" "view" "view" current true />
 			    <#if "edit" != current>
@@ -141,6 +148,7 @@ navigation freemarker macros
                 	<@makeLink "entity/user" "rights/${id?c}" "rights" "rights" current false />
 				</#if>
                 </ul>
+            </div>
             </div>
             </#if>
         </#if>
@@ -157,7 +165,8 @@ navigation freemarker macros
     <#macro keywordToolbar current>
 
         <#if editor>
-            <div class="col-12 resource-nav  screen" id="toolbars" parse="true">
+        <div class="container" id="toolbars" parse="true">
+            <div class="col-12 resource-nav  screen">
                 <ul>
                     <@makeLink keyword.urlNamespace "" "view" "view" current true />
 
@@ -167,6 +176,7 @@ navigation freemarker macros
                     <@makeLink "entity/keyword" "edit" "edit" "edit" current true />
                 </#if>
                 </ul>
+            </div>
             </div>
         </#if>
     </#macro>
