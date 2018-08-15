@@ -9,7 +9,7 @@
 
     <div class="row">
         <div class="col-9">
-                <a href="<@s.url value="/workspace/integrate"/>" class="button tdar-button">Start a New Integration</a>
+                <a href="<@s.url value="/workspace/integrate"/>" class="button tdar-button float-right">Start a New Integration</a>
             <#list workflows?sort_by('dateUpdated')?reverse>
                 <h3>Saved Integrations</h3>
             <table id="tblWorkflows" class="table table-bordered table-hover">

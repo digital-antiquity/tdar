@@ -231,6 +231,64 @@ are governed by several media queries and thus easy to screw up the formatting o
 .alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
   color: #000; }
 
+.d3tree svg {
+  border: 1px solid #CCC; }
+
+.d3tree .node {
+  cursor: pointer; }
+
+.d3tree .node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px; }
+
+.d3tree .node circle.children {
+  fill: lightsteelblue; }
+
+.d3tree .found {
+  fill: #7a1501;
+  stroke: #7a1501;
+  stroke-width: 1.5px; }
+
+.d3tree circle.found {
+  fill: #7a1501;
+  stroke: #7a1501;
+  stroke-width: 1.5px; }
+
+.d3tree .node text {
+  font: 10px sans-serif; }
+
+.d3tree .node text.found {
+  font: 10px sans-serif;
+  stroke: #000 !important;
+  stroke-width: .6px; }
+
+.d3tree .link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px; }
+
+.d3tree .foundLink {
+  fill: none;
+  stroke: #7a1501;
+  stroke-width: 1.5px; }
+
+/*Just to ensure the select2 box is "glued" to the top*/
+.d3tree .search {
+  width: 100%; }
+
+#searchclear {
+  position: absolute;
+  right: 10px;
+  top: -12px;
+  font-weight: bold;
+  bottom: 0;
+  height: 14px;
+  margin: auto;
+  font-size: 14px;
+  cursor: pointer;
+  color: #ccc; }
+
 /** set width and height properly **/
 .svgicon {
   display: inline-block;
@@ -966,5 +1024,17 @@ div + .add-another-control {
 h3.displayName {
   margin-top: 1em;
   border-bottom: 1px solid #EEE; }
+
+#ontology-nodes .hidden-nodes {
+  display: none;
+  visibility: hidden; }
+
+.hiddenChildren:after {
+  content: "(show more)";
+  font-size: 10px !important;
+  font-family: helvetica !important; }
+
+div#ontologyTarget {
+  background-color: #efefef; }
 
 /*# sourceMappingURL=style.css.map */

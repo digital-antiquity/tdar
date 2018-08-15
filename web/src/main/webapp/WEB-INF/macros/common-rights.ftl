@@ -13,28 +13,28 @@
 	                <div class="form-row" >
 	                	<div class="col-4"><b>First Name</b></div>
 	                    <div class="col-8">
-	                        <@s.textfield name="invites[0].firstName" cssClass="col-8 inviteForm" id="firstName" />
+	                        <@s.textfield name="invites[0].firstName" cssClass=" inviteForm" id="firstName" />
 	                    </div>
 	                </div>
                     
 	                <div class="form-row" >
 	                	<div class="col-4"><b>Last Name</b></div>
     	                <div class="col-8">
-        	                <@s.textfield name="invites[0].lastName" cssClass="col-8 inviteForm" id="lastName" />
+        	                <@s.textfield name="invites[0].lastName" cssClass=" inviteForm" id="lastName" />
             	        </div>
 	                </div>
                     
 	                <div class="form-row" >
 	                	<div class="col-4"><b>Email</b></div>
 	                    <div class="col-8">
-	                        <@s.textfield name="invites[0].email" cssClass="col-8 inviteForm" id="email" />
+	                        <@s.textfield name="invites[0].email" cssClass=" inviteForm" id="email" />
 	                    </div>
 	                </div>
                     
 	                <div class="form-row" >
 	                	<div class="col-4"><b>Permission</b></div>
 	                    <div class="col-8">
-	                        <@s.select  cssClass="controls creator-rights-select col-8" name="invites[0].permission" emptyOption='false'
+	                        <@s.select  cssClass="controls creator-rights-select" name="invites[0].permission" emptyOption='false'
 	                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
 	                    </div>
 	                </div>
@@ -42,11 +42,12 @@
 	                <div class="form-row" >
 	                	<div class="col-4"><b>Expires?</b></div>
 	                    <div class=" col-8">
-	                        <div class="input-append">
-	                              <input class="controls datepicker" name="invites[0].until" style="width:6em" 
+	                        <div class="input-group">
+	                              <input class="form-control datepicker" name="invites[0].until" style="width:6em" 
 	                                size="16" type="text" value="" data-date-format="mm-dd-yyyy" >
-	
-	                              <span class="add-on"><i class="icon-th"></i></span>
+	                               <div class="input-group-append">
+	                              <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+	                              </div>
 	                        </div>
 	                    </div>
                     </div>
@@ -54,7 +55,7 @@
                 <div class="col-6">
 	                <div class="form-row" >
 	                <p><b>Add a Note</b></p>
-	                <@s.textarea name="invites[0].note" cssClass="col-12" rows=5 />
+	                <@s.textarea name="invites[0].note" cssClass="col-12" rows=8 />
 	                </div>
                 </div>
             </div>
@@ -67,10 +68,10 @@
     <h3>Add / Modify User(s)</h3>
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
     <div class="row">
-        <div class='col-<#if showDate>5<#else>7</#if>'>
+        <div class='col-<#if showDate>6<#else>8</#if>'>
         <b>User or Email </b>
         </div>
-        <div class="col-2">
+        <div class="col-3">
          <b>Permissions</b>
         </div>
         <#if showDate>
@@ -97,21 +98,22 @@
 
     <#macro _proxy proxy_index proxy showDate=true>
     
-                        <div class=" control-group repeat-row" id="authorizedUsersRow_${proxy_index}_">
+                        <div class=" control-group repeat-row mb-3" id="authorizedUsersRow_${proxy_index}_">
                             <div class="form-row"  id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
+                                    <div class="col-<#if showDate>6<#else>8</#if>">
                                         <input type="hidden" name="proxies[${proxy_index}].inviteId" value="<#if proxy.inviteId?has_content>${(proxy.inviteId!-1)?c}</#if>">
 
                                         <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
                                         <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''} <#if proxy.inviteId?has_content> (invite) </#if>" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
-                                                 class="col-<#if showDate>5<#else>7</#if> userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
+                                                 class="mr-2 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input form-control"
                                                  <#if proxy.inviteId?has_content> disabled=true </#if>
                                                  
                                                  autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
                                                  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."
                                                  autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
                                                  autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
-
-                                                                        <@s.select cssClass="creator-rights-select col-4" name="proxies[${proxy_index}].permission" emptyOption='false'
+                                            </div>
+                                            <@s.select cssClass="creator-rights-select col-3" name="proxies[${proxy_index}].permission" emptyOption='false'
                                         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                                 <#if showDate>
                                     <div class="input-append col-2">
@@ -119,10 +121,13 @@
                                     <#if proxy.until?has_content>
                                         <#local val=proxy.until />
                                     </#if>
-                                          <input class="datepicker" name="proxies[${proxy_index}].until" style="width:6em" 
+                                            <div class="input-group ml-2">
+                                          <input class="datepicker form-input" name="proxies[${proxy_index}].until" style="width:6em" 
                                             size="16" type="text" value="${val}" data-date-format="mm-dd-yyyy" >
-
-                                          <span class="add-on"><i class="icon-th"></i></span>
+                                           <div class="input-group-append">
+                                              <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                          </div>
+                                          </div>
                                     </div>
                                 </#if>
 									<@nav.clearDeleteButton  />

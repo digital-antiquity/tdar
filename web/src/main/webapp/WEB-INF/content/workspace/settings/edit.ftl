@@ -20,18 +20,23 @@
         <@s.textfield name="persistable.name" cssClass="input-xlarge" label="Integration Name"/>
         <@s.textarea name="persistable.description" cssClass="input-xlarge" label="Integration Description"  cols="80"  />
 
-        <div class="control-group">
-        <label class="control-label">Allow anyone to view this Integration?</label>
-            <div class="controls">
-                <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="persistable.hidden"
-                                                                        value="false" <@commonr.checkedif persistable.hidden false /> />Yes</label>
-                <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="persistable.hidden"
-                                                                         value="true" <@commonr.checkedif persistable.hidden true /> />No</label>
-            </div>
+        <label class="control-label col-form-label">Allow anyone to view this Integration?</label>
+        <br/>
+        <div class="form-check form-check-inline">
+                <div class="form-check">
+                    <input type="radio" id="rdoheaderTrue" name="persistable.hidden" class="form-check-input form-check-inline" value="false" <@commonr.checkedif persistable.hidden false /> />
+                    <label for="rdoheaderTrue" class="radio form-check-label">Yes</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="rdoheaderFalse" name="persistable.hidden" class="form-check-input form-check-inline" value="true" <@commonr.checkedif persistable.hidden true /> />
+                    <label for="rdoheaderFalse" class="radio form-check-label">No</label>
+                </div>
         </div>
         
-
-        <p><b>Users who can view/run this integration</b></p>
+<br/>
+<br/>
+<br/>
+        <h5>Users who can view/run this integration</h5>
         <@edit.listMemberUsers false />
 
         <@s.hidden name="id" value="${persistable.id?c!-1}" />

@@ -9,6 +9,7 @@ $lightBeige: rgba(227, 224, 216, .2);
 @import 'leaflet';
 @import 'datatables';
 @import 'error';
+@import 'd3tree-ontology';
 @import 'svg';
 @import 'worldmap';
 @import 'treeview';
@@ -661,4 +662,24 @@ h3.displayName {
     border-bottom:1px solid #EEE;
 }
 
+
+
+
+
+
+#ontology-nodes .hidden-nodes {
+    display: none;
+    visibility: hidden;
+}
+
+
+.hiddenChildren:after {
+    content: "(show more)";
+    font-size: 10px !important;
+    font-family: helvetica !important;
+}
+
+div#ontologyTarget {
+    background-color: #efefef;
+}
 

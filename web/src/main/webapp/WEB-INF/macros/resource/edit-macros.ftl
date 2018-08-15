@@ -404,21 +404,20 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     @requires subcategories:List<CategoryVariable>
 -->
     <#macro categoryVariable>
-    <div class="form-group">
-        <label class="col-form-label">
-            <small>Category / Subcategory</small>
-        </label>
-
+    <div class="form-group row">
+        <label class="col-form-label col-2">Category / Subcategory</label>
+        <div class="col-10">
         <div class="controls form-row">
-            <div id='categoryDivId' class="col-3">
-                <@s.select theme="tdar"  id='categoryId' name='categoryId'
+            <div id='categoryDivId' class="col-6">
+                <@s.select id='categoryId' name='categoryId'
                 onchange='TDAR.common.changeSubcategory("#categoryId","#subcategoryId")' autocompleteName="sortCategoryId"
                 listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' cssClass="input-block-level" />
             </div>
-            <div id='subcategoryDivId' class="col-3">
-                <@s.select theme="tdar" id='subcategoryId' name='subcategoryId'
+            <div id='subcategoryDivId' class="col-6">
+                <@s.select id='subcategoryId' name='subcategoryId'
                 autocompleteName="subCategoryId" headerKey="-1" listKey='id' headerValue="N/A" list='%{subcategories}'  cssClass="input-block-level" />
             </div>
+        </div>
         </div>
     </div>
     </#macro>
@@ -430,15 +429,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="enter-data">
         <h2>${(resource.id == -1)?string("Submit", "Replace")} ${typeLabel}</h2>
 
-        <div class="form-group">
-            <label class='col-form-label' for='inputMethodId'>Submit as</label>
+        <div class="form-group row">
+            <label class='col-form-label col-2' for='inputMethodId'>Submit as</label>
 
-            <div class="controls">
-                <select id='inputMethodId' name='fileInputMethod' onchange='TDAR.common.refreshInputDisplay()' class="col-12">
+                <select id='inputMethodId' name='fileInputMethod' onchange='TDAR.common.refreshInputDisplay()' class="col-10 form-control">
                     <option value='file' <#if !usetext>selected="selected"</#if>>${uploadOptionText}</option>
                     <option value='text' <#if usetext>selected="selected"</#if>>${manualEntryText}</option>
                 </select>
-            </div>
         </div>
 
         <div id='uploadFileDiv' style='display:none;'>
@@ -446,8 +443,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <div class="controls">
                     <#nested 'upload'>
                 </div>
-            </div>
             <@_singleFileUpload />
+            </div>
         </div>
 
         <div id='textInputDiv'>
@@ -457,7 +454,6 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 </div>
             </div>
             <@s.textarea label='${typeLabel}' labelposition='top' id='fileInputTextArea' name='fileTextInput' rows="5" cssClass='resizable resize-vertical col-12' cols="80" />
-        </div>
     </div>
 
     </#macro>
@@ -828,7 +824,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 Date             
                         <div class="input-append">
    						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yyyy"} />
-                          <span class="add-on"><i class="far fa-calendar-alt"></i></span>
+                          <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
                         </div>
                 Description      <@s.textarea cssClass="input-block-level resizable resize-vertical" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
@@ -1243,9 +1239,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             <div class="col-6">
                                 <@registeredUserRow person=user _indexNumber=user_index includeRepeatRow=false includeRights=includerights />
                             </div>
-                            <div class="col-1">
-                                <@nav.clearDeleteButton id="user${user_index}"  />
-                            </div>
+                            <@nav.clearDeleteButton id="user${user_index}"  />
+                        <div class="col-5"></div>
                         </div>
                     </#if>
                 </#list>

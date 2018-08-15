@@ -21,7 +21,7 @@
         data integration tool.
     </span>
 
-    <div id='divOntology' class="glide ontologyInfo" data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
+    <div id='divOntology' class="glide ontologyInfo col-12" data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
 
         <@edit.categoryVariable />
 

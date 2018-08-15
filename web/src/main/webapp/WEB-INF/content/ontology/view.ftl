@@ -20,9 +20,9 @@
         </ul>
         </#if>
 
-	<form class="pull-right" onSubmit="return false;">
+	<form class="float-right" onSubmit="return false;">
 	    <div class="btn-group">
-		    <input type="search" id="search" placeholder="search"/>
+		    <input type="search" id="search" class="form-control" placeholder="search"/>
 			<span id="searchclear" class="remove">X</span>
 		</div>
 	</form>
