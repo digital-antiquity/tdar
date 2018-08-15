@@ -5,7 +5,7 @@
  */
 
 
-const Vue = require("vue");
+const Vue = require("vue").default;
 require("Axios");
 require("jquery");
 

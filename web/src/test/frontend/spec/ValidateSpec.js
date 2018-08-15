@@ -1,6 +1,10 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
 describe("ValidateSpec.js: TDAR.validate tests", function () {
     "use strict";
+    
+    beforeEach(function(){
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
+    });
 
     // FIXME: this does nothing in the leaflet world
     it("initializes form validation", function () {

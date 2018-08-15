@@ -1,7 +1,10 @@
 /* global describe, it, expect */
+const TDAR = require("JS/tdar.master");
+
 describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
 
     beforeEach(function() {
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
         loadFixtures("bulk-upload-form.html");
         jasmine.Ajax.install();
         jasmine.clock().install();

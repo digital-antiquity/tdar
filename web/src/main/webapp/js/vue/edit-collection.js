@@ -1,11 +1,9 @@
 /**TDAR edit-collection.js */
 
 
-import Vue from "vue";
-import axios from "Axios";
-
-TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
-	"use strict";
+const Vue = require("vue").default;
+const axios = require("Axios");
+const datatable = require("./../tdar.datatable");
 
 	var _init = function(params) {
 		var enableUnmanagedCollections = false;
@@ -121,7 +119,8 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
 							}
 
 							try {
-							TDAR.datatable.removePendingChange(parseInt(id),
+
+							datatable.removePendingChange(parseInt(id),
 									isManaged, isAddition, $dataTable);
 							} catch(e){console.warn(e);}
 						}
@@ -131,10 +130,12 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
 		return vm;
 	}
 
-	return {
+	module.exports = {
 		init : _init,
 		main : function() {
 				TDAR.vuejs.editcollectionapp.init(appId);
 		}
 	}
-})(console, jQuery, window, Vue, axios, TDAR);
+	
+//TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
+//})(console, jQuery, window, Vue, axios, TDAR);

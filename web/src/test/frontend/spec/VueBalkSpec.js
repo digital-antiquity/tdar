@@ -1,4 +1,7 @@
 /* global describe, it, xit, expect, beforeEach, afterEach, loadFixtures */
+
+const Vue = require("Vue").default;
+
 describe("BalkSpec.js: fileupload suite - root", function(){
     "use strict";
 

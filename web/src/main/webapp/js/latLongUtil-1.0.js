@@ -534,3 +534,8 @@ Geo.toBrng = function(deg, format, dp) {
   var brng =  Geo.toDMS(deg, format, dp);
   return brng.replace('360', '0');  // just in case rounding took us up to 360º!
 };
+
+module.exports = {
+    Geo : Geo,
+    LatLon: LatLon
+}

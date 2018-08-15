@@ -5,9 +5,6 @@ require('./../../includes/Leaflet.Sleep');
 require('leaflet-draw/dist/leaflet.draw');
 require('leaflet.markercluster');
 
-//import jQuery from 'jquery' 
-
-//TDAR.leaflet = (function(console, $, ctx, L) {
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
@@ -662,8 +659,8 @@ require('leaflet.markercluster');
         getMaps : _getMaps,
         update: _update,
         main : function() {
-            TDAR.leaflet.initLeafletMaps();
-            TDAR.leaflet.initEditableLeafletMaps();
-            TDAR.leaflet.initResultsMaps();
+            _initLeafletMaps();
+            _initEditableMaps();
+            _initResultsMaps();
         }
     }

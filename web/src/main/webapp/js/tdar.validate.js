@@ -50,6 +50,7 @@ require("./tdar.formValidateExtensions");
             var template = $.validator.format('<input type="hidden" name="clientValidationInfo[\'{0}\']" value="{1}">');
 
             $.each(errors, function (idx, error) {
+                const common = require("./tdar.common");
                 var key = "error_" + idx;
                 var msg = common.htmlEncode("" + error.element.id + ": " + error.message);
                 var $input = $(template(key, msg));

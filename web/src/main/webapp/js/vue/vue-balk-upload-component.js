@@ -1,5 +1,9 @@
 const vuejsupload = require("./vue-base-upload");
 
+const Vue = require("Vue").default;
+const VueRouter = require("./../../components/vue-router/dist/vue-router");
+
+
     var WONT_CURATE = "WONT_CURATE";
     var UNDO_WONT_CURATE = 'UNDO_WONT_CURATE';
     var CURATED = "CURATED";

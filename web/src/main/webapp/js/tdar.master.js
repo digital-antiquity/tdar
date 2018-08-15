@@ -35,6 +35,7 @@ TDAR.vuejs.uploadWidget     =   require("./vue/vue-edit-file-upload-component");
 TDAR.vuejs.upload           =   require("./vue/vue-base-upload");
 TDAR.vuejs.balk             =   require("./vue/vue-balk-upload-component");
 TDAR.vuejs.advancedSearch   =   require("./vue/vue-autocomplete");
+TDAR.vuejs.editcollectionapp =  require("./vue/edit-collection");
 require("./tdar.messages_en");
 
 window.TDAR = TDAR;

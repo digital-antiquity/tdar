@@ -1,4 +1,7 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
+
+const Vue = require("vue").default;
+
 describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	var resources
 	
@@ -143,6 +146,7 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
         //console.debug("JQUERY: is ",jQuery==$);
         Vue.nextTick(function() {
         	var rows = fix.find("#tblToAdd tr");
+        	console.debug(rows);
         	console.log("There are "+rows.length+" rows ");
             //expect(rows).toHaveLength(5);
           	var row = rows[0];

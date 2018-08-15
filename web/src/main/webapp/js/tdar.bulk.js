@@ -1,6 +1,8 @@
 /**
  * TDAR.bulk.js
  */
+    //const TDAR = require("./tdar.master");
+
     var asyncUrl;
     var gPercentDone = 0;
     var TIMEOUT = 1000 / 2; //2fps is all we need.
@@ -12,7 +14,7 @@
 
         _updateProgressBar(0);
         //fixme: for testing purposes, call fqn of updateProgress instead of _updateProgress
-        setTimeout(TDAR.bulk.updateProgress, TIMEOUT);
+        setTimeout(window.TDAR.bulk.updateProgress, TIMEOUT);
         return {asyncUrl: asyncUrl, percentDone: gPercentDone, timeout: TIMEOUT};
     };
 

@@ -1,7 +1,7 @@
 /* global describe, it, expect, $, $j, jasmine */
 
-
-
+const LatLon = require("JS/latLongUtil-1.0").LatLon;
+const Geo = require("JS/latLongUtil-1.0").Geo;
 
 describe("LatLonSpec.js: latlong tests", function () {
     "use strict";
