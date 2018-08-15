@@ -1,253 +1,3 @@
-.view .sidebar, .dashboard .sidebar {
-  background: url(/images/r4/bg-cols-right.png) top left repeat-y;
-  margin-left: 0px;
-  padding-left: 0px; }
-
-.noleftmargin {
-  margin-left: 0px;
-  padding-left: 0px; }
-
-aside li {
-  font-size: 13px;
-  line-height: 17px;
-  color: #000;
-  margin-top: 15px; }
-
-a {
-  color: #7a1501; }
-
-.red {
-  color: #7a1501; }
-
-.serif {
-  font-family: "ff-tisa-web-pro", serif !important; }
-
-.black {
-  color: #000; }
-
-.white {
-  color: white;
-  fill: white; }
-
-.beige {
-  background-color: #E3E0D8; }
-
-.lightbeige {
-  background-color: rgba(227, 224, 216, 0.2); }
-
-.white-border-bottom {
-  border-bottom: 4px solid white; }
-
-a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
-  font-family: helvetica, arial, sans-serif;
-  height: 35px;
-  display: inline-block;
-  background: #7a1501;
-  margin: 0 4px 0 0;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
-  font-weight: 700;
-  font-size: 12px;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-align: center;
-  -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src=/images/hIEfix.png, sizingMethod=crop )";
-  zoom: 1;
-  padding-left: 8px;
-  padding-right: 8px;
-  cursor: pointer;
-  border: none;
-  padding-top: .6em;
-  vertical-align: middle;
-  padding-bottom: 0;
-  background-color: #7a1501;
-  color: #fff;
-  border-radius: 0; }
-  a.tdarButton :focus, .tdar-button :focus, input.tdar-button[type=submit] :focus {
-    background-color: #a72e1d; }
-
-nav {
-  font-weight: bold; }
-  nav .logIn {
-    font-size: 0.85rem;
-    text-transform: uppercase; }
-    nav .logIn .tdarLink {
-      color: #7a1501; }
-
-.tdarNav {
-  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
-  /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
-  border-bottom: 1px solid #CCC; }
-  .tdarNav .tdarNavItem {
-    text-transform: uppercase;
-    font-weight: bold;
-    color: rgba(0, 0, 0, 0.5);
-    border-right: #7a1501; }
-  .tdarNav .nav-chevron {
-    stroke-width: 5px;
-    stroke: #7a1501; }
-  .tdarNav .show .nav-chevron {
-    transform: rotate(180deg); }
-
-.tdar-slider h4 a {
-  cursor: auto;
-  font-family: ff-tisa-web-pro, serif;
-  font-size: 15px;
-  font-weight: bold;
-  height: auto;
-  line-height: 19px; }
-
-p.lead {
-  min-height: 4em;
-  color: #7d7a77;
-  display: block;
-  font-family: ff-tisa-web-pro, serif;
-  font-size: 13px; }
-
-.carousel, .image-carousel.carousel {
-  /* Changes the position of the indicators */ }
-  .carousel .carousel-inner, .image-carousel.carousel .carousel-inner {
-    padding-left: 6em;
-    padding-right: 6em; }
-  .carousel .carousel-control, .image-carousel.carousel .carousel-control {
-    display: block;
-    width: 24px;
-    height: 38px;
-    background: url(/images/r4/btns-slider.png) 0 0;
-    background-repeat: no-repeat;
-    text-indent: -999em;
-    opacity: 0.5;
-    transition: opacity 0.1s ease-out; }
-  .carousel .car-btn:hover, .image-carousel.carousel .car-btn:hover {
-    opacity: 1; }
-  .carousel .carousel-control.left, .image-carousel.carousel .carousel-control.left {
-    left: 0; }
-  .carousel .carousel-control.right, .image-carousel.carousel .carousel-control.right {
-    right: 0;
-    background-position: -24px 0; }
-  .carousel .carousel-indicators, .image-carousel.carousel .carousel-indicators {
-    width: 100%;
-    top: auto;
-    bottom: 0px;
-    /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
-    /*margin-right: -19px;*/
-    position: inherit !important;
-    margin: 1em 0 0 0; }
-  .carousel .carousel-indicators .active, .image-carousel.carousel .carousel-indicators .active {
-    background: #333333; }
-  .carousel .carousel-indicators span, .image-carousel.carousel .carousel-indicators span {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border-radius: 10px;
-    padding: 4px;
-    margin: 1pt;
-    width: 3px;
-    height: 3px;
-    display: inline-block;
-    background: #c0c0c0; }
-
-/* Removes the default 20px margin and creates some padding space for the indicators and controls */
-.image-carousel.carousel {
-  margin-bottom: 10px;
-  padding: 0 40px 10px 40px; }
-
-h1 a, h2 a, h3 a, h4 a, h5 a {
-  color: black; }
-
-h1 {
-  font-size: 30px;
-  line-height: 34px; }
-
-h1, h2, h3, header {
-  font-family: "soleil", sans-serif !important;
-  font-weight: 700; }
-
-header .navbar button {
-  font-size: 14px; }
-
-header + section {
-  margin-top: 3.5em; }
-
-header + #hero {
-  margin-top: 0em !important; }
-
-.welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
-  font-family: "soleil", sans-serif !important; }
-
-h2 {
-  font-size: 20px;
-  line-height: 24px;
-  margin-bottom: 10px;
-  margin-top: 7px; }
-
-h4 {
-  font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 5px;
-  margin-top: 20px !important;
-  padding-top: 15px; }
-
-aside h4 {
-  border-top: 1px solid #e5e5e5; }
-
-#home .news li, .cols p,
-.tableFormat td, header form input.searchbox,
-header .welcome-drop a,
-.hero input.searchbox,
-#slider p,
-#slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
-  font-family: "ff-tisa-web-pro", serif !important; }
-
-@media (min-width: 991.98px) {
-  .tdarDropdown .flex-column:first-child {
-    border-right: 2px solid #7a1501; }
-
-  .dropdown-menu:after {
-    bottom: 100%;
-    left: 10%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none; }
-
-  .dropdown-menu-right:after {
-    left: 80% !important; }
-
-  .dropdown-menu:after {
-    border-color: rgba(0, 0, 0, 0);
-    border-bottom-color: white;
-    border-width: 10px;
-    margin-left: -10px; }
-
-  .dropdown-menu:before {
-    border-color: rgba(0, 0, 0, 0);
-    border-bottom-color: white;
-    border-width: 16.5px;
-    margin-left: -16.5px; } }
-@media (max-width: 768px) {
-  #home #hero h2 {
-    font-size: 3.5rem; }
-
-  #mdScreenNav {
-    background-color: #E3E0D8; }
-
-  .tdarNav {
-    background: none; }
-    .tdarNav .tdarNavItem {
-      padding-left: 0; }
-
-  #tdarNavMenu li, #myAccountNav li {
-    border-top: 2px solid #D2BF9E; }
-  #tdarNavMenu .nav-link, #tdarNavMenu .btn-link, #myAccountNav .nav-link, #myAccountNav .btn-link {
-    color: #352319;
-    font-size: 24px;
-    font-weight: bold; }
-
-  .nav-chevron {
-    stroke: #352319; } }
 #home .card p, p.lead {
   min-height: 4em;
   color: #7d7a77;
@@ -352,6 +102,91 @@ header .welcome-drop a,
 form.leaflet-control-geocoder-form {
   padding: 0px;
   margin: 0px; }
+
+.columnSquare {
+  display: inline-block;
+  border: 1px solid #999;
+  position: relative;
+  margin-right: 5px;
+  bottom: -.5em !important;
+  width: 10px;
+  height: 10px;
+  padding: 0px; }
+
+.columnSquare.uncoded {
+  background: #ffffff; }
+
+.countColumn, .buttontable div[data-count], .columnSquare.count {
+  background: #e5e696;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+.measurementColumn, .buttontable div[data-measurement], .columnSquare.measurement {
+  background: #deefff;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+.integrationColumn, .buttontable div[data-ontology], .columnSquare.integration {
+  background: #e4efc0;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+.columnSquare span:before {
+  font-size: 14px;
+  font-weight: bold;
+  position: relative;
+  font-family: helvetica;
+  display: inline-block;
+  text-align: center;
+  width: 1em;
+  top: -3px; }
+
+.columnSquare.complete span:before {
+  content: "\2713";
+  /* check mark */
+  color: #000; }
+
+.columnSquare.invalid span:before {
+  content: "X";
+  color: #7a1501; }
+
+.defaultColumn, .buttontable div, .columnSquare.coded {
+  background: #eeeeee;
+  border: 1px solid #999999; }
+
+.columnSquare.mapped {
+  background: #8b755e; }
+
+.mappingInfo label {
+  position: static; }
+
+.mappingInfo input {
+  margin-left: 1em; }
+
+.columnSquare.filename {
+  background: #8b755e;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+#cbCheckAllToggle, .sorting_1 input[type='checkbox'] {
+  margin-right: 10px !Important;
+  margin-left: 10px !Important; }
+
+.legend {
+  line-height: 1.2em; }
+
+.displayColumn {
+  background: #e9e4cd;
+  border: 1px solid #999999; }
+
+.buttontable td, .integrationColumn, .displayColumn {
+  vertical-align: top; }
+
+.short button {
+  visibility: hidden; }
+
+.short .ontology {
+  display: none; }
 
 /* Error banners are a more attention-grabbing form of user notifications. */
 .error-banner {
@@ -669,6 +504,256 @@ div.tdarresults {
   .page-item.active .page-link a {
     color: #fff; }
 
+.view .sidebar, .dashboard .sidebar {
+  background: url(/images/r4/bg-cols-right.png) top left repeat-y;
+  margin-left: 0px;
+  padding-left: 0px; }
+
+.noleftmargin {
+  margin-left: 0px;
+  padding-left: 0px; }
+
+aside li {
+  font-size: 13px;
+  line-height: 17px;
+  color: #000;
+  margin-top: 15px; }
+
+a {
+  color: #7a1501; }
+
+.red {
+  color: #7a1501; }
+
+.serif {
+  font-family: "ff-tisa-web-pro", serif !important; }
+
+.black {
+  color: #000; }
+
+.white {
+  color: white;
+  fill: white; }
+
+.beige {
+  background-color: #E3E0D8; }
+
+.lightbeige {
+  background-color: rgba(227, 224, 216, 0.2); }
+
+.white-border-bottom {
+  border-bottom: 4px solid white; }
+
+a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
+  font-family: helvetica, arial, sans-serif;
+  height: 35px;
+  display: inline-block;
+  background: #7a1501;
+  margin: 0 4px 0 0;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src=/images/hIEfix.png, sizingMethod=crop )";
+  zoom: 1;
+  padding-left: 8px;
+  padding-right: 8px;
+  cursor: pointer;
+  border: none;
+  padding-top: .6em;
+  vertical-align: middle;
+  padding-bottom: 0;
+  background-color: #7a1501;
+  color: #fff;
+  border-radius: 0; }
+  a.tdarButton :focus, .tdar-button :focus, input.tdar-button[type=submit] :focus {
+    background-color: #a72e1d; }
+
+nav {
+  font-weight: bold; }
+  nav .logIn {
+    font-size: 0.85rem;
+    text-transform: uppercase; }
+    nav .logIn .tdarLink {
+      color: #7a1501; }
+
+.tdarNav {
+  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
+  /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
+  border-bottom: 1px solid #CCC; }
+  .tdarNav .tdarNavItem {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    border-right: #7a1501; }
+  .tdarNav .nav-chevron {
+    stroke-width: 5px;
+    stroke: #7a1501; }
+  .tdarNav .show .nav-chevron {
+    transform: rotate(180deg); }
+
+.tdar-slider h4 a {
+  cursor: auto;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 15px;
+  font-weight: bold;
+  height: auto;
+  line-height: 19px; }
+
+p.lead {
+  min-height: 4em;
+  color: #7d7a77;
+  display: block;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 13px; }
+
+.carousel, .image-carousel.carousel {
+  /* Changes the position of the indicators */ }
+  .carousel .carousel-inner, .image-carousel.carousel .carousel-inner {
+    padding-left: 6em;
+    padding-right: 6em; }
+  .carousel .carousel-control, .image-carousel.carousel .carousel-control {
+    display: block;
+    width: 24px;
+    height: 38px;
+    background: url(/images/r4/btns-slider.png) 0 0;
+    background-repeat: no-repeat;
+    text-indent: -999em;
+    opacity: 0.5;
+    transition: opacity 0.1s ease-out; }
+  .carousel .car-btn:hover, .image-carousel.carousel .car-btn:hover {
+    opacity: 1; }
+  .carousel .carousel-control.left, .image-carousel.carousel .carousel-control.left {
+    left: 0; }
+  .carousel .carousel-control.right, .image-carousel.carousel .carousel-control.right {
+    right: 0;
+    background-position: -24px 0; }
+  .carousel .carousel-indicators, .image-carousel.carousel .carousel-indicators {
+    width: 100%;
+    top: auto;
+    bottom: 0px;
+    /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
+    /*margin-right: -19px;*/
+    position: inherit !important;
+    margin: 1em 0 0 0; }
+  .carousel .carousel-indicators .active, .image-carousel.carousel .carousel-indicators .active {
+    background: #333333; }
+  .carousel .carousel-indicators span, .image-carousel.carousel .carousel-indicators span {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding: 4px;
+    margin: 1pt;
+    width: 3px;
+    height: 3px;
+    display: inline-block;
+    background: #c0c0c0; }
+
+/* Removes the default 20px margin and creates some padding space for the indicators and controls */
+.image-carousel.carousel {
+  margin-bottom: 10px;
+  padding: 0 40px 10px 40px; }
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+  color: black; }
+
+h1 {
+  font-size: 30px;
+  line-height: 34px; }
+
+h1, h2, h3, header {
+  font-family: "soleil", sans-serif !important;
+  font-weight: 700; }
+
+header .navbar button {
+  font-size: 14px; }
+
+header + section {
+  margin-top: 3.5em; }
+
+header + #hero {
+  margin-top: 0em !important; }
+
+.welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+  font-family: "soleil", sans-serif !important; }
+
+h2 {
+  font-size: 20px;
+  line-height: 24px;
+  margin-bottom: 10px;
+  margin-top: 7px; }
+
+h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  margin-top: 20px !important;
+  padding-top: 15px; }
+
+aside h4 {
+  border-top: 1px solid #e5e5e5; }
+
+#home .news li, .cols p,
+.tableFormat td, header form input.searchbox,
+header .welcome-drop a,
+.hero input.searchbox,
+#slider p,
+#slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+  font-family: "ff-tisa-web-pro", serif !important; }
+
+@media (min-width: 991.98px) {
+  .tdarDropdown .flex-column:first-child {
+    border-right: 2px solid #7a1501; }
+
+  .dropdown-menu:after {
+    bottom: 100%;
+    left: 10%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none; }
+
+  .dropdown-menu-right:after {
+    left: 80% !important; }
+
+  .dropdown-menu:after {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 10px;
+    margin-left: -10px; }
+
+  .dropdown-menu:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 16.5px;
+    margin-left: -16.5px; } }
+@media (max-width: 768px) {
+  #home #hero h2 {
+    font-size: 3.5rem; }
+
+  #mdScreenNav {
+    background-color: #E3E0D8; }
+
+  .tdarNav {
+    background: none; }
+    .tdarNav .tdarNavItem {
+      padding-left: 0; }
+
+  #tdarNavMenu li, #myAccountNav li {
+    border-top: 2px solid #D2BF9E; }
+  #tdarNavMenu .nav-link, #tdarNavMenu .btn-link, #myAccountNav .nav-link, #myAccountNav .btn-link {
+    color: #352319;
+    font-size: 24px;
+    font-weight: bold; }
+
+  .nav-chevron {
+    stroke: #352319; } }
 .nav-pills .nav-item {
   width: 100%; }
 .nav-pills .nav-link.active {

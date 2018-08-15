@@ -163,9 +163,11 @@
                     <hr/></#if>
 
                 <div class="datatablecolumn col-12" id="columnDiv_${column_index}">
-                        <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions"
-                              class="columnSquare"><span>&nbsp;</span>
-                    <h3 class="displayName">${column.displayName}</h3>
+                        <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions">
+                        
+                    <h3 class="displayName">
+<span class="columnSquare">&nbsp;</span>                    
+                    ${column.displayName}</h3>
 
     <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
         <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
@@ -210,7 +212,6 @@
                             value="${categoryId}"
                             />
 
-                            <span id="subcategoryDivId_${column_index}">
                                 <#if subCategoryId != "">
                                     <@s.select  target="#columnDiv_${column_index}"
                                     id='subcategoryId_${column_index}'
@@ -232,7 +233,6 @@
                                         <option value='-1'>N/A</option>
                                     </select>
                                 </#if>
-                            </span>
                             <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
                         </div>
                         </div>

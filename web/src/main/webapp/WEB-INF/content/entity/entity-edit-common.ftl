@@ -4,10 +4,10 @@
 
     <#macro uploadForm>
         <#if editor>
-            <div class="control-group">
-                <label class="control-label">Add an Photo / Logo</label>
-                <div class="controls">
-                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' dynamicAttributes={
+            <div class="control-group row">
+                <label class="col-form-label col-2">Add an Photo / Logo</label>
+                <div class="controls col-10">
+                    <@s.file  name='file' cssClass="input-xxlarge profileImage " id="fileUploadField" labelposition='left' size='40' dynamicAttributes={
                         "data-rule-extension":"jpg,tiff,jpeg,png"
                     }/>
                 </div>
@@ -77,7 +77,7 @@
     </#macro>
 
     <#macro hidden>
-            <@s.checkbox label='Hide page from logged-out users' name="persistable.hidden" id="hidden-page"  />
+            <@s.checkbox label='Hide page from logged-out users' name="persistable.hidden" id="hidden-page"  labelposition="left"/>
     </#macro>
 
     <#macro contactInfo>

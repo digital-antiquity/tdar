@@ -5,6 +5,18 @@ $beige: #E3E0D8;
 $lightBeige: rgba(227, 224, 216, .2);
 
 
+@import 'homepage';
+@import 'leaflet';
+@import 'datatables';
+@import 'error';
+@import 'svg';
+@import 'worldmap';
+@import 'treeview';
+@import 'c3graph';
+@import 'view';
+@import 'search-result';
+
+
 .view .sidebar, .dashboard .sidebar {
 background: url(/images/r4/bg-cols-right.png) top left repeat-y;
 margin-left: 0px;
@@ -369,17 +381,6 @@ header .welcome-drop a,
     stroke: #352319;
   }
 }
-
-
-@import 'homepage';
-@import 'leaflet';
-@import 'error';
-@import 'svg';
-@import 'worldmap';
-@import 'treeview';
-@import 'c3graph';
-@import 'view';
-@import 'search-result';
 
 
 .nav-pills {
