@@ -603,7 +603,8 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
                     if (StringUtils.isNotBlank(form.getActionAttribute()) &&
-                            !StringUtils.containsAny(form.getNameAttribute().toLowerCase(), "autosave", "logoutform", "searchheader", "logoutformmenu")) {
+                            !StringUtils.containsAny(form.getNameAttribute().toLowerCase(), "autosave", "logoutform", "searchheader", "logoutformmenu") &&
+                            !form.getAttribute("class").contains("seleniumIgnoreForm")) {
                         htmlForm = form;
                         logger.trace("using form: {}", htmlForm.getNameAttribute());
                         break;

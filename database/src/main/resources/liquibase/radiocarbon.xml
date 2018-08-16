@@ -297,7 +297,6 @@
             
         <dropNotNullConstraint tableName="data_table" columnName="dataset_id"/>
     </changeSet>
-<<<<<<< mine
     
     <changeSet id="radiocarbon-dataset-search-1"
         author="abrin">
