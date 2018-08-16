@@ -258,6 +258,27 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 value : ''
             } ]
         },
+        mounted: function(){
+            var fld = document.getElementById("datasetfields");
+            if (fld == undefined) {
+                return;
+            }
+            var json = JSON.parse(fld.innerText);
+            console.log(json);
+            var self = this;
+            json.forEach(function(field){
+                self.selectOptions.push({
+                    name: field.displayName,
+                    fieldName: field.name,
+                    type: 'basic',
+                    group: 'custom',
+                    id: field.id,
+                    columnType: field.columnDataType
+                })
+                
+            });
+            
+        },
         computed : {},
         methods : {
             addRow : function() {
