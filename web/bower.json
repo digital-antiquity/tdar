@@ -17,6 +17,7 @@
     "jquery.treeview": "~1.4.1",
     "leaflet": "1.0.3",
     "leaflet-choropleth": "~1.0.3",
+    "jquery-validation": "~1.15.1",
     "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v1.0.0",
     "leaflet-control-geocoder": "~1.5.3",
     "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.4.9",
@@ -31,7 +32,6 @@
   },
   "dependencies-cdn": {
     "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",
-    "jquery-validation": "~1.8.1",
     "jquery": "~1.11.3",
     "angular-js": "~1.5.5",
     "jquery-ui": "~1.11.4"

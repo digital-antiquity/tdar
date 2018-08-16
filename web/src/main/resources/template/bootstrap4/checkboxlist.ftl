@@ -62,11 +62,6 @@
     
     <#assign itemKeyStr = itemKey.toString() />
     <div class="form-check">
-    <label class="form-check-label"
-    <#if itemTitle??>
-     title="${itemTitle?html}"<#rt/>
-    </#if>
-    ><#rt/>
     <input type="checkbox"<#rt/>
     <#if parameters.name??>
      name="${parameters.name?html}"<#rt/>
@@ -94,6 +89,11 @@
     <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
     <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />
     /><#rt/>
+    <label class="form-check-label"
+    <#if itemTitle??>
+     title="${itemTitle?html}"<#rt/>
+    </#if>
+    ><#rt/>
         ${itemValue}<#t/>
     </label></div>
     </@s.iterator>

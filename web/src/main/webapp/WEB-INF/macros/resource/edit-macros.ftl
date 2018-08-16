@@ -239,7 +239,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div class="col-1">
         <@s.textfield placeholder="End Year" cssClass="coverageEndYear mr-1 trim" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
         </div>
-        <@s.textfield placeholder="Description"  cssClass="coverageDescription col-7 trim" name="coverageDates[${proxy_index}].description"  maxlength=255 />
+        <div class="col-7">
+        <@s.textfield placeholder="Description"  cssClass="coverageDescription  trim" name="coverageDates[${proxy_index}].description"  maxlength=255 />
+        </div>
        <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
     </div>
     </#macro>

@@ -376,8 +376,9 @@ ${head}
         <script src="https://unpkg.com/popper.js@1.14.4/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/${bootstrapVersion}/js/bootstrap.min.js"  crossorigin="anonymous"></script>
     <#else>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
-        <script src="${staticHost}/includes/jquery.validate-1.13.1/additional-methods.js"></script>
+        <script src="https://unpkg.com/popper.js@1.14.4/dist/umd/popper.min.js"></script>
+        <script src="${staticHost}/components/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="${staticHost}/components/jquery-validation/dist/additional-methods.min.js"></script>
         <script src="${staticHost}/components/bootstrap/dist/js/bootstrap.js"></script>
     </#if>
 
