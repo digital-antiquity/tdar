@@ -29,6 +29,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.HasTables;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
@@ -189,6 +190,15 @@ public class TdarFile extends AbstractFile implements HasTables {
         return resource;
     }
 
+    @XmlElement(name = "projectRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public Project getProject() {
+        if (resource != null && resource.getProject() != Project.NULL) {
+            return resource.getProject();
+        }
+        return Project.NULL;
+    }
+
     public String getResourceUrl() {
         if (resource != null) {
             return "/" + resource.getAbsoluteUrl();
@@ -196,9 +206,23 @@ public class TdarFile extends AbstractFile implements HasTables {
         return null;
     }
 
+    public String getProjectUrl() {
+        if (resource != null && resource.getProject() != Project.NULL) {
+            return "/" + resource.getProject().getAbsoluteUrl();
+        }
+        return null;
+    }
+
     public Long getResourceId() {
         if (resource != null) {
             return resource.getId();
+        }
+        return null;
+    }
+
+    public Long getProjectId() {
+        if (resource != null && resource.getProject() != Project.NULL) {
+            return resource.getProject().getId();
         }
         return null;
     }

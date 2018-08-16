@@ -76,6 +76,8 @@
         <i v-if="canExternalReview" @click="markExternalReviewed()" class="icon-thumbs-up"></i></td>
     <td><a :href="file.resourceUrl">{{file.resourceId }}</a> {{file.resourceStatus}}  
     </td>
+    <td><a :href="file.projectUrl">{{file.projectId }}</a>  
+    </td>
     <td nowrap v-if="fullservice">
         <a @click="showComments()"><i class="icon-comment"></i>
         <span class="label"v-if="file.comments != undefined && file.comments.length > 0">{{file.comments.length}}</span></a>
@@ -116,6 +118,7 @@
     <th v-if="fullService"><span @click="sortBy('DATE_REVIEWED')"><span v-if="initialReviewed">Staff </span> Review</span></th>
     <th v-if="fullService && externalReviewed"><span @click="sortBy('DATE_EXTERNAL_REVIEWED')">External Review</span></th>
     <th>status</th>
+    <th>project</th>
     <th colspan="2"></th>
  </tr>
 </thead>
@@ -123,9 +126,28 @@
  <td colspan="20">
 <span class="link" @click="cd(undefined)">/ </span> <span v-for="(dir, index) in dirStack">
 		<span v-if="index != 0"> / </span> <span class="link" @click="cd(dir)">{{dir.name}}</span>
+</span> 
+
+<div class="pull-right">
+<span v-if="currentDir() != undefined && currentDir().collection != undefined"> (linked to <a :href="currentDir().collection.detailUrl" target=_blank>{{ currentDir().collection.name }}</a>) </span>
+
+<span class="dropdown" >
+    <!-- Link or button to toggle dropdown -->
+  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+    <i class="icon-tasks"></i>
+  </a>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" >
+    <li :class="dirActionsEnabledClass">
+       <a id="renamePlaceholder" @click="showRename()" >(rename)</a>
+    </li>
+  <li :class="dirActionsEnabledLinkClass"><a   @click="collectionUI()" tabindex="-1" href="#">Link to Collection</a></li>
+  <li :class="dirActionsEnabledUnlinkClass" ><a tabindex="-1"  @click="updateLinkedCollection()" href="#">Update Linked Collection</a></li>
+  <li :class="dirActionsEnabledUnlinkClass" ><a tabindex="-1"  @click="unlinkCollection()" href="#">Unlink</a></li>
+</ul>
 </span>
-<span class="pull-right" v-if="dirStack.length > 0">
-	<span class="link" id="renamePlaceholder" @click="showRename()" v-show="renameVisible == false">(rename)</span>
+</div>
+	
+<span v-if="dirStack.length > 0">
 	<div id="renamePart" v-show="renameVisible">
 		<input name="rename" id="rename" type="text" v-model="rename" />
         <span @click="renameDir()" class="link">ok</span>
@@ -150,28 +172,41 @@
         </tbody>
 </table>
 
-<div class="">
+<div class="row">
+    <div class="span7">
+        <div class="btn-group">
+            <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
+            <button class="btn" type="button" id="create" @click="createRecordFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button>
+        		<a v-if="fullService" class="btn" type="button" @click="showReports()">Reports</a> 
+        </div>
+        <span class="label" data-toggle="tooltip" data-placement="top" :title="selectedFileNames"> {{selectedFiles.length}} selected </span>
+    </div>
+    <div class="span3">
+        <div class="input-append">
+            <input class="span2" id="dirName" name="dirName" ref="dirName" type="text" v-model="dirName">
+            <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
+        </div>
+    </div>
+   </div>
+<br/><br/>
+<div class="row">
+<div class="span2">
     <label class="btn btn-success fileinput-button" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
         class="glyphicon glyphicon-plus"></i> <span>Upload 
             files...</span> <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
     </label>
-    <div class="input-append">
-    <input class="span2" id="dirName" name="dirName" type="text" v-model="dirName">
-        <button class="btn" type="button" id="mkdir" @click="mkdir">Add Folder</button>
     </div>
-    <div class="btn-group">
-        <button class="btn" type="button" id="move" @click="moveUI()" :disabled="cannotMoveSelected">Move Selected</button> 
-        <button class="btn" type="button" id="create" @click="createRecordFromSelected()" :disabled="cannotCreateRecordfromSelected">Create Record</button>
-		<a v-if="fullService" class="btn" type="button" @click="showReports()">Reports</a> 
+<div class="span8">
+    <!-- The global progress bar -->
+    <div id="progress" class="progress progress-striped span7" style="margin-top:5px">
+        <div class="progress-bar progress-bar-success bar"></div>
     </div>
-    <span class="label" data-toggle="tooltip" data-placement="top" :title="selectedFileNames"> {{selectedFiles.length}} </span>
-    </div>
-     <br> <br>
+    <div id="uploadstatus"></div>
      <div id="fileUploadErrors" class="fileuploaderrors controls controls-row">
         
         <ul v-for="(error,index) in warnings" >
-            <li> <label :for="append('fue',index )">{{ error }}</label>
+            <li> <label :for="append('fue',index )">{{ error }}</label></li>
         </ul>
         <ul v-for="(error,index) in errors" >
             <li> <label :for="append('fue',index )">{{ error }}</label>
@@ -179,12 +214,8 @@
         </ul>
 
     </div>
-
-    <!-- The global progress bar -->
-    <div id="progress" class="progress progress-striped span6" style="margin-top:5px">
-        <div class="progress-bar progress-bar-success bar"></div>
     </div>
-    <div id="uploadstatus"></div>
+
 
 
     <!--  COMMENT MODAL -->
@@ -231,6 +262,31 @@
       </div>
       <div class="modal-footer">
         <a  data-dismiss="modal" @click="cancelMove()" class="btn">Cancel</a>
+      </div>
+    </div>
+
+    <!--  COLLECTION MODAL -->
+    <div class="modal hide fade" id="collection-modal">
+      <div class="modal-header">
+        <button type="button" class="close"  data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>Link {{currentDir.name}}</h3>
+      </div>
+      <div class="modal-body">
+        <div>
+        <p>Choose a collection to link to:
+        <autocomplete url="/api/lookup/collection"
+             field="term"  
+            resultsuffix="collections"
+        @autocompletevalueset="selectCollection" ref="input"
+        fieldname="title" :allowCreate="false" idname="id" />
+
+        </p>
+            
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a  data-dismiss="modal" @click="linkCollection()" class="btn-active btn">Link</a>
+        <a  data-dismiss="modal" href="#" class="btn">Cancel</a>
       </div>
     </div>
 

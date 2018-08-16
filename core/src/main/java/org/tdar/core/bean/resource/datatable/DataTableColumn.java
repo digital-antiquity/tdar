@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -162,6 +164,11 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     @Column(columnDefinition = "boolean default FALSE")
     private boolean mappingColumn = false;
+
+    @ElementCollection()
+    @CollectionTable(name = "data_table_column_values", joinColumns = @JoinColumn(name = "column_id"))
+    @Column(name = "value")
+    private Set<String> values = new HashSet<>();
 
     @Column
     @Length(max = 4)
@@ -552,4 +559,13 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     public void setSearchField(boolean searchField) {
         this.searchField = searchField;
     }
+
+    public Set<String> getValues() {
+        return values;
+    }
+
+    public void setValues(Set<String> values) {
+        this.values = values;
+    }
+
 }

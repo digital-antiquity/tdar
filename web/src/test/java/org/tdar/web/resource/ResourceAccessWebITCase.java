@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.permissions.Permissions;
+import org.tdar.struts.action.resource.request.ProcessPermissonsAction;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
@@ -41,7 +42,8 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
     public void testShareAccessExpiresSuccess() {
         gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
         setInput("permission", Permissions.MODIFY_METADATA.name());
-        String untilString = DateTime.now().plusDays(1).toString("yyyy-MM-dd");
+        String untilStringEmail = DateTime.now().plusDays(1).toString("yyyy-MM-dd");
+        String untilString = DateTime.now().plusDays(1).toString(ProcessPermissonsAction.DATE_FORMAT);
         setInput("expiresString", untilString);
         submitForm("submit");
         logger.info(getCurrentUrlPath());
@@ -55,7 +57,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         logout();
         loginAdmin();
         gotoPage("/admin/email");
-        assertThat(getPageText(), containsString(hasBeenGrantedString));
+        assertThat(getPageText(), containsString(hasBeenGrantedString.replace(untilString, untilStringEmail)));
     }
 
     @Test

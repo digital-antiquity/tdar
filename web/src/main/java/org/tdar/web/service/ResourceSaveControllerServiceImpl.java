@@ -260,7 +260,11 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
 
             // 2. async uploads for Image or Document or ...
             if (multipleFileUploadEnabled) {
-                fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(auth.getItem(),fsw.getAccountId(), fileProxies, ticketId);
+                InformationResource info = auth.getItem();
+                if (fsw.isBulkUpload()) {
+                    info = null;
+                }
+                fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(info, fsw.getAccountId(), fileProxies, ticketId);
     
             } else
             // 3. single file upload (dataset|coding sheet|ontology)

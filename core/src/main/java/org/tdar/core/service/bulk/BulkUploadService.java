@@ -6,6 +6,7 @@ import java.util.List;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -33,9 +34,10 @@ public interface BulkUploadService {
 
     /**
      * Take the ManifestProxy and iterate through attached FileProxies and make resources out of them
+     * @return 
      * 
      */
-    void processFileProxiesIntoResources(Collection<FileProxy> fileProxies, InformationResource image, TdarUser authenticatedUser,
+    List<TdarFile> processFileProxiesIntoResources(Collection<FileProxy> fileProxies, InformationResource image, TdarUser authenticatedUser,
             AsyncUpdateReceiver asyncUpdateReceiver, List<Resource> resources);
 
     /**

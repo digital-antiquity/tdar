@@ -2,7 +2,7 @@
   <div class="autocomplete" ref="autocompleteroot" @mouseover="addFocus('mouse')" @mouseout="removeFocus('mouse')">
     <input type="hidden" v-model="id"  :name="idname" v-if="idname != undefined" />
     <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter"
-		@keydown.delete="deleteKey" @keyup.enter="enterKey" @keyup="anyKey" autocomplete="off" :disabled="disabled" 
+		@keydown.delete="deleteKey" @keyup.enter="enterKey" @keyup="anyKey" autocomplete="nope" :disabled="disabled" 
 		 ref="searchfield" :class="span" :name="fieldname" @focus="addFocus('cursor')" @blur="removeFocus('cursor')"/>
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results"  :style="getStyleTop()" ref="autoresults">
       <li v-if="!isLoading" v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }" :style="getStyleWidth()">

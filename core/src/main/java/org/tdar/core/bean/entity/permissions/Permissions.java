@@ -116,6 +116,7 @@ public enum Permissions implements HasLabel, Localizable {
         permissions.remove(Permissions.USE_ACCOUNT);
         permissions.remove(Permissions.ADMINISTER_ACCOUNT);
         permissions.remove(Permissions.EDIT_INTEGRATION);
+        permissions.remove(Permissions.NONE);
         return permissions;
     }
 
@@ -132,6 +133,9 @@ public enum Permissions implements HasLabel, Localizable {
 
         List<Permissions> toReturn = new ArrayList<>();
         for (Permissions perm : Permissions.values()) {
+            if (perm == NONE) {
+                continue;
+            }
             if (CollectionUtils.isEmpty(perm.getContexts())) {
                 toReturn.add(perm);
                 continue;
@@ -143,7 +147,7 @@ public enum Permissions implements HasLabel, Localizable {
                 }
             }
         }
-        toReturn.remove(NONE);
+
         return toReturn;
     }
 

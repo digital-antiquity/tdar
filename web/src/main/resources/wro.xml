@@ -119,6 +119,7 @@
         <js>/js/vue/vue-base-upload.js</js>
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>
+        <js>/js/vue/vue-autocomplete.js</js>
         <js>/js/vue/edit-collection.js</js>
         <js>/js/vue/vue-advanced-search.js</js>
         <js>/js/vue/vue-autocomplete.js</js>

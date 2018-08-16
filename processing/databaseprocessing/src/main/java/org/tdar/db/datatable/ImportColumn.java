@@ -1,5 +1,7 @@
 package org.tdar.db.datatable;
 
+import java.util.Set;
+
 public interface ImportColumn  {
 
     public static final String TDAR_ID_COLUMN = "id_row_tdar";
@@ -15,6 +17,8 @@ public interface ImportColumn  {
     String getDisplayName();
 
     void setDisplayName(String displayName);
+    
+    Set<String> getValues();
     
     Integer getLength();
 

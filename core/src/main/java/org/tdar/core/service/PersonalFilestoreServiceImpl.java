@@ -27,6 +27,8 @@ import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.CollectionResourceSection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.file.AbstractFile;
 import org.tdar.core.bean.file.CurationState;
@@ -34,6 +36,7 @@ import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.DirSummary;
 import org.tdar.core.dao.DirSummaryPart;
@@ -50,6 +53,10 @@ import org.tdar.fileprocessing.workflows.HasDatabaseConverter;
 import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.fileprocessing.workflows.WorkflowContext;
+import org.tdar.core.exception.TdarAuthorizationException;
+import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
@@ -70,21 +77,28 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    @Qualifier("target")
+    private GenericDao genericDao;
+    private FileProcessingDao fileProcessingDao;
+    private FileAnalyzer analyzer;
+    private AuthorizationService authorizationService;
+    private ResourceCollectionService resourceCollectionService;
     private TargetDatabase tdarDataImportDatabase;
 
-    @Autowired
-    private GenericDao genericDao;
-
-    @Autowired
     private DatasetImportService datasetImportService;
 
     @Autowired
-    private FileProcessingDao fileProcessingDao;
+    public PersonalFilestoreServiceImpl(GenericDao genericDao, FileProcessingDao fileProcessingDao, FileAnalyzer analyzer,
+            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService, 
+            @Qualifier("target") TargetDatabase tdarDataImportDatabase, DatasetImportService datasetImportService) {
+        this.genericDao = genericDao;
+        this.fileProcessingDao = fileProcessingDao;
+        this.analyzer = analyzer;
+        this.authorizationService = authorizationService;
+        this.resourceCollectionService = resourceCollectionService;
+        this.tdarDataImportDatabase = tdarDataImportDatabase;
+        this.datasetImportService = datasetImportService;
 
-    @Autowired
-    private FileAnalyzer analyzer;
+    }
 
     // FIXME: double check that won't leak memory
     private Map<TdarUser, PersonalFilestore> personalFilestoreCache = new WeakHashMap<TdarUser, PersonalFilestore>();
@@ -617,6 +631,54 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             d = d.getParent();
         }
         return path.toString();
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void linkCollection(TdarDir file, ResourceCollection collection, TdarUser user) {
+        if (!authorizationService.canAddToCollection(user, collection)) {
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+        }
+        file.setCollection(collection);
+        genericDao.saveOrUpdate(file);
+        updateLinkedCollection(file, user);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void updateLinkedCollection(TdarDir file, TdarUser user) {
+        if (!authorizationService.canAddToCollection(user, file.getCollection())) {
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+        }
+
+        for (AbstractFile f : listFiles(file, file.getAccount(), null, null, user)) {
+            if (f instanceof TdarFile == false) {
+                continue;
+            }
+            TdarFile tdarFile = (TdarFile) f;
+            if (tdarFile.getResource() == null) {
+                continue;
+            }
+            Resource resource = tdarFile.getResource();
+            if (resource.getManagedResourceCollections().contains(file.getCollection())) {
+                continue;
+            }
+            resourceCollectionService.addResourceCollectionToResource(resource, resource.getManagedResourceCollections(), user, true,
+                    ErrorHandling.VALIDATE_WITH_EXCEPTION, file.getCollection(),
+                    CollectionResourceSection.MANAGED);
+        }
+
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void unlinkLinkedCollection(TdarDir file, TdarUser user) {
+        if (!authorizationService.canAddToCollection(user, file.getCollection())) {
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
+        }
+        
+        file.setCollection(null);
+        genericDao.saveOrUpdate(file);
     }
 
 }

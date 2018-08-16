@@ -1,5 +1,4 @@
-
-TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
+TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
     "use strict";
 
     if (document.getElementById("autocomplete") != undefined ) {
@@ -29,8 +28,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           render: {
               type: Object
           },
-          init_id: {type: Number},
-          init_val: {type: String},
           fieldname: {
               type: String
           },
@@ -71,6 +68,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             cancelToken: undefined
           }
         },
+        
         methods: {
             createNew: function() {
                 this.reset();
@@ -81,9 +79,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             },
             setValue: function(val) {
                 Vue.set(this,"search", val);
-            },
-            setId: function(val) {
-                Vue.set(this,"id", val);
             },
             addFocus: function (type) {
                 if (type == 'mouse') {
@@ -170,33 +165,32 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               this._setResult();
               var self = this;
              if (this.search != undefined && this.search.length > 0) {
-                  this.isLoading = true;
-                  if (this.cancelToken != undefined) {
-                      this.cancelToken.cancel();
+              this.isLoading = true;
+              if (this.cancelToken != undefined) {
+                  this.cancelToken.cancel();
+              }
+              
+              Vue.set(this, "cancelToken" ,axios.CancelToken.source());
+    
+              var searchUrl = this.url + "?" + this.field + "=" + this.search + "&" + this.suffix;
+              Vue.set(self, "totalRecords", 0);
+              Vue.set(self, "recordsPerPage", 25);
+              axios.get(searchUrl, { cancelToken: self.cancelToken.token }).then(function(res) {
+                  Vue.set(self, "isLoading",false);
+                  Vue.set(self, 'results',res.data[self.resultsuffix]);
+                  console.log(res);
+                  Vue.set(self, "totalRecords", res.data.status.totalRecords);
+                  if (res.data.status.totalRecords < res.data.status.recordsPerPage) {
+                      Vue.set(self, "recordsPerPage", self.totalRecords);
+                  } else {
+                      Vue.set(self, "recordsPerPage", res.data.status.recordsPerPage);
                   }
-                  
-                  Vue.set(this, "cancelToken" ,axios.CancelToken.source());
-        
-                  var searchUrl = this.url + "?" + this.field + "=" + this.search + "&" + this.suffix;
-                  Vue.set(self, "totalRecords", 0);
-                  Vue.set(self, "recordsPerPage", 25);
-                  axios.get(searchUrl, { cancelToken: self.cancelToken.token }).then(function(res) {
-                      Vue.set(self, "isLoading",false);
-                      Vue.set(self, 'results',res.data[self.resultsuffix]);
-                      console.log(res);
-                      Vue.set(self, "totalRecords", res.data.status.totalRecords);
-                      if (res.data.status.totalRecords < res.data.status.recordsPerPage) {
-                          Vue.set(self, "recordsPerPage", self.totalRecords);
-                      } else {
-                          Vue.set(self, "recordsPerPage", res.data.status.recordsPerPage);
-                      }
-                  }).catch(function(thrown) {
-                      if (!axios.isCancel(thrown)) {
-                          console.error(thrown);
-                      }
-                  });
-
-                  this.isOpen = true;
+              }).catch(function(thrown) {
+                  if (!axios.isCancel(thrown)) {
+                      console.error(thrown);
+                  }
+              });
+              this.isOpen = true;
               } else {
               this.isOpen = false;
               Vue.set(self, "isLoading",false);
@@ -278,9 +272,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           }
         },
         mounted: function() {
-            this.search = this.init_val;
-            this.id  = this.init_id;
-            console.log("init: ", this.search, this.id);
           Vue.set(this, 'width',this.$refs['searchfield'].offsetWidth);
           Vue.set(this, 'top',this.$refs['searchfield'].offsetHeight + this.$refs['searchfield'].offsetTop );
           document.addEventListener("click", this.handleClickOutside);

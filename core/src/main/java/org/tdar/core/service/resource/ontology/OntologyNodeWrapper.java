@@ -7,8 +7,12 @@ import java.util.List;
 import org.tdar.core.bean.resource.OntologyNode;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonAutoDetect
+@JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
+@JsonInclude(Include.NON_NULL)
 public class OntologyNodeWrapper implements Serializable {
 
     private static final long serialVersionUID = 8411393518053120151L;
