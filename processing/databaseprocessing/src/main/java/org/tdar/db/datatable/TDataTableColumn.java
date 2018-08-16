@@ -1,6 +1,8 @@
 package org.tdar.db.datatable;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -50,6 +52,8 @@ public class TDataTableColumn implements Serializable, ImportColumn {
     private Integer importOrder;
     private Integer sequenceNumber;
     private Integer length = -1;
+    private Set<String> values = new HashSet<>();
+
 
     /* (non-Javadoc)
      * @see org.tdar.datatable.ImportColumn#getName()
@@ -153,5 +157,14 @@ public class TDataTableColumn implements Serializable, ImportColumn {
             return 0;
         }
         return sequenceNumber.compareTo(b.getSequenceNumber());
+    }
+
+    @Override
+    public Set<String> getValues() {
+        return values;
+    }
+
+    public void setValues(Set<String> values) {
+        this.values = values;
     }
 }
