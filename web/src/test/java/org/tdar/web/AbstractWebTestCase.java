@@ -738,7 +738,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
     }
 
     public void createDocumentAndUploadFile(String title, Long accountId) {
-        clickLinkWithText("UPLOAD");
+        clickLinkWithText("Upload");
         gotoPage("/resource/add");
         String ticketId = getPersonalFilestoreTicketId();
         uploadFileToPersonalFilestore(ticketId, TestConstants.TEST_DOCUMENT);
@@ -747,7 +747,7 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         // logger.info(getPageText());
         gotoPage("/");
 
-        clickLinkWithText("UPLOAD");
+        clickLinkWithText("Upload");
         // logger.info(getPageCode());
         clickLinkWithText(ResourceType.DOCUMENT.getLabel());
         assertTextPresentInPage("Create a new Document");

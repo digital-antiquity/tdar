@@ -20,7 +20,7 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testAdminLogin() {
-        assertTextPresentInPage("Admin");
+        assertTextPresentInCode("Admin");
     }
 
     @Test

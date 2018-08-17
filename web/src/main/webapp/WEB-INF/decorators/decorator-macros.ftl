@@ -120,7 +120,7 @@
                     </ul>
                     <div class="dropdown ml-auto tdarDropdown" id = "myAccountNav">
                         <div class="d-none d-md-block">
-                            <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
+                            <button class="btn btn-link align-middle tdarNavItem" type="button" id="myAccountMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                                 <@dec.myAccountMenu />
                             </div>
@@ -153,7 +153,7 @@
             <a class="dropdown-item" href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a>
             <a class="dropdown-item" href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a>
             <form class="seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
-                <button type="submit" class="dropdown-item btn-link" name="logout" value="Logout">Sign Out</button>
+                <button type="submit" class="dropdown-item btn-link" name="logout" id="logout-button" value="Logout">Sign Out</button>
             </form>
         </div>
         <div class="d-flex flex-column">
