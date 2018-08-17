@@ -170,7 +170,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         visibleUnmanagedCollections = viewService.getVisibleUnmanagedCollections(authWrapper);
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
-            setMappedData(resourceService.getMappedDataForInformationResource(informationResource, getTdarConfiguration().isProductionEnvironment()));
+            setMappedData(resourceService.getMappedDataForInformationResource(informationResource, getAuthenticatedUser(), getTdarConfiguration().isProductionEnvironment()));
         }
 
     }

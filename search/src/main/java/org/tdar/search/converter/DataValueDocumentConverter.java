@@ -8,7 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.SearchUtils;
@@ -18,9 +20,9 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
     /*
      * See solr/configsets/default/conf/dataMappings-schema.xml
      */
-    public static List<SolrInputDocument> convert(InformationResource ir, ResourceService resourceService) {
+    public static List<SolrInputDocument> convert(InformationResource ir, DatasetDao datasetDao) {
         List<SolrInputDocument> docs = new ArrayList<>();
-        Map<DataTableColumn, String> data = resourceService.getMappedDataForInformationResource(ir, TdarConfiguration.getInstance().isProductionEnvironment());
+        Map<DataTableColumn, String> data = datasetDao.getMappedDataForInformationResource(ir);
         if (data != null) {
             for (DataTableColumn key : data.keySet()) {
                 if (key == null) {
@@ -32,7 +34,9 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
                 }
 
                 SolrInputDocument doc = createDocument(key, ir, mapValue);
-                docs.add(doc);
+                if (doc != null) {
+                    docs.add(doc);
+                }
             }
 
         }
@@ -41,6 +45,9 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     public static SolrInputDocument createDocument(DataTableColumn key, InformationResource ir, String mapValue) {
+        if (key.getVisible() == ColumnVisibiltiy.HIDDEN) {
+            return null;
+        }
         SolrInputDocument doc = new SolrInputDocument();
         doc.setField(QueryFieldNames.ID, ir.getId());
         doc.setField(QueryFieldNames.CLASS, ir.getClass().getName());

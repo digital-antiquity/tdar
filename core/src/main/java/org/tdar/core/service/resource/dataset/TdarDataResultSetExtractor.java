@@ -44,11 +44,11 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
      * @see org.springframework.jdbc.core.ResultSetExtractor#extractData(java.sql.ResultSet)
      */
     @Override
-    public List<List<String>> extractData(ResultSet rs) throws SQLException {
+    public List<List<String>> extractData(ResultSet rs, boolean canSeeConfidential) throws SQLException {
         List<List<String>> results = new ArrayList<List<String>>();
         int rowNum = 1;
         while (rs.next()) {
-            Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
+            Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, canSeeConfidential, rs, returnRowId);
             if (rs.isFirst()) {
                 wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
 
@@ -58,9 +58,19 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
                 // remove hidden columns
                 Iterator<DataTableColumn> colIterator = columns.iterator();
                 while (colIterator.hasNext()) {
-                    if (!colIterator.next().isVisible()) {
-                        colIterator.remove();
+                    switch (colIterator.next().getVisible()) {
+                        case HIDDEN:
+                            colIterator.remove();
+                            break;
+                        case CONFIDENTIAL:
+                            if (canSeeConfidential) {
+                                colIterator.remove();
+                            }
+                            break;
+                        case VISIBLE:
+                        default:
                     }
+
                 }
                 if (returnRowId) {
                     columns.add(DataTableColumn.TDAR_ROW_ID);

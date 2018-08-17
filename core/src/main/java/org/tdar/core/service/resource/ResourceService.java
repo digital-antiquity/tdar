@@ -135,7 +135,7 @@ public interface ResourceService {
      */
     List<HomepageGeographicCache> getISOGeographicCounts();
 
-    Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource, boolean failOnMissing);
+    Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource, TdarUser tdarUser, boolean failOnMissing);
 
     /**
      * For a given @link Resource and set of @link LatitudeLogitudeBox entries, pass the LatitudeLogitudeBoxes to the @link GeographicSearchService to generate

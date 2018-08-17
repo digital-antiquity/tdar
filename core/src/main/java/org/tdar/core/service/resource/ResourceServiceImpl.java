@@ -48,6 +48,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
@@ -65,10 +66,12 @@ import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
+import org.tdar.core.service.AuthenticationService;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.exception.TdarRuntimeException;
 import org.tdar.search.geosearch.GeoSearchService;
@@ -109,6 +112,8 @@ public class ResourceServiceImpl implements ResourceService {
     private SerializationService serializationService;
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
+    @Autowired
+    private AuthorizationService authorizationService;
 
     @Autowired
     private GeoSearchService geoSearchService;
@@ -301,9 +306,26 @@ public class ResourceServiceImpl implements ResourceService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource, boolean failOnMissing) {
+    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource,TdarUser tdarUser, boolean failOnMissing) {
         try {
-            return datasetDao.getMappedDataForInformationResource(resource);
+            Map<DataTableColumn, String> map = datasetDao.getMappedDataForInformationResource(resource);
+            boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
+            map.keySet().forEach(key -> {
+                switch (key.getVisible()) {
+                    case CONFIDENTIAL:
+                        if (canViewConfidentialInformation == false) {
+                            map.remove(key);
+                        }
+                        break;
+                    case HIDDEN:
+                        map.remove(key);
+                        break;
+                    case VISIBLE:
+                    default:
+                        break;
+                }
+            });
+            return map;
         } catch (Throwable t) {
             logger.error("could not attach additional dataset data to resource", t);
             if (failOnMissing) {

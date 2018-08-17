@@ -90,11 +90,6 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         }
 
         @Override
-        public boolean isVisible() {
-            return false;
-        }
-
-        @Override
         public boolean isValid() {
             return true;
         };
@@ -187,8 +182,9 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Column(columnDefinition = "boolean default TRUE")
     private boolean ignoreFileExtension = true;
 
-    @Column(columnDefinition = "boolean default TRUE")
-    private boolean visible = true;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ColumnVisibiltiy visible = ColumnVisibiltiy.VISIBLE;
 
     @Column(name="search_field",columnDefinition = "boolean default TRUE")
     private boolean searchField = true;
@@ -375,14 +371,6 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     public void setTempSubCategoryVariable(CategoryVariable tempSubCategoryVariable) {
         this.tempSubCategoryVariable = tempSubCategoryVariable;
-    }
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
     }
 
     @Override
@@ -595,5 +583,13 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     public void setFloatValues(Set<Double> floatValues) {
         this.floatValues = floatValues;
+    }
+
+    public ColumnVisibiltiy getVisible() {
+        return visible;
+    }
+
+    public void setVisible(ColumnVisibiltiy visible) {
+        this.visible = visible;
     }
 }
