@@ -13,6 +13,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.service.event.TxMessageBus;
 import org.tdar.search.exception.SearchIndexException;
@@ -86,5 +87,7 @@ public interface SearchIndexService extends TxMessageBus<SolrDocumentContainer> 
     public SolrInputDocument index(LookupSource src, Indexable item, boolean deleteFirst);
 
     public void commit(String coreForClass) throws SearchIndexException, IOException;
+
+    public void indexDataMappings(Dataset dataset);
 
 }

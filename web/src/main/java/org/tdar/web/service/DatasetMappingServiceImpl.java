@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.DatasetDao;
@@ -40,8 +41,8 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
     @Override
     @Async
     @Transactional
-    public void remapColumnsAsync(final List<DataTableColumn> columns, final Project project) {
-        remapColumns(columns, project);
+    public void remapColumnsAsync(final Dataset dataset, final List<DataTableColumn> columns, final Project project) {
+        remapColumns(dataset, columns, project);
     }
 
     /*
@@ -51,9 +52,10 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
      */
     @Override
     @Transactional
-    public void remapColumns(List<DataTableColumn> columns, Project project) {
+    public void remapColumns(Dataset dataset, List<DataTableColumn> columns, Project project) {
         datasetDao.remapColumns(columns, project);
         try {
+            searchIndexService.indexDataMappings(dataset);
             searchIndexService.indexProject(project);
         } catch (SearchIndexException | IOException e) {
             logger.error("error in reindexing", e);
