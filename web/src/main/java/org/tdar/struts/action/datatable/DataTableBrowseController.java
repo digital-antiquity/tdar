@@ -63,8 +63,8 @@ public class DataTableBrowseController extends AbstractAuthenticatableAction {
         if (dataset.isPublicallyAccessible() || authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), dataset)) {
             ResultMetadataWrapper selectAllFromDataTable = ResultMetadataWrapper.NULL;
             try {
-                selectAllFromDataTable = datasetService.selectAllFromDataTable(dataTable, getStartRecord(), getRecordsPerPage(), true,
-                        getTdarConfiguration().isViewRowSupported());
+                selectAllFromDataTable = datasetService.selectAllFromDataTable(dataset, dataTable, getStartRecord(), getRecordsPerPage(), true,
+                        getTdarConfiguration().isViewRowSupported(), getAuthenticatedUser());
             } catch (BadSqlGrammarException ex) {
                 getLogger().error("Failed to pull datatable results for '{}' (perhaps the table is missing from tdardata schema?)", dataTable.getName());
             }

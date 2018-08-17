@@ -37,12 +37,16 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.ConfidentialViewable;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
@@ -420,10 +424,25 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         if (resource instanceof Project || resource instanceof SupportsResource) {
             return true;
         }
-        if (((InformationResource) resource).isPublicallyAccessible()) {
+        if (((InformationResource) resource).isPublicallyAccessible() && !hasRestrictedFields(resource)) {
             return true;
         }
         return canDo(person, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, Permissions.VIEW_ALL);
+    }
+
+    private boolean hasRestrictedFields(Resource resource) {
+        if (resource instanceof Dataset == false) {
+            return false;
+        }
+        Dataset dataset = (Dataset) resource;
+        for (DataTable dt : dataset.getDataTables()) {
+            for (DataTableColumn dtc : dt.getDataTableColumns()) {
+                if (dtc.getVisible() != null && dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /*

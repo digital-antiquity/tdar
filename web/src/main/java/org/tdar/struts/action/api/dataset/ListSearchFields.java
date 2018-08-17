@@ -41,7 +41,7 @@ public class ListSearchFields extends AbstractJsonApiAction {
 
         @Action(value = "listSearchFields")
         public String execute() throws IOException {
-            columns = datasetService.findSearchableColumns(dataset);
+            columns = datasetService.findSearchableColumns(dataset, getAuthenticatedUser());
             setResultObject(columns);
             return SUCCESS;
         }

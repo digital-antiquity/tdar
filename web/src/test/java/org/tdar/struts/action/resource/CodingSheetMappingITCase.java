@@ -178,7 +178,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
         genericService.save(column);
         datasetDao.translate(column, codingSheet);
 
-        ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(firstTable, 0, 100, true, false);
+        ResultMetadataWrapper resultsWrapper = datasetService.selectAllFromDataTable(dataset, firstTable, 0, 100, true, false, null);
         List<List<String>> selectAllFromDataTable = resultsWrapper.getResults();
         assertEquals(6, selectAllFromDataTable.size());
         HashMap<Integer, String> map = new HashMap<Integer, String>();

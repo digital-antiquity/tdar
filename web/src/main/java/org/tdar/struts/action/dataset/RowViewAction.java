@@ -73,7 +73,7 @@ public class RowViewAction extends AbstractAuthenticatableAction implements Prep
         }
         if (dataTable != null) {
             if (authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
-                dataTableRowAsMap = datasetService.selectRowFromDataTable(dataTable, rowId, true);
+                dataTableRowAsMap = datasetService.selectRowFromDataTable(getDataset(), dataTable, rowId, true, getAuthenticatedUser());
                 if (MapUtils.isEmpty(dataTableRowAsMap)) {
                     return ERROR;
                 }

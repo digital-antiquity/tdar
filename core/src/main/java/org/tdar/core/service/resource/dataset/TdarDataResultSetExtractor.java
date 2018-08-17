@@ -29,13 +29,16 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
      * Should the tdar_id row be included or not
      */
     private boolean returnRowId = true;
+    private boolean canSeeConfidential;
 
-    public TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable, boolean returnRowId) {
+    public TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable, boolean returnRowId,
+            boolean canSeeConfidential) {
         this.wrapper = wrapper;
         this.start = start;
         this.page = page;
         this.dataTable = dataTable;
         this.returnRowId = returnRowId;
+        this.canSeeConfidential = canSeeConfidential;
     }
 
     /*
@@ -44,7 +47,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
      * @see org.springframework.jdbc.core.ResultSetExtractor#extractData(java.sql.ResultSet)
      */
     @Override
-    public List<List<String>> extractData(ResultSet rs, boolean canSeeConfidential) throws SQLException {
+    public List<List<String>> extractData(ResultSet rs) throws SQLException {
         List<List<String>> results = new ArrayList<List<String>>();
         int rowNum = 1;
         while (rs.next()) {
@@ -84,8 +87,21 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             if ((rowNum > start) && (rowNum <= (start + page))) {
                 ArrayList<String> values = new ArrayList<String>();
                 for (DataTableColumn col : wrapper.getFields()) {
-                    if (col.isVisible() || (returnRowId && DataTableColumn.TDAR_ID_COLUMN.equals(col.getName()))) {
+                    if (returnRowId && DataTableColumn.TDAR_ID_COLUMN.equals(col.getName())) {
                         values.add(result.get(col));
+                    }
+
+                    switch (col.getVisible()) {
+                        case CONFIDENTIAL:
+                            if (canSeeConfidential) {
+                                values.add(result.get(col));
+                            }
+                            break;
+                        case HIDDEN:
+                            break;
+                        case VISIBLE:
+                        default:
+                            values.add(result.get(col));
                     }
                 }
                 results.add(values);
