@@ -308,4 +308,22 @@
             baseColumnNames="column_id" baseTableName="data_table_column_values"
             referencedColumnNames="id" />
     </changeSet>
+     <changeSet id="radiocarbon-fileprocessing-5" author="abrin" failOnError="false" >
+         <createTable tableName="data_table_column_int_values">
+            <column name="value" type="integer" />
+            <column name="column_id" type="bigint"/>
+         </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_column_values" referencedTableName="data_table_column"
+            baseColumnNames="column_id" baseTableName="data_table_column_int_values"
+            referencedColumnNames="id" />
+         <createTable tableName="data_table_column_float_values">
+            <column name="value" type="float8" />
+            <column name="column_id" type="bigint"/>
+         </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_column_values" referencedTableName="data_table_column"
+            baseColumnNames="column_id" baseTableName="data_table_column_float_values"
+            referencedColumnNames="id" />
+    </changeSet>
 </databaseChangeLog>

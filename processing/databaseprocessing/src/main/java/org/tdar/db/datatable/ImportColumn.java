@@ -28,4 +28,8 @@ public interface ImportColumn  {
 
     int compareToBySequenceNumber(ImportColumn b);
 
+    Set<Integer> getIntValues();
+
+    Set<Double> getFloatValues();
+
 }

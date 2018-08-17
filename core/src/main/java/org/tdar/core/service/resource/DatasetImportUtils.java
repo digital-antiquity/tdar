@@ -38,6 +38,8 @@ public class DatasetImportUtils {
         col.setImportOrder(incomingColumn.getImportOrder());
         col.setDataTable(tableToPersist);
         col.setValues(incomingColumn.getValues());
+        col.setIntValues(incomingColumn.getIntValues());
+        col.setFloatValues(incomingColumn.getFloatValues());
         col.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         tableToPersist.getDataTableColumns().add(col);
         return col;
