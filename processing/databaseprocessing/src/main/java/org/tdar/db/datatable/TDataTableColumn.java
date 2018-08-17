@@ -53,6 +53,8 @@ public class TDataTableColumn implements Serializable, ImportColumn {
     private Integer sequenceNumber;
     private Integer length = -1;
     private Set<String> values = new HashSet<>();
+    private Set<Integer> intValues = new HashSet<>();
+    private Set<Double> floatValues = new HashSet<>();
 
 
     /* (non-Javadoc)
@@ -166,5 +168,21 @@ public class TDataTableColumn implements Serializable, ImportColumn {
 
     public void setValues(Set<String> values) {
         this.values = values;
+    }
+
+    public Set<Integer> getIntValues() {
+        return intValues;
+    }
+
+    public void setIntValues(Set<Integer> intValues) {
+        this.intValues = intValues;
+    }
+
+    public Set<Double> getFloatValues() {
+        return floatValues;
+    }
+
+    public void setFloatValues(Set<Double> floatValues) {
+        this.floatValues = floatValues;
     }
 }

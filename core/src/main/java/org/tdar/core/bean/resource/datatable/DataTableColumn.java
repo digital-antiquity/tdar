@@ -170,6 +170,16 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Column(name = "value")
     private Set<String> values = new HashSet<>();
 
+    @ElementCollection()
+    @CollectionTable(name = "data_table_column_int_values", joinColumns = @JoinColumn(name = "column_id"))
+    @Column(name = "value")
+    private Set<Integer> intValues = new HashSet<>();
+
+    @ElementCollection()
+    @CollectionTable(name = "data_table_column_float_values", joinColumns = @JoinColumn(name = "column_id"))
+    @Column(name = "value")
+    private Set<Double> floatValues = new HashSet<>();
+    
     @Column
     @Length(max = 4)
     private String delimiterValue;
@@ -560,6 +570,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         this.searchField = searchField;
     }
 
+    @Override
     public Set<String> getValues() {
         return values;
     }
@@ -568,4 +579,21 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         this.values = values;
     }
 
+    @Override
+    public Set<Integer> getIntValues() {
+        return intValues;
+    }
+
+    public void setIntValues(Set<Integer> intValues) {
+        this.intValues = intValues;
+    }
+
+    @Override
+    public Set<Double> getFloatValues() {
+        return floatValues;
+    }
+
+    public void setFloatValues(Set<Double> floatValues) {
+        this.floatValues = floatValues;
+    }
 }
