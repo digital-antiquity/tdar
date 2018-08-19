@@ -47,7 +47,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           enterkey: {type: Function},
           anykey: {type: Function},
           customcreatenew: {type:Function},
-          createnewtext: {type:String, default:'Create New'} 
+          createnewtext: {type:String, default:'Create New'},
+          id: {type:Number}
         },
     
         data: function() {
@@ -55,7 +56,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             isOpen: false,
             results: [],
             search: "",
-            id: '',
             searchObj: {},
             hasFocus: false,
             mouseFocus: false,

@@ -120,6 +120,9 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
         // overriding for and document
         map.put(ResourceType.DOCUMENT, Arrays.asList(AUTHOR));
         map.put(ResourceType.PROJECT, Arrays.asList(PRINCIPAL_INVESTIGATOR, PROJECT_DIRECTOR, SPONSOR));
+        if (resourceType == null) {
+            return new HashSet<>();
+        }
         return new HashSet<>(map.get(resourceType));
     }
 

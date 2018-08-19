@@ -1,13 +1,51 @@
 
 <div id="sel">
+
+<b>id</b>
+<input type="text" v-model="resource.id" name="id" maxlength="512" />
+<div data-tiplabel="Title" data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'." data-original-title="" title="">
+
+<div class="control-group "><label class="control-label" for="resourceRegistrationTitle">Title <span class="required">*</span></label>    <div class="controls">
+
+<input type="text" v-model="resource.title" name="document.title" maxlength="512"  id="resourceRegistrationTitle" class="required descriptiveTitle input-xxlarge trim" title="A title is required for all Documents" required="true"></div>
+</div>
+            </div>
+            
+<div data-tiplabel="Year" data-tooltipcontent="Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created.">
+
+<div class="control-group "><label class="control-label" for="dateCreated">Year <span class="required">*</span></label>    <div class="controls">
+
+<input v-model="resource.date" type="text" name="document.date" maxlength="7" id="dateCreated" class="reasonableDate required input-mini trim" title="Please enter the year this Document was created" required="true"></div>
+</div>
+                </div>
+<div id="t-abstract" class="clear" data-tiplabel="Abstract / Description" data-tooltipcontent="Short description of the             Document
+." data-original-title="" title="">
+
+<div class="control-group "><label class="control-label" for="resourceDescription">Abstract / Description <span class="required">*</span></label>    <div class="controls">
+<textarea v-model="resource.description" name="document.description" cols="80" rows="4" id="resourceDescription" class="required resizable resize-vertical input-xxlarge trim" title="A description is required" required="true"></textarea></div>
+</div>
+            </div>
+<b>epochtime</b>
+    <input type="text" name="startTime" v-model="epochtime" id="metadataForm_epochTimeUpdated">
+    <b>accountId</b>
+    <input type="text" v-model="accountId" name="accountId" maxlength="512">
+    
+    <b>submitter</b>
     <div>
+        <autocomplete url="/api/lookup/person"
+        suffix="user=true" field="term"
+        resultsuffix="people" 
+        ref="submitter"
+        fieldname="resource.submitter.properName" allowCreate="false" idname="resource.submitter.id"  :id="resource.submitter.id" />
+        </div>
+    <div>
+    <b>Project</b>
     <autocomplete url="/api/lookup/resource"
         suffix="resourceTypes=PROJECT" field="term"
         resultsuffix="resources" 
         @autocompletevalueset="selectProject" ref="input"
-        fieldname="title" allowCreate="false" idname="id" />
-        </div>
-        {{resource}}
+        fieldname="title" allowCreate="false" idname="projectId" />
+    </div>
     <div>
         <h5>Notes</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertNotes" :disabled="inheritanceDisabled"/></b>
@@ -149,7 +187,12 @@
             name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" 
             result_suffix="items"  />
     </div>
-    {{project}}
+    
+        {{resource}}
+        <hr>
+        {{project}}
+        
+
 </div>
 <script>
 $(document).ready(function() {
@@ -164,6 +207,8 @@ $(document).ready(function() {
                 allow_create:true,
                 nameField: 'title',
                 idField: 'id',
+                accountId: 219,
+                epochtime: -1,
                 projectId: undefined,
                 inheritanceDisabled: true,
                 inhertSiteName: false,
@@ -250,6 +295,15 @@ $(document).ready(function() {
                     }
                 },
                 mounted: function() {
+                    if (document.getElementById('json') != undefined) {
+                        var json = JSON.parse(document.getElementById('json').innerText );
+                        json.submitter = {id:135028};
+                        Vue.set(this,'resource',json);
+                    }
+                    Vue.set(this,"epochtime", Date.now() + 15000);
+                    Vue.set(this,"accountId",220);
+                    //Vue.set("resource","submitter",{});
+                    //this.resource.submitter = {id:8344, properName:'adam brin'};
                     var self = this.resource.latitudeLongitudeBoxes[0];
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
