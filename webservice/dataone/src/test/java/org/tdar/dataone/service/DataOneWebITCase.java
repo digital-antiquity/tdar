@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,6 +21,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Assert;
 import org.junit.Test;
@@ -220,6 +223,16 @@ public class DataOneWebITCase extends AbstractGenericWebTest {
         Assert.assertEquals(200, gotoPage("/v2/log?fromDate=2010-01-01T01:01:00.000"));
         // test with date ... YYYY-MM-DDTHH:MM:SS.mmm
 
+    }
+    
+    @Test
+    public void testError() throws ClientProtocolException, IOException {
+        HttpPost post = new HttpPost(TestConfiguration.getInstance().getBaseSecureUrl() + "error");
+        post.addHeader("Content-Type", "application/xml");
+        post.setEntity(new StringEntity(" <error detailCode=\"6001\" errorCode=\"0\" name=\"SynchronizationFailed\" nodeId=\"urn:node:cnStageUCSB1\" pid=\"blahblah\"><description>Synchronization task of [PID::] blahblah \n" + 
+                "[::PID] failed. Cause: NotFound: Unknown identifier. id=\"blahblah\"\n" + 
+                "</description></error>"));
+        httpClient.execute(post);
     }
 
     @Test

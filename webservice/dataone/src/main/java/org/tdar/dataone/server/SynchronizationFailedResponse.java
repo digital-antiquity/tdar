@@ -33,9 +33,9 @@ public class SynchronizationFailedResponse extends AbstractDataOneResponse {
     @POST
     @Produces("text/plain")
     @Consumes("application/xml")
-    public Response synchronizationFailed(@QueryParam("session") String session, String message) {
+    public Response synchronizationFailed(String message) {
         setupResponseContext(response, request);
-        logger.error(session + ": " + message);
+        logger.error(":: " + message);
         return Response.ok().build();
     }
 
