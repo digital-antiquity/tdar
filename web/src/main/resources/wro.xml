@@ -117,6 +117,8 @@
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>
         <js>/js/vue/vue-autocomplete.js</js>
+        <js>/js/vue/vue-tagging.js</js>
+        <js>/js/vue/vue-creatorwidget.js</js>
         <js>/js/vue/edit-collection.js</js>
 
     </group>

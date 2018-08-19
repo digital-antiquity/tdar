@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>18.1.0-RADIOCARBON-SNAPSHOT</version>
+    <version>19.0.0-TRENCH-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
