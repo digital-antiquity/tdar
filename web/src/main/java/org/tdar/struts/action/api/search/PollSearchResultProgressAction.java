@@ -19,6 +19,7 @@ import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.result.HasJsonDocumentResult;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.web.service.WebSearchService;
@@ -31,7 +32,7 @@ import com.opensymphony.xwork2.Validateable;
 @Scope("prototype")
 @ParentPackage("default")
 @RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
-public class PollSearchResultProgressAction extends AbstractAdvancedSearchController implements Preparable, Validateable {
+public class PollSearchResultProgressAction extends AbstractAdvancedSearchController implements Preparable, Validateable, HasJsonDocumentResult {
 
     private static final long serialVersionUID = -7606256523280755196L;
 

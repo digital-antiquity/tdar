@@ -47,7 +47,6 @@
     });
 </script>
 
-    <@edit.personAutocompleteTemplate />
 
 </body>
 

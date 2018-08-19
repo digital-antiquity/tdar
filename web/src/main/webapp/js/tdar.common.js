@@ -226,13 +226,13 @@ TDAR.common = function (TDAR, fileupload) {
             //init fileupload
             var id = $('input[name=id]').val();
             if (props.ableToUpload && props.multipleUpload) {
-                TDAR.fileupload.registerUpload({
-                    informationResourceId: id,
-                    acceptFileTypes: props.acceptFileTypes,
-                    formSelector: props.formSelector,
-                    inputSelector: '#fileAsyncUpload',
-                    fileuploadSelector: '#divFileUpload'
-                });
+//                TDAR.fileupload.registerUpload({
+//                    informationResourceId: id,
+//                    acceptFileTypes: props.acceptFileTypes,
+//                    formSelector: props.formSelector,
+//                    inputSelector: '#fileAsyncUpload',
+//                    fileuploadSelector: '#divFileUpload'
+//                });
 
             }
         }
@@ -989,9 +989,6 @@ TDAR.common = function (TDAR, fileupload) {
         "coordinatesCheckboxClicked": _coordinatesCheckboxClicked,
         "refreshInputDisplay": _refreshInputDisplay,
         "maxJavascriptValidationMessages": 25,
-
-        //I don't like how  Javascript Templates from "(tmpl.min.js)" puts "tmpl" in global scope, so I'm aliasing it here.
-        "tmpl": tmpl,
         "collectionTreeview": _collectionTreeview,
         "humanFileSize": _humanFileSize,
         "initImageGallery": _initImageGallery,

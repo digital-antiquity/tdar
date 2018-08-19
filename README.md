@@ -7,26 +7,40 @@ the access to these data.
 
 For more information, please visit http://www.tdar.org
 
-## Initial Setup
+# prerequisites to installing tDAR
 
-    # build a clean copy of tDAR without tests
-    mvn clean install -DskipTests 
+* Postgres 9.5 (with PostGIS extensions for production)
+* Java 8
+* Maven 3.5
+* Mercurial 
+* git (for npm packages)
+* npm 5.6+
+* Chrome (for Selenium)
+* chromedriver (for selenium; in unix assumed to be in /usr/local/bin/chromedriver; if mac /Applications/chromedriver )
 
-    # create database instances for tdar (tdarmetadata and tdardata)
-    cd web/
-    mvn clean compile -Psetup-new-instance,liquibase-setup-production-instance
+## getting the basic environment setup
+1. check out the source from http://bitbucket.org/tdar/tdar.src
+2. do a first clean install *mvn clean install -DskipTests*
+3. cd "web" to move into the "web" package
+4. run *mvn clean compile -Psetup-new-instance* to copy template configuration files into the src/main/resources/ directory
 
-## Running the webapp
+## setting up postgres
 
-    cd web/
-    # edit src/main/resources/tdar.properties to point to localhost
-    # edit src/main/resources/hibernate.properties to point to your local database
-    mvn clean compile jetty:run -Pliquibase
+1. install postgres with postgis extensions
+2. create tdar user with login permissions from localhost, tests assume password of 'tdar'
+3. create the following databases with tdar as the owner:
+* *test_tdarmetadata*
+* *test_tdardata*
+* *tdarmetadata*
+* *tdardata*
+* _tdargis_ (optional, using the posgis template)
 
+### setting the tdar database
 
-## Testing
+1. run *mvn clean install -DskipTests -Pliquibase-setup-dev-instance*
 
-    # create the test_tdarmetadata database
-    # install selenium's chromedriver
-    # install chrome
-    mvn clean verify -Ptest
+## next steps
+1. try running tdar in the web package: mvn clean compile jetty:run
+
+## testing tdar:
+mvn clean verify -Ptest

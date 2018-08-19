@@ -9,9 +9,48 @@ input[autocomplete="off"]::-webkit-contacts-auto-fill-button {
 }
 
 
+.iwell {
+    border: 1px solid #CCC;
+    background: #EFEFEF;
+    border-radius: 6px;
+}
+
+.iwell div {
+    margin:1em;
+}
+
+.iwell p {
+    margin-top:10px;
+}
 /*
     History: this file represents the original source code as provided by Fervor
 */
+
+
+body.responsive-desktop br.responsive-large-desktop {
+    display:none;
+}
+
+body.responsive-tablet br.responsive-desktop {
+    display:none;
+}
+
+.fileinput-button input {
+    cursor: pointer;
+    direction: ltr;
+    filter: alpha(opacity=0);
+    font-size: 23px;
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    right: 0;
+/*     top: 0; */
+    transform: translate(-300px, 0) scale(4);
+}
+
+
 
 .red {
     color: #7a1501;

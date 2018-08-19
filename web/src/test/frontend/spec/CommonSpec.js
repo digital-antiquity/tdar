@@ -419,12 +419,6 @@ describe("CommonSpec.js: edit page tests", function () {
             expect($('#textInputDiv')).toBeVisible();
         });
     
-        it("should work when we call tmpl", function () {
-            var fmt = 'Hello {%=o.title%}'
-            var obj = {title:'world'};
-            var result = TDAR.common.tmpl(fmt, obj);
-            expect(result).toBe('Hello world');
-        });
     
         it("initializes collection lists  when we call collectionTreeview", function () {
             loadFixtures('treeview.html');

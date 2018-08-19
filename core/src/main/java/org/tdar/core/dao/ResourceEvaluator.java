@@ -139,7 +139,7 @@ public class ResourceEvaluator implements Serializable {
                     }
 
                     // composite files, like GIS or datasets are counted differently, one file per composite in total, regardless of actual files
-                    if (informationResource.getResourceType().isCompositeFilesEnabled()) {
+                    if (informationResource.getResourceType().isCompositeFilesEnabled() || informationResource.getResourceType().isSensoryData()) {
                         filesUsed_ = 1;
                     } else {
                         filesUsed_++;

@@ -317,7 +317,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     // fixme: probably better to just accept a transient collection object
     private String setupCollectionForTest(String title_, List<String> resourceTitles, CollectionVisibility visibility) {
         gotoPage("/dashboard");
-        find(By.linkText("UPLOAD")).click();
+        find(By.linkText("CREATE")).click();
         waitForPageload();
         gotoPage(SHARE + "add");
         waitForPageload();

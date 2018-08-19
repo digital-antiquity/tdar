@@ -254,20 +254,24 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         // 1. text input for CodingSheet or Ontology (everything in a String, needs preprocessing to convert to a FileProxy)
         if (textInputFileProxy != null) {
             fileProxiesToProcess.add(textInputFileProxy);
-        } else
+        } else {
 
-        // 2. async uploads for Image or Document or ...
-        if (multipleFileUploadEnabled) {
-            fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(fileProxies, ticketId);
-
-        } else
-        // 3. single file upload (dataset|coding sheet|ontology)
-        // there could be an incoming file payload, or just a metadata change.
-        {
-            logger.debug("uploaded: {} {}", files, filenames);
-            fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess, auth.getItem(), filenames, files, fileProxies);
+            // 2. async uploads for Image or Document or ...
+            if (multipleFileUploadEnabled) {
+                InformationResource info = auth.getItem();
+                if (fsw.isBulkUpload()) {
+                    info = null;
+                }
+                fileProxiesToProcess = fileProxyService.reconcilePersonalFilestoreFilesAndFileProxies(info, fsw.getAccountId(), fileProxies, ticketId);
+    
+            } else
+            // 3. single file upload (dataset|coding sheet|ontology)
+            // there could be an incoming file payload, or just a metadata change.
+            {
+                logger.debug("uploaded: {} {}", files, filenames);
+                fileProxiesToProcess = handleSingleFileUpload(fileProxiesToProcess, auth.getItem(), filenames, files, fileProxies);
+            }
         }
-
         return fileProxiesToProcess;
     }
 
@@ -286,7 +290,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         if (CollectionUtils.isEmpty(proxies)) {
             return null;
         }
-        logger.debug("handling uploaded files for {}", item);
+        logger.debug("handling uploaded files for {} {}", ticketId,  item);
         validateFileExtensions(proxies, validFileNames, provider);
         logger.debug("Final proxy set: {}", proxies);
         if (CollectionUtils.isEmpty(proxies)) {
@@ -326,7 +330,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         } else {
             // process a new uploaded file (either ADD or REPLACE)
             setFileProxyAction(persistable, singleFileProxy);
-            singleFileProxy.setFilename(uploadedFilesFileNames.get(0));
+            singleFileProxy.setName(uploadedFilesFileNames.get(0));
             singleFileProxy.setFile(uploadedFiles.get(0));
             toProcess.add(singleFileProxy);
         }

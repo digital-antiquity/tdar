@@ -23,6 +23,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
@@ -48,6 +49,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonAccountFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * $Id$
@@ -71,12 +75,14 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
 
     @Length(max = FieldLength.FIELD_LENGTH_255, min = 1)
     @NotNull
+    @JsonView({JsonAccountFilter.class })
     private String name;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @JsonView({JsonAccountFilter.class })
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     private Status status = Status.ACTIVE;
 
@@ -133,10 +139,28 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
 
     @Column(name = "files_used")
     private Long filesUsed = 0L;
+    
     @Column(name = "space_used")
     private Long spaceUsedInBytes = 0L;
+
     @Column(name = "resources_used")
     private Long resourcesUsed = 0L;
+    
+    @Column(name = "file_expiry_days", nullable=false)
+    @JsonView({JsonAccountFilter.class })
+    private Integer daysFilesExpireAfter = 60;
+    
+    @Column(name = "full_service", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
+    private Boolean fullService = false;
+    
+    @Column(name = "initial_review", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
+    private Boolean initialReview = false;
+    
+    @Column(name = "external_review", nullable=false, columnDefinition="boolean default false")
+    @JsonView({JsonAccountFilter.class })
+    private Boolean externalReview = false;
 
     public BillingAccount() {
     }
@@ -291,6 +315,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         return totalSpaceInBytes;
     }
 
+    @JsonView({JsonAccountFilter.class })
     public Long getAvailableNumberOfFiles() {
         Long totalFiles = getTotalNumberOfFiles();
         return totalFiles - getFilesUsed();
@@ -302,6 +327,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         return totalSpace - getSpaceUsedInBytes();
     }
 
+    @JsonView({JsonAccountFilter.class })
     public Long getAvailableSpaceInMb() {
         return MathUtils.divideByRoundDown(getAvailableSpaceInBytes(), (double) MathUtils.ONE_MB);
     }
@@ -321,6 +347,9 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         setModifiedBy(p);
     }
 
+    @JsonView({JsonAccountFilter.class })
+    @XmlAttribute(name = "ownerRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public TdarUser getOwner() {
         return owner;
     }
@@ -432,6 +461,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     }
 
     @Override
+    @JsonView({JsonAccountFilter.class })
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
     }
@@ -485,6 +515,10 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         return status == Status.FLAGGED;
     }
 
+    
+    @JsonView({JsonAccountFilter.class })
+    @XmlElementWrapper(name = "authorizedUsers")
+    @XmlElement(name = "authorizedUser")
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;
     }
@@ -501,6 +535,38 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @Override
     public boolean isValid() {
         return StringUtils.isNotBlank(name);
+    }
+
+    public Boolean getFullService() {
+        return fullService;
+    }
+
+    public void setFullService(Boolean fullService) {
+        this.fullService = fullService;
+    }
+
+    public Boolean getInitialReview() {
+        return initialReview;
+    }
+
+    public void setInitialReview(Boolean initialReview) {
+        this.initialReview = initialReview;
+    }
+
+    public Boolean getExternalReview() {
+        return externalReview;
+    }
+
+    public void setExternalReview(Boolean externalReview) {
+        this.externalReview = externalReview;
+    }
+
+    public Integer getDaysFilesExpireAfter() {
+        return daysFilesExpireAfter;
+    }
+
+    public void setDaysFilesExpireAfter(Integer daysFilesExpireAfter) {
+        this.daysFilesExpireAfter = daysFilesExpireAfter;
     }
 
 }
