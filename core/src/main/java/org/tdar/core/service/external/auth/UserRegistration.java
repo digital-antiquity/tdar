@@ -28,6 +28,9 @@ public class UserRegistration extends UserAuthData {
     private String confirmEmail;
     private boolean requestingContributorAccess;
     private boolean acceptTermsOfUse;
+    private boolean acceptTermsOfUseAndContributorAgreement;
+
+
     private UserAffiliation affiliation;
 
     public UserRegistration() {
@@ -68,7 +71,7 @@ public class UserRegistration extends UserAuthData {
             }
         }
 
-        if (!acceptTermsOfUse) {
+        if (!acceptTermsOfUse && !acceptTermsOfUseAndContributorAgreement) {
             errors.addFieldError(getPrefix() + "acceptTermsOfUse", "userAccountController.require_tos");
         }
 
@@ -221,5 +224,13 @@ public class UserRegistration extends UserAuthData {
         this.getPerson().setLastName(person.getLastName());
         this.getPerson().setEmail(person.getEmail());
 
+    }
+
+    public boolean isAcceptTermsOfUseAndContributorAgreement() {
+        return acceptTermsOfUseAndContributorAgreement;
+    }
+
+    public void setAcceptTermsOfUseAndContributorAgreement(boolean acceptTermsOfUseAndContributorAgreement) {
+        this.acceptTermsOfUseAndContributorAgreement = acceptTermsOfUseAndContributorAgreement;
     }
 }

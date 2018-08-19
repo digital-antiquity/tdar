@@ -33,7 +33,7 @@
 
     <h3>About You</h3>
 
-     <@auth.registrationFormFields beanPrefix="registration" />
+     <@auth.registrationFormFields beanPrefix="registration" detail="verbose" />
 
 </div>
 </div>

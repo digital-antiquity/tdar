@@ -36,7 +36,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.BOTH, true);
         assertCurrentUrlContains("dashboard");
         assertTextPresentIgnoreCase("Start a new Project");
-        clickLinkWithText("UPLOAD");
+        clickLinkWithText("Upload");
         assertPageTitleEquals("add a new resource");
         logout();
     }
@@ -51,7 +51,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.BOTH, true);
         assertCurrentUrlContains("dashboard");
         assertTextPresentIgnoreCase("Start a new Project");
-        clickLinkWithText("UPLOAD");
+        clickLinkWithText("Upload");
         assertPageTitleEquals("add a new resource");
         gotoPage("/entity/user/myprofile");
         clickElementWithId("disable-account");
