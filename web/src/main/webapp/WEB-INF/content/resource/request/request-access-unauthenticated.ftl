@@ -20,13 +20,13 @@
 	<@auth.loginWarning />
 
     <div class="row">
-        <div class="col-9" id="divRegistrationSection">
+        <div class="col-8" id="divRegistrationSection">
                 <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed tdarvalidate"
                         enctype='multipart/form-data' action="process-request-registration" dynamicAttributes={"data-validate-method":"initRegForm"}>
                     <@s.token name='struts.csrf.token' />
                         <legend>Register</legend>
-                        <div class="authpane">
-                            <div class="authfields">
+                        <div class="authpane row">
+                            <div class="authfields col-12">
                                 <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false beanPrefix="requestUserRegistration"/>
                                 <@_extraFields />
 
@@ -39,14 +39,14 @@
                 </@s.form>
         </div>
 
-        <div class="col-3" id="divLoginSection">
+        <div class="col-4" id="divLoginSection">
             <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate form-condensed"
                     enctype='multipart/form-data' action="process-request-login">
                     <legend>
                         Log In
                     </legend>
-                <div class="authpane">
-                    <div class="authfields">
+                <div class="authpane row">
+                    <div class="authfields col-12">
                         <@auth.login showLegend=false>
                         <@_extraFields />
 

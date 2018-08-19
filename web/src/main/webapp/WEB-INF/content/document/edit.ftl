@@ -53,7 +53,7 @@
         <label class="col-form-label col-2">Volume Information</label>
 
         <div class="col-10">
-        <div class="controls form-row">
+        <div class="controls row">
             <@s.textfield id='volume'  placeholder='Volume' name='document.volume' cssClass="col-2 mr-2"   maxlength=255 />
         <@s.textfield id='journalNumber'placeholder='Issue Number' name='document.journalNumber' cssClass="col-2"  maxlength=255 />
         </div>
@@ -64,7 +64,7 @@
         <label class="col-2 col-form-label">Series Information</label>
 
         <div class="col-10">
-        <div class="controls form-row">
+        <div class="controls row">
             <@s.textfield id='seriesName' placeholder='Series Title' name='document.seriesName' cssClass="col-7 mr-2"  maxlength=255 />
             <@s.textfield id='seriesNumber' placeholder='Series #' name='document.seriesNumber' cssClass="col-2 mr-2"  maxlength=255 />
             <@s.textfield id='edition' placeholder='Edition' name='document.edition' cssClass="col-2"  maxlength=255 />
@@ -77,7 +77,7 @@
             <label class="col-2 col-form-label">Start/End Page</label>
 
         <div class="col-10">
-            <div class="controls form-row">
+            <div class="controls row">
                 <@s.textfield  id='startPage' placeholder="Start#" name='document.startPage' cssClass="col-2 mr-2" maxlength=9/>
                 <@s.textfield id='endPage'  placeholder="End#" name='document.endPage' cssClass="col-2" maxlength=9 />
             </div>

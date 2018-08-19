@@ -141,17 +141,13 @@
         <#if editor>
             <div class="form-group row" id="divSubmitter">
                 <label class="col-form-label col-2">Submitter</label>
-                <div class="col-10">
-                <div class="row">
                     <#if submitter?has_content>
-		                <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8 ml-1"
+		                <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8"
 		                    prefix="submitter" includeRights=false includeRepeatRow=false />
 		 	        <#else>
-                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8 ml-1"
+                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8 "
                         prefix="submitter" includeRights=false includeRepeatRow=false />
                     </#if>
-            </div>
-            </div>
             </div>
         </#if>
     </div>

@@ -99,7 +99,7 @@
             </div>
             <#elseif fieldType.simple>
             <div class="term retain  ${fieldType} simple <#if fieldType.multiIndex>multiIndex</#if>">
-                <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="col-8" />
+                <@s.textfield type="text" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}]" cssClass="form-control" />
             </div>
             <#elseif fieldType="COVERAGE_DATE_RADIOCARBON" || fieldType="COVERAGE_DATE_CALENDAR" >
             <div class="term ${fieldType} controls-row">
@@ -161,17 +161,23 @@
                 <!-- FIXME: REPLACE WITH REFERENCE TO EDIT-MACROS -->
             <span class="creatorPerson " id="group_${groupid}_row_${fieldIndex}_parent">
                 <div class="form-row">
+                <div class="col-5">
                     <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
-                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="Last Name"  
+                    <@s.textfield cssClass=" nameAutoComplete" placeholder="Last Name"  
                 autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" />
-                    <@s.textfield cssClass="col-4 nameAutoComplete" placeholder="First Name" 
+                </div>
+                <div class="col-4">
+                    <@s.textfield cssClass="nameAutoComplete" placeholder="First Name" 
                 autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255"  />
-                    <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select col-3" />
+                </div>
+                <div class="col-3">
+                    <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select" />
+                </div>
                 </div>
                 <div class="controls-row">
-                    <#local icol = 10/>
+                    <#local icol = 12 />
                     <#if authenticated>
                     <#local icol = 5/>
                         <@s.textfield cssClass="col-5 nameAutoComplete" placeholder="Email (Optional)" 
@@ -191,9 +197,11 @@
             <span class="creatorInstitution" id="group_${groupid}_${fieldIndex}_institution_parent">
                 <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.id" id="group_${groupid}_${fieldIndex}_institution_id"/>
                 <div class="form-row">
-                    <@s.textfield  cssClass="col-8 institutionAutoComplete institution" placeholder="Institution Name" 
+                	<div class=" col-8">
+                    <@s.textfield  cssClass="form-control institutionAutoComplete institution" placeholder="Institution Name" 
                     autocompleteName="name" autocompleteIdElement="#group_${groupid}_${fieldIndex}_institution_id" autocompleteParentElement="#group_${groupid}_${fieldIndex}_institution_parent"
                     name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" />
+                    </div>
                 <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" cssClass="col-4" 
                 emptyOption=true listValue='label' placeholder="Role " list=relevantInstitutionRoles />
                 </div>
@@ -315,7 +323,7 @@
         <div class="col-8 term-container">
         <div class=" controls controls-row simple multiIndex ">
                             <span class="term retain ALL_FIELDS simple multiIndex">
-                                <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="col-8"/>
+                                <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="form-control"/>
                             </span>
             </div>
             </div>
@@ -338,7 +346,7 @@
     <#macro templateProject fieldIndex="{termid}" groupid="{groupid}">
     <div class="term PROJECT">
         <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
-            <@common.combobox cssClass="input-xxlarge-combo projectcombo col-8" name="groups[${groupid}].projects[${fieldIndex}].title"
+            <@common.combobox cssClass="input-xxlarge-combo projectcombo form-control" name="groups[${groupid}].projects[${fieldIndex}].title"
     autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id"
     target="" label="" placeholder="enter project name"  bootstrapControl=false />
     </div>
@@ -355,7 +363,7 @@
     <div class="term ${type?upper_case}">
         <@s.hidden name="groups[${groupid}].${prefix}[${fieldIndex}].id" id="${prefix}_${groupid}_${fieldIndex}_id" />
             <@common.combobox name="groups[${groupid}].${prefix}[${fieldIndex}].name" id="${prefix}_${groupid}_${fieldIndex}_name"
-    cssClass="col-8 input-xxlarge-combo collectioncombo" autocompleteIdElement="#${prefix}_${groupid}_${fieldIndex}_id"
+    cssClass="form-control input-xxlarge-combo collectioncombo" autocompleteIdElement="#${prefix}_${groupid}_${fieldIndex}_id"
     target="" label="" placeholder="enter ${type} name" bootstrapControl=false collectionType="${collectionType}"/>
     </div>
     </#macro>

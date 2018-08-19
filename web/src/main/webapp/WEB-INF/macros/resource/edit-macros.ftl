@@ -44,9 +44,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 <div class="col-10">
                     <#list _resourceCollections as resourceCollection>
                     <#-- emit a single row of the choose-a-collection section -->
-                    <div id="${prefix}Row_${resourceCollection_index}_" class="form-row repeat-row">
+                    <div id="${prefix}Row_${resourceCollection_index}_" class="row repeat-row">
                         <@s.hidden name="${prefix}[${resourceCollection_index}].id"  id="${prefix}Row_${resourceCollection_index}_id" />
-                        <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="col-11 collectionAutoComplete "  autocomplete="off"
+                        <@s.textfield  id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="col-11 collectionAutoComplete "  autocomplete="off"
                         autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
                         collectionType="${collectionType}"
                         autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
@@ -111,7 +111,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#macro>
 
     <#macro _keywordRow keywordField keyword_index=0 showDelete=true>
-    <div class="controls repeat-row form-row" id='${keywordField}Row_${keyword_index}_'>
+    <div class="controls repeat-row row" id='${keywordField}Row_${keyword_index}_'>
         <@s.textfield name='${keywordField}[${keyword_index}]'  maxlength=255 cssClass='col-11 keywordAutocomplete' placeholder="enter keyword" includeGroup=false />
         <#if showDelete>
         <@nav.clearDeleteButton id="${keywordField}Row" />
@@ -233,13 +233,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@s.select name="coverageDates[${proxy_index}].dateType" cssClass="coverageTypeSelect col-2"
     listValue='label'  headerValue="Date Type" headerKey="NONE"
     list=allCoverageTypes />
-        <div class="col-1">
+        <div class="col-2">
         <@s.textfield placeholder="Start Year" cssClass="coverageStartYear mr-1 trim" name="coverageDates[${proxy_index}].startDate" maxlength="10" />
         </div>
-        <div class="col-1">
+        <div class="col-2">
         <@s.textfield placeholder="End Year" cssClass="coverageEndYear mr-1 trim" name="coverageDates[${proxy_index}].endDate" maxlength="10" />
         </div>
-        <div class="col-7">
+        <div class="col-5">
         <@s.textfield placeholder="Description"  cssClass="coverageDescription  trim" name="coverageDates[${proxy_index}].description"  maxlength=255 />
         </div>
        <@nav.clearDeleteButton id="{proxy_index}DateRow"/>
@@ -1296,9 +1296,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#elseif prefix == 'submitter'>
             <#local properNameField>submitterProperName</#local>
         </#if>
-
+<#if includeRights>
     <div id='${rowIdElement}' class="creatorPerson <#if hidden>hidden</#if> <#if includeRepeatRow>repeat-row</#if>">
-        <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
+</#if>
+                <@s.hidden name='${strutsPrefix}${personPrefix}.id' value='${(person.id!-1)?c}' id="${idIdElement}"  cssClass="" onchange="this.valid()"  autocompleteParentElement="#${rowIdElement}"   />
             
             <@s.textfield  cssClass="${lookupType} ${requiredClass} ${textfieldCssClass!'col-10'}" placeholder="Name"  readonly=isDisabled autocomplete="off"
             name="${properNameField}" maxlength="255" autocompleteName="properName"
@@ -1319,7 +1320,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                 <@s.hidden id="${strutsPrefix}hdnGeneralPermission" name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
             </#if>
+<#if includeRights>
     </div>
+</#if>
     </#macro>
 
 

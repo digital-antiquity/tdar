@@ -348,11 +348,11 @@
 
     <div id="divResultsSortControl">
         <div class="row">
-            <div class="col-3">
+            <div class="col-6">
                 <@totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
             </div>
-            <div class="col-6 form-inline">
-                <div class="pull-right">
+            <div class="col-6">
+                <div class="float-right">
                     <div class="control-group"></div>
                     <label>Records Per Page
                         <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
@@ -374,13 +374,10 @@
                     <hr/></#if>
                 <#assign indx = indx + 1/>
                 <div class="listItemPart">
-                    <h3 class="search-result-title-${result.status}">
+                    <b class="search-result-title-${result.status}">
                         <a class="resourceLink" href="${result.detailUrl}">${result.properName}</a>
-                    </h3>
+                    </b>
                     <#if result.institution?has_content><p>${result.institution.name}</p></#if>
-                    <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
-                    <blockquote class="luceneScore">
-                    <b>score:</b>${result.score!""}<br> </blockquote>
                 </div>
             </#if>
         </#list>

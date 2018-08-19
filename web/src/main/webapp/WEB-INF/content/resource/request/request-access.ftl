@@ -4,29 +4,28 @@
 <head>
 <meta name="robots" content="noindex">
 </head>
-
 <h1>Send a Message</h1>
-<h3>Resource: <span class="red"><a href="${resource.detailUrl}">${resource.title}</a> (${resource.id?c})</span></h3>
+<h5>Resource: <span class="red"><a href="${resource.detailUrl}">${resource.title}</a> (${resource.id?c})</span></h5>
 <br/>
     <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal tdarvalidate" method='post' enctype='multipart/form-data' action='deliver'>
         <@s.token name='struts.csrf.token' />
-              <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
-                 <br/>
-                 <div class="control-group">
-                 <label class="control-label" for="metadataForm_type">Email Type</label>
-                 <div class="controls">
-                 <#list emailTypes>
-                 	<#items as type_>
-                 		<#assign label = type_.label />
-                 		<#if type_ == 'CUSTOM_CONTACT'>
-                 			<#assign label = custom.name />
-                 		</#if>
-                 		<label class="radio inline" for="metadataForm_type${type_}">
-                 		<input type="radio" name="type" id="metadataForm_type${type_}" value="${type_}" class="required" <#if type?has_content && type == type_ >checked="checked"</#if>
-                 			 aria-required="true">${label}</label>
-                 	 </#items>
-             	 </#list> 
-             	 </div>
+              <p><b>Select the type of message you'd like to send to another ${siteAcronym} user.</b></p>
+                 <div class="form-group row">
+	                 <label class="col-form-label col-2" for="metadataForm_type">Email Type</label>
+	                 <div class="col-10">
+		                 <#list emailTypes>
+		                 	<#items as type_>
+		                 		<#assign label = type_.label />
+		                 		<#if type_ == 'CUSTOM_CONTACT'>
+		                 			<#assign label = custom.name />
+		                 		</#if>
+		                 		<div class="form-check form-check-inline">
+			                 		<input type="radio" name="type" id="metadataForm_type${type_}" value="${type_}" class="required form-check-input" <#if type?has_content && type == type_ >checked="checked"</#if> aria-required="true">
+			                 		<label class="radio form-check-label" for="metadataForm_type${type_}">${label} </label>
+	                 			 </div>
+		                 	 </#items>
+		             	 </#list> 
+	             	 </div>
              	 </div>
                 <#assign contactId = resource.submitter.id />
                 <#if contactProxies?has_content>
@@ -46,7 +45,7 @@
                     <#assign fromId = authenticatedUser.id />
                 </#if>
                 <@s.hidden name="fromId" value="${authenticatedUser.id?c}" /> 
-                <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="col-5 required" cols="80" />
+                <@s.textarea name="messageBody" id="messageBody" rows="4" label="Message" cssClass="col-10 required" cols="80" />
 
                 <p><b>Note:</b> Your message will be sent to the designated contact of this digital resource in tDAR. 
                 Please use "<i>suggest correction</i>" if you would like to recommend changes to the metadata.  

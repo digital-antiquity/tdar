@@ -22,7 +22,7 @@
 <#local spanhalf = "col-${cols/2}"/>
 
 <div class="row">
-    <div class="col-8">
+    <div class="col">
         <@s.textfield spellcheck="false" required=true id='username' label="Username"
             name="${beanPrefix}.person.username" cssClass="required username input-xlarge"
             dynamicAttributes={"data-rule-minlength":"5",  "data-msg-required":"Username is required.",
@@ -31,14 +31,14 @@
 </div>
 
 <div class="row">
-    <div class="col-4">
+    <div class="col">
         <@s.textfield spellcheck="false" required=true id='firstName' label='First name'
             name='${beanPrefix}.person.firstName' cssClass="required input-xlarge"
             dynamicAttributes={
                 "data-msg-required":"First name is required."
             }/>
     </div>
-    <div class="col-4">
+    <div class="col">
         <@s.textfield spellcheck="false" required=true id='lastName' label='Last name'
             name='${beanPrefix}.person.lastName' cssClass="required input-xlarge"
             dynamicAttributes={
@@ -48,7 +48,7 @@
 </div>
 
 <div class="row">
-    <div class="col-4">
+    <div class="col">
         <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address"
         name="${beanPrefix}.person.email" cssClass="required email input-xlarge"
         dynamicAttributes={
@@ -56,7 +56,7 @@
             "data-msg-required":"Email address is required."
         }/>
     </div>
-    <div class="col-4">
+    <div class="col">
         <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email"
             name="${beanPrefix}.confirmEmail" cssClass="required email input-xlarge"
             dynamicAttributes={
@@ -69,10 +69,10 @@
 </div>
 
 <div class="row">
-    <div class="col-4">
+    <div class="col">
         <@s.textfield labelposition='top' label='Organization' name='${beanPrefix}.institutionName' id='institutionName' cssClass="input-xlarge"/>
     </div>
-    <div class="col-4">
+    <div class="col">
     <#-- listValueKey="localeKey"	       theme="tdar" -->
             <@s.select list="affiliations" name="${beanPrefix}.affiliation" label="Affiliation / Interest" listValue="label" headerKey=""
     headerValue="Select Affiliation"   />
@@ -80,7 +80,7 @@
 
 </div>
 <div class="row">
-    <div class="col-4">
+    <div class="col">
         <@s.password required=true label='Password' name='${beanPrefix}.password' id='password'
             cssClass="required input-xlarge" autocomplete="off"
             dynamicAttributes={
@@ -89,7 +89,7 @@
                 "data-msg-minlength":"Your password must be at least 8 characters."
             }/>
     </div>
-    <div class="col-4">
+    <div class="col">
         <@s.password required=true label='Confirm password' name='${beanPrefix}.confirmPassword' id='confirmPassword'
         cssClass="required input-xlarge" autocomplete="off"
         dynamicAttributes={
@@ -104,7 +104,7 @@
 
 <#if (level > 1)>
 <div class="row">
-    <div class="col-4">
+    <div class="col-6">
         <@s.textfield label='Work phone' labelposition='top' name='${beanPrefix}.person.phone' id='phone' cssClass=" input-xlarge"/>
     </div>
 </div>
@@ -177,8 +177,8 @@
         <legend>Login</legend>
     </#if>
     <@s.token name='struts.csrf.token' />
-    <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus" labelposition="left" cssClass="col-4"/>
-    <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" labelposition="left"  cssClass="col-4"/>
+    <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus"  cssClass="col"/>
+    <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" cssClass="col"/>
 
     <#nested />
     <script type="text/javascript">

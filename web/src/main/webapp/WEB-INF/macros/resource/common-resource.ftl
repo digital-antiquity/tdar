@@ -210,11 +210,12 @@ Common macros used in multiple contexts
                 placeholder="${placeholder}" cssClass="${cssClass}" />
             </#if>
             <div class="input-group-append">
-            <button type="button" class="btn btn-outline-secondary"><i class="fas fa-chevron-down"></i></button>
-            <#if addNewLink?has_content>
-                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn btn-outline-secondary show-all"
-                   target="_blank">add new</a>
-            </#if>
+    	        <button type="button" class="btn btn-outline-secondary"><i class="fas fa-chevron-down"></i></button>
+	            <#if addNewLink?has_content>
+	                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn btn-outline-secondary show-all"
+	                   target="_blank">add new</a>
+	            </#if>
+            </div>
             </div>
             </div>
             </div>
