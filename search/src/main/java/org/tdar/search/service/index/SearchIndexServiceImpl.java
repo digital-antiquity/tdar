@@ -38,6 +38,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -243,12 +244,13 @@ public class SearchIndexServiceImpl implements SearchIndexService {
             SolrInputDocument document = createDocument(item);
 
             if (Objects.equals(src, LookupSource.DATA)) {
-                List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource) item,
-                        datasetDao);
+                List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource) item, datasetDao);
                 template.add(CoreNames.DATA_MAPPINGS, convert);
+
                 if (deleteFirst) {
                     template.deleteByQuery(CoreNames.DATA_MAPPINGS, "id:" + item.getId());
                 }
+                template.add(CoreNames.DATA_MAPPINGS, convert);
                 return null;
             }
 
@@ -670,6 +672,11 @@ public class SearchIndexServiceImpl implements SearchIndexService {
         commitAndClearSession(coreName);
         logger.debug("completed partial indexing of projectTitle");
 
+    }
+
+    @Override
+    public void indexDataMappings(Dataset dataset) {
+        index(LookupSource.DATA, dataset, true);
     }
 
 }

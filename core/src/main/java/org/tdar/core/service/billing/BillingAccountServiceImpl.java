@@ -439,6 +439,10 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
         if (PersistableUtils.isTransient(acct)) {
             acct.markUpdated(invoice.getOwner());
             acct.setStatus(Status.ACTIVE);
+            if (CollectionUtils.isEmpty(acct.getAuthorizedUsers())) {
+                acct.getAuthorizedUsers().add(new AuthorizedUser(invoice.getOwner(),invoice.getOwner(), Permissions.ADMINISTER_ACCOUNT));
+            }
+
         }
         invoice.markUpdated(authenticatedUser);
         acct.getInvoices().add(invoice);

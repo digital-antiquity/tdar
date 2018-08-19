@@ -53,8 +53,9 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
     @Override
     @Transactional
     public void remapColumns(Dataset dataset, List<DataTableColumn> columns, Project project) {
-        datasetDao.remapColumns(columns , dataset, project);
+        datasetDao.remapColumns(columns, dataset, project);
         try {
+            searchIndexService.indexDataMappings(dataset);
             searchIndexService.indexProject(project);
         } catch (SearchIndexException | IOException e) {
             logger.error("error in reindexing", e);

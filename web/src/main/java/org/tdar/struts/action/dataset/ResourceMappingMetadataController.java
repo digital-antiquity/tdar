@@ -152,9 +152,9 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
     protected void postSaveColumnMetadataCleanup() {
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
-                datasetMappingService.remapColumnsAsync(persistable, columnsToRemap, getDataResource().getProject());
+                datasetMappingService.remapColumnsAsync(getDataResource(), columnsToRemap, getDataResource().getProject());
             } else {
-                datasetMappingService.remapColumns(persistable, columnsToRemap, getDataResource().getProject());
+                datasetMappingService.remapColumns(getDataResource(), columnsToRemap, getDataResource().getProject());
             }
         }
     }
