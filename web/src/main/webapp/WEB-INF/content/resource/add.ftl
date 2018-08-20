@@ -108,12 +108,16 @@
 
         <div class="row">
             <div class="col-4">
-                <h3 class="ontology-mid-red"><@link "ontology" "Ontology"/></h3>
+            <h3>
+            <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_ontology"></use></svg>            
+            <@link "ontology" "Ontology" /></h3>
                 In ${siteAcronym}, an ontology is a small file used with a dataset column (and/or coding sheet) to hierarchically organize values in the data in
                 order to facilitate integrating datasets from different sources. (Please see the tutorials on data integration for a complete explanation).
             </div>
             <div class="col-4">
-                <h3 class="coding_sheet-mid-red"><@link "coding-sheet" "Coding Sheet"/></h3>
+            <h3>
+            <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_coding_sheet"></use></svg>            
+            <@link "coding-sheet" "Coding Sheet"/></h3>
                 A list of codes and their meanings, usually associated with a single column in a dataset. An example from archaeology might be a list of ceramic
                 type codes from a particular analysis project, linked to a specific dataset within ${siteAcronym}. A collection of coding sheets make up a
                 coding packet, and are part of the proper documentation of a dataset.

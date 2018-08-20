@@ -546,9 +546,6 @@ img.responsive-image {
 .section, .section + .card {
   margin-bottom: 1em; }
 
-.resource-list .listItem b {
-  font-size: 112%; }
-
 div.tdarresults {
   border-top: double #222;
   border-bottom: double #222;
