@@ -204,9 +204,11 @@
                     <th>Category</th>
                     <th>Coding Sheet</th>
                     <th>Ontology</th>
+                    <th>Search</th>
                 </tr>
                 </thead>
                 <#list dataTable.dataTableColumns as column>
+                <#if !column.visible?has_content || column.visible == 'CONFIDENTIAL' && ableToViewConfidentialFiles || column.visible == 'VISIBLE'>
                 <#assign oddEven="oddC" />
                 <#if column_index % 2 == 0>
                     <#assign oddEven="evenC" />
@@ -248,7 +250,11 @@
                         <td class="${oddEven}">
                             <@_printOntology column />
                         </td>
+                        <td class="${oddEven}">
+                         ${column.searchField?c} <#if column.visible?has_content && column.visible == 'CONFIDENTIAL'>(Confidential)</#if>
+                        </td>
                     </tr>
+                    </#if>
                 </#list>
             </table>
             </#list>
@@ -488,7 +494,7 @@
         <#if map?? && !map.empty>
         <h3>Additional Metadata</h3>
             <#list map?keys as key>
-                <#if key?? && map.get(key)?? && key.visible?? && key.visible>
+                <#if key?? && map.get(key)?? && (key.visible?? == false || key.visible == 'VISIBLE' || key.visible == 'CONFIDENTIAL' && ableToViewConfidentialFiles) >
                     <@view.kvp key=key.displayName!"unknown field" val=map.get(key)!"unknown value" />
                 </#if>
             </#list>

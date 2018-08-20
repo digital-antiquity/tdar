@@ -18,6 +18,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.poi.hssf.util.HSSFColor.VIOLET;
 import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -311,6 +312,9 @@ public class ResourceServiceImpl implements ResourceService {
             Map<DataTableColumn, String> map = datasetDao.getMappedDataForInformationResource(resource);
             boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
             map.keySet().forEach(key -> {
+                if (key.getVisible() == null) {
+                    key.setVisible(ColumnVisibiltiy.VISIBLE);
+                }
                 switch (key.getVisible()) {
                     case CONFIDENTIAL:
                         if (canViewConfidentialInformation == false) {
