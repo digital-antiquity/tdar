@@ -48,7 +48,7 @@
     </div>
     <div>
         <h5>Notes</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertNotes" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingNoteInformation" :disabled="inheritanceDisabled"/></b>
         <div v-for="(note, idx) in resource.resourceNotes" class="row">
               <div class="repeat-row">
         <div class="controls controls-row">
@@ -79,7 +79,7 @@
 
 <div>
         <h5>Individual and Institutional Roles</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertCreators" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
         <div v-for="(creator, idx) in resource.individualInstitutionalRoles" class="row">
                     <creatorrolelookup :resourcecreator="creator" :row="idx"  />
     </div>    
@@ -87,56 +87,57 @@
     
     <div>
         <h5>Other Keywords</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertOther" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingOtherInformation" :disabled="inheritanceDisabled"/></b>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" prefix="otherKeywords" 
             name_field="label" autocomplete_suffix="keywordType=OtherKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Culture Keywords</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertCulture" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingCulturalInformation" :disabled="inheritanceDisabled"/></b>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="culture"  :values="resource.cultureKeywords" prefix="resource.cultureKeywords" 
             name_field="label" autocomplete_suffix="keywordType=CultureKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Temporal Keywords</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertTemporal" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingTemporalInformation" :disabled="inheritanceDisabled"/></b>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" prefix="temporalKeywords" 
             name_field="label" autocomplete_suffix="keywordType=TemporalKeyword" 
             result_suffix="items"  />
     </div>
     <div>
-        <h5>Site Name</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteName" :disabled="inheritanceDisabled"/></b>
+        <h5>Site Information</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingSiteInformation" :disabled="inheritanceDisabled"/></b>
+        <div>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" prefix="siteNameKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteNameKeyword" 
             result_suffix="items"  />
-    </div>
-    <div>
-        <h5>Site Type</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteType" :disabled="inheritanceDisabled"/></b>
+        </div>
+        <br/>
+        <div>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" prefix="siteTypeKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteTypeKeyword" 
             result_suffix="items"  />
+        </div>
     </div>
     <div>
         <h5>Investigation Type</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertInvestigationType" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingInvestigationInformation" :disabled="inheritanceDisabled"/></b>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="investigationType" :values="resource.investigationTypes" prefix="resource.investigationTypes" 
             name_field="label" autocomplete_suffix="keywordType=InvestigationType" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Material</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertMaterial" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingMaterialInformation" :disabled="inheritanceDisabled"/></b>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.materialKeywords" prefix="materialKeywords"  
             name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Geographic</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSpatial" :disabled="inheritanceDisabled"/></b>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingSpatialInformation" :disabled="inheritanceDisabled"/></b>
         <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" prefix="geographicKeywords"
             name_field="label" autocomplete_suffix="keywordType=GeographicKeyword" 
             result_suffix="items"  />
@@ -211,16 +212,6 @@ $(document).ready(function() {
                 epochtime: -1,
                 projectId: undefined,
                 inheritanceDisabled: true,
-                inhertSiteName: false,
-                inhertSiteType: false,
-                inhertTemporal: false,
-                inhertCreators: false,
-                inhertCulture: false,
-                inhertSpatial: false,
-                inhertMaterial: false,
-                inhertOther: false,
-                inhertNotes: false,
-                inhertInvestigationType: false,
                 project: {},
                 noteTypes: [
                     {value:"GENERAL", name:"General Note"},
@@ -233,19 +224,18 @@ $(document).ready(function() {
                     individualInstitutionalRoles: [{id: undefined, role: undefined , creator: {institution:{ name: undefined}}, id: undefined}] }
                 },
                 watch: {
-                    inhertInvestigationType: function(o, b) {
+                    "resource.inheritingInvestigationInformation": function(o, b) {
                         this.inherit(o,b,'investigationType', 'activeInvestigationTypes');
                     },
-                    inhertSiteName: function(o, b) {
+                    "resource.inheritingSiteInformation": function(o, b) {
                         this.inherit(o,b,'siteName', 'activeSiteNameKeywords');
-                    },
-                    inhertSiteType: function(o, b) {
                         this.inherit(o,b,'siteType', 'activeSiteTypeKeywords');
                     },
-                    inhertTemporal: function(o, b) {
+                    "resource.inheritingTemporalInformation": function(o, b) {
                         this.inherit(o,b,'temporal', 'activeTemporalKeywords');
                     },
-                    inhertCreators: function(o, b) {
+                    "resource.inheritingIndividualAndInstitutionalCredit": function(o, b) {
+                        if (this.project != undefined && this.project.activeIndividualAndInstitutionalCredit != undefined) {
                         this.resource.individualInstitutionalRoles.length = 0;
                         var self = this;
                         this.project.activeIndividualAndInstitutionalCredit.forEach(function(role_) {
@@ -253,15 +243,17 @@ $(document).ready(function() {
                             role.init = "";
                             self.resource.individualInstitutionalRoles.push(role);
                         });
+                            }
                     },
-                    inhertMaterial: function(o, b) {
+                    "resource.inheritingMaterialInformation": function(o, b) {
                         this.inherit(o,b,'material', 'activeMaterialKeywords');
                     },
-                    inhertCulture: function(o, b) {
+                    "resource.inheritingCulturalInformation": function(o, b) {
                         this.inherit(o,b,'culture', 'activeCultureKeywords');
                     },
-                    inhertSpatial: function(o, b) {
+                    "resource.inheritingSpatialInformation": function(o, b) {
                         this.inherit(o,b,'geographic', 'activeGeographicKeywords');
+                        if (this.project != undefined && this.project.activeLatitudeLongitudeBoxes != undefined) {
                         this.resource.latitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
                         this.resource.latitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
                         this.resource.latitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
@@ -270,11 +262,19 @@ $(document).ready(function() {
                         Vue.nextTick(function() {
                             $(".locateCoordsButton").click();
                         });
+                            }
                     },
-                    inhertOther: function(o, b) {
+                    "resource.inheritingOtherInformation": function(o, b) {
                         this.inherit(o,b,'other', 'activeOtherKeywords');
                     },
-                    inhertNotes: function(o, b) {
+                    "resource.inheritingIdentifierInformation": function(o, b) {
+                        //this.inherit(o,b,'culture', 'activeCultureKeywords');
+                    },
+                    "resource.inheritingCollectionInformation": function(o, b) {
+                      //  this.inherit(o,b,'culture', 'activeCultureKeywords');
+                    },
+                    "resource.inheritingNoteInformation": function(o, b) {
+                        if (this.project != undefined && this.project.activeResourceNotes != undefined) {
                         this.resource.resourceNotes.length = 0;
                         var _app = this;
                         this.project.activeResourceNotes.forEach(function(n) {
@@ -283,6 +283,7 @@ $(document).ready(function() {
                         });
                         if (this.resource.resourceNotes.length == 0) {
                             this.resource.resourceNotes.push({});
+                        }
                         }
                     }
                 },
