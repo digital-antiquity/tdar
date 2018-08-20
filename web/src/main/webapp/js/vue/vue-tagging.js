@@ -75,7 +75,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 ret = ret + "[" + idx + "]";
                 
                 if (this.prefix != undefined) {
-                    ret = ret + + ".";
+                    ret = ret + ".";
                 }
                 
                 
@@ -86,6 +86,11 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 var ret = "";
                 if (this.prefix != undefined) {
                     ret = ret + this.prefix + ".";
+                }
+                ret = ret + "[" + idx + "]";
+
+                if (this.prefix != undefined) {
+                    ret = ret + ".";
                 }
                 ret = ret + this.id_field;
                 return ret;

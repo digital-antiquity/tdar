@@ -88,7 +88,7 @@
     <div>
         <h5>Other Keywords</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertOther" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" prefix="resource.otherKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" prefix="otherKeywords" 
             name_field="label" autocomplete_suffix="keywordType=OtherKeyword" 
             result_suffix="items"  />
     </div>
@@ -102,21 +102,21 @@
     <div>
         <h5>Temporal Keywords</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertTemporal" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" prefix="resource.temporalKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" prefix="temporalKeywords" 
             name_field="label" autocomplete_suffix="keywordType=TemporalKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Site Name</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteName" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" prefix="resource.siteNameKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" prefix="siteNameKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteNameKeyword" 
             result_suffix="items"  />
     </div>
     <div>
         <h5>Site Type</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteType" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" prefix="resource.siteTypeKeywords" 
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" prefix="siteTypeKeywords" 
             name_field="label" autocomplete_suffix="keywordType=SiteTypeKeyword" 
             result_suffix="items"  />
     </div>
@@ -128,9 +128,16 @@
             result_suffix="items"  />
     </div>
     <div>
+        <h5>Material</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertMaterial" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.materialKeywords" prefix="materialKeywords"  
+            name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" 
+            result_suffix="items"  />
+    </div>
+    <div>
         <h5>Geographic</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSpatial" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" prefix="resource.geographicKeywords"
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" prefix="geographicKeywords"
             name_field="label" autocomplete_suffix="keywordType=GeographicKeyword" 
             result_suffix="items"  />
             
@@ -180,13 +187,6 @@
             </div>
                                 <div class="mapdiv"></div>
         </div>
-    <div>
-        <h5>Material</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertMaterial" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.materialKeywords" prefix="resource.materialKeywords"  
-            name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" 
-            result_suffix="items"  />
-    </div>
     
         {{resource}}
         <hr>
@@ -294,7 +294,7 @@ $(document).ready(function() {
                         return "";
                     }
                 },
-                mounted: function() {
+                created: function() {
                     if (document.getElementById('json') != undefined) {
                         var json = JSON.parse(document.getElementById('json').innerText );
                         json.submitter = {id:135028};
