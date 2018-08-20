@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class SynchronizationFailedResponse extends AbstractDataOneResponse {
 
     @POST
     @Produces("text/plain")
-    @Consumes("application/xml")
+    @Consumes("multipart/mixed")
     public Response synchronizationFailed(String message) {
         setupResponseContext(response, request);
         logger.error(":: " + message);
