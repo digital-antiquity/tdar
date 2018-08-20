@@ -534,26 +534,57 @@ View freemarker macros
         <#local numThumbnails = resource.visibleFilesWithThumbnails?size!0 />
         <#local numThumbnailsPerSection = 4 />
         <#local numIndicators = ( numThumbnails / numThumbnailsPerSection)?ceiling  />
-        <#--  from http://bootsnipp.com/snipps/thumbnail-carousel
-        <div class="hidden">
-        <p><strong># Indicators per section: </strong>${numIndicatorsPerSection}</p>
-        <p><strong># Visible Thumbnails: </strong>${resource.visibleFilesWithThumbnails?size!0}</p>
-        <p><strong># Indicators: </strong>${numIndicators}</p>
-        </div>
-        -->
-        <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
-            <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
 
+        <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
+        <#--  
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img class="d-block w-100" src=".../800x400?auto=yes&bg=777&fg=555&text=First slide" alt="First slide">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src=".../800x400?auto=yes&bg=666&fg=444&text=Second slide" alt="Second slide">
+    </div>
+    <div class="carousel-item">
+      <img class="d-block w-100" src=".../800x400?auto=yes&bg=555&fg=333&text=Third slide" alt="Third slide">
+    </div>
+  </div>
+  <ol class="carousel-indicators">
+    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+  </ol>
+  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+
+         
+           -->
+            <div id="myCarousel" class="image-carousel carousel slide pagination-centered" data-ride="carousel">
+                <#if (numIndicators > 1)>
+                    <ol class="carousel-indicators ">
+                        <li data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</li>
+                        <#list 1..(numIndicators -1) as x>
+                            <li data-target="#myCarousel" data-slide-to="${x}">&nbsp;</li>
+                        </#list>
+                    </ol>
+                    </#if>
                 <!-- Carousel items -->
                 <div class="carousel-inner">
 
                     <#list resource.visibleFilesWithThumbnails as irfile>
                         <#local lazyLoad = (irfile_index > (2 * numThumbnailsPerSection)) />
                         <#if (irfile_index % numThumbnailsPerSection) == 0>
-                        <div class="item pagination-centered <#if irfile_index == 0>active</#if>"> <#t>
-                        <div class="row-fluid"> <#t>
+                        <div class="carousel-item <#if irfile_index == 0>active</#if>"> <#t>
+                        <div class="row"> <#t>
                         </#if>
-                        <div class="col-3"> <#t>
+                        <div class="col"> <#t>
                           <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>"> <#t>
                               <span class="thumbnail-center-spacing "></span> <#t>
                               <img class="thumbnailLink img-polaroid"<#t>
@@ -583,14 +614,14 @@ View freemarker macros
                 </div>
                 <!--/carousel-inner-->
                 <#if (numIndicators > 1)>
-                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
-                    <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
-                    <div class="carousel-indicators ">
-                        <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
-                        <#list 1..(numIndicators -1) as x>
-                            <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
-                        </#list>
-                    </div>
+                  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
                 </#if>
             </div>
             <!--/myCarousel-->

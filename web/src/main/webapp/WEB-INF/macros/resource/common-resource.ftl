@@ -188,10 +188,10 @@ Common macros used in multiple contexts
 <#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
  as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
     <#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="" collectionType="">
-    <div class="row">
+    <#if label?has_content && label != ''><div class="row">
         <label class="col-form-label col-2">${label}</label>
         <div class="col-10">
-        <div class="row">
+        <div class="row"></#if>
         <div class="input-group mb-3">
         <#--if 'value' is not a string,  omit the 'value' attribute so that we don't override the
         s.textfield default (i.e. the value described by the 'name' attribute) -->
@@ -209,17 +209,17 @@ Common macros used in multiple contexts
                 collectionType="${collectionType}" includeGroup=false
                 placeholder="${placeholder}" cssClass="${cssClass}" />
             </#if>
-            <div class="input-group-append">
-    	        <button type="button" class="btn btn-outline-secondary"><i class="fas fa-chevron-down"></i></button>
-	            <#if addNewLink?has_content>
-	                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn btn-outline-secondary show-all"
-	                   target="_blank">add new</a>
-	            </#if>
+                <div class="input-group-append">
+        	        <button type="button" class="btn btn-outline-secondary"><i class="fas fa-chevron-down"></i></button>
+    	            <#if addNewLink?has_content>
+    	                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn btn-outline-secondary show-all"
+    	                   target="_blank">add new</a>
+    	            </#if>
+                </div>
             </div>
+<#if label?has_content && label != ''>            </div>
             </div>
-            </div>
-            </div>
-        </div>
+        </div></#if>
     </#macro>
 
 

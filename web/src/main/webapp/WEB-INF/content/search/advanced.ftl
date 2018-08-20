@@ -114,47 +114,19 @@
             </div>
             <#elseif fieldType="KEYWORD_INVESTIGATION">
             <div class="term KEYWORD_INVESTIGATION">
-                <table id="groups[${groupid}].investigationTypeTable[${fieldIndex}]" class="field">
-                    <tbody>
-                    <tr>
-                        <td>
-                            <@s.checkboxlist name='groups[${groupid}].investigationTypeIdLists[${fieldIndex}]' list='allInvestigationTypes' listKey='id' listValue='label'  numColumns=2  cssClass="smallIndent" />
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <@s.checkboxlist name='groups[${groupid}].investigationTypeIdLists[${fieldIndex}]' list='allInvestigationTypes' listKey='id' listValue='label'  numColumns=2  cssClass="smallIndent" />
             </div>
             <#elseif fieldType="KEYWORD_SITE">
             <div class="term KEYWORD_SITE">
-                <table id="groups[${groupid}].siteTypeKeywordTable[${fieldIndex}]" class="field">
-                    <tbody>
-                    <tr>
-                        <td><@s.checkboxlist theme="hier" name="groups[${groupid}].approvedSiteTypeIdLists[${fieldIndex}]" keywordList="allApprovedSiteTypeKeywords" /></td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <@s.checkboxlist theme="hier" name="groups[${groupid}].approvedSiteTypeIdLists[${fieldIndex}]" keywordList="allApprovedSiteTypeKeywords" />
             </div>
             <#elseif fieldType="KEYWORD_MATERIAL">
             <div class="term KEYWORD_MATERIAL">
-                <table id="groups[${groupid}].materialTypeTable[${fieldIndex}]" class="field">
-                    <tbody>
-                    <tr>
-                        <td>
-                            <@s.checkboxlist name='groups[${groupid}].materialKeywordIdLists[${fieldIndex}]' list='allMaterialKeywords' listKey='id' listValue='label'  numColumns=2 />
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <@s.checkboxlist name='groups[${groupid}].materialKeywordIdLists[${fieldIndex}]' list='allMaterialKeywords' listKey='id' listValue='label'  numColumns=2 />
             </div>
             <#elseif fieldType="KEYWORD_CULTURAL">
             <div class="term KEYWORD_CULTURAL">
-                <table id="groups[${groupid}].siteTypeKeywordTable[${fieldIndex}]" class="field">
-                    <tbody>
-                    <tr>
-                        <td><@s.checkboxlist theme="hier" name="groups[${groupid}].approvedCultureKeywordIdLists[${fieldIndex}]" keywordList="allApprovedCultureKeywords" /></td>
-                    </tr>
-                    </tbody>
-                </table>
+                   <@s.checkboxlist theme="hier" name="groups[${groupid}].approvedCultureKeywordIdLists[${fieldIndex}]" keywordList="allApprovedCultureKeywords" />
             </div>
             <#elseif fieldType ="RESOURCE_CREATOR_PERSON">
             <div class="term RESOURCE_CREATOR_PERSON">
@@ -163,28 +135,28 @@
                 <div class="form-row">
                 <div class="col-5">
                     <@s.hidden name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.id" id="group_${groupid}_${fieldIndex}_person_id" onchange="this.valid()"  autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"  />
-                    <@s.textfield cssClass=" nameAutoComplete" placeholder="Last Name"  
+                    <@s.textfield cssClass=" nameAutoComplete form-control" placeholder="Last Name"  
                 autocompleteName="lastName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.lastName" maxlength="255" />
                 </div>
                 <div class="col-4">
-                    <@s.textfield cssClass="nameAutoComplete" placeholder="First Name" 
+                    <@s.textfield cssClass="nameAutoComplete form-control" placeholder="First Name" 
                 autocompleteName="firstName" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.firstName" maxlength="255"  />
                 </div>
                 <div class="col-3">
-                    <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select" />
+                    <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" emptyOption=true listValue='label' list=relevantPersonRoles cssClass="creator-role-select form-control" />
                 </div>
                 </div>
                 <div class="controls-row">
                     <#local icol = 12 />
                     <#if authenticated>
                     <#local icol = 5/>
-                        <@s.textfield cssClass="col-5 nameAutoComplete" placeholder="Email (Optional)" 
+                        <@s.textfield cssClass="col-5 nameAutoComplete form-control" placeholder="Email (Optional)" 
                         autocompleteName="email" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="#group_${groupid}_row_${fieldIndex}_parent"
                         name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.email" maxlength="255" />
                     </#if>
-                <@s.textfield cssClass="nameAutoComplete col-${icol}" placeholder="Institution Name (Optional)" 
+                <@s.textfield cssClass="nameAutoComplete col-${icol} form-control" placeholder="Institution Name (Optional)" 
                 autocompleteName="institution" autocompleteIdElement="#group_${groupid}_${fieldIndex}_person_id" autocompleteParentElement="group_${groupid}_row_${fieldIndex}_parent"
                 name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].person.institution.name" maxlength="255" />
                 </div>
@@ -202,7 +174,7 @@
                     autocompleteName="name" autocompleteIdElement="#group_${groupid}_${fieldIndex}_institution_id" autocompleteParentElement="#group_${groupid}_${fieldIndex}_institution_parent"
                     name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].institution.name" maxlength="255" />
                     </div>
-                <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" cssClass="col-4" 
+                <@s.select  name="groups[${groupid}].resourceCreatorProxies[${fieldIndex}].role" cssClass="col-4 form-control" 
                 emptyOption=true listValue='label' placeholder="Role " list=relevantInstitutionRoles />
                 </div>
             </span>
@@ -254,7 +226,7 @@
     </#macro>
 
     <#macro searchTypeSelect id="0" init="" groupid="0" >
-    <select id="group${groupid}searchType_${id}_" name="groups[${groupid}].fieldTypes[${id}]" class="control-label searchType repeatrow-noreset col-2" style="font-size:smaller">
+    <select id="group${groupid}searchType_${id}_" name="groups[${groupid}].fieldTypes[${id}]" class="form-control searchType repeatrow-noreset col-2" style="font-size:smaller">
         <#assign groupName = ""/>
         <#list allSearchFieldTypes as fieldType>
             <#if !fieldType.hidden>
@@ -320,7 +292,7 @@
     <#macro blankRow groupid=0 fieldType_index=0 idAttr="grouptablerow_${groupid}_">
     <div id="${idAttr}" class="form-row termrow repeat-row">
         <@searchTypeSelect />
-        <div class="col-8 term-container">
+        <div class="col-9 term-container">
         <div class=" controls controls-row simple multiIndex ">
                             <span class="term retain ALL_FIELDS simple multiIndex">
                                 <input type="text" name="groups[${groupid}].allFields[${fieldType_index}]" class="form-control"/>
@@ -348,7 +320,7 @@
         <@s.hidden name="groups[${groupid}].projects[${fieldIndex}].id" id="projects_${groupid}_${fieldIndex}_id" />
             <@common.combobox cssClass="input-xxlarge-combo projectcombo form-control" name="groups[${groupid}].projects[${fieldIndex}].title"
     autocompleteIdElement="#projects_${groupid}_${fieldIndex}_id"
-    target="" label="" placeholder="enter project name"  bootstrapControl=false />
+    target=""  placeholder="enter project name"  bootstrapControl=false />
     </div>
     </#macro>
 
@@ -360,7 +332,7 @@
         <#local collectionType="SHARED">
         <#local prefix="shares">
     </#if>
-    <div class="term ${type?upper_case}">
+    <div class="term ${type?upper_case} form-row">
         <@s.hidden name="groups[${groupid}].${prefix}[${fieldIndex}].id" id="${prefix}_${groupid}_${fieldIndex}_id" />
             <@common.combobox name="groups[${groupid}].${prefix}[${fieldIndex}].name" id="${prefix}_${groupid}_${fieldIndex}_name"
     cssClass="form-control input-xxlarge-combo collectioncombo" autocompleteIdElement="#${prefix}_${groupid}_${fieldIndex}_id"

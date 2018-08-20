@@ -130,8 +130,9 @@
     </#list>
 </table>
 </#if>
-<h3> Create Voucher</h3>
-<div class="well">
+<div class="card">
+<div class="card-body">
+<h3 class="card-title"> Create Voucher</h3>
 	<p>Voucher codes can be used to allow another tDAR user to use files or space without providing them full access to this account.  Simply create a voucher below by specifying either the number of MB or files <b> To redeem a voucher, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
     <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
         <div class="row">
@@ -143,18 +144,17 @@
 		            <@s.hidden name="quantity" value="1" />
                 </#if>
                 
-                <div class="control-group ">
-                
-                <label class="control-label">Date Expires</label>
-                 <div class="controls">
-	                <div class="input-append">
-	   		          <input name="expires" class="input-small col-2 datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
-	                  <span class="add-on"><i class="icon-th"></i></span>
-	                </div>
-				</div>
-				</div>
-
             </div>
+                <div class="col-4">
+                    <div class="form-group">
+                <label class="col-form-label">Date Expires</label>
+                    <div class="input-group">
+                      <input name="expires" class="input-small form-control datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
+                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+                </div>
+
             <div class="col-4">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
             </div>
@@ -169,6 +169,7 @@
             </div>
         </div>
     </@s.form>
+</div>
 </div>
 
 <h3>Who can use this account</h3>

@@ -13,15 +13,7 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
                     </div>
-
-                    <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
-                        <div class="input-group">
-                            <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
-                            <span class="input-group-append">
-                                        <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
-                                    </span>
-                        </div>
-                    </form>
+                    <@searchform />
                 </div>
 
 
@@ -39,14 +31,7 @@
                     </div>
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <form  name="searchheader"  class="form-inline seleniumIgnoreForm" action="/search/results" method="GET">
-                                <div class="input-group">
-                                    <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search...">
-                                    <span class="input-group-append">
-                                        <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
-                                    </span>
-                                </div>
-                            </form>
+                            <@searchform />
                         </li>
                     </ul>
                 </div>
@@ -169,6 +154,17 @@
     </#if>
 </#macro>
 
+<#macro searchform>
+                    <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
+                        <div class="input-group">
+                            <input type="hidden" name="_tdar.searchType" value="simple">
+                            <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search..."name="query">
+                            <span class="input-group-append">
+                                        <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
+                                    </span>
+                        </div>
+                    </form>
+</#macro>
 <#macro homepageHeader>
 
 <section id="hero">

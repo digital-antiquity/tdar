@@ -21,8 +21,8 @@
 <#macro sidebar minimal=false>
 
     <!-- Don't show header if header doesn't exist -->
-    <div id="sidebar-right" parse="true" class="row">
-    	<div class="col-10 offset-2">
+    <div id="sidebar-right" parse="true" class="row pl-3">
+    	<div class="col-12">
         <br/><br/>
         <#if !minimal>
             <#if (logoAvailable && ((resourceCollection.properties.whitelabel)!false || ((resourceCollection.properties.customHeaderEnabled)!false) == false)) >

@@ -533,8 +533,8 @@
                 <#include 'vue-collection-widget.html' />
     </div>
 
-<div id="sidebar-right" parse="true" class="row">
-	<div class="col-10 offset-2">
+<div id="sidebar-right" parse="true" class="row pl-3">
+	<div class="col-12">
     <div class="beige white-border-bottom">
         <div class="iconbox">
             <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${resource.resourceType?lower_case}"></use></svg>
