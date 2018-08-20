@@ -63,20 +63,23 @@
         <div v-if="option.type == 'basic' || option.type == undefined">
             <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.searchFieldName" v-if="option.autocompleteUrl != undefined" 
 		:resultsuffix="option.resultSuffix" ref="autocomplete" :span="'span3'" :fieldname="fieldName" :allowCreate="false" :idname="idName"/>
-            <input type="text" :name="fieldName" class="span3" v-if="option.autocompleteUrl == undefined">
+            <input type="text" :name="valueFieldName" class="span3" v-if="option.autocompleteUrl == undefined">
         </div>
         <div v-if="option.type == 'select'">
-             <select name="name" class="span3" multiple>
-                  <option :name="fieldName" v-for="(opt, i) in option.values">{{opt}}</option>
+             <select :name="valueFieldName" class="span3" multiple>
+                  <option  v-for="(opt, i) in option.values">{{opt}}</option>
               </select>
  		 </div>
          <div v-if="option.type == 'integer'">
-                    <input type="number" :name="fieldName" class=" span3">
+              <input type="number" :name="valueFieldName" class=" span3">
  		 </div>
          <div v-if="option.type == 'date'">
-              <input type="date" :name="fieldName + 'start'" class=" span3">
-              <input type="date" :name="fieldName + 'end'" class=" span3">
+              <input type="date" :name="fieldName + '.start'" class=" span3">
+              <input type="date" :name="fieldName + '.end'" class=" span3">
  		 </div>
+        <span v-if="option.columnType != undefined"> 
+            <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
+        </span>
          <div id="latlongoptions" v-if="option.type == 'map'">
             <div id='map' class='leaflet-map-editable' data-search="true" style="height:300px">
                <span class="latlong-fields">

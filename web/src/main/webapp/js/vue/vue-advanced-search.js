@@ -33,11 +33,22 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         mounted : function() {
         },
         computed : {
+            valueFieldName: function() {
+                if (this.option == undefined || this.option.fieldName == undefined) {
+                    return undefined;
+                }
+                var ret = "groups[0]." + this.option.fieldName.replace("[]","["+this.index+"]");
+                if (this.option.columnType != undefined) {
+                    return ret + ".value";
+                }
+                return ret;
+                
+            },
             fieldName: function() {
                 if (this.option == undefined || this.option.fieldName == undefined) {
                     return undefined;
                 }
-                return "groups[0]." + this.option.fieldName.replace("[]","["+this.index+"]");;
+                return "groups[0]." + this.option.fieldName.replace("[]","["+this.index+"]");
             },
             searchFieldName: function() {
                 return "searchFieldName";
@@ -269,7 +280,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             json.forEach(function(field){
                 self.selectOptions.push({
                     name: field.displayName,
-                    fieldName: field.name,
+                    fieldName: "dataValues[]",
                     type: 'basic',
                     group: 'custom',
                     id: field.id,
