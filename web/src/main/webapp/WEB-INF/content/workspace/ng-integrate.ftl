@@ -322,7 +322,7 @@
 <script type="text/ng-template" id="workspace/modal-dialog.html">
     <div id="divModalContainer" class="modal modal-big " tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
-
+		<div class="modal-content">
         <div class="modal-header alert-info">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <div id="#modalAjaxIndicator" class="pull-right">
@@ -433,6 +433,7 @@
                     <span ng-show="selectedItems.length" >(<a href="javascript:void(0)"  ng-click="clearSelectedItems()">clear selections</a>)</span>
                 </div>
             </div>
+            </div>
 
 
 
@@ -466,7 +467,7 @@
 <div>
 
     <div id="divResultContainer" class="modal modal-big fade hide" tabindex="-1" role="dialog">
-
+		<div class="modal-content">
         <div class="modal-header alert-info">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="hModalHeader">Integration Results</h3>
@@ -510,6 +511,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </div>
 </body>

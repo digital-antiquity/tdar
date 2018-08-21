@@ -29,7 +29,6 @@ navigation freemarker macros
         <div class="col-12 resource-nav  screen " >
             <ul>
                 <#if persistable??>
-			        <@makeLink namespace "view" "view" "view" current />
 			        <#if editable>
 			            <@makeLink namespace "edit" "edit" "edit" current />
 			            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
@@ -62,7 +61,6 @@ navigation freemarker macros
         <div class="container" id="toolbars" parse="true">
         <div class="col-12 resource-nav  screen " >
             <ul>
-        <@makeLink namespace "view" "view" "view" current />
         <#if editable>
                     <@makeLink resourceCollection.urlNamespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
@@ -93,7 +91,6 @@ navigation freemarker macros
         <div class="container" id="toolbars" parse="true">
         <div class="col-12 resource-nav  screen ">
             <ul>
-	        	<@makeLink namespace "view" "view" "view" current />
     		    <#if editable>
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
@@ -138,7 +135,6 @@ navigation freemarker macros
         <div class="container" id="toolbars" parse="true">
             <div class="col-12 resource-nav  screen">
                 <ul>
-                    <@makeLink "browse" "creators" "view" "view" current true />
 			    <#if "edit" != current>
                     <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
                 <#else>
@@ -168,7 +164,6 @@ navigation freemarker macros
         <div class="container" id="toolbars" parse="true">
             <div class="col-12 resource-nav  screen">
                 <ul>
-                    <@makeLink keyword.urlNamespace "" "view" "view" current true />
 
             <#if "edit" != current>
                     <@makeLink "entity/keyword" "edit?keywordType=${keywordType}" "edit" "edit" current true  />

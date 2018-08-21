@@ -28,7 +28,7 @@
         <h2>Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!</h2>
         <#if contributor>
             <div class="row">
-                <div class="col-10">
+                <div class="col-lg-10 col-md-8">
                     <h4>Upload Resources</h4>
                     <div class="row">
                         <div class="col">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 </div>
-                <div class="col-2">
+                <div class="col-md-4 col-lg-2">
                     <h4>Organize</h4>
                 <div class="row">
                 <div class="col">
