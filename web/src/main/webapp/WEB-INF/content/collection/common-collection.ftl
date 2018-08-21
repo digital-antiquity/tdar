@@ -208,15 +208,7 @@
         
         <div class="collection-facets col-12">
             <#assign mapSize="450" />
-<#-- for when map orientiation is 'left' or 'right'  
-            <#if (totalRecords > 10)>
-                <#assign mapSize="700" />
-            </#if>
-            <#if (totalRecords > 18)>
-                <#assign mapSize="1000" />
-            </#if>
--->
-			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" />
+			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" 'horizontal' />
         </div>
 
         <div class="tdarresults">

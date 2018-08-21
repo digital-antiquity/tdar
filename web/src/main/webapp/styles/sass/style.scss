@@ -804,3 +804,30 @@ div#ontologyTarget {
     border: 1px solid #aaa;
     display: inline-block;
 }
+
+
+
+.primary-thumbnail {
+    height: 125px;
+    display: inline-block;
+    width: 125px;
+    /* TODO: use the lines below if thumbnails need to be something other than span2 */
+    /*min-width: 125px;*/
+    /*width: 100%;*/
+    vertical-align: middle;
+    text-align: center;
+}
+
+.thumbnail-center-spacing {
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.thumbnail-border {
+    border: 1px solid #eee;
+}
+
+.thumbnail-border:hover, .thumbnail-border-selected {
+    border: 1px solid #aeaeae;
+}

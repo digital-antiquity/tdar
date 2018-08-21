@@ -407,9 +407,14 @@
     </ul>
 </#macro>
 
-<#macro partFacet selectedResourceTypes paginationHelper name tag>
+<#macro partFacet selectedResourceTypes paginationHelper name tag mode="vertical">
       <#if selectedResourceTypes.empty>
-            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" pictoralIcon=true />
+          <#if mode == "horizontal">
+            <#local liCssClass="list-inline-item" />
+            <#local ulClass="tools ml-0 pl-0 list-inline" />
+        </#if>
+
+            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" pictoralIcon=true liCssClass=liCssClass ulClass=ulClass />
         <#else>
         <${tag}>
             There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
