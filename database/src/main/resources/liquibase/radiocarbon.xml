@@ -383,4 +383,14 @@
             <column name="visible" type="varchar(25)" />
         </addColumn>
     </changeSet>
+    <changeSet id="radiocarbon-dataset-search-5"
+        author="abrin">
+         <addColumn tableName="collection">
+            <column name="dataset_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_collection_dataset" referencedTableName="dataset"
+            baseColumnNames="dataset_id" baseTableName="collection"
+            referencedColumnNames="id" />
+    </changeSet>
 </databaseChangeLog>

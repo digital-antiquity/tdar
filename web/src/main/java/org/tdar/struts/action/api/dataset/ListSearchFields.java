@@ -20,7 +20,7 @@ import org.tdar.utils.json.JacksonView;
 
 @Component
 @Scope("prototype")
-@ParentPackage("secured")
+@ParentPackage("default")
 @Namespace("/api/dataset")
 public class ListSearchFields extends AbstractJsonApiAction {
 

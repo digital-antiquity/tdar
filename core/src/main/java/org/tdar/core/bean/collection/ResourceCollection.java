@@ -1,4 +1,5 @@
 /**
+
  * $Id$
  * 
  * @author $Author$
@@ -85,6 +86,7 @@ import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.HasAuthorizedUsers;
 import org.tdar.core.bean.resource.Resource;
@@ -208,6 +210,10 @@ public class ResourceCollection extends AbstractPersistable
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "owner_id", nullable = false)
     private TdarUser owner;
+
+    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
+    @JoinColumn(name = "dataset_id", nullable = true)
+    private Dataset dataset;
 
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id", nullable = true)
@@ -898,5 +904,13 @@ public class ResourceCollection extends AbstractPersistable
     @XmlTransient
     public boolean isCollection() {
         return true;
+    }
+
+    public Dataset getDataset() {
+        return dataset;
+    }
+
+    public void setDataset(Dataset dataset) {
+        this.dataset = dataset;
     }
 }
