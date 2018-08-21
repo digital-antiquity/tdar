@@ -521,5 +521,5 @@ Auth Info
         </#if>
             </div>
     </#macro>
-
+<script src="https://raw.githubusercontent.com/softwarespot/jquery-scrollspy/master/jquery-scrollspy.min.js"></script>
 </#escape>

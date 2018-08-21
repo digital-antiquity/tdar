@@ -370,6 +370,7 @@
     </#macro>
 
         <#list resource.activeCoverageDates>
+        <div class="section">
         <h2>Temporal Coverage <#if editor && resource.inheritingTemporalInformation!false><small>(from project)</small></#if> </h2>
         <#items as coverageDate>
             <#assign value>
@@ -379,7 +380,7 @@
             </#assign>
             <@view.kvp key=coverageDate.dateType.label val=value />
             </#items>
-            <hr/>
+            </div>
         </#list>
 
 
@@ -551,7 +552,7 @@
     <#else>
         <#if resourceTypeFacets?has_content >
         <p>Project Contents</p>
-            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
+            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="list-inline-item" ulClass="list-inline" icon=false />
         </#if>
     </#if>
         <ul class="media-list pl-0 ml-0">

@@ -539,12 +539,23 @@ img.responsive-image {
   padding-bottom: 5px;
   margin: 20px 0; }
 
-.section + .section {
+.section + .section, .section + abbr {
   padding-top: 1em;
   border-top: 1px solid #EEE; }
 
 .section, .section + .card {
   margin-bottom: 1em; }
+
+#subnavbar .nav-link {
+  font-weight: normal;
+  padding-top: 4px;
+  padding-bottom: 4px; }
+#subnavbar .nav-link.active {
+  font-weight: bold; }
+
+#subnavbar.affix {
+  position: fixed;
+  top: 10px; }
 
 div.tdarresults {
   border-top: double #222;
