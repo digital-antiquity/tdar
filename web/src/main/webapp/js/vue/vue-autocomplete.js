@@ -48,7 +48,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
           anykey: {type: Function},
           customcreatenew: {type:Function},
           createnewtext: {type:String, default:'Create New'},
-          id: {type:Number}
+          initial_id: {type:Number},
+          initial_value:{type:String}
         },
     
         data: function() {
@@ -56,6 +57,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             isOpen: false,
             results: [],
             search: "",
+            id:- 1 ,
             searchObj: {},
             hasFocus: false,
             mouseFocus: false,
@@ -256,6 +258,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
             this.isOpen = false;
             this.arrowCounter = -1;
           },
+          setId: function(id) {
+              console.log('setid',id);
+          },
           handleClickOutside: function(evt) {
             if (!this.$el.contains(evt.target)) {
               this.isOpen = false;
@@ -275,6 +280,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
         mounted: function() {
           Vue.set(this, 'width',this.$refs['searchfield'].offsetWidth);
           Vue.set(this, 'top',this.$refs['searchfield'].offsetHeight + this.$refs['searchfield'].offsetTop );
+          Vue.set(this,"search", this.initial_value);
+          Vue.set(this,"id", this.initial_id);
           document.addEventListener("click", this.handleClickOutside);
         },
         destroyed: function() {

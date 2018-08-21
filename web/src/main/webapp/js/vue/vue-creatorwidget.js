@@ -20,7 +20,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 roles: ['AUTHOR','EDITOR'],
                 showEditInstitution: false,
                 showEditPerson: false,
-                prefix: "authorishipProxies",
+                prefix: "authorshipProxies",
                 toggle: "PERSON"
                 }
             },

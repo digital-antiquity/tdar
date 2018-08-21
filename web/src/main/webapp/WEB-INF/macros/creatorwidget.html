@@ -3,8 +3,8 @@
             <div v-if="!showEditPerson">
                 <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
                 resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="span4"
-                :customcreatenew="clickNew" createnewtext="Create New Person" :init_id="creator.id" :init_val="creator.properName"
-                                ref="input" fieldname="properName" :allowCreate="false" idname="id" /> 
+                :customcreatenew="clickNew" createnewtext="Create New Person" :initial_id="creator.id" :initial_value="creator.properName"
+                                ref="input" fieldname="properName" :allowCreate="false" idname="personid" /> 
             </div>
             <div class="" v-show="showEditPerson">
                 <div class="controls-row">
@@ -24,8 +24,8 @@
             <div class="" v-if="!showEditInstitution">
                 <autocomplete url="https://localhost:8443/api/lookup/institution" suffix=""  field="institution"   
                 resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="span4"
-                :customcreatenew="clickNew" createnewtext="Create New Institution" :init_id="creator.id" :init_val="creator.properName"
-                ref="input" fieldname="properName" :allowCreate="false" idname="id" />
+                :customcreatenew="clickNew" createnewtext="Create New Institution" :initial_id="creator.id" :initial_value="creator.properName"
+                ref="input" fieldname="properName" :allowCreate="false" idname="institutionid" />
             </div>
             <div v-if="showEditInstitution">
                 <div class="controls-row">
@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="span4">
-        <input type="hidden" name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
+        <input type="hidden" :name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
         <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id">
         <div v-if="toggle == 'PERSON'">
 			<person :creator="resourcecreator.creator" ref="inputperson" />

@@ -573,6 +573,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
         cleanupKeywords(rcp.getUncontrolledCultureKeywords());
         cleanupKeywords(rcp.getUncontrolledMaterialKeywords());
         cleanupKeywords(rcp.getUncontrolledSiteTypeKeywords());
+        cleanupKeywords(rcp.getControlledInvestigationTypes());
         cleanupKeywords(rcp.getSiteNameKeywords());
         cleanupKeywords(rcp.getOtherKeywords());
         cleanupKeywords(rcp.getTemporalKeywords());
@@ -587,7 +588,9 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
 
         PersistableUtils.reconcileSet(res.getSiteNameKeywords(), genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, rcp.getSiteNameKeywords()));
         PersistableUtils.reconcileSet(res.getOtherKeywords(), genericKeywordService.findOrCreateByLabels(OtherKeyword.class, rcp.getOtherKeywords()));
-        PersistableUtils.reconcileSet(res.getInvestigationTypes(), genericService.findAll(InvestigationType.class, rcp.getInvestigationTypeIds()));
+        Set<InvestigationType> findAll = new HashSet<>(genericService.findAll(InvestigationType.class, rcp.getInvestigationTypeIds()));
+        findAll.addAll(genericKeywordService.findOrCreateByLabels(InvestigationType.class, rcp.getControlledInvestigationTypes()));
+        PersistableUtils.reconcileSet(res.getInvestigationTypes(), findAll);
 
         PersistableUtils.reconcileSet(res.getCultureKeywords(), culKeys);
         PersistableUtils.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
