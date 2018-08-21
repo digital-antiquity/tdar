@@ -89,40 +89,35 @@ const datatable = require("./../tdar.datatable");
 						},
 
 						undoModification : function(id, isManaged, isAddition) {
-							var $dataTable = !isAddition ? $('#existing_resources_datatable')
-									: $('#resource_datatable');
+						    console.debug("edit-collection:undoModification called");
+							var $dataTable = !isAddition ? $('#existing_resources_datatable') : $('#resource_datatable');
 
 							if (isManaged) {
 								if (isAddition) {
-									console.debug("Removing " + id
-											+ " from managed additions");
-									this.removeFromArray(id,
-											this.managedAdditions)
+									console.debug("Removing " + id + " from managed additions");
+									this.removeFromArray(id, this.managedAdditions)
 								} else {
-									console.debug("Removing " + id
-											+ " from managed removals");
-									this.removeFromArray(id,
-											this.managedRemovals)
+									console.debug("Removing " + id + " from managed removals");
+									this.removeFromArray(id, this.managedRemovals)
 								}
 							} else {
 								if (isAddition) {
 									console.debug("Removing " + id
 											+ " from unmanaged additions");
-									this.removeFromArray(id,
-											this.unmanagedAdditions)
+									this.removeFromArray(id, this.unmanagedAdditions)
 								} else {
-									console.debug("Removing " + id
-											+ " from unmanaged removals");
-									this.removeFromArray(id,
-											this.unmanagedRemovals)
+									console.debug("Removing " + id +" from unmanaged removals");
+									this.removeFromArray(id, this.unmanagedRemovals)
 								}
 							}
 
 							try {
-
-							datatable.removePendingChange(parseInt(id),
-									isManaged, isAddition, $dataTable);
-							} catch(e){console.warn(e);}
+							    console.debug("Data table is");
+							    console.debug($dataTable);
+							    datatable.removePendingChange(parseInt(id), isManaged, isAddition, $dataTable);
+							} catch(e){
+							    console.warn(e);
+						    }
 						}
 					}
 				});

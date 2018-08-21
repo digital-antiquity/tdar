@@ -8,7 +8,7 @@
 const Vue = require("vue").default;
 require("Axios");
 require("jquery");
-
+require("./vue-selectize");
 //require("./vue-selectize");
 
 //These are the default options for selectize. They are merged when the selectize box is created. 

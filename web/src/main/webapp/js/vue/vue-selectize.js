@@ -6,8 +6,9 @@
  * This integrates Selectize with Vue so it can be used as a component.
  */
 
-require("vue");
+const Vue = require("Vue").default;
 
+console.debug(Vue);
 Vue.component('selectize', {
     props : [ 'options', 'value' ],
     template : '<select><slot></slot></select>',

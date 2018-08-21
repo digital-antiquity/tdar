@@ -965,6 +965,7 @@ core.namespace("datatable");
     	var btnId = "";
     	
     	if(isManaged){
+    	    console.log("Removing pending change from managed");
     		if(isAddition){
     			array =  'toAddManaged'
     			btnId = "btnAddManagedId_";
@@ -975,7 +976,7 @@ core.namespace("datatable");
 	    	}
     	}
     	else {
-    		
+    		console.log("Removing pending change from unmanaged");
     		if(isAddition){
     			array = 'toAddUnmanaged';
     			btnId = "btnAddUnmanagedId_";
@@ -987,8 +988,11 @@ core.namespace("datatable");
     	}
     	
     	console.log("Removing pending change from data");
+    	console.log("Id to remove is "+id);
+    	
     	_arrayRemove($dataTable.data(array),parseInt(id));
-    	console.debug($dataTable);
+
+    	console.debug("Datatabe object is "+$dataTable);
     	var buttonId = "#"+btnId+id;
     	console.log("Reenabling button "+buttonId);
     	$(buttonId).removeAttr("disabled");
@@ -1401,6 +1405,10 @@ core.namespace("datatable");
      * @private
      */
     function _arrayAdd(arr, item) {
+        if(arr==undefined){
+            console.error("Attempted to add an element to an array, but the array was undefined");
+        }
+        
         if(arr.indexOf(item) === -1) {
             arr.push(item);
         }
@@ -1413,6 +1421,11 @@ core.namespace("datatable");
      * @private
      */
     function _arrayRemove(arr, item) {
+        
+        if(arr==undefined){
+            console.error("Attempted to remove an element from an array, but the array was undefined");
+        }
+        
         var idx = arr.indexOf(item);
         if(idx !== -1) {
             arr.splice(idx, 1);
