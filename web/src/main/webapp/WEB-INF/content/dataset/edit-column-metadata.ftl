@@ -303,7 +303,7 @@
         </div>
         </#if>
     <h2>Summary</h2>
-    <table id="summaryTable" class="table tableFormat">
+    <table id="summaryTable" class="table table-sm table-striped">
         <tr>
             <th></th>
             <th></th>

@@ -60,7 +60,8 @@
                         <div class="controls form-row">
                             <div class="col-6">
                                 <table class="table table-condensed table-hover selected-datasets">
-                                    <thead>
+                                      <thead class="thead-dark">
+
                                         <tr>
                                             <th colspan="3">Selected Datasets
                                                 <div class="alert alert-warn" ng-show="ctrl.integration.dataTables.length > maxDataTables" >
@@ -89,7 +90,8 @@
                         </div>
                             <div class="col-6">
                                 <table class="table table-condensed table-hover">
-                                    <thead>
+                                      <thead class="thead-dark">
+
                                         <tr><th colspan="2">Available Ontologies</th></tr>
                                     </thead>
                                     <tbody>
@@ -171,7 +173,8 @@
                                                     <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to an available ontology.
                                                 </div>
                                                 <table class="table table-bordered table-condensed table-hover">
-                                                    <thead>
+                                                      <thead class="thead-dark">
+
                                                     <tr>
                                                         <th rowspan="2" style="white-space: nowrap;">&nbsp;</th>
                                                         <th rowspan="2" style="width:99%">
@@ -233,8 +236,9 @@
                                             <div ng-switch-when="display" class=".display-pane-content">
                                             
                                                 <h3>Choose the source columns to include in this display column </h3>
-                                                <table class="table">
-                                                    <thead>
+                                                <table class="table table-sm table-striped">
+                                                      <thead class="thead-dark">
+
                                                         <tr>
                                                             <th>Dataset</th>
                                                             <th>Table</th>
@@ -259,8 +263,9 @@
 
                                             <div ng-switch-when="count" class=".count-pane-content">
                                                 <h3>Select count columns </h3>
-                                                <table class="table">
-                                                    <thead>
+                                                <table class="table table-sm table-striped">
+                                                      <thead class="thead-dark">
+
                                                         <tr>
                                                             <th>Dataset</th>
                                                             <th>Table</th>
@@ -383,7 +388,8 @@
 
                         <div class="table-modal-results-container">
                             <table class="table table-striped table-modal-results table-hover table-condensed" id="modalResults" ng-class="{active: !modalSearching, disabled: modalSearching}">
-                                <thead>
+                                  <thead class="thead-dark">
+
                                 <tr>
                                     <th style="width:1em">&nbsp</th>
                                     <th style="width:40em">Title</th>

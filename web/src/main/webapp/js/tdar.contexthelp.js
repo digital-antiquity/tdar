@@ -21,7 +21,7 @@ TDAR.contexthelp = (function () {
      *
      * @param targetElem the form field or div described by the help text.
      */
-    function setToolTipContents(targetElem) {
+    function setToolTipContents(targetElem, ignorePosition) {
         var $targetElem = $(targetElem);
         var fieldOff = $targetElem.offset();
         var label;
@@ -44,12 +44,13 @@ TDAR.contexthelp = (function () {
         }
         var $notice = $("#notice:visible");
         if ($notice.length > 0) {
+            if (ignorePosition == undefined || ignorePosition == false) {
             var noteOff = $notice.offset();
             $notice.offset({
                 left: noteOff.left,
                 top: fieldOff.top
             });
-
+            }
             $notice.html(label + "<div id='noticecontent'>" + content + "</div>");
             //hack: if h2 in content, move it out.
             $notice.prepend($('#noticecontent h2').first().remove());
@@ -70,12 +71,12 @@ TDAR.contexthelp = (function () {
      *
      * @param form
      */
-    function initializeTooltipContent(form) {
+    function initializeTooltipContent(form, ignorePosition) {
         if (typeof form === "undefined") {
             return;
         }
         $(form).on("mouseenter focusin", "[data-tooltipcontent]", function () {
-            setToolTipContents(this);
+            setToolTipContents(this, ignorePosition);
         });
     }
 

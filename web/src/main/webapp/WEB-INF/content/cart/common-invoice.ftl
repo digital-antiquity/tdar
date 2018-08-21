@@ -8,7 +8,8 @@
     </#if>
     <!-- FOR testing total:$${calculatedCost!0} -->
     <table class="table  table-invoice">
-        <thead>
+          <thead class="thead-dark">
+
             <tr>
                 <th>Item</th>
                 <th>Quantity</th>

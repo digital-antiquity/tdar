@@ -48,8 +48,9 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
     </div>
 </div>
 
-<table class="tableFormat table">
-<thead>
+<table class="table table-sm table-striped"">
+  <thead class="thead-dark">
+
 <tr>
     <th>Id</th>
     <th>To</th>
@@ -88,8 +89,9 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
 <hr />
 
     <h3>All Emails</h3>
-    <table class="tableFormat table" style="border:1px solid #eee;">
-    <thead>
+    <table class="table table-sm table-striped"" style="border:1px solid #eee;">
+      <thead class="thead-dark">
+
     <tr>
         <th>Id</th>
         <th>To</th>

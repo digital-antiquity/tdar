@@ -74,8 +74,9 @@
                 To be parsed properly a coding sheet should have <b>Code, Term, Description (optional)</b> columns, in order. For example:
             </p>
 
-            <table class="table">
-                <thead>
+            <table class="table table-sm table-striped">
+                  <thead class="thead-dark">
+
                 <tr>
                     <th>Code</th>
                     <th>Term</th>

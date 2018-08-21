@@ -9,8 +9,9 @@
 <div class="glide">
     <h3>Current Resource Breakdown</h3>
     <#assign currentResourceStatsKeys = currentResourceStats?keys?sort />
-    <table class="tableFormat table">
-        <thead>
+    <table class="table table-sm table-striped"">
+          <thead class="thead-dark">
+
         <tr>
             <th>Resource Type</th>
             <th>Total active</th>
@@ -36,8 +37,9 @@
 
 <div class="glide">
     <h3>Recent Logins </h3>
-    <table class="tableFormat table">
-        <thead>
+    <table class="table table-sm table-striped"">
+          <thead class="thead-dark">
+
         <tr>
             <th>User</th>
             <th>Email</th>
@@ -57,7 +59,7 @@
 
 <div class="glide">
     <h3>Recently Created or Updated Resources in the Last Week</h3>
-    <table class="tableFormat table">
+    <table class="table table-sm table-striped"">
         <tr>
             <th>Id</th>
             <th>Title</th>

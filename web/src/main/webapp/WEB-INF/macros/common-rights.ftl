@@ -162,8 +162,9 @@ $(function() {
         <#if editable && (collections?has_content || invites?has_content || ((persistable.authorizedUsers)![])?has_content) >
         <h3>Access Permissions</h3>
             <#nested />
-        <table class="tableFormat table">
-            <thead>
+        <table class="table table-sm table-striped"">
+              <thead class="thead-dark">
+
             <tr>
                 <th>Where</th>
                 <th>User</th>

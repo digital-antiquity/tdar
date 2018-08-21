@@ -191,7 +191,7 @@ true for our registration page or our profile page).-->
     <#macro resourceUsageInfo>
         <#local _isProject =  ((persistable.resourceType)!'') == "PROJECT" >
         <#if uploadedResourceAccessStatistic?has_content >
-        <table class="table tableFormat">
+        <table class="table table-sm table-striped">
             <tr>
                 <#if _isProject >
                     <th>Total # of Resources</th></#if>

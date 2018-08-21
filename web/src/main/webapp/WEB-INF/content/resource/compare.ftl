@@ -10,7 +10,7 @@
 <#-- for trying to do things as a columns: ${resource['resourceType']} -->
 <#assign properties=['id','resourceType','title','description','primaryCreators','activeIndividualAndInstitutionalCredit','resourceProviderInstitution','project','sharedResourceCollections','activeInformationResourceFiles','activeInvestigationTypes','activeMaterialTypes','activeSiteNameKeywords','activeSiteTypeKeywords','activeTemporalKeywords','activeOtherKeywords','activeGeographicKeywords','activeCultureKeywords'] />
 
-<table class="table">
+<table class="table table-sm table-striped">
     <tr>
         <th>Id:</th>
         <#list resources as resource>

@@ -33,16 +33,8 @@
 
 </head>
 <body>
-    <@edit.sidebar>
-    <@edit.subNavMenu>
-    <#-- include local scrollspy menu details -->
-        <#if local_.subNavMenu?? && local_.subNavMenu?is_macro>
-            <@local_.subNavMenu />
-        </#if>
-
-    </@edit.subNavMenu>
-    </@edit.sidebar>
-
+<div class="row">
+<div class="col-md-10 col-sm-12 col-lg-10">
     <#assign fileReminder=true />
     <#assign prefix="${resource.resourceType.label?lower_case}" />
 
@@ -100,7 +92,11 @@
                 <#else>
                     <@s.select  value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}' cssClass="col-3"/>
                 </#if>
-                <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
+                <#if resource.resourceType.project>
+                <div class="col-10 offset-2">
+                <span class="help-block">Note: project status does not affect status of child resources.</span>
+                </div>
+                </#if>
         </div>
 
         <@helptext.status />
@@ -486,6 +482,15 @@ Auth Info
         </#noescape>
 </script>
 
+</div>
+</div>
+<div class="col-md-2 col-lg-2">
+    <@edit.subNavMenu>
+    <#-- include local scrollspy menu details -->
+        <#if local_.subNavMenu?? && local_.subNavMenu?is_macro>
+            <@local_.subNavMenu />
+        </#if>
+    </@edit.subNavMenu>
 </div>
 </body>
 

@@ -69,8 +69,9 @@
 </div>
 <#macro accountSection>
             <#list accounts>
-                <table class="table">
-                    <thead>
+                <table class="table table-sm table-striped">
+                      <thead class="thead-dark">
+
                         <tr>
                             <th>Name</th>
                             <th>Invoices</th>

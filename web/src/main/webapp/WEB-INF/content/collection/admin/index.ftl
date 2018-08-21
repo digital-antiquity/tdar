@@ -26,8 +26,9 @@
     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
             <#if term?has_content >Limited to: ${term}</#if>
     
-    <table class="table tableformat">
-        <thead>
+    <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+
             <tr> <th>id</th><th>status</th><th>type</th><th>title</th><th>files</th></tr>
         </thead>
         <tbody>
@@ -49,7 +50,7 @@
 <br/>
 <br/>
 <h4>Revision History</h4>
-<table class="table tableFormat">
+<table class="table table-sm table-striped">
     <tr>
         <th>When</th>
         <th>Who</th>
@@ -69,8 +70,9 @@
 </table>
 
 <h4>Revisions</h4>
-    <table class="table">
-        <thead>
+    <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+
             <tr><th>filename</th><th>date</th><th>size</th></tr>
         </thead>
         <tbody>

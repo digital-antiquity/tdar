@@ -289,8 +289,9 @@ View freemarker macros
             <#local showDownloads = authenticatedUser?? />
         <div id="extendedFileInfoContainer">
             <h3 id="allfiles">File Information</h3>
-            <table class="table tableFormat">
-                <thead>
+            <table class="table table-sm table-striped">
+                  <thead class="thead-dark">
+
                 <tr>
                     <th>&nbsp;</th>
                     <th>Name</th>
@@ -721,7 +722,8 @@ View freemarker macros
             <col>
             <col style="width:3em">
         </colgroup>
-        <thead>
+          <thead class="thead-dark">
+
         <tr>
             <th style="width: 4em">ID
             <th colspan="2">Name

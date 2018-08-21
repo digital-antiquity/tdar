@@ -603,6 +603,10 @@ a {
 .white-border-bottom {
   border-bottom: 4px solid white; }
 
+.btn-primary {
+  background: #7a1501;
+  border: none; }
+
 a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
   font-family: helvetica, arial, sans-serif;
   height: 35px;

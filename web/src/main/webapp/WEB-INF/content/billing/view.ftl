@@ -22,7 +22,7 @@
     </#if>
 
 <h3>Overall Usage</h3>
-<table class="tableFormat table">
+<table class="table table-sm table-striped"">
     <tr>
         <th></th>
         <th>Used</th>
@@ -64,7 +64,7 @@
 </table>
 
 <h3>Invoices</h3>
-<table class="tableFormat table">
+<table class="table table-sm table-striped"">
     <tr>
         <th>name</th>
         <th>owner</th>
@@ -101,7 +101,7 @@
 
 <#if (account.coupons?has_content && account.coupons?size > 0)>
 <h3>Voucher Codes</h3>
-<table class="tableFormat table">
+<table class="table table-sm table-striped"">
     <tr>
         <th>files</th>
         <th>space</th>
@@ -173,7 +173,7 @@
 </div>
 
 <h3>Who can use this account</h3>
-<table class="tableFormat table table-bordered">
+<table class="table table-sm table-striped" table-bordered">
     <#list account.authorizedUsers as member>
         <tr>
             <td><a href="<@s.url value="/browse/creators/${member.user.id?c}"/>">${member.user.properName}</a></td>
@@ -194,8 +194,9 @@
 </#if>
 
 <h3>Resources associated with this account</h3>
-<table class="tableFormat table">
-    <thead>
+<table class="table table-sm table-striped"">
+      <thead class="thead-dark">
+
     <tr>
         <th>Id</th>
         <th>Date Created</th>
@@ -207,7 +208,8 @@
         <th>Files</th>
         <th>Space (MB)</th>
     </tr>
-    <thead>
+      <thead class="thead-dark">
+
     <tbody>
         <#list resources as resource>
             <#assign stat = ""/>
@@ -233,8 +235,9 @@
     </tbody>
 </table>
 
-<table class="table tableFormat">
-<thead>
+<table class="table table-sm table-striped">
+  <thead class="thead-dark">
+
     <tr> <th>Date</th><th>Files Used</th><th>Space Used (in bytes)</th><th>Resources Used</th></tr>
     <#list account.usageHistory as history>
     <tr>

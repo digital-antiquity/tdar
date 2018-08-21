@@ -13,7 +13,8 @@
             <#list workflows?sort_by('dateUpdated')?reverse>
                 <h3>Saved Integrations</h3>
             <table id="tblWorkflows" class="table table-bordered table-hover">
-                <thead>
+                  <thead class="thead-dark">
+
                     <tr>
                         <th>Name / Description</th>
                         <th>Last Update</th>

@@ -62,8 +62,9 @@
     </#macro>
 
     <#macro collectionsSection>
-        <table class="table">
-            <thead>
+        <table class="table table-sm table-striped">
+              <thead class="thead-dark">
+
             <tr>
                 <th>Collection (${allResourceCollections?size})</th>
                 <th>Resources</th>

@@ -24,9 +24,10 @@
     <@dash.sidebar current="collections" />
 </div>
 <div class="col-10">
-        <div class="table">
+        <div class="table table-sm table-striped">
             <table class="table ">
-            <thead>
+              <thead class="thead-dark">
+
             <tr>
                 <th>Collection</th>
                 <th>Description</th>

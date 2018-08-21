@@ -71,6 +71,10 @@ a {
     border-bottom:4px solid white;
 }
 
+.btn-primary{
+    background: $darkRed;
+    border:none;
+}
 
 a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
         font-family: helvetica, arial, sans-serif;
@@ -454,9 +458,6 @@ body {
 
 
 .tableFormat {
-
-//    font-size: 11px;
-//    line-height: 14px;
     margin: 0;
     padding: 8px 10px;
     border-collapse: collapse;

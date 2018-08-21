@@ -98,6 +98,9 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 </div>
+
+<@view.resourceCitationSection resource />
+
 <#list viewableResourceCollections>
 <div class="section">
     <h3>This Resource is Part of the Following Collections</h3>
@@ -118,8 +121,6 @@
 </p>
 </div>
 </#list>
-
-<@view.resourceCitationSection resource />
 
     <#noescape>
         <#if resource.url! != ''>
@@ -191,7 +192,7 @@
             <#if dataTable.description?has_content>
             <p class="tableDescription">${dataTable.description}</p>
             </#if>
-            <table class="tableFormat table table-bordered">
+            <table class="table table-sm table-striped" table-bordered">
                 <thead class='highlight'>
                 <tr>
                     <th class="guide">Column Name</th>
@@ -250,7 +251,7 @@
             </#list>
                 <#if resource.relationships?size != 0>
                 <h4>Data Table Relationships:</h4>
-                <table class="tableFormat table table-striped table-bordered">
+                <table class="table table-sm table-striped" table-striped table-bordered">
                     <thead class="highlight">
                     <tr>
                         <th>Type</th>

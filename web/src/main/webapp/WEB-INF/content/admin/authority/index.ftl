@@ -79,7 +79,7 @@
 
 
 <div class="glide" id="divIdentifyDupes">
-    <table id='dupe_datatable' class="table tableFormat"></table>
+    <table id='dupe_datatable' class="table table-sm table-striped"></table>
 </div>
 
 

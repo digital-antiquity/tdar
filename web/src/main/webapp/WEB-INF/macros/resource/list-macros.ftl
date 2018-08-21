@@ -399,9 +399,10 @@ bookmark indicator, etc..
     </#macro>
 
 
-    <#macro table data cols id="tbl${data.hashCode()?string?url}" cssClass="table tableFormat datatableSortable"  colLabels=cols>
+    <#macro table data cols id="tbl${data.hashCode()?string?url}" cssclass="table table-sm table-striped datatableSortable"  colLabels=cols>
     <table id="${id}" class="${cssClass}">
-        <thead>
+          <thead class="thead-dark">
+
         <tr>
             <#list colLabels as colLabel>
                 <th>${colLabel}</th>
@@ -418,7 +419,7 @@ bookmark indicator, etc..
     </table>
     </#macro>
 
-    <#macro easytable data cols id="tblEasyTable" cssClass="table tableFormat datatableSortable" cols=data?keys >
+    <#macro easytable data cols id="tblEasyTable" cssclass="table table-sm table-striped datatableSortable" cols=data?keys >
         <@table data cols id cssClass colLabels; rowdata>
             <#list cols as key>
                 <#local val = rowdata[key]!"">
@@ -429,9 +430,10 @@ bookmark indicator, etc..
     </#macro>
 
 
-    <#macro hashtable data id="tblNameValue" keyLabel="Key" valueLabel="Value" cssClass="table tableFormat datatableSortable">
+    <#macro hashtable data id="tblNameValue" keyLabel="Key" valueLabel="Value" cssclass="table table-sm table-striped datatableSortable">
     <table id="${id}" class="${cssClass}">
-        <thead>
+          <thead class="thead-dark">
+
         <tr>
             <th>${keyLabel}</th>
             <th>${valueLabel}</th>

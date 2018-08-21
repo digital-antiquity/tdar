@@ -36,8 +36,9 @@ facetWrapper<#escape _untrusted as _untrusted?html>
 </div>
 
 <h3>Occurence Counts</h3>
-<table class="table tableFormat sortable" id="ocur">
-<thead>
+<table class="table table-sm table-striped sortable" id="ocur">
+  <thead class="thead-dark">
+
 	<tr><th>type</th><th>subtype</th><th>label</th><th>count</th></tr>
 		</thead>
 		<tbody>

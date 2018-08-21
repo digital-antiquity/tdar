@@ -227,7 +227,8 @@
                                 </#if>
                                 <col style="">
                             </colgroup>
-                            <thead>
+                              <thead class="thead-dark">
+
                                 <tr>
                                     <th>ID</th>
                                     <th>Title</th>

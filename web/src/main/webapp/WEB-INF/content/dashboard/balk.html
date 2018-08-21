@@ -106,8 +106,9 @@
     </div>
 </div>
 
-<table class="table" id="filesTable">
-<thead>
+<table class="table table-sm table-striped" id="filesTable">
+  <thead class="thead-dark">
+
  <tr>
     <th></th>
     <th><span @click="sortBy('FILENAME')">File Name</span></th>
@@ -326,8 +327,9 @@
  
 <div class="tab-content">
   <div class="tab-pane active" id="summary">
-<table class="table" v-if="summary != undefined">
-    <thead>
+<table class="table table-sm table-striped" v-if="summary != undefined">
+      <thead class="thead-dark">
+
         <tr>
             <th>Directory</th>
             <th>Added</th>
@@ -388,7 +390,7 @@
         </div>
     </div>
 </div>
-<table class="table"  v-if="recent != undefined && recent.files != undefined">
+<table class="table table-sm table-striped"  v-if="recent != undefined && recent.files != undefined">
 <tr>
 <th>Recently Changed Files</th>
 <th>Added</th>

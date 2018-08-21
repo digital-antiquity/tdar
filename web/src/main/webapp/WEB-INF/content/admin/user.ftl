@@ -13,8 +13,9 @@
 <br/>
     <@admin.statsTable historicalUserStats "User Statistics" "userstats" />
 <h3>Repeated Logins</h3>
-<table class="table tableFormat">
-    <thead>
+<table class="table table-sm table-striped">
+      <thead class="thead-dark">
+
     <tr>
         <th># of logins</th>
         <th>user count</th>
@@ -88,8 +89,9 @@
 
 <div>
     <h3>Recently Registered Users </h3>
-    <table class="table tableFormat">
-        <thead>
+    <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+
         <tr>
             <th>User</th>
             <th>Email</th>

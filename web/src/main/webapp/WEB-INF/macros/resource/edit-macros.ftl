@@ -1070,7 +1070,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         </#if>
                         
                     </colgroup>
-                    <thead>
+                      <thead class="thead-dark">
+
                         <tr>
                             <#if selectable || clickable>
                                 <th>id</th>
@@ -1198,7 +1199,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <#macro subNavMenu>
         <#local supporting = resource.resourceType.supporting >
 
-    <nav id='subnavbar'  class="nav nav-pills static navbar-light bg-light" style="" >
+    <nav id='subnavbar'  class="nav nav-pills static navbar-light bg-light col-2" >
       <nav class="nav nav-pills flex-column">
 
                     <!-- <li class="alwaysHidden nav-link"><a href="#top">top</a></li> -->
@@ -1222,7 +1223,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
                     <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
 	    </nav>
+	    <div id="notice"></div>
+		</div>
     </nav>
+    
     </#macro>
 
     <#-- emit a repeatrow table of @registeredUserRow controls -->

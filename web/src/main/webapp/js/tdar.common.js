@@ -327,7 +327,7 @@ TDAR.common = function (TDAR, fileupload) {
             });
         });
 
-        TDAR.contexthelp.initializeTooltipContent(form);
+        TDAR.contexthelp.initializeTooltipContent(form,true);
         _applyWatermarks(form);
 
         // prevent "enter" from submitting

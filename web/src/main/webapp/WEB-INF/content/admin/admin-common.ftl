@@ -50,13 +50,14 @@
         <#assign statsObjKeys = statsObj?keys?sort?reverse />
         <#assign numSets = 0/>
         <#assign totalRows = 0/>
-        <table class="tableFormat table" id="table${cssid}">
+        <table class="table table-sm table-striped"" id="table${cssid}">
             <#assign first = true/>
             <#list statsObjKeys as key>
                 <#assign vals = statsObj.get(key) />
                 <#assign valsKeys = vals?keys />
                 <#if first>
-                    <thead>
+                      <thead class="thead-dark">
+
                     <tr>
                         <th>Date</th>
                         <#list valsKeys as key_>

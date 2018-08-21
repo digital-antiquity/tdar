@@ -54,7 +54,8 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     Digital Preservation Fees
                 </h3>
                 <table class="table rateTable small">
-                    <thead>
+                      <thead class="thead-dark">
+
                         <tr style="background-color:#EEE">
                             <th>
                                 Digital Preservation
@@ -158,7 +159,8 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
         <div class="col-12">
             <h3>Choose a Package</h3>
             <table class="table pTable">
-            <thead>
+              <thead class="thead-dark">
+
              <tr>
             <th>Package</th>
               <th>
@@ -408,7 +410,8 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
             This lets us send arbitrary parameters.  Please skip this section if the previous sentence sounded like gibberish.
         </div>
         <table class="table table-bordered table-compact">
-            <thead>
+              <thead class="thead-dark">
+
             <tr>
                 <th>Item</th>
                 <th>Quantity</th>
@@ -453,7 +456,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
     <#macro rates>
     <div class="tdar-rates" >
         <h2>Rates</h2>
-        <table class="tableFormat table">
+        <table class="table table-sm table-striped"">
             <tr>
                 <th>Item/Service</th>
                 <th>Cost</th>
