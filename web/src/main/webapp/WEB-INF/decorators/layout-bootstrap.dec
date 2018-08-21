@@ -238,7 +238,7 @@ ${head}
         <#assign spanSize = 12/>
         <#if  showLeftSidebar() || showRightSidebar() >
             <#assign part="cols" />
-            <#assign spanSize = 9/>
+            <#assign spanSize = 'col-md-8 col-lg-9 col-sm-12 '/>
         <#elseif showLeftSidebar() && showRightSidebar() >
             <#assign part="cols" />
             <#assign spanSize = 6/>
@@ -277,19 +277,19 @@ ${head}
         <section class="container ${part}">
             <div class="row">
             <#if showLeftSidebar()>
-                <aside class="col-3">
+                <aside class="col-md-4 col-lg-3">
                 ${page.properties["div.sidebar-left"]}
                 </aside>
             </#if>
 
-            <article class="col-${spanSize} results" id="articleBody">
+            <article class="${spanSize} results" id="articleBody">
             <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
             <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
             ${body}
             </article>
 
             <#if showRightSidebar() >
-                <aside class="col-3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+                <aside class="col-md-4 col-lg-3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
                 ${page.properties["div.sidebar-right"]}
                 </aside>
             </#if>

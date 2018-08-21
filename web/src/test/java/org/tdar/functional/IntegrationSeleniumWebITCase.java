@@ -54,10 +54,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     public void setupIntegration() throws IOException {
         super.beforeTest();
         login();
-        find(By.partialLinkText("Integrate")).click();
-        waitForPageload();
-        Assert.assertTrue(getText().contains("Data Integration"));
-        Assert.assertTrue(getCurrentUrl().contains("/workspace/list"));
+        gotoPage("/workspace/list");
         find(linkText("START A NEW INTEGRATION")).click();
         Assert.assertTrue(getCurrentUrl().contains("/workspace/integrate"));
     }
