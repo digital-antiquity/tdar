@@ -1,7 +1,7 @@
 const core = require("./../tdar.core");
 
 require('leaflet-choropleth');
-require('./../../includes/Leaflet.Sleep');
+require('./../../js_includes/includes/Leaflet.Sleep');
 require('leaflet-draw/dist/leaflet.draw');
 require('leaflet.markercluster');
 

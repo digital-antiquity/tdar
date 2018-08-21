@@ -14,22 +14,22 @@ const autocomplete = require("./tdar.autocomplete");
 const contexthelp = require("./tdar.contexthelp");
 const inheritance = require("./tdar.inheritance");
 
-require("imports-loader?this=>window!./../includes/modernizr-custom-2.6.2.min.js");
+require("imports-loader?this=>window!./../js_includes/includes/modernizr-custom-2.6.2.min.js");
 
 //Various jQuery plugins
-require('./../includes/jquery-ui-1.11.4.custom/jquery-ui');
-require('./../includes/jquery.watermark-3.1.3.min.js');
-require('./../includes/jquery.treeview/jquery.treeview.js');
-require('./../includes/jquery.cookie.js');
+require('./../js_includes/includes/jquery-ui-1.11.4.custom/jquery-ui');
+require('./../js_includes/includes/jquery.watermark-3.1.3.min.js');
+require('./../js_includes/includes/jquery-treeview/jquery.treeview.js');
+require('./../js_includes/includes/jquery.cookie.js');
 require('./jquery.FormNavigate');
-require('./../includes/jquery.textarearesizer.js');
-require('./../includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js');
-require('./../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js');
-require('./../includes/jquery.populate.js');
-require("./../includes/jquery.tabby-0.12.js");
-require("./../includes/bindWithDelay.js");
-require("./../includes/bootstrap-2.32/js/bootstrap.js")
-require("./../includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker");
+require('./../js_includes/includes/jquery.textarearesizer.js');
+require('./../js_includes/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js');
+require('./../js_includes/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js');
+require('./../js_includes/includes/jquery.populate.js');
+require("./../js_includes/includes/jquery.tabby-0.12.js");
+require("./../js_includes/includes/bindWithDelay.js");
+require("./../js_includes/includes/bootstrap-2.32/js/bootstrap.js")
+require("./../js_includes/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker");
 
 jQuery.extend({
     /**

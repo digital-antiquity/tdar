@@ -65,8 +65,8 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},*/
-                {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
-                {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false},
+                {pattern: "src/main/webapp/js_includes/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
+                {pattern: "src/main/webapp/js_includes/includes/bootstrap-2.32/css/bootstrap.css", watched: false},
 
 
             ],
@@ -93,15 +93,14 @@ module.exports = function(config) {
                 //static files: images used by js libraries, e.g. jquery-ui, jquery-file-upload
                 {pattern: "src/main/webapp/includes/**/images/**/*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
-                {pattern: "src/main/webapp/components/**/*.*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/js_includes/components/**/*.*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/js/maps/**/*.*", served:true, included:false, watched:false},
-
             ]),
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
         proxies: {
             '/images/': '/base/src/main/webapp/images/',
-            '/includes/': '/base/src/main/webapp/includes/',
+            '/includes/': '/base/src/main/webapp/js_includes/includes/',
             '/js/maps/': '/base/src/main/webapp/js/maps/'
         },
             ///Users/jimdevos/develop/tdar.src/src/main/webapp/js/maps/world.json
@@ -117,7 +116,6 @@ module.exports = function(config) {
             'src/test/frontend/html2js/*.html': ['html2js']
             ,'src/main/webapp/js/**/*.js': ['coverage'],
             'src/test/frontend/spec/**/*.js' : ['webpack']
-
         },
 
         // test results reporter to use

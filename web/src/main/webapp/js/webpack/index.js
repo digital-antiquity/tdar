@@ -13,30 +13,30 @@ window.jQuery = $;
 window.$ = $;
 
 //used by jquery.treeview 
-import './../../includes/jquery.cookie.js';
-//import './../../includes/jquery-ui-1.11.4.custom/jquery-ui.js';
+import './../../js_includes/includes/jquery.cookie.js';
+//import './../../js_includes/includes/jquery-ui-1.11.4.custom/jquery-ui.js';
 import 'jquery-ui';
 
 import 'svgxuse';
 
-import './../../includes/jquery.textarearesizer.js';
+import './../../js_includes/includes/jquery.textarearesizer.js';
 
 /* LICENSE: MIT */
 import './../jquery.FormNavigate.js';
-import './../../includes/jquery.watermark-3.1.3.min.js';
+import './../../js_includes/includes/jquery.watermark-3.1.3.min.js';
 
 /* LICENSE: MIT */
-import './../../includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js';
+import './../../js_includes/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js';
 
 /* LICENSE: BSD /GPL 2.0 */
-import './../../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js';
+import './../../js_includes/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js';
 
 /* LICENSE: BSD /GPL 2.0 */
-import './../../includes/jquery.treeview/jquery.treeview.js';
+import './../../js_includes/includes/jquery.treeview/jquery.treeview.js';
 
-//import './../../includes/blueimp-tmpl/js/tmpl.min.js';
+//import './../../js_includes/includes/blueimp-tmpl/js/tmpl.min.js';
 require('script-loader!blueimp-tmpl/js/tmpl.js');
-require('script-loader!./../../includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js');
+require('script-loader!./../../js_includes/includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js');
 
 
 
@@ -57,10 +57,10 @@ require('script-loader!blueimp-file-upload/js/jquery.fileupload-validate.js');
 require('script-loader!blueimp-file-upload/js/jquery.fileupload-ui.js');
 
 /* LICENSE: MIT */
-import './../../includes/jquery.populate.js';
+import './../../js_includes/includes/jquery.populate.js';
 
 /* LICENSE: MIT */
-import './../../includes/jquery.tabby-0.12.js';
+import './../../js_includes/includes/jquery.tabby-0.12.js';
 
 /* LICENSE:CC Attribution 3.0 Unported */
 //import './../latLongUtil-1.0.js';
@@ -69,15 +69,15 @@ import 'leaflet/dist/leaflet';
 
 import 'leaflet-choropleth/dist/choropleth.js';
 
-import './../../includes/es6-promise/lib/es6-promise.js';
-import './../../includes/es6-promise/lib/es6-promise.auto.js';
+import './../../js_includes/includes/es6-promise/lib/es6-promise.js';
+import './../../js_includes/includes/es6-promise/lib/es6-promise.auto.js';
 
 import 'qs/dist/qs.js';
 
-import './../../includes/Leaflet.Sleep.js';
+import './../../js_includes/includes/Leaflet.Sleep.js';
 
 import 'leaflet-draw/dist/leaflet.draw.js';
-import './../../includes/leaflet-cluster/dist/leaflet.markercluster.js';
+import './../../js_includes/includes/leaflet-cluster/dist/leaflet.markercluster.js';
 
 import 'd3/d3';
 import c3 from 'c3/c3';
@@ -120,13 +120,13 @@ import './../tdar.pricing';
 import './../tdar.contexthelp';
 import './../tdar.menu';
 import './../tdar.formValidateExtensions';
-import './../../includes/bindWithDelay';
+import './../../js_includes/includes/bindWithDelay';
 import './../tdar.bookmark';
 import './../maps/tdar.leaflet';
 **/
 
 
-import './../../includes/js-emca-5.1-polyfill.js';
+import './../../js_includes/includes/js-emca-5.1-polyfill.js';
 import 'selectize/dist/js/standalone/selectize.js';
 
 //import './../maps/tdar.worldmap';
@@ -135,7 +135,7 @@ import "vue";
 //import 'axios/dist/axios.min.js';
 
 import './../vue/vue-selectize.js';
-require('script-loader!../../includes/bootstrap-2.32/js/bootstrap.js');
+require('script-loader!../../js_includes/includes/bootstrap-2.32/js/bootstrap.js');
 import './../vue/view-collection-widget.js';
 import './../vue/edit-collection';
 

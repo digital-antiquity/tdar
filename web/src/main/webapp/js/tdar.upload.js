@@ -6,11 +6,11 @@ const datepicker = require("./tdar.datepicker");
 const core = require("./tdar.core");
 
 window.$ = window.jQuery = require('jquery'); // was import $ from 'jquery';
-require('./../includes/jquery-ui-1.11.4.custom/jquery-ui');
+require('./../js_includes/includes/jquery-ui-1.11.4.custom/jquery-ui');
 
-//require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/vendor/jquery.ui.widget.js');
-require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/jquery.iframe-transport.js');
-require('imports-loader?define=>false&exports=>false&$=jquery!./../components/blueimp-file-upload/js/jquery.fileupload.js');
+//require('imports-loader?define=>false&exports=>false&$=jquery!./../js_includes/components/blueimp-file-upload/js/vendor/jquery.ui.widget.js');
+require('imports-loader?define=>false&exports=>false&$=jquery!./../js_includes/components/blueimp-file-upload/js/jquery.iframe-transport.js');
+require('imports-loader?define=>false&exports=>false&$=jquery!./../js_includes/components/blueimp-file-upload/js/jquery.fileupload.js');
 
 //require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/vendor/jquery.ui.widget.js');
 //require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.iframe-transport.js');
