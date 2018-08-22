@@ -92,7 +92,6 @@ const datatable = require("./../tdar.datatable");
 						    console.debug("edit-collection:undoModification called");
 						    var tableId = !isAddition ? '#existing_resources_datatable' : '#resource_datatable';
 						    
-						    console.debug($("#HELL0"));
 						    console.debug("Table id is : "+tableId);
 							var $dataTable = $(tableId);
 							//console.debug("Data table is ");

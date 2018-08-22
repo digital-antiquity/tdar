@@ -1,6 +1,7 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 
 const Vue = require("vue").default;
+const TDAR = require("JS/tdar.master");
 
 describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	var resources
@@ -129,7 +130,7 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
         jasmine.getFixtures().fixturesPath = "base/src/main/webapp/WEB-INF/content/collection/";
         var html = jasmine.getFixtures().read("vue-edit-collection.html");
         var fix = jasmine.getFixtures().set(html);
-        var  vapp = TDAR.vuejs.editcollectionapp.init();
+        var vapp = TDAR.vuejs.editcollectionapp.init();
 
         expect(vapp.managedAdditions).toHaveLength(0);
         expect(resources.length).toBeGreaterThan(0);
@@ -142,8 +143,6 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
         
         vapp.$forceUpdate();
         // make VueJS "tick" or re-render
-        
-        //console.debug("JQUERY: is ",jQuery==$);
         Vue.nextTick(function() {
         	var rows = fix.find("#tblToAdd tr");
         	console.debug(rows);

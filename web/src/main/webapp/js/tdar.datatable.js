@@ -990,11 +990,9 @@ core.namespace("datatable");
     	console.log("Removing pending change from data");
     	console.log("Id to remove is "+id);
     	console.log("Array key is "+array);
-    	console.debug($dataTable.data(array))
     	
     	_arrayRemove($dataTable.data(array),parseInt(id));
 
-    	//console.debug("Datatabe object is "+$dataTable);
     	var buttonId = "#"+btnId+id;
     	console.log("Reenabling button "+buttonId);
     	$(buttonId).removeAttr("disabled");
