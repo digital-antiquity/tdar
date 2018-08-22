@@ -378,9 +378,8 @@
     </changeSet>
     <changeSet id="radiocarbon-dataset-search-4"
         author="abrin">
-         <dropColumn tableName="data_table_column" columnName="visible" />
          <addColumn tableName="data_table_column">
-            <column name="visible" type="varchar(25)" />
+            <column name="visibility" type="varchar(25)" />
         </addColumn>
     </changeSet>
     <changeSet id="radiocarbon-dataset-search-5"

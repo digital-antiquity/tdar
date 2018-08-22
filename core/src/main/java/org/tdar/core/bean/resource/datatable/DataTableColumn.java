@@ -182,7 +182,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Column(columnDefinition = "boolean default TRUE")
     private boolean ignoreFileExtension = true;
 
-    @Column
+    @Column(name="visibility")
     @Enumerated(EnumType.STRING)
     private ColumnVisibiltiy visible = ColumnVisibiltiy.VISIBLE;
 
