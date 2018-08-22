@@ -26,7 +26,7 @@
                                 ${authenticatedUser.properName}
                             </p>
                             <#else>
-                            <p class = "logIn"><a class = "tdarLink" href="/login">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
+                            <p class = "logIn"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
                         </#if>
                     </div>
                     <ul class="navbar-nav">
@@ -150,7 +150,7 @@
     </div>
     <#else>
         <a class="dropdown-item" href="<@s.url value="/account/new" />" rel="nofollow">Sign Up</a>
-        <a class="dropdown-item" href="<@s.url value="/login" />" rel="nofollow">Log In</a>
+        <a class="dropdown-item" href="${auth.loginLink()}" rel="nofollow">Log In</a>
     </#if>
 </#macro>
 
@@ -188,22 +188,6 @@
   </div>
 </section>
 
-<#--     <div class="row">
-        <div class="hero">
-<h2>What can you dig up?</h2>
-
-<p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
-
-<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
-    <input type="text" name="query" placeholder="Find archaeological data..." accesskey="s" class="searchbox input-xxlarge">
-    <a href="<@s.url value="/search"/>">advanced</a>
-    <input type="hidden" name="_tdar.searchType" value="simple">
-</form>
-
-        <@auth.loginMenu true/>
-        </div>
-        <ul class="inline-menu hidden-desktop"><@auth.loginMenu false/></ul>
-    </div> -->
 
 <section id="learnMore">
   <div class="container px-5 py-3">

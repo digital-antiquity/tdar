@@ -9,6 +9,9 @@ TDAR.scrollspy = (function(TDAR, $) {
         console.log('binding scrollspy');
         $(document).ready(function() {
             $(window).scroll(function(e) {
+                if ($nav.offset() == undefined) {
+                    return;
+                }
                 var scrollTop = $(window).scrollTop();
                 var viewableOffset = $nav.offset().top - scrollTop;
                 var footerOffset = $("#footer").offset().top - scrollTop;

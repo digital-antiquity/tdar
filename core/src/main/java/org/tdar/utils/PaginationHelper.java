@@ -14,7 +14,7 @@ import org.tdar.search.query.SearchResultHandler;
  * @version $Rev$
  */
 public class PaginationHelper {
-    public static final int DEFAULT_ITEMS_PER_WINDOW = 15;
+    public static final int DEFAULT_ITEMS_PER_WINDOW = 10;
 
     @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

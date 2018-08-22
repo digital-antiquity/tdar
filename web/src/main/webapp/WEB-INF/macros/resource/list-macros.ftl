@@ -431,7 +431,7 @@ bookmark indicator, etc..
 
 
     <#macro hashtable data id="tblNameValue" keyLabel="Key" valueLabel="Value" cssclass="table table-sm table-striped datatableSortable">
-    <table id="${id}" class="${cssClass}">
+    <table id="${id}" class="${cssclass!''}">
           <thead class="thead-dark">
 
         <tr>

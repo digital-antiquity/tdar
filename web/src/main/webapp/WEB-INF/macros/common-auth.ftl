@@ -280,4 +280,17 @@
     </#macro>
 
 
+    <#function loginLink returnUrl="">
+        <#noescape>
+        <#local _current = (currentUrl!'/') />
+        <#if returnUrl != ''><#local _current = returnUrl /></#if>
+        <#if _current == '/' || currentUrl?starts_with('/login')>
+                <#return '/login' />
+                <#else>
+                <#local ret><@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url></#local>
+                    <#return ret />
+        </#if>
+        </#noescape>
+    </#function>
+
 </#escape>

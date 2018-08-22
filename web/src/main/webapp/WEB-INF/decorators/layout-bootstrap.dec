@@ -235,13 +235,13 @@ ${head}
 
 
         <#assign part="" />
-        <#assign spanSize = 12/>
+        <#assign spanSize = "col-12" />
         <#if  showLeftSidebar() || showRightSidebar() >
             <#assign part="cols" />
             <#assign spanSize = 'col-md-8 col-lg-9 col-sm-12 '/>
         <#elseif showLeftSidebar() && showRightSidebar() >
             <#assign part="cols" />
-            <#assign spanSize = 6/>
+            <#assign spanSize = "col-6" />
         </#if>
         
         
