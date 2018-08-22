@@ -831,3 +831,13 @@ div#ontologyTarget {
 .thumbnail-border:hover, .thumbnail-border-selected {
     border: 1px solid #aeaeae;
 }
+
+
+span.uneditable-input {
+    overflow:hidden;
+}
+
+.help-inline {
+    margin-bottom: .5em;
+    margin-top:.25em;
+}

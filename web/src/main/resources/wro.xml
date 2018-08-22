@@ -62,6 +62,7 @@
         <js>/js/tdar.moreinfo.js</js>
         <js>/js/tdar.common.js</js>
         <js>/js/tdar.bulk.js</js>
+        <js>/js/tdar.scrollspy.js</js>
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
         <!-- <js>/js/tdar.select2-autocomplete.js</js> -->

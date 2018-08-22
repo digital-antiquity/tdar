@@ -1198,28 +1198,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 <#--emit the sub-navmenu of a resource edit page -->
     <#macro subNavMenu>
         <#local supporting = resource.resourceType.supporting >
-<script>
-$(document).ready(function() {
-   $(window).scroll(function(e){
-       var $nav = $('#subnavbar');
-       var scrollTop = $(window).scrollTop();
-       var viewableOffset = $nav.offset().top - scrollTop;
-       var footerOffset = $("#footer").offset().top - scrollTop;
-       var viewableBottom = viewableOffset + $nav.height();
-        if (viewableOffset < 10 && scrollTop > 189) {
-            $nav.removeClass('hidden');
-            $nav.css({'width':$nav.width()});
-            $nav.addClass('affix');
-        }
-        if (footerOffset < viewableBottom) {
-            $nav.addClass('hidden');
-        } else if (scrollTop < 189) {
-            $nav.removeClass('hidden');
-            $nav.removeClass('affix');
-        }
-   });
-});
-</script>
     <nav id='subnavbar'  class="bg-light" >
     <div class=" col-12">
         <p>Jump to Section:</p>
@@ -1243,8 +1221,8 @@ $(document).ready(function() {
                     <li><a class="nav-link"href="#resourceNoteSectionGlide">Notes</a></li>
                     <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
                     <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
-	    <div class="help mt-3">
-	    <div id="notice" class=" p-1"></div></div>
+<#-- 	    <div class="help mt-3">
+	    <div id="notice" class=" p-1"></div></div> -->
 		</div>
 		</div>
     </nav>

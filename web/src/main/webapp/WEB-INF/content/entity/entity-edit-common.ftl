@@ -102,25 +102,9 @@
             <@common.chromeAutofillWorkaround />
             <@s.token name='struts.csrf.token' />
             <@common.jsErrorLog />
+	<div class="row">
+	<div class="col-10">
 
-        <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
-            <div class="">
-                <div class="container">
-                    <ul class="nav">
-                        <li class="alwaysHidden"><a href="#top">top</a></li>
-                        <li class="active"><a href="#profile">Basic</a></li>
-                        <#if contributor><li><a href="#archive">Archival</a></li></#if>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#billingSection">Billing</a></li>
-                        <li><a href="#password">Change Password</a></li>
-                    </ul>
-                    <div id="fakeSubmitDiv" class="pull-right">
-                        <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                        <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="">
             <@basicInformation>
@@ -222,7 +206,27 @@
             $("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
         });
     </script>
+	</div>
+	<div class='col-2'>
 
+    <nav id='subnavbar'  class="bg-light" >
+    <div class=" col-12">
+        <p>Jump to Section:</p>
+    <ul class="list-unstyled">
+                        <li class="active"><a class="nav-link" href="#profile">Basic</a></li>
+                        <#if contributor><li><a class="nav-link" href="#archive">Archival</a></li></#if>
+                        <li><a class="nav-link" href="#contact">Contact</a></li>
+                        <li><a class="nav-link" href="#billingSection">Billing</a></li>
+                        <li><a class="nav-link" href="#password">Change Password</a></li>
+                    </ul>
+                    <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
+                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+		</div>
+		</div>
+    </nav>
+	
+	</div>
+	</div>
     </#macro>
 
 

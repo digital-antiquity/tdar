@@ -15,34 +15,15 @@
 </head>
 <body>
 
-    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
-        <div class="">
-            <div class="container">
-                <ul class="nav">
-                    <li class="alwaysHidden"><a href="#top">top</a></li>
-                    <li class="active"><a href="#basicInformationSection">Basic</a></li>
-                    <li><a href="#divResourcesSesction">Resources</a></li>
-                </ul>
-                <div id="fakeSubmitDiv" class="pull-right">
-                    <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div id="sidebar-right" parse="true">
-        <div id="notice">
-            <h3>Introduction</h3>
-            This is the editing form for a Collection.
-        </div>
-    </div>
 
     <#assign newRecord = false>
     <#if persistable.id == -1>
         <#assign newRecord = true />
     </#if>
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
+    <div class="row">
+    <div class="col-10">
         <div class="row">
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
@@ -338,5 +319,22 @@
         </script>
         </#noescape>
 <div style="display:none"></div>
+</div>
+<div class="col-2">
+    <nav id='subnavbar'  class="bg-light" >
+    <div class=" col-12">
+        <p>Jump to Section:</p>
+    <ul class="list-unstyled">
+                    <li class="active"><a class="nav-link" href="#basicInformationSection">Basic</a></li>
+                    <li><a class="nav-link" href="#divResourcesSesction">Resources</a></li>
+                    </ul>
+                    <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
+                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+		</div>
+		</div>
+    </nav>
+
+</div>
+</div>
 </body>
 </#escape>

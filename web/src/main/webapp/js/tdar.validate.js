@@ -116,11 +116,9 @@ TDAR.validate = (function($, ctx) {
     };
 
     var _postValidateBasic =  function($form, validator) {
-        console.log("AAAA");
         $(".coverageTypeSelect",$form).each(function (i, elem) {
             _prepareDateFields(elem);
         });
-        console.log("BBBB");
         $("#coverageDateRepeatable", $form).delegate(".coverageTypeSelect", "change", function () {
             _prepareDateFields(this);
         });
@@ -397,4 +395,3 @@ TDAR.validate = (function($, ctx) {
         }
     }
 })(jQuery, window);
-
