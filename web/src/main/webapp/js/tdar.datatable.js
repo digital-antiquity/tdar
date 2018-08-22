@@ -989,10 +989,12 @@ core.namespace("datatable");
     	
     	console.log("Removing pending change from data");
     	console.log("Id to remove is "+id);
+    	console.log("Array key is "+array);
+    	console.debug($dataTable.data(array))
     	
     	_arrayRemove($dataTable.data(array),parseInt(id));
 
-    	console.debug("Datatabe object is "+$dataTable);
+    	//console.debug("Datatabe object is "+$dataTable);
     	var buttonId = "#"+btnId+id;
     	console.log("Reenabling button "+buttonId);
     	$(buttonId).removeAttr("disabled");
@@ -1228,7 +1230,7 @@ core.namespace("datatable");
                 mDataProp : "id",
                 tdarSortOption : 'ID',
                 bSortable : false,
-                fnRender : TDAR.datatable.renderPersonId
+                fnRender : window.TDAR.datatable.renderPersonId
             }, {
                 sTitle : "First",
                 mDataProp : "firstName",
@@ -1254,7 +1256,7 @@ core.namespace("datatable");
             }
         };
 
-        return TDAR.datatable.registerLookupDataTable(settings);
+        return window.TDAR.datatable.registerLookupDataTable(settings);
     }
 
     function _checkAllToggle() {
@@ -1373,7 +1375,7 @@ core.namespace("datatable");
             }
         }
         if (size > 0) {
-            return TDAR.datatable.registerLookupDataTable(options);
+            return window.TDAR.datatable.registerLookupDataTable(options);
         }
 
     }

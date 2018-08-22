@@ -39,6 +39,7 @@ if (process.argv != undefined  && process.argv.length > 0) {
 module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     config.set({
+       
         webpack: webpackConfig,
         browserConsoleLogOptions: {terminal:false},
 
@@ -47,7 +48,7 @@ module.exports = function(config) {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine-ajax', 'jasmine-jquery', 'jasmine'],
+        frameworks: ['jquery-1.11.3','jasmine-ajax', 'jasmine-jquery', 'jasmine'],
 
         // list of files / patterns to load in the browser (we aren't using requireJS, so order matters)
         files: [].concat(

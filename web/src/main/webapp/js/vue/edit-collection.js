@@ -90,8 +90,15 @@ const datatable = require("./../tdar.datatable");
 
 						undoModification : function(id, isManaged, isAddition) {
 						    console.debug("edit-collection:undoModification called");
-							var $dataTable = !isAddition ? $('#existing_resources_datatable') : $('#resource_datatable');
-
+						    var tableId = !isAddition ? '#existing_resources_datatable' : '#resource_datatable';
+						    
+						    console.debug($("#HELL0"));
+						    console.debug("Table id is : "+tableId);
+							var $dataTable = $(tableId);
+							//console.debug("Data table is ");
+							//console.debug($dataTable);
+							
+ 
 							if (isManaged) {
 								if (isAddition) {
 									console.debug("Removing " + id + " from managed additions");
@@ -112,8 +119,6 @@ const datatable = require("./../tdar.datatable");
 							}
 
 							try {
-							    console.debug("Data table is");
-							    console.debug($dataTable);
 							    datatable.removePendingChange(parseInt(id), isManaged, isAddition, $dataTable);
 							} catch(e){
 							    console.warn(e);
