@@ -43,19 +43,19 @@
         <div class="control-label">
             <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
                 <button type="button" :class="personClass" data-toggle="button" @click="toggleValue('PERSON')">Person</button>
-                <input type="hidden" :name="getPrefix('type')" v-model="toggle">
+                <input type="hidden" :name="getRootPrefix('type')" v-model="toggle">
                 <button type="button" :class="institutionClass" @click="toggleValue('INSTITUTION')" data-toggle="button">Institution</button>
             </div>
         </div>
     </div>
     <div class="span4">
         <input type="hidden" :name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
-        <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id">
+        <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id" id="idfield">
         <div v-if="toggle == 'PERSON'">
-			<person :creator="resourcecreator.creator" ref="inputperson" />
+			<person :creator="resourcecreator.creator" ref="inputperson" @autocompleteset="updatecreator" :row="row" :prefix="prefix"/>
         </div>
         <div v-if="toggle == 'INSTITUTION'">
-			<institution :creator="resourcecreator.creator" ref="inputinstitution" />
+			<institution :creator="resourcecreator.creator" ref="inputinstitution" @autocompleteset="updatecreator"  :row="row"  :prefix="prefix"/>
         </div>
     </div>
     <div class="span2">

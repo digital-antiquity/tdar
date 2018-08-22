@@ -14,13 +14,21 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     type:Number,
                     default: 0
                 },
+                roles: {
+                    type:Array,
+                    default: function() {
+                        return ['AUTHOR','EDITOR'];
+                    }
+                },
+                prefix: {
+                    type:String,
+                    default: 'authorshipProxies'
+                }
             },
             data: function() {
                 return {
-                roles: ['AUTHOR','EDITOR'],
                 showEditInstitution: false,
                 showEditPerson: false,
-                prefix: "authorshipProxies",
                 toggle: "PERSON"
                 }
             },
@@ -98,12 +106,13 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
             },
             methods: {
                 toggleValue: function(key) {
-//                    this.toggling = true;
-//                    Vue.set(this,"toggling",true);
                     this.reset(key);
                     Vue.set(this,"toggle",key);
-//                    Vue.set(this,"toggling",false);
-//                    this.toggling = false;
+                },
+                updatecreator: function(result) {
+                    this.resourcecreator.creator = result;
+                    Vue.set(this.resourcecreator,"creator", result);
+                    console.log("setting resourcecreator to", result);
                 },
                 getPrefix: function(part) {
                     var ret = this.prefix;
@@ -178,7 +187,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 return {
                 roles: ['AUTHOR','EDITOR'],
                 showEditPerson: false,
-                prefix: "authorishipProxies",
+                prefix: "authorshipProxies",
                 }
             },
             beforeMount: function() {
@@ -213,7 +222,8 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 },
                 addAutocompleteValue: function(result) {
                     if (result != undefined && result.id != undefined) {
-                        Vue.set(this,"creator", result);
+//                        Vue.set(this,"creator", result);
+                        this.$emit("autocompleteset", result);
                     }
                 },
                 clickEdit: function() {
@@ -226,6 +236,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 clear: function() {
                     if (this.$refs.input != undefined) {
                         this.$refs.input.clear();
+                        this.$emit("autocompleteset",  { institution:{ name: undefined}});
                     }
                 },
                 setValue: function(val) {
@@ -255,7 +266,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 return {
                 roles: ['AUTHOR','EDITOR'],
                 showEditInstitution: false,
-                prefix: "authorishipProxies",
+                prefix: "authorshipProxies",
                 }
             },
             beforeMount: function() {
@@ -288,7 +299,8 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 },
                 addAutocompleteValue: function(result) {
                     if (result != undefined && result.id != undefined) {
-                        Vue.set(this,"creator", result);
+//                        Vue.set(this,"creator", result);
+                        this.$emit("autocompleteset", result);
                     }
                 },
                 clickEdit: function() {
@@ -301,6 +313,7 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 clear: function() {
                     if (this.$refs.input != undefined) {
                         this.$refs.input.clear();
+                        this.$emit("autocompleteset", {});
                     }
                 },
                 setValue: function(val) {

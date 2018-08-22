@@ -81,8 +81,10 @@
         <h5>Individual and Institutional Roles</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
         <div v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit" class="row">
-                    <creatorrolelookup :resourcecreator="creator" :row="idx"  />
-        </div>    
+                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" />
+        </div> 
+          <button class="btn addanother"  @click="addanothercreator" type="button"><i class="icon-plus-sign"></i>add another</button>
+        
 </div> 
     
     <div>
@@ -214,6 +216,7 @@ $(document).ready(function() {
                 projectId: undefined,
                 inheritanceDisabled: true,
                 project: {},
+                creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
                 noteTypes: [
                     {value:"GENERAL", name:"General Note"},
                     {value:"REDACTION", name:"Redaction Note"},
@@ -242,6 +245,7 @@ $(document).ready(function() {
                         this.project.activeIndividualAndInstitutionalCredit.forEach(function(role_) {
                             var role = JSON.parse(JSON.stringify(role_));
                             role.init = "";
+                            role.id = undefined;
                             self.resource.activeIndividualAndInstitutionalCredit.push(role);
                         });
                             }
@@ -304,6 +308,9 @@ $(document).ready(function() {
                          if (json.submitterRef != undefined && json.submitterRef.indexOf(":") != -1) {
                             Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
                         }
+                        if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
+                            json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
+                        }
                     }
                     Vue.set(this,"epochtime", Date.now() + 15000);
                     Vue.set(this,"accountId",220);
@@ -343,6 +350,9 @@ $(document).ready(function() {
                             this.$refs[ref].enable();
                         }
                     },
+                    addanothercreator: function() {
+                        this.resource.activeIndividualAndInstitutionalCredit.push({creator:{person:{institution:{}}}});
+                        },
                     selectProject: function(val) {
                         console.log("project:", val);
                         if (val == undefined) {
