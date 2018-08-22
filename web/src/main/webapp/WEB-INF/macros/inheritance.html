@@ -157,28 +157,28 @@
                         <tbody><tr>
                             <td></td>
                             <td>
-<input type="text" name="latitudeLongitudeBoxes[0].north"size="14" value="" class="maxy float latLong ne-lat hidden" title="Please enter a valid Maximum Latitude" v-model="resource.latitudeLongitudeBoxes[0].north">
+<input type="text" name="latitudeLongitudeBoxes[0].north"size="14" value="" class="maxy float latLong ne-lat hidden" title="Please enter a valid Maximum Latitude" v-model="resource.activeLatitudeLongitudeBoxes[0].north">
                                 <input type="text" placeholder="Latitude (max)" class="ne-lat-display span2 d_maxy"   >
                             </td>
                             <td></td>
                         </tr>
                         <tr>
                             <td style="width:33%;text-align:center">
-<input type="text" name="latitudeLongitudeBoxes[0].west" size="14" value=""  class="minx float latLong sw-lng hidden" title="Please enter a valid Minimum Longitude" v-model="resource.latitudeLongitudeBoxes[0].west"> 
+<input type="text" name="latitudeLongitudeBoxes[0].west" size="14" value=""  class="minx float latLong sw-lng hidden" title="Please enter a valid Minimum Longitude" v-model="resource.activeLatitudeLongitudeBoxes[0].west"> 
                                <input type="text"  placeholder="Longitude (min)" class="sw-lng-display span2 d_minx"  >
                             </td>
                             <td style="width:33%;text-align:center">
                                 <input type="button" id="locate" ref="updateMap" value="Locate" class="btn locateCoordsButton">
                             </td>
                             <td style="width:33%;text-align:center">
-<input type="text" name="latitudeLongitudeBoxes[0].east" v-model="resource.latitudeLongitudeBoxes[0].east" size="14" class="maxx float latLong ne-lng hidden" title="Please enter a valid Maximum Longitude" >
+<input type="text" name="latitudeLongitudeBoxes[0].east" v-model="resource.activeLatitudeLongitudeBoxes[0].east" size="14" class="maxx float latLong ne-lng hidden" title="Please enter a valid Maximum Longitude" >
                                 <input type="text" placeholder="Longitude (max)" class="d_maxx ne-lng-display span2">
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td>
-<input type="text" name="latitudeLongitudeBoxes[0].south" v-model="resource.latitudeLongitudeBoxes[0].south" size="14"  class="miny float latLong sw-lat hidden" title="Please enter a valid Minimum Latitude" >
+<input type="text" name="latitudeLongitudeBoxes[0].south" v-model="resource.activeLatitudeLongitudeBoxes[0].south" size="14"  class="miny float latLong sw-lat hidden" title="Please enter a valid Minimum Latitude" >
                                 <input type="text"  placeholder="Latitude (min)" class="d_miny sw-lat-display span2">
                             </td>
                             <td></td>
@@ -248,7 +248,8 @@ $(document).ready(function() {
                             role.id = undefined;
                             self.resource.activeIndividualAndInstitutionalCredit.push(role);
                         });
-                            }
+                        
+                        }
                     },
                     "resource.inheritingMaterialInformation": function(o, b) {
                         this.inherit(o,b,'material', 'activeMaterialKeywords');
@@ -259,11 +260,11 @@ $(document).ready(function() {
                     "resource.inheritingSpatialInformation": function(o, b) {
                         this.inherit(o,b,'geographic', 'activeGeographicKeywords');
                         if (this.project != undefined && this.project.activeLatitudeLongitudeBoxes != undefined) {
-                        this.resource.latitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
-                        this.resource.latitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
-                        this.resource.latitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
-                        this.resource.latitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
-                        console.log(this.resource.latitudeLongitudeBoxes[0]);
+                        this.resource.activeLatitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
+                        this.resource.activeLatitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
+                        this.resource.activeLatitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
+                        this.resource.activeLatitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
+                        console.log(this.resource.activeLatitudeLongitudeBoxes[0]);
                         Vue.nextTick(function() {
                             $(".locateCoordsButton").click();
                         });
@@ -311,12 +312,15 @@ $(document).ready(function() {
                         if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
                             json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
                         }
+                        if (json.activeLatitudeLongitudeBoxes == undefined || json.activeLatitudeLongitudeBoxes.length == 0) {
+                            json.activeLatitudeLongitudeBoxes = [{north: undefined, south: undefined, east: undefined,west: undefined } ];
+                        }
                     }
                     Vue.set(this,"epochtime", Date.now() + 15000);
                     Vue.set(this,"accountId",220);
                     //Vue.set("resource","submitter",{});
                     //this.resource.submitter = {id:8344, properName:'adam brin'};
-                    var self = this.resource.latitudeLongitudeBoxes[0];
+                    var self = this.resource.activeLatitudeLongitudeBoxes[0];
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
                             Vue.set(self, "west", e.minx);

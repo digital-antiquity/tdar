@@ -27,7 +27,7 @@
                 :customcreatenew="clickNew" createnewtext="Create New Institution" :initial_id="creator.id" :initial_value="creator.properName"
                 ref="input" fieldname="properName" :allowCreate="false" idname="institutionid" />
             </div>
-            <div v-if="showEditInstitution">
+            <div v-show="showEditInstitution">
                 <div class="controls-row">
                     <input type="text" :name="getPrefix('name')" maxlength="255" v-model="creator.name" class="span2 trim" placeholder="Institution Name (Optional)">
                     <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="span2  trim" placeholder="Email (optional)">
