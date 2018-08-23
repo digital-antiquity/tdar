@@ -78,10 +78,19 @@
     </div>
 
 <div>
+        <h5>Creators</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
+        <div v-for="(creator, idx) in resource.contentOwners" class="row">
+                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" />
+        </div> 
+          <button class="btn addanother"  @click="addanothercreator" type="button"><i class="icon-plus-sign"></i>add another</button>
+        
+</div> 
+<div>
         <h5>Individual and Institutional Roles</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
         <div v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit" class="row">
-                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" />
+                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="creditProxies" />
         </div> 
           <button class="btn addanother"  @click="addanothercreator" type="button"><i class="icon-plus-sign"></i>add another</button>
         
@@ -200,6 +209,12 @@
 <script>
 $(document).ready(function() {
 
+var cl =  Vue.component('checkboxlist', {
+    name: "checkboxlist",
+    template: "#checkboxlist-template",
+    props: {
+    }});
+    
     var app = new Vue({
         el : "#sel",
         data : {
@@ -311,6 +326,9 @@ $(document).ready(function() {
                         }
                         if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
                             json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
+                        }
+                        if (json.contentOwners == undefined || json.contentOwners.length == 0) {
+                            json.contentOwners = [{creator:{person:{institution:{}}}}];
                         }
                         if (json.activeLatitudeLongitudeBoxes == undefined || json.activeLatitudeLongitudeBoxes.length == 0) {
                             json.activeLatitudeLongitudeBoxes = [{north: undefined, south: undefined, east: undefined,west: undefined } ];

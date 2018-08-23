@@ -1051,7 +1051,7 @@ public class Resource implements Persistable,
     }
 
     @Transient
-    @XmlTransient
+//    @XmlTransient
     public Collection<ResourceCreator> getContentOwners() {
         List<ResourceCreator> authors = new ArrayList<ResourceCreator>();
 
