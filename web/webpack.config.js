@@ -88,8 +88,7 @@ module.exports = {
             modules : path.join(__dirname, "node_modules"),
             JS : path.resolve(__dirname, 'src/main/webapp/js/'),
             Components : path.resolve(__dirname, 'src/main/webapp/components/'),
-            Includes : path.resolve(__dirname, 'src/main/webapp/includes/'),
-            'vue$': 'vue/dist/vue.esm.js'
+            Includes : path.resolve(__dirname, 'src/main/webapp/includes/')
         }
 
     // alias: {

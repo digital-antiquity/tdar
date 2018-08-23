@@ -1,6 +1,6 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 
-const Vue = require("vue").default;
+const Vue = require("vue/dist/vue.esm.js").default;
 
 describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
 	var resources

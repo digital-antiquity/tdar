@@ -1,5 +1,5 @@
 /* global describe, it, xit, expect, beforeEach, afterEach, loadFixtures */
-const Vue = require("vue").default;
+const Vue = require("vue/dist/vue.esm.js").default;
 
 describe("FileuploadSpec.js: fileupload suite - root", function(){
     "use strict";

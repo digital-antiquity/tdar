@@ -1,6 +1,6 @@
 const core = require("./../tdar.core.js");
 const datepicker = require("./../tdar.datepicker");
-const Vue = require("vue").default;
+const Vue = require("vue/dist/vue.esm.js").default;
 
 const vuejsupload = require("./vue-base-upload");
 
