@@ -747,7 +747,10 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(user, ds);
         ds.getDataTables().forEach(dt -> {
             dt.getDataTableColumns().forEach(dtc -> {
-                if (dtc.isSearchField() && (dtc.getVisible() == null || dtc.getVisible() == ColumnVisibiltiy.VISIBLE || dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL && canViewConfidentialInformation)) {
+                if (dtc.isSearchField() && 
+                        (dtc.getVisible() == null 
+                        || dtc.getVisible() == ColumnVisibiltiy.VISIBLE 
+                        || dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL && canViewConfidentialInformation)) {
                     cols.add(dtc);
                 }
 
