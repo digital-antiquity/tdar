@@ -1,4 +1,4 @@
-const Vue = require("vue");
+const Vue = require("vue").default;
 
     var __normalize = function(filename) {
         var basename = filename.replace(/[^\w\-\.\+\_]/g, "-");

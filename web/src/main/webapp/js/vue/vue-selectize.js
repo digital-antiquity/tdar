@@ -6,7 +6,7 @@
  * This integrates Selectize with Vue so it can be used as a component.
  */
 
-const Vue = require("vue");
+const Vue = require("vue").default;
 
 console.debug(Vue);
 Vue.component('selectize', {

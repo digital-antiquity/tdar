@@ -1,4 +1,4 @@
-const Vue = require("vue");
+const Vue = require("vue").default;
 const axios = require("Axios");
 
     if (document.getElementById("autocomplete") != undefined ) {
