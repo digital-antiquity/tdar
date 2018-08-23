@@ -72,7 +72,7 @@ module.exports = {
         'global.jQuery' : 'jquery',
         //'jquery.ui.widget' : 'blueimp-file-upload/js/vendor/jquery.ui.widget',
         
-        axios : "Axios",
+        //axios : "Axios",
         c3 : "c3",
         d3 : "d3",
         TDAR : "JS/tdar.master",

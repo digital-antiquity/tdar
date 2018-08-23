@@ -41,7 +41,7 @@
                 if (data.percentDone != 100) {
                     _updateProgressBar(data.percentComplete);
                     $("#buildStatus").empty().append(data.message);
-                    setTimeout(_updateProgress, TIMEOUT);
+                    setTimeout(window.TDAR.bulk.updateProgress, TIMEOUT);
                 } else {
                     _updateProgressBar(100);
                     $('#divUploadComplete').show();

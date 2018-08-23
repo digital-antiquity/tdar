@@ -1,8 +1,12 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 const Vue = require("vue/dist/vue.esm.js").default;
-describe("Vue-collection-widget.js: collection widget test", function() {
+const TDAR = require("JS/tdar.master");
+const axios = require("axios");
 
+
+describe("Vue-collection-widget.js: collection widget test", function() {
     beforeEach(function() {
+        moxios.install(axios);
     });
 
     afterEach(function() {
@@ -10,11 +14,8 @@ describe("Vue-collection-widget.js: collection widget test", function() {
         moxios.uninstall(axios);
     });
     
-    
     it("Creates a new collection", function(done){
     	var fix = setupFixture("true","true","1");
-        moxios.install(axios);
-        
         moxios.stubRequest('api/collection/newcollection', {
         	    "name": "abc",
         	    "id": 66061,
@@ -48,6 +49,8 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     vapp.addToCollection();
     
     Vue.nextTick(function() {
+        console.debug("Debugging next app");
+            console.debug(vapp.collections);
         	expect(vapp.collections.unmanaged[0].name).toBe("Test");
     });
 
@@ -59,7 +62,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     	var fix = setupFixture("true","true","2");
     	
         // only install the moxios proxy ONCE the fixture has been setup
-        moxios.install(axios);
+       // moxios.install(axios);
         
         //Mock a result with 2 existing Unmanaged collections. 
         moxios.stubRequest('/api/collection/resourcecollections?resourceId=2', {
@@ -180,7 +183,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     	var fix = setupFixture("true","true","3");
 
         // only install the moxios proxy ONCE the fixture has been setup
-        moxios.install(axios);
+        //moxios.install(axios);
         
         // stub out moxios resquest/responses
         moxios.stubRequest('/api/collection/resourcecollections?resourceId=3', {
@@ -249,7 +252,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     
     it("gets a list of collections the user has permissions to", function(done){
     	var fix = setupFixture("false","true","4");
-        moxios.install(axios);
+        //moxios.install(axios);
 
        
         moxios.stubRequest('/api/collection/resourcecollections?resourceId=4', {
@@ -323,7 +326,7 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     it("gracefully handles page with no map elements", function(done) {
     	var fix = setupFixture("true","true","5");
 
-        moxios.install(axios);
+        //moxios.install(axios);
 
         var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
         
