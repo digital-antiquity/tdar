@@ -1,7 +1,7 @@
 /**TDAR edit-collection.js */
 
 
-const Vue = require("vue").default;
+const Vue = require("vue/dist/vue.esm.js").default;
 const axios = require("Axios");
 const datatable = require("./../tdar.datatable");
 

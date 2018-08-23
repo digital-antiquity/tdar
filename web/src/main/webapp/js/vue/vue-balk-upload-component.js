@@ -1,6 +1,6 @@
 const vuejsupload = require("./vue-base-upload");
 
-const Vue = require("vue").default;
+const Vue = require("vue/dist/vue.esm.js").default;
 const VueRouter = require("./../../js_includes/components/vue-router/dist/vue-router");
 
 

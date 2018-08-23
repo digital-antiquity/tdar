@@ -1,4 +1,4 @@
-const Vue = require("vue").default;
+const Vue = require("vue/dist/vue.esm.js").default;
 const axios = require("Axios");
 
     if (document.getElementById("autocomplete") != undefined ) {
