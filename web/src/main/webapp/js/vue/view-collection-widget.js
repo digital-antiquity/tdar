@@ -6,7 +6,7 @@
 
 
 const Vue = require("vue/dist/vue.esm.js").default;
-require("Axios");
+const axios = require("axios");
 require("jquery");
 require("./vue-selectize");
 //require("./vue-selectize");

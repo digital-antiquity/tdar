@@ -2,7 +2,7 @@
 
 
 const Vue = require("vue/dist/vue.esm.js").default;
-const axios = require("Axios");
+//const axios = require("axios");
 const datatable = require("./../tdar.datatable");
 
 	var _init = function(params) {
