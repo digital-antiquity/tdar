@@ -1030,9 +1030,14 @@ footer {
 .repeat-row + .repeat-row {
   margin-top: .8rem; }
 
-div + .add-another-control {
-  top: -.6rem;
-  padding-bottom: .5rem;
+.repeatLastRow {
+  margin-bottom: 1rem; }
+
+.repeatLastRow.form-group .form-group:last-child {
+  margin-bottom: 0rem; }
+
+.repeatLastRow + .add-another-control {
+  top: -.6rem !important;
   position: relative; }
 
 h3.displayName {

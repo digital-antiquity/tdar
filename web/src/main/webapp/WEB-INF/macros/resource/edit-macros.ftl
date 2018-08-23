@@ -1221,8 +1221,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <li><a class="nav-link"href="#resourceNoteSectionGlide">Notes</a></li>
                     <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
                     <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
-<#-- 	    <div class="help mt-3">
-	    <div id="notice" class=" p-1"></div></div> -->
+ 	    <div class="help mt-3">
+	    <div id="notice" class=" p-1"></div></div> 
 		</div>
 		</div>
     </nav>

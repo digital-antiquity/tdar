@@ -262,9 +262,9 @@
             </select>
         </div>
     </div>
-    <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%" callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0"
+    <div id="groupTable0" class="grouptable repeatLastRow  form-group form-row" callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0"
          data-add-another="add another search term">
-
+		<div class="col-12">
         <#if group_?is_hash >
             <#list group_.fieldTypes as fieldType >
                 <#if fieldType??>
@@ -284,6 +284,7 @@
         <#else>
             <@blankRow />
         </#if>
+        </div>
     </div>
 
     </#macro>
