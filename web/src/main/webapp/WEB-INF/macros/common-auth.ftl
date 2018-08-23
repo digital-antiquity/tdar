@@ -178,6 +178,7 @@
     </#if>
     <@s.token name='struts.csrf.token' />
     <@s.textfield spellcheck="false" id='loginUsername' name="${beanPrefix}.loginUsername" label="Username" cssClass="required" autofocus="autofocus"  cssClass="col"/>
+    <a class="label-right" href='<@s.url value="/account/recover"/>' rel="nofollow"><i>Forgot your password?</i></a>
     <@s.password id='loginPassword' name="${beanPrefix}.loginPassword" label="Password" cssClass="required" cssClass="col"/>
 
     <#nested />

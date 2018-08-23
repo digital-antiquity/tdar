@@ -191,7 +191,9 @@ ${head}
 
 
         <#if errorWarningSectionVisible >
-            <div class="alert alert-error error-banner">
+        <div class="container">
+        <div class="row">
+            <div class="alert alert-warning error-banner">
                 <#if stackTraces?has_content>
                     <div class="error-codes pull-right">
                         <strong><@s.text name="error.action_error_codes"/></strong>
@@ -222,14 +224,19 @@ ${head}
                     </#if>
                 </div>
             </div>
+            </div>
+            </div>
         </#if>
 
         <#if actionMessages?has_content || (page.properties["div.messages"])?has_content>
-            <div class="${bs.row()}">
-                <div class="span12">
+            <div class="container">
+            <div class="row">
+                <div class="col-12">
                     <@s.actionmessage />
         ${(page.properties["div.messages"])!}
                 </div>
+            </div>
+            </div>
             </div>
         </#if>
 

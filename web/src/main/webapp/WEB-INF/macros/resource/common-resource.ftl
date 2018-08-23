@@ -65,8 +65,8 @@ Common macros used in multiple contexts
 
     <#macro cartouche persistable useDocumentType=false>
         <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
-    <span class="cartouche badge badge-dark nowrap">
-        <span class="flex">
+    <span class="cartouche badge badge-secondary nowrap">
+        <span class="-flex">
     <#local type=""/>
     <#if persistable.resourceType?has_content>
         <#local type>svg-icons_icon-${persistable.resourceType?lower_case}</#local>
@@ -79,8 +79,12 @@ Common macros used in multiple contexts
     <#--        <#if (persistable.status)?? && !persistable.active>
             ${persistable.status} <#t>
         </#if>  -->
+        <span class="rs">
         <@upperPersistableTypeLabel persistable />
+        </span>
+<!--        <span class='id'>
         <#if editor> (${persistable.id?c})</#if>
+        </span> -->
          </span>
      </span>
         <#nested />

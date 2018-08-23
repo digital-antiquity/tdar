@@ -103,7 +103,7 @@
 
 <#list viewableResourceCollections>
 <div class="section">
-    <h3>This Resource is Part of the Following Collections</h3>
+    <h2>This Resource is Part of the Following Collections</h2>
     <p>
     <ul class="list-inline">
     <#items as collection>
@@ -136,13 +136,12 @@
 
     <#if ( resource.hasBrowsableImages && resource.visibleFilesWithThumbnails?size > 0)>
         <@view.imageGallery />
-    <br/>
     </#if>
 
     <#if resource.resourceType.dataTableSupported>
         <#if (resource.dataTables?has_content)>
             <#if resource.viewable && authenticated && (resource.publicallyAccessible || ableToViewConfidentialFiles)>
-            <h3 id="browseTable" data-namespace="${namespace}">Browse ${resource.title}</h3>
+            <h2 id="browseTable" data-namespace="${namespace}">Browse ${resource.title}</h2>
 
                 <#if (resource.dataTables?size > 1)>
                 <form>
@@ -176,7 +175,7 @@
 
             </#if>
 
-        <h3>Data Set Structure</h3>
+        <h2>Data Set Structure</h2>
         <div class="row">
             <div class="col-3"><span class="columnSquare measurement"></span>Measurement Column</div>
             <div class="col-3"><span class="columnSquare count"></span>Count Column</div>
@@ -430,14 +429,14 @@
     </#if>
     <#if creditProxies?has_content >
         <div class="section">
-    <h3>Individual &amp; Institutional Roles <#if editor && resource.inheritingIndividualAndInstitutionalCredit!false ><small>(from project)</small></#if> </h3>
+    <h2>Individual &amp; Institutional Roles <#if editor && resource.inheritingIndividualAndInstitutionalCredit!false ><small>(from project)</small></#if> </h2>
         <@view.showCreatorProxy proxyList=creditProxies />
         </div>
     </#if>
 
         <#list allResourceAnnotationKeys>
         <div class="section">
-        <h3>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h3>
+        <h2>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h2>
 
         <#items as key>
             <#assign contents = "" />
@@ -471,7 +470,7 @@
     </#if>
 <#-- display linked data <-> ontology nodes -->
         <#list relatedResources![]>
-        <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
+        <h2>This ${resource.resourceType.label} is Used by the Following Datasets:</h2>
         <ol style='list-style-position:inside'>
             <#items as related >
             <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${related.title} </a></li>
@@ -485,7 +484,7 @@
     <#if mappedData?has_content >
         <#assign map = mappedData />
         <#if map?? && !map.empty>
-        <h3>Additional Metadata</h3>
+        <h2>Additional Metadata</h2>
             <#list map?keys as key>
                 <#if key?? && map.get(key)?? && key.visible?? && key.visible>
                     <@view.kvp key=key.displayName!"unknown field" val=map.get(key)!"unknown value" />
@@ -501,7 +500,7 @@
     </#if>
 
 <#list visibleUnmanagedCollections>
-    <h3>This Resource is Part of the Following User Created Collections</h3>
+    <h2>This Resource is Part of the Following User Created Collections</h2>
         <ul class="inline">
     <#items as collection>
     
@@ -520,6 +519,7 @@
     <hr>
 </#list>
 
+    <div class="section">
     <@view.accessRights>
     <div>
         <#if resource.embargoedFiles?? && !resource.embargoedFiles>
@@ -528,6 +528,7 @@
         </#if>
     </div>
     </@view.accessRights>
+    </div>
 
 
 
@@ -580,7 +581,7 @@
 
             <@nav.shareSection />
         </ul>
-    <h3>Basic Information</h3>
+    <h2>Basic Information</h2>
 
     <p>
 
@@ -666,14 +667,12 @@ $(function(){
 <#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
     <#macro _relatedSimpleItem listitems label>
         <#list listitems>
-        <h3>${label}</h3>
-        <table>
+        <div class="section">
+        <h2>${label}</h2>
             <#items as citation>
-                <tr>
-                    <td>${citation}</td>
-                </tr>
+                    <p>${citation}</p>
             </#items>
-        </table>
+        </div>
         </#list>
     </#macro>
 
@@ -681,7 +680,7 @@ $(function(){
 <div class="modal hide fade" id="modal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Add to a Collection</h3>
+    <h2>Add to a Collection</h2>
   </div>
   
   <div class="modal-body">

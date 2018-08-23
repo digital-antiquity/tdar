@@ -468,8 +468,8 @@ body {
 }
 
 p {
-    font-size: 14px;
-    line-height: 23px;
+    font-size: 16px;
+    line-height: 1.5em;
 }
 
 .static {
@@ -849,4 +849,25 @@ span.uneditable-input {
 .help-inline {
     margin-bottom: .5em;
     margin-top:.25em;
+}
+
+.label-right {
+    margin-top:.6em;
+    float:right;
+}
+
+
+.cartouche {
+    min-width:10em;
+    text-align:left;
+    svg {
+        float:left;
+    }
+}
+
+.recordcite {
+    .card-body {
+        padding-top: .5rem;
+        padding-bottom: .3rem;
+    }
 }

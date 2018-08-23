@@ -287,8 +287,8 @@ View freemarker macros
     <#macro extendedFileInfo>
         <#if (resource.informationResourceFiles?has_content)>
             <#local showDownloads = authenticatedUser?? />
-        <div id="extendedFileInfoContainer">
-            <h3 id="allfiles">File Information</h3>
+        <div id="extendedFileInfoContainer" class="section">
+            <h2 id="allfiles">File Information</h2>
             <table class="table table-sm table-striped">
                   <thead class="thead-dark">
 
@@ -531,42 +531,13 @@ View freemarker macros
 
 <#-- emit an image gallery for the accessible image/video files for the current resource -->
     <#macro imageGallery>
+    <div class="section">
     <div class="slider">
         <#local numThumbnails = resource.visibleFilesWithThumbnails?size!0 />
         <#local numThumbnailsPerSection = 4 />
         <#local numIndicators = ( numThumbnails / numThumbnailsPerSection)?ceiling  />
 
         <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
-        <#--  
-        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-      <img class="d-block w-100" src=".../800x400?auto=yes&bg=777&fg=555&text=First slide" alt="First slide">
-    </div>
-    <div class="carousel-item">
-      <img class="d-block w-100" src=".../800x400?auto=yes&bg=666&fg=444&text=Second slide" alt="Second slide">
-    </div>
-    <div class="carousel-item">
-      <img class="d-block w-100" src=".../800x400?auto=yes&bg=555&fg=333&text=Third slide" alt="Third slide">
-    </div>
-  </div>
-  <ol class="carousel-indicators">
-    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-  </ol>
-  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
-</div>
-
-         
-           -->
             <div id="myCarousel" class="image-carousel carousel slide pagination-centered" data-ride="carousel">
                 <#if (numIndicators > 1)>
                     <ol class="carousel-indicators ">
@@ -629,7 +600,7 @@ View freemarker macros
         </#if>
         <br/>
 
-    </div><!--/well-->
+    </div>
         <#if authenticatedUser?? >
         <div class="bigImage pagination-centered">
             <#list resource.visibleFilesWithThumbnails as irfile>
@@ -653,6 +624,7 @@ View freemarker macros
             TDAR.common.initImageGallery();
         });
     </script>
+    </div>
     </#macro>
 
     <#macro _altText irfile description = irfile.description!"">
@@ -827,7 +799,8 @@ View freemarker macros
 <#-- emit license information section -->
     <#macro license>
         <#if (resource.licenseType??) >
-        <h3>License</h3>
+    <div class="section">
+        <h2>License</h2>
             <#if (resource.licenseType.imageURI != "")>
             <a href="${resource.licenseType.URI}"><img alt="license image" title="license image"
                                                        src="<#if secure>${resource.licenseType.secureImageURI}<#else>${resource.licenseType.imageURI}</#if>"/></a>
@@ -840,6 +813,7 @@ View freemarker macros
             <h4>Custom License Type - See details below</h4>
             <p>${resource.licenseText}</p>
             </#if>
+        </div>
         </#if>
     </#macro>
 

@@ -28,10 +28,10 @@
         <h2>Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!</h2>
         <#if contributor>
             <div class="row">
-                <div class="col-lg-10 col-md-8">
+                <div class="col-lg-8 col-xl-10">
                     <h4>Upload Resources</h4>
                     <div class="row">
-                        <div class="col">
+                        <div class="col-xl-3 col-lg-6">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
@@ -40,7 +40,7 @@
                               </div>
                               </div>
                         </div>
-                        <div class="col">
+                        <div class="col-xl-3 col-lg-6">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
@@ -49,7 +49,7 @@
                         </div>
                         </div>
                         </div>
-                        <div class="col">
+                        <div class="col-xl-3 col-lg-6">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
@@ -58,7 +58,7 @@
                         </div>
                         </div>
                         </div>
-                        <div class="col">
+                        <div class="col-xl-3 col-lg-6">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 </div>
-                <div class="col-md-4 col-lg-2">
+                <div class="col-lg-4 col-xl-2">
                     <h4>Organize</h4>
                 <div class="row">
                 <div class="col">
@@ -265,17 +265,9 @@
             <ol id='recentlyEditedResources'>
                 <#list recentlyEditedResources as res>
                     <li id="li-recent-resource-${res.id?c}">
-                        <div class="row">
-                        	<div class="col-9">
                             <@commonr.cartouche res true>
-                                <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
+                                <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 120 /></a>
                             </@commonr.cartouche>
-                            </div>
-                            <div class="col-3">
-                                    <a class="btn btn-sm" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
-                                    <a class="btn btn-sm" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
-                        	</div>
-                        </div>
                     </li>
                 </#list>
             </ol>

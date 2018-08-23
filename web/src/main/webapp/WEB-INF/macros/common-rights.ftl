@@ -160,7 +160,7 @@ $(function() {
 <#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
     <#macro resourceCollectionsRights collections=[] owner="">
         <#if editable && (collections?has_content || invites?has_content || ((persistable.authorizedUsers)![])?has_content) >
-        <h3>Access Permissions</h3>
+        <h2>Access Permissions</h2>
             <#nested />
         <table class="table table-sm table-striped"">
               <thead class="thead-dark">

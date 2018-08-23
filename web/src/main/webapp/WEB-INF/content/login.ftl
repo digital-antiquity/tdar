@@ -23,16 +23,11 @@ vim:sts=2:sw=2:filetype=jsp
 <div class="card-body">
 <@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal">
 	<@auth.loginWarning />
-    <@auth.login>    
+    <@auth.login>
     <@s.hidden name="url" />
     <div class="form-actions">
         <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
-        <div class="pull-right">
-            <div class="btn-group">
-                <a class="btn " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a>
-                <a class="btn " href='<@s.url value="/account/recover"/>' rel="nofollow">Reset Password</a>
-            </div>
-        </div>
+                <p class="mt-2">Need an account: <a class=" " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a></p>
     </div>
     </@auth.login>
 </@s.form>
