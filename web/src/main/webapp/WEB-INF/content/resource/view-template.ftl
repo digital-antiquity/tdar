@@ -33,7 +33,19 @@
 </head>
 
 
-    <@nav.toolbar "${resource.urlNamespace}" "view">
+
+        <#if local_.notifications?? && local_.notifications?is_macro>
+            <@local_.notifications />
+        </#if>
+
+<div id="datatable-child" style="display:none">
+    <p class="">
+        You have successfully updated the page that opened this window. What would you like to do now?
+    </p>
+</div>
+
+    <@view.pageStatusCallout />
+    <@nav.toolbar "${resource.urlNamespace}" "view" true>
         <#if resource.resourceType.dataTableSupported && editable>
             <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
@@ -47,21 +59,11 @@
             <@local_.toolbarAdditions />
         </#if>
     </@nav.toolbar>
+<div class="section mt-25">
 
-        <#if local_.notifications?? && local_.notifications?is_macro>
-            <@local_.notifications />
-        </#if>
-
-<div id="datatable-child" style="display:none">
-    <p class="">
-        You have successfully updated the page that opened this window. What would you like to do now?
-    </p>
-</div>
-
-    <@view.pageStatusCallout />
-<div class="section">
-
+    
     <h1 class="view-page-title">${resource.title!"No Title"}</h1>
+
     <#if hasProject>
 
     <div id="subtitle">
@@ -75,9 +77,6 @@
         </p></div>
     </#if>
 
-    <#if editor>
-    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/resource/admin?id=${resource.id?c}"/>">ADMIN</a></div>
-    </#if>
 
     <@view.showCreatorProxy proxyList=authorshipProxies />
     <#if resource.date?has_content>

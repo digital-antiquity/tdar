@@ -18,16 +18,22 @@ navigation freemarker macros
                 would otherwise not be able to edit the current resource were they not an admin user.
   @requires authenticatedUser:Person person object of the authenticated user
 -->
-    <#macro toolbar namespace current="view">
+    <#macro toolbar namespace current="view" modern=false>
         <#if resource??>
             <#if resource.id == -1>
                 <#return>
             </#if>
         </#if>
         <#if (sessionData.authenticated)!false>
-        <div class="container" id="toolbars" parse="true">
-        <div class="col-12 resource-nav  screen " >
-            <ul>
+ <#if modern==false>       <div class="container" id="toolbars" parse="true"></#if>
+        <div class="resource-nav  screen <#if modern>modern row<#else>col-12</#if> " >
+                <#if modern>
+                
+                    <label class="col-form-label" style="color:#666">Actions:
+                </label>
+
+                </#if>
+            <ul class="col">
                 <#if persistable??>
 			        <#if editable>
 			            <@makeLink namespace "edit" "edit" "edit" current />
@@ -46,11 +52,14 @@ navigation freemarker macros
 						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
 <#--						<@makeLink "resource" "share/${resource.id?c}" "share" "share" "" false /> -->
 					</#if>
+					<#if editor>
+                        <@makeLink "resource" "admin?id=${resource.id?c}" "admin" "admin" "" false />					
+					</#if>
 			    </#if>
 			    <#nested>
 			</ul>
 		</div>
-		</div>
+<#if !modern>		</div></#if>
 		</#if>
     </#macro>
 

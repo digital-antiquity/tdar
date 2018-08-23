@@ -38,7 +38,7 @@
 
     <#if (totalRecords > 0)>
         <#if !hideFacetsAndSort>
-        <div id="sidebar-left" parse="true" class="options hidden-phone">
+        <div id="sidebar-left" parse="true" class="options d-sm-none d-md-block">
 
             <h2 class="totalRecords">Search Options</h2>
             <ul class="tools media-list ml-0 pl-0">
