@@ -5,7 +5,7 @@
  */
 
 
-const Vue = require("vue").default;
+const Vue = require("vue");
 require("Axios");
 require("jquery");
 require("./vue-selectize");

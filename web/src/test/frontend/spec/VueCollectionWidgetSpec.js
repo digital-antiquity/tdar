@@ -1,5 +1,5 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
-const Vue = require("vue").default;
+const Vue = require("vue");
 describe("Vue-collection-widget.js: collection widget test", function() {
 
     beforeEach(function() {

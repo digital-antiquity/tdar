@@ -76,7 +76,6 @@ module.exports = {
         c3 : "c3",
         d3 : "d3",
         TDAR : "JS/tdar.master",
-        //Vue : 'vue',
         LatLon : 'JS/latLongUtil-1.0',
         L : 'leaflet'
     }) ],
@@ -89,7 +88,8 @@ module.exports = {
             modules : path.join(__dirname, "node_modules"),
             JS : path.resolve(__dirname, 'src/main/webapp/js/'),
             Components : path.resolve(__dirname, 'src/main/webapp/components/'),
-            Includes : path.resolve(__dirname, 'src/main/webapp/includes/')
+            Includes : path.resolve(__dirname, 'src/main/webapp/includes/'),
+            'vue$': 'vue/dist/vue.esm.js'
         }
 
     // alias: {

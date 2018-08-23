@@ -1,6 +1,5 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
-
-const Vue = require("vue").default;
+const Vue = require("vue");
 const TDAR = require("JS/tdar.master");
 
 describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
@@ -137,15 +136,17 @@ describe("Vue-edit-collection.js: Edit collection resources Vue", function() {
         
         addManagedResources(vapp);
         addUnmanagedResources(vapp);
+        
         expect(vapp.managedAdditions).toHaveLength(2);
         expect(vapp.unmanagedAdditions).toHaveLength(3);
         
         
         vapp.$forceUpdate();
         // make VueJS "tick" or re-render
+        
         Vue.nextTick(function() {
         	var rows = fix.find("#tblToAdd tr");
-        	console.debug(rows);
+        	//console.debug(rows);
         	console.log("There are "+rows.length+" rows ");
             //expect(rows).toHaveLength(5);
           	var row = rows[0];
