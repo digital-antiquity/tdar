@@ -19,7 +19,7 @@
     This collection is not accessible
     
     <#else>
-
+        <@commonCollection.toolbar />
 
         <@commonCollection.descriptionSection/>
 

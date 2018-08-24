@@ -126,7 +126,7 @@ ${vueFilesFallback!'{{ files }}'}
     <label
         class="btn fileinput-button replace-file-button btn btn-sm btn-warning btn-block" :disabled="inputDisabled" :for="fileuploadId" v-if="file.replaceFile == undefined"
         :id="wrapperId" style="width: 6em; text-align: left"> <i
-            class="icon-refresh icon-white"> </i> <span>Replace</span> 
+            <i class="fas fa-sync-alt white"></i> </i> <span>Replace</span> 
             <input :disabled="inputDisabled"
             type="file" name="replaceFile" @change="replaceFileChange"
             :id="fileuploadId" class="replace-file">
@@ -143,13 +143,13 @@ ${vueFilesFallback!'{{ files }}'}
                 class="btn btn-danger delete-button btn-sm btn-block"
                 @click="deleteFile" data-type="DELETE"
                 style="text-align: left">
-                <i class="icon-trash icon-white"></i> <span>Delete</span>
+                <i class="fas fa-trash-alt white"></i> <span>Delete</span>
             </button>
             <button v-if="file.action == 'DELETE'" :disabled="inputDisabled" type="button"
                 class="btn btn-warning delete-button btn-sm btn-block"
                 @click="unDeleteFile" data-type="DELETE"
                 style="text-align: left">
-                <i class="icon-trash icon-white"></i> <span>Undelete</span>
+                <i class="fas fa-trash-alt white"></i> <span>Undelete</span>
             </button>
         </div>
 

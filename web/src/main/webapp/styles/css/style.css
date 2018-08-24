@@ -589,7 +589,7 @@ aside li {
   color: #000;
   margin-top: 15px; }
 
-a {
+a, .bookmark-link, .bookmark-label {
   color: #7a1501; }
 
 .red {
@@ -1062,90 +1062,134 @@ div#ontologyTarget {
   height: initial;
   margin: 0px;
   line-height: 1em;
-  background: none;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  background: #fafafa;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
   margin-bottom: 10px; }
   .resource-nav.modern label {
     float: none;
-    padding: 8px 10px 5px 5px;
+    padding-top: 0px;
+    margin-bottom: 0rem;
+    padding-bottom: 0rem;
+    margin-top: .44rem;
+    margin-left: .5rem;
+    padding-right: .5rem;
     font-weight: 700;
     font-size: 12px;
     line-height: 11px;
     color: #7d7a77;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    border-right: 1px solid #fff; }
-  .resource-nav.modern ul li {
-    float: none;
-    margin-bottom: .2em; }
-    .resource-nav.modern ul li b, .resource-nav.modern ul li a, .resource-nav.modern ul li span.disabled {
+    letter-spacing: 1px; }
+  .resource-nav.modern ul {
+    margin: 0rem;
+    padding: 0rem; }
+    .resource-nav.modern ul li {
       float: none;
-      padding: 8px 5px 5px 5px;
-      font-weight: 700;
-      font-size: 12px;
-      line-height: 11px;
-      color: #7d7a77;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border-right: 1px solid #fff; }
-    .resource-nav.modern ul li a:hover {
-      color: white; }
+      padding: 0px;
+      margin-right: 0px;
+      margin-bottom: .4rem;
+      margin-top: .2rem; }
+      .resource-nav.modern ul li b, .resource-nav.modern ul li a, .resource-nav.modern ul li span.disabled {
+        float: none;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 11px;
+        padding-right: .5rem;
+        padding-left: .5rem;
+        color: #7d7a77;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-right: 1px solid #fff; }
+      .resource-nav.modern ul li a:hover {
+        text-decoration: none;
+        color: black; }
 
-/* resource navigation toolbar */
+/* resource navigation toolbar 
 .resource-nav {
-  height: 40px;
-  margin: 40px 0px 40px 0px;
-  background: #f0eeeb; }
-  .resource-nav ul {
-    position: relative;
-    left: -10px; }
-  .resource-nav ul, .resource-nav li, .resource-nav li {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: inline-block; }
-  .resource-nav li a {
-    float: left; }
-  .resource-nav li span.disabled {
-    display: inline-block; }
-  .resource-nav li a, .resource-nav li b, .resource-nav li span.disabled {
-    font-weight: 700;
-    font-size: 12px;
-    line-height: 11px;
-    color: #7d7a77;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 16px 10px 9px 10px;
-    border-right: 1px solid #fff; }
-  .resource-nav li span.disabled {
-    color: #ccc !important; }
-  .resource-nav li a:hover, .resource-nav li.active a {
-    color: #fff;
-    background: #7a1501;
-    text-decoration: none; }
-  .resource-nav li.disabled a:hover {
-    background-color: inherit !important;
-    color: inherit !important;
-    text-decoration: none; }
-  .resource-nav li.edit a {
-    background-position-y: -40px; }
-  .resource-nav li.delete a {
-    background-position-y: -95px; }
-  .resource-nav li.bookmark a {
-    background-position-y: -150px; }
-  .resource-nav li.un-bookmark a {
-    background-position-y: -300px; }
-  .resource-nav li.disabled.bookmark a {
-    background-position-y: -300px; }
-  .resource-nav li.columns a {
-    background-position-y: -203px; }
-  .resource-nav li.mapping a {
-    background-position: 12px -258px; }
+    height: 40px;
+    margin: 40px 0px 40px 0px;
+    background: #f0eeeb;
+    ul{
+        position:relative;
+        left: -10px;
+    }
+
+    ul, li, li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display:inline-block;
+    }
+
+    li a {
+        float: left;
+    }
+
+    li span.disabled {
+        display: inline-block;
+    }
+
+    li a, li b, li span.disabled {
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 11px;
+        color: #7d7a77;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 16px 10px 9px 10px;
+        border-right: 1px solid #fff;
+    }
+
+    li span.disabled {
+        color: #ccc !important;
+    }
+
+    li a:hover,  li.active a {
+        color: #fff;
+        background: #7a1501;
+        text-decoration: none;
+    }
+
+     li.disabled a:hover {
+        background-color: inherit !important;
+        color: inherit !important;
+        text-decoration: none;
+    }
+
+     li.edit a {
+        background-position-y: -40px;
+    }
+
+     li.delete a {
+        background-position-y: -95px;
+    }
+
+     li.bookmark a {
+        background-position-y: -150px;
+    }
+
+     li.un-bookmark a {
+        background-position-y: -300px;
+    }
+
+     li.disabled.bookmark a {
+        background-position-y: -300px;
+    }
+
+     li.columns a {
+        background-position-y: -203px;
+    }
+
+     li.mapping a {
+        background-position: 12px -258px;
+    }
+}
 
 .lt-ie10 .resource-nav li a {
-  padding: 15px 20px 14px 40px !important; }
-
+    padding: 15px 20px 14px 40px !important;
+}
+*/
 .image-carousel .carousel-indicators li {
   background-color: #ddd; }
 .image-carousel .carousel-control-prev-icon {
@@ -1215,5 +1259,19 @@ b.srt {
 
 .all-caps, .uppercase {
   text-transform: uppercase; }
+
+.resource-nav, #subnavbar.bg-light {
+  border-radius: .25rem; }
+
+h3.downloads {
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem; }
+
+#fileSummaryContainer {
+  border-bottom-left-radius: .25rem;
+  border-bottom-right-radius: .25rem; }
+
+#sidebar-right .beige {
+  border-radius: .25rem; }
 
 /*# sourceMappingURL=style.css.map */

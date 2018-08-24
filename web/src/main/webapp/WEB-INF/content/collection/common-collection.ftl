@@ -78,41 +78,6 @@
 </#macro>
 
 <#macro header>
-    <#if editable>
-    <#local path="${resourceCollection.urlNamespace}"/>
-        <@nav.collectionToolbar "collection" "view">
-            <@nav.makeLink
-            namespace="${path}"
-            action="add?parentId=${id?c}"
-            label="add child collection"
-            name="child_collection"
-            current=current
-            includeResourceId=false
-            disabled=disabled
-            extraClass="hidden-tablet hidden-phone"/>
-
-            <@nav.makeLink
-                namespace="${path}"
-                action="${id?c}/rights"
-                label="permissions"
-                name="rights"
-                includeResourceId=false
-                current=current
-                disabled=disabled
-            extraClass=""/>
-
-        <#if editor && ((resourceCollection.managedResources![])?size > 0) >
-            <@nav.makeLink
-            namespace="${path}/admin/batch"
-            action="${id?c}"
-            label="batch title (beta)"
-            name="batch"
-            current=current
-            disabled=disabled
-            extraClass="hidden-tablet hidden-phone"/>
-        </#if>
-        </@nav.collectionToolbar>
-    </#if>
 
     <div id="divSearchContext" parse="true">
         <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
@@ -145,9 +110,6 @@
 </#macro>
 
 <#macro descriptionSection>
-    <#if editor>
-    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/collection/admin/${id?c}"/>">ADMIN</a></div>
-    </#if>
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.formattedDescription?? || collections??>
         <div class="col-12">
             <#if resourceCollection.parent??><p><b>Part of:</b>
@@ -196,6 +158,45 @@
             </div> -->
             <hr/>
             </#if>
+</#macro>
+<#macro toolbar>
+<div class="col-12">
+    <#if editable>
+    <#local path="${resourceCollection.urlNamespace}"/>
+        <@nav.collectionToolbar "collection" "view">
+            <@nav.makeLink
+            namespace="${path}"
+            action="add?parentId=${id?c}"
+            label="add child collection"
+            name="child_collection"
+            current=current
+            includeResourceId=false
+            disabled=disabled
+            extraClass="hidden-tablet hidden-phone"/>
+
+            <@nav.makeLink
+                namespace="${path}"
+                action="${id?c}/rights"
+                label="permissions"
+                name="rights"
+                includeResourceId=false
+                current=current
+                disabled=disabled
+            extraClass=""/>
+
+        <#if editor && ((resourceCollection.managedResources![])?size > 0) >
+            <@nav.makeLink
+            namespace="${path}/admin/batch"
+            action="${id?c}"
+            label="batch title (beta)"
+            name="batch"
+            current=current
+            disabled=disabled
+            extraClass="hidden-tablet hidden-phone"/>
+        </#if>
+        </@nav.collectionToolbar>
+    </#if>
+</div>
 </#macro>
 
 <#macro resultsSection header="Inside This Collection">
