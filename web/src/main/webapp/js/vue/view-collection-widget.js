@@ -6,7 +6,10 @@
 
 
 const Vue = require("vue/dist/vue.esm.js").default;
-//const axios = require("axios");
+const axios = require("axios");
+const common = require("./../tdar.common.js");
+const core = require("./../tdar.core.js");
+
 require("jquery");
 require("selectize");
 //require("./vue-selectize");
@@ -181,7 +184,6 @@ var _init = function(appId) {
 	    },
     
 	    methods: {
-	    	
 	    	//Helper methods: maybe move to a static library?
 	        _arrayRemove: function(arr, item) {
 	            var idx = arr.indexOf(item);
@@ -191,7 +193,7 @@ var _init = function(appId) {
 	        },
 	        
 	        ellipse : function(value){
-	            return TDAR.common.htmlEncode(TDAR.ellipsify(value, 80))
+	            return common.htmlEncode(core.ellipsify(value, 80))
 	         }, 
 	                 
 	         //"Add to Collection" functions. 
@@ -211,9 +213,7 @@ var _init = function(appId) {
 	            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
 	                Vue.set(this,"managedResource",true);
 	            }
-	
-	            console.debug("Collection list");
-	            console.debug($('#collection-list'));
+
 	            
 	            var $select = $('#collection-list').selectize();
 	            $select[0].selectize.clear();
@@ -270,10 +270,6 @@ var _init = function(appId) {
 	            	console.log("Unmanaged collections: ",response.data.unmanaged.length);
 	                Vue.set(self,'collections',response.data);
 	            }).
-	            then(function(){
-	                console.log("I'm DOING SOMETHING!");
-	            }
-	            ).
 	            catch(function(error){
 	                console.error("An error ocurred getting a list of collections for this resource");
 	                console.error(error);
@@ -375,8 +371,15 @@ var _init = function(appId) {
 	         * Exposed methods
 	         */ 
 	        removeResourceFromCollection: function(collection,section){
+
+	        	if(collection == undefined ){
+	        		console.error("removeResourceFromCollection expected collection to not be an array, but it was null instead");
+	        	}
+	        	
+	        	
 	            Vue.set(this,"changesMade",true);
 	            	console.log("Pending collection removal from "+collection.id+" - "+section);
+	            	
 	            	if(section=='MANAGED'){
 	            		this.managedCollectionsToRemove.push(collection.id);
 	            		this._arrayRemove(this.collections.managed, collection);

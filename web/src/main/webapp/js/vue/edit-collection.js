@@ -4,6 +4,9 @@
 const Vue = require("vue/dist/vue.esm.js").default;
 //const axios = require("axios");
 const datatable = require("./../tdar.datatable");
+const common = require("./../tdar.common");
+const core = require("./../tdar.core");
+
 
 	var _init = function(params) {
 		var enableUnmanagedCollections = false;
@@ -65,8 +68,7 @@ const datatable = require("./../tdar.datatable");
 
 					methods : {
 						ellipse : function(value) {
-							return TDAR.common.htmlEncode(TDAR.ellipsify(value,
-									80))
+							return common.htmlEncode(core.ellipsify(value, 80))
 						},
 
 						search : function(value, array) {
@@ -94,6 +96,14 @@ const datatable = require("./../tdar.datatable");
 						    
 						    console.debug("Table id is : "+tableId);
 							var $dataTable = $(tableId);
+							
+							
+							/**
+							 * Verify that the datatable actually returns the right object. If it doesn't then it probably means that
+							 * the DOM isn't properly loaded. 
+							 * 
+							 */
+							
 							//console.debug("Data table is ");
 							//console.debug($dataTable);
 							

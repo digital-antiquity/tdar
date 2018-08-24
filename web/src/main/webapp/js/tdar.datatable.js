@@ -961,6 +961,23 @@ core.namespace("datatable");
     
 
     function _removePendingChange(id, isManaged, isAddition, $dataTable){
+    	
+    	console.log("Called datatable.removePendingChange");
+    	
+    	
+    	if($dataTable == undefined || $dataTable == null){
+    		console.error("!!! error in _removePendingChange: $dataTable is undefined");
+    		return;
+    	}
+    	else {
+    		/**
+    		 * If the followign debug statement puts out somethign very long ,then its probable that the DOM didn't load correctly. 
+    		 */
+    		
+    		//console.debug("Datatable is ",$dataTable);
+    	}
+    	
+    	
     	var array = "";
     	var btnId = "";
     	
@@ -991,11 +1008,21 @@ core.namespace("datatable");
     	console.log("Id to remove is "+id);
     	console.log("Array key is "+array);
     	
+    	/**
+    	 * if the jQuery selector doesn't return a correct element, then the .data() function will return a null array and it will throw 
+    	 * and error. 
+    	 */
+    	
     	_arrayRemove($dataTable.data(array),parseInt(id));
 
     	var buttonId = "#"+btnId+id;
     	console.log("Reenabling button "+buttonId);
     	$(buttonId).removeAttr("disabled");
+    	
+    	
+    	/**
+    	 * If the jQuery selector is not valid, then the redraw table function won't work correctly. 
+    	 */
     	$dataTable.dataTable().fnDraw();
     }
     
@@ -1425,11 +1452,13 @@ core.namespace("datatable");
         if(arr==undefined){
             console.error("Attempted to remove an element from an array, but the array was undefined");
         }
-        
-        var idx = arr.indexOf(item);
-        if(idx !== -1) {
-            arr.splice(idx, 1);
-        }
+        else {
+	        var idx = arr.indexOf(item);
+	        
+	        if(idx !== -1) {
+	            arr.splice(idx, 1);
+	        }
+    	}
     }
 
 

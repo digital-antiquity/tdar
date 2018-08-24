@@ -69,26 +69,35 @@ require("./tdar.formValidateExtensions");
      * Validate a single form, called out and returning the validator to enable testing 
      */
     var _initForm = function (form) {
-        var $form = $(form);
+ 
+    	var $form = $(form);
         console.log($form.attr('id'));
+        
         var method = $form.data('validate-method');
         var validator;
         console.log(method);
+        
+        
         if (method != undefined) {
+        	console.info("Validation Method is not undefined");
+        	
             var method_ = window[method];
+            
             // FIXME: There has to be a better way to bind these
             if ($.isFunction(window['TDAR']['validate'][method])) {
                 method_ = window['TDAR']['validate'][method];
             }
+
             if ($.isFunction(window[method])) {
                 method_ = window[method];
-            }               
+            } 
+            
             if (method_ != undefined) {
                 // add options based on method ... here's where we implicitly call initBasicForm
                 var options  = method_($form);
                 var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
                 validator = $form.validate(allValidateOptions);
-                console.log("validate: " + method);
+                console.log("validate method is : " + method);
                 $form.data("tdar-validate-status","valid-custom");
                 if (method == 'initBasicForm') {
                     _postValidateBasic($form, validator);
@@ -96,7 +105,8 @@ require("./tdar.formValidateExtensions");
                 if (method == 'initRightsForm') {
                     _postValidateRights($form, validator);
                 }
-            } else {
+            } 
+            else {
                 console.log("validate method specified, but not a function");
                 $form.data("tdar-validate-status","failed-invalid-method");
             }
@@ -105,7 +115,9 @@ require("./tdar.formValidateExtensions");
 
         var allValidateOptions = $.extend({}, _defaultValidateOptions);
         validator = $form.validate(allValidateOptions);
+        
         $form.data("tdar-validate-status","valid-default");
+        
         return validator;
     };
     
@@ -119,20 +131,33 @@ require("./tdar.formValidateExtensions");
     };
 
     var _postValidateBasic =  function($form, validator) {
-        $('.coverageTypeSelect', "#coverageDateRepeatable",$form).each(function (i, elem) {
+    	
+    	console.info("Calling tdar.validate : _postValidateBasic");
+    	
+        $('.coverageTypeSelect', "#coverageDateRepeatable", $form).each(function (i, elem) {
             _prepareDateFields(elem);
         });
+       
+        
+        
+        
+        //TODO: This is causing issues in webpack. I think its the "This" reference causes scoping issues. 
+        // jQuery .delegate may have issues in the context its being used.
         $("#coverageDateRepeatable", $form).delegate(".coverageTypeSelect", "change", function () {
+        	console.debug("finding coverageDateRepeatable");
             _prepareDateFields(this);
         });
 
         var $uploaded = $( '_uploadedFiles', $form);
+        
         if ($uploaded.length > 0) {
             var _validateUploadedFiles = function () {
+            	console.info("called call-back function _validateUploadedFiles");
                 if ($uploaded.val().length > 0) {
                     $("#reminder").hide();
                 }
             };
+            
             $uploaded.change(_validateUploadedFiles);
             _validateUploadedFiles();
         }
@@ -314,10 +339,19 @@ require("./tdar.formValidateExtensions");
      * @private
      */
     var _prepareDateFields = function (selectElem) {
+    	console.info("inside tdar.validate:_prepareDateFields");
+    	   
+        if(selectElem == undefined){
+        	console.error("expected parameter `selectElem` to not be null, but it was");
+        }
+        
         var startElem = $(selectElem).siblings('.coverageStartYear');
         var endElem = $(selectElem).siblings('.coverageEndYear');
         $(startElem).rules("remove");
         $(endElem).rules("remove");
+
+     
+        
         switch ($(selectElem).val()) {
             case "CALENDAR_DATE":
                 $(startElem).rules("add", {
@@ -327,13 +361,16 @@ require("./tdar.formValidateExtensions");
                         return $(endElem).val() != "";
                     }
                 });
+                
                 $(endElem).rules("add", {
                     range: [ -99900, 2100 ],
                     required: function () {
                         return $(startElem).val() != "";
                     }
                 });
+                
                 break;
+                
             case "RADIOCARBON_DATE":
                 $(startElem).rules("add", {
                     range: [ 0, 100000 ],
@@ -342,13 +379,16 @@ require("./tdar.formValidateExtensions");
                         return $(endElem).val() != "";
                     }
                 });
+                
                 $(endElem).rules("add", {
                     range: [ 0, 100000 ],
                     required: function () {
                         return $(startElem).val() != "";
                     }
                 });
+                
                 break;
+                
             case "NONE":
                 $(startElem).rules("add", {
                     blankCoverageDate: {"start": startElem, "end": endElem}
@@ -358,7 +398,7 @@ require("./tdar.formValidateExtensions");
     };
     
     var _initRegForm = function(form) {
-
+    	console.info("Inside tdar.validate:_initRegForm");
         var $form = form;
         //disable double-submit protection if user gets here via backbutton
         var $submit = $form.find(".submittableButtons").prop("disabled", false);

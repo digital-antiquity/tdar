@@ -50,7 +50,6 @@ describe("BalkSpec.js: fileupload suite - root", function(){
 
         afterEach(function() {
             jasmine.Ajax.uninstall();
-            
         });
         
 

@@ -49,8 +49,6 @@ describe("Vue-collection-widget.js: collection widget test", function() {
     vapp.addToCollection();
     
     Vue.nextTick(function() {
-        console.debug("Debugging next app");
-            console.debug(vapp.collections);
         	expect(vapp.collections.unmanaged[0].name).toBe("Test");
     });
 
