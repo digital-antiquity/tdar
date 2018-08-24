@@ -7,6 +7,7 @@
 </head>
 <body>
 
+
 <div id="titlebar" parse="true">
     <h1>
         <#if exploreKeyword?? && exploreKeyword.definition?has_content >

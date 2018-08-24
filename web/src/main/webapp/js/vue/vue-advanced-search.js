@@ -1,6 +1,30 @@
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
 
+    var _value = Vue.component('value', {
+        template : "#value-template",
+        props: {
+            values:[],
+            labelField: 'label',
+            fieldName: 'cb',
+            valueField: 'id',
+            numcols: 2,
+            type:'checkbox',
+            choices: [{label: 'test', id: 1},{label: 'test 2', id: 2},{label: 'test 3', id: 3},{label: 'test 4', id: 4},{label: 'test 5', id: 5},{label: 'test 5', id: 6}]
+        },
+        methods: {
+            subarray: function(start) {
+            var num = Math.ceil(this.choices.length / this.numcols);
+            var init = start * num;
+            var ret =  this.choices.slice(init , init + num);
+            return ret;
+            },
+            collist: function() {
+                return [...Array(this.numcols).keys()];
+            }
+        }
+    });
+
     var _part = Vue.component('part', {
         template : "#search-row-template",
         props : [ "row", "index", "options", "totalrows" ],
