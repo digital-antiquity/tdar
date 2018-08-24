@@ -66,14 +66,12 @@
                             </div>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <a href="" class="nav-link align-middle tdarNavItem">News</a>
-                        </li>
-                        <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
-                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Use <svg class="svgicon svg-icons_chevron nav-chevron">
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Find Data
+                                	 <svg class="svgicon svg-icons_chevron nav-chevron">
                                     <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <h5 class = "ml-4">Use</h5>
+                                    <h5 class = "ml-4">Find Data</h5>
                                     <div class="d-flex flex-row">
                                         <div class="d-flex flex-column">
                                         </div>
@@ -83,12 +81,13 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item mr-sm-3">
+<!--                        <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
-                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Archive <svg class="svgicon svg-icons_chevron nav-chevron">
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects
+                                 <svg class="svgicon svg-icons_chevron nav-chevron">
                                     <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <h5 class = "ml-4">Archive</h5>
+                                    <h5 class = "ml-4">Projects</h5>
                                     <div class="d-flex flex-row">
                                         <div class="d-flex flex-column">
                                         </div>
@@ -98,8 +97,11 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="nav-item mr-sm-3">
+-->                        <li class="nav-item mr-sm-3">
                             <a href="/contribute" class="nav-link align-middle tdarNavItem">Upload</a>
+                        </li>
+                        <li class="nav-item mr-sm-3">
+                            <a href="/contribute" class="nav-link align-middle tdarNavItem">Help</a>
                         </li>
 
                     </ul>

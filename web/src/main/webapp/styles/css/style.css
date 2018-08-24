@@ -1210,4 +1210,10 @@ span.uneditable-input {
 b.srt {
   font-size: 16px; }
 
+.nav-link.align-middle.tdarNavItem {
+  margin-top: -2px; }
+
+.all-caps, .uppercase {
+  text-transform: uppercase; }
+
 /*# sourceMappingURL=style.css.map */
