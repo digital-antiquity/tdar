@@ -924,13 +924,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <div class="row">
     <div class="col-10 offset-2">
         <#nested />
-        <div id="notice" z-index="1000">
-            <h2>Introduction</h2>
-
-            <div id="noticecontent">
-                This is the page for editing metadata associated with ${resource.resourceType.plural}.
-            </div>
-        </div>
     </div>
     </div>
     </div>
@@ -1221,9 +1214,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <li><a class="nav-link"href="#resourceNoteSectionGlide">Notes</a></li>
                     <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
                     <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
- 	    <div class="help mt-3">
-	    <div id="notice" class=" p-1"></div></div> 
-		</div>
 		</div>
     </nav>
     

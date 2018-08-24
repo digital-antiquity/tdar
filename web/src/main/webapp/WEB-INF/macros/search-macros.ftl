@@ -27,7 +27,7 @@
         <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="col" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
 
         <#if authenticated>
-        <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="col-2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
+        <@s.checkboxlist numColumns=3 spanClass="col" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
         </#if>
 
     <h4>Limit by geographic region:</h4>
@@ -45,7 +45,7 @@
 
 
     <h2>Sorting Options and Submit</h2>
-        <@sortFields />
+        <@sortFields "Sort" "form-control" />
     </#macro>
 
     <#macro typeSelected type>
@@ -78,10 +78,10 @@
     </div>
     </#macro>
 
-    <#macro sortFields label="Sort">
+    <#macro sortFields label="Sort" sortClass="">
     <div class="row">
     <label class="col-form-label col-3 mt-0 pt-0 mb-0 pb-0">${label}</label>
-        <select name="sortField" class="col-8" id="sortField">
+        <select name="sortField" class="col-8 ${sortClass}" id="sortField">
         <#list sortOptions as sort>
             <#local type="" />
             <#if sort.name() == 'PROJECT' || sort.name() == 'RESOURCE_TYPE' || sort.name() == "RESOURCE_TYPE_REVERSE">

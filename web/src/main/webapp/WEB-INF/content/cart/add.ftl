@@ -104,7 +104,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 # of Files
                             </th>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer col-2 orderinfo" maxlength=9  />
+                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer col-4 orderinfo" maxlength=9  />
                             </td>
                         </tr>
                         <tr>
@@ -112,7 +112,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 Total File Size (MB)
                             </th>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer col-2 orderinfo" maxlength=9 />
+                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer col-4 orderinfo" maxlength=9 />
                             </td>
                         </tr>
                         <tr>
@@ -258,12 +258,14 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                 <h3>
                     Additional Services
                 </h3>
+                <div class="rounded-border">
                 <p>
                     Our full service digital curation covers everything necessary to migrate your paper library or born-digital files into a discoverable, accessible (with you in control of who gets access), searchable, and preserved digital archive in tDAR. <a href="mailto:info@digitalantiquity.org">Contact us for a quote</a>.
                 </p>
                 <p>
                     Service packages coming soon.
                 </p>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -283,10 +285,10 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 
 
         <div class="row">
-            <div class="col-12 well how-works">
-                <h4>
+            <div class="col-12 well">
+                <h2>
                     Learn How tDAR Works
-                </h4>
+                </h2>
                 <div class="row">
                     <div class="col">
                         <div class="media">

@@ -25,7 +25,7 @@
 <div class="usual">
     <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} >
     <div>
-        <@s.submit id="searchButtonTop" value="Search" cssClass="btn btn-primary pull-right" />
+        <@s.submit id="searchButtonTop" value="Search" cssClass="btn btn-primary float-right" />
         <@search.toolbar />
     </div>
 

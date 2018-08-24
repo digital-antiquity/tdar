@@ -11,9 +11,9 @@
 
 </head>
 <body>
-    <@nav.billingToolbar "${account.urlNamespace}" "view"/>
 
 	<h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
+    <@nav.billingToolbar "${account.urlNamespace}" "view"/>
 
     <@view.pageStatusCallout />
 
@@ -21,7 +21,7 @@
     <p>${account.description!""}</p>
     </#if>
 
-<h3>Overall Usage</h3>
+<h2>Overall Usage</h2>
 <table class="table table-sm table-striped"">
     <tr>
         <th></th>
@@ -63,7 +63,7 @@
     </tr>
 </table>
 
-<h3>Invoices</h3>
+<h2>Invoices</h2>
 <table class="table table-sm table-striped"">
     <tr>
         <th>name</th>
@@ -100,7 +100,7 @@
 
 
 <#if (account.coupons?has_content && account.coupons?size > 0)>
-<h3>Voucher Codes</h3>
+<h2>Voucher Codes</h2>
 <table class="table table-sm table-striped"">
     <tr>
         <th>files</th>
@@ -132,7 +132,7 @@
 </#if>
 <div class="card">
 <div class="card-body">
-<h3 class="card-title"> Create Voucher</h3>
+<h2 class="card-title"> Create Voucher</h2>
 	<p>Voucher codes can be used to allow another tDAR user to use files or space without providing them full access to this account.  Simply create a voucher below by specifying either the number of MB or files <b> To redeem a voucher, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
     <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
         <div class="row">
@@ -172,7 +172,7 @@
 </div>
 </div>
 
-<h3>Who can use this account</h3>
+<h2>Who can use this account</h2>
 <table class="table table-sm table-striped" table-bordered">
     <#list account.authorizedUsers as member>
         <tr>
@@ -184,7 +184,7 @@
 </table>
 
 <#if editor>
-<h3>Account File Settings</h3>
+<h2>Account File Settings</h2>
 <p>
     <b>Files Expire After:</b> ${account.daysFilesExpireAfter}<br/>
     <b>Full Service Enabled:</b> ${account.fullService?c}<br/>
@@ -193,7 +193,7 @@
     
 </#if>
 
-<h3>Resources associated with this account</h3>
+<h2>Resources associated with this account</h2>
 <table class="table table-sm table-striped"">
       <thead class="thead-dark">
 

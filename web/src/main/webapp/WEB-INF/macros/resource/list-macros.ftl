@@ -234,7 +234,7 @@
                     <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i> </#if><#if permissionsCache?has_content && permissionsCache.isManaged(resource.id) == false>[not managed]</#if></@commonr.cartouche>
                     <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
                         <span class='badge badge-secondary all-caps' title="Citation only; this record has no attached files.">        <span class="rs">Citation Only</span></span>
-                        <#elseif resource.resourceType.document>
+                        <#elseif resource.resourceType?has_content && resource.resourceType.document == true >
                         <span class='badge badge-secondary all-caps'><span class="rs">Full-Text</span></span>
                     </#if>
                     <@_listCreators resource />

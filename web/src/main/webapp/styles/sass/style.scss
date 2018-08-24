@@ -277,12 +277,19 @@ header + #hero {
      font-family: "soleil", sans-serif !important;
  }
 
-h2 {
-    font-size: 20px;
-    line-height: 24px;
-    margin-bottom: 10px;
-    margin-top: 7px;
-}
+ h2 {
+     font-size: 20px;
+     line-height: 24px;
+     margin-bottom: 10px;
+     margin-top: 7px;
+ }
+
+ h3 {
+     font-size: 17px;
+     line-height: 20px;
+     margin-bottom: 10px;
+     margin-top: 7px;
+ }
 
 h4 {
 font-size: 14px;
@@ -994,4 +1001,32 @@ h3.downloads {
 
 #sidebar-right .beige {
     border-radius: .25rem;
+}
+
+.rounded-border {
+    border: 1px solid #CCC;
+    padding: .5em;
+    border-radius: .25rem;
+};
+
+table {
+    border-radius: .25rem;
+}
+
+.statusbadge {
+    font-size:50%;
+    position:relative;
+    text-transform:uppercase !important;
+    top:-.3rem;
+    
+    a {
+        color:white;
+    }
+}
+
+
+.moreinfo {
+    font-size:.8em;
+    margin-left:.5em;
+    color:#555;
 }

@@ -219,7 +219,18 @@ TDAR.common = function (TDAR, fileupload) {
         //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
         var formid = $form.attr("id");
         
-
+//        $('[data-toggle="popover"]').popover();
+        $("[data-popover-content]").popover({
+            html : true,
+            content: function() {
+                var content = $(this).attr("data-popover-content");
+                return $(content).html();
+            },
+            title: function() {
+                var title = $(this).attr("data-popover-content");
+                return $(title).children(".popover-heading").html();
+            }
+        });
         //information needed re: existing file uploads - needed by TDAR.upload library
 
         if (props.multipleUpload) {

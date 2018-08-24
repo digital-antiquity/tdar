@@ -433,41 +433,41 @@ View freemarker macros
         <#if sessionData?? && sessionData.authenticated>
         <h2>Administrative Information</h2>
 
-            <@common.resourceUsageInfo />
         <div>
             <dl class="row">
                 <dt class="col-2">
-                <p><strong>Created by</strong></p></dt>
-                <dd class="col-4"><p><a
+                <strong>Created</strong></dt>
+                <dd class="col-4"><a
                         href="<@s.url value="${resource.submitter.detailUrl}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
-                    on ${resource.dateCreated}</#if></p></dd>
+                    on ${resource.dateCreated}</#if></dd>
+                <dt class="col-2">
+                <strong>Last Updated</strong></dt>
+                <dd class="col-4"><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
+                    on ${resource.dateUpdated?date!""}</dd>
                 <#if resource.submitter.id != resource.uploader.id>
                     <dt class="col-2">
-                    <p><strong>Uploaded by</strong></p></dt>
-                    <dd class="col-4"><p><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
-                    </p></dd>
+                    <strong>Uploaded</strong></dt>
+                    <dd class="col-4"><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
+                    </dd>
                 </#if>
                 <#if resource.account?has_content && (administrator || editable) >
                     <dt class="col-2">
-                    <p><strong>Account</strong></p></dt>
-                    <dd class="col-4"><p><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></p></dd>
+                    <strong>Account</strong></dt>
+                    <dd class="col-4"><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></dd>
                 </#if>
 
                 <#if administrator>
                     <dt class="col-2">
-                    <p><strong>Status</strong></p></dt>
-                    <dd class="col-4"><p>${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>
-                        (${resource.previousStatus.label})</#if></p></dd>
+                    <strong>Status</strong></dt>
+                    <dd class="col-4">${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>
+                        (${resource.previousStatus.label})</#if></dd>
                 </#if>
                 <dt class="col-2">
-                <p><strong>Last Updated by</strong></p></dt>
-                <dd class="col-4"><p><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
-                    on ${resource.dateUpdated?date!""}</p></dd>
-                <dt class="col-2">
-                <p><strong>Viewed</strong></p></dt>
-                <dd class="col-4"><p>${resource.transientAccessCount!"0"} time(s)</p></dd>
+                <strong>Viewed</strong></dt>
+                <dd class="col-4">${resource.transientAccessCount!"0"} time(s)</dd>
             </dl>
         </div>
+            <@common.resourceUsageInfo />
 
             <#nested>
             <@rights.resourceCollectionsRights collections=effectiveShares owner=resource.submitter />
@@ -511,11 +511,10 @@ View freemarker macros
 
                 <@_statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
             <#if persistable.status.flaggedForBilling && namespace=='/billing'>
-                This account has been marked as <strong>${persistable.status.label}</strong>, please add funds to it.
+                - please add funds to it.
             <#else>
-                This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of
-                <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>.
-                    <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
+                <#if authorityForDup?has_content> - of
+                <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>
             </#if>
                 </@_statusCallout>
 
@@ -523,8 +522,7 @@ View freemarker macros
     </#macro>
     <#macro _statusCallout onStatus cssClass>
         <#if persistable.status.toString().equalsIgnoreCase(onStatus) >
-        <div class="alert-${cssClass} alert">
-            <p><#nested></p>
+        <div class="badge-${cssClass} badge statusbadge"> ${onStatus}<#nested>
         </div>
         </#if>
     </#macro>

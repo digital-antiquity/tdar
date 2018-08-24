@@ -71,7 +71,8 @@
         </#if>
 	</div>
     <div class="col-12" id="basicInformationSection">
-        <h2>Basic Information</h2>
+        <h2>Basic Information
+           <a tabindex="0" class="moreinfo" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-popover-content="#spanStatusToolTip" ><i class="fas fa-info-circle"></i></a> </h2>
 
         <#if resource.id?? &&  resource.id != -1>
             <@s.hidden name="id"  value="${resource.id?c}" />

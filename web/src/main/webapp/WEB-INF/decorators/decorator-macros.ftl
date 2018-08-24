@@ -210,7 +210,7 @@
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
                       <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h5>
                       <p class="card-text">Contribute documents, datasets, images, and other critical archaeological materials.</p>
-                      <a href="#" class="btn tdarButton">Learn More</a>
+                      <a href="/contribute" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>
@@ -220,7 +220,7 @@
                       <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
                       <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h5>
                       <p class="card-text">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
-                      <a href="#" class="btn tdarButton">Learn More</a>
+                      <a href="http://www.tdar.org/why-tdar/preservation/" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>
@@ -230,7 +230,7 @@
                       <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
                       <h5 class="card-title"><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h5>
                       <p class="card-text">Researchers like you. Uncover knowledge of the past, and preserve and protect resources.</p>
-                      <a href="#" class="btn tdarButton">Learn More</a>
+                      <a href="http://www.tdar.org/using-tdar/" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>

@@ -31,7 +31,7 @@
                 <div class="col-lg-8 col-xl-10">
                     <h4>Upload Resources</h4>
                     <div class="row">
-                        <div class="col-xl-3 col-lg-6">
+                        <div class="col-xl-3 col-lg-6 pl-1 pr-1">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
@@ -40,7 +40,7 @@
                               </div>
                               </div>
                         </div>
-                        <div class="col-xl-3 col-lg-6">
+                        <div class="col-xl-3 col-lg-6 pl-1 pr-1">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
@@ -49,7 +49,7 @@
                         </div>
                         </div>
                         </div>
-                        <div class="col-xl-3 col-lg-6">
+                        <div class="col-xl-3 col-lg-6 pl-1 pr-1">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
@@ -58,7 +58,7 @@
                         </div>
                         </div>
                         </div>
-                        <div class="col-xl-3 col-lg-6">
+                        <div class="col-xl-3 col-lg-6 pl-1 pr-1">
                             <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
@@ -69,14 +69,14 @@
                     </div>
                 </div>
                 </div>
-                <div class="col-lg-4 col-xl-2">
+                <div class="col-lg-4 col-xl-2 pl-1 pr-1">
                     <h4>Organize</h4>
                 <div class="row">
                 <div class="col">
                     <div class="card">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-right: 5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-                            Use <b>Collections</b> organize your resources and manage permissions.
+                            Use <b>Collections</b> to organize your resources and manage permissions.
                              <p class="center"><a href="/collection/add" class="button tdarButton">Create</a></p>
                         </div>
                     </div>

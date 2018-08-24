@@ -23,13 +23,11 @@
     <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true" class="row pl-3">
     	<div class="col-12">
-        <br/><br/>
         <#if !minimal>
             <#if (logoAvailable && ((resourceCollection.properties.whitelabel)!false || ((resourceCollection.properties.customHeaderEnabled)!false) == false)) >
                 <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
             </#if>
             <#if results?has_content>
-            <hr class="light"/>
             <@commonr.renderWorldMap mode="mini" />
             <hr class="light"/>
                 <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="list-unstyled" pictoralIcon=true />
@@ -85,7 +83,7 @@
     </div>
     
 
-    <@view.pageStatusCallout />
+
 
 </#macro>
 

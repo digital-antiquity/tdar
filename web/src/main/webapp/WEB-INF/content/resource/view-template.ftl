@@ -44,10 +44,10 @@
     </p>
 </div>
 
-    <@view.pageStatusCallout />
+    
 
     
-    <h1 class="view-page-title">${resource.title!"No Title"}</h1>
+    <h1 class="view-page-title">${resource.title!"No Title"} <@view.pageStatusCallout /></h1>
     <@nav.toolbar "${resource.urlNamespace}" "view" true>
         <#if resource.resourceType.dataTableSupported && editable>
             <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
