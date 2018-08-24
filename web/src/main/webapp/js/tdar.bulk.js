@@ -25,7 +25,7 @@
     }
     
     var _updateProgress = function () {
-        //console.log("updating progress");
+//        console.log("updating progress...");
         if (gPercentDone >= 100) {
             //console.log("progress at 100. no need to continue");
             return;

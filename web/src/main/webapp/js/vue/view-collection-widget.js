@@ -269,13 +269,13 @@ var _init = function(appId) {
 	            	console.log("Managed collections: ",response.data.managed.length);
 	            	console.log("Unmanaged collections: ",response.data.unmanaged.length);
 	                Vue.set(self,'collections',response.data);
+    	            console.log("This was called? ", called);
 	            }).
 	            catch(function(error){
 	                console.error("An error ocurred getting a list of collections for this resource");
 	                console.error(error);
 	            });
 	            
-	            console.log("This was called? ", called);
 	        },
 	        
 	        _removeResourceFromCollection: function(collectionId,section){
@@ -392,6 +392,7 @@ var _init = function(appId) {
 	        
 	        addToCollection:function(){
 	            var vapp = this;
+                console.log('selected collection:',this.selectedCollection);
 	            if(this.selectedCollection==""){
 	                $("#addToNew").popover('show');
 	                setTimeout(function () {
@@ -503,7 +504,6 @@ var _init = function(appId) {
 	                vapp._addResultsToCollection(this.selectedCollection);
 	             }
 	        },
-	        
 	        updateProgressBar: function(collectionId){
 	            var vapp = this;
 	            
@@ -547,6 +547,7 @@ var _init = function(appId) {
     });
       return app2;
 }
+
 
 module.exports = {
     init: _init,

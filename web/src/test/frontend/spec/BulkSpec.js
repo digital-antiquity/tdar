@@ -16,7 +16,7 @@ describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
     });
 
     it("should work when we call updateProgress", function() {
-        spyOn(TDAR.bulk, "updateProgress");
+        spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
         expect(TDAR.bulk.updateProgress).not.toHaveBeenCalled();
         expect(settings.asyncUrl).toBe('/checkstatus');
