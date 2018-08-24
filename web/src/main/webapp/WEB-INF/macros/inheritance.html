@@ -79,20 +79,19 @@
 
 <div>
         <h5>Creators</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
         <div v-for="(creator, idx) in resource.contentOwners" class="row">
-                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" />
+                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" @deleterow="deleteCreatorRow" />
         </div> 
-          <button class="btn addanother"  @click="addanothercreator" type="button"><i class="icon-plus-sign"></i>add another</button>
+          <button class="btn addanother"  @click="addCreatorRow(resource.contentOwners)" type="button"><i class="icon-plus-sign"></i>add another</button>
         
 </div> 
 <div>
         <h5>Individual and Institutional Roles</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
         <div v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit" class="row">
-                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="creditProxies" />
+                <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="creditProxies" @deleterow="deleteCreatorRow"/>
         </div> 
-          <button class="btn addanother"  @click="addanothercreator" type="button"><i class="icon-plus-sign"></i>add another</button>
+          <button class="btn addanother"  @click="addCreatorRow(resource.activeIndividualAndInstitutionalCredit)" type="button"><i class="icon-plus-sign"></i>add another</button>
         
 </div> 
     
@@ -372,9 +371,13 @@ var cl =  Vue.component('checkboxlist', {
                             this.$refs[ref].enable();
                         }
                     },
-                    addanothercreator: function() {
-                        this.resource.activeIndividualAndInstitutionalCredit.push({creator:{person:{institution:{}}}});
+                    addCreatorRow: function(el) {
+                        el.push({creator:{person:{institution:{}}}});
                         },
+                    deleteCreatorRow: function(el,idx) {
+                        console.log(el, idx);
+                        el.splice(idx,1);
+                    },
                     selectProject: function(val) {
                         console.log("project:", val);
                         if (val == undefined) {

@@ -8,7 +8,7 @@
 <#include "/WEB-INF/macros/creatorwidget.html">
 <#include "/WEB-INF/macros/inheritance.html">
 
-<button type="submit" name="submit">Submit</button>
+<button type="button" name="submit">Submit</button>
 </form>
 <script id="json" type="text/json">
 <#noescape>
