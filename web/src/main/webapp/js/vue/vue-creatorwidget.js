@@ -131,7 +131,12 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     return ret;
                 },
                 deleteRow: function() {
-                    this.$emit("deleterow",this.prefix, this.row);
+                    if (this.row == 0) {
+                        this.reset();
+                        this.$forceUpdate()
+                    } else {
+                        this.$emit("deleterow",this.prefix, this.row);
+                    }
                 },
                 reset: function(type) {
                     if (type == undefined) {

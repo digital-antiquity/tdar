@@ -80,7 +80,7 @@
 <div>
         <h5>Creators</h5>
         <div v-for="(creator, idx) in resource.contentOwners" class="row">
-                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" @deleterow="deleteCreatorRow" />
+                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" @deleterow="deleteCreatorRow" ref='contentOwner'/>
         </div> 
           <button class="btn addanother"  @click="addCreatorRow(resource.contentOwners)" type="button"><i class="icon-plus-sign"></i>add another</button>
         
@@ -89,7 +89,7 @@
         <h5>Individual and Institutional Roles</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
         <div v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit" class="row">
-                <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="creditProxies" @deleterow="deleteCreatorRow"/>
+                <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="creditProxies" @deleterow="deleteCreatorRow" ref='contentCredit'/>
         </div> 
           <button class="btn addanother"  @click="addCreatorRow(resource.activeIndividualAndInstitutionalCredit)" type="button"><i class="icon-plus-sign"></i>add another</button>
         
@@ -373,10 +373,18 @@ var cl =  Vue.component('checkboxlist', {
                     },
                     addCreatorRow: function(el) {
                         el.push({creator:{person:{institution:{}}}});
-                        },
+                        this.$forceUpdate()
+                    },
                     deleteCreatorRow: function(el,idx) {
-                        console.log(el, idx);
-                        el.splice(idx,1);
+                        var arr = this.resource.activeIndividualAndInstitutionalCredit;
+                        if (el == 'authorshipProxies') {
+                            arr = this.resource.contentOwners;
+                        }
+                        console.log(arr, idx);
+                        if (arr.length > 1) {
+                        arr.splice(idx,1);
+                            }
+                        this.$forceUpdate()
                     },
                     selectProject: function(val) {
                         console.log("project:", val);
