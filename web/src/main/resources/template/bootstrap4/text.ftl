@@ -48,6 +48,9 @@
 <#if parameters.title??>
  title="${parameters.title?html}"<#rt/>
 </#if>
+<#if parameters.tooltip??>
+ data-toggle="tooltip" data-placement="top" data-tooltip="${parameters.tooltip}" 
+</#if>
 <#include "/${parameters.templateDir}/${parameters.expandTheme}/css.ftl" />
 <#include "/${parameters.templateDir}/simple/scripting-events.ftl" />
 <#include "/${parameters.templateDir}/simple/common-attributes.ftl" />

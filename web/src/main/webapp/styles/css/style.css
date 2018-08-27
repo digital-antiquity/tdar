@@ -190,7 +190,6 @@ form.leaflet-control-geocoder-form {
 
 /* Error banners are a more attention-grabbing form of user notifications. */
 .error-banner {
-  background: url(../images/caution.gif) 0.2em 0.2em;
   background-repeat: no-repeat;
   background-size: 1.5em;
   margin-top: 3em;
@@ -815,6 +814,9 @@ header .welcome-drop a,
     border-width: 16.5px;
     margin-left: -16.5px; } }
 @media (max-width: 768px) {
+  #sidebar-right {
+    background-image: none; }
+
   #home #hero h2 {
     font-size: 3.5rem; }
 
@@ -1066,7 +1068,7 @@ div#ontologyTarget {
 /***** NAV *******/
 .resource-nav.modern {
   height: initial;
-  margin: 0px;
+  margin-top: 1em;
   line-height: 1em;
   background: #fafafa;
   border-top: 1px solid #ddd;
@@ -1107,6 +1109,8 @@ div#ontologyTarget {
         text-transform: uppercase;
         letter-spacing: 1px;
         border-right: 1px solid #fff; }
+      .resource-nav.modern ul li a {
+        color: #7a1501; }
       .resource-nav.modern ul li a:hover {
         text-decoration: none;
         color: black; }
@@ -1300,5 +1304,13 @@ table {
   font-size: .8em;
   margin-left: .5em;
   color: #555; }
+
+.popover {
+  max-width: 676px !important; }
+  .popover h3 {
+    margin-top: 0px !important; }
+
+.results form h2 {
+  margin-top: 1.8rem !important; }
 
 /*# sourceMappingURL=style.css.map */

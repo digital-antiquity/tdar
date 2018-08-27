@@ -23,7 +23,6 @@ ${parameters.groupLabel?html}<#t/>
  <span class="required">*</span><#t/>
 </#if>
 ${parameters.labelseparator?default("")?html}<#t/>
-<#include "/${parameters.templateDir}/xhtml/tooltip.ftl" /> 
 </label><#t/>
 </#if>
 <#if parameters.labelposition?exists && parameters.labelposition.equalsIgnoreCase('top')>

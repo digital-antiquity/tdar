@@ -28,7 +28,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#local _resourceCollections = [blankShare] />
     </#if> 
     
-    <h3>Collection Membership</h3>               
+    <h3>Collection Membership <@helptext.info title="Collection Membership" contentDiv="#divResourceCollectionListTips" /></h3>               
 
     <#if (list?has_content && list?is_collection && (list?size!0) > 0 )>
         <#local _resourceCollections = list />
@@ -36,7 +36,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     
     <@helptext.resourceCollection />
     
-    <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
+    <div>
         <#if (ableToAdjustPermissions?? && ableToAdjustPermissions) || resource.resourceType.project || rightsPage!false >
             <div id="${prefix}Table" class="form-group row repeatLastRow" addAnother="add another ${label}">
                 <label class="col-form-label col-2">${label}</label>
@@ -128,15 +128,14 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited sectionId='#divSpatialInformation' />
         <div id="divSpatialInformation">
 
-            <div data-tiplabel="Spatial Terms: Geographic"
-                 data-tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;.">
+            <div>
                 <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' "GeographicKeyword" /> 
             </div>
             <@helptext.geo />
-            <h4>Geographic Region</h4>
+            <h4>Geographic Region <@helptext.info title="Enter Coordinates" contentDiv="#divManualCoordinateEntryTip" /></h4>
 
         <div id='large-map' style="height:300px" class="leaflet-map-editable col-12" data-search="true">
-            <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
+            <div id="divManualCoordinateEntry" class="latlong-fields">
                 <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
                 <div id='explicitCoordinatesDiv' style='text-align:center;'>
                     <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;">
@@ -202,8 +201,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h2 id="temporalInfoSectionLabel">Temporal Coverage</h2>
         <@_inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited sectionId='#divTemporalInformation' />
         <div id="divTemporalInformation">
-            <div data-tiplabel="Temporal Terms"
-                 data-tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
+            <div data-tooltip="Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
                 <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' "TemporalKeyword" true "add another temporal keyword" />
             </div>
             <@_coverageDatesSection />
@@ -214,9 +212,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- emit the coverage dates section (temporal coverage, temporal keywords) -->
     <#macro _coverageDatesSection>
         <@helptext.coverageDates />
-    <div class="form-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date" data-tiplabel="Coverage Dates"
-         data-tooltipcontent="#coverageDatesTip">
-        <label class="col-form-label">Coverage Dates</label>
+    <div class="form-group repeatLastRow" id="coverageDateRepeatable" data-add-another="add another coverage date">
+        <label class="col-form-label">Coverage Dates <@helptext.info title="Coverage Dates" contentDiv="#coverageDatesTip" /></label>
 
         <#list coverageDates as coverageDate>
             <#if coverageDate??>
@@ -250,8 +247,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- emit the "general keywords" repeatable fields -->
     <#macro generalKeywords showInherited=true>
     <div
-            data-tiplabel="General Keywords" class="col-12"
-            data-tooltipcontent="Keyword list: Select the artifact types discussed in the document.">
+             class="col-12" data-tooltip="Add additional keywords for this resource">
         <h2 id="generalInfoSectionLabel">General Keywords</h2>
         <@_inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited sectionId='#divOtherInformation'/>
         <div id="divOtherInformation">
@@ -265,8 +261,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
  -->
     <#macro siteKeywords showInherited=true divTitle="Site Information">
         <@helptext.siteName />
-    <div id="siteSection" data-tooltipcontent="#siteinfohelp" class="col-12">
-        <h2 id="siteInfoSectionLabel">${divTitle}</h2>
+    <div id="siteSection" class="col-12">
+        <h2 id="siteInfoSectionLabel">${divTitle} <@helptext.info title="Site Information" contentDiv="#siteinfohelp"/></h2>
         <@_inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited sectionId='#divSiteInformation'/>
         <div id="divSiteInformation">
             <@keywordRows "Site Name / Number" siteNameKeywords 'siteNameKeywords' "SiteNameKeyword" />
@@ -291,7 +287,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     @requires materialKeywordIds:list<long>  list of ids corresponding to checkboxes that chould be "checked"
  -->
     <#macro materialTypes showInherited=true>
-    <div data-tooltipcontent="#materialtypehelp" class="col-12">
+    <div class="col-12">
         <@helptext.materialType />
         <h2 id="materialInfoSectionLabel">Material Types</h2>
         <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited sectionId='#allMaterialInformation' />
@@ -313,7 +309,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     @requires  approvedCultureKeywords:list<Keyword>
  -->
     <#macro culturalTerms showInherited=true inline=false>
-    <div data-tooltipcontent="#culturehelp" class="col-12">
+    <div class="col-12">
         <@helptext.cultureTerms />
         <h2 id="culturalInfoSectionLabel">${culturalTermsLabel!"Cultural Terms"}</h2>
         <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited sectionId='#divCulturalInformation'/>
@@ -337,7 +333,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     @requires  investigationTypeIds:list<long>
  -->
     <#macro investigationTypes showInherited=true >
-    <div data-tiplabel="Investigation Types" data-tooltipcontent="#investigationtypehelp" id="investigationSection" class="col-12">
+    <div id="investigationSection" class="col-12">
         <h2 id="investigationInfoSectionLabel">Investigation Types</h2>
         <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited sectionId='#divInvestigationInformation' />
         <div id="divInvestigationInformation">
@@ -358,15 +354,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@helptext.accessRights />
 
 
-    <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
+    <div id="divAccessRights">
         <#if header>
-                <h2><a name="accessRights"></a>Access Rights</h2>
+                <h2><a name="accessRights"></a>Access Rights <@helptext.info title="Access Rights" contentDiv="${tipsSelector}" /></h2>
         </#if>
     <#--<#if type == 'resource'>-->
         <#--<@resourceCollectionSection prefix="shares" label="Shares" list=shares />-->
     <#--</#if>-->
 
-        <h3>${label}</h3>
+        <h3>${label}<#if !header><@helptext.info title="Access Rights" contentDiv="${tipsSelector}" /></#if></h3>
 
         <div id="accessRightsRecords" class="<#if (ableToUploadFiles?? && ableToUploadFiles) || (!ableToUploadFiles?has_content)>repeatLastRow</#if>"
              data-addAnother="add another user">
@@ -470,8 +466,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         element
 -->
     <#macro submit label="Save" fileReminder=true buttonid="submitButton" span="col-9" class="btn-primary submitButton">
-    <div class="errorsection row">
-        <div class="${span}">
+    <div class="errorsection ${span}">
             <#if fileReminder>
                 <div id="reminder" class="">
                     <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
@@ -481,12 +476,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div id="error" class="" style="display:none">
                 <ul></ul>
             </div>
-            <div class="form-actions" id="editFormActions">
+            <div class="form-actions col-12" id="editFormActions">
                 <input type="submit" class='btn ${class} submittableButtons' name="submitAction" value="${label}" id="${buttonid}">
                 <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
                 <#nested>
             </div>
-        </div>
     </div>
 
     <div class="modal hide fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
@@ -579,9 +573,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     @requires resourceNotes:list<ResourceNote>
 -->
     <#macro resourceNoteSection showInherited=true>
-    <div id="resourceNoteSectionGlide" data-tiplabel="Notes" data-tooltipcontent="Use this section to append any notes that may help clarify certain aspects of the resource.  For example,
-    a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document." class="col-12">
-        <h2 id="notesInfoSectionLabel">Notes</h2>
+    <div id="resourceNoteSectionGlide"  class="col-12">
+        <@helptext.notes />
+        <h2 id="notesInfoSectionLabel">Notes <@helptext.info title="Notes" contentDiv="#notesHelpDiv" /></h2>
         <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited sectionId='#resourceNoteSection'/>
         <div id="resourceNoteSection" class="repeatLastRow row">
             <label class="col-form-label col-2">Type / Contents</label>
@@ -618,11 +612,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
       @pram  prefix:string prefix to append to form field 'name' attribute.  This gets passed to @creatorProxyRow
     -->
     <#macro resourceCreators sectionTitle proxies prefix>
-    <div class="col-12" data-tiplabel="${sectionTitle}"
-         id="${prefix}Section"
-         data-tooltipcontent="#divResourceCreatorsTip">
+    <div class="col-12" 
+         id="${prefix}Section">
 
-        <h2 id="${prefix}InfoSectionLabel">${sectionTitle}</h2>
+        <h2 id="${prefix}InfoSectionLabel">${sectionTitle} <@helptext.info title="${sectionTitle}" contentDiv="#divResourceCreatorsTip" /></h2>
         <#nested>
         <div id="${prefix}Table" class="repeatLastRow creatorProxyTable">
             <#list proxies as proxy>
@@ -756,9 +749,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 <#-- emit the custom identifiers section of a resource edit page-->
     <#macro identifiers showInherited=true>
-    <div id="divIdentifiersGlide" class="col-12" data-tiplabel="<@resourceTypeLabel /> Specific or Agency Identifiers" data-tooltipcontent="#divIdentifiersTip">
+    <div id="divIdentifiersGlide" class="col-12">
         <@helptext.identifiers />
-        <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers</h2>
+        <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers<@helptext.info title="Resource Specific or Agency Identifiers" contentDiv="#divIdentifiersTip" /></h2>
         <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited sectionId='#divIdentifiers' />
         <div id="divIdentifiers" class="repeatLastRow">
             <div class="form-group row">
@@ -861,8 +854,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
             </#if>
         <#else>
         <div class="form-group"
-             data-tiplabel="Upload ${typeLabel}"
-             data-tooltipcontent="The metadata entered on this form will be associated with this file. We accept the following formats:
+             data-tooltip="The metadata entered on this form will be associated with this file. We accept the following formats:
                         <@join sequence=validFileExtensions delimiter=", "/>">
             <label for="fileUploadField" class="col-form-label">${typeLabel}</label>
 
@@ -886,9 +878,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         maxUploadFilesPerRecord=maxUploadFilesPerRecord canReplace=(fileProxies?size > 0) siteAcronym=siteAcronym />
 
 
-    <div id="${divId}" class="col-12" data-tiplabel="${uploadLabel}" data-tooltipcontent="#${divId}Help">
+    <div id="${divId}" class="col-12" >
         <@s.hidden name="ticketId" id="ticketId" />
-        <h2>${uploadLabel}</h2>
+        <h2>${uploadLabel} <@helptext.info title="${uploadLabel}" contentDiv="#${divId}Help" /></h2>
 
         <div id="fileuploadErrors" class="fileupload-error-container" style="display:none">
             <div class="alert alert-block">
@@ -1125,8 +1117,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
     <#macro copyrightHolders sectionTitle copyrightHolderProxies >
         <#if config.copyrightMandatory || resource.copyrightHolder?has_content>
             <@helptext.copyrightHoldersTip />
-        <div class="" id="copyrightHoldersSection" data-tiplabel="Primary Copyright Holder" data-tooltipcontent="#divCopyrightHoldersTip">
-            <h2>${sectionTitle}</h2>
+        <div class="" id="copyrightHoldersSection" >
+            <h2>${sectionTitle} <@helptext.info title="Primary Copyright Holder" contentDiv="#divCopyrightHoldersTip" /></h2>
 
             <div id="copyrightHolderTable" class="form-group table creatorProxyTable">
                 <@creatorProxyRow proxy=copyrightHolderProxies proxy_index="" prefix="copyrightHolder" required=true
@@ -1191,7 +1183,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 <#--emit the sub-navmenu of a resource edit page -->
     <#macro subNavMenu>
         <#local supporting = resource.resourceType.supporting >
-    <nav id='subnavbar'  class="bg-light" >
+    <nav id='subnavbar'  class="bg-light d-sm-none d-md-block" >
     <div class=" col-12">
         <p>Jump to Section:</p>
     <ul class="list-unstyled">

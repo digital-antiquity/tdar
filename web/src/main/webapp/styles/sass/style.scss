@@ -350,6 +350,10 @@ header .welcome-drop a,
 }
 
 @media(max-width: 768px) {
+   #sidebar-right {
+      background-image:none;
+   }
+   
   #home
   {
     #hero
@@ -711,7 +715,7 @@ div#ontologyTarget {
 
 .resource-nav.modern {
     height:initial;
-    margin:0px;
+    margin-top:1em;
     line-height:1em;
     background:rgb(250,250,250);
     border-top: 1px solid #ddd;
@@ -758,6 +762,9 @@ div#ontologyTarget {
                 text-transform: uppercase;
                 letter-spacing: 1px;
                 border-right: 1px solid #fff;
+            }
+            a {
+                color:$darkRed;
             }
             a:hover {
                 text-decoration: none;
@@ -1029,4 +1036,17 @@ table {
     font-size:.8em;
     margin-left:.5em;
     color:#555;
+}
+
+.popover {
+    max-width: 676px !important;
+    
+    h3 {
+        margin-top:0px !important;
+    }
+}
+
+
+.results form h2 {
+    margin-top:1.8rem !important;
 }

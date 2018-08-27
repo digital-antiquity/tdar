@@ -1,5 +1,15 @@
 <#escape _untrusted as _untrusted?html>
 
+    <#macro info title="title" contentDiv="" content="">
+     <a tabindex="0" class="moreinfo" role="button" data-toggle="popover" data-trigger="focus" title="${title}" data-popover-content="${contentDiv}" ><i class="fas fa-info-circle"></i></a> 
+    </#macro>
+
+    <#macro notes>
+    <div id="notesHelpDiv" style="display:none">
+    Use this section to append any notes that may help clarify certain aspects of the resource.  For example,
+    a &quot;Redaction Note&quot; may be added to describe the rationale for certain redactions in a document.
+    </div>
+    </#macro>
     <#macro asyncUpload divId="" validFileExtensions=[] multipleFileUploadEnabled=true maxUploadFilesPerRecord=50 canReplace=false siteAcronym="tDAR">
     <div id="${divId}Help" style="display:none">
         <div>
@@ -20,7 +30,7 @@
             <#if canReplace>
                 <h3>Replacing Files</h3>
                 <ol>
-                    <li>In the list of files, locate the row (or file tab) that corresponds to the file you would like to replace.</li>
+                    <li>Locate the row (or file tab) that corresponds to the file you would like to replace.</li>
                     <li>In that row, click on the button labeled "Replace". tDAR will prompt you for a new file.</li>
                     <li>Once the upload is complete, you must save the form to confirm your changes.Click on the "Save" button in the upper right hand portion
                         of the screen.
@@ -31,19 +41,12 @@
             </#if>
 
             <h3>Deleting Files</h3>
-            You can remove files by clicking on the button labeled "Delete". If you change your mind or if you
-            mistakenly clicked on the delete button, do not worry. You can restore the file by clicking the button a
+            You can remove files by clicking on the button labeled "Delete". You can restore the file by clicking the button a
             second time (the button will now be labeled "Undelete").
 
 
             <h3>File Information</h3>
             <dl>
-                <dt>Restriction</dt>
-                <dd><em>Public Files</em> are accessible to all registered ${siteAcronym} users. <em>Confidential</em> and <em>Embargoed</em> files can only be
-                    downloaded by registered ${siteAcronym} users that you specify in the Access Rights section
-                </dd>
-                <dt>Date Created</dt>
-                <dd>The date this file was created. For image files, it is the calendar date when the image was taken, rendered, etc.</dd>
                 <dt>Description</dt>
                 <dd>
                     Additional information specific to this file.
@@ -57,7 +60,6 @@
     <#macro projectInheritance>
     <div tooltipfor="cbInheritingInvestigationInformationhint,cbInheritingSiteInformationhint,cbInheritingMaterialInformationhint,cbInheritingCulturalInformationhint,cbInheritingTemporalInformationhint,cbInheritingOtherInformationhint,cbInheritingSpatialInformationhint"
          class="hidden">
-        <h2>&quot;Inheriting&quot; Project Metadata</h2>
 
         <div>
             <dl>
@@ -79,7 +81,6 @@
     </div>
 
     <div class="glide">
-        <h3>${siteAcronym} project metadata</h3>
 
         <p>
             Projects in ${siteAcronym} contain and help organize a variety of different information resources such as documents,
@@ -97,7 +98,6 @@
 
     <#macro status>
     <div id="spanStatusToolTip" class="hidden">
-        <h2>Status</h2>
         Indicates the stage of a resource's lifecycle and how ${siteAcronym} treats its content.
         <dl>
             <dt>Draft</dt>
@@ -110,6 +110,27 @@
             <dd>The item has been 'deleted' from ${siteAcronym} workspaces and search results, and is considered deprecated.</dd>
         </dl>
     </div>
+    </#macro>
+
+    <#macro basicHelp>
+    <div style="display:none" id="basicHelp">
+            <h5>Status</h5>
+        Indicates the stage of a resource's lifecycle and how ${siteAcronym} treats its content.
+        <dl>
+            <dt>Draft</dt>
+            <dd>The resource is under construction and/or incomplete</dd>
+            <dt>Active</dt>
+            <dd>The resource is considered to be complete.</dd>
+            <dt>Flagged</dt>
+            <dd>This resource has been flagged for deletion or requires attention</dd>
+            <dt>Deleted</dt>
+            <dd>The item has been 'deleted' from ${siteAcronym} workspaces and search results, and is considered deprecated.</dd>
+        </dl>
+         <h5>Title</h5>
+         If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.
+         <h5>Year</h5>
+         Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created.
+         </div>
     </#macro>
 
     <#macro inheritance>
@@ -148,7 +169,6 @@
 
     <#macro manualGeo>
     <div id="divManualCoordinateEntryTip" class="hidden">
-        <h2>Manually Enter Coordinates</h2>
 
         <div>
             Click the Locate button after entering the longitude-latitude pairs in the respective input fields to draw a box on the map and zoom to it.
@@ -175,7 +195,6 @@
 
     <#macro siteName>
     <div class="hidden" id="siteinfohelp">
-        <h2>Site Information</h2>
         Keyword list: Enter site names and select (<a target="_blank" title="click to open view the complete list in a new window" href="${config.siteTypesHelpUrl}">feature
         types</a>)
         discussed in the document. Use the <em>Other</em> field if necessary.
@@ -185,14 +204,12 @@
 
     <#macro materialType>
     <div class="hidden" id="materialtypehelp">
-        <h2>Material Types</h2>
         Keyword list: Select the artifact types discussed in the document.<a href="${config.materialTypesHelpUrl}">view all material types</a>
     </div>
     </#macro>
 
     <#macro cultureTerms>
     <div id="culturehelp" class="hidden">
-        <h2>${culturalTermsLabel!"Cultural Terms"}</h2>
         Keyword list: Select the archaeological &quot;${culturalTermsLabel!"cultures"}&quot; discussed in the document. Use the Other field if needed.
         <a href="${config.culturalTermsHelpUrl}">view all controlled terms</a>
     </div>
@@ -277,8 +294,6 @@
         <dl>
             <dt>Type</dt>
             <dd>Use the toggle at the left to select whether you're adding a Person or Institution</dd>
-            <dt>Add Another</dt>
-            <dd> Use the '+' sign to add fields for either persons or institutions, and use the drop-down menu to select roles</dd>
             <dt>Roles</dt>
             <dd>View <a href="${config.resourceCreatorRoleDocumentationUrl}">All Roles</a></dd>
         </dl>
@@ -344,5 +359,10 @@
     a way that would damage the archaeological resources; and, <em>(2)</em> will give credit to the individual(s) or organization 
     that created the information that you download.
     </#macro>
-
+    <#macro helpBelow text="">
+        <div class="row" style="margin-top:-1em;margin-bottom:1em;">
+        <div class="col-10 offset-2"><span class="form-text text-muted">${text}</span>
+        </div>
+        </div>
+    </#macro>
 </#escape>

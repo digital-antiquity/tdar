@@ -537,7 +537,7 @@
 
 <div id="sidebar-right" parse="true" class="row pl-3">
 	<div class="col-12">
-    <div class="beige white-border-bottom">
+    <div class="beige white-border-bottom d-sm-none d-md-block">
         <div class="iconbox">
             <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${resource.resourceType?lower_case}"></use></svg>
         </div>

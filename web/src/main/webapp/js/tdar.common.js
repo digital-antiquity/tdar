@@ -224,13 +224,25 @@ TDAR.common = function (TDAR, fileupload) {
             html : true,
             content: function() {
                 var content = $(this).attr("data-popover-content");
-                return $(content).html();
+                if (content) {
+                    return $(content).html();
+                }
             },
             title: function() {
                 var title = $(this).attr("data-popover-content");
                 return $(title).children(".popover-heading").html();
             }
         });
+        $("[data-tooltip]").each(function(i,el) {
+            var tip = $(el).data("tooltip");
+            if (tip) {
+            $(el).tooltip({
+            placement:"top",
+            title: tip 
+            });
+            }
+        });
+
         //information needed re: existing file uploads - needed by TDAR.upload library
 
         if (props.multipleUpload) {

@@ -42,6 +42,7 @@ TDAR.contexthelp = (function () {
         } else {
             console.error("unable to bind tooltip - no tooltip element or tooltipcontent found");
         }
+               
         var $notice = $("#notice:visible");
         if ($notice.length > 0) {
             if (ignorePosition == undefined || ignorePosition == false) {
@@ -78,6 +79,7 @@ TDAR.contexthelp = (function () {
         $(form).on("mouseenter focusin", "[data-tooltipcontent]", function () {
             setToolTipContents(this, ignorePosition);
         });
+
     }
 
     return {

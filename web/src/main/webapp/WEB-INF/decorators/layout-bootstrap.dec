@@ -193,7 +193,7 @@ ${head}
         <#if errorWarningSectionVisible >
         <div class="container">
         <div class="row">
-            <div class="alert alert-warning error-banner">
+            <div class="alert alert-warning error-banner col-12">
                 <#if stackTraces?has_content>
                     <div class="error-codes pull-right">
                         <strong><@s.text name="error.action_error_codes"/></strong>
@@ -202,7 +202,7 @@ ${head}
                         </#list>
                     </div>
                 </#if>
-                <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
+                <h2>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h2>
 
                 <div>
                     <@s.actionerror cssClass="action-errors" theme="simple" />

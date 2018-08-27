@@ -26,11 +26,11 @@
 	<#case "checkbox">
 	<#case "checkboxlist">
 	<#case "radio">
-	<#case "submit">
-	button btn
-	<#break>
 	<#case "radiomap">
 	form-check-input
+	<#break>
+	<#case "submit">
+	button btn
 	<#break>
 	<#case "file">
 	form-control-file
