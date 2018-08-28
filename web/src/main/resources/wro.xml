@@ -4,8 +4,6 @@
     <group name='default'>
         <!-- <css>/css/tdar-bootstrap.css</css> -->
         <css>/components/jquery.treeview/jquery.treeview.css</css>
-        <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
-        <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/4/dataTables.bootstrap.css</css>
         <!--  used by jquery.treeview -->
         <js>/includes/jquery.cookie.js</js>
         
@@ -19,9 +17,7 @@
         <js>/js/jquery.FormNavigate.js</js>
         <js>/includes/jquery.watermark-3.1.3.min.js</js>
         <!-- LICENSE: MIT -->
-        <js>/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js</js>
         <!-- LICENSE: BSD /GPL 2.0 -->
-        <js>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js</js>
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/components/jquery.treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->

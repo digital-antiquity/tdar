@@ -284,9 +284,9 @@ TDAR.datatable = function() {
             });
         }
         
-
         // put any user-specified dataTable options that have been specified in the parms into the dataTableOptions
         $.extend(options, dataTableOptions);
+        console.log(options);
 
         $dataTable.dataTable(options);
         _scrollOnPagination();
@@ -624,7 +624,7 @@ TDAR.datatable = function() {
      */
     function fnRenderTitle(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
-        var objResource = oObj.aData;
+        var objResource = oObj;
         var html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
                 '</a>';
         html += ' (ID: ' + objResource.id
@@ -642,8 +642,8 @@ TDAR.datatable = function() {
      *            row object
      * @returns {string} html to place insert into the cell
      */
-    function fnRenderTitleAndDescription(oObj) {
-        var objResource = oObj.aData;
+    function fnRenderTitleAndDescription(a,b,oObj,d) {
+        var objResource = oObj;
         return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.ellipsify(objResource.description, 80)) + '</p>';
     }
 
@@ -661,14 +661,14 @@ TDAR.datatable = function() {
 
         jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
         $.extend($.fn.dataTableExt.oStdClasses, {
-            "sWrapper" : "dataTables_wrapper form-inline"
+            "sWrapper" : "dataTables_wrapper "
         });
 
         var _fnRenderTitle = _options.showDescription ? fnRenderTitleAndDescription : fnRenderTitle;
 
         var aoColumns_ = [ {
             "mDataProp" : "title",
-            fnRender : _fnRenderTitle,
+            render : _fnRenderTitle,
             bUseRendered : false,
             "bSortable" : false
         }, {
@@ -717,7 +717,7 @@ TDAR.datatable = function() {
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
-            "sDom" : "<'row'<'col-6'l><'pull-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>", // no text filter!
+            "sDom" : "<'row'<'col-12'l><'float-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>", // no text filter!
             "sAjaxDataProp" : 'resources',
             "oLanguage": {
                 "sZeroRecords": "No records found. <span id='fltrTxt'>Consider <a id='lnkResetFilters' href='javascript:void(0)'>expanding your search</a></span>"
@@ -1310,61 +1310,127 @@ TDAR.datatable = function() {
         });
     }
 
+    
+    function _getBasicConfig(url, columns, dataArrayName) {
+        var config =  {
+            "processing": true,
+            "serverSide": true,
+            "ordering": false,
+            "searching":false,
+            "info":     true,
+            "columns": columns,
+             "autoWidth": false, 
+            "ajax": {
+                "url": url,
+                "dataType": "jsonp",
+            
+            "data" : function ( d , s ) {
+                console.log(d,s);
+                return {
+                    startRecord: d.start ,
+                    recordsPerPage: d.length ,
+                    term: d.search.value
+                    
+                }
+            },
+            "dataSrc": function ( json ) {
+                if (json.status != undefined) {
+                    json.recordsTotal = json.status.totalRecords;
+                    json.recordsFiltered = json.status.totalRecords;
+                }
+                if (json.totalRecords != undefined) {
+                    json.recordsTotal = json.totalRecords;
+                    json.recordsFiltered = json.totalRecords;
+                }
+                console.log(json);
+                return json[dataArrayName];
+            
+        }}
+
+       }
+        return config;
+    }
+    
     function _initalizeResourceDatasetDataTable(columns, viewRowSupported, resourceId, namespace, dataTableId) {
         jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
         $.extend($.fn.dataTableExt.oStdClasses, {
-            "sWrapper" : "dataTables_wrapper form-inline"
+            "sWrapper" : "dataTables_wrapper"
         });
 
         var offset = 0;
         var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
-        var options = {
-            "sAjaxDataProp" : "results",
-            "sDom" : "<'row'<'col-6'l><'col-3'>r>t<'row'<'col-4'i><'col-5'p>>",
-            "bProcessing" : true,
-            "bServerSide" : true,
-            "bScrollInfinite" : false,
-            "bScrollCollapse" : true,
-            tableSelector : '#dataTable',
-            sPaginationType : "bootstrap",
-            sScrollX : "100%",
-            "sScrollY" : "",
-            "aoColumns" : [],
-            "sAjaxSource" : browseUrl
-        };
+        var size = 0;
+        var cols = [];
+        var th ="";
 
         if (viewRowSupported) {
-            options.aoColumns.push({
-                "bSortable" : false,
-                "sName" : "id_row_tdar",
-                "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
-                "fnRender" : function(obj) {
-                    return '<a href="' + TDAR.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] ) +
-                            '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
-                }
+            cols.push({
+                "data":offset,
+                "targets":offset,
+                "render" : function ( data, type, row, meta ) {
+                    row.unshift("");
+                    console.log(row);
+                    var url =  TDAR.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + row[1] );
+                    return '<a href="' + url + '" title="View row as page...">view row</a></li>';
+                },
             });
             offset++;
+            th = th +  "<th>id</th>";
+
         }
-        ;
-        var size = 0;
-        for ( var col in columns) {
-            if (columns.hasOwnProperty(col)) {
-                size++;
-                options.aoColumns.push({
-                    "bSortable" : false,
-                    "sName" : columns[col].simpleName,
-                    "sTitle" : columns[col].displayName,
-                    "tdarIdx" : size + offset -1,
-                    "fnRender" : function(obj) {
-                        var val = obj.aData[this.tdarIdx];
-                        var str = TDAR.common.htmlEncode(val);
-                        return str;
-                    }
-                });
-            }
+        
+        columns.forEach(function(f) {
+            cols.push({simpleName: f.displayName, "targets":offset,"data": offset });
+            offset++;
+            size++;
+            th = th + "<th>" + f.displayName + "</th>";
+        });
+        console.log(cols);
+        var config = _getBasicConfig(browseUrl, cols, "results");
+//        var options = {
+//            "sAjaxDataProp" : "results",
+//            "sDom" : "<'row'<'col-6'l><'col-3'>r>t<'row'<'col-4'i><'col-5'p>>",
+//            "bProcessing" : true,
+//            "bServerSide" : true,
+//            "bScrollInfinite" : false,
+//            "bScrollCollapse" : true,
+//            tableSelector : '#dataTable',
+//            sPaginationType : "bootstrap",
+//            sScrollX : "100%",
+//            "sScrollY" : "",
+//            "aoColumns" : [],
+//            "sAjaxSource" : browseUrl
+//        };
+
+        var $thead = $("#dataTable thead");
+        if ($thead.length == 0) {
+            $("#dataTable").append("<thead class='thead-dark'>");
+            $thead = $("#dataTable thead");
+        } else {
+            $thead.empty();
         }
+        $thead.append( th);
+//        for ( var col in columns) {
+//            if (columns.hasOwnProperty(col)) {
+//                size++;
+//                config.aoColumns.push({
+//                    "bSortable" : false,
+//                    "sName" : columns[col].simpleName,
+//                    "sTitle" : columns[col].displayName,
+//                    "tdarIdx" : size + offset -1,
+//                    "fnRender" : function(obj) {
+//                        var val = obj.aData[this.tdarIdx];
+//                        var str = TDAR.common.htmlEncode(val);
+//                        return str;
+//                    }
+//                });
+//            }
+//        }
         if (size > 0) {
-            return TDAR.datatable.registerLookupDataTable(options);
+            $("#dataTable").dataTable(config);
+            _scrollOnPagination();
+
+//            return TDAR.datatable.registerLookupDataTable(config);
         }
 
     }

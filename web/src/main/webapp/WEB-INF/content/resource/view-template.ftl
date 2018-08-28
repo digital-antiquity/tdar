@@ -157,12 +157,12 @@
             <p><@view.embargoCheck /></p>
 
             <div class="row">
-                <div class="col-9">
+                <div class="col-12">
                     <table id="dataTable"
                            data-data-table-selector="#table_select"
                            data-default-data-table-id="${dataTable.id?c}"
                            data-resource-id="${resource.id?c}"
-                           class="dataTable table tableFormat table-striped table-bordered"></table>
+                           class="table table-striped"></table>
                 </div>
             </div>
                 <#if config.xmlExportEnabled>
