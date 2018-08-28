@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/helptext.ftl" as helptext>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "../collection/common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
@@ -28,16 +29,16 @@
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
-        <h2>Basic Information</h2>
+        <h2>Basic Information <@helptext.info title="Basic Information"
+             content="Enter a name and description for this collection.  You may also choose a &quot;parent
+    collection&quot; which allows you to inherit all of the access permissions defined by the parent." /></h2>
 
-        <div class="col-12" id="basicInformationSection" data-tiplabel="Basic Information"
-             data-tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent
-    collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
+        <div class="col-12" id="basicInformationSection">
             <#if resourceCollection.id?? &&  resourceCollection.id != -1>
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
             <@edit.hiddenStartTime />
-            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
+            <@s.textfield labelposition='left' label='Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
 
             <div id="parentIdContainer" class="form-group row">
                 <label class="col-form-label col-2">Parent Collection</label>
@@ -54,7 +55,7 @@
                 </div>
             </div>
 
-        <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
+        <@s.textarea rows="4" labelposition='top' label='Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge trim' title="Please enter the description " />
 
         <#if editor>
@@ -90,7 +91,7 @@
 
 
             <#if administrator>
-                <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
+                <@s.textarea rows="4" labelposition='top' label='Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
                 cssClass='resizable input-xxlarge' title="Please enter the description " />
             </#if>
 
@@ -116,7 +117,7 @@
                 <li>Private collections are only viewable to the users specified in the <a href="#accessRights">Access Rights</a> section.</li>
             </ul>
         </div>
-        <div class="glide" data-tiplabel="Browse and Display Options" data-tooltipcontent="#divBrowseOptionsTips">
+        <div class="glide" data-tooltip="#divBrowseOptionsTips">
             <h2>Browse and Display Options</h2>
 
         
@@ -124,13 +125,14 @@
                 <label class="col-form-label col-2">Hide this collection?</label>
                 <div class="col-10">
 					<div class="form-row">
-						<div  class="col-2">    
-		                    <label for="rdoVisibleTrue" class="form-check-label radio "><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
-								class="form-check-input" value="true" <@commonr.checkedif resourceCollection.hidden true /> />Yes</label>
+						<div  class="form-check form-check-inline">    
+								<input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden" class="form-check-input" value="true" <@commonr.checkedif resourceCollection.hidden true />
+		                    /> <label for="rdoVisibleTrue" class="form-check-label  "> Yes</label>
 		                </div>
-						<div  class="col-2">    
-		                    <label for="rdoVisibleFalse" class="radio form-check-label"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
-								class="form-check-input" value="false" <@commonr.checkedif resourceCollection.hidden false /> />No</label>
+						<div  class="form-check form-check-inline">    
+		                    <input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
+								class="form-check-input" value="false" <@commonr.checkedif resourceCollection.hidden false /> />
+		                    <label for="rdoVisibleFalse" class="radio form-check-label"> No</label>
 		                </div>
 	                </div>
                 </div>
@@ -178,21 +180,21 @@
         </ul>
         </div>
 
-        <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="#divResourcesOptionsTips">
-            <h2>Resources</h2>
+        <div class="glide" id="divResourcesSesction">
+            <h2>Resources <@helptext.info content="Share Resources with Users" contentDiv="#divResourcesOptionsTips" /></h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
         
     <#if (resourceCollection.id?? &&  resourceCollection.id != -1 && resourceCollection.size > 0)> 
         <ul class="nav nav-tabs" id="tabs">
-          <li class="active"><a data-toggle="tab" href="#existingResources" id="existingResourceTab">Resources in this collection</a></li>
-          <li><a data-toggle="tab" href="#addResources" id="addResourceTab">Add Resources to this collection</a></li>
+          <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#existingResources" id="existingResourceTab">Resources in this collection</a></li>
+          <li class="nav-item"><a data-toggle="tab" class="nav-link " href="#addResources" id="addResourceTab">Add Resources to this collection</a></li>
         </ul>
         
         <div class="tab-content">
-          <div id="existingResources" class="tab-pane fade in active">
+          <div id="existingResources" class="tab-pane  active">
           
-                   <@s.textfield theme="tdar" name="_tdar.existing.query" id="existing_res_query" cssClass='col-8'
+                   <@s.textfield name="_tdar.existing.query" id="existing_res_query" cssClass='col-8'
                             placeholder="Enter a full or partial title to filter results" />
           
                 <#--The HTML table for resources. -->
@@ -236,7 +238,7 @@
                     </div>
                 </div>
           </div>
-          <div id="addResources" class="tab-pane fade">
+          <div id="addResources" class="tab-pane ">
                 <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="col-12" useUnmanagedCollections=administrator>
                 </@edit.resourceDataTable>
           </div>

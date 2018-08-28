@@ -409,7 +409,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <div id='categoryDivId' class="col-6">
                 <@s.select id='categoryId' name='categoryId'
                 onchange='TDAR.common.changeSubcategory("#categoryId","#subcategoryId")' autocompleteName="sortCategoryId"
-                listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' cssClass="input-block-level" />
+                listKey='id' listValue='name' emptyOption='true' list='%{allDomainCategories}' cssClass="form-control" />
             </div>
             <div id='subcategoryDivId' class="col-6">
                 <@s.select id='subcategoryId' name='subcategoryId'
@@ -931,7 +931,8 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 <#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="col-8" useUnmanagedCollections=false>
 
         <#--you are in a col-9, but assume col-8 so we fit inside well -->
-        <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
+        <div class="card tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
+        	<div class="card-body">
                 <div class="row" >
                     <div class="${span}" >
                         <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='col-8'
@@ -951,7 +952,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 </div>
                             </div>
                     </div>
-                </div>
         <#--End Search box-->
     
                 <div id="divAdvancedFilters${idAddition}" class="collapse">
@@ -959,7 +959,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <div class="col">
                             <label class="" for="project-selector${idAddition}">Project</label>
                             
-                            <select id="project-selector${idAddition}" name="_tdar.project" class="input-block-level">
+                            <select id="project-selector${idAddition}" name="_tdar.project" class="form-control">
                                 <option value="" selected='selected'>All Editable Projects</option>
                                 <#if allSubmittedProjects?? && !allSubmittedProjects.empty>
                                     <optgroup label="Projects">
@@ -991,7 +991,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             -->
                             
                             <div class="">
-                                <select name="_tdar.collection" id="collection-selector${idAddition}" class="input-block-level">
+                                <select name="_tdar.collection" id="collection-selector${idAddition}" class="form-control">
                                     <option value="" <#if (selectedId!-1) == -1>selected='selected'</#if>>All Collections</option>
                                     <@s.iterator value='allResourceCollections' var='rc'>
                                         <option value="${rc.id?c}" title="${rc.name!""?html}"
@@ -1007,13 +1007,13 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <div class="col">
                             <label class="">Status</label>
                             <@s.select theme="tdar" id="statuses${idAddition}" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
-                            list='%{statuses}' cssClass="input-block-level"/>
+                            list='%{statuses}' cssClass="form-control"/>
                         </div>
         
                         <div class="col">
                             <label class="">Resource Type</label>
                             <@s.select theme="tdar" id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
-                            listValue='label' list='%{resourceTypes}' cssClass="input-block-level"/>
+                            listValue='label' list='%{resourceTypes}' cssClass="form-control"/>
                         </div>
                     </div> <#--End row-->
         
@@ -1023,12 +1023,14 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         
                             <div class="">
                                 <@s.select theme="tdar" emptyOption='false' id="sortBy${idAddition}" name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' cssClass="selSortBy"
-                                value="ID_REVERSE" cssClass="input-block-level"/>
+                                value="ID_REVERSE" cssClass="form-control"/>
                             </div>
                         </div>
                         <div class="col">
                         </div>
                     </div>
+                </div>
+                </div>
                 </div>
         </div><#-- end of the search box/advanced search options-->
         

@@ -37,7 +37,7 @@ color: #000;
 margin-top: 15px;
 }
 
-a, .bookmark-link, .bookmark-label {
+a, .bookmark-link, .bookmark-label, .page-link {
     color: $darkRed;
 }
 
@@ -721,6 +721,7 @@ div#ontologyTarget {
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
     margin-bottom: 10px;
+    margin-left:0rem;
     
     label {
         float:none;

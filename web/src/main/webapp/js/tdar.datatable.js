@@ -1,7 +1,7 @@
 TDAR.namespace("datatable");
 TDAR.datatable = function() {
     "use strict";
-
+    var link = true;
     /**
      * Register a new dtatable control. By default, the datatable populates with resources editable by the user. Most of the initialization options required by
      * the $.dataTable are handled by this function. However, you can override these functions by via the options argument in the constructor
@@ -214,7 +214,9 @@ TDAR.datatable = function() {
         
         //this can be done more elegatly, so the callback can be set in the options. 
         if (options.clickableRows){
-        	
+        	if (options.isClickable) {
+        	    link = false;
+        	}
         	dataTableOptions["fnRowCallback"] = function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
                 // determine whether the user selected this item already (if so check the box)
                 //var $button = $(nRow).find('button');
@@ -225,7 +227,6 @@ TDAR.datatable = function() {
                 $(nRow).attr("id","row-"+id);
                 return nRow;
             };
-        	
             //The $dataTable is the jQuery object for the table. 
             //The click event listener is being bound to all the buttons in the table. 
             $dataTable.on('click', 'button' , function() {
@@ -340,9 +341,9 @@ TDAR.datatable = function() {
      */
     function fnRenderIdColumn(oObj) {
         // in spite of the name, aData is an object corresponding to the current row
-        var id = oObj.aData.id;
+        var id = oObj.id;
         var attrId = "cbEntityId_" + id;
-        var resourceType = oObj.aData.resourceType;
+        var resourceType = oObj.resourceType;
         // not all things are resourceTypes that are rendered like this
         if (resourceType) {
             resourceType = resourceType.toLowerCase();
@@ -362,7 +363,7 @@ TDAR.datatable = function() {
      */
     function fnRenderRemoveButtonsColumn(oObj) {
         // in spite of the name, aData is an object corresponding to the current row
-        var id = oObj.aData.id;
+        var id = oObj.id;
 
         var mAttrId = "btnRemoveManagedId_" + id;
         var uAttrId = "btnRemoveUnmanagedId_" + id;
@@ -383,8 +384,8 @@ TDAR.datatable = function() {
         var isBeingRemovedFromManaged 	= removeManagedIds.indexOf(id) > -1;
         var isBeingAddedToUnmanaged		= addUnmanagedIds.indexOf(id) > -1;
         
-        var isManaged   = oObj.aData.isManagedResult   == true;
-        var isUnmanaged = oObj.aData.isUnmanagedResult == true;
+        var isManaged   = oObj.isManagedResult   == true;
+        var isUnmanaged = oObj.isUnmanagedResult == true;
         
         var output = '<div class="btn-group">';
         var closingUl = "";
@@ -458,7 +459,7 @@ TDAR.datatable = function() {
         // in spite of the name, aData is an object corresponding to the current row
         
     	var oSettings = oObj.oSettings;
-    	var aData = oObj.aData;
+    	var aData = oObj;
     	var id = aData.id;
         var mAttrId = "btnAddManagedId_" + id;
         var uAttrId = "btnAddUnmanagedId_" + id;
@@ -544,7 +545,7 @@ TDAR.datatable = function() {
         // in spite of the name, aData is an object corresponding to the current row
         
     	var oSettings = oObj.oSettings;
-    	var aData = oObj.aData;
+    	var aData = oObj;
     	var id = aData.id;
         var mAttrId = "btnAddManagedId_" + id;
         var uAttrId = "btnAddUnmanagedId_" + id;
@@ -583,10 +584,11 @@ TDAR.datatable = function() {
     
     
     
-    function fnRenderStatusColumn(oObj){
-        var id = oObj.aData.id;
-        var managed   = oObj.aData.isManagedResult   == true;
-        var unmanaged = oObj.aData.isUnmanagedResult == true;
+    function fnRenderStatusColumn(a,b,oObj){
+        //console.log(a,b,oObj);
+        var id = oObj.id;
+        var managed   = oObj.isManagedResult   == true;
+        var unmanaged = oObj.isUnmanagedResult == true;
     	
         return (managed ? "Managed " :"") + (unmanaged ? " Unmanaged":"");
     }
@@ -598,11 +600,12 @@ TDAR.datatable = function() {
      * @param oObj
      * @returns {string}
      */
-    function fnRenderAddRemoveColumn(oObj) {
+    function fnRenderAddRemoveColumn(a,b,oObj) {
+        link = false;
         // in spite of the name, aData is an object corresponding to the current row
-        var id = oObj.aData.id;
+        var id = oObj.id;
         var managedAttrId = "btnAddManagedId_" + id;
-        var resourceType = oObj.aData.resourceType;
+        var resourceType = oObj.resourceType;
         // not all things are resourceTypes that are rendered like this
         if (resourceType) {
             resourceType = resourceType.toLowerCase();
@@ -622,11 +625,17 @@ TDAR.datatable = function() {
      *            row object
      * @returns {string} html to place insert into the cell
      */
-    function fnRenderTitle(oObj) {
+    function fnRenderTitle(oObj,b,c) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj;
-        var html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
-                '</a>';
+        if (objResource  == undefined || typeof c === "object") {
+            objResource  = c;
+        }
+        var html = TDAR.common.htmlEncode(objResource.title);
+        if (link == true) {
+            html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
+            '</a>';
+        }
         html += ' (ID: ' + objResource.id
         if (objResource.status != 'ACTIVE') {
             html += " " + objResource.status;
@@ -643,6 +652,7 @@ TDAR.datatable = function() {
      * @returns {string} html to place insert into the cell
      */
     function fnRenderTitleAndDescription(a,b,oObj,d) {
+        //console.log(a,b,oObj,d);
         var objResource = oObj;
         return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.ellipsify(objResource.description, 80)) + '</p>';
     }
@@ -693,7 +703,7 @@ TDAR.datatable = function() {
         	console.log("If a rendering error occurs, it may be because the column is not being rendered in freemarker");
         	aoColumns_.push({
 	        	"mData" : null, 
-	        	fnRender : fnRenderStatusColumn,
+	        	render : fnRenderStatusColumn,
 	        	"bSortable" : false
 	        });
         }
@@ -703,7 +713,7 @@ TDAR.datatable = function() {
         	console.log("If a rendering error occurs, it may be because the column is not being rendered in freemarker");
 	        aoColumns_.push({
 	        	"mData" : null,
-	        	fnRender : _options.enableUnmanagedCollections ? fnRenderAddButtonsColumn : fnRenderAddButtonsColumnManagedOnly,
+	        	render : _options.enableUnmanagedCollections ? fnRenderAddButtonsColumn : fnRenderAddButtonsColumnManagedOnly,
 	        	"bSortable" : false,
 	        });
         }
@@ -841,7 +851,7 @@ TDAR.datatable = function() {
 
         jQuery.fn.dataTableExt.oPagination.iFullNumbersShowPages = 3;
         $.extend($.fn.dataTableExt.oStdClasses, {
-            "sWrapper" : "dataTables_wrapper form-inline"
+            "sWrapper" : "dataTables_wrapper"
         });
 
         var _fnRenderTitle = _options.showDescription ? fnRenderTitleAndDescription : fnRenderTitle;
@@ -873,14 +883,14 @@ TDAR.datatable = function() {
         if(_options.enableUnmanagedCollections){
         	aoColumns_.push({
 	        	"mData" : null, 
-	        	fnRender : fnRenderStatusColumn,
+	        	render : fnRenderStatusColumn,
 	        	"bSortable" : false
 	        });
         }
         
     	aoColumns_.push({
         	"mData" : null,
-        	fnRender : fnRenderRemoveButtonsColumn,
+        	render : fnRenderRemoveButtonsColumn,
         	"bSortable" : false,
         });
         
@@ -1200,7 +1210,7 @@ TDAR.datatable = function() {
 
     function _fnRenderPersonId(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
-        var objResource = oObj.aData;
+        var objResource = oObj;
         var html = '<a href="' + TDAR.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
         return html;
     }
@@ -1221,7 +1231,7 @@ TDAR.datatable = function() {
                 mDataProp : "id",
                 tdarSortOption : 'ID',
                 bSortable : false,
-                fnRender : TDAR.datatable.renderPersonId
+                render : TDAR.datatable.renderPersonId
             }, {
                 sTitle : "First",
                 mDataProp : "firstName",

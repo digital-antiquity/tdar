@@ -1,7 +1,11 @@
 <#escape _untrusted as _untrusted?html>
 
     <#macro info title="title" contentDiv="" content="">
-     <a tabindex="0" class="moreinfo" role="button" data-toggle="popover" data-trigger="focus" title="${title}" data-popover-content="${contentDiv}" ><i class="fas fa-info-circle"></i></a> 
+    	<#local text=contentDiv />
+    	<#if content?has_content>
+    	<#local text=content />
+    	</#if>
+     <a tabindex="0" class="moreinfo" role="button" data-toggle="popover" data-trigger="focus" title="${title}" data-popover-content="${text}" ><i class="fas fa-info-circle"></i></a> 
     </#macro>
 
     <#macro notes>

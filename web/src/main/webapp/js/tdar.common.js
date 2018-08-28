@@ -224,8 +224,10 @@ TDAR.common = function (TDAR, fileupload) {
             html : true,
             content: function() {
                 var content = $(this).attr("data-popover-content");
-                if (content) {
+                if (content && content.startsWith("#")) {
                     return $(content).html();
+                } else {
+                    return content;
                 }
             },
             title: function() {
