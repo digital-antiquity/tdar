@@ -200,7 +200,7 @@
                 <#--The HTML table for resources. -->
                 <div class="row">
                     <div class="col-12">
-                    <table class="display table table-striped table-bordered tableFormat" id="existing_resources_datatable">
+                    <table class="table table-striped" id="existing_resources_datatable">
                             <colgroup>
                                 <col style="width: 10%">
                                 <col style="width: 60%">
@@ -293,6 +293,7 @@
             limitContext: ${((!editor)!true)?string},
             isSelectable: false,
             isClickable: true,
+            collectionClick: true,
             showDescription: false,
             selectResourcesFromCollectionid: $("#metadataForm_id").val()
         });

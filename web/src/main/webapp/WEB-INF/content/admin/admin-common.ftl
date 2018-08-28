@@ -12,7 +12,6 @@
             <a class='dropdown-toggle nav-link' data-toggle='dropdown' href='#'>Statistics <b class='caret'></b></a>
             <ul class='dropdown-menu'>
                 <li class="dropdown-item"><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
-                <li class="dropdown-item"><a href="<@s.url value="/admin/usage/downloads"/>">Download Statistics</a></li>-->
                 <li class="dropdown-item"><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
                 <li class="dropdown-item"><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
             </ul>

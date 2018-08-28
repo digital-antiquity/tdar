@@ -21,8 +21,11 @@
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/components/jquery.treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
-        <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
+        <js>/components/datatables.net/js/jquery.dataTables.min.js</js>
+        <js>/components/datatables.net-bs4/js/dataTables.bootstrap4.js</js>
+        <css>/components/datatables.net-bs4/css/dataTables.bootstrap4.min.css</css>
         <js>/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js</js>
+        <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
         <!--  we use the template for the person autocomplete, we should fix this and then remove it -->
         <js>/components/blueimp-file-upload/js/jquery.iframe-transport.js</js>
         <js>/components/blueimp-file-upload/js/jquery.fileupload.js</js>

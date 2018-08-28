@@ -1037,7 +1037,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#--The HTML table for resources. -->
         <div class="row">
             <div class="${span}">
-            <table class="display table table-striped table-bordered tableFormat" id="resource_datatable${idAddition}">
+            <table class="table table-striped " id="resource_datatable${idAddition}" style="width:100%">
                     <colgroup>
                         <#if selectable || clickable>
                             <col style="" />

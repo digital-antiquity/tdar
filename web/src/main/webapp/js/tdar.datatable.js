@@ -16,6 +16,10 @@ TDAR.datatable = function() {
      * @returns {*|jQuery|HTMLElement} reference to the datatable widget created by this element.
      */
     function _registerLookupDataTable(parms) {
+        $.extend($.fn.dataTableExt.oStdClasses, {
+            "sWrapper" : "dataTables_wrapper "
+        });
+
         _extendSorting();
         // tableSelector, sAjaxSource, sAjaxDataProp, aoColumns, requestCallback, selectableRows
         var doNothingCallback = function() {
@@ -182,7 +186,7 @@ TDAR.datatable = function() {
         
         // if user wants selectable rows, render checkbox in the first column (which we assume is an ID field)
        if (options.selectableRows) {
-            options.aoColumns[0].fnRender = fnRenderIdColumn;
+            options.aoColumns[0].render = fnRenderIdColumn;
             options.aoColumns[0].bUseRendered = false;
             
             dataTableOptions["fnRowCallback"] = function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
@@ -214,10 +218,11 @@ TDAR.datatable = function() {
         
         //this can be done more elegatly, so the callback can be set in the options. 
         if (options.clickableRows){
-        	if (options.isClickable) {
-        	    link = false;
-        	}
-        	dataTableOptions["fnRowCallback"] = function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
+            if (options.isClickable) {
+                link = false;
+            }
+
+            dataTableOptions["fnRowCallback"] = function(nRow, obj, iDisplayIndex, iDisplayIndexFull) {
                 // determine whether the user selected this item already (if so check the box)
                 //var $button = $(nRow).find('button');
                 //var btnId = $button.prop('id');
@@ -229,6 +234,63 @@ TDAR.datatable = function() {
             };
             //The $dataTable is the jQuery object for the table. 
             //The click event listener is being bound to all the buttons in the table. 
+
+            if (options.collectionClick) {
+                $dataTable.on('click', 'button' , function() {
+                    console.log("Binding add/remove button event handlers");
+                    var $elem = $(this); // 'this' is a button
+                    var btnId = $elem.prop('id'); //Gets the button ID
+                    var btnName = btnId.substring(0,btnId.lastIndexOf("_")); //parse out the
+                    var id = parseInt(btnId.substring(btnId.lastIndexOf("_")+1));
+                    var objRowData = $dataTable.fnGetData($elem.parents('tr')[0]); 
+                    
+                    var mode = $elem.val(); //The value attribute has what the button is used for. 
+            
+                    
+                    //The basic function of the a button click is to 
+                    // 1) Add the ID of the resource to the Table's data object
+                    // 2) Invoke the callback method of the row (Add managed/unmanaged)
+                    // 3) Disable the button so it cant be clicked.
+                    
+                    switch(mode){
+                        case "addUnmanaged":
+                            _arrayAdd($dataTable.data('toAddUnmanaged'),id);
+                            options.rowSelectionCallback(id, objRowData, true, false);
+                            $elem.attr("disabled", "disabled");
+                            break;
+                        case "addManaged":
+                            _arrayAdd($dataTable.data('toAddManaged'),id);
+                            options.rowSelectionCallback(id, objRowData, true, true);
+                            $elem.attr("disabled", "disabled");
+                            break;
+                        case "addBoth":
+                            _arrayAdd($dataTable.data('toAddManaged'),id);
+                            _arrayAdd($dataTable.data('toAddUnmanaged'),id);
+                            options.rowSelectionCallback(id, objRowData, true, true);
+                            options.rowSelectionCallback(id, objRowData, true, false);
+                            $elem.attr("disabled", "disabled");
+                            break;
+                            
+                        case "removeUnmanaged":
+                            _arrayAdd($dataTable.data('toRemoveUnmanaged'),id);
+                            options.rowSelectionCallback(id, objRowData, false, false);
+                            $elem.attr("disabled", "disabled");
+                            break;
+                        case "removeManaged":
+                            _arrayAdd($dataTable.data('toRemoveManaged'),id);
+                            options.rowSelectionCallback(id, objRowData, false, true);
+                            $elem.attr("disabled", "disabled");
+                            break;
+                        case "removeBoth":
+                            _arrayAdd($dataTable.data('toRemoveManaged'),id);
+                            _arrayAdd($dataTable.data('toRemoveUnmanaged'),id);
+                            options.rowSelectionCallback(id, objRowData, false, false);
+                            options.rowSelectionCallback(id, objRowData, false, true);
+                            $elem.attr("disabled", "disabled");
+                            break;
+                    }
+                });    
+            }
             $dataTable.on('click', 'button' , function() {
             	console.log("Binding add/remove button event handlers");
             	var $elem = $(this); // 'this' is a button
@@ -287,7 +349,7 @@ TDAR.datatable = function() {
         
         // put any user-specified dataTable options that have been specified in the parms into the dataTableOptions
         $.extend(options, dataTableOptions);
-        console.log(options);
+        //console.log(options);
 
         $dataTable.dataTable(options);
         _scrollOnPagination();
@@ -339,7 +401,7 @@ TDAR.datatable = function() {
      * @param oObj
      * @returns {string}
      */
-    function fnRenderIdColumn(oObj) {
+    function fnRenderIdColumn(a,b,oObj) {
         // in spite of the name, aData is an object corresponding to the current row
         var id = oObj.id;
         var attrId = "cbEntityId_" + id;
@@ -633,8 +695,8 @@ TDAR.datatable = function() {
         }
         var html = TDAR.common.htmlEncode(objResource.title);
         if (link == true) {
-            html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
-            '</a>';
+            html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'><b>' + TDAR.common.htmlEncode(objResource.title) +
+            '</b></a>';
         }
         html += ' (ID: ' + objResource.id
         if (objResource.status != 'ACTIVE') {
@@ -654,7 +716,7 @@ TDAR.datatable = function() {
     function fnRenderTitleAndDescription(a,b,oObj,d) {
         //console.log(a,b,oObj,d);
         var objResource = oObj;
-        return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.ellipsify(objResource.description, 80)) + '</p>';
+        return fnRenderTitle(oObj) + '<br /> <span>' + TDAR.common.htmlEncode(TDAR.ellipsify(objResource.description, 80)) + '</span>';
     }
 
     /**
@@ -1208,7 +1270,7 @@ TDAR.datatable = function() {
         jQuery.fn.dataTableExt.oSort['tdar-currency-desc'] = _fnCurrencySortDesc;
     }
 
-    function _fnRenderPersonId(oObj) {
+    function _fnRenderPersonId(a,b,oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj;
         var html = '<a href="' + TDAR.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
@@ -1218,8 +1280,7 @@ TDAR.datatable = function() {
         var settings = {
             tableSelector : '#dataTable',
             sAjaxSource : TDAR.uri() + 'api/lookup/person',
-            "sDom" : "<'row'<'col-6'l><'col-6'f>r>t<'row'<'col-4'i><'col-5'p>>",
-            sPaginationType : "bootstrap",
+            "sDom" : "<'row'<'col-6'l><'col-6'f>r>t<'row'<'col-7'i><'col-5'p>>",
             "bLengthChange" : true,
             "bFilter" : true,
             sAjaxDataProp : 'people',
@@ -1379,7 +1440,7 @@ TDAR.datatable = function() {
                 "targets":offset,
                 "render" : function ( data, type, row, meta ) {
                     row.unshift("");
-                    console.log(row);
+//                    console.log(row);
                     var url =  TDAR.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + row[1] );
                     return '<a href="' + url + '" title="View row as page...">view row</a></li>';
                 },
@@ -1395,7 +1456,7 @@ TDAR.datatable = function() {
             size++;
             th = th + "<th>" + f.displayName + "</th>";
         });
-        console.log(cols);
+//        console.log(cols);
         var config = _getBasicConfig(browseUrl, cols, "results");
 //        var options = {
 //            "sAjaxDataProp" : "results",

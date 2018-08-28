@@ -112,9 +112,13 @@
     </table>
 </div>
 
-<div class="glide">
+<div class="row">
     <h3>Registered Users</h3>
-    <table id="dataTable" class="tableFormat"></table>
+    <div class="col-12">
+    <table id="dataTable" class="table table-striped" style="width:100%">
+        <thead class="thead-dark"></thead>
+    </table>
+</div>
 </div>
 <script>
 $(document).ready(function () {

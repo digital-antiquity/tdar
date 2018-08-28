@@ -148,6 +148,7 @@
             <a class="dropdown-item" href="/browse/explore">Explore</a>
             <a class="dropdown-item" href="/search">Search</a>
             <a class="dropdown-item" href="/workspace/list">Integrate</a>
+            <#if editor><a class="dropdown-item" href="/admin/internal">Admin</a></#if>
         </div>
     </div>
     <#else>
