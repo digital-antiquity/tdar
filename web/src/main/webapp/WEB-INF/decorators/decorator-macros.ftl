@@ -13,7 +13,7 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
                     </div>
-                    <@searchform />
+                    <@searchform false />
                 </div>
 
 
@@ -31,7 +31,7 @@
                     </div>
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <@searchform />
+                            <@searchform true />
                         </li>
                     </ul>
                 </div>
@@ -157,14 +157,17 @@
     </#if>
 </#macro>
 
-<#macro searchform>
+<#macro searchform topRight=false>
                     <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
                         <div class="input-group">
                             <input type="hidden" name="_tdar.searchType" value="simple">
-                            <input class="form-control form-control-sm border-right-0 border" type="search" placeholder="Search..."name="query">
+                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..."name="query">
                             <span class="input-group-append">
                                         <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
-                                    </span>
+                            </span>
+                            <#if topRight?has_content && topRight >
+                ${(page.properties["div.divSearchContext"])!""}
+                </#if>
                         </div>
                     </form>
 </#macro>

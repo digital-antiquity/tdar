@@ -32,7 +32,7 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testPageStats() {
         gotoPage("/project/" + EditWebITCase.PROJECT_ID);
-        clickLinkOnPage("ADMIN");
+        clickLinkOnPage("admin");
     }
 
     @Test

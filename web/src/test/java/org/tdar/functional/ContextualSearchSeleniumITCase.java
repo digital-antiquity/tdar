@@ -57,7 +57,7 @@ public class ContextualSearchSeleniumITCase extends AbstractEditorSeleniumWebITC
         gotoPage(path);
 
         // Focus on the searchbox. The contextual search option should appear.
-        WebElementSelection sb = find("input.searchbox").click();
+        WebElementSelection sb = find("input.contextsearchbox").click();
         assertThat(sb, is(not(emptySelection())));
         assertThat(sb, is(visible()));
 

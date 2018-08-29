@@ -56,7 +56,7 @@ TDAR.advancedSearch = (function () {
             name = name.replace(/groups\[(\d+)\](.+)/,"groups["+groupnum+"]$2");
 //            console.log($(".searchType",$controlGroup).attr("name"),name);
             $searchType.attr("name",name);
-            var rownum = $(this).closest(".grouptable").children(".termrow:visible").index($(this).closest(".termrow"));
+            var rownum = $(this).closest(".grouptable").children(0).children(".termrow:visible").index($(this).closest(".termrow"));
             _updateAttributesForRow($(row), groupnum, rownum);
 
             // remove whatever is currently inside of the term-container and replace with the new term
