@@ -158,7 +158,7 @@
 
             <div class="row">
                 <div class="col-12">
-                    <table id="dataTable"
+                    <table id="dataTable" style="width:100%"
                            data-data-table-selector="#table_select"
                            data-default-data-table-id="${dataTable.id?c}"
                            data-resource-id="${resource.id?c}"

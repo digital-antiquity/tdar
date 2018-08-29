@@ -32,7 +32,7 @@
                     <h4>Upload Resources</h4>
                     <div class="row">
                         <div class="col-xl-3 col-lg-6 pl-1 pr-1">
-                            <div class="card">
+                            <div class="card bg-light">
                               <div class="card-body">
                             <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
                             Use <b>Documents</b> to archive reports, books, PDFs, and other textual materials.
@@ -41,7 +41,7 @@
                               </div>
                         </div>
                         <div class="col-xl-3 col-lg-6 pl-1 pr-1">
-                            <div class="card">
+                            <div class="card bg-light">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
                             Use <b>Datasets</b> for data tables, Excel, Access and other tabular data files.
@@ -50,7 +50,7 @@
                         </div>
                         </div>
                         <div class="col-xl-3 col-lg-6 pl-1 pr-1">
-                            <div class="card">
+                            <div class="card bg-light">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
                             Use <b>Images</b> for drawings, photographs, JPEG, TIFF, and other image files.
@@ -59,7 +59,7 @@
                         </div>
                         </div>
                         <div class="col-xl-3 col-lg-6 pl-1 pr-1">
-                            <div class="card">
+                            <div class="card bg-light">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
                             Have a <b>3D Scan</b>, <b>GIS File</b>, or want to create a <b>Coding Sheet</b>, <b>Ontology</b>, or <b>Project</b>?
@@ -73,7 +73,7 @@
                     <h4>Organize</h4>
                 <div class="row">
                 <div class="col">
-                    <div class="card">
+                    <div class="card bg-light">
                               <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-right: 5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
                             Use <b>Collections</b> to organize your resources and manage permissions.
@@ -159,14 +159,8 @@
 <div id="sidebar-right" parse="true">
     <div>
         <div id="myProfile">
-            <hr/>
         </div>
-        <#if contributor>
-            <#if (activeResourceCount != 0)>
-                <@resourcePieChart />
-                <hr/>
-            </#if>
-        <#else>
+        <#if !contributor>
             <div id="myCarousel" class="carousel slide" data-interval="5000" data-pause="hover">
                 <#assign showBuy = (!accounts?has_content) />
               <!-- Carousel items -->
@@ -249,12 +243,6 @@
                 <li><a href="<@s.url value="/resource/add"/>">Add a new Resource</a></li>
             </ol>
         </div>
-    </div>
-</#macro>
-
-<#macro resourcePieChart>
-    <div>
-        <h3>At a glance</h3>
     </div>
 </#macro>
 

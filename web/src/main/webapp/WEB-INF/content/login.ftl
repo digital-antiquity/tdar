@@ -17,10 +17,10 @@ vim:sts=2:sw=2:filetype=jsp
     <strong>Note:</strong>You must be logged-in to download materials. Please log in below, or signup for a free user account.
 </div>
 </#if>
-<h1>Log in to ${siteAcronym}</h1>
 
-<div class="card">
+<div class="card col-4 offset-5">
 <div class="card-body">
+<h1>Log in to ${siteAcronym}</h1>
 <@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal">
 	<@auth.loginWarning />
     <@auth.login>

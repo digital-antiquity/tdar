@@ -931,17 +931,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 <#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="col-8" useUnmanagedCollections=false>
 
         <#--you are in a col-9, but assume col-8 so we fit inside well -->
-        <div class="card tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> 
+        <div class="card tdar-widget div-search-filter bg-light mb-2" id="divSearchFilters${idAddition}"> 
         	<div class="card-body">
-                <div class="row" >
+                <div class="row " >
                     <div class="${span}" >
-                        <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='col-8'
+                    	<div class="input-group">
+                        <@s.textfield  name="_tdar.query" id="query${idAddition}" cssClass='col-8'
                             placeholder="Enter a full or partial title to filter results" />
-                            <div>
-                                <button type="button" class="btn btn-sm pull-left" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
-                                    More/Less options...
+                            <div class="input-append">
+                                <button type="button" class="btn btn-outline-secondary" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
+                                    More options
                                 </button>
-                                
+                                </div>
+                                </div>
                                 <div class="float-right">
                                     <#if limitToCollection>
                                         <label class="checkbox hidden" style="font-weight:normal; ">
@@ -954,10 +956,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     </div>
         <#--End Search box-->
     
-                <div id="divAdvancedFilters${idAddition}" class="collapse">
+                <div id="divAdvancedFilters${idAddition}" class="collapse mt-2">
                     <div class="row">
                         <div class="col">
-                            <label class="" for="project-selector${idAddition}">Project</label>
+                            <label class="col-form-label" for="project-selector${idAddition}">Project</label>
                             
                             <select id="project-selector${idAddition}" name="_tdar.project" class="form-control">
                                 <option value="" selected='selected'>All Editable Projects</option>
@@ -982,7 +984,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         </div>
         
                         <div class="col">
-                            <label class="" for="collection-selector${idAddition}">Collection</label>
+                            <label class="col-form-label" for="collection-selector${idAddition}">Collection</label>
                             <#local selectedId=-1/>
                             <#-- limit to just this collection
                             <#if namespace=='/collection' && (id!-1) != -1>
@@ -1005,24 +1007,24 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         
                     <div class="row">
                         <div class="col">
-                            <label class="">Status</label>
-                            <@s.select theme="tdar" id="statuses${idAddition}" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
+                            <label class="col-form-label">Status</label>
+                            <@s.select  id="statuses${idAddition}" headerKey="" headerValue="Any" name='_tdar.status'  emptyOption='false' listValue='label'
                             list='%{statuses}' cssClass="form-control"/>
                         </div>
         
                         <div class="col">
-                            <label class="">Resource Type</label>
-                            <@s.select theme="tdar" id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
+                            <label class="col-form-label">Resource Type</label>
+                            <@s.select  id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
                             listValue='label' list='%{resourceTypes}' cssClass="form-control"/>
                         </div>
                     </div> <#--End row-->
         
                     <div class="row">
                         <div class="col">
-                            <label class="">Sort by</label>
+                            <label class="col-form-label">Sort by</label>
         
                             <div class="">
-                                <@s.select theme="tdar" emptyOption='false' id="sortBy${idAddition}" name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' cssClass="selSortBy"
+                                <@s.select emptyOption='false' id="sortBy${idAddition}" name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' cssClass="selSortBy"
                                 value="ID_REVERSE" cssClass="form-control"/>
                             </div>
                         </div>

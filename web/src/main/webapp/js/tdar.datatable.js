@@ -1391,7 +1391,7 @@ TDAR.datatable = function() {
             "info":     true,
             "columns": columns,
              "autoWidth": false, 
-            "ajax": {
+             "ajax": {
                 "url": url,
                 "dataType": "jsonp",
             
