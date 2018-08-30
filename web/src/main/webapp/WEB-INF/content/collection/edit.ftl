@@ -197,9 +197,7 @@
                    <@s.textfield name="_tdar.existing.query" id="existing_res_query" cssClass='col-8'
                             placeholder="Enter a full or partial title to filter results" />
           
-                <#--The HTML table for resources. -->
-                <div class="row">
-                    <div class="col-12">
+                
                     <table class="table table-striped" id="existing_resources_datatable">
                             <colgroup>
                                 <col style="width: 10%">
@@ -235,8 +233,6 @@
                             </tbody>
                         </table>
                                     
-                    </div>
-                </div>
           </div>
           <div id="addResources" class="tab-pane ">
                 <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="col-12" useUnmanagedCollections=administrator>

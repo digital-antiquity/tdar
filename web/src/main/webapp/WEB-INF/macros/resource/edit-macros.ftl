@@ -929,12 +929,10 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         as the first column in each row of the data table
 -->
 <#macro resourceDataTable showDescription=true selectable=false clickable=false limitToCollection=false idAddition="" span="col-8" useUnmanagedCollections=false>
-
-        <#--you are in a col-9, but assume col-8 so we fit inside well -->
-        <div class="card tdar-widget div-search-filter bg-light mb-2" id="divSearchFilters${idAddition}"> 
-        	<div class="card-body">
+	<div class="card tdar-widget div-search-filter bg-light mb-2" id="divSearchFilters${idAddition}"> 
+		<div class="card-body">
                 <div class="row " >
-                    <div class="${span}" >
+                    <div class="col-12" >
                     	<div class="input-group">
                         <@s.textfield  name="_tdar.query" id="query${idAddition}" cssClass='col-8'
                             placeholder="Enter a full or partial title to filter results" />
@@ -942,20 +940,19 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                 <button type="button" class="btn btn-outline-secondary" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
                                     More options
                                 </button>
-                                </div>
-                                </div>
-                                <div class="float-right">
-                                    <#if limitToCollection>
-                                        <label class="checkbox hidden" style="font-weight:normal; ">
-                                            <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded${idAddition}">
-                                            Show only selected resources
-                                        </label>
-                                    </#if>
-                                </div>
                             </div>
+                        </div>
+                        <div class="float-right">
+                            <#if limitToCollection>
+                                <label class="checkbox hidden" style="font-weight:normal; ">
+                                    <input type="checkbox" name='_tdar.parentCollectionsIncluded' id="parentCollectionsIncluded${idAddition}">
+                                    Show only selected resources
+                                </label>
+                            </#if>
+                        </div>
                     </div>
-        <#--End Search box-->
-    
+                </div>
+
                 <div id="divAdvancedFilters${idAddition}" class="collapse mt-2">
                     <div class="row">
                         <div class="col">
@@ -986,11 +983,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <div class="col">
                             <label class="col-form-label" for="collection-selector${idAddition}">Collection</label>
                             <#local selectedId=-1/>
-                            <#-- limit to just this collection
-                            <#if namespace=='/collection' && (id!-1) != -1>
-                                <#local selectedId=id/>
-                            </#if>
-                            -->
+                   
                             
                             <div class="">
                                 <select name="_tdar.collection" id="collection-selector${idAddition}" class="form-control">
@@ -1002,7 +995,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                                     </@s.iterator>
                                 </select>
                             </div>
-                        </div><#--End row-->
+                        </div>
                     </div>
         
                     <div class="row">
@@ -1017,7 +1010,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                             <@s.select  id="resourceTypes${idAddition}" name='_tdar.resourceType'  headerKey="" headerValue="All" emptyOption='false'
                             listValue='label' list='%{resourceTypes}' cssClass="form-control"/>
                         </div>
-                    </div> <#--End row-->
+                    </div> 
         
                     <div class="row">
                         <div class="col">
@@ -1032,10 +1025,9 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         </div>
                     </div>
                 </div>
-                </div>
-                </div>
-        </div><#-- end of the search box/advanced search options-->
-        
+		</div>
+    </div>
+
         <#--The HTML table for resources. -->
         <div class="row">
             <div class="${span}">

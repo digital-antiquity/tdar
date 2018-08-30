@@ -18,7 +18,12 @@ vim:sts=2:sw=2:filetype=jsp
 </div>
 </#if>
 
-<div class="card col-4 offset-5">
+<div class="row">
+<div class="col-8">
+<img src="..." class="img-fluid" alt="Responsive image" />
+</div>
+<div class="col-4">
+<div class="card ">
 <div class="card-body">
 <h1>Log in to ${siteAcronym}</h1>
 <@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal">
@@ -33,6 +38,9 @@ vim:sts=2:sw=2:filetype=jsp
 </@s.form>
     <div id="error"></div>
 </div>
+</div>
+</div>
+
 </div>
 <#include "/WEB-INF/notice.ftl">
 
