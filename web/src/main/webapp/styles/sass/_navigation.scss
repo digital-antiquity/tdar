@@ -1,0 +1,58 @@
+nav
+{
+  font-weight: bold;
+
+  .logIn
+  {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    .tdarLink
+    {
+      color: $darkRed;
+    }
+  }
+}
+
+.tdarNav
+{
+  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
+  /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
+  border-bottom:1px solid #CCC; 
+  font-size:14px;
+  
+  .tdarNavItem
+  {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgba(0,0,0,0.5);
+    border-right: $darkRed;
+  }
+
+  .nav-chevron
+  {
+    stroke-width: 5px;
+    stroke: $darkRed;
+  }
+  
+  .show .nav-chevron
+  {
+    transform: rotate(180deg);
+  }
+}
+
+
+
+#tdarNavMenu {
+    margin-left:2em;
+}
+
+
+#tdarNavMenu {
+    margin-right:2em;
+}
+
+.navbar-brand {
+    margin-left:2em;
+    padding-top:0px;
+    padding-bottom:0px;
+}

@@ -388,7 +388,7 @@ bookmark indicator, etc..
                 </#if>
 
             <li class="media bookmark-container">
-                    <i title="bookmark or unbookmark" class="${icon} bookmarkicon icon-push-down mr-3"></i>
+                    <i title="bookmark or unbookmark" class="${icon} bookmarkicon icon-push-down  mr-2 ml-1"></i>
                 <div class="media-body">
                   <a class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}" >
                           <span class="bookmark-label">${label}</span>

@@ -17,12 +17,11 @@ vim:sts=2:sw=2:filetype=jsp
     <strong>Note:</strong>You must be logged-in to download materials. Please log in below, or signup for a free user account.
 </div>
 </#if>
+<#assign number = .now?long % 6 + 1/>
 
-<div class="row">
-<div class="col-8">
-<img src="..." class="img-fluid" alt="Responsive image" />
-</div>
-<div class="col-4">
+<div class="row login-image image${number}">
+<div class="col-8"></div>
+<div class="col-4 ml-0 pl-0 pb-5 pt-5">
 <div class="card ">
 <div class="card-body">
 <h1>Log in to ${siteAcronym}</h1>
@@ -31,8 +30,9 @@ vim:sts=2:sw=2:filetype=jsp
     <@auth.login>
     <@s.hidden name="url" />
     <div class="form-actions">
-        <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
-                <p class="mt-2">Need an account: <a class=" " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a></p>
+                <button type="submit" class="button btn btn-primary input-small submitButton float-right" name="_tdar.Login" id="btnLogin">Login</button>
+                <p class="mt-2 ">Need an account? <a class=" " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a></p>
+                
     </div>
     </@auth.login>
 </@s.form>
@@ -43,6 +43,10 @@ vim:sts=2:sw=2:filetype=jsp
 
 </div>
 <#include "/WEB-INF/notice.ftl">
-
+<script>
+$(document).ready(function() {
+setTimeout(200,function() {$("#loginUsername").focus();});
+});
+</script>
 </body>
 

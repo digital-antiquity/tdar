@@ -240,21 +240,21 @@ navigation freemarker macros
     <#macro shareSection id=id title=resource.title citation=resourceCitation.fullCitation >
         <#assign url="${((request.requestURL)!'')}" />
 
-        <li class="media"><i class="fab fa-twitter icon-push-down mr-3"></i>
+        <li class="media"><i class="fab fa-twitter icon-push-down  mr-2 ml-1"></i>
             <div class="media-body">
                 <a href="https://twitter.com/intent/tweet?url=${url?url}&text=${((title)!'')?url}" target="_blank"
                    onClick="TDAR.common.registerShare('twitter','${currentUrl?js_string}','${id?c}')">Tweet</a>
              </div>
         </li>
     
-        <li class="media"><i class="far fa-thumbs-up icon-push-down mr-3"></i>
+        <li class="media"><i class="far fa-thumbs-up icon-push-down  mr-2 ml-1"></i>
             <div class="media-body">
                     <a  href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${title?url}" target="_blank"
                         onClick="TDAR.common.registerShare('facebook','${currentUrl?js_string}','${id?c}')">Like</a>
             </div>
         </li>
         <li class="media">
-        <i class="far fa-envelope mr-3 icon-push-down"></i>
+        <i class="far fa-envelope  mr-2 ml-1 icon-push-down"></i>
             <div class="media-body">
                 <a <#noescape>href="mailto:?subject=${title?url}&amp;body=${citation!''?trim?url}%0D%0A%0D%0A${url}"</#noescape>
                     onClick="TDAR.common.registerShare('email','${currentUrl?js_string}','${id?c}')">Email</a>

@@ -221,7 +221,7 @@ View freemarker macros
             <h3 class="downloads">Find a Copy</h3>
             <div id="fileSummaryContainer">
                 <ul class="downloads media-list  pl-0 ml-0">
-                    <li class="citationNote"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
+                    <li class="citationNote ml-0 pl-3 pr-3 mr-0"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
                     at ${resource.copyLocation}.</#if></li>
                 </ul>
             </div>
@@ -235,18 +235,18 @@ View freemarker macros
                     <#if ((resource.totalNumberOfFiles!0) > 0) >
 
                         <#if resource.hasConfidentialFiles()>
-                            <li><@embargoCheck/></li></#if>
+                            <li class="ml-0 pl-3 pr-3 mr-0"><@embargoCheck/></li></#if>
                         <@fileInfoSection extended=false; irfile, showAll>
                             <#local showAll = showAll>
-                            <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
-                                <@fileIcon irfile=irfile extraClass="pull-left" />
+                            <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media ml-0 pl-3 pr-3 mr-0">
+                                <@fileIcon irfile=irfile extraClass="mr-2" />
                                 <div class="media-body"><@createFileLink irfile true /></div>
                                 <@translatedFileSection irfile />
                             </li>
                         </@fileInfoSection>
                         <#if (resource.totalNumberOfActiveFiles > 1)>
-                            <li class="archiveLink media">
-                                <i class="iconf page-white-zip pull-left"></i>
+                            <li class="archiveLink media ml-0 pl-3 pr-3 mr-0">
+                                <i class="iconf page-white-zip ml-1 mr-2"></i>
 
                                 <div class="media-body"><@createArchiveFileLink resource=resource /></div>
                             </li>

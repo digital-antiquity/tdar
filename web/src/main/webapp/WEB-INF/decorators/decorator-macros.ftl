@@ -171,12 +171,9 @@
                         </div>
                     </form>
 </#macro>
-<#macro homepageHeader>
 
-<section id="hero">
-  <div class = "container">  
-    <div class="px-5 pb-5 pt-3">
-        <div class="container">
+<#macro searchHero>
+        <div class="container whatcanyoudig-image">
             <h2 >What can you dig up?</h2>
             <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
@@ -190,6 +187,24 @@
                 </div>
             </form>
         </div>
+</#macro>
+
+<#macro imageheader>
+<div class="image">
+    <div class='hero-note'>
+        <h2>Archive a file <br/>for as little as <span class="red">$5</span></h2>
+    </div>
+    <img src="/images/homepage/IMG_4478.jpg" class="img-fluid rounded" alt="Responsive image">
+</div>
+
+</#macro>
+
+<#macro homepageHeader>
+
+<section id="hero">
+  <div class = "container">  
+    <div class="px-0 pb-0 pt-0">
+<@searchHero /> 
     </div>
   </div>
 </section>

@@ -6,6 +6,7 @@ $lightBeige: rgba(227, 224, 216, .2);
 
 
 @import 'homepage';
+@import 'navigation';
 @import 'leaflet';
 @import 'datatables';
 @import 'error';
@@ -16,7 +17,7 @@ $lightBeige: rgba(227, 224, 216, .2);
 @import 'c3graph';
 @import 'view';
 @import 'search-result';
-
+@import 'famfam';
 
 #sidebar-right {
 background: url(/images/r4/bg-cols-right.png) top left repeat-y;
@@ -82,7 +83,6 @@ a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
         display: inline-block;
         background: $darkRed;
         margin: 0 4px 0 0;
-        -webkit-border-radius: 2px;
         border-radius: 2px;
         font-weight: 700;
         font-size: 12px;
@@ -107,47 +107,6 @@ a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
       };
 }
 
-nav
-{
-  font-weight: bold;
-
-  .logIn
-  {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    .tdarLink
-    {
-      color: $darkRed;
-    }
-  }
-}
-
-.tdarNav
-{
-  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
-  /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
-  border-bottom:1px solid #CCC; 
-  font-size:14px;
-  
-  .tdarNavItem
-  {
-    text-transform: uppercase;
-    font-weight: bold;
-    color: rgba(0,0,0,0.5);
-    border-right: $darkRed;
-  }
-
-  .nav-chevron
-  {
-    stroke-width: 5px;
-    stroke: $darkRed;
-  }
-  
-  .show .nav-chevron
-  {
-    transform: rotate(180deg);
-  }
-}
 
 .tdar-slider {
     h4 {a {
@@ -168,73 +127,6 @@ p.lead {
         font-family: ff-tisa-web-pro, serif;
         font-size: 13px;
 
-}
-
-.carousel, .image-carousel.carousel {
-    .carousel-inner {
-        padding-left:6em;
-        padding-right:6em;
-    }
-
-
-    .carousel-control {
-        display: block;
-        width: 24px;
-        height: 38px;
-        background: url(/images/r4/btns-slider.png) 0 0;
-        background-repeat: no-repeat;
-        text-indent: -999em;
-        opacity: 0.5;
-        transition: opacity 0.1s ease-out;
-    }
-
-    .car-btn:hover {
-        opacity: 1;
-    }
-
-    .carousel-control.left {
-        left: 0;
-    }
-
-    .carousel-control.right {
-        right: 0;
-        background-position: -24px 0;
-    }
-    
-
-    /* Changes the position of the indicators */
-    .carousel-indicators {
-        width: 100%;
-        top: auto;
-        bottom: 0px;
-        /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
-        /*margin-right: -19px;*/
-        position: inherit !important;
-        margin: 1em 0 0 0;
-    }
-
-.carousel-indicators .active {
-        background: #333333;
-    }
-
-    .carousel-indicators span {
-        -webkit-border-radius: 10px;
-        -moz-border-radius: 10px;
-        border-radius: 10px;
-        padding: 4px;
-        margin: 1pt;
-        width: 3px;
-        height: 3px;
-        display: inline-block;
-        background: #c0c0c0;
-    }
-    
-}
-
-/* Removes the default 20px margin and creates some padding space for the indicators and controls */
-.image-carousel.carousel {
-    margin-bottom: 10px;
-    padding: 0 40px 10px 40px;
 }
 
 
@@ -269,9 +161,6 @@ header + section {
     margin-top: 3.5em;
 }
 
-header + #hero {
-    margin-top: 0em !important;
-}
 
  .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
      font-family: "soleil", sans-serif !important;
@@ -353,17 +242,6 @@ header .welcome-drop a,
    #sidebar-right {
       background-image:none;
    }
-   
-  #home
-  {
-    #hero
-    {
-      h2
-      {
-        font-size: 3.5rem;
-      }
-    }
-  }
 
   #mdScreenNav
   {
@@ -1087,4 +965,45 @@ table {
     font-size: 13px;
     font-style: italic;
     font-weight: normal;
+}
+
+
+
+.rounded {
+    border-radius:.25em;
+}
+
+
+
+.login-image {
+        background: url(/images/homepage/IMG_4478.jpg) no-repeat center;
+        background-size:cover;
+        border-radius: .25em;
+        .card {
+            background-color:rgba(255,255,255,.85)
+        }
+}
+
+.login-image.image1 {
+    background-image: url(/images/homepage/IMG_4478.jpg)  !important;
+}
+
+.login-image.image2 {
+    background-image: url(/images/homepage/aa-NM-019.jpg)  !important;
+}
+
+.login-image.image3 {
+    background-image: url(/images/homepage/aztec-mask.jpg)  !important;
+}
+
+.login-image.image4 {
+    background-image: url(/images/homepage/chaco-19-1929.jpg)  !important;
+}
+
+.login-image.image5 {
+    background-image: url(/images/homepage/Hopwell-Mound-City_Squier-Davis.jpg)  !important;
+}
+
+.login-image.image6 {
+    background-image: url(/images/homepage/NPSMarchingBearMoundGroup.jpg)  !important;
 }

@@ -558,7 +558,7 @@
         <ul class="media-list pl-0 ml-0">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media">
-                <i class="fas fa-comment-alt icon-push-down mr-3"></i>
+                <i class="fas fa-comment-alt icon-push-down mr-2 ml-1"></i>
                 <div class="media-body">
                         <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
                     <#if !(authenticatedUser.id)?has_content>
@@ -571,7 +571,7 @@
             <@list.bookmarkMediaLink resource />
     
                  <li class="media ">
-                    <i class="fas fa-folder-open icon-push-down mr-3"></i>
+                    <i class="fas fa-folder-open icon-push-down  mr-2 ml-1"></i>
                 <div class="media-body">
                     <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
                 </div>
