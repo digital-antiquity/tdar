@@ -193,7 +193,7 @@ ${head}
         <#if errorWarningSectionVisible >
         <div class="container">
         <div class="row">
-            <div class="alert alert-warning error-banner col-12">
+            <div class="alert alert-warning error-banner col-12 mt-4">
                 <#if stackTraces?has_content>
                     <div class="error-codes pull-right">
                         <strong><@s.text name="error.action_error_codes"/></strong>

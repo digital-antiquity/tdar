@@ -935,14 +935,17 @@ public abstract class AbstractWebTestCase extends AbstractGenericWebTest impleme
         if (terms != null) {
             switch (terms) {
                 case BOTH:
-                    setInput("registration.acceptTermsOfUse", "true");
-                    setInput("registration.requestingContributorAccess", "true");
+                    setInput("registration.acceptTermsOfUseAndContributorAgreement", "true");
+//                    setInput("registration.acceptTermsOfUse", "true");
+//                    setInput("registration.requestingContributorAccess", "true");
                     break;
                 case CONTRIB:
                     setInput("registration.requestingContributorAccess", "true");
+                    setInputIfExists("registration.acceptTermsOfUseAndContributorAgreement", "true");
                     break;
                 case TOS:
-                    setInput("registration.acceptTermsOfUse", "true");
+                    setInputIfExists("registration.acceptTermsOfUse", "true");
+                    setInputIfExists("registration.acceptTermsOfUseAndContributorAgreement", "true");
                     break;
                 default:
                     break;
