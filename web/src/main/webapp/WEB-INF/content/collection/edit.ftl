@@ -283,7 +283,7 @@
 
     $(function () {
         'use strict';
-        TDAR.datatable.setupDashboardDataTable({
+        TDAR.datatable.setupCollectionDataTable({
             enableUnmanagedCollections : ${(administrator!false)?string},
             isAdministrator: ${(editor!false)?string},
             limitContext: ${((!editor)!true)?string},

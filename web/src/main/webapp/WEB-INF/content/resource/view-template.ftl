@@ -145,7 +145,7 @@
                 <#if (resource.dataTables?size > 1)>
                 <form>
                     <label for="table_select">Choose Table:</label>
-                    <select id="table_select" name="dataTableId">
+                    <select id="table_select" name="dataTableId" class="form-control">
                         <#list resource.importSortedDataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>
@@ -158,7 +158,7 @@
 
             <div class="row">
                 <div class="col-12">
-                    <table id="dataTable" style="width:100%"
+                    <table id="view-data-table" style="width:100%"
                            data-data-table-selector="#table_select"
                            data-default-data-table-id="${dataTable.id?c}"
                            data-resource-id="${resource.id?c}"

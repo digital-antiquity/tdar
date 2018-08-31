@@ -1,5 +1,6 @@
 header + #hero {
-  margin-bottom: 0em !important; }
+  margin-bottom: 0em !important;
+  margin-top: 3em; }
 
 @media (max-width: 768px) {
   #sidebar-right {
@@ -10,13 +11,14 @@ header + #hero {
 .whatcanyoudig-image {
   background: url(/images/r4/bg-home.jpg) no-repeat center;
   background-size: cover;
-  min-height: 20em;
+  height: 25em;
   padding-top: 1.5em;
   padding-left: 50px;
   border-radius: .25em; }
 
 .image {
-  position: relative; }
+  position: relative;
+  height: 25em; }
   .image .hero-note {
     position: absolute;
     display: inline-block;
@@ -32,6 +34,8 @@ header + #hero {
       font-weight: 400 !Important;
       line-height: 4rem !Important;
       margin-top: 0px !important; }
+      .image .hero-note h2 .red {
+        font-weight: 700; }
 
 #home .card p, p.lead {
   min-height: 4em;
@@ -4415,5 +4419,11 @@ table {
 
 .login-image.image6 {
   background-image: url(/images/homepage/NPSMarchingBearMoundGroup.jpg) !important; }
+
+.scroll-x {
+  overflow-x: scroll; }
+
+#view-data-table_wrapper > .row + .row {
+  overflow-x: scroll; }
 
 /*# sourceMappingURL=style.css.map */
