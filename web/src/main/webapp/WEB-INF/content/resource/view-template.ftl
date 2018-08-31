@@ -52,7 +52,6 @@
         <#if resource.resourceType.dataTableSupported && editable>
             <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
-            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
             <#if mappingFeatureEnabled >
             <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
             </#if>
@@ -191,7 +190,7 @@
             <p class="tableDescription">${dataTable.description}</p>
             </#if>
             <table class="table table-sm table-striped" table-bordered">
-                <thead class='highlight'>
+                <thead class='thead-dark'>
                 <tr>
                     <th class="guide">Column Name</th>
                     <th>Data Type</th>
@@ -250,7 +249,7 @@
                 <#if resource.relationships?size != 0>
                 <h4>Data Table Relationships:</h4>
                 <table class="table table-sm table-striped" table-striped table-bordered">
-                    <thead class="highlight">
+                    <thead class="thead-dark">
                     <tr>
                         <th>Type</th>
                         <th>Local Table</th>

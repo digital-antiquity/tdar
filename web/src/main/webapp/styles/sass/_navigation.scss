@@ -26,8 +26,20 @@ nav
     font-weight: bold;
     color: rgba(0,0,0,0.5);
     border-right: $darkRed;
+    text-wrap:none;
   }
 
+  .fa-chevron-up {
+      display:none;
+  }
+  .show {
+      .fa-chevron-up {
+          display:block;
+      }
+       .fa-chevron-down {
+          display:none;
+      }
+  }
   .nav-chevron
   {
     stroke-width: 5px;

@@ -44,8 +44,11 @@
                     <ul class="navbar-nav">
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
-                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About 
-                                <i class="fas fa-chevron-down"></i></button>
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span>About 
+                                	 <svg class="svgicon svg-icons_chevron nav-chevron">
+	                                    <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
+
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <h5 class = "ml-4">About</h5>
                                     <div class="d-flex flex-row">

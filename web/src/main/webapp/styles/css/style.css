@@ -172,7 +172,14 @@ nav {
     text-transform: uppercase;
     font-weight: bold;
     color: rgba(0, 0, 0, 0.5);
-    border-right: #7a1501; }
+    border-right: #7a1501;
+    text-wrap: none; }
+  .tdarNav .fa-chevron-up {
+    display: none; }
+  .tdarNav .show .fa-chevron-up {
+    display: block; }
+  .tdarNav .show .fa-chevron-down {
+    display: none; }
   .tdarNav .nav-chevron {
     stroke-width: 5px;
     stroke: #7a1501; }
@@ -224,7 +231,6 @@ form.leaflet-control-geocoder-form {
   border: 1px solid #999;
   position: relative;
   margin-right: 5px;
-  bottom: -.5em !important;
   width: 10px;
   height: 10px;
   padding: 0px; }

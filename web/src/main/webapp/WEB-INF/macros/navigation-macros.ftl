@@ -35,10 +35,10 @@ navigation freemarker macros
 	        <#if editable>
 				<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
 			</#if>
+			<#nested>
 			<#if editor>
                 <@makeLink "resource" "admin?id=${resource.id?c}" "admin" "admin" "" false />					
 			</#if>
-			<#nested>
          </@_toolbar>
     </#macro>
 
@@ -72,11 +72,11 @@ navigation freemarker macros
              <#if administrator && whiteLabelCollection>
                         <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
              </#if>
+        </#if>
+        <#nested>
             <#if editor>
                 <@makeLink namespace "admin/${persistable.id?c}" "admin" "admin" "" false />                   
             </#if>
-        </#if>
-        <#nested>
        </@_toolbar>
     </#macro>
 
