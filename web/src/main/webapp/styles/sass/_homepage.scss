@@ -86,6 +86,10 @@ header + #hero {
     }
   #hero
   {
+      .carousel-inner {
+          padding-left:0px;
+          padding-right:0px;
+      }
 
       h2 {
         font-weight: 700;
@@ -176,11 +180,10 @@ header + #hero {
 }
 
 
-
-.carousel, .image-carousel.carousel {
+#slider  {
     .carousel-inner {
-        padding-left:6em;
-        padding-right:6em;
+        padding-left:0px;
+        padding-right:0px;
     }
 
 
@@ -194,6 +197,11 @@ header + #hero {
         opacity: 0.5;
         transition: opacity 0.1s ease-out;
     }
+    
+    .carousel-item {
+        padding-left:3em !important;
+        padding-right:3em !important;
+    }
 
     .car-btn:hover {
         opacity: 1;
@@ -202,7 +210,10 @@ header + #hero {
     .carousel-control.left {
         left: 0;
     }
-
+    .carousel-control-next,    .carousel-control-prev {
+        width:5%;
+    }
+    
     .carousel-control.right {
         right: 0;
         background-position: -24px 0;
@@ -234,7 +245,6 @@ header + #hero {
         background: #c0c0c0;
     }
     
-}
 
 /* Removes the default 20px margin and creates some padding space for the indicators and controls */
 .image-carousel.carousel {
@@ -242,3 +252,4 @@ header + #hero {
     padding: 0 40px 10px 40px;
 }
 
+}

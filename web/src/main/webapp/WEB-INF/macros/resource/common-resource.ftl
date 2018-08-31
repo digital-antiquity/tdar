@@ -258,9 +258,10 @@ Common macros used in multiple contexts
 
 <#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
     <#macro codingRules>
+    <div class="section">
         <#if resource.id != -1>
             <#nested>
-        <h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
+        <h2>Coding Rules</h2>
             <#if resource.codingRules.isEmpty() >
             <div>
                 No coding rules have been entered for this coding sheet yet.
@@ -268,7 +269,7 @@ Common macros used in multiple contexts
             <#else>
             <div id='codingRulesDiv'>
                 <table width="60%" class="table table-striped tableFormat">
-                    <thead class='highlight'>
+                    <thead class='thead-dark'>
                     <tr>
                         <th>Code</th>
                         <th>Term</th>
@@ -327,6 +328,7 @@ Common macros used in multiple contexts
             </div>
             </#if>
         </#if>
+        </div>
     </#macro>
 
 

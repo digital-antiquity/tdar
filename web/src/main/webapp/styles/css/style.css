@@ -56,6 +56,9 @@ header + #hero {
   min-height: 2em;
   font-weight: bold;
   font-size: 24px; }
+#home #hero .carousel-inner {
+  padding-left: 0px;
+  padding-right: 0px; }
 #home #hero h2 {
   font-weight: 700;
   font-size: 60px;
@@ -110,12 +113,13 @@ header + #hero {
   font-weight: bold;
   text-transform: uppercase; }
 
-.carousel, .image-carousel.carousel {
-  /* Changes the position of the indicators */ }
-  .carousel .carousel-inner, .image-carousel.carousel .carousel-inner {
-    padding-left: 6em;
-    padding-right: 6em; }
-  .carousel .carousel-control, .image-carousel.carousel .carousel-control {
+#slider {
+  /* Changes the position of the indicators */
+  /* Removes the default 20px margin and creates some padding space for the indicators and controls */ }
+  #slider .carousel-inner {
+    padding-left: 0px;
+    padding-right: 0px; }
+  #slider .carousel-control {
     display: block;
     width: 24px;
     height: 38px;
@@ -124,14 +128,19 @@ header + #hero {
     text-indent: -999em;
     opacity: 0.5;
     transition: opacity 0.1s ease-out; }
-  .carousel .car-btn:hover, .image-carousel.carousel .car-btn:hover {
+  #slider .carousel-item {
+    padding-left: 3em !important;
+    padding-right: 3em !important; }
+  #slider .car-btn:hover {
     opacity: 1; }
-  .carousel .carousel-control.left, .image-carousel.carousel .carousel-control.left {
+  #slider .carousel-control.left {
     left: 0; }
-  .carousel .carousel-control.right, .image-carousel.carousel .carousel-control.right {
+  #slider .carousel-control-next, #slider .carousel-control-prev {
+    width: 5%; }
+  #slider .carousel-control.right {
     right: 0;
     background-position: -24px 0; }
-  .carousel .carousel-indicators, .image-carousel.carousel .carousel-indicators {
+  #slider .carousel-indicators {
     width: 100%;
     top: auto;
     bottom: 0px;
@@ -139,9 +148,9 @@ header + #hero {
     /*margin-right: -19px;*/
     position: inherit !important;
     margin: 1em 0 0 0; }
-  .carousel .carousel-indicators .active, .image-carousel.carousel .carousel-indicators .active {
+  #slider .carousel-indicators .active {
     background: #333333; }
-  .carousel .carousel-indicators span, .image-carousel.carousel .carousel-indicators span {
+  #slider .carousel-indicators span {
     border-radius: 10px;
     padding: 4px;
     margin: 1pt;
@@ -149,11 +158,9 @@ header + #hero {
     height: 3px;
     display: inline-block;
     background: #c0c0c0; }
-
-/* Removes the default 20px margin and creates some padding space for the indicators and controls */
-.image-carousel.carousel {
-  margin-bottom: 10px;
-  padding: 0 40px 10px 40px; }
+  #slider .image-carousel.carousel {
+    margin-bottom: 10px;
+    padding: 0 40px 10px 40px; }
 
 nav {
   font-weight: bold; }

@@ -291,9 +291,6 @@
 
 
 
-    <#if resource.resourceType.supporting >
-        <@view.categoryVariables />
-    </#if>
     <#if !resource.resourceType.project >
         <#if config.licensesEnabled?? &&  config.licensesEnabled || resource.licenseType?has_content >
             <@view.license />
@@ -464,18 +461,29 @@
     <@_relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
     <@_relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
     <#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
-    <hr/>
     </#if>
 <#-- display linked data <-> ontology nodes -->
         <#list relatedResources![]>
+        <div class="section">
         <h2>This ${resource.resourceType.label} is Used by the Following Datasets:</h2>
-        <ol style='list-style-position:inside'>
+        <div class="row">
+        <div class="col">
+        <ul>
+            <#assign  half = (relatedResources?size / 2 )?ceiling />
             <#items as related >
             <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${related.title} </a></li>
+            <#if related?index == half>
+	            </ul>
+            	</div>
+            	<div class="col">
+    			    <ul>
+            </#if>
             </#items>
-    </ol>
+	    </ul>
+	    </div>
+	    </div>
+	</div>
         </#list>
-
     <@view.unapiLink resource />
 
 <#--emit additional dataset metadata as a list of key/value pairs  -->

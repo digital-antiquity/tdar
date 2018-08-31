@@ -12,12 +12,13 @@
     </#macro>
 
     <#macro afterBasicInfo>
-        <@common.codingRules>
-            <#if resource.defaultOntology?has_content>
-            <p><b>Ontology:</b> <a href='<@s.url value="/${resource.defaultOntology.absoluteUrl}"/>'>${resource.defaultOntology.title}</a></p>
-            </#if>
-            <@view.categoryVariables />
-        </@common.codingRules>
+    <div class="section">
+        <#if resource.defaultOntology?has_content>
+        <p><b>Ontology:</b> <a href='<@s.url value="/${resource.defaultOntology.absoluteUrl}"/>'>${resource.defaultOntology.title}</a></p>
+        </#if>
+        <@view.categoryVariables />
+        </div>
+        <@common.codingRules />
     </#macro>
 
 </#escape>

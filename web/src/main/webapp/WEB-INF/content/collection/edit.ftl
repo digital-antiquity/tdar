@@ -59,7 +59,7 @@
             cssClass='resizable input-xxlarge trim' title="Please enter the description " />
 
         <#if editor>
-            <h4>Admin Options</h4>
+            <h2>Admin Options</h2>
             <div class="form-group row" id="divSubmitter">
                 <label class="control-label col-form-label col-2">Submitter</label>
 				<div class="col-10">
@@ -192,10 +192,9 @@
         </ul>
         
         <div class="tab-content">
-          <div id="existingResources" class="tab-pane  active">
+          <div id="existingResources" class="tab-pane  active  m-3 mt-4">
           
-                   <@s.textfield name="_tdar.existing.query" id="existing_res_query" cssClass='col-8'
-                            placeholder="Enter a full or partial title to filter results" />
+                   <@s.textfield name="_tdar.existing.query" id="existing_res_query"  placeholder="Enter a full or partial title to filter results" />
           
                 
                     <table class="table table-striped" id="existing_resources_datatable">
@@ -234,9 +233,13 @@
                         </table>
                                     
           </div>
-          <div id="addResources" class="tab-pane ">
+          <div id="addResources" class="tab-pane m-3 mt-4">
+          	<div class="row">
+          		<div class="col-12">
                 <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="col-12" useUnmanagedCollections=administrator>
                 </@edit.resourceDataTable>
+                </div>
+                </div>
           </div>
     </div>
     <#else>
