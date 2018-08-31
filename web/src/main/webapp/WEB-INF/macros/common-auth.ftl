@@ -112,7 +112,7 @@
 
 <div class="row">
     <div class="${spanfull}">
-        <#if showMinimal>
+        <#if true>
             <label class="checkbox">
                 <@s.checkbox theme="simple" name="${beanPrefix}.acceptTermsOfUseAndContributorAgreement" id="tou-id"  />
                 I have read and accept the ${siteAcronym}

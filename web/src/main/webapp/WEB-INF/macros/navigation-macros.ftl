@@ -19,13 +19,14 @@ navigation freemarker macros
   @requires authenticatedUser:Person person object of the authenticated user
 -->
     <#macro toolbar namespace current="view" modern=false>
+    <#if !editable>
+        <#return>
+    </#if>
          <@_toolbar>
-	        <#if editable>
-	            <@makeLink namespace "edit" "edit" "edit" current />
-	            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-                <@makeLink "resource" "delete?id=${resource.id?c}" "delete" "delete" current true _deleteable />
-                <@makeLink "resource" "rights/${resource.id?c}" "permissions" "permissions" current false false />
-	        </#if>
+            <@makeLink namespace "edit" "edit" "edit" current />
+            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+            <@makeLink "resource" "delete?id=${resource.id?c}" "delete" "delete" current true _deleteable />
+            <@makeLink "resource" "rights/${resource.id?c}" "permissions" "permissions" current false false />
 	        <#if resource.resourceType.project >
 	            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false ""/>
 	        </#if>

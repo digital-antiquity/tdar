@@ -167,7 +167,10 @@ View freemarker macros
 <#-- emit download link for translated dataset file -->
     <#macro translatedFileSection irfile>
         <#if irfile.hasTranslatedVersion >
-        <blockquote>
+        </li>
+<li class="  media ml-0 pl-3 pr-3 mr-0">
+    <i class="iconf page-excel mr-2"></i>
+                                <div class="media-body">
             <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
             Data column(s) in this dataset have been associated with coding sheet(s) and translated:
             <#if userAbleToReTranslate>
@@ -176,7 +179,7 @@ View freemarker macros
                     <b>Note: this process may take some time</b>)
                 </small>
             </#if>
-        </blockquote>
+        </div>
         </#if>
     </#macro>
 

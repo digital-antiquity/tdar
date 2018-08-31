@@ -45,9 +45,7 @@
                         <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
                                 <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span>About 
-                                	 <svg class="svgicon svg-icons_chevron nav-chevron">
-	                                    <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
+                                 About <svg class="svgicon svg-icons_chevron nav-chevron"> <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
 
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <h5 class = "ml-4">About</h5>
@@ -197,7 +195,7 @@
     <div class='hero-note'>
         <h2>Archive a file <br/>for as little as <span class="red">$5</span></h2>
     </div>
-    <img src="/images/homepage/IMG_4478.jpg" class="img-fluid rounded" alt="Responsive image">
+    <img src="/images/homepage/IMG_4478.jpg" class="img-fluid rounded" alt="Responsive image" title="test">
 </div>
 
 </#macro>
@@ -219,9 +217,6 @@
     </div>
     <div class="carousel-item">
 		<@imageheader />
-    </div>
-    <div class="carousel-item">
-      <img class="d-block w-100" src=".../800x400?auto=yes&bg=555&fg=333&text=Third slide" alt="Third slide">
     </div>
   </div>
 <!-- 

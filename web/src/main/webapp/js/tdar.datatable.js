@@ -1785,7 +1785,6 @@ TDAR.datatable = function() {
         $.extend($.fn.dataTableExt.oStdClasses, {
             "sWrapper" : "dataTables_wrapper"
         });
-
         var offset = 0;
         var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
         var size = 0;
@@ -1826,7 +1825,6 @@ TDAR.datatable = function() {
                 var dt = $table.dataTable();
                 dt.fnDestroy();
             }
-        }
         $table.empty();
         $table.append("<tbody>");
         $table.append("<thead class='thead-dark'>");
@@ -1834,6 +1832,7 @@ TDAR.datatable = function() {
         $table.dataTable(config);
         _scrollOnPagination();
         viewDataTableInitialized = true;
+        }
     }
 
     /**
@@ -1907,7 +1906,6 @@ TDAR.datatable = function() {
                 dataTableWidget = undefined;
             }
             var columnsPromise = _loadDatasetTableMetadata('/datatable/browse', dataTableId);
-
             columnsPromise.done(function(data) {
                 var columns = data.fields.map(function(item) {
                     return {
