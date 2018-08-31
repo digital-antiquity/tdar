@@ -1,19 +1,23 @@
-package org.tdar.core.bean.coverage;
+package org.tdar.utils;
 
 import static java.lang.Math.abs;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.tdar.core.bean.coverage.LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.utils.SpatialObfuscationUtil;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 
 @SuppressWarnings({ "static-method" })
 public class LatitudeLongitudeBoxTest {
@@ -22,8 +26,54 @@ public class LatitudeLongitudeBoxTest {
     private static final double _36_small = _36 + 0.01;
     private static final double _neg_107 = -107.78792202517137;
     private static final double _neg_107_small = _neg_107 + 0.01;
+    private static final double EPSILON = 0;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    
+    @Test 
+    public void testDistanceWestToEast() {
+    	LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-.4,-.4, .4,.4);
+    	assertLength(llb, .8);
+    }
+    
+    
+    
+    @Test
+    public void testVerifyDistanceAcrossPrimeMeridian(){
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-.01,-.01,.01,.01);
+        
+        double latLen = llb.getAbsoluteLatLength();
+        double longLen = llb.getAbsoluteLongLength();
+        
+        assertTrue("Length is .02", latLen == .02);
+        assertTrue("Length is .02", longLen == .02);        
+    }
+    
+    @Test
+    public void testVerifyLargeDistanceAcrossPrimeMeridian(){
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-179.0,-.01,179.0,.01);
+        
+        double latLen = llb.getAbsoluteLatLength();
+        double longLen = llb.getAbsoluteLongLength();
+        logger.debug("long length is {} ",longLen);
+        
+        assertTrue("Length is .02", latLen == .02);
+        assertTrue("Length is 358", longLen == 358);        
+    }
+    
+    @Test
+    public void testVerifyDistanceAcrossAnteMeridian(){
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(179.0,-.01,-179.0,.01);
+        
+        double latLen = llb.getAbsoluteLatLength();
+        double longLen = llb.getAbsoluteLongLength();
+        logger.debug("long length is {} ",longLen);
+        
+        assertTrue("Length is .02", latLen == .02);
+        assertTrue("Length is 2", longLen == 2);        
+    }
+    
+    
     @Test
     public void testNewObfuscation() {
         double half = LatitudeLongitudeBox.ONE_MILE_IN_DEGREE_MINUTES / 3;
@@ -79,6 +129,7 @@ public class LatitudeLongitudeBoxTest {
         llb.setNorth(_36_small);
         llb.setSouth(_36);
         logger.debug("before: {}", llb);
+        
         llb.obfuscate();
         logger.debug(" after: {}", llb);
         assertNotEquals(_neg_107_small, llb.getObfuscatedEast());
@@ -95,6 +146,7 @@ public class LatitudeLongitudeBoxTest {
     public void isActuallyObfuscatedByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(Double.valueOf(0), Double.valueOf(0), Double.valueOf(0), Double.valueOf(0));
         assertFalse(llb.isOkayToShowExactLocation());
+        
         llb.obfuscate();
         assertTrue(llb.isObfuscatedObjectDifferent());
     }
@@ -102,7 +154,8 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void testExactLLB() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(10d, 10d, 10d, 10d);
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
 
         assertGreaterThanOneMile(llb);
     }
@@ -119,26 +172,43 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void testExactLLB2() {
         // not 100% necessary, but attempting to get at the randomness
+        SpatialObfuscationUtil.useRandom(false);
+        SpatialObfuscationUtil.setRandom(0.9999);
+
         for (int i = 0; i < 100; i++) {
             LatitudeLongitudeBox llb = new LatitudeLongitudeBox(-36.845703125d, -3.64903402157866d, -36.845703125d, 3.64903402157866d);
 
-            llb.obfuscateAll();
+            
+            llb.obfuscate();
 
             assertGreaterThanOneMile(llb);
             llb = new LatitudeLongitudeBox(-9.667d, 25.35d, -9.66666666666667d, 25.35d);
 
-            llb.obfuscateAll();
+            
+            llb.obfuscate();
             assertGreaterThanOneMile(llb);
         }
+        SpatialObfuscationUtil.useRandom(true);
+        SpatialObfuscationUtil.setRandom(null);
+
     }
 
     private void assertGreaterThanOneMile(LatitudeLongitudeBox llb) {
-        assertThat(distance(llb.getObfuscatedNorth(), llb.getObfuscatedSouth()), greaterThan(ONE_MILE_IN_DEGREE_MINUTES));
-        assertThat(distance(llb.getObfuscatedEast(), llb.getObfuscatedWest()), greaterThan(ONE_MILE_IN_DEGREE_MINUTES));
+        assertThat(distance(llb.getObfuscatedNorth(), llb.getObfuscatedSouth()), greaterThanOrEqualTo(ONE_MILE_IN_DEGREE_MINUTES));
+        assertThat(distance(llb.getObfuscatedEast(), llb.getObfuscatedWest()), greaterThanOrEqualTo(ONE_MILE_IN_DEGREE_MINUTES));
     }
 
     private double distance(double lht, double rht) {
-        return abs(lht - rht);
+        return round(abs(lht - rht));
+    }
+
+    double round(double num) {
+        DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.CEILING);
+        double d = Double.parseDouble(df.format(num));
+        logger.debug("{} -> {}", num, d);
+        return d;
+
     }
 
     @SuppressWarnings("deprecation")
@@ -148,10 +218,12 @@ public class LatitudeLongitudeBoxTest {
         Double lng = -71.392991d;
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(lng, lat, lng, lat);
 
-        llb.obfuscateAll();
+        
+        Double south = llb.getSouth();
+        llb.obfuscate();
         double min = llb.getObfuscatedSouth().doubleValue();
         double max = llb.getObfuscatedNorth().doubleValue();
-        Assert.assertFalse(llb.getSouth().doubleValue() == min);
+        Assert.assertFalse(south.doubleValue() == min);
         Assert.assertFalse(lat.doubleValue() == max);
         Assert.assertFalse(lat.doubleValue() == llb.getObfuscatedWest().doubleValue());
         Assert.assertFalse(lat.doubleValue() == llb.getObfuscatedEast().doubleValue());
@@ -159,7 +231,7 @@ public class LatitudeLongitudeBoxTest {
         Assert.assertFalse(llb.getObfuscatedWest().doubleValue() == llb.getObfuscatedEast().doubleValue());
         logger.debug("{} <-> {}", max, min);
         logger.debug("{} <--> {}", max - min, ONE_MILE_IN_DEGREE_MINUTES);
-        Assert.assertFalse(abs(abs(max) - abs(min)) < ONE_MILE_IN_DEGREE_MINUTES);
+        assertGreaterThanOneMile(llb);
     }
 
     @SuppressWarnings("static-method")
@@ -190,7 +262,8 @@ public class LatitudeLongitudeBoxTest {
     public void obfuscationIsStable() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         Double maxObfuscatedLatitude = llb.getObfuscatedNorth();
         Double minObfuscatedLatitude = llb.getObfuscatedSouth();
         Double maxObfuscatedLongitude = llb.getObfuscatedEast();
@@ -206,10 +279,12 @@ public class LatitudeLongitudeBoxTest {
     public void doesNotObfuscateAboveOneMile() {
         Double slightlyMoreThanOneMile = ONE_MILE_IN_DEGREE_MINUTES + 0.00001d;
         Double zero = 0.0;
-        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LATITUDE, true)));
-        assertTrue(slightlyMoreThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyMoreThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE, true)));
-        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LATITUDE, true)));
-        assertTrue(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyMoreThanOneMile, LatitudeLongitudeBox.LONGITUDE, true)));
+        LatitudeLongitudeBox llb  = new LatitudeLongitudeBox(slightlyMoreThanOneMile, slightlyMoreThanOneMile, zero, zero);
+        llb.obfuscate();
+        assertEquals(slightlyMoreThanOneMile ,llb.getObfuscatedWest());
+        assertEquals(zero, llb.getObfuscatedEast());
+        assertEquals(slightlyMoreThanOneMile ,llb.getObfuscatedSouth());
+        assertEquals(zero, llb.getObfuscatedNorth());
     }
 
     @SuppressWarnings("static-method")
@@ -217,11 +292,12 @@ public class LatitudeLongitudeBoxTest {
     public void doesObfuscateAtLessThanOneMile() {
         Double slightlyLessThanOneMile = ONE_MILE_IN_DEGREE_MINUTES - 0.00001d;
         Double zero = 0.0;
-        assertFalse(slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LATITUDE, true)));
-        assertFalse(
-                slightlyLessThanOneMile.equals(LatitudeLongitudeBox.randomizeIfNeedBe(slightlyLessThanOneMile, zero, LatitudeLongitudeBox.LONGITUDE, true)));
-        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LATITUDE, true)));
-        assertFalse(zero.equals(LatitudeLongitudeBox.randomizeIfNeedBe(zero, slightlyLessThanOneMile, LatitudeLongitudeBox.LONGITUDE, true)));
+        LatitudeLongitudeBox llb  = new LatitudeLongitudeBox(zero, zero, slightlyLessThanOneMile, slightlyLessThanOneMile);
+        llb.obfuscate();
+        assertNotEquals(slightlyLessThanOneMile ,llb.getObfuscatedWest());
+        assertNotEquals(zero, llb.getObfuscatedEast());
+        assertNotEquals(slightlyLessThanOneMile ,llb.getObfuscatedSouth());
+        assertNotEquals(zero, llb.getObfuscatedNorth());
     }
 
     /**
@@ -233,21 +309,19 @@ public class LatitudeLongitudeBoxTest {
     public void doesReObfuscateOnNewCoordinates() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         Double maxObfuscatedLatitude = llb.getObfuscatedNorth();
         Double minObfuscatedLatitude = llb.getObfuscatedSouth();
         Double maxObfuscatedLongitude = llb.getObfuscatedEast();
         Double minObfuscatedLongitude = llb.getObfuscatedWest();
-        llb.setNorth(0.1);
-        llb.setSouth(0.1);
-        llb.setEast(0.1);
-        llb.setWest(0.1);
+        llb = new LatitudeLongitudeBox(0.1, 0.1, 0.1, 0.1);
+        llb.obfuscate();
 
-        llb.obfuscateAll();
-        assertFalse(maxObfuscatedLatitude.equals(llb.getObfuscatedNorth()));
-        assertFalse(minObfuscatedLatitude.equals(llb.getObfuscatedSouth()));
-        assertFalse(maxObfuscatedLongitude.equals(llb.getObfuscatedEast()));
-        assertFalse(minObfuscatedLongitude.equals(llb.getObfuscatedWest()));
+        assertNotEquals(maxObfuscatedLatitude, llb.getObfuscatedNorth());
+        assertNotEquals(minObfuscatedLatitude, llb.getObfuscatedSouth());
+        assertNotEquals(maxObfuscatedLongitude, llb.getObfuscatedEast());
+        assertNotEquals(minObfuscatedLongitude, llb.getObfuscatedWest());
     }
 
     /**
@@ -259,21 +333,19 @@ public class LatitudeLongitudeBoxTest {
     public void doesReObfuscateOnNewMaxXandYs() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         Double maxObfuscatedLatitude = llb.getObfuscatedNorth();
         Double minObfuscatedLatitude = llb.getObfuscatedSouth();
         Double maxObfuscatedLongitude = llb.getObfuscatedEast();
         Double minObfuscatedLongitude = llb.getObfuscatedWest();
-        llb.setMaxx(0.1);
-        llb.setMinx(0.1);
-        llb.setMaxy(0.1);
-        llb.setMiny(0.1);
 
-        llb.obfuscateAll();
-        assertFalse(maxObfuscatedLatitude.equals(llb.getObfuscatedNorth()));
-        assertFalse(minObfuscatedLatitude.equals(llb.getObfuscatedSouth()));
-        assertFalse(maxObfuscatedLongitude.equals(llb.getObfuscatedEast()));
-        assertFalse(minObfuscatedLongitude.equals(llb.getObfuscatedWest()));
+        llb = new LatitudeLongitudeBox(0.1, 0.1, 0.1, 0.1);
+        llb.obfuscate();
+        assertNotEquals(maxObfuscatedLatitude,llb.getObfuscatedNorth());
+        assertNotEquals(minObfuscatedLatitude,llb.getObfuscatedSouth());
+        assertNotEquals(maxObfuscatedLongitude,llb.getObfuscatedEast());
+        assertNotEquals(minObfuscatedLongitude,llb.getObfuscatedWest());
     }
 
     @SuppressWarnings({ "static-method", "deprecation" })
@@ -281,13 +353,13 @@ public class LatitudeLongitudeBoxTest {
     public void doesObfuscateAccordingToService() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         Double maxObfuscatedLatitude = llb.getObfuscatedNorth();
         Double minObfuscatedLatitude = llb.getObfuscatedSouth();
         Double maxObfuscatedLongitude = llb.getObfuscatedEast();
         Double minObfuscatedLongitude = llb.getObfuscatedWest();
-        assertFalse(llb.isObfuscated());
-        llb.obfuscate();
+
         assertTrue(llb.isObfuscatedObjectDifferent());
         assertTrue(llb.isObfuscated());
         assertTrue(maxObfuscatedLatitude.equals(llb.getNorth()));
@@ -302,7 +374,8 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
         llb.setOkayToShowExactLocation(true);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         // shouldn't be obfuscated
         assertFalse(llb.isObfuscatedObjectDifferent());
         llb.obfuscate();
@@ -320,7 +393,8 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
                 ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitudeIfNotObfuscated()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitudeIfNotObfuscated()));
     }
@@ -331,7 +405,8 @@ public class LatitudeLongitudeBoxTest {
                 ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
         llb.setOkayToShowExactLocation(false);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitudeIfNotObfuscated()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitudeIfNotObfuscated()));
     }
@@ -340,6 +415,7 @@ public class LatitudeLongitudeBoxTest {
     public void doesNotReturnCenterIfLessThanOneMileByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES - 0.00005,
                 ONE_MILE_IN_DEGREE_MINUTES - 0.00005);
+        
         llb.obfuscate();
         assertTrue(null == llb.getCenterLatitudeIfNotObfuscated());
         assertTrue(null == llb.getCenterLongitudeIfNotObfuscated());
@@ -350,6 +426,7 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES - 0.00001,
                 ONE_MILE_IN_DEGREE_MINUTES + 0.00001);
         llb.setOkayToShowExactLocation(false);
+        
         llb.obfuscate();
         assertTrue(null == llb.getCenterLatitudeIfNotObfuscated());
         assertTrue(null == llb.getCenterLongitudeIfNotObfuscated());
@@ -360,7 +437,8 @@ public class LatitudeLongitudeBoxTest {
     public void doesObfuscatedCenterIfBoxLessThanOneMileByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertFalse(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLatitude()));
         assertFalse(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLongitude()));
     }
@@ -369,12 +447,14 @@ public class LatitudeLongitudeBoxTest {
     public void avoidChangesOnDoubleCall() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         Double obfuscatedCenterLatitude = llb.getObfuscatedCenterLatitude();
         assertFalse(Double.valueOf(0.0).equals(obfuscatedCenterLatitude));
         Double obfuscatedCenterLongitude = llb.getObfuscatedCenterLongitude();
         assertFalse(Double.valueOf(0.0).equals(obfuscatedCenterLongitude));
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertEquals(obfuscatedCenterLatitude, llb.getObfuscatedCenterLatitude());
         assertEquals(obfuscatedCenterLongitude, llb.getObfuscatedCenterLongitude());
     }
@@ -385,7 +465,8 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
         llb.setOkayToShowExactLocation(true);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertTrue(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLatitude()));
         assertTrue(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLongitude()));
     }
@@ -395,7 +476,8 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
                 ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLatitude()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLongitude()));
     }
@@ -406,7 +488,8 @@ public class LatitudeLongitudeBoxTest {
                 ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
         llb.setOkayToShowExactLocation(false);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLatitude()));
         assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLongitude()));
     }
@@ -421,7 +504,8 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
         llb.setOkayToShowExactLocation(true);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertTrue(Double.valueOf(minimumLongitude).equals(llb.getWest()));
         assertTrue(Double.valueOf(maximumLongitude).equals(llb.getEast()));
         assertTrue(Double.valueOf(minimumLatitude).equals(llb.getSouth()));
@@ -433,18 +517,52 @@ public class LatitudeLongitudeBoxTest {
     }
 
     @Test
-    public void testCenterWithDateline() {
+    public void testCenterWithDatelineAntiMeridian() {
         double minimumLongitude = -170d;
         double maximumLongitude = 170d;
         double minimumLatitude = 1;
         double maximumLatitude = 11;
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         logger.debug("{}", llb.getObfuscatedCenterLatitude());
         logger.debug("{}", llb.getObfuscatedCenterLongitude());
         assertTrue(Double.valueOf(6.0).equals(llb.getObfuscatedCenterLatitude()));
         assertTrue(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLongitude()));
+    }
+    
+    @Test
+    public void testObfuscatedWithCenterAntiMeridian() {
+        double minimumLongitude =  179.9999999d;
+        double maximumLongitude = -179.9999999d;
+        double minimumLatitude = 1;
+        double maximumLatitude = 11;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
+        SpatialObfuscationUtil.obfuscate(llb);
+        
+        logger.debug("{}/ {}", llb.getObfuscatedEast(), llb.getObfuscatedWest());
+        assertTrue(llb.getObfuscatedEast() > maximumLongitude);
+        assertTrue(llb.getObfuscatedWest() < minimumLongitude);
+    }
+   
+    @Test
+    public void testObfuscatedWithCenterPrimeMeridian() {
+        double minimumLongitude = -.00001d;
+        double maximumLongitude =  .00001d;
+        double minimumLatitude = 1;
+        double maximumLatitude = 11;
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
+
+        
+        llb.obfuscate();
+        logger.debug("{}/ {}", llb.getObfuscatedEast(), llb.getObfuscatedWest());
+        
+        //Make sure the obfuscated bound is more east than the original
+        assertTrue(maximumLongitude < llb.getObfuscatedEast() );
+        
+        //And the west bound is more west than the original.
+        assertTrue(llb.getObfuscatedWest() < minimumLongitude);
     }
 
     @SuppressWarnings({ "static-method", "deprecation" })
@@ -456,7 +574,8 @@ public class LatitudeLongitudeBoxTest {
         double maximumLatitude = ONE_MILE_IN_DEGREE_MINUTES + 0.00004;
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(minimumLongitude, minimumLatitude, maximumLongitude, maximumLatitude);
 
-        llb.obfuscateAll();
+        
+        llb.obfuscate();
         assertTrue(Double.valueOf(minimumLongitude).equals(llb.getWest()));
         assertTrue(Double.valueOf(maximumLongitude).equals(llb.getEast()));
         assertTrue(Double.valueOf(minimumLatitude).equals(llb.getSouth()));
@@ -465,6 +584,10 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(Double.valueOf(maximumLongitude).equals(llb.getObfuscatedEast()));
         assertTrue(Double.valueOf(minimumLatitude).equals(llb.getObfuscatedSouth()));
         assertTrue(Double.valueOf(maximumLatitude).equals(llb.getObfuscatedNorth()));
+    }
+    
+    private void assertLength(LatitudeLongitudeBox llb, double length) {
+    	assertTrue("Length is "+length, llb.getAbsoluteLongLength()==length);
     }
 
 }

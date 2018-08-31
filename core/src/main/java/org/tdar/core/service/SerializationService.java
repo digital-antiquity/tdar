@@ -140,4 +140,6 @@ public interface SerializationService {
 
     void post(LoggingObjectContainer o) throws Exception;
 
+    void markReadOnly(Persistable persistable);
+
 }
