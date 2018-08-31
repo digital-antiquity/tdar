@@ -685,6 +685,11 @@ img.responsive-image {
   position: fixed;
   top: 10px; }
 
+#myCarousel .carousel-control-prev {
+  width: 5%; }
+#myCarousel .carousel-indicators .active {
+  background-color: black; }
+
 div.tdarresults {
   border-top: double #222;
   border-bottom: double #222;

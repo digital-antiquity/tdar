@@ -546,7 +546,7 @@ View freemarker macros
         <#local numIndicators = ( numThumbnails / numThumbnailsPerSection)?ceiling  />
 
         <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
-            <div id="myCarousel" class="image-carousel carousel slide pagination-centered" data-ride="carousel">
+            <div id="myCarousel" class="image-carousel carousel slide pagination-centered pt-3 pb-5" data-ride="carousel">
                 <#if (numIndicators > 1)>
                     <ol class="carousel-indicators ">
                         <li data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</li>
@@ -556,7 +556,7 @@ View freemarker macros
                     </ol>
                     </#if>
                 <!-- Carousel items -->
-                <div class="carousel-inner">
+                <div class="carousel-inner px-5">
 
                     <#list resource.visibleFilesWithThumbnails as irfile>
                         <#local lazyLoad = (irfile_index > (2 * numThumbnailsPerSection)) />
@@ -594,11 +594,11 @@ View freemarker macros
                 </div>
                 <!--/carousel-inner-->
                 <#if (numIndicators > 1)>
-                  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                  <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
                   </a>
-                  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                  <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                   </a>
@@ -610,11 +610,11 @@ View freemarker macros
 
     </div>
         <#if authenticatedUser?? >
-        <div class="bigImage pagination-centered">
+        <div class="bigImage justify-content-center">
             <#list resource.visibleFilesWithThumbnails as irfile>
                 <div>
             <span id="imageContainer">
-            <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}"
+            <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}" class="rounded mx-auto d-block"
                  src="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>"/>
             <#if !irfile.public><span id="confidentialLabel">This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</span></#if>
                 </div>

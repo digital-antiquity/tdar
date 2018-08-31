@@ -484,9 +484,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </div>
 
     <div class="modal hide fade" id="validationErrorModal" tabindex="-1" role="dialog" aria-labelledby="validationErrorModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="validationErrorModalLabel">Validation Errors</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         </div>
         <div class="modal-body">
             <h4>Please correct the following errors</h4>
@@ -495,6 +496,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
         <div class="modal-footer">
             <button type="button" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        </div>
         </div>
     </div>
     </#macro>
@@ -546,21 +548,20 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class='divInheritSection'>
         <#if showInherited>
             <div class="form-group alwaysEnabled">
-                <div class="controls offset-2">
-                    <#if editor!false>
-                        <button type="button" class="btn btn-xs btn-danger clear-section float-right"
-                                data-clear-target="${sectionId}"
-                                title="Admin only: reset checkboxes and remove multi-value fields in this inheritance section."
-                                >Reset Section</button>
-                    </#if>
-                    <label class="checkbox">
-                        <@s.checkbox theme="simple" name="${name}" id="${checkboxId}" />
-                        <span class="labeltext">${label}</span>
-                    </label>
+                <div class="controls offset-2 col-10">
+                    <div class="row">
+                        <div class="<#if editor!false>col-10<#else>col-12</#if>">
+                            <@s.checkbox  name="${name}" id="${checkboxId}" label="${label}"/>
+                        </div>
+                        <#if editor!false>
+                            <button type="button" class="btn btn-xs btn-danger clear-section"
+                                    data-clear-target="${sectionId}"
+                                    title="Admin only: reset checkboxes and remove multi-value fields in this inheritance section."
+                                    >Reset Section</button>
+                        </#if>
+                    </div>
                 </div>
             </div>
-
-
         <#elseif resource??>
             <div id="${checkboxId}hint" class="inherit-tips">
                 <em>Note: This section supports <strong>inheritance</strong>: values can be re-used by resources associated with a project.</em>

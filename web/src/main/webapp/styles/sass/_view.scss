@@ -134,3 +134,16 @@ margin: 20px 0;
         position: fixed;
         top:10px;
     }
+
+
+#myCarousel {
+    .carousel-control-prev {
+        width:5%;
+    }
+    
+    .carousel-indicators {
+        .active {
+            background-color:black;
+        }
+    }
+}
