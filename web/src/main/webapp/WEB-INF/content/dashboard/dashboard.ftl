@@ -207,7 +207,7 @@
 
 <hr/>
 <div>
-<ul class="inline center">
+<ul class="list-inline center small">
             <li><a href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.properName}</a></li>
             <#if authenticatedUser.institution??>
                 <li><a href="<@s.url value="/browse/creators/${authenticatedUser.institution.id?c}"/>">${authenticatedUser.institution.properName}</a></li>
@@ -217,16 +217,14 @@
             </#if>
 </ul>
 </div>
-    <#-- <@accountSection /> -->
-<hr/>
 
 
 <#macro searchSection>
     <div class="row">
         <div class="col-10">
             <form name="searchheader" action="<@s.url value="/search/results"/>">
-                <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
-                <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="col-2" name='resourceTypes' list='resourceTypes'  listValue='label' label="Resource Type"/>
+                <input type="text" name="query" class="searchbox form-control" placeholder="Search ${siteAcronym} &hellip; ">
+                <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="col" name='resourceTypes' list='resourceTypes'  listValue='label' label="Resource Type"/>
                 <@s.submit value="Search" cssClass="btn btn-primary" />
             </form>
         </div>    

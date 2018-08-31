@@ -70,7 +70,11 @@ public class UserRegistration extends UserAuthData {
                 errors.addFieldError(getPrefix() + "person.email", "userAccountController.email_invalid");
             }
         }
-
+        if (isAcceptTermsOfUseAndContributorAgreement()) {
+            setAcceptTermsOfUse(true);
+            setRequestingContributorAccess(true);
+        }
+        
         if (!acceptTermsOfUse && !acceptTermsOfUseAndContributorAgreement) {
             errors.addFieldError(getPrefix() + "acceptTermsOfUse", "userAccountController.require_tos");
         }

@@ -13,10 +13,7 @@ public abstract class AbstractWithContributorUserRegistration extends UserRegist
 
     @Override
     public ErrorTransferObject validate(AuthenticationService authService, String remoteHost) {
-        if (isAcceptTermsOfUseAndContributorAgreement()) {
-            setAcceptTermsOfUse(true);
-            setRequestingContributorAccess(true);
-        }
+  
         ErrorTransferObject validate = super.validate(authService, remoteHost);
         if (!isRequestingContributorAccess()) {
             validate.addFieldError(getPrefix() + "requestingContributorAccess", "userAccountController.require_contributor_agreement");

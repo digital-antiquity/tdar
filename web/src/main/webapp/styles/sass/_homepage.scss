@@ -23,6 +23,13 @@ header + #hero {
   }
 }
 
+#homepageCarousel {
+    .carousel-indicators {
+        left:initial;
+        bottom:0;
+    }
+}
+
 .whatcanyoudig-image {
     background:url(/images/r4/bg-home.jpg) no-repeat center;
     background-size:cover;
@@ -75,11 +82,11 @@ header + #hero {
              margin-left: 0px;
              margin-right: 0px;
              margin-top: 0px;
-             min-height: 52px;
+             min-height: 5.8em;
              text-align: center;
         }
         h5 {
-            min-height: 2em;
+            min-height: 2.4em;
             font-weight:bold;
             font-size:24px;
         }
@@ -252,4 +259,9 @@ header + #hero {
     padding: 0 40px 10px 40px;
 }
 
+}
+
+.right-bottom-dropshadow {
+    box-shadow: 4px 4px rgba(0,0,0,.09);
+    padding-right: 0px;
 }

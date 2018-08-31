@@ -1016,3 +1016,8 @@ table {
 #view-data-table_wrapper > .row + .row {
     overflow-x: scroll;
 }
+
+.rounded-left {
+    border-top-right-radius: .25em;
+    border-bottom-right-radius: .25em;
+}

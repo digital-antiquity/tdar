@@ -178,24 +178,23 @@
             <h2 >What can you dig up?</h2>
             <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
-                <div class="input-group col-md-9 noleftmargin">
+                <div class="input-group col-md-9 noleftmargin right-bottom-dropshadow">
                     <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
                     <span class="input-group-append" name="_tdar.searchType" value="simple">
                         <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
                     </span>
+                </div>
                     <a class="ml-3 align-self-center" href="<@s.url value="/search"/>">advanced</a>
                     <input type="hidden" name="_tdar.searchType" value="simple">
-                </div>
             </form>
         </div>
 </#macro>
 
 <#macro imageheader>
-<div class="image">
-    <div class='hero-note'>
+<div class="image login-image image1">
+    <div class='hero-note rounded-left'>
         <h2>Archive a file <br/>for as little as <span class="red">$5</span></h2>
     </div>
-    <img src="/images/homepage/IMG_4478.jpg" class="img-fluid rounded" alt="Responsive image" title="test">
 </div>
 
 </#macro>
@@ -205,11 +204,11 @@
 <section id="hero">
   <div class = "container">  
     <div class="px-0 pb-0 pt-0">
-    <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-ride="carousel">
+    <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
   <ol class="carousel-indicators">
-    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#homepageCarousel" data-slide-to="1"></li>
+    <li data-target="#homepageCarousel" data-slide-to="2"></li>
   </ol>
   <div class="carousel-inner">
     <div class="carousel-item active">
@@ -220,11 +219,11 @@
     </div>
   </div>
 <!-- 
-  <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+  <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="sr-only">Previous</span>
   </a>
-  <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+  <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
     <span class="sr-only">Next</span>
   </a>

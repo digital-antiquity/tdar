@@ -8,6 +8,10 @@ header + #hero {
 
   #home #hero h2 {
     font-size: 3.5rem; } }
+#homepageCarousel .carousel-indicators {
+  left: initial;
+  bottom: 0; }
+
 .whatcanyoudig-image {
   background: url(/images/r4/bg-home.jpg) no-repeat center;
   background-size: cover;
@@ -50,10 +54,10 @@ header + #hero {
   margin-left: 0px;
   margin-right: 0px;
   margin-top: 0px;
-  min-height: 52px;
+  min-height: 5.8em;
   text-align: center; }
 #home .card h5 {
-  min-height: 2em;
+  min-height: 2.4em;
   font-weight: bold;
   font-size: 24px; }
 #home #hero .carousel-inner {
@@ -161,6 +165,10 @@ header + #hero {
   #slider .image-carousel.carousel {
     margin-bottom: 10px;
     padding: 0 40px 10px 40px; }
+
+.right-bottom-dropshadow {
+  box-shadow: 4px 4px rgba(0, 0, 0, 0.09);
+  padding-right: 0px; }
 
 nav {
   font-weight: bold; }
@@ -4443,5 +4451,9 @@ table {
 
 #view-data-table_wrapper > .row + .row {
   overflow-x: scroll; }
+
+.rounded-left {
+  border-top-right-radius: .25em;
+  border-bottom-right-radius: .25em; }
 
 /*# sourceMappingURL=style.css.map */
