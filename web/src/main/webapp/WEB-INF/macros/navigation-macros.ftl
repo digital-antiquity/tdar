@@ -19,9 +19,6 @@ navigation freemarker macros
   @requires authenticatedUser:Person person object of the authenticated user
 -->
     <#macro toolbar namespace current="view" modern=false>
-    <#if !editable>
-        <#return>
-    </#if>
          <@_toolbar>
             <@makeLink namespace "edit" "edit" "edit" current />
             <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
@@ -45,6 +42,9 @@ navigation freemarker macros
 
 
     <#macro _toolbar>
+    <#if !editable>
+        <#return>
+    </#if>
         <#if (sessionData.authenticated)!false && (persistable?has_content && persistable.id > 0)>
         <div class="resource-nav  screen modern row" >
                 <label class="col-form-label list-inline-item" style="color:#666">Actions:</label>
@@ -60,20 +60,17 @@ navigation freemarker macros
 
     <#macro collectionToolbar namespace current="view">
          <@_toolbar>
-        <#if editable>
-                    <@makeLink resourceCollection.urlNamespace "edit" "edit" "edit" current />
-                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-                    <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true false />
-                    <#if editor && ((resourceCollection.managedResources![])?size > 0) >
-	
-	                    <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
-	                    <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
-					</#if>
+            <@makeLink resourceCollection.urlNamespace "edit" "edit" "edit" current />
+            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+            <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+            <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true false />
+            <#if editor && ((resourceCollection.managedResources![])?size > 0) >
+                    <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
+                    <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
+			</#if>
              <#if administrator && whiteLabelCollection>
-                        <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
+                    <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
              </#if>
-        </#if>
         <#nested>
             <#if editor>
                 <@makeLink namespace "admin/${persistable.id?c}" "admin" "admin" "" false />                   
@@ -84,22 +81,20 @@ navigation freemarker macros
 
     <#macro billingToolbar namespace current="view">
          <@_toolbar>
-    		    <#if editable>
-                    <@makeLink namespace "edit" "edit" "edit" current />
-                    <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-                    <@makeLink "billing" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-                    <@makeLink "export" "request?accountId=${persistable.id}" "export" "export" current true _deleteable />
-		        </#if>
-	        	<@makeLink "cart" "add?accountId=${persistable.id?c}" "add invoice" "add" "" false false />
-    	    	<#if administrator>
-    		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
-		        </#if>
-                <#local edit = !(editable || administrator) />
-    		    <#if !edit>
-                    <#local _large = (persistable.resources?size &gt; 50000) />
-	                <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
-		        </#if>
-                <@makeLink namespace "transfer/${persistable.id?c}" "transfer" "transfer" current true edit />
+            <@makeLink namespace "edit" "edit" "edit" current />
+            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
+            <@makeLink "billing" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
+            <@makeLink "export" "request?accountId=${persistable.id}" "export" "export" current true _deleteable />
+        	<@makeLink "cart" "add?accountId=${persistable.id?c}" "add invoice" "add" "" false false />
+	    	<#if administrator>
+		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
+	        </#if>
+            <#local edit = !(editable || administrator) />
+		    <#if !edit>
+                <#local _large = (persistable.resources?size &gt; 50000) />
+                <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
+	        </#if>
+            <@makeLink namespace "transfer/${persistable.id?c}" "transfer" "transfer" current true edit />
          </@_toolbar>
     </#macro>
 
@@ -110,7 +105,7 @@ navigation freemarker macros
     @requires authenticatedUser:Person
  -->
     <#macro creatorToolbar current>
-        <#if editable!false >
+         <@_toolbar>
             <#if (persistable.registered)!false>
                 <#local creatorType = "user" />
             <#elseif creator??>
@@ -118,18 +113,15 @@ navigation freemarker macros
             <#else>
                 <#local creatorType = persistable.creatorType?lower_case />
             </#if>
-
-             <@_toolbar>
-			    <#if "edit" != current>
-                    <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
-                <#else>
-                    <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
-                </#if>
-                <#if creatorType == 'user'>
-                	<@makeLink "entity/user" "rights/${id?c}" "rights" "rights" current false />
-				</#if>
+		    <#if "edit" != current>
+                <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
+            <#else>
+                <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
+            </#if>
+            <#if creatorType == 'user'>
+            	<@makeLink "entity/user" "rights/${id?c}" "rights" "rights" current false />
+			</#if>
          </@_toolbar>
-        </#if>
     </#macro>
 
 

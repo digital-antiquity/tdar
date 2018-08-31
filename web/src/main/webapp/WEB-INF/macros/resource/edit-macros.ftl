@@ -143,28 +143,28 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             <td></td>
                             <td>
                                 <@s.textfield  theme="simple" name='latitudeLongitudeBoxes[0].north' id='maxy' size="14" cssClass="maxy float latLong ne-lat" title="Please enter a valid Maximum Latitude" />
-                                <input type="text" id='d_maxy' placeholder="Latitude (max)" class="ne-lat-display col-2 d_maxy"/>
+                                <input type="text" id='d_maxy' placeholder="Latitude (max)" class="ne-lat-display form-control d_maxy"/>
                             </td>
                             <td></td>
                         </tr>
                         <tr>
                             <td style="width:33%;text-align:center">
                                 <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].west" id='minx' size="14" cssClass="minx float latLong sw-lng" title="Please enter a valid Minimum Longitude" />
-                                <input type="text" id='d_minx' placeholder="Longitude (min)" class="sw-lng-display col-2 d_minx"/>
+                                <input type="text" id='d_minx' placeholder="Longitude (min)" class="sw-lng-display form-control d_minx"/>
                             </td>
                             <td style="width:33%;text-align:center">
                                 <input type="button" id="locate" value="Locate" class="btn locateCoordsButton"/>
                             </td>
                             <td style="width:33%;text-align:center">
                                 <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].east" id='maxx' size="14" cssClass="maxx float latLong ne-lng" title="Please enter a valid Maximum Longitude" />
-                                <input type="text" id='d_maxx' placeholder="Longitude (max)" class="d_maxx ne-lng-display col-2"/>
+                                <input type="text" id='d_maxx' placeholder="Longitude (max)" class="d_maxx ne-lng-display form-control"/>
                             </td>
                         </tr>
                         <tr>
                             <td></td>
                             <td>
                                 <@s.textfield theme="simple"  name="latitudeLongitudeBoxes[0].south" id="miny" size="14" cssClass="miny float latLong sw-lat" title="Please enter a valid Minimum Latitude" />
-                                <input type="text" id="d_miny" placeholder="Latitude (min)" class="d_miny sw-lat-display col-2"/>
+                                <input type="text" id="d_miny" placeholder="Latitude (min)" class="d_miny sw-lat-display  form-control"/>
                             </td>
                             <td></td>
                         </tr>
