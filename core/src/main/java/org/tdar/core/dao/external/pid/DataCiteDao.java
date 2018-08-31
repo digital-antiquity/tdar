@@ -8,9 +8,7 @@ package org.tdar.core.dao.external.pid;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,19 +18,17 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -58,7 +54,7 @@ public class DataCiteDao implements ExternalIDProvider {
     private static final String UTF_8 = "UTF-8";
 
     private static final String METADATA = "metadata";
-    // DOCUMENTATION: http://n2t.net/ezid/doc/apidoc.html#operation-get-identifier-metadata
+    // DOCUMENTATION: https://support.datacite.org/docs/mds-api-guide
 
     private static final String DOI_PROVIDER_PASSWORD = "doi.provider.password";
     private static final String DOI_PROVIDER_USERNAME = "doi.provider.username";
@@ -160,8 +156,12 @@ public class DataCiteDao implements ExternalIDProvider {
     @Override
     public Map<String, String> getMetadata(String identifier) throws IOException {
         Map<String, String> typeMap = new HashMap<String, String>();
-        HttpGet request = new HttpGet(getDOIProviderHostname() + "/metadata/" + identifier);
+        String uri = getDOIProviderHostname() + "/metadata/" + identifier;
+        logger.trace("urL: {}", uri);
+        HttpGet request = new HttpGet(uri);
+
         CloseableHttpResponse execute = httpclient.execute(request);
+        logger.debug("done request");
         if (execute.getStatusLine().getStatusCode() != 200) {
             throw new TdarRecoverableRuntimeException("error getting doi metadata:" + execute.getStatusLine().toString());
         }
@@ -169,6 +169,7 @@ public class DataCiteDao implements ExternalIDProvider {
         logger.trace("result: {}", xml);
         typeMap.put("xml", xml);
         typeMap.put("id", identifier);
+        request.releaseConnection();
         return typeMap;
     }
 
@@ -202,9 +203,11 @@ public class DataCiteDao implements ExternalIDProvider {
          */
         HttpDelete delete = new HttpDelete(constructDataCiteUrl(r, METADATA));
         CloseableHttpResponse execute = httpclient.execute(delete);
+        logger.debug("{}",execute.getStatusLine());
         if (execute.getStatusLine().getStatusCode() != 200) {
             throw new TdarRecoverableRuntimeException("error deleting doi:" + execute.getStatusLine().toString());
         }
+        delete.releaseConnection();
         return null;
     }
 
@@ -235,8 +238,9 @@ public class DataCiteDao implements ExternalIDProvider {
             HttpEntity entity_ = EntityBuilder.create().setText(result).setContentType(ContentType.APPLICATION_XML.withCharset(UTF_8)).build();
             put.setEntity(entity_);
             CloseableHttpResponse execute = httpclient.execute(put);
-            logger.debug(execute.toString());
-            if (execute.getStatusLine().getStatusCode() != 200) {
+            put.releaseConnection();
+            if (execute.getStatusLine().getStatusCode() != 201) {
+                logger.debug(execute.toString());
                 throw new TdarRecoverableRuntimeException("error registering doi:" + execute.getStatusLine().toString());
             }
             if (StringUtils.isBlank(r.getExternalId())) {
@@ -259,14 +263,21 @@ public class DataCiteDao implements ExternalIDProvider {
          */
         HttpPut put = new HttpPut(url);
         EntityBuilder e = EntityBuilder.create();
-        List<NameValuePair> parameters = e.getParameters();
         e.setParameters(new BasicNameValuePair("doi", constructDoi(r)), new BasicNameValuePair("url", r.getAbsoluteUrl()));
         put.setEntity(e.build());
         CloseableHttpResponse execute = httpclient.execute(put);
-        if (execute.getStatusLine().getStatusCode() != 200) {
+        put.releaseConnection();
+        if (isNotOkStatusCode(execute.getStatusLine().getStatusCode())) {
             throw new TdarRecoverableRuntimeException("error registering doi:" + execute.getStatusLine().toString());
         }
 
+    }
+
+    private boolean isNotOkStatusCode(int statusCode) {
+        if (statusCode != 200 && statusCode != 201) {
+            return true;
+        }
+        return false;
     }
 
     /**

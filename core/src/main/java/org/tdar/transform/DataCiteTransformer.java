@@ -55,6 +55,8 @@ import edu.asu.lib.mods.ModsElementContainer.TypeOfResourceValue;
 public abstract class DataCiteTransformer<R extends Resource> implements
         Transformer<R, DataCiteDocument> {
 
+    // METADATA RULES : https://schema.datacite.org/meta/kernel-4.1/doc/DataCite-MetadataKernel_v4.1.pdf
+    
     @SuppressWarnings("unused")
     private final transient Logger log = LoggerFactory.getLogger(getClass());
     private XmlEscapeHelper x;
@@ -71,7 +73,7 @@ public abstract class DataCiteTransformer<R extends Resource> implements
             dcd.addDescription(getX().stripNonValidXMLCharacters(abst), DescriptionType.ABSTRACT);
         }
 
-        switch(source.getResourceType()) {
+        switch (source.getResourceType()) {
             case ARCHIVE:
             case PROJECT:
                 dcd.setResourceType(org.datacite.v41.ResourceType.COLLECTION);
@@ -98,26 +100,19 @@ public abstract class DataCiteTransformer<R extends Resource> implements
         }
 
         int year = source.getDateCreated().getYear() + 1900;
-        String publisher = null;
+        String publisher = "(:unav)";
         if (source instanceof InformationResource) {
             InformationResource ir = (InformationResource) source;
             if (ir.getDate() != null && ir.getDate() > 1) {
                 year = ir.getDate();
             }
-            publisher = ir.getPublisherName();
-            if (publisher == null && ir.getResourceProviderInstitution() != null) {
-                publisher = ir.getResourceProviderInstitution().getName();
+            if (StringUtils.isNotBlank(ir.getPublisherName())) {
+                publisher = ir.getPublisherName();
             }
-        }
-        if (publisher == null) {
-            List<ResourceCreator> creators = new ArrayList<>(source.getResourceCreators(ResourceCreatorRole.PREPARER));
-            creators.addAll(source.getResourceCreators(ResourceCreatorRole.SUBMITTER));
-            creators.addAll(source.getPrimaryCreators());
-            
-            if (CollectionUtils.isNotEmpty(creators)) {
-                publisher = creators.get(0).getCreator().getProperName();
-            } else {
-                publisher = source.getSubmitter().getProperName();
+            if (publisher == null && ir.getResourceProviderInstitution() != null) {
+                if (StringUtils.isNotBlank(ir.getResourceProviderInstitution().getName())) {
+                publisher = ir.getResourceProviderInstitution().getName();
+                }
             }
         }
         dcd.setPublicationYear(year);

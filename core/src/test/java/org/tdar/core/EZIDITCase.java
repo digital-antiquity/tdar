@@ -112,32 +112,25 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
             Resource r = resourceService.find(TestConstants.DOCUMENT_INHERITING_CULTURE_ID);
             ezidDao.connect();
             String absoluteUrl = UrlService.absoluteUrl(r);
+            r.setExternalId("");
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
-            assertEquals(2, createdIDs.size());
+            assertEquals(1, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();
-            String ark = createdIDs.get("ARK").trim();
             assertTrue(StringUtils.isNotBlank(doi));
-            assertTrue(StringUtils.isNotBlank(ark));
 
             Map<String, String> metadata = ezidDao.getMetadata(doi);
-//            assertEquals(ark, metadata.get(EZIDDao._SHADOWED_BY));
-//            assertEquals(r.getTitle(), metadata.get(EZIDDao.DATACITE_TITLE));
+            assertTrue(metadata.get("xml").contains("<title>"+ r.getTitle() + "</title>"));
 
             r.setTitle("test");
             ezidDao.modify(r, absoluteUrl, doi);
 
             metadata = ezidDao.getMetadata(doi);
-//            assertEquals(ark, metadata.get("_shadowedby"));
-//            assertEquals(r.getTitle(), metadata.get(EZIDDao.DATACITE_TITLE));
+            assertTrue(metadata.get("xml").contains("<title>test</title>"));
 
             r.setStatus(Status.DELETED);
             ezidDao.delete(r, absoluteUrl, doi);
 
             metadata = ezidDao.getMetadata(doi);
-//            assertEquals(ark, metadata.get("_shadowedby"));
-            // should now be blank
-//            assertTrue(r.getTitle().equals(metadata.get(EZIDDao.DATACITE_TITLE)));
-//            assertTrue(EZIDDao._STATUS_UNAVAILABLE.equals(metadata.get(EZIDDao._STATUS)));
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -154,15 +147,14 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
             ezidDao.connect();
             String absoluteUrl = UrlService.absoluteUrl(r);
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
-            assertEquals(2, createdIDs.size());
+            logger.debug("createIds: {}", createdIDs);
+            assertEquals(1, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();
-            String ark = createdIDs.get("ARK").trim();
             assertTrue(StringUtils.isNotBlank(doi));
-            assertTrue(StringUtils.isNotBlank(ark));
 
             Map<String, String> metadata = ezidDao.getMetadata(doi);
-//            assertEquals(ark, metadata.get(EZIDDao._SHADOWED_BY));
-//            assertEquals(r.getTitle(), metadata.get(EZIDDao.DATACITE_TITLE));
+            logger.debug("{}",metadata);
+            assertTrue(metadata.get("xml").contains("<title>"+ r.getTitle() + "</title>"));
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -203,11 +195,9 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
             String absoluteUrl = UrlService.absoluteUrl(r);
             logger.debug("create");
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
-            assertEquals(2, createdIDs.size());
+            assertEquals(1, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();
-            String ark = createdIDs.get("ARK").trim();
             assertTrue(StringUtils.isNotBlank(doi));
-            assertTrue(StringUtils.isNotBlank(ark));
 
             logger.debug("get metadata");
             Map<String, String> metadata = ezidDao.getMetadata(doi);
