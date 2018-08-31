@@ -2,7 +2,7 @@
 
 const Vue = require("vue/dist/vue.esm.js").default;
 
-describe("BalkSpec.js: fileupload suite - root", function(){
+xdescribe("BalkSpec.js: fileupload suite - root", function(){
     "use strict";
 
        function getBaseConfig() {

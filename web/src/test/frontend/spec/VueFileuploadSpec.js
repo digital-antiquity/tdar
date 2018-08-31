@@ -116,7 +116,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
                     Vue.nextTick(function() {
                         expect(filePart.file.action).toEqual("MODIFY_METADATA");
                         vapp.$destroy();
-
+                                
                     });
                 });
             });
