@@ -26,7 +26,7 @@
 <#if parameters.cssClass??>
  class="${parameters.cssClass?html}"<#rt/>
 <#else>
- class="alert alert-warning list-unstyled"<#rt/>
+ class="alert alert-info list-unstyled  mt-5"<#rt/>
 </#if>
 <#if parameters.cssStyle??>
  style="${parameters.cssStyle?html}"<#rt/>
