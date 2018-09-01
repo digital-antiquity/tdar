@@ -12,7 +12,7 @@ vim:sts=2:sw=2:filetype=jsp
 </head>
 <body>
 <#if sessionData.returnUrl?? && sessionData.returnUrl.contains("/filestore/") >
-<div class="alert alert-warning">
+<div class="alert alert-warning pt-4">
     <button type="button" class="close" data-dismiss="alert">×</button>
     <strong>Note:</strong>You must be logged-in to download materials. Please log in below, or signup for a free user account.
 </div>
