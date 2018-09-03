@@ -16,10 +16,11 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.base.GenericDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.workflow.workflows.Workflow;
-import org.tdar.filestore.WorkflowContext;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.fileprocessing.workflows.HasDatabaseConverter;
+import org.tdar.fileprocessing.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 
 /**
  * $Id$
@@ -68,22 +69,19 @@ public class MessageServiceImpl implements MessageService {
     public <W extends Workflow> boolean sendFileProcessingRequest(Workflow workflow, InformationResourceFileVersion... informationResourceFileVersions) {
         WorkflowContext ctx = workflowContextService.initializeWorkflowContext(workflow, informationResourceFileVersions);
         List<Long> irfIds = new ArrayList<>();
-        Set<InformationResource> resources = new HashSet<>();
         for (InformationResourceFileVersion version : informationResourceFileVersions) {
             InformationResourceFile irf = version.getInformationResourceFile();
             if (!irfIds.contains(irf.getId())) {
                 irf.setStatus(FileStatus.QUEUED);
                 genericDao.saveOrUpdate(irf);
-                // FIXME: when we reimplement the message queue, this will need to be adjusted to do a flush here, otherwise, we cannot guarantee that the save
-                // will happen before the evict
-                resources.add(irf.getInformationResource());
             }
         }
         // genericDao.detachFromSession(resources);
-        resources = null;
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
-            ctx.setSerializationService(serializationService);
+            if (ctx.isCodingSheet() == false && ctx.isDataTableSupported() && workflow instanceof HasDatabaseConverter) {
+                ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaaseConverterForExtension(ctx.getPrimaryExtension()));
+            }
             boolean success = workflow_.run(ctx);
             // Martin: the following mandates that we wait for run to complete.
             // Surely the plan is to immediately show the user a result page with "your request is being processed" and then

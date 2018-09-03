@@ -16,17 +16,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.ArchiveEvaluator;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.download.DownloadFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.filestore.Filestore;
+import org.tdar.filestore.VersionType;
 
 public class DownloadServiceITCase extends AbstractIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");

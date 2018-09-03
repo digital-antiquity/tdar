@@ -29,9 +29,9 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Localizable;
-import org.tdar.core.exception.LocalizableException;
 import org.tdar.core.service.ReflectionHelper;
+import org.tdar.exception.LocalizableException;
+import org.tdar.locale.Localizable;
 
 public class LocalizationTestCase {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

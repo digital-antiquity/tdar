@@ -1,41 +1,23 @@
 package org.tdar.db.model;
 
-import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -52,20 +34,16 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.db.builder.AbstractSqlTools;
 import org.tdar.db.builder.SqlSelectBuilder;
+import org.tdar.db.builder.SqlTools;
 import org.tdar.db.builder.WhereCondition;
 import org.tdar.db.builder.WhereCondition.Condition;
 import org.tdar.db.builder.WhereCondition.ValueCondition;
-import org.tdar.db.conversion.analyzers.DateAnalyzer;
-import org.tdar.db.model.abstracts.AbstractDataRecord;
-import org.tdar.db.model.abstracts.RowOperations;
-import org.tdar.db.model.abstracts.TargetDatabase;
-import org.tdar.utils.MessageHelper;
-import org.tdar.utils.Pair;
+import org.tdar.db.datatable.DataTableColumnType;
+import org.tdar.db.datatable.ImportColumn;
+import org.tdar.db.datatable.ImportTable;
+import org.tdar.db.postgres.LowMemoryStatementCreator;
+import org.tdar.db.postgres.PostgresImportDatabase;
 
 /**
  * $Id$
@@ -77,12 +55,11 @@ import org.tdar.utils.Pair;
  * @version $Revision$
  */
 @Component(value = "target")
-public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
+public class PostgresDatabase extends PostgresImportDatabase implements TargetDatabase {
 
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT * FROM \"%s\" WHERE \"%s\"=?";
     private static final String SELECT_ALL_FROM_TABLE_WHERE_LOWER = "SELECT * FROM \"%s\" WHERE lower(\"%s\")=lower(?)";
-    private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE \"%s\" DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE \"%s\" SET \"%s\"='" + NO_CODING_SHEET_VALUE + " ' || \"%s\" WHERE \"%s\" IS NULL";
     private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE \"%s\" SET \"%s\"=? WHERE trim(\"%s\")=?";
@@ -92,147 +69,55 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String RENAME_COLUMN = "ALTER TABLE \"%s\" RENAME COLUMN \"%s\" TO \"%s\"";
     private static final String UPDATE_COLUMN_TO_NULL = "UPDATE \"%s\" SET \"%s\"=NULL";
     private static final String ORIGINAL_KEY = "__o";
-    private static final String INSERT_STATEMENT = "INSERT INTO %1$s (%2$s) VALUES(%3$s)";
-    private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + DataTableColumn.TDAR_ID_COLUMN + " bigserial, %2$s)";
-    private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
-    public static final String DEFAULT_TYPE = "text";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    // FIXME: replace with LoadingCache for simpler usage (and better concurrent performance)
-    private ConcurrentMap<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap = new ConcurrentHashMap<DataTable, Pair<PreparedStatement, Integer>>();
 
-    private JdbcTemplate jdbcTemplate;
-
-    @Override
-    public int getMaxTableLength() {
-        return MAX_NAME_SIZE;
-    }
-
-    @Override
-    public int getMaxColumnNameLength() {
-        return MAX_COLUMN_NAME_SIZE;
-    }
-
-    @Override
-    public DatabaseType getDatabaseType() {
-        return DatabaseType.POSTGRES;
-    }
-
-    @Override
-    public String getFullyQualifiedTableName(String tableName) {
-        return SCHEMA_NAME + '.' + tableName;
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void dropTable(final DataTable dataTable) {
-        dropTable(dataTable.getName());
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void dropTable(final String tableName) {
-        try {
-            jdbcTemplate.execute(String.format(DROP_TABLE, getFullyQualifiedTableName(tableName)));
-        } catch (BadSqlGrammarException exception) {
-            if (isAcceptableException(exception.getSQLException())) {
-                return;
-            }
-            throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_delete_table", exception, Arrays.asList(tableName));
-        }
-    }
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void addOrExecuteBatch(DataTable dataTable, boolean force) {
-        Pair<PreparedStatement, Integer> statementPair = preparedStatementMap.get(dataTable);
-        logger.trace("adding or executing batch for {} with statement pair {}", dataTable, statementPair);
-        if (statementPair == null) {
-            return;
-        }
-
-        PreparedStatement statement = statementPair.getFirst();
-        int batchNum = statementPair.getSecond().intValue() + 1;
-
-        statementPair.setSecond(batchNum);
-        if ((batchNum < TdarConfiguration.getInstance().getTdarDataBatchSize()) && !force) {
-            return;
-        }
-        try {
-            String success = "all";
-            int[] numUpdates = statement.executeBatch();
-            for (int i = 0; i < numUpdates.length; i++) {
-                if (numUpdates[i] == -2) {
-                    logger.error("Execution {} : unknown number of rows updated", i);
-                    success = "some";
-                } else {
-                    logger.trace("Execution {} successful: {} rows updated", i, numUpdates[i]);
-                }
-            }
-            logger.debug("{} inserts/updates committed, {} successful", numUpdates.length, success);
-            // cleanup
-        } catch (SQLException e) {
-            logger.warn("sql exception", e.getNextException());
-            throw new TdarRecoverableRuntimeException("postgresDatabase.prepared_statement_fail", e);
-        } finally {
-            try {
-                statement.clearBatch();
-                statement.getConnection().close();
-                preparedStatementMap.remove(dataTable);
-            } catch (Exception e) {
-                throw new TdarRecoverableRuntimeException("postgresDatabase.could_not_close", e);
-            }
-        }
-    }
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     public void createTable(final String createTableStatement) {
         logger.debug(createTableStatement);
-        jdbcTemplate.execute(createTableStatement);
-    }
-
-    private boolean isAcceptableException(SQLException exception) {
-        return exception.getSQLState().equals(getSqlDropStateError());
+        getJdbcTemplate().execute(createTableStatement);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Transactional(value = "tdarDataTx", readOnly = true)
     public List query(String sql, RowMapper rowMapper) {
-        return jdbcTemplate.query(sql, rowMapper);
+        return getJdbcTemplate().query(sql, rowMapper);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T query(String sql, ResultSetExtractor<T> resultSetExtractor) {
-        return jdbcTemplate.query(sql, resultSetExtractor);
+        return getJdbcTemplate().query(sql, resultSetExtractor);
     }
 
     @Override
     @Deprecated
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
+    public <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
-        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+        return getJdbcTemplate().query(builder.toSql(), resultSetExtractor);
     }
 
     @Override
     @Deprecated
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
+    public <T> T selectAllFromTable(ImportTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
         SqlSelectBuilder builder = getSelectAll(table, false);
         builder.getOrderBy().addAll(Arrays.asList(orderBy));
-        return jdbcTemplate.query(new LowMemoryStatementCreator(builder.toSql()), resultSetExtractor);
+        return getJdbcTemplate().query(new LowMemoryStatementCreator(builder.toSql()), resultSetExtractor);
     }
 
-    private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
+    private SqlSelectBuilder getSelectAll(ImportTable table, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         if (includeGeneratedValues) {
             builder.getColumns().add(DataTableColumn.TDAR_ROW_ID.getName());
         }
-        List<DataTableColumn> columns = table.getDataTableColumns();
-        columns.sort(new Comparator<DataTableColumn>() {
+        List<ImportColumn> columns = table.getDataTableColumns();
+        columns.sort(new Comparator<ImportColumn>() {
 
             @Override
-            public int compare(DataTableColumn o1, DataTableColumn o2) {
+            public int compare(ImportColumn o1, ImportColumn o2) {
                 Integer c1 = 0;
                 Integer c2 = 0;
                 if (o1.getImportOrder() != null) {
@@ -245,28 +130,32 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             }
 
         });
-        table.getDataTableColumns().forEach(dtc -> {
+        for (ImportColumn dtc : columns) {
             builder.getColumns().add(dtc.getName());
-            if (dtc.getDefaultCodingSheet() != null && includeGeneratedValues) {
-                builder.getColumns().add(generateOriginalColumnName(dtc));
+
+            if (dtc instanceof DataTableColumn) {
+                DataTableColumn col = (DataTableColumn) dtc;
+                if (col.getDefaultCodingSheet() != null && includeGeneratedValues) {
+                    builder.getColumns().add(generateOriginalColumnName(col));
+                }
             }
-        });
+        }
         builder.getTableNames().add(table.getName());
         return builder;
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
+    public <T> T selectAllFromTableInImportOrder(ImportTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         builder.getOrderBy().add(DataTableColumn.TDAR_ROW_ID.getName());
         LowMemoryStatementCreator lmsc = new LowMemoryStatementCreator(builder.toSql());
-        return jdbcTemplate.query(lmsc, resultSetExtractor);
+        return getJdbcTemplate().query(lmsc, resultSetExtractor);
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<String> selectDistinctValues(DataTableColumn dataTableColumn, boolean sort) {
+    public List<String> selectDistinctValues(ImportTable table , ImportColumn dataTableColumn, boolean sort) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
@@ -279,17 +168,17 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             builder.getGroupBy().add(dataTableColumn.getName());
         }
         builder.getColumns().add(dataTableColumn.getName());
-        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getTableNames().add(table.getName());
         if (sort) {
             builder.getOrderBy().add(dataTableColumn.getName());
         }
         logger.trace(builder.toSql());
-        return jdbcTemplate.queryForList(builder.toSql(), String.class);
+        return getJdbcTemplate().queryForList(builder.toSql(), String.class);
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn) {
+    public Map<String, Long> selectDistinctValuesWithCounts(ImportTable table, ImportColumn dataTableColumn) {
         if (dataTableColumn == null) {
             return Collections.emptyMap();
         }
@@ -298,7 +187,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         builder.setCountColumn(dataTableColumn.getName());
         builder.getGroupBy().add(dataTableColumn.getName());
         builder.getColumns().add(dataTableColumn.getName());
-        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getTableNames().add(table.getName());
         builder.getOrderBy().add(dataTableColumn.getName());
 
         final Map<String, Long> toReturn = new HashMap<String, Long>();
@@ -314,17 +203,17 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<String> selectNonNullDistinctValues(DataTableColumn dataTableColumn, boolean useUntranslatedValues) {
+    public List<String> selectNonNullDistinctValues(ImportTable table, ImportColumn dataTableColumn, boolean useUntranslatedValues) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
         SqlSelectBuilder builder = new SqlSelectBuilder();
-        builder.getTableNames().add(dataTableColumn.getDataTable().getName());
+        builder.getTableNames().add(table.getName());
         builder.setDistinct(true);
         String name = dataTableColumn.getName();
         if (useUntranslatedValues) {
-            String original = generateOriginalColumnName(dataTableColumn);
-            if (hasColumn(dataTableColumn.getDataTable().getName(), original)) {
+            String original = generateOriginalColumnName((DataTableColumn)dataTableColumn);
+            if (hasColumn(table.getName(), original)) {
                 name = original;
             }
         }
@@ -340,64 +229,17 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             builder.getWhere().add(notBlank);
         }
 
-        return jdbcTemplate.queryForList(builder.toSql(), String.class);
+        return getJdbcTemplate().queryForList(builder.toSql(), String.class);
     }
 
-    @Override
-    public String normalizeTableOrColumnNames(String name) {
-        String result = name.trim().replaceAll("[^\\w]", "_").toLowerCase();
-        if (result.length() > MAX_NAME_SIZE) {
-            result = result.substring(0, MAX_NAME_SIZE);
-        }
-        if (RESERVED_COLUMN_NAMES.contains(result)) {
-            result = "col_" + result;
-        }
-        if (result.equals("")) {
-            result = "col_blank";
-        }
-
-        if (StringUtils.isNumeric(result.substring(0, 1))) {
-            // FIXME: document this
-            result = "c" + result;
-        }
-        return result;
-    }
 
     // FIXME: allows for totally free form queries, refine this later?
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T query(PreparedStatementCreator psc, PreparedStatementSetter pss, ResultSetExtractor<T> rse) {
-        return jdbcTemplate.query(psc, pss, rse);
+        return getJdbcTemplate().query(psc, pss, rse);
     }
 
-    public String getSqlDropStateError() {
-        return DROP_STATE_ERROR_CODE;
-    }
 
-    @Qualifier("tdarDataImportDataSource")
-    @Autowired(required = false)
-    public void setDataSource(DataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
-
-    public DataSource getDataSource() {
-        return jdbcTemplate.getDataSource();
-    }
-
-    /**
-     * Callers that invoke this method must manage the returned Connection
-     * properly and manually close it after use.
-     */
-    protected Connection getConnection() throws SQLException {
-        return getDataSource().getConnection();
-    }
-
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
-    }
-
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     public boolean hasColumn(final String tableName, final String columnName) {
@@ -420,232 +262,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return false;
     }
 
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType type) {
-        alterTableColumnType(tableName, column, type, -1);
-    }
 
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void alterTableColumnType(String tableName, DataTableColumn column, DataTableColumnType columnType, int length) {
-        String type = toImplementedTypeDeclaration(columnType, length);
-        String sqlAlterTable = SQL_ALTER_TABLE;
-        String sql = String.format(sqlAlterTable, tableName, column.getName(), type);
-        logger.trace(sql);
-        getJdbcTemplate().execute(sql);
-    }
-
-    public String getDefaultTypeDeclaration() {
-        return DEFAULT_TYPE;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.tdar.db.model.abstracts.TargetDatabase#toLocalType(org.tdar.core.
-     * bean.resource.DataTableColumnType, int)
-     */
-    @Override
-    public String toImplementedTypeDeclaration(DataTableColumnType dataType, int length_) {
-        int length = length_;
-        String str = getDefaultTypeDeclaration();
-
-        // enforcing a minimum width on all column lengths (TDAR-1105)
-        if (length < 1) {
-            length = 1;
-        }
-
-        switch (dataType) {
-            case BIGINT:
-                str = "bigint";
-                break;
-            case DOUBLE:
-                str = "double precision";
-                break;
-            case DATE:
-            case DATETIME:
-                str = "timestamp with time zone";
-                break;
-            case VARCHAR:
-                if (length <= MAX_VARCHAR_LENGTH) {
-                    str = "character varying (" + length + ")";
-                    break;
-                }
-            default:
-                str = getDefaultTypeDeclaration();
-        }
-        logger.trace("creating definition: {}", str);
-        return str;
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void createTable(DataTable dataTable) {
-        dropTable(dataTable);
-        String createTable = CREATE_TABLE;
-        String COL_DEF = "\"%1$s\" %2$s";
-
-        // take all of the columns that we're dealing with and
-        StringBuilder tableColumnBuilder = new StringBuilder();
-        Set<String> columnNames = new HashSet<String>();
-        Iterator<DataTableColumn> iterator = dataTable.getDataTableColumns().iterator();
-        int i = 1;
-        if (dataTable.getDataTableColumns().size() > MAX_ALLOWED_COLUMNS) {
-            throw new TdarRecoverableRuntimeException("postgresDatabase.datatable_to_long");
-        }
-
-        while (iterator.hasNext()) {
-            DataTableColumn column = iterator.next();
-            String name = column.getName();
-            if (columnNames.contains(name)) {
-                name = name + i;
-                column.setName(name);
-                column.setDisplayName(column.getDisplayName() + i);
-            }
-            columnNames.add(name);
-            i++;
-            tableColumnBuilder.append(String.format(COL_DEF, name,
-                    this.toImplementedTypeDeclaration(column.getColumnDataType(), column.getLength())));
-            if (iterator.hasNext()) {
-                tableColumnBuilder.append(", ");
-
-            }
-        }
-
-        String sql = String.format(createTable, dataTable.getName(), tableColumnBuilder.toString());
-        logger.info("creating table: {}", dataTable.getName());
-        logger.debug(sql);
-        getJdbcTemplate().execute(sql);
-    }
-
-    public PreparedStatement createPreparedStatement(DataTable dataTable, List<DataTableColumn> list) throws SQLException {
-        String insertSQL = INSERT_STATEMENT;
-
-        List<String> columnNameList = dataTable.getColumnNames();
-        String columnNames = StringUtils.join(columnNameList, ", ");
-        String valuePlaceHolder = StringUtils.repeat("?", ", ", columnNameList.size());
-        String sql = String.format(insertSQL, dataTable.getName(), columnNames, valuePlaceHolder);
-        logger.trace(sql);
-
-        return getConnection().prepareStatement(sql);
-    }
-
-    private <K, V> V getOrCreate(K key, ConcurrentMap<K, V> concurrentMap, Callable<V> newValueCreator) throws Exception {
-        V value = concurrentMap.get(key);
-        if (value == null) {
-            V newValue = newValueCreator.call();
-            value = concurrentMap.putIfAbsent(key, newValue);
-            if (value == null) {
-                value = newValue;
-            }
-        }
-        return value;
-    }
-
-    private Callable<Pair<PreparedStatement, Integer>> createPreparedStatementPairCallable(final DataTable dataTable) {
-        return new Callable<Pair<PreparedStatement, Integer>>() {
-            @Override
-            public Pair<PreparedStatement, Integer> call() throws Exception {
-                return Pair.create(createPreparedStatement(dataTable, dataTable.getDataTableColumns()), 0);
-            }
-        };
-    }
-
-    @Override
-    public void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception {
-        if (MapUtils.isEmpty(valueColumnMap)) {
-            return;
-        }
-
-        Pair<PreparedStatement, Integer> statementPair = getOrCreate(dataTable, preparedStatementMap, createPreparedStatementPairCallable(dataTable));
-        PreparedStatement preparedStatement = statementPair.getFirst();
-        logger.trace("{}", valueColumnMap);
-
-        int i = 1;
-
-        for (DataTableColumn column : dataTable.getDataTableColumns()) {
-            String colValue = valueColumnMap.get(column);
-            setPreparedStatementValue(preparedStatement, i, column, colValue);
-            i++;
-        }
-        // push everything into batches
-        addToBatch(preparedStatement);
-        addOrExecuteBatch(dataTable, false);
-    }
-
-    private void addToBatch(PreparedStatement preparedStatement) {
-        try {
-            preparedStatement.addBatch();
-        } catch (SQLException e) {
-            logger.error("an error ocurred while processing a prepared statement ", e);
-        }
-    }
-
-    private void setPreparedStatementValue(PreparedStatement preparedStatement, int i, DataTableColumn column, String colValue) throws SQLException {
-        // not thread-safe
-        DateFormat dateFormat = new SimpleDateFormat();
-        DateFormat accessDateFormat = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
-        if (!StringUtils.isEmpty(colValue)) {
-            switch (column.getColumnDataType()) {
-                case BOOLEAN:
-                    preparedStatement.setBoolean(i, Boolean.parseBoolean(colValue));
-                    break;
-                case DOUBLE:
-                    preparedStatement.setDouble(i, Double.parseDouble(colValue));
-                    break;
-                case BIGINT:
-                    preparedStatement.setLong(i, Long.parseLong(colValue));
-                    break;
-                case BLOB:
-                    preparedStatement.setBinaryStream(i, new ByteArrayInputStream(colValue.getBytes()), colValue.length());
-                    break;
-                case DATE:
-                case DATETIME:
-
-                    Date date = null;
-                    // 3 cases -- it's a date already
-                    try {
-                        java.sql.Date.valueOf(colValue);
-                        date = dateFormat.parse(colValue);
-                    } catch (Exception e) {
-                        logger.trace("couldn't parse " + colValue, e);
-                    }
-                    // it's an Access date
-                    try {
-                        date = accessDateFormat.parse(colValue);
-                    } catch (Exception e) {
-                        logger.trace("couldn't parse " + colValue, e);
-                    }
-                    // still don't know, so it came from the date analyzer
-                    if (date == null) {
-                        date = DateAnalyzer.convertValue(colValue);
-                    }
-                    if (date != null) {
-                        java.sql.Timestamp sqlDate = new java.sql.Timestamp(date.getTime());
-                        preparedStatement.setTimestamp(i, sqlDate);
-                    } else {
-                        throw new TdarRecoverableRuntimeException("postgresDatabase.cannot_parse_date",
-                                Arrays.asList(colValue.toString(), column.getName(), column.getDataTable().getName()));
-                    }
-                    break;
-                default:
-                    preparedStatement.setString(i, colValue);
-            }
-
-        } else {
-            preparedStatement.setNull(i, column.getColumnDataType().getSqlType());
-        }
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void closePreparedStatements(Collection<DataTable> dataTables) throws Exception {
-        for (DataTable table : dataTables) {
-            addOrExecuteBatch(table, true);
-        }
-    }
 
     private String generateOriginalColumnName(DataTableColumn column) {
         return column.getName() + ORIGINAL_KEY + column.getId();
@@ -677,15 +294,15 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             // this column has already been translated once. Wipe the current
             // translation and replace it with the new.
             String clearTranslatedColumnSql = String.format(UPDATE_COLUMN_TO_NULL, tableName, columnName);
-            jdbcTemplate.execute(clearTranslatedColumnSql);
+            getJdbcTemplate().execute(clearTranslatedColumnSql);
         } else {
             // FIXME: preserve original column order
             // if this column has never had a default coding sheet, rename column to column_original
             String renameColumnSql = String.format(RENAME_COLUMN, tableName, columnName, originalColumnName);
-            jdbcTemplate.execute(renameColumnSql);
+            getJdbcTemplate().execute(renameColumnSql);
             // and then create the column again.
             String createColumnSql = String.format(ADD_COLUMN, tableName, columnName);
-            jdbcTemplate.execute(createColumnSql);
+            getJdbcTemplate().execute(createColumnSql);
 
         }
 
@@ -755,7 +372,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             }
         };
         // executes translation step
-        jdbcTemplate.execute(translateColumnPreparedStatementCreator, translateColumnCallback);
+        getJdbcTemplate().execute(translateColumnPreparedStatementCreator, translateColumnCallback);
         // the last step is to update all untranslated rows
         // SQL is essentially: update tableName set translatedColumnName='No
         // coding sheet value for code: ' || originalColumnName where
@@ -763,7 +380,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         String updateUntranslatedRows = String.format(UPDATE_UNMAPPED_CODING_SHEET, tableName, columnName, originalColumnName, columnName);
         // getLogger().debug("updating untranslated rows: " +
         // updateUntranslatedRows);
-        jdbcTemplate.execute(updateUntranslatedRows);
+        getJdbcTemplate().execute(updateUntranslatedRows);
     }
 
     /**
@@ -808,20 +425,20 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         logger.debug(sqlDrop);
         logger.debug(sqlRename);
         JdbcTemplate jdbcTemplate = getJdbcTemplate();
-        jdbcTemplate.execute(sqlDrop);
-        jdbcTemplate.execute(sqlRename);
+        getJdbcTemplate().execute(sqlDrop);
+        getJdbcTemplate().execute(sqlRename);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     public void executeUpdateOrDelete(final String createTableStatement) {
         logger.debug(createTableStatement);
-        jdbcTemplate.execute(createTableStatement);
+        getJdbcTemplate().execute(createTableStatement);
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor) {
-        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, column.getDataTable().getName(), column.getName()),
+        return getJdbcTemplate().query(String.format(SELECT_ALL_FROM_TABLE_WHERE, column.getDataTable().getName(), column.getName()),
                 new String[] { key },
                 resultSetExtractor);
     }
@@ -830,7 +447,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Transactional(value = "tdarDataTx", readOnly = true)
     public Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
             ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor) {
-        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE_LOWER, column.getDataTable().getName(), column.getName()),
+        return getJdbcTemplate().query(String.format(SELECT_ALL_FROM_TABLE_WHERE_LOWER, column.getDataTable().getName(), column.getName()),
                 new String[] { key }, resultSetExtractor);
     }
 
@@ -839,7 +456,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         logger.warn("RENAMING COLUMN " + column + " TO " + newName, new Exception("altering column should only be done by tests."));
         String sql = String.format(RENAME_COLUMN, column.getDataTable().getName(), column.getName(), newName);
         column.setName(newName);
-        jdbcTemplate.execute(sql);
+        getJdbcTemplate().execute(sql);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
@@ -854,9 +471,9 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public int getRowCount(DataTable dataTable) {
+    public int getRowCount(ImportTable dataTable) {
         String sql = String.format(SELECT_ROW_COUNT, dataTable.getName());
-        return jdbcTemplate.queryForObject(sql, Integer.class);
+        return getJdbcTemplate().queryForObject(sql, Integer.class);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = true)
@@ -867,58 +484,17 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         SqlSelectBuilder builder = new SqlSelectBuilder();
         builder.getColumns().add(column.getName());
         builder.getTableNames().add(column.getDataTable().getName());
-        return jdbcTemplate.queryForList(builder.toSql(), String.class);
+        return getJdbcTemplate().queryForList(builder.toSql(), String.class);
     }
 
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void editRow(DataTable dataTable, Long rowId, Map<?, ?> data) {
-
-        String columnAssignments = "";
-        final List<Object> values = new ArrayList<Object>();
-        String separator = "";
-        for (Object columnName : data.keySet()) {
-            if (!"id".equals(columnName)) {
-                columnAssignments += separator + columnName + "=" + "?";
-                values.add(data.get(columnName));
-                separator = " ";
-            }
-        }
-        // Put id last so WHERE id = ? will work.
-        values.add(data.get("id"));
-
-        // TODO RR: should this fail with an exception?
-        // Probably should log it.
-        if (values.size() > 1) {
-            String sqlTemplate = "UPDATE \"%s\" SET %s WHERE id = ?";
-            String sql = String.format(sqlTemplate, dataTable.getName(), columnAssignments);
-
-            jdbcTemplate.update(sql, values.toArray());
-        }
-    }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public Set<AbstractDataRecord> findAllRows(DataTable dataTable) {
-        return null;
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    public void deleteRow(DataTable dataTable, Long rowId) {
-        // Do nothing.
-        // Not allowed this time.
-        // The use case was to allow modification of existing records.
-        // I am interpreting this literally as update only.
-        throw new NotImplementedException(MessageHelper.getMessage("error.not_implemented"));
-    }
-
-    @Override
-    @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
+    public List<List<String>> selectAllFromTable(ImportTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,
             String query) {
         List<String> coalesce = new ArrayList<String>();
-        for (DataTableColumn column : dataTable.getDataTableColumns()) {
+        List<ImportColumn> columns =(List<ImportColumn>)(List)dataTable.getDataTableColumns();
+        for (ImportColumn column : columns) {
             coalesce.add(String.format("coalesce(\"%s\",'') ", column.getName()));
         }
 
@@ -929,37 +505,41 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         String vector = StringUtils.join(coalesce, " || ' ' || ");
         String sql = String.format("SELECT %s from \"%s\" where to_tsvector('english', %s) @@ to_tsquery(%s)", selectColumns, dataTable.getName(), vector,
-                quote(query, false));
+                SqlTools.quote(query, false));
         logger.debug(sql);
-        return jdbcTemplate.query(sql, resultSetExtractor);
+        return getJdbcTemplate().query(sql, resultSetExtractor);
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public <T> T selectRowFromTable(DataTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
+    public <T> T selectRowFromTable(ImportTable dataTable, ResultSetExtractor<T> resultSetExtractor, Long rowId) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
         builder.getTableNames().add(dataTable.getName());
         WhereCondition where = new WhereCondition(DataTableColumn.TDAR_ROW_ID.getName());
         where.setValue(rowId);
         builder.getWhere().add(where);
-        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+        return getJdbcTemplate().query(builder.toSql(), resultSetExtractor);
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public String selectTableAsXml(DataTable dataTable) {
+    public String selectTableAsXml(ImportTable dataTable) {
         String sql = String.format("select table_to_xml('%s',true,false,'');", dataTable.getName());
         logger.debug(sql);
-        return jdbcTemplate.queryForObject(sql, String.class);
+        return getJdbcTemplate().queryForObject(sql, String.class);
     }
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public boolean checkTableExists(DataTable dataTable) {
-        String sql = String.format("select * from \"%s\" limit 1", dataTable.getName());
+    public boolean checkTableExists(ImportTable dataTable) {
+        return checkTableExists(dataTable.getName());
+    }
+
+    private boolean checkTableExists(String table) {
+        String sql = String.format("select * from \"%s\" limit 1", table);
         logger.trace(sql);
         try {
-            SqlRowSet queryForRowSet = jdbcTemplate.queryForRowSet(sql);
+            SqlRowSet queryForRowSet = getJdbcTemplate().queryForRowSet(sql);
             queryForRowSet.next();
             return true;
         } catch (Throwable e) {

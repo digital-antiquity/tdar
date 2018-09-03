@@ -9,7 +9,7 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionHelper;
 import org.tdar.functional.AbstractSeleniumWebITCase;
 import org.tdar.junit.RunWithTdarConfiguration;

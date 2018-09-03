@@ -39,16 +39,16 @@ import org.tdar.utils.PersistableUtils;
 // @Indexed
 @Table(name = "dataset")
 @XmlRootElement(name = "dataset")
-public class Dataset extends InformationResource {
+public class Dataset extends InformationResource implements HasTables {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
-    // @IndexedEmbedded
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "dataset_id", nullable=true)
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "dataset_id")
+    @JoinColumn(name = "dataset_id", nullable=true)
     private Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
 
     public Dataset() {

@@ -1,53 +1,12 @@
 Vertebrate Element
 	Articulated Skeleton
-		Articulated Skeleton Complete
 		Articulated Skeleton Nearly Complete
 		Articulated Skeleton Partial
-			Articulated Skeleton Anterior Portion
 			Articulated Skeleton Posterior Portion
 	Non-appendicular
 		Skull (Head)
 			Antler
-			Antler or Horncore
-			Alisphenoid
-			Angular
-			Articular
-			Basihyal
-			Basiooccipital
-			Basisphenoid
-			Basisphenoidal Rostrum
-			Basitemporal Plate
-			Beak
-			Branchiostegal (Branchiostegal Ray)
-			Bulla
-			Ceratohyal
-			Circumorbital (Orbital Ring)
-			Dermatosphenotic
 			Dentary
-			Ectopterygoid
-			Endocranium (Neurocranium)
-			Endopterygoid
-			Epihyal
-			Epiotic
-			Ethmoid
-			Exoccipital
-			Frontal
-				Frontal w/ Antler
-				Frontal w/ Pedicel
-			Frontal or Parietal
-			Frontoparietal
-			Gular Plate
-			Horncore (Horn Core)
-			Horn Sheath
-			Hyoid
-			Hyomandibular
-			Hypohyal
-			Incus
-			Interhyal
-			Interparietal
-			Interopercular
-			Jugal
-			Lacrimal (Lachrymal)
 			Maleus
 			Mandible 
 				Mandible w/ Teeth
@@ -57,15 +16,3 @@ Vertebrate Element
 				Maxilla w/o Teeth
 			Maxilla or Mandible (Maxilla or Dentary)
 			Mesethmoid
-			Mesopteygoid
-			Metapterygoid
-			Nasal
-			Occipital
-				Occipital Condyle
-			Opercular
-			Opisthotic
-			Orbitosphenotic
-			Otolith (Statoconium;Otoconium)
-			Palatine
-			Parasphenoid
-			Parethmoid

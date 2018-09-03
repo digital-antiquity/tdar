@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.TestConstants;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.FormEncodingType;
@@ -37,14 +37,14 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         String resourceId = querySelectorAll(".bookmark-link").get(0).getAttribute("resource-id");
         bookmark(resourceId);
         gotoPage(viewPage);
-        gotoPage(URLConstants.BOOKMARKS);
+        gotoPage(UrlConstants.BOOKMARKS);
         assertTextPresentInCode(docTitle);
 
         // now delete it, and check again: it should be gone.
         gotoPage(viewPage);
         clickLinkOnPage("delete");
         submitForm("delete");
-        gotoPage(URLConstants.BOOKMARKS);
+        gotoPage(UrlConstants.BOOKMARKS);
         assertTextNotPresent(docTitle);
 
         // have an admin undelete the resource
@@ -59,7 +59,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
         // log back in as regular user, we should be able to see the resource in the workspace again
         login();
-        gotoPage(URLConstants.BOOKMARKS);
+        gotoPage(UrlConstants.BOOKMARKS);
         assertTextPresentInCode(docTitle);
     }
 
@@ -92,7 +92,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         String resourceId = querySelectorAll(".bookmark-link").get(0).getAttribute("resource-id");
         bookmark(resourceId);
         gotoPage(viewPage);
-        gotoPage(URLConstants.BOOKMARKS);
+        gotoPage(UrlConstants.BOOKMARKS);
 
         assertTextPresentInCode(docTitle);
 
@@ -102,7 +102,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             clickLinkOnPage("edit");
             setInput("status", status.name());
             submitForm();
-            gotoPage(URLConstants.BOOKMARKS);
+            gotoPage(UrlConstants.BOOKMARKS);
 
             // boolean seen = false;
             // for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#bookmarks")) {
@@ -126,7 +126,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         clickLinkOnPage("edit");
         setInput("status", Status.ACTIVE.name());
         submitForm();
-        gotoPage(URLConstants.BOOKMARKS);
+        gotoPage(UrlConstants.BOOKMARKS);
         assertTextPresentInCode(docTitle);
     }
 

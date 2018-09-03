@@ -13,9 +13,9 @@
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
-        <artifactId>base</artifactId>
-        <version>18.1.0-RADIOCARBON-SNAPSHOT</version>
-        <relativePath>../base/pom.xml</relativePath>
+        <artifactId>parent-base</artifactId>
+         <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
+        <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
@@ -33,10 +33,6 @@
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
-                <exclusion>
-                    <artifactId>guava</artifactId>
-                    <groupId>com.google.guava</groupId>
-                </exclusion>
                 <exclusion>
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
@@ -88,6 +84,13 @@
         <dependency>
             <groupId>org.tdar</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>base</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>

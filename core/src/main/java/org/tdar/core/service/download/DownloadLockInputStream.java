@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 /*
  * Closes a DownloadLock when stream is closed

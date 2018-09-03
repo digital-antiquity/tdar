@@ -4,7 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,8 +20,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.db.model.PostgresConstants;
+import org.tdar.db.postgres.PostgresConstants;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -35,6 +40,7 @@ public class IntegrationContext implements Serializable {
     private Date dateCreated = new Date();
     private List<IntegrationColumn> integrationColumns = new ArrayList<>();
     private List<DataTable> dataTables;
+    private List<Dataset> datasets = new ArrayList<>();
     private String title;
     private String description;
 
@@ -159,6 +165,26 @@ public class IntegrationContext implements Serializable {
             }
         }
         return false;
+    }
+
+    public List<Dataset> getDatasets() {
+        return datasets;
+    }
+
+    public void setDatasets(List<Dataset> datasets) {
+        this.datasets = datasets;
+    }
+
+    public Map<DataTable, Dataset> getTableMap() {
+        Map<DataTable,Dataset> tableDatasetMap = new HashMap<>();
+        for (DataTable table : getDataTables()) {
+            for (Dataset ds  : getDatasets()) {
+                if (ds.getDataTableById(table.getId()) != null) {
+                    tableDatasetMap.put(table, ds);
+                }
+            }
+        }
+        return tableDatasetMap;
     }
 
 }

@@ -1,6 +1,6 @@
 package org.tdar.core.bean.notification;
 
-import org.tdar.core.bean.Localizable;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 /**

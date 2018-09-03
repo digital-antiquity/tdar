@@ -3,8 +3,8 @@ package org.tdar.core.service;
 import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,8 +20,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -43,15 +45,25 @@ import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
+import org.tdar.core.service.resource.DatasetImportService;
+import org.tdar.db.conversion.converters.DatasetConverter;
+import org.tdar.db.datatable.TDataTable;
+import org.tdar.db.model.TargetDatabase;
+import org.tdar.fileprocessing.workflows.HasDatabaseConverter;
+import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
+import org.tdar.fileprocessing.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.utils.FileStoreFileUtils;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -70,15 +82,21 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     private FileAnalyzer analyzer;
     private AuthorizationService authorizationService;
     private ResourceCollectionService resourceCollectionService;
+    private TargetDatabase tdarDataImportDatabase;
+
+    private DatasetImportService datasetImportService;
 
     @Autowired
     public PersonalFilestoreServiceImpl(GenericDao genericDao, FileProcessingDao fileProcessingDao, FileAnalyzer analyzer,
-            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService) {
+            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService, 
+            @Qualifier("target") TargetDatabase tdarDataImportDatabase, DatasetImportService datasetImportService) {
         this.genericDao = genericDao;
         this.fileProcessingDao = fileProcessingDao;
         this.analyzer = analyzer;
         this.authorizationService = authorizationService;
         this.resourceCollectionService = resourceCollectionService;
+        this.tdarDataImportDatabase = tdarDataImportDatabase;
+        this.datasetImportService = datasetImportService;
 
     }
 
@@ -247,6 +265,73 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Transactional(readOnly = true)
     public List<TdarDir> listDirectories(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
         return fileProcessingDao.listDirectoriesFor(parent, account, authenticatedUser);
+    }
+
+    @Transactional(readOnly = false)
+    public void groupTdarFiles(Collection<TdarFile> files) throws Throwable {
+        // do something to pull into sets using workflows...
+
+        TdarFile file = null;
+        RequiredOptionalPairs pair = null;
+        // should we consider persisting the RequiredOptionalPair, or making it an ENUM or something that could be persisted on TdarFile? This would help if
+        // we're trying to make this process a bit more asynchronous
+        validate(file, pair);
+        process(file, pair);
+        // run validate
+        // run process
+    }
+
+    @Transactional(readOnly = false)
+    public void validate(TdarFile file, RequiredOptionalPairs pair) {
+        // validate that the package is complete and the files have a size
+        boolean success = true;
+        if (success) {
+            file.setStatus(ImportFileStatus.VALIDATED);
+        } else {
+            file.setStatus(ImportFileStatus.VALIDATION_FAILED);
+        }
+        genericDao.saveOrUpdate(file);
+
+    }
+
+    @Transactional(readOnly = false)
+    public void process(TdarFile file, RequiredOptionalPairs pair) throws Throwable {
+        WorkflowContext ctx = new WorkflowContext();
+        ctx.setTdarFile(true);
+        ctx.setPrimaryExtension(file.getExtension());
+        ctx.setOriginalFile(FileStoreFileUtils.copyTdarFile(file));
+        for (TdarFile f : file.getParts()) {
+            FileStoreFile fsf = FileStoreFileUtils.copyTdarFile(f);
+            ctx.getOriginalFile().getParts().add(fsf);
+        }
+        ctx.setTargetDatabase(tdarDataImportDatabase);
+        ctx.setHasDimensions(pair.isHasDimensions());
+        ctx.setOkToStoreInFilestore(false);
+        if (pair.getDatasetConverter() != null) {
+            ctx.setDatasetConverter(pair.getDatasetConverter());
+            ctx.setDataTableSupported(true);
+        }
+        ctx.setFilestore(TdarConfiguration.getInstance().getFilestore());
+        ctx.setWorkflowClass(pair.getWorkflowClass());
+        Workflow workflow_ = ctx.getWorkflowClass().newInstance();
+        if (ctx.isCodingSheet() == false && ctx.isDataTableSupported() && workflow_ instanceof HasDatabaseConverter) {
+            ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaaseConverterForExtension(ctx.getPrimaryExtension()));
+        }
+        boolean success = workflow_.run(ctx);
+        if (success) {
+            for (FileStoreFile f : ctx.getVersions()) {
+                file.getVersions().add(FileStoreFileUtils.copyToTdarFileVersion(f));
+            }
+            file.setLength(ctx.getNumPages());
+            file.setHeight(ctx.getOriginalFile().getHeight());
+            file.setWidth(ctx.getOriginalFile().getWidth());
+            datasetImportService.reconcileDataset(file, ctx.getDataTables(), ctx.getRelationships());
+            file.setStatus(ImportFileStatus.PROCESSED);
+        } else {
+            file.setStatus(ImportFileStatus.PROCESING_FAILED);
+        }
+        genericDao.saveOrUpdate(file);
+
     }
 
     @Override

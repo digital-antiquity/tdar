@@ -261,4 +261,69 @@
 
     </changeSet>
 
+
+    <changeSet id="radiocarbon-fileprocessing-1" author="abrin">
+        <addColumn tableName="files">
+            <column name="version_of_id" type="bigint"/>
+        </addColumn>
+        <addColumn tableName="files">
+            <column name="version_type" type="varchar(25)"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_version" referencedTableName="files"
+            baseColumnNames="version_of_id" baseTableName="files"
+            referencedColumnNames="id" />
+
+    </changeSet>
+     <changeSet id="radiocarbon-fileprocessing-2" author="abrin">
+         <addColumn tableName="files">
+            <column name="length" type="int"/>
+        </addColumn>
+         <addColumn tableName="data_table_relationship">
+            <column name="file_id" type="bigint"/>
+        </addColumn>
+         <addColumn tableName="data_table">
+            <column name="file_id" type="bigint"/>
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_file_table" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="data_table"
+            referencedColumnNames="id" />
+        <addForeignKeyConstraint
+            constraintName="fk_file_relationship" referencedTableName="files"
+            baseColumnNames="file_id" baseTableName="data_table_relationship"
+            referencedColumnNames="id" />
+    </changeSet>
+     <changeSet id="radiocarbon-fileprocessing-3" author="abrin" failOnError="false" >
+            
+        <dropNotNullConstraint tableName="data_table" columnName="dataset_id"/>
+    </changeSet>
+     <changeSet id="radiocarbon-fileprocessing-4" author="abrin" failOnError="false" >
+         <createTable tableName="data_table_column_values">
+            <column name="value" type="varchar(255)" />
+            <column name="column_id" type="bigint"/>
+         </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_column_values" referencedTableName="data_table_column"
+            baseColumnNames="column_id" baseTableName="data_table_column_values"
+            referencedColumnNames="id" />
+    </changeSet>
+     <changeSet id="radiocarbon-fileprocessing-5" author="abrin" failOnError="false" >
+         <createTable tableName="data_table_column_int_values">
+            <column name="value" type="integer" />
+            <column name="column_id" type="bigint"/>
+         </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_column_values" referencedTableName="data_table_column"
+            baseColumnNames="column_id" baseTableName="data_table_column_int_values"
+            referencedColumnNames="id" />
+         <createTable tableName="data_table_column_float_values">
+            <column name="value" type="float8" />
+            <column name="column_id" type="bigint"/>
+         </createTable>
+        <addForeignKeyConstraint
+            constraintName="fk_column_values" referencedTableName="data_table_column"
+            baseColumnNames="column_id" baseTableName="data_table_column_float_values"
+            referencedColumnNames="id" />
+    </changeSet>
 </databaseChangeLog>

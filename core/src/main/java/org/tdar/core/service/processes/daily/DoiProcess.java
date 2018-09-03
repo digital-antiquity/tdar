@@ -15,16 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.utils.Pair;
 
 @Component

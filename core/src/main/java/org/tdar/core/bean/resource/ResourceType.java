@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.transform.ModsTransformer.DcmiModsTypeMapper;
 import org.tdar.utils.MessageHelper;
 

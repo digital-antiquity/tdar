@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum ObjectType implements HasLabel, Localizable, PluralLocalizable {

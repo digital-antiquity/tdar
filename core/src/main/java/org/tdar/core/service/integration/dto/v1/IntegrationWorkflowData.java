@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
@@ -28,9 +29,6 @@ import org.tdar.utils.PersistableUtils;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.base.Objects;
 import com.opensymphony.xwork2.TextProvider;
 
@@ -94,6 +92,7 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             integrationContext.getIntegrationColumns().add(col);
         }
         integrationContext.setDataTables(service.findAll(DataTable.class, PersistableUtils.extractIds(getDataTables())));
+        integrationContext.setDatasets(service.findAll(Dataset.class, PersistableUtils.extractIds(getDatasets())));
         integrationContext.setTitle(title);
         integrationContext.setDescription(description);
         return integrationContext;
@@ -227,8 +226,15 @@ public class IntegrationWorkflowData extends AbstractIntegrationWorkflowData imp
             return;
         }
 
+        List<Dataset> datasets = service.findAll(Dataset.class, datasetIds);
         for (DataTableDTO dt : getDataTables()) {
-            if (PersistableUtils.isNotNullOrTransient(dt.getPersistable()) && !datasetIds.contains(dt.getPersistable().getDataset().getId())) {
+            Dataset ds =  null;
+            for (Dataset d : datasets)  {
+                if (d.getDataTableById(dt.getId()) != null) {
+                    ds = d;
+                }
+            }
+            if (PersistableUtils.isNotNullOrTransient(dt.getPersistable()) && ds == null) {
                 checkAddKey(fieldErrors, DATA_TABLE).add(provider.getText("integrationWorkflowData.bad_datatable", Arrays.asList(dt)));
             }
         }

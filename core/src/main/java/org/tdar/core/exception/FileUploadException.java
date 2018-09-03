@@ -1,5 +1,7 @@
 package org.tdar.core.exception;
 
+import org.tdar.exception.I18nException;
+
 /**
  * $Id$
  * 

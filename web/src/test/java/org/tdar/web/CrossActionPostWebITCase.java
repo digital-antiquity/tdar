@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotSame;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 

@@ -23,16 +23,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
+import org.tdar.fileprocessing.workflows.FileArchiveWorkflow;
 import org.tdar.filestore.BaseFilestore;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
+import org.tdar.filestore.VersionType;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 

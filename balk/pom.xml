@@ -21,13 +21,9 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-        <version>18.1.0-RADIOCARBON-SNAPSHOT</version>
+         <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
-
-    <prerequisites>
-        <maven>3.1.0</maven>
-    </prerequisites>
     <organization>
         <name>The Digital Archaeological Record</name>
         <url>http://www.tdar.org</url>

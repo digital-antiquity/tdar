@@ -23,10 +23,10 @@ public class DataTableProxy implements Serializable {
     private DataTable dataTable;
     private Person submitter;
 
-    public DataTableProxy(DataTable dataTable) {
-        dataset = dataTable.getDataset();
+    public DataTableProxy(DataTable dataTable, Dataset dataset) {
+        this.dataset = dataset;
         this.setDataTable(dataTable);
-        this.setSubmitter(dataTable.getDataset().getSubmitter());
+        this.setSubmitter(dataset.getSubmitter());
     }
 
     @JsonView(JsonIntegrationFilter.class)

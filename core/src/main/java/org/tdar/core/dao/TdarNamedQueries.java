@@ -21,6 +21,7 @@ public interface TdarNamedQueries {
     String QUERY_BOOKMARKEDRESOURCES_FOR_USER = "bookmarkedResource.byPerson";
     String QUERY_DATASET_CAN_LINK_TO_ONTOLOGY = "dataset.canLinkToOntology";
     String QUERY_DATATABLE_RELATED_ID = "dataTable.relatedId";
+    String QUERY_DATATABLE_DATASET = "dataTable.datasetId";
     String QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY = "dataTableColumn.withDefaultOntology";
     String QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME = "informationResource.findByFileName";
     String QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD = "ontologyNode.allChildrenWithIndexWildcard";

@@ -20,15 +20,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.file.FileStatus;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
@@ -38,8 +36,10 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.VersionType;
 
 public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 

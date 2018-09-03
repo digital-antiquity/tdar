@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;

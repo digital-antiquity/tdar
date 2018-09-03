@@ -1,8 +1,8 @@
 package org.tdar.core.dao.external.payment.nelnet;
 
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.locale.HasLabel;
+import org.tdar.locale.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum NelnetTransactionType implements HasLabel, Localizable {

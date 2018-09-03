@@ -4,8 +4,6 @@
 package org.tdar.core.filestore;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -18,17 +16,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
-import org.tdar.core.bean.resource.file.FileType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.MessageService;
-import org.tdar.core.service.workflow.workflows.FileArchiveWorkflow;
-import org.tdar.core.service.workflow.workflows.Workflow;
+import org.tdar.fileprocessing.workflows.FileArchiveWorkflow;
+import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.FileType;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 
@@ -46,16 +44,6 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Test
-    public void testAnalyzerSuggestions() {
-        assertEquals(ResourceType.DOCUMENT, fileAnalyzer.suggestTypeForFileExtension("doc", ResourceType.DOCUMENT));
-        assertEquals(ResourceType.SENSORY_DATA, fileAnalyzer.suggestTypeForFileExtension("gif", ResourceType.SENSORY_DATA, ResourceType.IMAGE));
-        assertEquals(ResourceType.IMAGE, fileAnalyzer.suggestTypeForFileExtension("gif", ResourceType.IMAGE, ResourceType.SENSORY_DATA));
-        assertNull(fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY));
-        assertEquals(ResourceType.CODING_SHEET, fileAnalyzer.suggestTypeForFileExtension("xls", ResourceType.ONTOLOGY, ResourceType.CODING_SHEET));
-        assertFalse(fileAnalyzer.getExtensionsForType(ResourceType.ARCHIVE).contains("xml"));
-        assertEquals(ResourceType.AUDIO, fileAnalyzer.suggestTypeForFileExtension("aiff", ResourceType.values()));
-    }
 
     @Test
     @Rollback
@@ -72,9 +60,9 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         SensoryData doc = generateAndStoreVersion(SensoryData.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
 
-        FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
+        FileType fileType = fileAnalyzer.getFileTypeForExtension(originalVersion, doc.getResourceType());
         assertEquals(FileType.FILE_ARCHIVE, fileType);
-        Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
+        Workflow workflow = fileAnalyzer.getWorkflow(ResourceType.SENSORY_DATA, originalVersion);
         assertEquals(FileArchiveWorkflow.class, workflow.getClass());
         messageService.sendFileProcessingRequest(workflow, originalVersion);
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();

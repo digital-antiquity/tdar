@@ -12,15 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.exception.FilestoreLoggingException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -58,7 +58,7 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
             // FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD),
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = UrlConstants.DASHBOARD),
                     @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")
             })
     @WriteableSession

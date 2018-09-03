@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
-import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;

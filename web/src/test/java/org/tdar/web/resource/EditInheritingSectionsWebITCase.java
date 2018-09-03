@@ -15,8 +15,8 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 import net.sf.json.JSONArray;

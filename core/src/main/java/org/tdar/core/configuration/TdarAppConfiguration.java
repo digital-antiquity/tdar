@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.tdar.configuration.PooledDataSourceWrapper;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.dao.external.pid.EZIDDao;
@@ -70,7 +71,7 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
     public DataSource tdarGeoDataSource() {
         try {
             String prefix = "tdargisdata";
-            return configureDataSource(prefix);
+            return new PooledDataSourceWrapper(prefix, env).getDataSource();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

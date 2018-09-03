@@ -25,7 +25,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.Cache;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,14 +37,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.tdar.AbstractSimpleIntegrationTest;
 import org.tdar.TestConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -62,11 +58,8 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarAppConfiguration;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
@@ -89,8 +82,11 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.exception.TdarRecoverableRuntimeException;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.VersionType;
 import org.tdar.utils.EmailStatisticsHelper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
@@ -101,13 +97,8 @@ import org.tdar.utils.TestConfiguration;
 @ContextConfiguration(classes = TdarAppConfiguration.class)
 @SuppressWarnings("rawtypes")
 @ActiveProfiles(profiles = { "test" })
-public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJUnit4SpringContextTests implements TestEntityHelper {
+public abstract class AbstractIntegrationTestCase extends AbstractSimpleIntegrationTest implements TestEntityHelper {
 
-    protected Filestore filestore = TdarConfiguration.getInstance().getFilestore();
-
-    protected PlatformTransactionManager transactionManager;
-    private TransactionCallback verifyTransactionCallback;
-    private TransactionTemplate transactionTemplate;
     
     @Autowired
     private AwsEmailSender awsEmailService;
@@ -184,9 +175,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     };
 
     @Before
-    public void announceTestStarting() {
-        String fmt = " ***   RUNNING TEST: {}.{}() ***";
-        logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
+    public void setupTest() {
         genericService.delete(genericService.findAll(Email.class));
         sendEmailProcess.setAllIds(null);
         if (awsEmailService instanceof MockAwsEmailSenderServiceImpl) {
@@ -204,12 +193,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     // Called when your test fails. Did I say "when"? I meant "if".
     public void onFail(Throwable e, Description description) {
-    }
-
-    @After
-    public void announceTestOver() {
-        String fmt = " *** COMPLETED TEST: {}.{}() ***";
-        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
     }
 
     @Deprecated
@@ -579,38 +562,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return transactionManager;
     }
 
-    @Autowired
-    public void setTransactionManager(PlatformTransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-        transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-    }
-
-    protected <V> V runInNewTransaction(TransactionCallback<V> action) {
-        logger.debug("starting new transaction");
-        return transactionTemplate.execute(action);
-    }
-
-    protected void runInNewTransactionWithoutResult(TransactionCallback<Object> action) {
-        runInNewTransaction(action);
-    }
-
-    @AfterTransaction
-    @SuppressWarnings("unchecked")
-    public void verifyTransactionCallback() {
-        if (verifyTransactionCallback != null) {
-            runInNewTransaction(verifyTransactionCallback);
-        }
-    }
-
-    public TransactionCallback getVerifyTransactionCallback() {
-        return verifyTransactionCallback;
-    }
-
-    public <T> void setVerifyTransactionCallback(TransactionCallback<T> verifyTransactionCallback) {
-        this.verifyTransactionCallback = verifyTransactionCallback;
-    }
-
     public TdarConfiguration getTdarConfiguration() {
         return TdarConfiguration.getInstance();
     }
@@ -698,6 +649,16 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected InformationResourceFileVersion makeFileVersion(File name, long id) throws IOException {
         long infoId = (long) (Math.random() * 10000);
         InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.UPLOADED, name.getName(), 1, infoId, 123L);
+        version.setId(id);
+        filestore.store(FilestoreObjectType.RESOURCE, name, version);
+        version.setTransientFile(name);
+        return version;
+    }
+
+
+    protected FileStoreFile makeFileStoreFile(File name, long id) throws IOException {
+        long infoId = (long) (Math.random() * 10000);
+        FileStoreFile version = new FileStoreFile(FilestoreObjectType.RESOURCE, VersionType.UPLOADED, name.getName(), 1, infoId, 123L, 1L);
         version.setId(id);
         filestore.store(FilestoreObjectType.RESOURCE, name, version);
         version.setTransientFile(name);

@@ -22,8 +22,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.configuration.SimpleAppConfiguration;
-import org.tdar.core.configuration.TdarConfiguration;
 
 @Configuration
 @PropertySource(value = SolrConfig.SEARCH_PROPERTIES, ignoreResourceNotFound = true)

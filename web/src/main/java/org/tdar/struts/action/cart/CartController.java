@@ -10,7 +10,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.URLConstants;
+import org.tdar.UrlConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
@@ -80,8 +80,8 @@ public class CartController extends AbstractCartController {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/cart/${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
             @Result(name = ADD, type = TdarActionSupport.TDAR_REDIRECT, location = TdarActionSupport.ADD),
-            @Result(name = SUCCESS_COMPLETE, type = TDAR_REDIRECT, location = URLConstants.DASHBOARD),
-            @Result(name = ERROR, type = TDAR_REDIRECT, location = URLConstants.CART_ADD)
+            @Result(name = SUCCESS_COMPLETE, type = TDAR_REDIRECT, location = UrlConstants.DASHBOARD),
+            @Result(name = ERROR, type = TDAR_REDIRECT, location = UrlConstants.CART_ADD)
     })
     @HttpsOnly
     public String processPaymentRequest() throws TdarActionException {

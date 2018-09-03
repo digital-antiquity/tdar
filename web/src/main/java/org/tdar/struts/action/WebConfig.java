@@ -3,7 +3,7 @@ package org.tdar.struts.action;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.configuration.TdarConfiguration;
 
 public class WebConfig {
 

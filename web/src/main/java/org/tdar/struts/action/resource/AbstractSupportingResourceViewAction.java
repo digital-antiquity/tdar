@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -25,8 +26,9 @@ public abstract class AbstractSupportingResourceViewAction<R extends Information
         if (relatedResources == null) {
             relatedResources = new ArrayList<Resource>();
             for (DataTable table : getTablesUsingResource()) {
-                if (!table.getDataset().isDeleted()) {
-                    relatedResources.add(table.getDataset());
+                Dataset ds = dataTableService.findDatasetForTable(table);
+                if (!ds.isDeleted()) {
+                    relatedResources.add(ds);
                 }
             }
         }

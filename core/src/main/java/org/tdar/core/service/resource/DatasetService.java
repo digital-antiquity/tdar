@@ -10,7 +10,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.db.model.PostgresDatabase;
@@ -72,7 +71,7 @@ public interface DatasetService {
     /*
      * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
      */
-    List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column);
+//    List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column);
 
     /*
      * Based on a set of @link DataTableColumn entries, and a @link Project we can will clear out the existing mappings; and then identify mappings that need to

@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -39,6 +41,8 @@ import org.tdar.core.bean.resource.HasStatic;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.db.datatable.DataTableColumnType;
+import org.tdar.db.datatable.ImportColumn;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
@@ -64,14 +68,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
-public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable, HasStatic {
+public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable, HasStatic, ImportColumn {
 
     private static final long serialVersionUID = 430090539610139732L;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    public static final String TDAR_ID_COLUMN = "id_row_tdar";
 
     public static final DataTableColumn TDAR_ROW_ID = new DataTableColumn() {
 
@@ -163,6 +165,21 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Column(columnDefinition = "boolean default FALSE")
     private boolean mappingColumn = false;
 
+    @ElementCollection()
+    @CollectionTable(name = "data_table_column_values", joinColumns = @JoinColumn(name = "column_id"))
+    @Column(name = "value")
+    private Set<String> values = new HashSet<>();
+
+    @ElementCollection()
+    @CollectionTable(name = "data_table_column_int_values", joinColumns = @JoinColumn(name = "column_id"))
+    @Column(name = "value")
+    private Set<Integer> intValues = new HashSet<>();
+
+    @ElementCollection()
+    @CollectionTable(name = "data_table_column_float_values", joinColumns = @JoinColumn(name = "column_id"))
+    @Column(name = "value")
+    private Set<Double> floatValues = new HashSet<>();
+    
     @Column
     @Length(max = 4)
     private String delimiterValue;
@@ -532,5 +549,40 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     public void setImportOrder(Integer importOrder) {
         this.importOrder = importOrder;
+    }
+
+    @Override
+    public int compareToBySequenceNumber(ImportColumn b) {
+        if ((sequenceNumber == null) || (b.getSequenceNumber() == null)) {
+            return 0;
+        }
+        return sequenceNumber.compareTo(b.getSequenceNumber());
+    }
+
+    @Override
+    public Set<String> getValues() {
+        return values;
+    }
+
+    public void setValues(Set<String> values) {
+        this.values = values;
+    }
+
+    @Override
+    public Set<Integer> getIntValues() {
+        return intValues;
+    }
+
+    public void setIntValues(Set<Integer> intValues) {
+        this.intValues = intValues;
+    }
+
+    @Override
+    public Set<Double> getFloatValues() {
+        return floatValues;
+    }
+
+    public void setFloatValues(Set<Double> floatValues) {
+        this.floatValues = floatValues;
     }
 }
