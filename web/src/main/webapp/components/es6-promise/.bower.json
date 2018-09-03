@@ -1,12 +1,11 @@
 {
   "name": "es6-promise",
   "namespace": "Promise",
-  "version": "4.1.1",
   "description": "A polyfill for ES6-style Promises, tracking rsvp",
   "authors": [
     "Stefan Penner <stefan.penner@gmail.com>"
   ],
-  "main": "./es6-promise.js",
+  "main": "dist/es6-promise.js",
   "keywords": [
     "promise"
   ],
@@ -18,15 +17,23 @@
     "url": "https://github.com/stefanpenner/es6-promise/issues"
   },
   "license": "MIT",
-  "homepage": "https://github.com/components/es6-promise",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "vendor",
+    "tasks"
+  ],
+  "homepage": "https://github.com/stefanpenner/es6-promise",
+  "version": "4.1.1",
   "_release": "4.1.1",
   "_resolution": {
     "type": "version",
     "tag": "v4.1.1",
-    "commit": "6e5ab2464cc4957017f0fc162d257a12733481dd"
+    "commit": "7f82a5649202af5e4757d969e54419d38ed57277"
   },
-  "_source": "https://github.com/components/es6-promise.git",
-  "_target": "^4.1.1",
-  "_originalSource": "es6-promise",
-  "_direct": true
+  "_source": "https://github.com/stefanpenner/es6-promise.git",
+  "_target": "v4.1.1",
+  "_originalSource": "https://github.com/stefanpenner/es6-promise.git"
 }

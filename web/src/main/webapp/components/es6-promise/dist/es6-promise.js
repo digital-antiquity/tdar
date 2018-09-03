@@ -3,7 +3,7 @@
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/stefanpenner/es6-promise/master/LICENSE
- * @version   4.1.1
+ * @version   4.1.0+f046478d
  */
 
 (function (global, factory) {
@@ -534,7 +534,7 @@ Enumerator$1.prototype._eachEntry = function (entry, i) {
     } else if (typeof _then !== 'function') {
       this._remaining--;
       this._result[i] = entry;
-    } else if (c === Promise$3) {
+    } else if (c === Promise$2) {
       var promise = new c(noop);
       handleMaybeThenable(promise, entry, _then);
       this._willSettleAt(promise, i);
@@ -863,27 +863,27 @@ function needsNew() {
   Useful for tooling.
   @constructor
 */
-function Promise$3(resolver) {
+function Promise$2(resolver) {
   this[PROMISE_ID] = nextId();
   this._result = this._state = undefined;
   this._subscribers = [];
 
   if (noop !== resolver) {
     typeof resolver !== 'function' && needsResolver();
-    this instanceof Promise$3 ? initializePromise(this, resolver) : needsNew();
+    this instanceof Promise$2 ? initializePromise(this, resolver) : needsNew();
   }
 }
 
-Promise$3.all = all$1;
-Promise$3.race = race$1;
-Promise$3.resolve = resolve$1;
-Promise$3.reject = reject$1;
-Promise$3._setScheduler = setScheduler;
-Promise$3._setAsap = setAsap;
-Promise$3._asap = asap;
+Promise$2.all = all$1;
+Promise$2.race = race$1;
+Promise$2.resolve = resolve$1;
+Promise$2.reject = reject$1;
+Promise$2._setScheduler = setScheduler;
+Promise$2._setAsap = setAsap;
+Promise$2._asap = asap;
 
-Promise$3.prototype = {
-  constructor: Promise$3,
+Promise$2.prototype = {
+  constructor: Promise$2,
 
   /**
     The primary way of interacting with a promise is through its `then` method,
@@ -1143,17 +1143,15 @@ function polyfill$1() {
         }
     }
 
-    local.Promise = Promise$3;
+    local.Promise = Promise$2;
 }
 
 // Strange compat..
-Promise$3.polyfill = polyfill$1;
-Promise$3.Promise = Promise$3;
+Promise$2.polyfill = polyfill$1;
+Promise$2.Promise = Promise$2;
 
-Promise$3.polyfill();
-
-return Promise$3;
+return Promise$2;
 
 })));
 
-//# sourceMappingURL=es6-promise.auto.map
+//# sourceMappingURL=es6-promise.map

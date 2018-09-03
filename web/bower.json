@@ -5,6 +5,9 @@
   "dependencies": {
     "angular-modal-service": "0.4.0",
     "blueimp-file-upload": "9.19.2",
+    "blueimp-canvas-to-blob":"https://github.com/blueimp/JavaScript-Canvas-to-Blob.git#v2.2.0",
+    "blueimp-load-image": "https://github.com/blueimp/JavaScript-Load-Image.git#v1.13.1",
+    "blueimp-tmpl": "https://github.com/blueimp/JavaScript-Templates.git#v2.5.5",
     "bootstrap": "~2.3.2",
     "bootstrap-datepicker-eyecon": "~1.0.0",
     "c3": "~0.4.11",
