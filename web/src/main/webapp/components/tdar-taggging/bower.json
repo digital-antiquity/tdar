@@ -1,0 +1,23 @@
+{
+  "name": "tdar-tagging",
+  "authors": [
+    "Adam Brin <adam@brin.org>"
+  ],
+  "description": "tDAR VueJS tagging lookup",
+  "main": "js/tdar-vue-tagging.js",
+  "keywords": [
+    "values"
+  ],
+  "dependencies": {
+      "vue": "^2.4.2"
+  },
+  "license": "APACHE 2.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "tdar-tagging",
+  "authors": [
+    "Adam Brin <adam@brin.org>"
+  ],
+  "description": "tDAR VueJS tagging lookup",
+  "main": "js/tdar-vue-tagging.js",
+  "keywords": [
+    "values"
+  ],
+  "dependencies": {
+    "vue": "^2.4.2"
+  },
+  "license": "APACHE 2.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "b5cd319f35",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "b5cd319f35d54d4acebbdb7cd23a8cc3be8a6373"
+  },
+  "_source": "https://bitbucket.org/tdar/tagging.git",
+  "_target": "*",
+  "_originalSource": "https://bitbucket.org/tdar/tagging.git"
+}

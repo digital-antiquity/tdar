@@ -1,0 +1,23 @@
+{
+  "name": "tdar-values",
+  "authors": [
+    "Adam Brin <adam@brin.org>"
+  ],
+  "description": "tDAR VueJS Value lookup",
+  "main": "js/tdar-vue-values.js",
+  "keywords": [
+    "values"
+  ],
+  "dependencies": {
+      "vue": "^2.4.2"
+  },
+  "license": "APACHE 2.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
