@@ -22,7 +22,6 @@ import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.geosearch.GeoSearchDao;
 import org.tdar.search.geosearch.GeoSearchService;
-import org.tdar.utils.SpatialObfuscationUtil;
 
 public class GeoSearchITCase extends AbstractIntegrationTestCase {
 
@@ -56,7 +55,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         assertNotNull(geoSearchService);
         geoSearchDao.setDataSource(new SingleConnectionDataSource("jdbc:postgresql://localhost/postgis_broken", true));
         LatitudeLongitudeBox latLongBox = constructLatLongBox();
-        SpatialObfuscationUtil.obfuscate(latLongBox);
         Set<GeographicKeyword> countryInfo = geoSearchService.extractCountryInfo(latLongBox);
         assertNotNull(countryInfo);
         assertTrue(countryInfo.size() == 0);
@@ -73,7 +71,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         latLong.setNorth(38.865d);
         latLong.setEast(-121.31d);
         latLong.setWest(-124.43d);
-        SpatialObfuscationUtil.obfuscate(latLong);
         Set<GeographicKeyword> countryInfo = geoSearchService.extractAllGeographicInfo(latLong);
         for (GeographicKeyword kwd : countryInfo) {
             logger.info("{}", kwd);
@@ -85,7 +82,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testCountrySearch() {
         LatitudeLongitudeBox latLongBox = constructLatLongBox();
-        SpatialObfuscationUtil.obfuscate(latLongBox);
         Set<GeographicKeyword> countryInfo = geoSearchService.extractCountryInfo(latLongBox);
         boolean found = false;
         logger.info("{}", countryInfo);
@@ -110,7 +106,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
             return;
         }
         assertNotNull(latLong);
-        SpatialObfuscationUtil.obfuscate(latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         extractAllGeographicInfo.addAll(geoSearchService.extractCountyInfo(latLong));
         boolean found = false;
@@ -132,7 +127,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         if (!geoSearchService.isEnabled()) {
             return;
         }
-        SpatialObfuscationUtil.obfuscate(latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         boolean found = false;
         logger.info("{}", latLong);
@@ -164,7 +158,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
             return;
         }
         assertNotNull(latLong);
-        SpatialObfuscationUtil.obfuscate(latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         boolean found = false;
         boolean found2 = false;
@@ -196,9 +189,7 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         if (!geoSearchService.isEnabled()) {
             return;
         }
-        SpatialObfuscationUtil.obfuscate(latLong);
         assertNotNull(latLong);
-        logger.debug("{}", latLong);
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         int found = 0;
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
@@ -219,7 +210,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
     public void testAdminSearch() {
         if (geoSearchService.isEnabled()) {
             LatitudeLongitudeBox latLongBox = constructLatLongBox();
-            SpatialObfuscationUtil.obfuscate(latLongBox);
             Set<GeographicKeyword> adminInfo = geoSearchService.extractAdminInfo(latLongBox);
             boolean found = false;
             for (GeographicKeyword kwd : adminInfo) {
@@ -237,7 +227,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
     public void testCountySearch() {
         if (geoSearchService.isEnabled()) {
             LatitudeLongitudeBox latLongBox = constructLatLongBox();
-            SpatialObfuscationUtil.obfuscate(latLongBox);
             Set<GeographicKeyword> adminInfo = geoSearchService.extractCountyInfo(latLongBox);
             boolean found = false;
             for (GeographicKeyword kwd : adminInfo) {
@@ -265,7 +254,7 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
     /* THIS TEST IS NOT VALID BECAUSE OF THE VALIDATION RULES ON LATLONGBOX, but it is, nonetheless, a good test to document */
     public void testMicronesia() {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(-171.142, -14.602, 146.154, 20.617);
-        SpatialObfuscationUtil.obfuscate(latLong);
+
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         int found = 0;
         logger.debug(extractAllGeographicInfo.size() + " geographic terms being returned {}", extractAllGeographicInfo);
