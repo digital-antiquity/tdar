@@ -105,6 +105,9 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 return value[this.name_field];
             },
             remove: function(index) {
+                if (this.disabled) {
+                    return;
+                }
                  this.values.splice(index,1);
             },
             addEntry: function(input) {

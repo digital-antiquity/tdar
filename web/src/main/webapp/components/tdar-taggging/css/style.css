@@ -44,3 +44,7 @@
 .sandbox .autocomplete input {
     border: none;
 }
+
+.sandbox.disabled .remove {
+    color: #aaa;
+}

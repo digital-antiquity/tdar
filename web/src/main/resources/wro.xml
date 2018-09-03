@@ -117,10 +117,20 @@
         <js>/js/vue/vue-base-upload.js</js>
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>
-        <js>/js/vue/vue-autocomplete.js</js>
-        <js>/js/vue/vue-tagging.js</js>
         <js>/js/vue/vue-creatorwidget.js</js>
         <js>/js/vue/edit-collection.js</js>
+
+
+
+        <js>/components/tdar-autocomplete/js/vue-autocomplete.js</js>
+        <css>/components/tdar-autocomplete/css/tdar-autocomplete.css</css>
+
+        <js>/components/tdar-taggging/js/vue-tagging.js</js>
+        <css>/components/tdar-taggging/css/style.css</css>
+        <js>/components/tdar-values/js/tdar-vue-values.js</js>
+
+        <js>/js/vue/vue-edit-resource.js</js>
+
 
     </group>
     <group name="ng-integrate">

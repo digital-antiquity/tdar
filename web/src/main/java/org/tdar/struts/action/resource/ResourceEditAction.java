@@ -1,11 +1,18 @@
 package org.tdar.struts.action.resource;
 
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.PersistableUtils;
@@ -16,6 +23,12 @@ public class ResourceEditAction<P extends Persistable & Addressable> extends Abs
 
     @Autowired
     private SerializationService serializationService;
+
+    @Autowired
+    private GenericKeywordService genericKeywordService;
+
+    @Autowired
+    private GenericService genericService;
 
     private static final long serialVersionUID = 1467806719681708555L;
 
@@ -52,6 +65,16 @@ public class ResourceEditAction<P extends Persistable & Addressable> extends Abs
 
     public void setJson(String json) {
         this.json = json;
+    }
+
+    public String getInvestigationTypes() throws IOException {
+        List<InvestigationType> types = genericService.findAll(InvestigationType.class);
+        return serializationService.convertToJson(types);
+    }
+
+    public String getMaterialTypes() throws IOException {
+        List<MaterialKeyword> types = genericKeywordService.findAllApproved(MaterialKeyword.class);
+        return serializationService.convertToJson(types);
     }
 
 }

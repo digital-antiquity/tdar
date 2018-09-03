@@ -3,8 +3,9 @@
 <form method="POST" action="/document/save">
 
 
-<#include "/WEB-INF/macros/autocomplete.html">
-<#include "/WEB-INF/macros/tagging.html">
+<#include "/components/tdar-autocomplete/template/autocomplete.html">
+<#include "/components/tdar-taggging/template/tagging.html">
+<#include "/components/tdar-values/template/values.html">
 <#include "/WEB-INF/macros/creatorwidget.html">
 <#include "/WEB-INF/macros/inheritance.html">
 
@@ -13,6 +14,16 @@
 <script id="json" type="text/json">
 <#noescape>
 ${json}
+</#noescape>
+</script>
+<script id="materialTypes" type="text/json">
+<#noescape>
+${materialTypes}
+</#noescape>
+</script>
+<script id="investigationTypes" type="text/json">
+<#noescape>
+${investigationTypes}
 </#noescape>
 </script>
 </#escape>
