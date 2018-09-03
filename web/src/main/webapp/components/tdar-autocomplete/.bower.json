@@ -30,8 +30,7 @@
     "tag": "0.1.0",
     "commit": "e83feb0afc5af475a72ed2308166d253525f059f"
   },
-  "_source": "git@bitbucket.org:tdar/autocomplete.git",
-  "_target": "^0.1.0",
-  "_originalSource": "git@bitbucket.org:tdar/autocomplete.git",
-  "_direct": true
+  "_source": "https://bitbucket.org/tdar/autocomplete.git",
+  "_target": "*",
+  "_originalSource": "https://bitbucket.org/tdar/autocomplete.git"
 }
