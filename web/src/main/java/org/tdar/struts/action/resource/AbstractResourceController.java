@@ -145,6 +145,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<String> uncontrolledSiteTypeKeywords;
     private List<String> uncontrolledCultureKeywords;
     private List<String> uncontrolledMaterialKeywords;
+    private List<String> controlledInvestigationTypes;
 
     private List<String> otherKeywords;
 
@@ -465,6 +466,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         proxy.setOtherKeywords(otherKeywords);
         proxy.setUncontrolledCultureKeywords(uncontrolledCultureKeywords);
         proxy.setUncontrolledMaterialKeywords(uncontrolledMaterialKeywords);
+        proxy.setControlledInvestigationTypes(controlledInvestigationTypes);
         proxy.setUncontrolledSiteTypeKeywords(uncontrolledSiteTypeKeywords);
         proxy.setTemporalKeywords(temporalKeywords);
         proxy.setSave(shouldSaveResource());
@@ -1025,5 +1027,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setSubmit(String submit) {
         this.submit = submit;
+    }
+
+    public List<String> getControlledInvestigationTypes() {
+        return controlledInvestigationTypes;
+    }
+
+    public void setControlledInvestigationTypes(List<String> controlledInvestigationTypes) {
+        this.controlledInvestigationTypes = controlledInvestigationTypes;
     }
 }

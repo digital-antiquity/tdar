@@ -74,6 +74,7 @@
         <js>/js/tdar.messages_en.js</js>
         <js>/js/tdar.d3tree.js</js>
         <css>/css/tdar.homepage.css</css>
+        <css>/css/tdar-autocomplete.css</css>
         <css>/css/tdar.d3tree.css</css>
         <css>/css/tdar.c3graph.css</css>
         <css>/css/tdar.leaflet.css</css>
@@ -117,6 +118,8 @@
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>
         <js>/js/vue/vue-autocomplete.js</js>
+        <js>/js/vue/vue-tagging.js</js>
+        <js>/js/vue/vue-creatorwidget.js</js>
         <js>/js/vue/edit-collection.js</js>
 
     </group>

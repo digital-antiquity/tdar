@@ -45,6 +45,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
     List<String> uncontrolledCultureKeywords;
     List<String> uncontrolledMaterialKeywords;
     List<String> uncontrolledSiteTypeKeywords;
+    private List<String> controlledInvestigationTypes;
     List<String> temporalKeywords;
     private String resourceProviderInstitutionName;
     private String publisherName;
@@ -422,6 +423,14 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public List<String> getControlledInvestigationTypes() {
+        return controlledInvestigationTypes;
+    }
+
+    public void setControlledInvestigationTypes(List<String> controlledInvestigationTypes) {
+        this.controlledInvestigationTypes = controlledInvestigationTypes;
     }
 
 }

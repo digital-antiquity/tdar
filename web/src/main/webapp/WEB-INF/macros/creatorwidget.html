@@ -1,0 +1,72 @@
+<script type="text/x-template" id="person-template">
+<div>
+            <div v-if="!showEditPerson">
+                <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
+                resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="span4"
+                :customcreatenew="clickNew" createnewtext="Create New Person" :initial_id="creator.id" :initial_value="creator.properName"
+                                ref="input" fieldname="properName" :allowCreate="false" idname="personid" /> 
+            </div>
+            <div class="" v-show="showEditPerson">
+                <div class="controls-row">
+                    <input type="text" id="ln" :name="getPrefix('lastName')" maxlength="255" v-model="creator.lastName" class="span2 trim" title="A last name" placeholder="Last Name">
+                    <input type="text" :name="getPrefix('firstName')" maxlength="255" v-model="creator.firstName" class="span2  trim " title="A first name" placeholder="First Name">
+                </div>
+                <div class="controls-row">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="span2  trim" placeholder="Email (optional)">
+                    <input type="text" :name="getPrefix('institution.name')" maxlength="255" v-model="creator.institution.name" class="span2 trim" placeholder="Institution Name (Optional)">
+                </div>
+            </div>
+
+</div>
+</script>
+<script type="text/x-template" id="institution-template">
+<div>
+            <div class="" v-if="!showEditInstitution">
+                <autocomplete url="https://localhost:8443/api/lookup/institution" suffix=""  field="institution"   
+                resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="span4"
+                :customcreatenew="clickNew" createnewtext="Create New Institution" :initial_id="creator.id" :initial_value="creator.properName"
+                ref="input" fieldname="properName" :allowCreate="false" idname="institutionid" />
+            </div>
+            <div v-show="showEditInstitution">
+                <div class="controls-row">
+                    <input type="text" :name="getPrefix('name')" maxlength="255" v-model="creator.name" class="span2 trim" placeholder="Institution Name (Optional)">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="span2  trim" placeholder="Email (optional)">
+                </div>
+            </div>
+</div>
+</script>
+
+<script type="text/x-template" id="creatorwidget-template">
+
+<div class="row" id="autotool">
+    <div class="span2">
+        <div class="control-label">
+            <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+                <button type="button" :class="personClass" data-toggle="button" @click="toggleValue('PERSON')">Person</button>
+                <input type="hidden" :name="getRootPrefix('type')" v-model="toggle">
+                <button type="button" :class="institutionClass" @click="toggleValue('INSTITUTION')" data-toggle="button">Institution</button>
+            </div>
+        </div>
+    </div>
+    <div class="span4">
+        <input type="hidden" :name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
+        <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id" id="idfield">
+        <div v-if="toggle == 'PERSON'">
+			<person :creator="resourcecreator.creator" ref="inputperson" @autocompleteset="updatecreator" :row="row" :prefix="prefix"/>
+        </div>
+        <div v-if="toggle == 'INSTITUTION'">
+			<institution :creator="resourcecreator.creator" ref="inputinstitution" @autocompleteset="updatecreator"  :row="row"  :prefix="prefix"/>
+        </div>
+    </div>
+    <div class="span2">
+    
+    <select :name="getRootPrefix('role')" class="creator-role-select span2" v-model="resourcecreator.role">
+        <option v-for="(value, index) in roles">{{value}}</option>
+    </select>
+    </div>
+    <div class="span1">
+        <a  :class="deleteClass" @click="deleteRow"><i class='icon-trash'></i></a>
+    </div>
+</div>
+</script>
+
