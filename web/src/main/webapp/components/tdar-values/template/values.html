@@ -1,0 +1,14 @@
+<script  type="text/x-template" id="value-template">
+<div v-if="type == 'select' || type=='multiselect'">
+    <select  :name="fieldName" v-model="values"  :multiple="type == 'multiselect'">
+    <option v-for="(choice, idx) in choices" :value="choice[valueField]" >{{choice[labelField]}}</option>
+    </select>
+</div>
+<div v-else>{{numcols}} <br/>
+    <div v-for="start in collist()">
+        <div  v-for="(choice, idx) in subarray(start)">
+        <label>{{choice[labelField]}} <input :type="type" :name="fieldName" :value="choice[valueField]" v-model="values"/></label><br/>
+        </div>
+    </div>
+</div>
+</script>

@@ -25,7 +25,8 @@
     "qs": "https://github.com/ljharb/qs.git#6.5.1",
     "es6-promise": "https://github.com/stefanpenner/es6-promise.git",
     "vue-router": "^3.0.1",
-    "tdar-autocomplete": "https://bitbucket.org/tdar/autocomplete.git"
+    "tdar-autocomplete": "https://bitbucket.org/tdar/autocomplete.git",
+    "tdar-values": "https://bitbucket.org/tdar/vue-values.git"
   },
   "dependencies-cdn": {
     "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",
