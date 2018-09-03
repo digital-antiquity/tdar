@@ -37,6 +37,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 },
                 prefix: {type: String,
                     default: ""},
+                include_id: {type: Boolean,
+                    default: true},
+                use_name_field: {type: Boolean,
+                        default: true},
                 name_field: {
                     type: String,
                     default: "name"
@@ -74,18 +78,24 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
 
                 ret = ret + "[" + idx + "]";
                 
-                if (this.prefix != undefined) {
-                    ret = ret + + ".";
+                if (this.prefix != undefined && this.use_name_field) {
+                    ret = ret + ".";
                 }
                 
-                
-                ret = ret + this.name_field;
+                if (this.use_name_field) {
+                    ret = ret + this.name_field;
+                }
                 return ret;
             },
             idField: function(idx) {
                 var ret = "";
                 if (this.prefix != undefined) {
                     ret = ret + this.prefix + ".";
+                }
+                ret = ret + "[" + idx + "]";
+
+                if (this.prefix != undefined) {
+                    ret = ret + ".";
                 }
                 ret = ret + this.id_field;
                 return ret;

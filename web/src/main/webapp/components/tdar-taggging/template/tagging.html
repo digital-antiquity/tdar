@@ -1,11 +1,11 @@
 <script type="text/x-template" id="tagging-template">
 <div :class="rootClass">
-        <span v-for="(value, index) in values">
-        <div class="item label" :value="value">
+     <span v-for="(value, index) in values">
+        <div class="item label" :idx="index">
 		    <input type="hidden" :name="nameField(index)" v-model="value[name_field]"> 
-		    <input type="hidden" :name="idField(index)" v-model="value[id_field]"> 
-            <span>{{ getLabel(value) }} </span> <a href="#" class="remove" tabindex="-1"
-                title="Remove" @click="remove(index)">×</a>
+		    <input type="hidden" :name="idField(index)" v-model="value[id_field]" v-if="include_id" /> 
+            <span>{{ getLabel(value) }} </span>
+			 <a href="#" class="remove" tabindex="-1" title="Remove" @click="remove(index)">×</a>
         </div>
     </span>
     <autocomplete :url="autocomplete_url"
@@ -13,55 +13,6 @@
         :resultsuffix="result_suffix" :deletekey="deleteLast" :disabled="disabled"
         :enterkey="addEntry" :anykey="watchEntry"
         @autocompletevalueset="addAutocompleteValue" ref="input"
-        fieldname="title" :allowCreate="allow_create" idname="id" />
+        fieldname="ignoretitle" :allowCreate="allow_create" idname="igoreid" />
 </div>
 </script>
-
-<style>
-.sandbox {
-    border: 1px solid #CCC;
-    border-radius: .25em;
-    padding-top: .2em;
-    padding-left: .6em;
-    padding-bottom: .2em;
-    padding-right: .6em;
-}
-
-.item a {
-    margin-left: .2em;
-    border-left: 1px solid #DDD;
-    padding-left: .5em;
-    padding-right: .2em;
-    color: #FFF
-}
-
-.item {
-    margin-right: .3em;
-    padding-bottom: .3em;
-    padding-top: .3em;
-    padding-left: .3em;
-}
-
-.sandbox input {
-    border: none !important;
-    border-color: white !important;
-    box-shadow: none !important;
-}
-
-.sandbox .autocomplete, .item {
-    display: inline-block;
-}
-
-.sandbox.disabled {
-    background: #EEE;
-}
-
-.sandbox.disabled * {
-    color: #DDD;
-}
-
-
-.sandbox .autocomplete input {
-    border: none;
-}
-</style>
