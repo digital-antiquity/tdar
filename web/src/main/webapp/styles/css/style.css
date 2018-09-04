@@ -3793,6 +3793,9 @@ aside li {
 a, .bookmark-link, .bookmark-label, .page-link {
   color: #7a1501; }
 
+a.button, a.btn {
+  color: inherit; }
+
 .red {
   color: #7a1501; }
 
@@ -3828,7 +3831,7 @@ a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
   border-radius: 2px;
   font-weight: 700;
   font-size: 12px;
-  color: #fff;
+  color: #fff !important;
   text-transform: uppercase;
   letter-spacing: 1px;
   text-align: center;
@@ -4303,7 +4306,7 @@ table {
   .popover h3 {
     margin-top: 0px !important; }
 
-.results form h2 {
+form h2 {
   margin-top: 1.8rem !important; }
 
 #divSearchContext {

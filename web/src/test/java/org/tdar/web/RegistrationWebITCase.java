@@ -26,7 +26,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         personmap.remove("registration.contributorReason");
         testRegister(personmap, TERMS.BOTH, true);
         assertCurrentUrlContains("dashboard");
-        assertTextNotPresentIgnoreCase("new project");
+        assertTextPresentIgnoreCase("new project");
         logout();
     }
 

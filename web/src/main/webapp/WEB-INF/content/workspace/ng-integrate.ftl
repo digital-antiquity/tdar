@@ -60,7 +60,7 @@
                         <div class="controls form-row">
                             <div class="col-6">
                                 <table class="table table-condensed table-hover selected-datasets">
-                                      <thead class="thead-dark">
+                                      <thead class="">
 
                                         <tr>
                                             <th colspan="3">Selected Datasets
@@ -90,7 +90,7 @@
                         </div>
                             <div class="col-6">
                                 <table class="table table-condensed table-hover">
-                                      <thead class="thead-dark">
+                                      <thead class="">
 
                                         <tr><th colspan="2">Available Ontologies</th></tr>
                                     </thead>
@@ -125,7 +125,7 @@
                                     </a>
                                     <ul class="dropdown-menu" id="btnSetAddIntegrationColumns">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
-                                                ><a ng-disabled="isReadOnly()" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
+                                                ><a class="dropdown-item" ng-disabled="isReadOnly()" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
@@ -155,10 +155,10 @@
                             <div id="tabControl">
                                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                                     <li ng-repeat="column in ctrl.integration.columns" ng-click="ctrl.setTab($index)" onclick="return false;" class="nav-item" >
-                                        <a href="#tab{{$index}}" id="tabtab{{$index}}" ng-class="{active: ctrl.isTabSet($index)} nav-link">
+                                        <a href="#tab{{$index}}" id="tabtab{{$index}}" ng-class="{active: ctrl.isTabSet($index), 'nav-link': true}">
                                         {{column.name}}
                                             <input type="hidden" name="column.name{{$index}}" ng-model="column.name" />
-                                            <button class="close" ng-click="ctrl.closeTab($index)">x</button>
+                                            <button class="ml-2 close" ng-click="ctrl.closeTab($index)">x</button>
                                         </a>
                                     </li>
                                 </ul>
@@ -204,11 +204,11 @@
 
                                                                     <!-- <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span> -->
                                                                     <!-- FIXME: this is "hidden", but is it even needed? -->
-                                                                    <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+                                                                    <select class="intcol form-control" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
                                                                 </div>
                                                                 <div ng-switch-when="0"></div>
                                                                 <div ng-switch-default>
-                                                                    <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                                    <select class="form-control" title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
                                                                 </div>
                                                                 </div>
                                                             </div>
@@ -336,7 +336,7 @@
             <h3 id="hModalHeader">{{title}}</h3>
         </div>
         <div class="modal-body">
-            <div class="row-fluid">
+            <div class="row">
                 <div class="col-12">
                     <form id="frmModal" class="form-horizontal form-condensed" ng-model-options="{ updateOn: 'default blur', debounce: {'default': 500, 'blur':0, 'click':0} }">
                         <div>
@@ -348,15 +348,15 @@
                             </div>
                             <div class="control-group">
                                 <label class="col-form-label">Belongs to</label>
-                                <div class="controls controls-row">
-                                    <div class="col-3">
+                                <div class="controls form-row">
+                                    <div class="col-6">
                                         <select name="searchFilter.projectId" class="form-control"
                                                 ng-model="filter.projectId" ng-options="project.id as project.title for project in projects"
                                                 ng-change="updateFilter()">
                                             <option value="">Any project</option>
                                         </select>
                                     </div>
-                                    <div class="col-3">
+                                    <div class="col-6">
                                         <select name="searchFilter.collectionId" class="form-control"
                                                 ng-model="filter.collectionId" ng-options="collection.id as collection.title for collection in collections"
                                                 ng-change="updateFilter()">
@@ -379,9 +379,15 @@
 
                             <div class="control-group">
                                 <label class="col-form-label">Other Filters</label>
-                                <div class="controls form-inline">
-                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.bookmarked" ng-model="filter.bookmarked" ng-change="updateFilter()">Bookmarked Items</label>
-                                    <label class="checkbox inline"><input type="checkbox" name="searchFilter.integrationCompatible" ng-model="filter.integrationCompatible" value="true" ng-change="updateFilter()">Integration-compatible</label>
+                                <div class="controls">
+                                <div class="form-check form-check-inline">
+                                    <input type="checkbox" name="searchFilter.bookmarked" ng-model="filter.bookmarked" ng-change="updateFilter()" class="form-check-input">
+                                    <label class="checkbox form-check-label">Bookmarked Items</label>
+                                 </div>
+                                 <div class="form-check form-check-inline">
+                                    <input type="checkbox" name="searchFilter.integrationCompatible" ng-model="filter.integrationCompatible" value="true" ng-change="updateFilter()" class="form-check-input">
+                                    <label class="checkbox form-check-label">Integration-compatible</label>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -423,7 +429,6 @@
             </div>
         </div>
         <div class="modal-footer">
-            <div class="row-fluid">
                 <div class="col-4 text-left">
                     <span ng-show="results.length"> Displaying records {{startRecord() + 1| number}} - {{endRecord()  | number}} of {{modalTotalResults}} </span>
                 </div>
@@ -438,7 +443,6 @@
                                 '1': '1 dataset selected',                                'other': '{{selectedItems.length}} datasets selected'}"></ng-pluralize>
                     <span ng-show="selectedItems.length" >(<a href="javascript:void(0)"  ng-click="clearSelectedItems()">clear selections</a>)</span>
                 </div>
-            </div>
             </div>
 
 
@@ -473,10 +477,11 @@
 <div>
 
     <div id="divResultContainer" class="modal modal-big fade hide" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
         <div class="modal-header alert-info">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h3 id="hModalHeader">Integration Results</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         </div>
         <div class="modal-body">
             <div class="row-fluid">
@@ -486,15 +491,15 @@
                     
                       <!-- Nav tabs -->
                       <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
-                        <li role="presentation"><a href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
-                        <li role="presentation"><a href="#json" aria-controls="preview" role="tab" data-toggle="tab">Raw (request)</a></li>
+                        <li role="presentation" class="active nav-item"><a class="nav-link" href="#pivot" aria-controls="pivot" role="tab" data-toggle="tab">Summary</a></li>
+                        <li role="presentation" class="nav-item"><a class="nav-link" href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
+                        <li role="presentation" class="nav-item"><a class="nav-link" href="#json" aria-controls="preview" role="tab" data-toggle="tab">Raw (request)</a></li>
                       </ul>
                     
                       <!-- Tab panes -->
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="pivot">
-                            <table tdar-datatable aa-data="download.pivotData.rows" ao-columns="download.pivotData.columns" id="tblPivotData"></table>
+                            <table tdar-datatable class="table" aa-data="download.pivotData.rows" ao-columns="download.pivotData.columns" id="tblPivotData"></table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
                             <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
@@ -512,7 +517,7 @@
 
             <div class="row-fluid">
                 <div class="col-12">
-                    <a type="button" ng-disabled="downloadDisabled" class="btn" ng-click="downloadClicked()" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
+                    <a type="button" class="btn btn-secondary" ng-disabled="downloadDisabled" class="btn" ng-click="downloadClicked()" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                 </div>
             </div>

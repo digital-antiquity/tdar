@@ -41,8 +41,8 @@ navigation freemarker macros
     </#macro>
 
 
-    <#macro _toolbar>
-    <#if !editable>
+    <#macro _toolbar editor=false >
+    <#if ((editable?has_content == false) || editable == false) && (editor?has_content == false || editor == false)>
         <#return>
     </#if>
         <#if (sessionData.authenticated)!false && (persistable?has_content && persistable.id > 0)>
@@ -133,9 +133,8 @@ navigation freemarker macros
  -->
 
     <#macro keywordToolbar current>
-
         <#if editor>
-         <@_toolbar>
+         <@_toolbar editor>
 
             <#if "edit" != current>
                     <@makeLink "entity/keyword" "edit?keywordType=${keywordType}" "edit" "edit" current true  />
