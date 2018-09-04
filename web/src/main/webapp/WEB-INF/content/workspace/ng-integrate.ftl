@@ -329,11 +329,11 @@
       <div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
         <div class="modal-header alert-info">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <div id="#modalAjaxIndicator" class="pull-right">
+            <div id="#modalAjaxIndicator" class="fload-right">
                 <span class="small" ng-show="modalSearching">Searching</span>
             </div>
             <h3 id="hModalHeader">{{title}}</h3>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         </div>
         <div class="modal-body">
             <div class="row">
@@ -495,17 +495,39 @@
                         <li role="presentation" class="nav-item"><a class="nav-link" href="#preview" aria-controls="preview" role="tab" data-toggle="tab">Preview</a></li>
                         <li role="presentation" class="nav-item"><a class="nav-link" href="#json" aria-controls="preview" role="tab" data-toggle="tab">Raw (request)</a></li>
                       </ul>
-                    
                       <!-- Tab panes -->
                       <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="pivot">
-                            <table tdar-datatable class="table" aa-data="download.pivotData.rows" ao-columns="download.pivotData.columns" id="tblPivotData"></table>
+                            <table class="table" id="tblPivotData">
+                                <thead>
+                                    <th ng-repeat="col in download.pivotData.columns">{{col}}</th>
+                                </thead>
+                            <tbody>
+                                <tr ng-repeat="row in download.pivotData.rows">
+                                    <td ng-repeat="col in row">{{col}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                            </table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="preview">
-                            <table tdar-datatable aa-data="download.previewData.rows" ao-columns="download.previewData.columns" id="tblPreviewData"></table>
+                            <table class="table" id="tblPreviewData">
+                                <thead>
+                                    <th ng-repeat="col in download.previewData.columns">{{col}}</th>
+                                </thead>
+                            <tbody>
+                                <tr ng-repeat="row in download.previewData.rows">
+                                    <td ng-repeat="_col in row track by $index">{{_col}}</td>
+                                </tr>
+                            </tbody>
+                            </table>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="json">
+                        <div class="card">
+                            <div class="card-body">
                             {{ ctrl.getIntegration() }}
+                            </div>
+                        </div>
                         </div>
                       </div>
                     
