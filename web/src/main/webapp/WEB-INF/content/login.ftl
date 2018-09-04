@@ -17,7 +17,7 @@ vim:sts=2:sw=2:filetype=jsp
     <strong>Note:</strong>You must be logged-in to download materials. Please log in below, or signup for a free user account.
 </div>
 </#if>
-<#assign number = .now?long % 10 + 1/>
+<#assign number = .now?long % 12 + 1/>
 
 <div class="row login-image image${number}">
 <div class="col-8"></div>

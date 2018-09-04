@@ -199,6 +199,15 @@
 
 </#macro>
 
+<#macro imageheader2>
+<div class="image login-image image11">
+    <div class='hero-note rounded-left'>
+        <h2>Learn about our <br/> digital curation services</h2>
+    </div>
+</div>
+
+</#macro>
+
 <#macro homepageHeader>
 
 <section id="hero-wide">
@@ -216,6 +225,9 @@
     </div>
     <div class="carousel-item">
 		<@imageheader />
+    </div>
+    <div class="carousel-item">
+		<@imageheader2 />
     </div>
   </div>
 <!-- 
