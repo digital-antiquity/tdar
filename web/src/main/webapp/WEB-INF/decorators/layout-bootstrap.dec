@@ -16,7 +16,8 @@
 <#global jquery_validate_version="1.15.1" >
 <#global bootstrapVersion="4.1.3" >
 
-<!-- adam's temp area for added css -->
+<link rel="stylesheet" href="https://use.typekit.net/yrw4dsr.css">
+
 
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
@@ -89,20 +90,6 @@
 <link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
 <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
-
-<script type="text/javascript">
-    (function(d) {
-        var config = {
-                    kitId: 'czp6njc',
-                    scriptTimeout: 3000
-                },
-                h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(
-                        /\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement(
-                        "script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";
-                        tk.src='//use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;
-                        f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-    })(document);
-</script>
 
 
     <#if whiteLabelCollection??>  
