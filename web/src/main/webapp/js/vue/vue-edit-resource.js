@@ -1,8 +1,9 @@
 TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
 
-    if (document.getElementById("sel") != undefined) {
-
+    if (document.getElementById("sel") == undefined) {
+        return;
+    }
 
     var app = new Vue({
         el : "#sel",
@@ -30,7 +31,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     ],
                 resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
                     resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
-                    individualInstitutionalRoles: [{id: undefined, role: undefined , creator: {institution:{ name: undefined}}, id: undefined}] }
+                    individualInstitutionalRoles: [ {id: undefined, role: undefined , creator: {institution:{ name: undefined}, id: undefined} } ] }
                 },
                 watch: {
                     "resource.inheritingInvestigationInformation": function(o, b) {
@@ -199,5 +200,5 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     
                 }
     });
-    }
+
 })(console, window, Vue, axios, TDAR);

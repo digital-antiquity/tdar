@@ -67,7 +67,11 @@ var _value = Vue.component('value', {
         return ret;
         },
         collist: function() {
-            return [...Array(this.numcols).keys()];
+            var ret = [];
+            for (var i=0; i < this.numcols; i++) {
+                ret.push(i);
+            }
+            return ret;
         },
         enable: function() {
             
