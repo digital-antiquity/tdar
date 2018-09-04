@@ -156,7 +156,7 @@ ${head}
     	</style>
     </#if>
 </head>
-<body id="${bodyid}" class="${pageType} <#if !production>not-production</#if>"
+<body id="${bodyid}" class="${pageType} <#if !production>not-production</#if>" data-spy="scroll" data-target="#subnavbar" 
 	 data-leaflet-api-key="${config.leafletApiKey}" data-leaflet-tile-provider="${config.leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${config.mapDefaultLat}" data-centerLong="${config.mapDefaultLng}"  data-useGeoLoc="${config.geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
      <#if authenticatedUser?has_content>data-userid="${authenticatedUser.id?c}" data-currentTime="1" </#if>
@@ -244,10 +244,10 @@ ${head}
         <#assign part="" />
         <#assign spanSize = "col-12" />
         <#if  showLeftSidebar() || showRightSidebar() >
-            <#assign part="cols" />
+            <#assign part="" />
             <#assign spanSize = 'col-md-8 col-lg-9 col-sm-12 '/>
         <#elseif showLeftSidebar() && showRightSidebar() >
-            <#assign part="cols" />
+            <#assign part="" />
             <#assign spanSize = "col-6" />
         </#if>
         

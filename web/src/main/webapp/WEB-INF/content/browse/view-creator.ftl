@@ -27,63 +27,7 @@
 
     <#if creator?? >
     
-        <#if  creatorFacetMap?has_content || keywordFacetMap?has_content >
-        <div id="sidebar-right" parse="true" class="row">
-        <div class="col-10 offset-2">
-            <div class="sidebar-spacer">
-                <#list creatorFacetMap?values >
-                    <div id="related-creators">
-                        <h3>Related Creators</h3>
-                        <ul class="list-unstyled ml-0 pl-0">
-                        <#assign count = 0 />
-                            <#items as collab>
-		                        <#assign count = count + 1 />
-                                <li>
-                                   <#if authenticatedUser?has_content>
-                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
-                                    <#else>
-                                        ${collab.label}
-                                    </#if>
-                                </li>
-                                <#if (count > results?size / 2) >
-                                 <#break>
-                                </#if>
-                            </#items>
-                        </ul>
-                    </div>
-                </#list>
-
-                <#list keywordFacetMap?values >
-                    <div id="related-keywords">
-                        <h3>Related Keywords</h3>
-                        <ul class="list-unstyled ml-0 pl-0">
-                        <#assign count = 0 />
-                            <#items as collab>
-		                        <#assign count = count + 1 />
-                                <li>
-                                   <#if authenticatedUser?has_content>
-                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
-                                    <#else>
-                                        ${collab.label}
-                                    </#if>
-                                </li>
-                                <#if (count > results?size / 2) >
-                                 <#break>
-                                </#if>
-                            </#items>
-                        </ul>
-                    </div>
-                </#list>
-
-                <div>
-                    <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
-                        associated with a Creator and highlighting the most commonly used.
-                    </small>
-                </div>
-            </div>
-        </div>
-        </div>
-        </#if>
+    <@sidebar />
 
     <h1>
     <#if logoUrl?has_content>
@@ -349,6 +293,66 @@
         <#if _show>
         <b>${_label}:</b>
             <#if _val>${trueString}<#else>${falseString}</#if>
+        </#if>
+    </#macro>
+    
+    <#macro sidebar>
+            <#if  creatorFacetMap?has_content || keywordFacetMap?has_content >
+        <div id="sidebar-right" parse="true" class="row">
+        <div class="col-10 offset-2">
+            <div class="sidebar-spacer">
+                <#list creatorFacetMap?values >
+                    <div id="related-creators">
+                        <h3>Related Creators</h3>
+                        <ul class="list-unstyled ml-0 pl-0">
+                        <#assign count = 0 />
+                            <#items as collab>
+                                <#assign count = count + 1 />
+                                <li>
+                                   <#if authenticatedUser?has_content>
+                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
+                                    <#else>
+                                        ${collab.label}
+                                    </#if>
+                                </li>
+                                <#if (count > results?size / 2) >
+                                 <#break>
+                                </#if>
+                            </#items>
+                        </ul>
+                    </div>
+                </#list>
+
+                <#list keywordFacetMap?values >
+                    <div id="related-keywords">
+                        <h3>Related Keywords</h3>
+                        <ul class="list-unstyled ml-0 pl-0">
+                        <#assign count = 0 />
+                            <#items as collab>
+                                <#assign count = count + 1 />
+                                <li>
+                                   <#if authenticatedUser?has_content>
+                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
+                                    <#else>
+                                        ${collab.label}
+                                    </#if>
+                                </li>
+                                <#if (count > results?size / 2) >
+                                 <#break>
+                                </#if>
+                            </#items>
+                        </ul>
+                    </div>
+                </#list>
+
+                <div>
+                    <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
+                        associated with a Creator and highlighting the most commonly used.
+                    </small>
+                </div>
+            </div>
+        </div>
+        </div>
         </#if>
     </#macro>
 </#escape>
