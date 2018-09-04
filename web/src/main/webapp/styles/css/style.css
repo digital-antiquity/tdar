@@ -2,11 +2,15 @@ header + #hero {
   margin-bottom: 0em !important;
   margin-top: 3em; }
 
+header + #hero-wide {
+  margin-bottom: 0em !important;
+  margin-top: 0em !important; }
+
 @media (max-width: 768px) {
   #sidebar-right {
     background-image: none; }
 
-  #home #hero h2 {
+  #home #hero h2, #home #hero-wide h2 {
     font-size: 3.5rem; } }
 #homepageCarousel .carousel-indicators {
   left: initial;
@@ -17,7 +21,7 @@ header + #hero {
   background-size: cover;
   height: 25em;
   padding-top: 1.5em;
-  padding-left: 50px;
+  padding-left: 10em;
   border-radius: .25em; }
 
 .image {
@@ -60,16 +64,16 @@ header + #hero {
   min-height: 2.4em;
   font-weight: bold;
   font-size: 24px; }
-#home #hero .carousel-inner {
+#home #hero .carousel-inner, #home #hero-wide .carousel-inner {
   padding-left: 0px;
   padding-right: 0px; }
-#home #hero h2 {
+#home #hero h2, #home #hero-wide h2 {
   font-weight: 700;
   font-size: 60px;
   line-height: 50px;
   letter-spacing: -2px;
   margin: 50px 0 0 0; }
-#home #hero p {
+#home #hero p, #home #hero-wide p {
   margin: 18px 0;
   font-weight: 500;
   font-size: 18px;

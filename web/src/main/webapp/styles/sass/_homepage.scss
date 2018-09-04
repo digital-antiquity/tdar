@@ -4,6 +4,12 @@ header + #hero {
     margin-top:3em;
 }
 
+header + #hero-wide {
+//    margin-top: 0em !important;
+    margin-bottom:0em !important;
+    margin-top:0em !important;
+}
+
 
 
 @media(max-width: 768px) {
@@ -13,7 +19,7 @@ header + #hero {
    
   #home
   {
-    #hero
+    #hero, #hero-wide
     {
       h2
       {
@@ -35,7 +41,7 @@ header + #hero {
     background-size:cover;
     height:25em;
     padding-top:1.5em;
-    padding-left:50px;
+    padding-left:10em;
     border-radius:.25em;
 }
 
@@ -91,7 +97,7 @@ header + #hero {
             font-size:24px;
         }
     }
-  #hero
+  #hero, #hero-wide
   {
       .carousel-inner {
           padding-left:0px;

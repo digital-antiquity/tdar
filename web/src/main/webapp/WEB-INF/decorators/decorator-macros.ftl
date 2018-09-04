@@ -174,7 +174,7 @@
 </#macro>
 
 <#macro searchHero>
-        <div class="container whatcanyoudig-image">
+        <div class="whatcanyoudig-image"><!-- had container -->
             <h2 >What can you dig up?</h2>
             <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
@@ -201,8 +201,8 @@
 
 <#macro homepageHeader>
 
-<section id="hero">
-  <div class = "container">  
+<section id="hero-wide">
+  <div class = "">  
     <div class="px-0 pb-0 pt-0">
     <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
   <ol class="carousel-indicators">
