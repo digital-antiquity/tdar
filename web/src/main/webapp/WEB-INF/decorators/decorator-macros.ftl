@@ -21,12 +21,12 @@
                     <div class="d-flex flex-column ml-auto">
                         <div class="mr-0 d-flex align-items-top justify-content-end">
                             <#if (authenticatedUser??) >
-                            <p id="welcome-menu" class="welcome  screen ">
+                            <p id="welcome-menu" class="welcome  screen san-serif ">
                                 <@s.text name="menu.welcome_back"/>
                                 ${authenticatedUser.properName}
                             </p>
                             <#else>
-                            <p class = "logIn"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
+                            <p class ="logIn san-serif"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
                         </#if>
                     </div>
                     <ul class="navbar-nav">
@@ -178,7 +178,7 @@
             <h2 >What can you dig up?</h2>
             <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
-                <div class="input-group col-md-9 noleftmargin right-bottom-dropshadow">
+                <div class="input-group col-md-6 noleftmargin right-bottom-dropshadow">
                     <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
                     <span class="input-group-append" name="_tdar.searchType" value="simple">
                         <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
@@ -193,7 +193,7 @@
 <#macro imageheader>
 <div class="image login-image image1">
     <div class='hero-note rounded-left'>
-        <h2>Archive a file <br/>for as little as <span class="red">$5</span></h2>
+        <h2><a href="/cart/add">Archive a file <br/>for as little as <span class="red">$5</span></a></h2>
     </div>
 </div>
 

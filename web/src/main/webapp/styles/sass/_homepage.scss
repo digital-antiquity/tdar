@@ -16,18 +16,31 @@ header + #hero-wide {
    #sidebar-right {
       background-image:none;
    }
-   
-  #home
-  {
-    #hero, #hero-wide
-    {
-      h2
-      {
-        font-size: 3.5rem;
-      }
-    }
-  }
 }
+
+// Small devices (landscape phones, 576px and up)
+@media (min-width: 1px) { 
+    #home #hero-wide h2 {
+        font-size:2rem !important;
+    }
+}
+
+// Medium devices (tablets, 768px and up)
+@media (min-width: 768px) { 
+    #home #hero-wide h2 {
+        font-size:2.5rem !important;
+    }
+ }
+
+// Large devices (desktops, 992px and up)
+@media (min-width: 992px) {
+    #home #hero-wide h2 {
+        font-size:3.0rem !important;
+    }
+}
+
+//// Extra large devices (large desktops, 1200px and up)
+//@media (min-width: 1200px) { ... }
 
 #homepageCarousel {
     .carousel-indicators {

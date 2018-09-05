@@ -8,10 +8,16 @@ header + #hero-wide {
 
 @media (max-width: 768px) {
   #sidebar-right {
-    background-image: none; }
-
-  #home #hero h2, #home #hero-wide h2 {
-    font-size: 3.5rem; } }
+    background-image: none; } }
+@media (min-width: 1px) {
+  #home #hero-wide h2 {
+    font-size: 2rem !important; } }
+@media (min-width: 768px) {
+  #home #hero-wide h2 {
+    font-size: 2.5rem !important; } }
+@media (min-width: 992px) {
+  #home #hero-wide h2 {
+    font-size: 3.0rem !important; } }
 #homepageCarousel .carousel-indicators {
   left: initial;
   bottom: 0; }
@@ -267,6 +273,34 @@ nav {
         text-decoration: none;
         color: black; }
 
+@media (min-width: 768px) {
+  .tdarDropdown .flex-column:first-child {
+    border-right: 2px solid #7a1501; }
+
+  .dropdown-menu:after {
+    bottom: 100%;
+    left: 10%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none; }
+
+  .dropdown-menu-right:after {
+    left: 80% !important; }
+
+  .dropdown-menu:after {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 10px;
+    margin-left: -10px; }
+
+  .dropdown-menu:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 16.5px;
+    margin-left: -16.5px; } }
 /********** LEAFLET **************/
 /** leaflet maps - **/
 .disable-map .leaflet-draw {
@@ -3919,34 +3953,6 @@ header .welcome-drop a,
 #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
   font-family: "ff-tisa-web-pro", serif !important; }
 
-@media (min-width: 991.98px) {
-  .tdarDropdown .flex-column:first-child {
-    border-right: 2px solid #7a1501; }
-
-  .dropdown-menu:after {
-    bottom: 100%;
-    left: 10%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none; }
-
-  .dropdown-menu-right:after {
-    left: 80% !important; }
-
-  .dropdown-menu:after {
-    border-color: rgba(0, 0, 0, 0);
-    border-bottom-color: white;
-    border-width: 10px;
-    margin-left: -10px; }
-
-  .dropdown-menu:before {
-    border-color: rgba(0, 0, 0, 0);
-    border-bottom-color: white;
-    border-width: 16.5px;
-    margin-left: -16.5px; } }
 @media (max-width: 768px) {
   #sidebar-right {
     background-image: none; }
@@ -4399,5 +4405,8 @@ form h2 {
 .rounded-left {
   border-top-right-radius: .25em;
   border-bottom-right-radius: .25em; }
+
+p.san-serif {
+  font-family: "soleil", sans-serif !important; }
 
 /*# sourceMappingURL=style.css.map */
