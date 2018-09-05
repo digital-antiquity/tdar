@@ -1,0 +1,49 @@
+.autocomplete {
+    position: relative;
+    width: 130px;
+}
+
+.autocomplete-results {
+    padding: 0;
+    margin: 0;
+    z-index:100000;
+    border: 1px solid #eeeeee;
+    line-height: initial;
+    weight: normal;
+    font-weight: normal;
+    overflow: auto;
+    position: absolute;
+    background: white; 
+}
+
+.autocomplete-result {
+    list-style: none;
+    text-align: left;
+    padding: 4px 2px;
+    cursor: pointer;
+    line-height: initial;
+    display: inline-block;
+    width: intrinsic;
+}
+
+.autocomplete-result.is-active, .autocomplete-result:hover {
+    background-color: #4aae9b;
+    color: white;
+}
+
+.autocomplete .status {
+    font-variant: small-caps;
+    font-weight:700;
+    font-size:90%;
+}
+
+input[autocomplete="off"]::-webkit-autofill,
+input[autocomplete="off"]::-webkit-contacts-auto-fill-button,
+input[autocomplete="off"]::-webkit-credentials-auto-fill-button {
+visibility: hidden;
+display: none !important;
+pointer-events: none;
+height: 0;
+width: 0;
+margin: 0;
+}
