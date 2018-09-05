@@ -143,9 +143,13 @@
         <h5>Material</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingMaterialInformation" :disabled="inheritanceDisabled"/></b>
         <div>
-        <value :choices="materialTypes" ref="materialControlled" :values="resource.controlledMaterialKeyords" />
+        controlled: {{resource.controlledMaterialKeywords.length}}</br>
+        uncontrolled:{{resource.uncontrolledMaterialKeywords.length}}</br>
         </div>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.uncontrolledmaterialKeywords" prefix="uncontrolledMaterialKeywords"  
+        <div>
+        <value :choices="materialTypes" ref="materialControlled" :values="resource.controlledMaterialKeywords" />
+        </div>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.uncontrolledMaterialKeywords" prefix="uncontrolledMaterialKeywords"  
             name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" :include_id="false" :use_name_field="false"
             result_suffix="items"  />
     </div>

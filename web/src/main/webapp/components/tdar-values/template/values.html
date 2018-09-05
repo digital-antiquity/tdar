@@ -1,7 +1,7 @@
 <script  type="text/x-template" id="value-template">
 <div class="value-container">
 <div v-if="type == 'select' || type=='multiselect'">
-    <select  :name="fieldName" v-model="internalvalues"  :multiple="type == 'multiselect'">
+    <select  :name="fieldName" v-model="internalvalues"  :multiple="type == 'multiselect'" :class="disabledClass" :disabled="disabled">
     <option v-for="(choice, idx) in choices" :value="choice[valueField]" >{{choice[labelField]}}</option>
     </select>
 </div>
@@ -9,7 +9,7 @@
 <div class="row">
     <div v-for="start in collist()" class="col span2">
 <div  v-for="(choice, idx) in subarray(start)">
-        <label>{{choice[labelField]}} <input :type="type" :name="fieldName" :value="choice[valueField]" v-model="internalvalues"/></label><br/>
+        <label>{{choice[labelField]}} <input :type="type" :name="fieldName" :value="choice[valueField]" :class="disabledClass" :disabled="disabled" v-model="internalvalues"/></label><br/>
         </div>
     </div>
 </div>

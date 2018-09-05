@@ -64,9 +64,12 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     },
                     "resource.inheritingMaterialInformation": function(o, b) {
                         if (this.project != undefined && this.project.activeMaterialKeywords != undefined) {
+                            console.log("inherit:", this.project.activeMaterialKeywords);
                             this.resource.controlledMaterialKeywords.length = 0;
                             this.resource.uncontrolledMaterialKeywords.length = 0;
+                            this.$refs.materialControlled.disable();
                             this.applyMaterialKeywords(this.project.activeMaterialKeywords);
+                            this.$refs.materialControlled.refresh();
                         }
                     },
                     "resource.inheritingCulturalInformation": function(o, b) {
@@ -140,7 +143,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                         }
                         Vue.set(this, "investigationTypes", JSON.parse(document.getElementById('investigationTypes').innerText ));
                         Vue.set(this, "materialTypes", JSON.parse(document.getElementById('materialTypes').innerText ));
-                        this.applyMaterialKeywords(this.materialTypes);
+                        this.applyMaterialKeywords(json.activeMaterialKeywords);
                     }
                     Vue.set(this,"epochtime", Date.now() + 15000);
                     Vue.set(this,"accountId",220);
@@ -172,18 +175,22 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                         console.log("setsubmitter", submitter);
                         Vue.set(this.resource,"submitter",submitter );
                     },
-                    applyMaterialKeywords(keywords) {
+                    applyMaterialKeywords: function(keywords) {
                         var controlled = this.resource.controlledMaterialKeywords;
                         var uncontrolled = this.resource.uncontrolledMaterialKeywords;
                         var self = this;
                         keywords.forEach(function(k){
+                            var seen = false;
+                            console.log(k);
                             self.materialTypes.forEach(function(c){
                                 if (c.id == k.id) {
                                     controlled.push(k);
-                                } else {
-                                    uncontrolled.push(k);
+                                    seen = true;
                                 }
                             });
+                            if (seen == false) {
+                                uncontrolled.push(k);
+                            }
                         });
                     },
                     inherit: function(o, b, ref, vals) {
