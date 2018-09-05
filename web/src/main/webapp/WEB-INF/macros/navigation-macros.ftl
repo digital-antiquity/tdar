@@ -20,22 +20,22 @@ navigation freemarker macros
 -->
     <#macro toolbar namespace current="view" modern=false>
          <@_toolbar>
-            <@makeLink namespace "edit" "edit" "edit" current />
+             <@makeLink2 namespace=namespace link="${persistable.id?c}/edit" label="edit" disabled=disabled icon="edit" />
             <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-            <@makeLink "resource" "delete?id=${resource.id?c}" "delete" "delete" current true _deleteable />
-            <@makeLink "resource" "rights/${resource.id?c}" "permissions" "permissions" current false false />
+             <@makeLink2 namespace="resource" link="delete?id=${persistable.id?c}" label="delete" disabled=disabled icon="delete" />
+             <@makeLink2 namespace="resource" link="rights/${persistable.id?c}" label="permissions" disabled=disabled icon="permissions" />
 	        <#if resource.resourceType.project >
-	            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false ""/>
+                <@makeLink2 namespace="resource" link="add?projectId=${persistable.id?c}" label="add item" disabled=disabled icon="add" />
 	        </#if>
 	        <#if ((billingAccounts![])?size > 0 || config.payPerIngestEnabled == false)>
-			   <@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
+                <@makeLink2 namespace="resource" link="duplicate/duplicate?id=${persistable.id?c}" label="duplicate" disabled=disabled icon="duplicate" />
 			</#if>
 	        <#if editable>
-				<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
+                <@makeLink2 namespace="resource" link="usage/${persistable.id?c}" label="usage" disabled=disabled icon="usage" />
 			</#if>
 			<#nested>
 			<#if editor>
-                <@makeLink "resource" "admin?id=${resource.id?c}" "admin" "admin" "" false />					
+                <@makeLink2 namespace="resource" link="admin?id=${persistable.id?c}" label="admin" disabled=disabled icon="admin" />
 			</#if>
          </@_toolbar>
     </#macro>
@@ -60,20 +60,20 @@ navigation freemarker macros
 
     <#macro collectionToolbar namespace current="view">
          <@_toolbar>
-            <@makeLink resourceCollection.urlNamespace "edit" "edit" "edit" current />
+             <@makeLink2 namespace=resourceCollection.urlNamespace link="${persistable.id?c}/edit" label="edit" disabled=disabled icon="edit" />
             <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-            <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-            <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true false />
+             <@makeLink2 namespace=resourceCollection.urlNamespace link="delete?id=${persistable.id?c}" label="delete" disabled=_deleteable icon="delete" />
+             <@makeLink2 namespace=resourceCollection.urlNamespace link="usage/${persistable.id?c}" label="usage" disabled=false icon="usage" />
             <#if editor && ((resourceCollection.managedResources![])?size > 0) >
-                    <@makeLink "resource" "compare?collectionId=${persistable.id?c}" "review" "review" "" false />
-                    <@makeLink "export" "request?collectionId=${persistable.id}" "export" "export" current true _deleteable />
+                    <@makeLink2 namespace="resource" link="compare?collectionId=${persistable.id?c}" label="review" disabled=false icon="review" />
+                    <@makeLink2 namespace="export" link="request?collectionId=${persistable.id?c}" label="export" disabled=false icon="export" />
 			</#if>
              <#if administrator && whiteLabelCollection>
-                    <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
+                    <@makeLink2 namespace=namespace link="admin/whitelabel/${persistable.id?c}/edit" label="private label settings" disabled=false icon="settings" />
              </#if>
         <#nested>
             <#if editor>
-                <@makeLink namespace "admin/${persistable.id?c}" "admin" "admin" "" false />                   
+                <@makeLink2 namespace=namespace link="admin/${persistable.id?c}" label="admin" disabled=false icon="admin" />
             </#if>
        </@_toolbar>
     </#macro>
@@ -81,20 +81,20 @@ navigation freemarker macros
 
     <#macro billingToolbar namespace current="view">
          <@_toolbar>
-            <@makeLink namespace "edit" "edit" "edit" current />
+            <@makeLink2 namespace=namespace label="edit" icon="edit" link="${persistable.id?c}/edit" disabled=disabled />
             <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
-            <@makeLink "billing" "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-            <@makeLink "export" "request?accountId=${persistable.id}" "export" "export" current true _deleteable />
-        	<@makeLink "cart" "add?accountId=${persistable.id?c}" "add invoice" "add" "" false false />
+            <@makeLink2 namespace=namespace label="delete" icon="delete" link="delete?id=${persistable.id}" disabled=_deleteable />
+            <@makeLink2 namespace="export" link="request?accountId=${persistable.id}" label="export" icon="export"  />
+        	<@makeLink2 namespace="cart" link="add?accountId=${persistable.id?c}" label="add invoice"icon="add" />
 	    	<#if administrator>
-		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
+		        <@makeLink2 namespace="billing" link="updateQuotas?id=${persistable.id?c}" label="Reset Totals" icon="add"/>
 	        </#if>
             <#local edit = !(editable || administrator) />
 		    <#if !edit>
                 <#local _large = (persistable.resources?size &gt; 50000) />
-                <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
+                <@makeLink2 namespace=namespace link="usage/${persistable.id?c}" label="usage" icon="usage" disabled=_large />
 	        </#if>
-            <@makeLink namespace "transfer/${persistable.id?c}" "transfer" "transfer" current true edit />
+            <@makeLink2 namespace=namespace link="transfer/${persistable.id?c}" label="transfer" icon="transfer" disabled=edit />
          </@_toolbar>
     </#macro>
 
@@ -113,13 +113,9 @@ navigation freemarker macros
             <#else>
                 <#local creatorType = persistable.creatorType?lower_case />
             </#if>
-		    <#if "edit" != current>
-                <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true  />
-            <#else>
-                <@makeLink "entity/${creatorType}" "edit" "edit" "edit" current true />
-            </#if>
+            <@makeLink2 namespace="entity" link="${creatorType}/${persistable.id?c}/edit" label="edit" icon="edit" />
             <#if creatorType == 'user'>
-            	<@makeLink "entity/user" "rights/${id?c}" "rights" "rights" current false />
+                <@makeLink2 namespace="entity/user" link="rights/${persistable.id?c}" label="rights" icon="permissions" />
 			</#if>
          </@_toolbar>
     </#macro>
@@ -135,87 +131,25 @@ navigation freemarker macros
     <#macro keywordToolbar current>
         <#if editor>
          <@_toolbar editor>
-
-            <#if "edit" != current>
-                    <@makeLink "entity/keyword" "edit?keywordType=${keywordType}" "edit" "edit" current true  />
-                <#else>
-                    <@makeLink "entity/keyword" "edit" "edit" "edit" current true />
-                </#if>
+            <@makeLink2 namespace="entity/keyword" link="edit?keywordType=${keywordType}&id=${persistable.id?c}" label="edit" icon="edit" />
          </@_toolbar>
         </#if>
     </#macro>
 
-<#-- Emit a link to a page which corresponds  specified namespace and action and resourceId.  For example, <@makeLink "coding-sheet" "add">
-    will emit <a href="http://{hostname}/coding-sheet/add">{label}</a>.
+    <#macro makeLink2 namespace="" link="" label=label disabled=false icon="">
 
-    If the specified URL is the same location of the current request,  this macro emits a text label instead of a link.
-
-    Most arguments to this macro (namespace/action/label) are technically optional, however, their default values are
-    are identifiers of the same name that must be defined at the time that freemarker renders this macro.
-    @param namespace:string? struts namespace name
-    @param action:string? struts action name
-    @param label:string? text to display for the link
-    @param current:string? struts action name of the current page.
- -->
-    <#macro makeLink namespace=namespace action=action label=label name=name  current="" includeResourceId=true disabled=false  extraClass="">
-        <#assign state = "" />
+        <li class="list-inline-item">
         <#if disabled>
-            <#assign state="disabled" />
-        <#elseif current?string == name?string>
-            <#assign state="active" />
-        </#if>
-        <#local action_ = action/>
-        <#if (action?last_index_of("?") > 0)>
-            <#local action_ = action?substring(0,action?last_index_of("?")) />
-        </#if>
-        <#if action_ == 'creators'>
-            <#local action_ = "view" />
-        </#if>
-
-    <li class="${state} ${extraClass} list-inline-item">
-        <#if disabled>
-        <span class="disabled">
+            <span class="disabled">
         <#else>
-        <#local localAction="/" + action />
-        <#if localAction == '/'>
-            <#local localAction="" />
-        </#if>
-        <#if persistable??>
-            <#local _id = persistable.id />
-        <#elseif creator?? >
-            <#local _id = creator.id />
-        <#elseif keyword?? >
-            <#local _id = keyword.id />
-        </#if>
-
-        <#if action?contains('columns') || action?contains("usage/") >
-            <#local includeResourceId = false/>
-        </#if>
-
-
-		<#if action == 'view' || action == "creators" || action == 'stats' >
-			<#local includeResourceId = false/>
-			<#local localAction="/${_id?c}"/>
-            <#if action == "creators">
-                <#local localAction="/creators/${_id?c}"/>
+            <#local localAction="/" + link />
+            <#if localAction == '/'>
+                <#local localAction="" />
             </#if>
-		</#if>
-        <a href="<#compress><@s.url value="/${namespace}${localAction}">
-	        <#if includeResourceId>
-	            <@s.param name="id" value="${_id?c}" />
-	        </#if>
-	        </@s.url></#compress>" class="toolbar-${name}">
+            <a href="<#compress><@s.url value="/${namespace}${localAction}"/></#compress>">
         </#if>
-        <#local _name = name />
-        <#if name == 'mapping'><#local _name = "icon-ontology"></#if>
-        <#if name == 'duplicate'><#local _name = "duplicate_mono"></#if>
-        <#if name == 'stats'><#local _name = "usage"></#if>
-        <#if name == 'rights'><#local _name = "permissions"></#if>
-        <svg class="svgicon toolbaricon"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${_name}"></use></svg>
+        <svg class="svgicon toolbaricon"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${icon}"></use></svg>
 
-<#--        <#else>
-            <i class="tdar-icon-${action_}<#if state?has_content>-${state}</#if>"></i>
-        </#if>-->
         <#nested>${label}<#if disabled></span><#else></a></#if>
     </li>
     </#macro>

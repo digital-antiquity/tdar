@@ -162,35 +162,27 @@
     <#if editable>
     <#local path="${resourceCollection.urlNamespace}"/>
         <@nav.collectionToolbar "collection" "view">
-            <@nav.makeLink
+            <@nav.makeLink2
             namespace="${path}"
-            action="add?parentId=${id?c}"
+            link="add?parentId=${id?c}"
             label="add child collection"
-            name="child_collection"
-            current=current
-            includeResourceId=false
             disabled=disabled
-            extraClass="hidden-tablet hidden-phone"/>
+            icon="add" />
 
-            <@nav.makeLink
+            <@nav.makeLink2
                 namespace="${path}"
-                action="${id?c}/rights"
+                link="${id?c}/rights"
                 label="permissions"
-                name="rights"
-                includeResourceId=false
-                current=current
-                disabled=disabled
-            extraClass=""/>
+                icon="permissions"
+                disabled=disabled/>
 
         <#if editor && ((resourceCollection.managedResources![])?size > 0) >
-            <@nav.makeLink
-            namespace="${path}/admin/batch"
-            action="${id?c}"
+            <@nav.makeLink2
+            namespace="${path}"
+            link="admin/batch/${id?c}"
             label="batch title (beta)"
-            name="batch"
-            current=current
-            disabled=disabled
-            extraClass="hidden-tablet hidden-phone"/>
+            icon="batch"
+            disabled=disabled />
         </#if>
         </@nav.collectionToolbar>
     </#if>

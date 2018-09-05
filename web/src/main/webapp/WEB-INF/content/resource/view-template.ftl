@@ -51,9 +51,9 @@
     <@nav.toolbar "${resource.urlNamespace}" "view" true>
         <#if resource.resourceType.dataTableSupported && editable>
             <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
-            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
+            <@nav.makeLink2 namespace="dataset" link="columns/${persistable.id?c}" label="table metadata" disabled=disabled icon="columns" />
             <#if mappingFeatureEnabled >
-            <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
+            <@nav.makeLink2 namespace="dataset" link="resource-mapping?id=${persistable.id?c}" label="res. mapping" disabled=disabled icon="columns" />
             </#if>
         </#if>
 

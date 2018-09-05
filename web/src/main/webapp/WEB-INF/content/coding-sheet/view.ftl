@@ -7,7 +7,7 @@
         <#if editable>
         <!-- disabled if coding sheet has errors, ontology is not mapped -->
             <#assign disabled = !okToMapOntology />
-            <@nav.makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled "mappingLink"/>
+            <@nav.makeLink2 namespace="coding-sheet" link="${persistable.id?c}/mapping" label="map ontology" icon="ontology" />
         </#if>
     </#macro>
 
