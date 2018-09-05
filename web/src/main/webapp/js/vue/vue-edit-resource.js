@@ -5,6 +5,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
         return;
     }
 
+    function dereference(obj) {
+        return JSON.parse(JSON.stringify(obj));
+    }
+    
     var app = new Vue({
         el : "#sel",
         data : {
@@ -21,6 +25,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 projectId: undefined,
                 inheritanceDisabled: true,
                 investigationTypes: [],
+                materialTypes: [],
                 project: {},
                 creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
                 noteTypes: [
@@ -29,7 +34,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     {value:"RIGHTS_ATTRIBUTION", name:"Rights & Attribution"},
                     {value:"ADMIN", name:"Administration Note"}
                     ],
-                resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
+                resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], controlledMaterialKeywords:[], uncontrolledMaterialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
                     resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
                     individualInstitutionalRoles: [ {id: undefined, role: undefined , creator: {institution:{ name: undefined}, id: undefined} } ] }
                 },
@@ -58,7 +63,11 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                         }
                     },
                     "resource.inheritingMaterialInformation": function(o, b) {
-                        this.inherit(o,b,'material', 'activeMaterialKeywords');
+                        if (this.project != undefined && this.project.activeMaterialKeywords != undefined) {
+                            this.resource.controlledMaterialKeywords.length = 0;
+                            this.resource.uncontrolledMaterialKeywords.length = 0;
+                            this.applyMaterialKeywords(this.project.activeMaterialKeywords);
+                        }
                     },
                     "resource.inheritingCulturalInformation": function(o, b) {
                         this.inherit(o,b,'culture', 'activeCultureKeywords');
@@ -87,15 +96,15 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     },
                     "resource.inheritingNoteInformation": function(o, b) {
                         if (this.project != undefined && this.project.activeResourceNotes != undefined) {
-                        this.resource.resourceNotes.length = 0;
-                        var _app = this;
-                        this.project.activeResourceNotes.forEach(function(n) {
-                            console.log(n);
-                            _app.resource.resourceNotes.push(JSON.parse(JSON.stringify(n)) );
-                        });
-                        if (this.resource.resourceNotes.length == 0) {
-                            this.resource.resourceNotes.push({});
-                        }
+                            this.resource.resourceNotes.length = 0;
+                            var _app = this;
+                            this.project.activeResourceNotes.forEach(function(n) {
+                                console.log(n);
+                                _app.resource.resourceNotes.push(derefrence(n) );
+                            });
+                            if (this.resource.resourceNotes.length == 0) {
+                                this.resource.resourceNotes.push({});
+                            }
                         }
                     }
                 },
@@ -125,7 +134,13 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             json.activeLatitudeLongitudeBoxes = [{north: undefined, south: undefined, east: undefined,west: undefined } ];
                         }
 
+                        if (json.controlledMaterialKeywords == undefined) {
+                            json.controlledMaterialKeywords = [];
+                            json.uncontrolledMaterialKeywords = [];
+                        }
                         Vue.set(this, "investigationTypes", JSON.parse(document.getElementById('investigationTypes').innerText ));
+                        Vue.set(this, "materialTypes", JSON.parse(document.getElementById('materialTypes').innerText ));
+                        this.applyMaterialKeywords(this.materialTypes);
                     }
                     Vue.set(this,"epochtime", Date.now() + 15000);
                     Vue.set(this,"accountId",220);
@@ -157,9 +172,23 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                         console.log("setsubmitter", submitter);
                         Vue.set(this.resource,"submitter",submitter );
                     },
+                    applyMaterialKeywords(keywords) {
+                        var controlled = this.resource.controlledMaterialKeywords;
+                        var uncontrolled = this.resource.uncontrolledMaterialKeywords;
+                        var self = this;
+                        keywords.forEach(function(k){
+                            self.materialTypes.forEach(function(c){
+                                if (c.id == k.id) {
+                                    controlled.push(k);
+                                } else {
+                                    uncontrolled.push(k);
+                                }
+                            });
+                        });
+                    },
                     inherit: function(o, b, ref, vals) {
                         if (this.project[vals] != undefined && o == true) {
-                            this.$refs[ref].setValues(this.project[JSON.parse(JSON.stringify(vals)) ]); 
+                            this.$refs[ref].setValues(this.project[dereference(vals) ]); 
                             this.$refs[ref].disable();
                         } else {
                             this.$refs[ref].enable();
