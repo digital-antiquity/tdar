@@ -146,7 +146,7 @@ navigation freemarker macros
             <#if localAction == '/'>
                 <#local localAction="" />
             </#if>
-            <a href="<#compress><@s.url value="/${namespace}${localAction}"/></#compress>">
+            <a href="<#compress><@s.url value="/${namespace}${localAction}"/></#compress>" class="toolbar-${icon}">
         </#if>
         <svg class="svgicon toolbaricon"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${icon}"></use></svg>
 

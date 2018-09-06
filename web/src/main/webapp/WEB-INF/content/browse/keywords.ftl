@@ -41,7 +41,6 @@
         
     </div>
 </div>
-        <@nav.keywordToolbar "view" />
 
 <div class="glide">
     <h1>${keyword.label} <span class="xsmall red">(<@s.text name="${keywordType.localeKey}"/>)</span></h1>
@@ -52,6 +51,7 @@
     <p><b>Parent:</b><@search.searchFor keyword.parent false /></p>
     </#if>
     
+        <@nav.keywordToolbar "view" />
     <p>${keyword.definition!''}</p>
 </div>
 
