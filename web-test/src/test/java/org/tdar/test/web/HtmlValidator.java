@@ -30,9 +30,11 @@ public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "</selectize>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
-            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute", "<template>", "</template>",
+            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute", "<template>", "</template>","<upload>","</upload>",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
+            "upload is not recognized",
+            "discarding unexpected upload",
             "missing </a> before <div>",
             "missing </a> before <h3>",
             "discarding unexpected </div",
