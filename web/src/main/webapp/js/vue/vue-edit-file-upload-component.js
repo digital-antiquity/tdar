@@ -2,13 +2,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
     "use strict";
     var ERROR_TIMEOUT = 5000;
 
-
     var _init = function(widgetId) {
 
         // //https://github.com/blueimp/jQuery-File-Upload/wiki/API
 
         var DELETE = 'DELETE';
-        
+
         var config = {
             files : [],
             url : TDAR.uri('upload/upload'),
@@ -37,13 +36,13 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     previousDeleteState : '',
                     xhr : undefined,
                     previousReplaceState : '',
-                    originalFileName: "",
-                    originalFileSize: ""
+                    originalFileName : "",
+                    originalFileSize : ""
                 }
             },
             mounted : function() {
                 var $picker = $("input.datepicker", this.el);
-                
+
                 TDAR.datepicker.applyHidden($picker);
                 var _app = this;
                 $picker.on("datechanged", function(e) {
@@ -145,12 +144,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         Vue.set(this.file, "originalFileSize", this.file.size);
                         Vue.set(this, "originalFileSize", this.file.size);
                         Vue.set(this.file, "originalFileName", this.file.name);
-                        
+
                     }
 
                     Vue.set(this.file, "action", "REPLACE");
-                    Vue.set(this,"warnings", []);
-                    var valid = this.$parent.validateAdd(files[0],this.file.name);
+                    Vue.set(this, "warnings", []);
+                    var valid = this.$parent.validateAdd(files[0], this.file.name);
                     if (valid) {
                         Vue.set(this.file, "replaceFile", files[0].name);
                         Vue.set(this.file, "name", files[0].name);
@@ -176,22 +175,25 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             }
         });
 
-        var app = new Vue({
-            el : widgetId,
-            data : {
-                files : config.files,
-                url : config.url,
-                ticketId : config.ticketId,
-                resourceId : config.resourceId,
-                userId : config.userId,
-                validFormats : config.validFormats,
-                sideCarOnly : config.sideCarOnly,
-                maxNumberOfFiles : config.maxNumberOfFiles,
-                errors : [],
-                warnings : [],
-                packageMessages: [],
-                requiredOptionalPairs : config.requiredOptionalPairs,
-                ableToUpload : config.ableToUpload
+        var cmp = Vue.component('upload', {
+            template : "#upload-template",
+            props : [ "config" ],
+            data : function() {
+                return {
+                    files : config.files,
+                    url : config.url,
+                    ticketId : config.ticketId,
+                    resourceId : config.resourceId,
+                    userId : config.userId,
+                    validFormats : config.validFormats,
+                    sideCarOnly : config.sideCarOnly,
+                    maxNumberOfFiles : config.maxNumberOfFiles,
+                    errors : [],
+                    warnings : [],
+                    packageMessages : [],
+                    requiredOptionalPairs : config.requiredOptionalPairs,
+                    ableToUpload : config.ableToUpload
+                }
             },
             computed : {
                 valid : function() {
@@ -205,10 +207,10 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     }
                     return !this.ableToUpload;
                 },
-                deleteDisabled: function() {
+                deleteDisabled : function() {
                     return false;
                 },
-                fileUploadButtonCss: function() {
+                fileUploadButtonCss : function() {
                     var css = "btn btn-success fileinput-button ";
                     if (this.inputDisabled) {
                         return css + " disabled";
@@ -242,26 +244,28 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 validatePackage : function() {
                     return TDAR.vuejs.upload.validatePackage(this.files, this.requiredOptionalPairs, this);
                 },
-                addPackageMessage: function(msg) {
-                    this.packageMessages.push(msg);  
+                addPackageMessage : function(msg) {
+                    this.packageMessages.push(msg);
                 },
-                clearPackageMessages: function() {
-                    this.packageMessages = [];  
+                clearPackageMessages : function() {
+                    this.packageMessages = [];
                 },
                 addError : function(error) {
-                  this.errors.push(error);  
+                    this.errors.push(error);
                 },
                 addWarning : function(error) {
-                    this.warnings.push(error);  
+                    this.warnings.push(error);
                 },
-                append: function(a, b) {
-                  return a + "" + b;  
+                append : function(a, b) {
+                    return a + "" + b;
                 },
                 validateAdd : function(file, replace) {
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files),
+                            this.maxNumberOfFiles, this.sideCarOnly, this)
                 },
-                reValidateAllFilesWithChangedFile: function(file) {
-                    return TDAR.vuejs.upload.validateAdd(file, this.files, file.name, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
+                reValidateAllFilesWithChangedFile : function(file) {
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, file.name, this.validFormats, this.getCurrentNumberOfFiles(this.files),
+                            this.maxNumberOfFiles, this.sideCarOnly, this)
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
@@ -279,8 +283,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 fileUploadSubmit : function(e, data) {
                 },
                 fileUploadAdd : function(e, data) {
-                    Vue.set(this,"errors", []);
-                    Vue.set(this,"warnings", []);
+                    Vue.set(this, "errors", []);
+                    Vue.set(this, "warnings", []);
                     // add a file
                     var _app = this;
                     console.log('fileUploadAdd:', e, data);
@@ -288,25 +292,25 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     var $upload = $('#fileupload');
                     return TDAR.vuejs.upload.fileUploadAdd($upload, data, _app);
                 },
-                addFile: function(file) {
+                addFile : function(file) {
                     this.files.push(file);
                 },
-                _disable: function() {
-                    //    $('.disabledCheckboxes').prop("disabled", true);
-                    //$('.disabledCheckboxes').removeAttr("disabled");
-                    Vue.set(this,"ableToUpload",false);
+                _disable : function() {
+                    // $('.disabledCheckboxes').prop("disabled", true);
+                    // $('.disabledCheckboxes').removeAttr("disabled");
+                    Vue.set(this, "ableToUpload", false);
                     $(".submitButton").prop("disabled", "disabled");
                     $(".submitButton").addClass("disabled");
                 },
-                _enable: function() {
-                    Vue.set(this,"ableToUpload",true);
+                _enable : function() {
+                    Vue.set(this, "ableToUpload", true);
                     $(".submitButton").prop("disabled", false);
                     $(".submitButton").removeAttr("disabled");
                     $(".submitButton").removeClass("disabled");
                 },
-                handleClick: function(e) {
+                handleClick : function(e) {
                     if (this.inputDisabled == false) {
-                        
+
                     } else {
                         console.log("input disabled");
                         e.preventDefault();
@@ -316,7 +320,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     // complete the add action
                     var _app = this;
                     this._enable();
-                    return TDAR.vuejs.upload.fileUploadAddDone(data,_app.files, _app);
+                    return TDAR.vuejs.upload.fileUploadAddDone(data, _app.files, _app);
                 }
             },
             mounted : function() {
@@ -325,7 +329,7 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     console.log('file upload disabled');
                     return;
                 }
-                var app_ =this;
+                var app_ = this;
                 $("#fileuploadWrapper").click(function(e) {
                     app_.handleClick(e);
                 })
@@ -347,10 +351,13 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     dataType : 'json',
                     paramName : "uploadFile",
                     // required to ensure that we don't send two files separately and not use the same ticket
-                    singleFileUploads: false,
+                    singleFileUploads : false,
                     formData : function(form) {
                         // override formData
-                        var data = [{name: "unfiled", value :true}];
+                        var data = [ {
+                            name : "unfiled",
+                            value : true
+                        } ];
                         if (_app.ticketId == undefined || _app.ticketId == -1) {
                             data.push({
                                 name : "ticketRequested",
@@ -378,12 +385,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 var _app = this;
 
                 up.bind('fileuploadadd', _app.fileUploadAdd).bind('fileuploaddone', _app.fileUploadAddDone).bind('fileuploadsubmit', _app.fileUploadSubmit)
-                        .bind('fileuploadprogress', _app.updateFileProgress)
-                 .bind('fileuploadfail', function (e, data) {console.log('fileUploadFail:',e);
-                 _app.addWarning("there was an error uploading the specified file");
-                 console.error(e);
-                 _app._enable();
-                 });
+                        .bind('fileuploadprogress', _app.updateFileProgress).bind('fileuploadfail', function(e, data) {
+                            console.log('fileUploadFail:', e);
+                            _app.addWarning("there was an error uploading the specified file");
+                            console.error(e);
+                            _app._enable();
+                        });
                 // .bind('fileuploadstart', function (e) {console.log('fileUploadStart:',e);})
                 // .bind('fileuploadstop', function (e) {console.log('fileUploadStop:',e);})
                 // .bind('fileuploadchange', function (e, data) {console.log('fileUploadChange:',e);});
@@ -396,8 +403,17 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 // .bind('fileuploadchunkalways', function (e, data) {/* ... */});
             }
         });
-//        return {"app" : app,"fpart" : _fpart};
-        return app;
+         var app = new Vue({
+             el : widgetId,
+             data: {
+             config: config}
+         });
+         
+        return {
+            "app" : app,
+            "cmp": cmp,
+            "fpart" : _fpart
+        };
     }
 
     return {

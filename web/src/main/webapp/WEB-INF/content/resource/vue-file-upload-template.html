@@ -1,5 +1,12 @@
 <div id='vueupload'>
 <div id="uploadWidget" data-config="#${uploadConfigId}">
+    <upload :config="config" />
+</div>
+    
+</div>
+
+<script type="text/x-template" id="upload-template">
+  <div>
     <table class="table">
         <thead>
             <tr>
@@ -32,7 +39,7 @@
                  <input type="text" :id="append('fue',index )" required="true" class=" required hidden"  :title="error" /> </li>
         </ul>
         <ul v-for="(error,index) in warnings" class="unstyled" >
-            <li> <label :for="append('fue',index )"><i class="icon-warning-sign"></i> {{ error }}</label>
+            <li> <label :for="append('fue',index )"><i class="icon-warning-sign"></i> {{ error }}</label></li>
         </ul>
         <ul v-for="(error,index) in packageMessages" >
         <li><label :for="append('pm',index )"><i class="icon-ban-circle"></i> {{ error }} </label>
@@ -50,13 +57,12 @@
     <!-- The container for the uploaded files -->
     <div id="files" class="files"></div>
     <!-- the following textarea is designed to handle the 'files' when a 'submit' is hit and then to support the issue when input is returned -->
-<textarea id="vueFilesFallback" name='vueFilesFallback' style="display:none;visibility:hidden;">
-${vueFilesFallback!'{{ files }}'}
-</textarea>
-</div>
-    
-</div>
+	<textarea id="vueFilesFallback" name='vueFilesFallback' style="display:none;visibility:hidden;">
+	${vueFilesFallback!'{{ files }}'}
+	</textarea>
 
+  </div>
+</script>
 <script type="text/x-template"   id="fpart-template">
 <tr v-bind:id="rowId">
     <td><label class="control-label">Filename</label>

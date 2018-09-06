@@ -52,7 +52,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
+            var vapp = getApp();
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -67,6 +67,14 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
         });
   
 
+        function getApp() {
+            var cmp = TDAR.vuejs.uploadWidget.init("#uploadWidget").cmp;
+            var Constructor = Vue.extend(cmp);
+            // count the contructor (get back to the app from the router)
+            var vapp = new Constructor().$mount();
+            return vapp;
+        }
+        
         function setupValidApp() {
             var conf = getBaseConfig();
             conf.validFormats.push('.tif');
@@ -76,8 +84,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
             jasmine.Ajax.stubRequest('/upload/upload').andReturn({
                 "responseText": 'success'
               });
-
-            var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
+            var vapp = getApp();
             var _files = [{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}];
             var result = vapp.fileUploadAdd(undefined, {originalFiles:_files});
             expect(result).toBe(true);
@@ -197,7 +204,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
+            var vapp = getApp();
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -224,7 +231,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
+            var vapp = getApp();
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -253,7 +260,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
+            var vapp = getApp();
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -284,7 +291,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = TDAR.vuejs.uploadWidget.init("#uploadWidget");
+            var vapp = getApp();
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jgw/object',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
