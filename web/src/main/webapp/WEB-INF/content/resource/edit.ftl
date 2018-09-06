@@ -1,8 +1,9 @@
 <#escape _untrusted as _untrusted?html>
 
 <form method="POST" action="/document/save">
-
-
+<#assign uploadConfigId=''/>
+<#assign fileProxies=[] />
+<#include "vue-file-upload-template.html">
 <#include "/components/tdar-autocomplete/template/autocomplete.html">
 <#include "/components/tdar-taggging/template/tagging.html">
 <#include "/components/tdar-values/template/values.html">

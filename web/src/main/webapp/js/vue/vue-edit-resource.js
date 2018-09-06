@@ -27,6 +27,16 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 investigationTypes: [],
                 materialTypes: [],
                 project: {},
+                fileUploadConfig: {
+                    resourceId : -1,
+                    userId : -1,
+                    validFormats : ['pdf','doc','docx','png','gif','jpg','tif','xls'],
+                    sideCarOnly : false,
+                    ableToUpload : true,
+                    maxNumberOfFiles : 50,
+                    files: [],
+                    requiredOptionalPairs:[]
+                },
                 creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
                 noteTypes: [
                     {value:"GENERAL", name:"General Note"},
@@ -38,7 +48,49 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
                     individualInstitutionalRoles: [ {id: undefined, role: undefined , creator: {institution:{ name: undefined}, id: undefined} } ] }
                 },
-                watch: {
+                created: function() {
+                    if (document.getElementById('json') != undefined) {
+                        var json = JSON.parse(document.getElementById('json').innerText );
+                        // json.submitter = {id:135028};
+                        Vue.set(this,'resource',json);
+                         if (json.submitterRef != undefined && json.submitterRef.indexOf(":") != -1) {
+                            Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
+                        }
+                        if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
+                            json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
+                        }
+                        if (json.contentOwners == undefined || json.contentOwners.length == 0) {
+                            json.contentOwners = [{creator:{person:{institution:{}}}}];
+                        }
+                        if (json.activeLatitudeLongitudeBoxes == undefined || json.activeLatitudeLongitudeBoxes.length == 0) {
+                            json.activeLatitudeLongitudeBoxes = [{north: undefined, south: undefined, east: undefined,west: undefined } ];
+                        }
+
+                        if (json.controlledMaterialKeywords == undefined) {
+                            json.controlledMaterialKeywords = [];
+                            json.uncontrolledMaterialKeywords = [];
+                        }
+                        if (json.id != undefined) {
+                            Vue.set(this.fileUploadConfig,'resourceId', json.id);
+                        }
+                        Vue.set(this, "investigationTypes", JSON.parse(document.getElementById('investigationTypes').innerText ));
+                        Vue.set(this, "materialTypes", JSON.parse(document.getElementById('materialTypes').innerText ));
+                        this.applyMaterialKeywords(json.activeMaterialKeywords);
+                    }
+                    Vue.set(this,"epochtime", Date.now() + 15000);
+                    Vue.set(this,"accountId",220);
+                    // Vue.set("resource","submitter",{});
+                    // this.resource.submitter = {id:8344, properName:'adam brin'};
+                    var self = this.resource.activeLatitudeLongitudeBoxes[0];
+                    Vue.nextTick(function() {
+                        TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
+                            Vue.set(self, "west", e.minx);
+                            Vue.set(self, "east", e.maxx);
+                            Vue.set(self, "north", e.maxy);
+                            Vue.set(self, "south", e.miny);
+                            });
+                    });
+                },                watch: {
                     "resource.inheritingInvestigationInformation": function(o, b) {
                         this.inherit(o,b,'investigationType', 'activeInvestigationTypes');
                     },
@@ -118,46 +170,6 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             }
                         return "";
                     }
-                },
-                created: function() {
-                    if (document.getElementById('json') != undefined) {
-                        var json = JSON.parse(document.getElementById('json').innerText );
-                        // json.submitter = {id:135028};
-                        Vue.set(this,'resource',json);
-                         if (json.submitterRef != undefined && json.submitterRef.indexOf(":") != -1) {
-                            Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
-                        }
-                        if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
-                            json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
-                        }
-                        if (json.contentOwners == undefined || json.contentOwners.length == 0) {
-                            json.contentOwners = [{creator:{person:{institution:{}}}}];
-                        }
-                        if (json.activeLatitudeLongitudeBoxes == undefined || json.activeLatitudeLongitudeBoxes.length == 0) {
-                            json.activeLatitudeLongitudeBoxes = [{north: undefined, south: undefined, east: undefined,west: undefined } ];
-                        }
-
-                        if (json.controlledMaterialKeywords == undefined) {
-                            json.controlledMaterialKeywords = [];
-                            json.uncontrolledMaterialKeywords = [];
-                        }
-                        Vue.set(this, "investigationTypes", JSON.parse(document.getElementById('investigationTypes').innerText ));
-                        Vue.set(this, "materialTypes", JSON.parse(document.getElementById('materialTypes').innerText ));
-                        this.applyMaterialKeywords(json.activeMaterialKeywords);
-                    }
-                    Vue.set(this,"epochtime", Date.now() + 15000);
-                    Vue.set(this,"accountId",220);
-                    // Vue.set("resource","submitter",{});
-                    // this.resource.submitter = {id:8344, properName:'adam brin'};
-                    var self = this.resource.activeLatitudeLongitudeBoxes[0];
-                    Vue.nextTick(function() {
-                        TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
-                            Vue.set(self, "west", e.minx);
-                            Vue.set(self, "east", e.maxx);
-                            Vue.set(self, "north", e.maxy);
-                            Vue.set(self, "south", e.miny);
-                            });
-                    });
                 },
                 methods: {
                     removeNote: function(idx) {

@@ -69,6 +69,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
 
         function getApp() {
             var cmp = TDAR.vuejs.uploadWidget.init("#uploadWidget").cmp;
+            console.log('!! app', cmp);
             var Constructor = Vue.extend(cmp);
             // count the contructor (get back to the app from the router)
             var vapp = new Constructor().$mount();

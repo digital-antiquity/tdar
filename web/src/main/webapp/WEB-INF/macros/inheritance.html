@@ -46,6 +46,12 @@
         @autocompletevalueset="selectProject" ref="input"
         fieldname="title" allowCreate="false" idname="projectId" />
     </div>
+    
+    
+    <div>
+            <upload :config="fileUploadConfig" />
+    </div>
+    
     <div>
         <h5>Notes</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingNoteInformation" :disabled="inheritanceDisabled"/></b>
