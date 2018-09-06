@@ -1,4 +1,4 @@
-/* global describe, it, xit, expect, beforeEach, afterEach, loadFixtures */
+/* global describe, it, it, expect, beforeEach, afterEach, loadFixtures */
 describe("FileuploadSpec.js: fileupload suite - root", function(){
     "use strict";
 
@@ -18,7 +18,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
        function setConfig(conf) {
            var c = JSON.stringify(conf);
            $("#uploadWidget").data("config","#uploadConfig");
-           $("#uploadWidget").append("<script id='uploadConfig'></script>");
+           $("#uploadWidget").append("<script id='uploadConfig' type='text/json'></script>");
            $("#uploadConfig").text(c);
        }
 
@@ -52,7 +52,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = getApp();
+            var vapp = getApp(conf);
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -67,12 +67,12 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
         });
   
 
-        function getApp() {
+        function getApp(conf) {
             var cmp = TDAR.vuejs.uploadWidget.init("#uploadWidget").cmp;
-            console.log('!! app', cmp);
+            console.log('!! app', conf);
             var Constructor = Vue.extend(cmp);
             // count the contructor (get back to the app from the router)
-            var vapp = new Constructor().$mount();
+            var vapp = new Constructor({propsData: {config: conf }}).$mount();
             return vapp;
         }
         
@@ -85,7 +85,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
             jasmine.Ajax.stubRequest('/upload/upload').andReturn({
                 "responseText": 'success'
               });
-            var vapp = getApp();
+            var vapp = getApp(conf);
             var _files = [{name:'test.JPG',size:1000,type:'jpg/image',lastModified:-1}];
             var result = vapp.fileUploadAdd(undefined, {originalFiles:_files});
             expect(result).toBe(true);
@@ -205,7 +205,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = getApp();
+            var vapp = getApp(conf);
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -232,7 +232,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = getApp();
+            var vapp = getApp(conf);
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -261,7 +261,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = getApp();
+            var vapp = getApp(conf);
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jpg',size:1000,type:'jpg/image',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);
@@ -292,7 +292,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
               });
 
             window.console.log("--------------------bbb---------------------");
-            var vapp = getApp();
+            var vapp = getApp(conf);
             var result = vapp.fileUploadAdd(undefined, {originalFiles:[{name:'test.jgw',size:1000,type:'jgw/object',lastModified:-1}]});
             expect(result).toBe(true);
             expect(vapp.files).toHaveLength(1);

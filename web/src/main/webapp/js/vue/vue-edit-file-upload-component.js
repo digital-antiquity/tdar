@@ -320,7 +320,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         mounted : function() {
             var cfg = {};
             $.extend(cfg, BASE_CONFIG, this.config);
-            console.log('MOUNTED:', cfg);
             Vue.set(this,"files", cfg.files);
             Vue.set(this,"url", cfg.url);
             Vue.set(this,"ticketId", cfg.ticketId);
@@ -417,7 +416,6 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             console.log($($(widgetId).data('config')).text());
             $.extend(config, BASE_CONFIG, JSON.parse($($(widgetId).data('config')).text()));
         }
-        console.log("config:", config);
 
         if (widgetId != undefined) {
             var app = new Vue({
