@@ -1,5 +1,5 @@
-const core = require("./../tdar.core");    
-require('leaflet-choropleth');
+const core = require("./../tdar.core");
+const L =require('leaflet-choropleth');
 const c3graphsupport = require("./../tdar.c3graphsupport");
 
     var _PLURAL = "_PLURAL";    
