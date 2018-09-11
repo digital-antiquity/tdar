@@ -326,4 +326,7 @@
             baseColumnNames="column_id" baseTableName="data_table_column_float_values"
             referencedColumnNames="id" />
     </changeSet>
+    <changeSet id="radiocarbon-fileprocessing-6" author="abrin">
+        <modifyDataType tableName="data_table_column_int_values" columnName="value" newDataType="bigint"/>
+    </changeSet>
 </databaseChangeLog>

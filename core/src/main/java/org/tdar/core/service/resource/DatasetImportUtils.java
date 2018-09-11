@@ -3,7 +3,7 @@ package org.tdar.core.service.resource;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.Dataset;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.HasTables;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -37,7 +37,16 @@ public class DatasetImportUtils {
         col.setColumnDataType(incomingColumn.getColumnDataType());
         col.setImportOrder(incomingColumn.getImportOrder());
         col.setDataTable(tableToPersist);
-        col.setValues(incomingColumn.getValues());
+        // TDAR-6115 -- need to improve how we handle this in the future to be more intelligent, ultimately just work out how to handle relational tables
+        for (String val : incomingColumn.getValues()) {
+            String[] split = StringUtils.split(val,TdarConfiguration.getInstance().getDatasetCellDelimiter());
+            for (String str : split) {
+                if (StringUtils.isBlank(str)) {
+                    continue;
+                }
+                col.getValues().add(StringUtils.trim(str));
+            }
+        }
         col.setIntValues(incomingColumn.getIntValues());
         col.setFloatValues(incomingColumn.getFloatValues());
         col.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);

@@ -1020,4 +1020,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("email.developer.test", "test@tdar.org");
     }
 
+    public String getDatasetCellDelimiter() {
+        return assistant.getStringProperty("dataset.string.delimiter", ";");
+    }
+
 }
