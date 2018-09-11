@@ -1,5 +1,8 @@
 /* global describe, it, xit, expect, beforeEach, afterEach, loadFixtures */
-describe("BalkSpec.js: fileupload suite - root", function(){
+
+const Vue = require("vue/dist/vue.esm.js").default;
+
+xdescribe("BalkSpec.js: fileupload suite - root", function(){
     "use strict";
 
        function getBaseConfig() {
@@ -47,7 +50,6 @@ describe("BalkSpec.js: fileupload suite - root", function(){
 
         afterEach(function() {
             jasmine.Ajax.uninstall();
-            
         });
         
 

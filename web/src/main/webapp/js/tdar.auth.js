@@ -1,5 +1,4 @@
-(function (TDAR, $) {
-    'use strict';
+
 
     var _initLogin = function () {
         $('#loginForm').validate({
@@ -45,10 +44,7 @@
     };
 
     
-    TDAR.auth = {
+    module.exports = {
         "initLogin": _initLogin,
         "initRegister": _initRegister
     };
-
-    
-})(TDAR, jQuery);

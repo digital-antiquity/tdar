@@ -1,4 +1,7 @@
 /* global describe, it, expect */
+
+require("./SpecHelper");
+
 describe("AuthoritySpec.js: tests for TDAR.authority methods", function() {
 
     var responses = {

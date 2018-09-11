@@ -1,4 +1,5 @@
 // Karma configuration
+var webpackConfig = require('./webpack-test.config.js');
 var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
 
@@ -11,7 +12,7 @@ function buildFilesFromWro(profile) {
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles
-            .concat(wroconfig[profile].jsFiles)
+           // .concat(wroconfig[profile].jsFiles)
             .map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
@@ -38,7 +39,8 @@ if (process.argv != undefined  && process.argv.length > 0) {
 module.exports = function(config) {
     var wroFiles = buildFilesFromWro('default');
     config.set({
-
+       
+        webpack: webpackConfig,
         browserConsoleLogOptions: {terminal:false},
 
         // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -52,27 +54,30 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                'node_modules/es6-promise/dist/es6-promise.js',
+                /*'node_modules/es6-promise/dist/es6-promise.js',
                 'node_modules/es6-promise/dist/es6-promise.auto.js',
                 'node_modules/vue/dist/vue.js',
-                'node_modules/axios/dist/axios.js',
+                'node_modules/axios/dist/axios.js',*/
                 'node_modules/moxios/dist/moxios.js',
-                {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
+                
+                /*{pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},
-                {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
-                {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
+                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},*/
+                {pattern: "src/main/webapp/js_includes/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
+                {pattern: "src/main/webapp/js_includes/includes/bootstrap-2.32/css/bootstrap.css", watched: false},
 
 
             ],
             //files specified in wro.xml 
             wroFiles,
             [
-                // specs
+                
+                //specs
                 specFiles,
+                //"src/test/frontend/spec/WorldMapSpec.js",  
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
@@ -89,15 +94,14 @@ module.exports = function(config) {
                 //static files: images used by js libraries, e.g. jquery-ui, jquery-file-upload
                 {pattern: "src/main/webapp/includes/**/images/**/*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
-                {pattern: "src/main/webapp/components/**/*.*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/js_includes/components/**/*.*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/js/maps/**/*.*", served:true, included:false, watched:false},
-
             ]),
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
         proxies: {
             '/images/': '/base/src/main/webapp/images/',
-            '/includes/': '/base/src/main/webapp/includes/',
+            '/includes/': '/base/src/main/webapp/js_includes/includes/',
             '/js/maps/': '/base/src/main/webapp/js/maps/'
         },
             ///Users/jimdevos/develop/tdar.src/src/main/webapp/js/maps/world.json
@@ -111,7 +115,8 @@ module.exports = function(config) {
             //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
             'src/test/frontend/html2js/*.html': ['html2js']
-            ,'src/main/webapp/js/**/*.js': ['coverage']
+            ,'src/main/webapp/js/**/*.js': ['coverage'],
+            'src/test/frontend/spec/**/*.js' : ['webpack']
         },
 
         // test results reporter to use
@@ -143,8 +148,8 @@ module.exports = function(config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
 
-        // browsers: ['ChromeHeadless'],
-        browsers: ['PhantomJS'],
+         browsers: ['ChromeHeadless'],
+        //browsers: ['PhantomJS'],
         // concurrency: Infinity,
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits

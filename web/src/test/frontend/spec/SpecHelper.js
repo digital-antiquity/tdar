@@ -1,7 +1,7 @@
 /* global describe, it, expect, beforeEach, jasmine */
 
     //custom jasmine matchers and common setup/teardown go here
-    var self = this;
+    var self = window;//this;
     
         
     /**
@@ -56,3 +56,6 @@
         var jsonp = params.callback + '(' + json + ')';
         return jsonp;
     };
+    
+    
+    module.exports = {self}

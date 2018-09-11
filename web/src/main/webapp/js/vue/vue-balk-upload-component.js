@@ -1,5 +1,9 @@
-TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
-    "use strict";
+const vuejsupload = require("./vue-base-upload");
+
+const Vue = require("vue/dist/vue.esm.js").default;
+const VueRouter = require("./../../js_includes/components/vue-router/dist/vue-router");
+
+
     var WONT_CURATE = "WONT_CURATE";
     var UNDO_WONT_CURATE = 'UNDO_WONT_CURATE';
     var CURATED = "CURATED";
@@ -1016,13 +1020,13 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                 validateAdd : function(file, replace) {
                     // validate a file that's been added
                     console.log(this.validFormats);
-                        return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, 0 , 100000 , false ,this )
+                        return vuejsupload.validateAdd(file, this.files, replace, this.validFormats, 0 , 100000 , false ,this )
                 },
                 updateFileProgress : function(e, data) {
                     // update the progress of uploading a file
                     var _app = this;
                     if (data.files != undefined) {
-                        var active = TDAR.vuejs.upload._matching(data.files, _app.files, "name");
+                        var active = vuejsupload._matching(data.files, _app.files, "name");
                         active.forEach(function(pair) {
                             var file = pair[0];
                             var fileContainer = pair[1];
@@ -1046,7 +1050,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     console.log('fileUploadAdd:', e, data);
                     this._disable();
                     var $upload = $('#fileupload');
-                    return TDAR.vuejs.upload.fileUploadAdd($upload, data, this);
+                    return vuejsupload.fileUploadAdd($upload, data, this);
                 },
                 _enable: function() {
                     Vue.set(this,"uploadDisabled", false);
@@ -1062,7 +1066,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     // complete the add action
                     var _app = this;
                     this._enable();
-                    return TDAR.vuejs.upload.fileUploadAddDone(data,_app.files, _app);
+                    return vuejsupload.fileUploadAddDone(data,_app.files, _app);
                 },
                 addFile: function(file) {
                     this.files.push(file);
@@ -1112,7 +1116,7 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
                     },
                     progressall : function(e, data) {
                         var progress = parseInt(data.loaded / data.total * 100, 10);
-                        TDAR.vuejs.upload.setProgress(progress);
+                        vuejsupload.setProgress(progress);
                     }
                 }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
                 var _app = this;
@@ -1238,16 +1242,18 @@ TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
         };
     };
     
-    return {
+    module.exports = {
         init : _init,
         formatDate : _formatDate,
         formatLongDate : _formatLongDate, 
         main : function() {
             var appId = "#filesTool";
             if ($(appId).length == 1) {
-                TDAR.vuejs.balk.init(appId);
+                _init(appId);
             }
         }
     }
 
-})(console, jQuery, window, Vue);
+//TDAR.vuejs.balk = (function(console, $, ctx, Vue) {
+//        "use strict";
+//})(console, jQuery, window, Vue);

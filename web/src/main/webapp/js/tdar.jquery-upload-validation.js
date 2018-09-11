@@ -1,4 +1,6 @@
 /**
+ * tdar.jquery-upload-validation
+ * 
  * The FileuploadValidator attempts to mimic the API and workflow of the jQuery Validation Plugin for the Blueimp
  * jQuery File Upload Plugin.
  *

@@ -1,7 +1,5 @@
-(function (TDAR, $) {
-    'use strict';
-
-    var POLLING_INTERVAL = 1500; //poll every 1.5s
+const common = require("./tdar.common");
+var POLLING_INTERVAL = 1500; //poll every 1.5s
 
     //parse string to integer.  replace blank and NaN with 0.
     var _parse = function (num) {
@@ -59,7 +57,7 @@
             /* give the user an understanding of size in GB if size is > 1/2 GB */
             var mb = "";
             if (numMb > 512) {
-                $("#convert").html(TDAR.common.humanFileSize(numMb * 1024*1024));
+                $("#convert").html(common.humanFileSize(numMb * 1024*1024));
             }
 
             var $est = $("#estimated");
@@ -91,7 +89,7 @@
                     var $price = $("#price");
                     if (subtotal == defaultsubtotal) {
                         $price.html("0.00");
-                        var line = TDAR.common.sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
+                        var line = common.sprintf("<tr><td colspan=4>{0}</td></tr>", "Please enter a number of files and MB above.");
                         $est.append(line);
 
                     } else {
@@ -104,10 +102,10 @@
                             for (var j = 0; j < item.items.length; j++) {
                                 var part = item.items[j];
                                 part.name = part.activity.numberOfFiles ===0 ?  "Extra Space" : "Files";
-                                var line = TDAR.common.sprintf("{0}  ( {1} Files / {2} )",
-                                                TDAR.common.formatNumber(item.subtotal),
-                                                TDAR.common.formatNumber(part.activity.numberOfFiles * part.quantity),
-                                                TDAR.common.humanFileSize(part.activity.numberOfMb * part.quantity * 1024*1024, ''));
+                                var line = common.sprintf("{0}  ( {1} Files / {2} )",
+                                                common.formatNumber(item.subtotal),
+                                                common.formatNumber(part.activity.numberOfFiles * part.quantity),
+                                                common.humanFileSize(part.activity.numberOfMb * part.quantity * 1024*1024, ''));
                                 total_files += part.activity.numberOfFiles * part.quantity;
                                 total_mb += part.activity.numberOfMb * part.quantity;
                                 $price.html(line);
@@ -166,10 +164,10 @@
      */
     var _setupPaymentMethodPivot = function() {
         $(".transactionType[type=radio]").click(function () {
-            TDAR.common.switchType(this, '#MetadataForm');
+            common.switchType(this, '#MetadataForm');
         });
         //switch to the right pane on init
-        TDAR.common.switchType($(".transactionType[type=radio]:checked", $('#MetadataForm')), "#MetadataForm");
+        common.switchType($(".transactionType[type=radio]:checked", $('#MetadataForm')), "#MetadataForm");
     }
 
     var _initPolling = function () {
@@ -227,12 +225,9 @@
         });
     }
     
-    TDAR.pricing = {
+    module.exports = {
         "initPricing": _initPricing,
         "updateProgress": _updateProgress,
         "initPolling": _initPolling,
         "initBillingChoice": _initBillingChoice
     };
-
-    
-})(TDAR, jQuery);

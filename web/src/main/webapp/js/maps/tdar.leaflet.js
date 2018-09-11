@@ -1,12 +1,16 @@
-TDAR.leaflet = (function(console, $, ctx, L) {
-    "use strict";
+const core = require("./../tdar.core");
+
+require('leaflet-choropleth');
+require('./../../js_includes/includes/Leaflet.Sleep');
+require('leaflet-draw/dist/leaflet.draw');
+require('leaflet.markercluster');
 
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
-    L.Icon.Default.imagePath = TDAR.assetsUri('/components/leaflet/dist/images/');
+    L.Icon.Default.imagePath = core.assetsUri('/components/leaflet/dist/images/');
 
     var $body = $('body');
 
@@ -327,7 +331,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
 
     function _initFromDataAttr($el, map, rectangleSettings) {
-        console.log('$el is ', $el);
         var $minx = parseFloat($el.data("minx"));
         var $miny = parseFloat($el.data("miny"));
         var $maxx = parseFloat($el.data("maxx"));
@@ -646,7 +649,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         return $('.leaflet-container').map(function(i, elem){return $(elem).data().map;});
 	}
 
-    return {
+    module.exports = {
         initLeafletMaps: _initLeafletMaps,
         initEditableLeafletMaps: _initEditableMaps,
         initResultsMaps: _initResultsMaps,
@@ -656,9 +659,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         getMaps : _getMaps,
         update: _update,
         main : function() {
-            TDAR.leaflet.initLeafletMaps();
-            TDAR.leaflet.initEditableLeafletMaps();
-            TDAR.leaflet.initResultsMaps();
+            _initLeafletMaps();
+            _initEditableMaps();
+            _initResultsMaps();
         }
     }
-})(console, jQuery, window, L);

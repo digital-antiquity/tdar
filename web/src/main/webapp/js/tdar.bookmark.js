@@ -1,10 +1,10 @@
-(function (TDAR, $) {
-    'use strict';
+const core = require("./tdar.core"); 
+const common = require("./tdar.common");
 
-    var _init = function() {
+var _init = function() {
         if ($("body").data("userid") != undefined) {
             _applyCollectionMenu();
-            $("body").on("click", ".bookmark-link", TDAR.bookmark.ajaxBookmark);
+            $("body").on("click", ".bookmark-link", ajaxBookmark); //was TDAR.bookmark.ajaxBookmark
         }
     };
     
@@ -14,7 +14,7 @@
             if(!$menu.hasClass('open')) {
                 var $next = $menu.next("ul.dropdown-menu");
                 $(".dropdown-menu").children(".extra").remove();
-                $next.append($("<li class='extra'><img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' /></li>"));
+                $next.append($("<li class='extra'><img src='" + core.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' /></li>"));
                 $.getJSON( "/api/collection/tree?type=LIST", function( data ) {
                     $(".dropdown-menu").children(".extra").remove();
                     var items = _buildCollectionTree(data);
@@ -37,7 +37,7 @@
                 html: _child.join( "" )
               })
             }
-            var item = "<li id='" + val.id + "' class='extra'><input type='radio' name='collectionId' value='"+val.id+"'> <a href='#'>" + TDAR.common.htmlEncode(TDAR.ellipsify(val.name, 80))+ "</a>";
+            var item = "<li id='" + val.id + "' class='extra'><input type='radio' name='collectionId' value='"+val.id+"'> <a href='#'>" + common.htmlEncode(core.ellipsify(val.name, 80))+ "</a>";
             if (children != undefined) {
             //http://stackoverflow.com/questions/9758587/twitter-bootstrap-multilevel-dropdown-menu
             //https://vsn4ik.github.io/bootstrap-submenu/
@@ -62,7 +62,7 @@
         var $this = $(this);
         var resourceId = $this.attr("resource-id");
         var state = $this.attr("bookmark-state");
-        var $waitingElem = $("<img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
+        var $waitingElem = $("<img src='" + core.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
         $this.prepend($waitingElem);
         var $icon = $(".bookmarkicon", $this);
         if ($icon == undefined || $icon.length == 0) {
@@ -87,7 +87,7 @@
         }
 //        var newclass = "tdar-icon-" + newstate;
 
-        $.post(TDAR.uri() + "api/resource/" + action + "?resourceId=" + resourceId, function (data) {
+        $.post(core.uri() + "api/resource/" + action + "?resourceId=" + resourceId, function (data) {
                     if (data.success) {
                         $(".bookmark-label", $this).text(newtext);
                         $icon.removeClass(oldclass).addClass(newclass).show();
@@ -104,13 +104,10 @@
     
     
     //expose public elements
-    TDAR.bookmark = {
+    module.exports = {
         "init": _init,
         "ajaxBookmark" : _ajaxBookmark,
 
         //Main entrypoint - to be called by TDAR.main()
         "main": _init
     };
-
-})(TDAR, jQuery);
-

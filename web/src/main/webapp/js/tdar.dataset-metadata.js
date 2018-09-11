@@ -1,7 +1,9 @@
-(function (TDAR, $) {
-    'use strict';
+const common = require("./tdar.core");
+const contexthelp = require("./tdar.contexthelp");
+const autocomplete = require("./tdar.autocomplete");
 
-    /**
+
+/**
      * this function manages the display of the checkboxes next to a column field when someone changes one of the values, it changes the color if mapped properly
      * to something
      */
@@ -134,13 +136,13 @@
 
         $form.delegate(":input", "blur change", TDAR.datasetMetadata.registerCheckboxInfo);
 
-        TDAR.contexthelp.initializeTooltipContent("#edit-metadata-form");
+        contexthelp.initializeTooltipContent("#edit-metadata-form");
 
         console.debug('binding autocompletes');
 
         // bugfix: deferred registration didn't properly register expando button. If this is too slow, but delegate inside of _applyComboboxAutocomplete
-        TDAR.autocomplete.applyComboboxAutocomplete($('input.codingsheetfield', $form), "CODING_SHEET");
-        TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
+        autocomplete.applyComboboxAutocomplete($('input.codingsheetfield', $form), "CODING_SHEET");
+        autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
 
         console.debug('intitializing columns');
         // determine when to show coding-sheet, ontology selection based on column encoding value
@@ -195,7 +197,7 @@
     }
 
     // expose public elements
-    TDAR.datasetMetadata = {
+    module.exports = {
         "init": _init,
         "gotoColumn": _gotoColumn,
         "updateSummaryTable": _updateSummaryTable,
@@ -203,4 +205,3 @@
         "initPagination": _pagination
     };
 
-})(TDAR, jQuery);

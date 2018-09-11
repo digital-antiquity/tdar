@@ -1,8 +1,3 @@
-/**
- * Contextual help service.
- */
-TDAR.contexthelp = (function () {
-    "use strict";
 
     /**
      * Display contextual help UI for the specified target element.  When displaying help-text, the service will
@@ -79,7 +74,6 @@ TDAR.contexthelp = (function () {
         });
     }
 
-    return {
+    module.exports = {
         initializeTooltipContent: initializeTooltipContent
     };
-})();

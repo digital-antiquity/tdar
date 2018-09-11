@@ -7,6 +7,7 @@ describe("AuthSpec.js: tests for TDAR.auth methods", function() {
     });
 
     it("should work when we call initLogin", function() {
+        jasmine.getFixtures().fixturesPath = "base/src/test/frontend/fixtures";
         loadFixtures("login-form.html");
         TDAR.auth.initLogin();
         var validator = $('form').data().validator;
@@ -16,6 +17,7 @@ describe("AuthSpec.js: tests for TDAR.auth methods", function() {
     });
 
     it("should work when we call initRegister", function() {
+        jasmine.getFixtures().fixturesPath = "base/src/test/frontend/fixtures";
         loadFixtures("registration-form.html");
         var form = document.getElementById('accountForm');
         var result = TDAR.auth.initRegister(form);

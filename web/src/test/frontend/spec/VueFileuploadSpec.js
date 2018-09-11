@@ -1,4 +1,6 @@
 /* global describe, it, xit, expect, beforeEach, afterEach, loadFixtures */
+const Vue = require("vue/dist/vue.esm.js").default;
+
 describe("FileuploadSpec.js: fileupload suite - root", function(){
     "use strict";
 
@@ -34,7 +36,6 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
             fixture = fixture.replace("${vueFilesFallback!'{{ files }}'}","{{files}}");
             var fix = jasmine.getFixtures().set(fixture);
             jasmine.Ajax.install();
-
         });
 
         afterEach(function() {
@@ -115,7 +116,7 @@ describe("FileuploadSpec.js: fileupload suite - root", function(){
                     Vue.nextTick(function() {
                         expect(filePart.file.action).toEqual("MODIFY_METADATA");
                         vapp.$destroy();
-
+                                
                     });
                 });
             });

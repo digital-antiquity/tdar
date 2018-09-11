@@ -1,6 +1,11 @@
 /* global describe, it, expect */
-describe("LeafletSpec.js", function() {
+const TDAR = require("JS/tdar.master");
+xdescribe("LeafletSpec.js", function() {
 
+    beforeEach(function(){
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
+    });
+    
         it("LeafletSpec.js: should work when we call initLeafletMaps", function() {
             var options = null;
             var expectedVal = null;
@@ -288,11 +293,11 @@ describe("LeafletSpec.js", function() {
                 var data = JSON.parse($j('#dataPage1').text());
 
                 var startRecord = 0;
-
                 //get the original map bounds, then call update w/ marker coords
                 var bounds1 = map.getBounds();
                 TDAR.leaflet.update(map, markers, data, startRecord, true);
                 var bounds2 = map.getBounds();
+                
                 expect(bounds1.equals(bounds2)).toBe(false);
 
                 //assert that all of the points fit in the new bounds

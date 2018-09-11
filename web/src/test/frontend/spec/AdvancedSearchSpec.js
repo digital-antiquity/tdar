@@ -1,9 +1,13 @@
 /* global describe, it, expect */
+
+const TDAR = require("JS/tdar.master");
+
 describe("AdvancedSearchSpec.js: advanced search form", function() {
     "use strict";
     var submitCallback, $map, $form, $autosave;
 
     beforeEach(function(){
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
         loadFixtures('advanced-search.html', 'advanced-search-template.html');
         submitCallback = spyOn(document.forms.searchGroups, 'submit').and.returnValue(false);
         $map = $('#large-google-map');
@@ -17,6 +21,8 @@ describe("AdvancedSearchSpec.js: advanced search form", function() {
         //Same goes for dom artifacts added by the map renderer.
         $('#large-google-map').append('<div>remove me</div>');
 
+        console.debug(TDAR.advancedSearch);
+        
         TDAR.advancedSearch.serializeFormState();
         $form.submit();
 

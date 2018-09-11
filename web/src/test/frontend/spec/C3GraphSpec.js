@@ -1,6 +1,10 @@
 /* global describe, it, expect */
 describe("C3GraphSpec.js: C3GraphSpec", function() {
 
+    beforeEach(function(){
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
+    });
+    
     it("should work when we call initC3Graph", function() {
        var options = null;
        var expectedVal = null;

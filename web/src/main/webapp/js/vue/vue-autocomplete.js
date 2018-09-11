@@ -1,6 +1,5 @@
-
-TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
-    "use strict";
+const Vue = require("vue/dist/vue.esm.js").default;
+const axios = require("axios");
 
     if (document.getElementById("autocomplete") != undefined ) {
     // https://alligator.io/vuejs/vue-autocomplete-component/
@@ -282,4 +281,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
         }
     });
     }
-})(console, window, Vue, axios);
+    
+//TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
+//})(console, window, Vue, axios);

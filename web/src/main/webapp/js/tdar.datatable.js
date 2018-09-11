@@ -1,6 +1,8 @@
-TDAR.namespace("datatable");
-TDAR.datatable = function() {
-    "use strict";
+
+const core = require("./tdar.core");
+const common = require("./tdar.common");
+
+core.namespace("datatable");
 
     /**
      * Register a new dtatable control. By default, the datatable populates with resources editable by the user. Most of the initialization options required by
@@ -28,7 +30,7 @@ TDAR.datatable = function() {
             isAdmin: false,
             
             rowSelectionCallback : doNothingCallback,
-            "sAjaxSource" : TDAR.uri( 'api/lookup/resource'),
+            "sAjaxSource" : core.uri( 'api/lookup/resource'),
             "sAjaxDataProp" : 'resources',
             "bJQueryUI" : false,
             "sScrollY" : "350px",
@@ -625,7 +627,7 @@ TDAR.datatable = function() {
     function fnRenderTitle(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + TDAR.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
+        var html = '<a href="' + core.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
                 '</a>';
         html += ' (ID: ' + objResource.id
         if (objResource.status != 'ACTIVE') {
@@ -644,7 +646,7 @@ TDAR.datatable = function() {
      */
     function fnRenderTitleAndDescription(oObj) {
         var objResource = oObj.aData;
-        return fnRenderTitle(oObj) + '<br /> <p>' + TDAR.common.htmlEncode(TDAR.ellipsify(objResource.description, 80)) + '</p>';
+        return fnRenderTitle(oObj) + '<br /> <p>' + common.htmlEncode(core.ellipsify(objResource.description, 80)) + '</p>';
     }
 
     /**
@@ -713,7 +715,7 @@ TDAR.datatable = function() {
         
         _registerLookupDataTable({
             tableSelector : '#resource_datatable',
-            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
+            sAjaxSource : core.uri( 'api/lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -889,7 +891,7 @@ TDAR.datatable = function() {
         var $dataTable = $(selector);
         _registerLookupDataTable({
             tableSelector : selector,
-            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
+            sAjaxSource : core.uri( 'api/lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -959,10 +961,28 @@ TDAR.datatable = function() {
     
 
     function _removePendingChange(id, isManaged, isAddition, $dataTable){
+    	
+    	console.log("Called datatable.removePendingChange");
+    	
+    	
+    	if($dataTable == undefined || $dataTable == null){
+    		console.error("!!! error in _removePendingChange: $dataTable is undefined");
+    		return;
+    	}
+    	else {
+    		/**
+    		 * If the followign debug statement puts out somethign very long ,then its probable that the DOM didn't load correctly. 
+    		 */
+    		
+    		//console.debug("Datatable is ",$dataTable);
+    	}
+    	
+    	
     	var array = "";
     	var btnId = "";
     	
     	if(isManaged){
+    	    console.log("Removing pending change from managed");
     		if(isAddition){
     			array =  'toAddManaged'
     			btnId = "btnAddManagedId_";
@@ -973,7 +993,7 @@ TDAR.datatable = function() {
 	    	}
     	}
     	else {
-    		
+    		console.log("Removing pending change from unmanaged");
     		if(isAddition){
     			array = 'toAddUnmanaged';
     			btnId = "btnAddUnmanagedId_";
@@ -985,11 +1005,24 @@ TDAR.datatable = function() {
     	}
     	
     	console.log("Removing pending change from data");
+    	console.log("Id to remove is "+id);
+    	console.log("Array key is "+array);
+    	
+    	/**
+    	 * if the jQuery selector doesn't return a correct element, then the .data() function will return a null array and it will throw 
+    	 * and error. 
+    	 */
+    	
     	_arrayRemove($dataTable.data(array),parseInt(id));
-    	console.debug($dataTable);
+
     	var buttonId = "#"+btnId+id;
     	console.log("Reenabling button "+buttonId);
     	$(buttonId).removeAttr("disabled");
+    	
+    	
+    	/**
+    	 * If the jQuery selector is not valid, then the redraw table function won't work correctly. 
+    	 */
     	$dataTable.dataTable().fnDraw();
     }
     
@@ -1202,13 +1235,13 @@ TDAR.datatable = function() {
     function _fnRenderPersonId(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + TDAR.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
+        var html = '<a href="' + core.uri('browse/creators/' + objResource.id) + '" class=\'title\'>' + objResource.id + '</a>';
         return html;
     }
     function _registerUserLookupDatatable() {
         var settings = {
             tableSelector : '#dataTable',
-            sAjaxSource : TDAR.uri() + 'api/lookup/person',
+            sAjaxSource : core.uri() + 'api/lookup/person',
             "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             sPaginationType : "bootstrap",
             "bLengthChange" : true,
@@ -1222,7 +1255,7 @@ TDAR.datatable = function() {
                 mDataProp : "id",
                 tdarSortOption : 'ID',
                 bSortable : false,
-                fnRender : TDAR.datatable.renderPersonId
+                fnRender : window.TDAR.datatable.renderPersonId
             }, {
                 sTitle : "First",
                 mDataProp : "firstName",
@@ -1248,7 +1281,7 @@ TDAR.datatable = function() {
             }
         };
 
-        return TDAR.datatable.registerLookupDataTable(settings);
+        return window.TDAR.datatable.registerLookupDataTable(settings);
     }
 
     function _checkAllToggle() {
@@ -1278,7 +1311,7 @@ TDAR.datatable = function() {
                 title : title
             });
 
-            $("#datatable-child").dialog({
+            /*$("#datatable-child").dialog({
                 resizable : false,
                 modal : true,
                 buttons : {
@@ -1291,7 +1324,9 @@ TDAR.datatable = function() {
                         $(this).dialog("close");
                     }
                 }
-            });
+            });*/
+            
+            
         }
     }
 
@@ -1318,7 +1353,7 @@ TDAR.datatable = function() {
         });
 
         var offset = 0;
-        var browseUrl = TDAR.uri("datatable/browse?id=" + dataTableId);
+        var browseUrl = core.uri("datatable/browse?id=" + dataTableId);
         var options = {
             "sAjaxDataProp" : "results",
             "sDom" : "<'row'<'span6'l><'span3'>r>t<'row'<'span4'i><'span5'p>>",
@@ -1340,7 +1375,7 @@ TDAR.datatable = function() {
                 "sName" : "id_row_tdar",
                 "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
                 "fnRender" : function(obj) {
-                    return '<a href="' + TDAR.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] ) +
+                    return '<a href="' + core.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] ) +
                             '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                 }
             });
@@ -1358,14 +1393,14 @@ TDAR.datatable = function() {
                     "tdarIdx" : size + offset -1,
                     "fnRender" : function(obj) {
                         var val = obj.aData[this.tdarIdx];
-                        var str = TDAR.common.htmlEncode(val);
+                        var str = common.htmlEncode(val);
                         return str;
                     }
                 });
             }
         }
         if (size > 0) {
-            return TDAR.datatable.registerLookupDataTable(options);
+            return window.TDAR.datatable.registerLookupDataTable(options);
         }
 
     }
@@ -1397,6 +1432,10 @@ TDAR.datatable = function() {
      * @private
      */
     function _arrayAdd(arr, item) {
+        if(arr==undefined){
+            console.error("Attempted to add an element to an array, but the array was undefined");
+        }
+        
         if(arr.indexOf(item) === -1) {
             arr.push(item);
         }
@@ -1409,10 +1448,17 @@ TDAR.datatable = function() {
      * @private
      */
     function _arrayRemove(arr, item) {
-        var idx = arr.indexOf(item);
-        if(idx !== -1) {
-            arr.splice(idx, 1);
+        
+        if(arr==undefined){
+            console.error("Attempted to remove an element from an array, but the array was undefined");
         }
+        else {
+	        var idx = arr.indexOf(item);
+	        
+	        if(idx !== -1) {
+	            arr.splice(idx, 1);
+	        }
+    	}
     }
 
 
@@ -1467,7 +1513,7 @@ TDAR.datatable = function() {
     }
     
 
-    return {
+    module.exports = {
         extendSorting : _extendSorting,
         registerLookupDataTable : _registerLookupDataTable,
         initUserDataTable : _registerUserLookupDatatable,
@@ -1482,4 +1528,3 @@ TDAR.datatable = function() {
         initDataTableBrowser: _initDataTableBrowser,
         removePendingChange: _removePendingChange
     };
-}();

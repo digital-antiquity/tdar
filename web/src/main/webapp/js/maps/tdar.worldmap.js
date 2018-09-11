@@ -1,6 +1,8 @@
-TDAR.worldmap = (function(console, $, ctx) {
-    "use strict";
-    var _PLURAL = "_PLURAL";
+const core = require("./../tdar.core");
+const L =require('leaflet-choropleth');
+const c3graphsupport = require("./../tdar.c3graphsupport");
+
+    var _PLURAL = "_PLURAL";    
     var hlayer;
     var geodata = {};
     var map;
@@ -177,7 +179,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 
         // load map data
         // FIXME: consider embedding data for faster rendering
-        var jqxhr = $.getJSON(TDAR.uri("/js/maps/world.json"));
+        var jqxhr = $.getJSON(core.uri("/js/maps/world.json"));
         jqxhr.done(function(data) {
             _setupMapLayer(data, map);
         });
@@ -225,7 +227,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             var $search = $(search);
             $search.append("<i class='icon-search'></i> Search");
             $search.click(function() {
-                window.location.href = TDAR.c3graphsupport.getClickPath(searchUri);
+                window.location.href = c3graphsupport.getClickPath(searchUri);
             });
             $zoomout.click(function() {_resetView();});
             topRight.appendChild(zoomout);
@@ -280,7 +282,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             fillColor : "#FEEFE",
             fillOpacity : 1
         };
-        var jqxhr = $.getJSON(TDAR.uri("/js/maps/USA.json"));
+        var jqxhr = $.getJSON(core.uri("/js/maps/USA.json"));
         jqxhr.done(function(data) {
             stateLayer = _setupMapLayer(data, map, true);
         });
@@ -429,7 +431,7 @@ TDAR.worldmap = (function(console, $, ctx) {
                         key = key.substring(0,key.length - _PLURAL.length);
                     }
                     var uri = _constructUri(key, clickId, name);
-                    window.location.href = TDAR.c3graphsupport.getClickPath(uri);
+                    window.location.href = c3graphsupport.getClickPath(uri);
                 }
             },
             pie : {
@@ -617,8 +619,13 @@ TDAR.worldmap = (function(console, $, ctx) {
         return str;
     }
 
-    return {
+    module.exports =  {
         initWorldMap : _initWorldMap,
-        resetView : _resetView
+        resetView : _resetView,
+        main: function() {
+            console.log("running main...");
+            // if ($("#worldmap").length > 0) {
+            	initWorldMap("worldmap","horizontal", "");
+            // }
+        }
     }
-})(console, jQuery, window);

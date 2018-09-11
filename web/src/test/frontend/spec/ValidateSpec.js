@@ -1,6 +1,12 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
+const TDAR = require("JS/tdar.master");
+
 describe("ValidateSpec.js: TDAR.validate tests", function () {
     "use strict";
+    
+    beforeEach(function(){
+        jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
+    });
 
     // FIXME: this does nothing in the leaflet world
     it("initializes form validation", function () {
@@ -36,6 +42,9 @@ describe("ValidateSpec.js: TDAR.validate tests", function () {
         var sel = $form.find('select')[0];
         var validator = TDAR.validate.initForm($form);
 
+        
+        console.debug($form);
+        
         //validation: everything blank - no errors 
         $(sel).val('NONE');
         $(sel).change();

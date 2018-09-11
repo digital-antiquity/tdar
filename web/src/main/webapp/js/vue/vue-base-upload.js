@@ -1,5 +1,4 @@
-TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
-    "use strict";
+const Vue = require("vue/dist/vue.esm.js").default;
 
     var __normalize = function(filename) {
         var basename = filename.replace(/[^\w\-\.\+\_]/g, "-");
@@ -55,7 +54,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             } else {
                 fileContainer.status = 'error';
             }
-            console.log("file<-->container",file,fileContainer);
+            //console.log("file<-->container",file,fileContainer);
             Vue.set(fileContainer, "dateCreated", file.dateCreated);
             Vue.set(fileContainer, "size", file.size);
             Vue.set(fileContainer, "id", file.id );
@@ -68,8 +67,6 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             Vue.set(fileContainer, "extension" , file.extension);
         });
         console.log("status-->",data.status, data.textStatus);
-
-        
     }
     
     var _validatePackage = function(files, requiredOptionalPairs, messageListener) {
@@ -261,7 +258,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         return false;
     }
 
-    return {
+    module.exports =  {
         _matching : __matching,
         setProgress : _setProgress,
         validatePackage : _validatePackage,
@@ -270,4 +267,6 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
         validateAdd : _validateAdd
     }
 
-})(console, jQuery, window, Vue);
+//TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
+//    "use strict";
+//})(console, jQuery, window, Vue);

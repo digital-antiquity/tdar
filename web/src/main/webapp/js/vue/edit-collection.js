@@ -1,5 +1,12 @@
-TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
-	"use strict";
+/**TDAR edit-collection.js */
+
+
+const Vue = require("vue/dist/vue.esm.js").default;
+//const axios = require("axios");
+const datatable = require("./../tdar.datatable");
+const common = require("./../tdar.common");
+const core = require("./../tdar.core");
+
 
 	var _init = function(params) {
 		var enableUnmanagedCollections = false;
@@ -61,8 +68,7 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 
 					methods : {
 						ellipse : function(value) {
-							return TDAR.common.htmlEncode(TDAR.ellipsify(value,
-									80))
+							return common.htmlEncode(core.ellipsify(value, 80))
 						},
 
 						search : function(value, array) {
@@ -85,39 +91,47 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 						},
 
 						undoModification : function(id, isManaged, isAddition) {
-							var $dataTable = !isAddition ? $('#existing_resources_datatable')
-									: $('#resource_datatable');
-
+						    console.debug("edit-collection:undoModification called");
+						    var tableId = !isAddition ? '#existing_resources_datatable' : '#resource_datatable';
+						    
+						    console.debug("Table id is : "+tableId);
+							var $dataTable = $(tableId);
+							
+							
+							/**
+							 * Verify that the datatable actually returns the right object. If it doesn't then it probably means that
+							 * the DOM isn't properly loaded. 
+							 * 
+							 */
+							
+							//console.debug("Data table is ");
+							//console.debug($dataTable);
+							
+ 
 							if (isManaged) {
 								if (isAddition) {
-									console.debug("Removing " + id
-											+ " from managed additions");
-									this.removeFromArray(id,
-											this.managedAdditions)
+									console.debug("Removing " + id + " from managed additions");
+									this.removeFromArray(id, this.managedAdditions)
 								} else {
-									console.debug("Removing " + id
-											+ " from managed removals");
-									this.removeFromArray(id,
-											this.managedRemovals)
+									console.debug("Removing " + id + " from managed removals");
+									this.removeFromArray(id, this.managedRemovals)
 								}
 							} else {
 								if (isAddition) {
 									console.debug("Removing " + id
 											+ " from unmanaged additions");
-									this.removeFromArray(id,
-											this.unmanagedAdditions)
+									this.removeFromArray(id, this.unmanagedAdditions)
 								} else {
-									console.debug("Removing " + id
-											+ " from unmanaged removals");
-									this.removeFromArray(id,
-											this.unmanagedRemovals)
+									console.debug("Removing " + id +" from unmanaged removals");
+									this.removeFromArray(id, this.unmanagedRemovals)
 								}
 							}
 
 							try {
-							TDAR.datatable.removePendingChange(parseInt(id),
-									isManaged, isAddition, $dataTable);
-							} catch(e){console.warn(e);}
+							    datatable.removePendingChange(parseInt(id), isManaged, isAddition, $dataTable);
+							} catch(e){
+							    console.warn(e);
+						    }
 						}
 					}
 				});
@@ -125,10 +139,12 @@ TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios) {
 		return vm;
 	}
 
-	return {
+	module.exports = {
 		init : _init,
 		main : function() {
 				TDAR.vuejs.editcollectionapp.init(appId);
 		}
 	}
-})(console, jQuery, window, Vue, axios);
+	
+//TDAR.vuejs.editcollectionapp = (function(console, $, ctx, Vue, axios, TDAR) {
+//})(console, jQuery, window, Vue, axios, TDAR);

@@ -1,5 +1,6 @@
-describe("FormNavigateSpec.js: form navigate tests", function() {
+const TDAR = require("JS/tdar.master");
 
+describe("FormNavigateSpec.js: form navigate tests", function() {
     function status() {
         var status = $('form').FormNavigate("status");
         return status;

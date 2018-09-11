@@ -273,4 +273,4 @@
             (value.toLowerCase() == $(param).val().toLowerCase());
     }, "Please enter the same value again. Not case-sensitive.");
 
-})(jQuery);
+})(jQuery, "jquery.validate");

@@ -1,5 +1,78 @@
-TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios) {
-    "use strict";
+/**TDAR
+ * view-collection-widget.js
+ * 
+ * This module is used to add/remove resources from the jQuery datatable. 
+ */
+
+
+const Vue = require("vue/dist/vue.esm.js").default;
+const axios = require("axios");
+const common = require("./../tdar.common.js");
+const core = require("./../tdar.core.js");
+
+require("jquery");
+require("selectize");
+//require("./vue-selectize");
+
+Vue.component('selectize', {
+    props : [ 'options', 'value' ],
+    template : '<select><slot></slot></select>',
+    mounted : function() {
+        var vm = this;
+        var $vm = $(this);
+        var $tag = $(this.$el);
+        var opt = $.extend({}, $(this.$el).data());
+        
+        if (this.options != null) {
+            opt.options = this.options;
+        }
+        
+        var method = $tag.data('config');
+        console.log("using init method: " + method);
+        var opts = {};
+       
+        if (method != undefined) {
+            var method_ = window[method];
+            // FIXME: There has to be a better way to bind these
+            if (window['TDAR']['vuejs'] != undefined) {
+                // fixme: make generic to search subtree
+                if ($.isFunction(window['TDAR']['vuejs']['collectionwidget'][method])) {
+                    method_ = window['TDAR']['vuejs']['collectionwidget'][method];
+                }
+            }
+            if ($.isFunction(window[method])) {
+                method_ = window[method];
+            }
+            if (method_ != undefined) {
+                // add options based on method ... here's where we implicitly call initBasicForm
+                opts = method_(this);
+            } else {
+                console.log("init method specified, but not a function");
+            }
+        }
+
+        this.sel = $(this.$el).selectize(opts).on("change", function() {
+            vm.$emit('input', vm.sel.getValue());
+        })[0].selectize;
+        this.sel.setValue(this.value, true);
+    },
+    watch : {
+        value : function(value) {
+            this.sel.setValue(value, true);
+        },
+        options : function(options) {
+            var val = this.sel.getValue();
+            this.sel.clearOptions();
+            this.sel.addOption(options);
+            this.sel.refreshOptions(false);
+            this.sel.setValue(val);
+        }
+    },
+    destroyed : function() {
+        this.sel.destroy();
+    }
+});
+
 
 //These are the default options for selectize. They are merged when the selectize box is created. 
 var _getSelectizeOpts = function() {
@@ -85,7 +158,9 @@ var _init = function(appId) {
 	    //This is called when vue is instantiated and is set up. 
 	    mounted: function() {
 	        var $e = $(this.$el);
-	        console.log("Calling mounting functions");
+	        
+	        //console.debug("$e is ",this.$el);
+	        console.log("Calling mounting functions for Vue-collection-widget");
 	        
 	        if($e.data('resourceId')!=null){
 	          	Vue.set(this, 'administrator',$e.data('administrator'));
@@ -109,7 +184,6 @@ var _init = function(appId) {
 	    },
     
 	    methods: {
-	    	
 	    	//Helper methods: maybe move to a static library?
 	        _arrayRemove: function(arr, item) {
 	            var idx = arr.indexOf(item);
@@ -119,7 +193,7 @@ var _init = function(appId) {
 	        },
 	        
 	        ellipse : function(value){
-	            return TDAR.common.htmlEncode(TDAR.ellipsify(value, 80))
+	            return common.htmlEncode(core.ellipsify(value, 80))
 	         }, 
 	                 
 	         //"Add to Collection" functions. 
@@ -139,7 +213,8 @@ var _init = function(appId) {
 	            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
 	                Vue.set(this,"managedResource",true);
 	            }
-	
+
+	            
 	            var $select = $('#collection-list').selectize();
 	            $select[0].selectize.clear();
 	        },
@@ -147,13 +222,16 @@ var _init = function(appId) {
 	        getCollections: function(){
 	        	console.log("Getting list of all available collections");
 	            var self = this;
+	            
 	            var permission = "ADD_TO_COLLECTION";
+	            
 	            if (this.unmanagedEnabled == true) {
 	                permission = ADD_TO_COLLECTION;
 	            }
+	            
 	            axios.get("/api/lookup/collection?permission=" + permission).then(function(res) {
-	                    self.items = res.data;
-	                    Vue.set(this,'changesMade',true);
+                    self.items = res.data;
+                    Vue.set(this,'changesMade',true);
 	            });
 	        },
 	        
@@ -178,26 +256,25 @@ var _init = function(appId) {
 	        },
 	        
 	        _getCollectionsForResource : function(){
-	        	console.log("Getting all collections for the resource "+this.resourceId);
 	            var self = this;
-	            var url = "/api/collection/resourcecollections?resourceId="+this.resourceId;
-	            
+	            var called = false;
+	            var url = "/api/collection/resourcecollections?resourceId="+self.resourceId;
+
+	            console.log("Getting all collections for the resource "+self.resourceId);
 	            console.log("Calling ",url);
 	
-	            var called = false;
 	            axios.get(url).then(function(response) {
 	            	console.log("response is:", response.data);
 	            	called = true;
 	            	console.log("Managed collections: ",response.data.managed.length);
 	            	console.log("Unmanaged collections: ",response.data.unmanaged.length);
 	                Vue.set(self,'collections',response.data);
-	            }).catch(function(error){
+    	            console.log("This was called? ", called);
+	            }).
+	            catch(function(error){
 	                console.error("An error ocurred getting a list of collections for this resource");
 	                console.error(error);
 	            });
-	            
-	            console.log("This was called? ", called);
-	            
 	            
 	        },
 	        
@@ -294,8 +371,15 @@ var _init = function(appId) {
 	         * Exposed methods
 	         */ 
 	        removeResourceFromCollection: function(collection,section){
+
+	        	if(collection == undefined ){
+	        		console.error("removeResourceFromCollection expected collection to not be an array, but it was null instead");
+	        	}
+	        	
+	        	
 	            Vue.set(this,"changesMade",true);
 	            	console.log("Pending collection removal from "+collection.id+" - "+section);
+	            	
 	            	if(section=='MANAGED'){
 	            		this.managedCollectionsToRemove.push(collection.id);
 	            		this._arrayRemove(this.collections.managed, collection);
@@ -308,6 +392,7 @@ var _init = function(appId) {
 	        
 	        addToCollection:function(){
 	            var vapp = this;
+                console.log('selected collection:',this.selectedCollection);
 	            if(this.selectedCollection==""){
 	                $("#addToNew").popover('show');
 	                setTimeout(function () {
@@ -419,7 +504,6 @@ var _init = function(appId) {
 	                vapp._addResultsToCollection(this.selectedCollection);
 	             }
 	        },
-	        
 	        updateProgressBar: function(collectionId){
 	            var vapp = this;
 	            
@@ -464,14 +548,17 @@ var _init = function(appId) {
       return app2;
 }
 
-return {
+
+module.exports = {
     init: _init,
     collectionSelectizeOptions : _getSelectizeOpts,
     main : function() {
         var appId = '#add-resource-form';
         if ($(appId).length  >0 ) {
-            TDAR.vuejs.collectionwidget.init(appId);
+            _init(appId);
         }
     }
 }
-})(console, jQuery, window, Vue,axios);
+
+//TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue, axios, TDAR) {
+//})(console, jQuery, window, Vue, axios, TDAR);

@@ -1,4 +1,6 @@
 /* global describe, it, expect, beforeEach */
+const TDAR = require("JS/tdar.master");
+require("./SpecHelper");
 
 describe("AutocompleteSpec.js: collection autocomplete", function(){
     
@@ -46,10 +48,12 @@ describe("AutocompleteSpec.js: collection autocomplete", function(){
         }
     };
     
+    console.debug(TDAR.autocomplete.applyCollectionAutocomplete);
 
     var applyCollectionAutocomplete = TDAR.autocomplete.applyCollectionAutocomplete;
 
     beforeEach(function(){
+        jasmine.getFixtures().fixturesPath = "base/src/test/frontend/fixtures";
         loadFixtures("autocomplete-collection.html");
         jasmine.Ajax.install();
     });
