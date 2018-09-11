@@ -1,15 +1,18 @@
 package org.tdar.db.conversion.analyzers;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.TDataTableColumn;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 
-public class CharAnalyzer implements ColumnAnalyzer {
+public class CharAnalyzer implements ColumnAnalyzer<String> {
     private static final String EXCEL_BAD_REGEX = "(.*)(#(REF|NUM|N/A|VALUE|NAME|DIV))(.*)";
     private int len = 0;
+    private Map<String, Integer> values = new HashMap();
 
     /**
      * Get mapped @link DataTableColumnType
@@ -44,6 +47,8 @@ public class CharAnalyzer implements ColumnAnalyzer {
         if (value.length() > len) {
             len = value.length();
         }
+        Integer def = values.getOrDefault(StringUtils.substring(value, 0,255), 0);
+        values.put(value, def + 1);
         return true;
     }
 
@@ -53,5 +58,10 @@ public class CharAnalyzer implements ColumnAnalyzer {
     @Override
     public int getLength() {
         return len;
+    }
+    
+    @Override
+    public Map<String,Integer> getValues() {
+        return values;
     }
 }

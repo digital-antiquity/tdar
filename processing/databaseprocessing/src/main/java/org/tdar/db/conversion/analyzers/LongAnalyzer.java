@@ -1,5 +1,8 @@
 package org.tdar.db.conversion.analyzers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.TDataTableColumn;
@@ -10,7 +13,8 @@ import org.tdar.db.datatable.TDataTableColumn;
  * @author abrin
  * 
  */
-public class LongAnalyzer implements ColumnAnalyzer {
+public class LongAnalyzer implements ColumnAnalyzer<Long> {
+    private Map<Long,Integer> values = new HashMap<>();
 
     /**
      * Get mapped @link DataTableColumnType
@@ -31,8 +35,9 @@ public class LongAnalyzer implements ColumnAnalyzer {
         if ("".equals(value)) {
             return true;
         }
+        Long lval = null;
         try {
-            Long.parseLong(value);
+            lval = Long.parseLong(value);
         } catch (NumberFormatException nfx) {
             return false;
         }
@@ -41,6 +46,10 @@ public class LongAnalyzer implements ColumnAnalyzer {
         if (StringUtils.isAlpha(lastChar)) {
             return false;
         }
+        
+        Integer def = values.getOrDefault(lval, 0);
+        values.put(lval, def + 1);
+
         return true;
     }
 
@@ -52,4 +61,10 @@ public class LongAnalyzer implements ColumnAnalyzer {
     public int getLength() {
         return 0;
     }
+    
+    @Override
+    public Map<Long,Integer> getValues() {
+        return values;
+    }
+
 }

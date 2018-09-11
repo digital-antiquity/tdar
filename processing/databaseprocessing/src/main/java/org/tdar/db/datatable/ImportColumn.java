@@ -28,7 +28,7 @@ public interface ImportColumn  {
 
     int compareToBySequenceNumber(ImportColumn b);
 
-    Set<Integer> getIntValues();
+    Set<Long> getIntValues();
 
     Set<Double> getFloatValues();
 
