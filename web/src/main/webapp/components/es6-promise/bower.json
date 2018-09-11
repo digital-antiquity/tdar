@@ -1,12 +1,11 @@
 {
   "name": "es6-promise",
   "namespace": "Promise",
-  "version": "4.0.5",
   "description": "A polyfill for ES6-style Promises, tracking rsvp",
   "authors": [
     "Stefan Penner <stefan.penner@gmail.com>"
   ],
-  "main": "./es6-promise.js",
+  "main": "dist/es6-promise.js",
   "keywords": [
     "promise"
   ],
@@ -17,5 +16,13 @@
   "bugs": {
     "url": "https://github.com/stefanpenner/es6-promise/issues"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "vendor",
+    "tasks"
+  ]
 }

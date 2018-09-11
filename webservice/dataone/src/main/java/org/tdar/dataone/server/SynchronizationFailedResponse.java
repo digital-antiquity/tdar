@@ -33,7 +33,7 @@ public class SynchronizationFailedResponse extends AbstractDataOneResponse {
 
     @POST
     @Produces("text/plain")
-    @Consumes("multipart/mixed")
+//    @Consumes("multipart/mixed")
     public Response synchronizationFailed(String message) {
         setupResponseContext(response, request);
         logger.error(":: " + message);
