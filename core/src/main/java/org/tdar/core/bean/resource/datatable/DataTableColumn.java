@@ -168,7 +168,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @ElementCollection()
     @CollectionTable(name = "data_table_column_int_values", joinColumns = @JoinColumn(name = "column_id"))
     @Column(name = "value")
-    private Set<Integer> intValues = new HashSet<>();
+    private Set<Long> intValues = new HashSet<>();
 
     @ElementCollection()
     @CollectionTable(name = "data_table_column_float_values", joinColumns = @JoinColumn(name = "column_id"))
@@ -568,11 +568,11 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     }
 
     @Override
-    public Set<Integer> getIntValues() {
+    public Set<Long> getIntValues() {
         return intValues;
     }
 
-    public void setIntValues(Set<Integer> intValues) {
+    public void setIntValues(Set<Long> intValues) {
         this.intValues = intValues;
     }
 

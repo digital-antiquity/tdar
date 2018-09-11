@@ -17,7 +17,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.db.ImportDatabase;
+import org.tdar.db.conversion.analyzers.CharAnalyzer;
 import org.tdar.db.conversion.analyzers.ColumnAnalyzer;
+import org.tdar.db.conversion.analyzers.DoubleAnalyzer;
+import org.tdar.db.conversion.analyzers.LongAnalyzer;
 import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.ImportTable;
 import org.tdar.db.datatable.TDataTable;
@@ -216,6 +219,15 @@ public abstract class AbstractDatabaseConverter implements DatasetConverter {
             logger.trace("altering {} to {} {}", column, best.getType(), best.getLength());
             targetDatabase.alterTableColumnType(dataTable.getName(), column, best.getType(), best.getLength());
             column.setColumnDataType(best.getType());
+            if (best instanceof CharAnalyzer) {
+                column.setValues(best.getValues().keySet());
+            }
+            if (best instanceof LongAnalyzer) {
+                column.setIntValues(best.getValues().keySet());
+            }
+            if (best instanceof DoubleAnalyzer) {
+                column.setFloatValues(best.getValues().keySet());
+            }
             // column.setColumnEncodingType(best.getType().getDefaultEncodingType());
         }
     }

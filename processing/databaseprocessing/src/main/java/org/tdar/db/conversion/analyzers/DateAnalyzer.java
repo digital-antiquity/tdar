@@ -1,7 +1,9 @@
 package org.tdar.db.conversion.analyzers;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.lang3.StringUtils;
@@ -18,8 +20,10 @@ import com.joestelmach.natty.Parser;
  * 
  * @author Martin Paulo
  */
-public class DateAnalyzer implements ColumnAnalyzer {
+public class DateAnalyzer implements ColumnAnalyzer<Date> {
 
+    private Map<Date, Integer> values = new HashMap<>();
+    
     /**
      * <p>
      * This method is surfaced as it is important that the same date is found by both the analyzer and the method that converts the value into a timestamp in
@@ -120,7 +124,12 @@ public class DateAnalyzer implements ColumnAnalyzer {
         if (null == value) {
             return false;
         }
-        return null != convertValue(value);
+        Date dval = convertValue(value);
+        if (dval != null) {
+            Integer def = values.getOrDefault(dval, 0);
+            values.put(dval, def + 1);
+        }
+        return null != dval;
     }
 
     /**
@@ -139,4 +148,8 @@ public class DateAnalyzer implements ColumnAnalyzer {
         return 0;
     }
 
+    @Override
+    public Map<Date, Integer> getValues() {
+        return values;
+    }
 }

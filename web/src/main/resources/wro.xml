@@ -45,8 +45,8 @@
         <js>/components/leaflet/dist/leaflet.js</js>
         <js>/components/leaflet-choropleth/dist/choropleth.js</js>
         
-        <js>/components/es6-promise/es6-promise.js</js>
-        <js>/components/es6-promise/es6-promise.auto.js</js>
+        <js>/components/es6-promise/dist/es6-promise.js</js>
+        <js>/components/es6-promise/dist/es6-promise.auto.js</js>
         <!-- <js>/components/axios/dist/axios.js</js> -->
         <js>/components/qs/dist/qs.js</js>
         <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
@@ -119,7 +119,8 @@
         <js>/js/vue/vue-base-upload.js</js>
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>
-        <js>/js/vue/vue-autocomplete.js</js>
+        <js>/components/tdar-autocomplete/js/vue-autocomplete.js</js>
+        <css>/components/tdar-autocomplete/css/tdar-autocomplete.css</css>
         <js>/js/vue/edit-collection.js</js>
         <js>/js/vue/vue-advanced-search.js</js>
         <js>/js/vue/vue-autocomplete.js</js>

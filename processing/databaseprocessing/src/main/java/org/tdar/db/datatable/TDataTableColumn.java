@@ -53,7 +53,7 @@ public class TDataTableColumn implements Serializable, ImportColumn {
     private Integer sequenceNumber;
     private Integer length = -1;
     private Set<String> values = new HashSet<>();
-    private Set<Integer> intValues = new HashSet<>();
+    private Set<Long> intValues = new HashSet<>();
     private Set<Double> floatValues = new HashSet<>();
 
 
@@ -170,11 +170,11 @@ public class TDataTableColumn implements Serializable, ImportColumn {
         this.values = values;
     }
 
-    public Set<Integer> getIntValues() {
+    public Set<Long> getIntValues() {
         return intValues;
     }
 
-    public void setIntValues(Set<Integer> intValues) {
+    public void setIntValues(Set<Long> intValues) {
         this.intValues = intValues;
     }
 

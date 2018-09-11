@@ -1,11 +1,16 @@
 package org.tdar.db.conversion.analyzers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.tdar.db.datatable.DataTableColumnType;
 import org.tdar.db.datatable.TDataTableColumn;
 
-public class DoubleAnalyzer implements ColumnAnalyzer {
+public class DoubleAnalyzer implements ColumnAnalyzer<Double> {
 
+    private Map<Double,Integer> values = new HashMap<>();
+    
     /**
      * Get mapped @link DataTableColumnType
      */
@@ -25,8 +30,9 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
         if ("".equals(value)) {
             return true;
         }
+        Double dval = null;
         try {
-            Double.parseDouble(value);
+            dval = Double.parseDouble(value);
         } catch (NumberFormatException nfx) {
             return false;
         }
@@ -37,6 +43,9 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
             return false;
         }
 
+        Integer def = values.getOrDefault(dval, 0);
+        values.put(dval, def + 1);
+ 
         return true;
     }
 
@@ -46,5 +55,10 @@ public class DoubleAnalyzer implements ColumnAnalyzer {
     @Override
     public int getLength() {
         return 0;
+    }
+
+    @Override
+    public Map<Double,Integer> getValues() {
+        return values;
     }
 }
