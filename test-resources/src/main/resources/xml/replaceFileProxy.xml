@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tdar:fileProxies xsi:schemaLocation="http://localhost:8180/schema/current schema.xsd" xmlns:tdar="http://www.tdar.org/namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <tdar:fileProxy>
+        <tdar:action>REPLACE</tdar:action>
+        <tdar:fileId>{{FILE_ID}}</tdar:fileId>
+        <tdar:name>{{FILENAME}}</tdar:name>
+        <tdar:restriction>PUBLIC</tdar:restriction>
+    </tdar:fileProxy>
+</tdar:fileProxies>

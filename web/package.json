@@ -1,0 +1,49 @@
+{
+  "name": "tDAR",
+  "version": "18.0.0",
+  "description": "The Digital Archaeological Record Web Application",
+  "main": "index.js",
+  "dependencies": {
+    "bower": "^1.8.4",
+    "grunt-cli": "~1.2.0"
+  },
+  "devDependencies": {
+    "angular": "^1.5.7",
+    "angular-mocks": "^1.5.7",
+    "axios": "0.17.0",
+    "deasync": "^0.1.0",
+    "es6-promise": "4.1.1",
+    "jasmine-core": "^2.4.1",
+    "karma": "~1.1.0",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-clear-screen-reporter": "^1.0.0",
+    "karma-coverage": "^1.0.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-html2js-preprocessor": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-jasmine-ajax": "~0.1.13",
+    "karma-jasmine-jquery": "^0.1.1",
+    "karma-junit-reporter": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "moxios": "0.4.0",
+    "phantomjs": "^2.1.7",
+    "vue": "^2.4.2",
+    "xml2js": "^0.4.9",
+    "xmldoc": "^0.5.1"
+  },
+  "scripts": {
+    "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",
+    "pretest": "echo node src/test/frontend/pretest.js",
+    "test": "karma start --no-single-run"
+  },
+  "repository": {
+    "type": "hg",
+    "url": "https://bitbucket.org/tdar/tdar.src"
+  },
+  "author": "adam brin",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://dev.tdar.org/jira"
+  },
+  "homepage": "http://www.tdar.org/"
+}

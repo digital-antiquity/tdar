@@ -1,0 +1,70 @@
+{
+    "columns": [
+        {
+            "dataTableColumns": [
+                null,
+                {
+                    "id": 32640,
+                    "name": "col_location"
+                }
+            ],
+            "name": "display column",
+            "type": "DISPLAY"
+        },
+        {
+            "dataTableColumns": [
+                {
+                    "id": 31710,
+                    "name": "species_common_name"
+                },
+                {
+                    "id": 32450,
+                    "name": "taxon"
+                }
+            ],
+            "name": "Fauna Taxon Ontology ",
+            "nodeSelection": [
+                {
+                    "id": 64870,
+                    "iri": "Aves"
+                },
+                {
+                    "id": 62580,
+                    "iri": "sheep"
+                },
+                {
+                    "id": 63000,
+                    "iri": "rabbit___hare"
+                }
+            ],
+            "ontology": {
+                "id": 42940,
+                "title": "Fauna Taxon Ontology "
+            },
+            "type": "INTEGRATION"
+        }
+    ],
+    "dataTables": [
+        {
+            "displayName": "Main table",
+            "id": 3091
+        },
+        {
+            "displayName": "qryBone",
+            "id": 3104
+        }
+    ],
+    "datasets": [],
+    "description": "",
+    "ontologies": [
+        {
+            "id": 42940,
+            "title": "Fauna Taxon Ontology "
+        },
+        {
+            "id": 42950,
+            "title": "Fauna Element Ontology"
+        }
+    ],
+    "title": "test integration"
+}

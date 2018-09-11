@@ -1,0 +1,18 @@
+Vertebrate Element
+	Articulated Skeleton
+		Articulated Skeleton Nearly Complete
+		Articulated Skeleton Partial
+			Articulated Skeleton Posterior Portion
+	Non-appendicular
+		Skull (Head)
+			Antler
+			Dentary
+			Maleus
+			Mandible 
+				Mandible w/ Teeth
+				Mandible w/o Teeth
+			Maxilla
+				Maxilla w/ Teeth
+				Maxilla w/o Teeth
+			Maxilla or Mandible (Maxilla or Dentary)
+			Mesethmoid

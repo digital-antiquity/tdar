@@ -1,0 +1,19 @@
+Vertebrate Element
+	Articulated Skeleton
+		Articulated Skeleton Nearly Complete
+		Articulated Skeleton Partial
+			Articulated Skeleton Anterior Portion
+	Non-appendicular
+		Skull (Head)
+			Antler
+			Frontal
+				Frontal w/ Antler
+				Frontal w/ Pedicel
+			Frontal or Parietal
+			Maleus
+			Mandible (Dentary)
+				Mandible w/ Teeth (Dentary w/ Teeth)
+				Mandible w/o Teeth (Dentary w/o Teeth)
+			Opisthotic
+			Orbitosphenotic
+			Otolith (Statoconium;Otoconium)
