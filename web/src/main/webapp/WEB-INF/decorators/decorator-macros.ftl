@@ -49,28 +49,38 @@
 </#if>
 
 <nav>
-    <ul class="hidden-phone-portrait">
-<!-- <li><a href="https://www.tdar.org/saa/">SAA</a></li> -->
+    <ul class="hidden-phone-portrait navmenu">
 <li><a href="https://www.tdar.org/news/">News</a></li>
 <li><a href="https://www.tdar.org/about">About</a></li>
 <li><a href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>
 
-<!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
         <#if ((authenticatedUser.contributor)!true)>
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
         <li>
             <#if navSearchBoxVisible>
-                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
+                <form name="searchheader" id="searchheader" action="<@s.url value="/search/results"/>" class="inlineform form-horizontal seleniumIgnoreForm hidden-phone hidden-tablet  screen">
                 <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
                     <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
                     <input type="hidden" name="_tdar.searchType" value="simple">
-                ${(page.properties["div.divSearchContext"])!""}
+                    <div id="divSearchContext">
+                        <#if namespace?contains("collection") && id?has_content >
+                            <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
+                            <label for="cbctxid">Search within this collection</label>
+                        </#if>
+                        <#if namespace?contains("project")  && id?has_content >
+                            <input id="cbctxid" type="checkbox" name="projectId" value="${id?c}">
+                            <label for="cbctxid">Search within this project</label>
+                        </#if>
+                        <a href="#" onClick="$('#advancedsearch').show(); return false;">More Options</a>
+                    </div>
                 </form>
+
             </#if>
         </li>
     </ul>
 
 </nav>
+<#include "/WEB-INF/content/search/search.html" >
 
 
 </#macro>

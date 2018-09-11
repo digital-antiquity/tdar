@@ -1,0 +1,32 @@
+{
+  "name": "tdar-values",
+  "authors": [
+    "Adam Brin <adam@brin.org>"
+  ],
+  "description": "tDAR VueJS Value lookup",
+  "main": "js/tdar-vue-values.js",
+  "keywords": [
+    "values"
+  ],
+  "dependencies": {
+    "vue": "^2.4.2"
+  },
+  "license": "APACHE 2.0",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "da4c76d52d",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "da4c76d52d5c0c9ae98e3d8b1c938a286998f0df"
+  },
+  "_source": "https://bitbucket.org/tdar/vue-values.git",
+  "_target": "*",
+  "_originalSource": "https://bitbucket.org/tdar/vue-values.git"
+}

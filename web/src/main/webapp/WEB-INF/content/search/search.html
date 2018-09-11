@@ -1,0 +1,119 @@
+<div class="advanced container" style="z-index: 10000; display: none" id="advancedsearch">
+    <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
+        <div class="row">
+            <div class="span6 offset6 advancedSearchbox" >
+    <a href="#" onClick="$('#advancedsearch').hide();return false;" class='pull-right'>close <b>X</b></a>
+                <h5>More search options</h5>
+                <div class="control-group condensed">
+                    <label class="control-label">What:</label>
+
+                    <div class="controls controls-row">
+                        <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE">
+                            Resources
+                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION">
+                            Collections
+                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE">
+                            People
+                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS">
+                            Institutions
+                        </label>
+                    </div>
+                </div>
+
+                <div class="searchgroup">
+                    <div id="groupTable0" class="condensed">
+                        <div class="condensed" v-for="(row,index) in rows">
+                            <part :index="index" :row="row" :options="selectOptions" @removerow="removeRow($event)" :totalrows="rows.length" />
+                        </div>
+                    </div>
+
+                    <div class="controls-row condensed">
+                        <div class="controls">
+                            <button class="btn" id="groupTable0AddAnotherButton" type="button" @click="addRow()">
+                                <i class="icon-plus-sign"></i>add another search term
+                            </button>
+                        </div>
+                    </div>
+                    <div class=" control-group " v-if="rows.length > 1">
+                        <label class="control-label">Include in results</label>
+                        <div class="controls controls-row condensed">
+                            <select name="groups[0].operator" class="span3">
+                                <option value="AND" selected="">When resource matches ALL terms below</option>
+                                <option value="OR">When resource matches ANY terms below</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="text-center">
+                        <button type="button" class="button btn tdar-button center" @click="submit()">Search</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<script type="text/x-template" id="search-row-template">
+<div class="controls-row">
+    <select v-model="option" :name="searchFieldName" class="span2 control-label" style="font-size:smaller" ref='fieldselect'>
+        <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
+        	<option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option"> {{ option.name }}  </option>
+        </optgroup>
+    </select>
+    <div class="span3" ref='valuearea'>
+        <div v-if="option.type == 'basic' || option.type == undefined">
+            <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.searchFieldName" v-if="option.autocompleteUrl != undefined" 
+		:resultsuffix="option.resultSuffix" ref="autocomplete" :span="'span3'" :fieldname="fieldName" :allowCreate="false" :idname="idName"/>
+            <input type="text" :name="valueFieldName" class="span3" v-if="option.autocompleteUrl == undefined">
+        </div>
+        <div v-if="option.type == 'select'">
+             <select :name="valueFieldName" class="span3" multiple>
+                  <option  v-for="(opt, i) in option.values">{{opt}}</option>
+              </select>
+ 		 </div>
+         <div v-if="option.type == 'integer'">
+              <input type="number" :name="valueFieldName" class=" span3">
+ 		 </div>
+         <div v-if="option.type == 'date'">
+              <input type="date" :name="fieldName + '.start'" class=" span3">
+              <input type="date" :name="fieldName + '.end'" class=" span3">
+ 		 </div>
+        <span v-if="option.columnType != undefined"> 
+            <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
+        </span>
+         <div id="latlongoptions" v-if="option.type == 'map'">
+            <div id='map' class='leaflet-map-editable' data-search="true" style="height:300px">
+               <span class="latlong-fields">
+                    <input type="hidden" :name="fieldName + '.east'" id="maxx" class="ne-lng latLongInput maxx" />
+                    <input type="hidden" :name="fieldName + '.south'"  id="miny" class="sw-lat latLongInput miny" />
+                    <input type="hidden" :name="fieldName + '.west'" id="minx" class="sw-lng latLongInput minx" />
+                    <input type="hidden" :name="fieldName + '.north'"  id="maxy" class="ne-lat latLongInput maxy" />
+               </span>
+               <div class="mapdiv"></div>
+             </div>
+         </div>
+         </div>
+         <div class="span1">
+                    <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>
+          </div>
+    </div>
+</div>
+</script>
+
+<#include "/WEB-INF/macros/autocomplete.html" />
+ <script>
+$(document).ready(function() {
+//    $("#advancedsearch").show();
+/*     $("#searchheader, #advancedsearch").mouseover(function() {
+        $("#advancedsearch").show();
+    }); */
+/*     $("#searchheader, #advancedsearch").mouseout(function() {
+        $("#advancedsearch").hide();
+    });
+ *//*
+ */
+});
+            
+</script>

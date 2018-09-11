@@ -11,7 +11,10 @@
         <!--  used by jquery.treeview -->
         <js>/includes/jquery.cookie.js</js>
         <css>/css/tdar-svg.css</css>
+        <css>/css/tdar-autocomplete.css</css>
         <js>/components/svgxuse/svgxuse.min.js</js>
+        
+        
         <!-- LICENSE: MIT /GPL 2.0 -->
         <!--  not sure who uses this -->
 <!--    <js>/includes/jquery.metadata.2.1/jquery.metadata.js</js> -->
@@ -119,6 +122,10 @@
         <js>/components/tdar-autocomplete/js/vue-autocomplete.js</js>
         <css>/components/tdar-autocomplete/css/tdar-autocomplete.css</css>
         <js>/js/vue/edit-collection.js</js>
+        <js>/js/vue/vue-advanced-search.js</js>
+        <js>/js/vue/vue-autocomplete.js</js>
+        <js>/js/vue/vue-tagging.js</js>
+        <js>/js/vue/vue-creatorwidget.js</js>
 
     </group>
     <group name="ng-integrate">

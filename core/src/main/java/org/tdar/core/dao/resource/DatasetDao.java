@@ -122,7 +122,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             @Override
             public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs.next()) {
-                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, rs, false);
+                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, true,  rs, false);
                     return results;
                 }
                 return null;

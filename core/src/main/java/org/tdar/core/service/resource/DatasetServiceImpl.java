@@ -34,6 +34,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.RevisionLogType;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -45,6 +46,7 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
@@ -75,6 +77,9 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     @Autowired
     private DataIntegrationService dataIntegrationService;
@@ -263,13 +268,14 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     @Override
     @SuppressWarnings("deprecation")
     @Transactional
-    public ResultMetadataWrapper selectAllFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated,
-            final boolean returnRowId) {
+    public ResultMetadataWrapper selectAllFromDataTable(final Dataset dataset, final DataTable dataTable, final int start, final int page, boolean includeGenerated,
+            final boolean returnRowId, final TdarUser authenticatedUser) {
         final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
         wrapper.setRecordsPerPage(page);
         wrapper.setStartRecord(start);
 
-        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable, returnRowId);
+        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable, returnRowId,
+                authorizationService.canViewConfidentialInformation(authenticatedUser, dataset));
         try {
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, resultSetExtractor, includeGenerated));
         } catch (BadSqlGrammarException e) {
@@ -289,14 +295,14 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      */
     @Override
     @Transactional
-    public Map<DataTableColumn, String> selectRowFromDataTable(final DataTable dataTable, final Long rowId, final boolean returnRowId) {
+    public Map<DataTableColumn, String> selectRowFromDataTable(final Dataset dataset, final DataTable dataTable, final Long rowId, final boolean returnRowId,TdarUser authenticatedUser) {
         ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
 
             @Override
             public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException {
                 Map<DataTableColumn, String> result = new HashMap<>();
                 while (rs.next()) {
-                    result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
+                    result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, authorizationService.canViewConfidentialInformation(authenticatedUser, dataset), rs, returnRowId);
                 }
                 return result;
             }
@@ -318,12 +324,12 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      */
     @Override
     @Transactional
-    public ResultMetadataWrapper findRowsFromDataTable(final DataTable dataTable, final int start, final int page, boolean includeGenerated, String query) {
+    public ResultMetadataWrapper findRowsFromDataTable(final Dataset dataset, final DataTable dataTable, final int start, final int page, boolean includeGenerated, String query,TdarUser authenticatedUser) {
         final ResultMetadataWrapper wrapper = new ResultMetadataWrapper();
         wrapper.setRecordsPerPage(page);
         wrapper.setStartRecord(start);
 
-        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable, false);
+        ResultSetExtractor<List<List<String>>> resultSetExtractor = new TdarDataResultSetExtractor(wrapper, start, page, dataTable, false, authorizationService.canViewConfidentialInformation(authenticatedUser, dataset));
         try {
             wrapper.setResults(tdarDataImportDatabase.selectAllFromTable(dataTable, resultSetExtractor, includeGenerated, query));
         } catch (BadSqlGrammarException e) {
@@ -332,29 +338,29 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         return wrapper;
     }
 
-//    /*
-//     * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
-//     */
-//    /*
-//     * (non-Javadoc)
-//     * 
-//     * @see org.tdar.core.service.resource.DatasetService#listRelationshipsForColumns(org.tdar.core.bean.resource.datatable.DataTableColumn)
-//     */
-//    @Override
-//    @Transactional
-//    public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
-//        List<DataTableRelationship> relationships = new ArrayList<>();
-//        Set<DataTableRelationship> allDatasetRelationships = column.getDataTable().getDataset().getRelationships();
-//        getLogger().trace("All relationships: {}", allDatasetRelationships);
-//        for (DataTableRelationship relationship : allDatasetRelationships) {
-//            for (DataTableColumnRelationship columnRelationship : relationship.getColumnRelationships()) {
-//                if (column.equals(columnRelationship.getLocalColumn())) {
-//                    relationships.add(relationship);
-//                }
-//            }
-//        }
-//        return relationships;
-//    }
+    // /*
+    // * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
+    // */
+    // /*
+    // * (non-Javadoc)
+    // *
+    // * @see org.tdar.core.service.resource.DatasetService#listRelationshipsForColumns(org.tdar.core.bean.resource.datatable.DataTableColumn)
+    // */
+    // @Override
+    // @Transactional
+    // public List<DataTableRelationship> listRelationshipsForColumns(DataTableColumn column) {
+    // List<DataTableRelationship> relationships = new ArrayList<>();
+    // Set<DataTableRelationship> allDatasetRelationships = column.getDataTable().getDataset().getRelationships();
+    // getLogger().trace("All relationships: {}", allDatasetRelationships);
+    // for (DataTableRelationship relationship : allDatasetRelationships) {
+    // for (DataTableColumnRelationship columnRelationship : relationship.getColumnRelationships()) {
+    // if (column.equals(columnRelationship.getLocalColumn())) {
+    // relationships.add(relationship);
+    // }
+    // }
+    // }
+    // return relationships;
+    // }
 
     /*
      * Based on a set of @link DataTableColumn entries, and a @link Project we can will clear out the existing mappings; and then identify mappings that need to
@@ -491,7 +497,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
             incomingColumn.setTransientOntology(defaultOntology);
             if ((defaultOntology != null) && PersistableUtils.isNullOrTransient(incomingCodingSheet)) {
                 incomingColumn.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
-                
+
                 CodingSheet generatedCodingSheet = dataIntegrationService.createGeneratedCodingSheet(provider, dataset, existingColumn, authenticatedUser,
                         defaultOntology);
                 incomingColumn.setDefaultCodingSheet(generatedCodingSheet);
@@ -735,4 +741,21 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         return getDao().findAllSorted(string);
     }
 
+    @Override
+    public Set<DataTableColumn> findSearchableColumns(Dataset ds, TdarUser user) {
+        Set<DataTableColumn> cols = new HashSet<>();
+        boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(user, ds);
+        ds.getDataTables().forEach(dt -> {
+            dt.getDataTableColumns().forEach(dtc -> {
+                if (dtc.isSearchField() && 
+                        (dtc.getVisible() == null 
+                        || dtc.getVisible() == ColumnVisibiltiy.VISIBLE 
+                        || dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL && canViewConfidentialInformation)) {
+                    cols.add(dtc);
+                }
+
+            });
+        });
+        return cols;
+    }
 }

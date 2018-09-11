@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
@@ -22,7 +23,7 @@ public class DatasetUtils {
     /*
      * Converts a JDBC @link ResultSet row into a Map of @link DataTableColumn (key) and String (value).
      */
-    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, ResultSet rs, boolean returnRowId)
+    public static Map<DataTableColumn, String> convertResultSetRowToDataTableColumnMap(final DataTable table, boolean canSeeConfidential, ResultSet rs, boolean returnRowId)
             throws SQLException {
         Map<DataTableColumn, String> results = new LinkedHashMap<>();
         if (returnRowId) {
@@ -33,8 +34,24 @@ public class DatasetUtils {
             String columnName = rs.getMetaData().getColumnName(i);
             DataTableColumn col = table.getColumnByName(columnName);
             // ignore if null (non translated version of translated)
-            if ((col != null) && col.isVisible()) {
-                results.put(col, null);
+            
+            if (col == null) {
+                continue;
+            }
+            if (col.getVisible() == null) {
+                col.setVisible(ColumnVisibiltiy.VISIBLE);
+            }
+            switch (col.getVisible()) {
+                case HIDDEN:
+                    continue;
+                case CONFIDENTIAL:
+                    if (canSeeConfidential) {
+                        results.put(col, null);
+                    }
+                    break;
+                case VISIBLE:
+                default:
+                    results.put(col, null);
             }
         }
         for (DataTableColumn key : results.keySet()) {

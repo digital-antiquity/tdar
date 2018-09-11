@@ -1,4 +1,3 @@
-
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios) {
     "use strict";
 

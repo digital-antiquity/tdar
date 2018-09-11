@@ -1,0 +1,306 @@
+
+<div id="sel">
+    <div>
+    <autocomplete url="/api/lookup/resource"
+        suffix="resourceTypes=PROJECT" field="term"
+        resultsuffix="resources" 
+        @autocompletevalueset="selectProject" ref="input"
+        fieldname="title" allowCreate="false" idname="id" />
+        </div>
+        {{resource}}
+    <div>
+        <h5>Notes</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertNotes" :disabled="inheritanceDisabled"/></b>
+        <div v-for="(note, idx) in resource.resourceNotes" class="row">
+              <div class="repeat-row">
+        <div class="controls controls-row">
+            <div class="span6">
+                <div class="controls-row">
+                    <select :name="'resourceNotes[' + idx + '].type'" v-model="resource.resourceNotes[idx].type">
+                        <option v-for="(opt, idx) in noteTypes" :value="opt.value">{{opt.name}}</option>
+                    </select>
+                </div>
+                <div class="controls-row">
+                    <textarea  :name="'resourceNotes[' + idx + '].note'" v-model="resource.resourceNotes[idx].note" cols="80" rows="4" 
+                        class="span6 resizable resize-vertical" maxlength="5000" placeholder="enter note contents"></textarea>
+                </div>
+            </div>
+            <div class="span1">
+    <button class="btn btn-mini " @click="removeNote(idx)" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
+            </div>
+        </div>
+    </div>
+        
+    <div class="control-group add-another-control">
+    <div class="controls">
+        <button class="btn addanother" @click="resource.resourceNotes.push({})" type="button"><i class="icon-plus-sign"></i>add another</button>
+    </div>
+</div>
+        </div>
+    </div>
+
+<div>
+        <h5>Individual and Institutional Roles</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertCreators" :disabled="inheritanceDisabled"/></b>
+        <div v-for="(creator, idx) in resource.individualInstitutionalRoles" class="row">
+                    <creatorrolelookup :resourcecreator="creator" :row="idx"  />
+    </div>    
+</div>    
+    
+    <div>
+        <h5>Other Keywords</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertOther" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" prefix="resource.otherKeywords" 
+            name_field="label" autocomplete_suffix="keywordType=OtherKeyword" 
+            result_suffix="items"  />
+    </div>
+    <div>
+        <h5>Culture Keywords</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertCulture" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="culture"  :values="resource.cultureKeywords" prefix="resource.cultureKeywords" 
+            name_field="label" autocomplete_suffix="keywordType=CultureKeyword" 
+            result_suffix="items"  />
+    </div>
+    <div>
+        <h5>Temporal Keywords</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertTemporal" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" prefix="resource.temporalKeywords" 
+            name_field="label" autocomplete_suffix="keywordType=TemporalKeyword" 
+            result_suffix="items"  />
+    </div>
+    <div>
+        <h5>Site Name</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteName" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" prefix="resource.siteNameKeywords" 
+            name_field="label" autocomplete_suffix="keywordType=SiteNameKeyword" 
+            result_suffix="items"  />
+    </div>
+    <div>
+        <h5>Site Type</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSiteType" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" prefix="resource.siteTypeKeywords" 
+            name_field="label" autocomplete_suffix="keywordType=SiteTypeKeyword" 
+            result_suffix="items"  />
+    </div>
+    <div>
+        <h5>Investigation Type</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertInvestigationType" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="investigationType" :values="resource.investigationTypes" prefix="resource.investigationTypes" 
+            name_field="label" autocomplete_suffix="keywordType=InvestigationType" 
+            result_suffix="items"  />
+    </div>
+    <div>
+        <h5>Geographic</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertSpatial" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" prefix="resource.geographicKeywords"
+            name_field="label" autocomplete_suffix="keywordType=GeographicKeyword" 
+            result_suffix="items"  />
+            
+
+    </div>
+    
+    
+        <div id='vueeditablemap' style="height:300px" class=" span9" data-search="true">
+            <div id="divManualCoordinateEntry2" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
+                <input type="checkbox" id="viewCoordinatesCheckbox2" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
+                <div id='explicitCoordinatesDiv' style='text-align:center;'>
+            
+            <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;">
+                        <tbody><tr>
+                            <td></td>
+                            <td>
+<input type="text" name="latitudeLongitudeBoxes[0].north"size="14" value="" class="maxy float latLong ne-lat hidden" title="Please enter a valid Maximum Latitude" v-model="resource.latitudeLongitudeBoxes[0].north">
+                                <input type="text" placeholder="Latitude (max)" class="ne-lat-display span2 d_maxy"   >
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td style="width:33%;text-align:center">
+<input type="text" name="latitudeLongitudeBoxes[0].west" size="14" value=""  class="minx float latLong sw-lng hidden" title="Please enter a valid Minimum Longitude" v-model="resource.latitudeLongitudeBoxes[0].west"> 
+                               <input type="text"  placeholder="Longitude (min)" class="sw-lng-display span2 d_minx"  >
+                            </td>
+                            <td style="width:33%;text-align:center">
+                                <input type="button" id="locate" ref="updateMap" value="Locate" class="btn locateCoordsButton">
+                            </td>
+                            <td style="width:33%;text-align:center">
+<input type="text" name="latitudeLongitudeBoxes[0].east" v-model="resource.latitudeLongitudeBoxes[0].east" size="14" class="maxx float latLong ne-lng hidden" title="Please enter a valid Maximum Longitude" >
+                                <input type="text" placeholder="Longitude (max)" class="d_maxx ne-lng-display span2">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+<input type="text" name="latitudeLongitudeBoxes[0].south" v-model="resource.latitudeLongitudeBoxes[0].south" size="14"  class="miny float latLong sw-lat hidden" title="Please enter a valid Minimum Latitude" >
+                                <input type="text"  placeholder="Latitude (min)" class="d_miny sw-lat-display span2">
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody></table>
+                    
+                    
+                </div>
+            </div>
+                                <div class="mapdiv"></div>
+        </div>
+    <div>
+        <h5>Material</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="inhertMaterial" :disabled="inheritanceDisabled"/></b>
+        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.materialKeywords" prefix="resource.materialKeywords"  
+            name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" 
+            result_suffix="items"  />
+    </div>
+    {{project}}
+</div>
+<script>
+$(document).ready(function() {
+
+    var app = new Vue({
+        el : "#sel",
+        data : {
+                separator: ";" ,
+                autocomplete_url:'https://localhost:8443/api/lookup/resource',
+                autocomplete_suffix:'',
+                result_suffix:'resources',
+                allow_create:true,
+                nameField: 'title',
+                idField: 'id',
+                projectId: undefined,
+                inheritanceDisabled: true,
+                inhertSiteName: false,
+                inhertSiteType: false,
+                inhertTemporal: false,
+                inhertCreators: false,
+                inhertCulture: false,
+                inhertSpatial: false,
+                inhertMaterial: false,
+                inhertOther: false,
+                inhertNotes: false,
+                inhertInvestigationType: false,
+                project: {},
+                noteTypes: [
+                    {value:"GENERAL", name:"General Note"},
+                    {value:"REDACTION", name:"Redaction Note"},
+                    {value:"RIGHTS_ATTRIBUTION", name:"Rights & Attribution"},
+                    {value:"ADMIN", name:"Administration Note"}
+                    ],
+                resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], materialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
+                    resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
+                    individualInstitutionalRoles: [{id: undefined, role: undefined , creator: {institution:{ name: undefined}}, id: undefined}] }
+                },
+                watch: {
+                    inhertInvestigationType: function(o, b) {
+                        this.inherit(o,b,'investigationType', 'activeInvestigationTypes');
+                    },
+                    inhertSiteName: function(o, b) {
+                        this.inherit(o,b,'siteName', 'activeSiteNameKeywords');
+                    },
+                    inhertSiteType: function(o, b) {
+                        this.inherit(o,b,'siteType', 'activeSiteTypeKeywords');
+                    },
+                    inhertTemporal: function(o, b) {
+                        this.inherit(o,b,'temporal', 'activeTemporalKeywords');
+                    },
+                    inhertCreators: function(o, b) {
+                        this.resource.individualInstitutionalRoles.length = 0;
+                        var self = this;
+                        this.project.activeIndividualAndInstitutionalCredit.forEach(function(role_) {
+                            var role = JSON.parse(JSON.stringify(role_));
+                            role.init = "";
+                            self.resource.individualInstitutionalRoles.push(role);
+                        });
+                    },
+                    inhertMaterial: function(o, b) {
+                        this.inherit(o,b,'material', 'activeMaterialKeywords');
+                    },
+                    inhertCulture: function(o, b) {
+                        this.inherit(o,b,'culture', 'activeCultureKeywords');
+                    },
+                    inhertSpatial: function(o, b) {
+                        this.inherit(o,b,'geographic', 'activeGeographicKeywords');
+                        this.resource.latitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
+                        this.resource.latitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
+                        this.resource.latitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
+                        this.resource.latitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
+                        console.log(this.resource.latitudeLongitudeBoxes[0]);
+                        Vue.nextTick(function() {
+                            $(".locateCoordsButton").click();
+                        });
+                    },
+                    inhertOther: function(o, b) {
+                        this.inherit(o,b,'other', 'activeOtherKeywords');
+                    },
+                    inhertNotes: function(o, b) {
+                        this.resource.resourceNotes.length = 0;
+                        var _app = this;
+                        this.project.activeResourceNotes.forEach(function(n) {
+                            console.log(n);
+                            _app.resource.resourceNotes.push(JSON.parse(JSON.stringify(n)) );
+                        });
+                        if (this.resource.resourceNotes.length == 0) {
+                            this.resource.resourceNotes.push({});
+                        }
+                    }
+                },
+                computed: {
+                    inheritanceDisabledClass: function() {
+                        if (this.inheritanceDisabled == true) {
+                            return "disabled";
+                            }
+                        return "";
+                    }
+                },
+                mounted: function() {
+                    var self = this.resource.latitudeLongitudeBoxes[0];
+                    Vue.nextTick(function() {
+                        TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
+                            Vue.set(self, "west", e.minx);
+                            Vue.set(self, "east", e.maxx);
+                            Vue.set(self, "north", e.maxy);
+                            Vue.set(self, "south", e.miny);
+                            });
+                    });
+                },
+                methods: {
+                    removeNote: function(idx) {
+                        if (this.resource.resourceNotes.length > 1) {
+                            this.resource.resourceNotes.splice(idx,1);
+                        }
+                        if (this.resource.resourceNotes.length == 0) {
+                            this.resource.resourceNotes.push({});
+                        }
+                        if (this.resource.resourceNotes.length == 1) {
+                            this.resource.resourceNotes[0]= {};
+                        }
+                        
+                    },
+                    inherit: function(o, b, ref, vals) {
+                        if (this.project[vals] != undefined && o == true) {
+                            this.$refs[ref].setValues(this.project[JSON.parse(JSON.stringify(vals)) ]); 
+                            this.$refs[ref].disable();
+                        } else {
+                            this.$refs[ref].enable();
+                        }
+                    },
+                    selectProject: function(val) {
+                        console.log("project:", val);
+                        if (val == undefined) {
+                            return;
+                        } 
+                        this.projectId = val.id;
+                        var self = this;
+                        axios.get("/project/json/" + val.id).then(function(res) {
+                            //Vue.set(self, "isLoading",false);
+                            Vue.set(self, 'project',res.data);
+                            Vue.set(self, 'inheritanceDisabled',false);
+                        }).catch(function(thrown) {
+                            if (!axios.isCancel(thrown)) {
+                                console.error(thrown);
+                            }
+                        });
+                    }
+                    
+                }
+    });
+
+});
+</script>

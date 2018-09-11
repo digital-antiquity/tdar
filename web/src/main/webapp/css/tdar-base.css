@@ -1,3 +1,22 @@
+
+.advanced {
+    position: absolute;
+    top: 70px;
+    right:32px;
+}
+
+
+.condensed {
+    margin-bottom:5px !important;    
+}
+
+.advancedSearchbox {
+    background-color: white;
+    border:1px solid #CCC;
+    padding:10px;
+    z-index: 1000;
+    line-height:initial;
+}
 /** stop safari from autofilling **/
 input[autocomplete="off"]::-webkit-contacts-auto-fill-button {
   visibility: hidden;
@@ -248,11 +267,11 @@ header h1 {
 
 header nav, header form {
     float: right;
-    overflow: hidden;
+    /* overflow: hidden; */
     height: 100px;
 }
 
-header nav ul, header nav li {
+header nav > ul.navmenu, header nav > .navmenu > li {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -277,11 +296,11 @@ header nav a:hover {
     color: #7d7a77;
 }
 
-header nav li.active a {
+header nav > .navmenu > li.active a {
     color: #7a1501;
 }
 
-header nav li.button a {
+header nav > .navmenu > li.button a {
     width: 72px;
     height: 24px;
     display: inline-block;
@@ -1036,6 +1055,10 @@ nav ul {
 /* TODO: this is necessary in bootstrap 2.2.2,  but I suspect it will be accounted for in later version  */
 .controls-row > div[class *="span"]:first-child {
     margin-left: 0;
+}
+
+.searchheader {
+    overflow:visible !important;
 }
 
 .searchheader input[type=text] {

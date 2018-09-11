@@ -29,13 +29,16 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
      * Should the tdar_id row be included or not
      */
     private boolean returnRowId = true;
+    private boolean canSeeConfidential;
 
-    public TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable, boolean returnRowId) {
+    public TdarDataResultSetExtractor(ResultMetadataWrapper wrapper, int start, int page, DataTable dataTable, boolean returnRowId,
+            boolean canSeeConfidential) {
         this.wrapper = wrapper;
         this.start = start;
         this.page = page;
         this.dataTable = dataTable;
         this.returnRowId = returnRowId;
+        this.canSeeConfidential = canSeeConfidential;
     }
 
     /*
@@ -48,7 +51,7 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
         List<List<String>> results = new ArrayList<List<String>>();
         int rowNum = 1;
         while (rs.next()) {
-            Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, rs, returnRowId);
+            Map<DataTableColumn, String> result = DatasetUtils.convertResultSetRowToDataTableColumnMap(dataTable, canSeeConfidential, rs, returnRowId);
             if (rs.isFirst()) {
                 wrapper.setFields(new ArrayList<DataTableColumn>(result.keySet()));
 
@@ -58,9 +61,19 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
                 // remove hidden columns
                 Iterator<DataTableColumn> colIterator = columns.iterator();
                 while (colIterator.hasNext()) {
-                    if (!colIterator.next().isVisible()) {
-                        colIterator.remove();
+                    switch (colIterator.next().getVisible()) {
+                        case HIDDEN:
+                            colIterator.remove();
+                            break;
+                        case CONFIDENTIAL:
+                            if (canSeeConfidential) {
+                                colIterator.remove();
+                            }
+                            break;
+                        case VISIBLE:
+                        default:
                     }
+
                 }
                 if (returnRowId) {
                     columns.add(DataTableColumn.TDAR_ROW_ID);
@@ -74,8 +87,21 @@ public class TdarDataResultSetExtractor implements ResultSetExtractor<List<List<
             if ((rowNum > start) && (rowNum <= (start + page))) {
                 ArrayList<String> values = new ArrayList<String>();
                 for (DataTableColumn col : wrapper.getFields()) {
-                    if (col.isVisible() || (returnRowId && DataTableColumn.TDAR_ID_COLUMN.equals(col.getName()))) {
+                    if (returnRowId && DataTableColumn.TDAR_ID_COLUMN.equals(col.getName())) {
                         values.add(result.get(col));
+                    }
+
+                    switch (col.getVisible()) {
+                        case CONFIDENTIAL:
+                            if (canSeeConfidential) {
+                                values.add(result.get(col));
+                            }
+                            break;
+                        case HIDDEN:
+                            break;
+                        case VISIBLE:
+                        default:
+                            values.add(result.get(col));
                     }
                 }
                 results.add(values);

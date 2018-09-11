@@ -29,7 +29,6 @@
     </#if>
 
     <@commonCollection.javascript />
-
+<script id="datasetinfo" data-dataset-id="<#if resourceCollection.dataset?has_content>${resourceCollection.dataset.id?c}</#if>"></script>
 </body>
-
 </#escape>

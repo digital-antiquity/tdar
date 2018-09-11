@@ -27,14 +27,21 @@ import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.resource.DataTableService;
+import org.tdar.core.service.resource.DatasetService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.bean.DataValue;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
@@ -65,11 +72,13 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private final GenericService genericService;
     private final SearchService<Resource> searchService;
+    private final DataTableService dataTableService;
 
     @Autowired
-    public ResourceSearchServiceImpl(SearchService<Resource> searchService, GenericService genericService) {
+    public ResourceSearchServiceImpl(SearchService<Resource> searchService, GenericService genericService, DataTableService dataTableService) {
         this.searchService = searchService;
         this.genericService = genericService;
+        this.dataTableService = dataTableService;
     }
 
     /*
@@ -268,6 +277,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
             } catch (SearchException e) {
                 logger.warn("issue hydrating creators", e);
             }
+            updateDataValuePairs(group, authenticatedUser);
             topLevelQueryPart.append(group.toQueryPartGroup(provider));
         }
         queryBuilder.append(topLevelQueryPart);
@@ -284,6 +294,22 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
         // dependent on handle search to hydrate
         asqo.setSearchPhrase(topLevelQueryPart.getDescription(provider));
         return result;
+    }
+
+    private void updateDataValuePairs(SearchParameters group, TdarUser user) {
+        if (CollectionUtils.isNotEmpty(group.getDataValues())) {
+            boolean canViewConfidentail = false;
+            for (DataValue dv  : group.getDataValues()) {
+                DataTableColumn col = genericService.find(DataTableColumn.class, dv.getColumnId());
+                dv.setName(col.getDisplayName());
+                Dataset dataset = dataTableService.findDatasetForTable(col.getDataTable());
+                if (!authorizationService.canViewConfidentialInformation(user, dataset) && col.getVisible() == ColumnVisibiltiy.CONFIDENTIAL) {
+                    throw new TdarAuthorizationException("cannot.search");
+                }
+                
+            }
+        }
+        
     }
 
     // deal with the terms that correspond w/ the "narrow your search" section

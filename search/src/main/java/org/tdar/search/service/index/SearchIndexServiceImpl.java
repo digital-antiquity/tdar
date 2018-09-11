@@ -244,8 +244,9 @@ public class SearchIndexServiceImpl implements SearchIndexService {
             SolrInputDocument document = createDocument(item);
 
             if (Objects.equals(src, LookupSource.DATA)) {
-                List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource) item,
-                        resourceService);
+                List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource) item, datasetDao);
+                template.add(CoreNames.DATA_MAPPINGS, convert);
+
                 if (deleteFirst) {
                     template.deleteByQuery(CoreNames.DATA_MAPPINGS, "id:" + item.getId());
                 }

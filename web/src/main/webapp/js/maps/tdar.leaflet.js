@@ -407,151 +407,160 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      * Returns list of promises with size equal to number of maps on page.  Each promise resolves after leaflet loads and initializes the map.
      */
     function _initEditableMaps() {
-        return $(".leaflet-map-editable").map(function() {
-            var $el = $(this);
-            // we create a div just before the div and copy the styles from the container. This is so that we can bind to class seletion for the fields.
-            // Currently, this is a bit of overkill but it would enable multiple forms on the same page
-
-            // An 'editable' map container needs two child nodes.
-            // - The first child node is a container for the latlong box form fields. Designate this node with
-            //   the .latlong-fields css class
-            //
-            // - The second child node contains the actual leaflet map (e.g. the mapdiv). Designate this node with
-            //   the .mapdiv css class.
-            var div = $el.find('div.mapdiv')[0];
-            //var div = document.createElement("div");
-            //$el.append(div);
-
-            // copy styles
-            div.setAttribute("style", $el.attr("style"));
-            $el.attr("style", "");
-            var $mapDiv = $(div);
-
-            //merge  data attributes from parent container to the actual map container
-            $.extend($mapDiv.data(), $el.data());
-
-            if ($mapDiv.height() == 0) {
-                $mapDiv.height(400);
-            }
-            return _initMap(div).done(function(map){
-                console.log('_initEditableMaps');
-                var drawnItems = new L.FeatureGroup();
-
-                // bind ids
-                var $dmx = $(".d_maxx", $el);
-                var $dix = $(".d_minx", $el);
-                var $dmy = $(".d_maxy", $el);
-                var $diy = $(".d_miny", $el);
-
-                // handling text based formats too    Geo.parseDMS("51°33′39″N" ); ...
-                $dmx.change(function() {
-                    $(".maxx", $el).val(Geo.parseDMS($dmx.val()));
-                });
-                $dmy.change(function() {
-                    $(".maxy", $el).val(Geo.parseDMS($dmy.val()));
-                });
-                $dix.change(function() {
-                    $(".minx", $el).val(Geo.parseDMS($dix.val()));
-                });
-                $diy.change(function() {
-                    $(".miny", $el).val(Geo.parseDMS($diy.val()));
-                });
-
-                // create a toolbar with just the rectangle and edit tool
-                var options = {
-                    position: 'topleft',
-                    draw: {
-                        polyline: false,
-                        polygon: false,
-                        circle: false, // Turns off this drawing tool
-                        rectangle: {
-                            shapeOptions: {
-                                clickable: true
-                            },
-                            repeatMode: false
-                        },
-                        marker: false
-                    },
-                    edit: {
-                        featureGroup: drawnItems,
-                        remove: true
-                    }
-                };
-
-                // Initialise the draw control and pass it the FeatureGroup of editable layers
-                var drawControl = new L.Control.Draw(options);
-                map.addControl(drawControl);
-                $(div).data('drawControl', drawControl);
-                _updateLayerFromFields($el, map, drawnItems, $mapDiv);
-                map.addLayer(drawnItems);
-
-                /**
-                 * Assumption of only one bounding box
-                 */
-                map.on('draw:created', function(e) {
-                    var type = e.layerType,
-                        layer = e.layer;
-                    drawnItems.addLayer(layer);
-                    var b = layer.getBounds();
-                    var bnds = _setValuesFromBounds($el, b);
-                    layer.setBounds(bnds);
-                    map.addLayer(layer);
-                    _disableRectangleCreate($mapDiv);
-                });
-
-                /**
-                 * Assumption of only one bounding box
-                 */
-                map.on('draw:edited', function(e) {
-                    var layers = e.layers;
-                    layers.eachLayer(function(layer) {
-                        var b = layer.getBounds();
-                        var bnds = _setValuesFromBounds($el, b);
-                        layer.setBounds(bnds);
-                    });
-                });
-
-                /**
-                 * Assumption of only one bounding box
-                 */
-                map.on('draw:deleted', function(e) {
-                    console.log("deleted fired");
-                    var layers = e.layers;
-                    var size = 1;
-                    layers.eachLayer(function(layer) {
-                        drawnItems.removeLayer(layer);
-                        size--;
-                        // the change() watch deosn't always pay attention to these explicit calls
-                        $(".minx", $el).val('');
-                        $(".miny", $el).val('');
-                        $(".maxx", $el).val('');
-                        $(".maxy", $el).val('');
-                        $(".d_minx", $el).val('');
-                        $(".d_miny", $el).val('');
-                        $(".d_maxx", $el).val('');
-                        $(".d_maxy", $el).val('');
-                    });
-
-                    if (size == 0 ) {
-                        _enableRectangleCreate($mapDiv);
-                    }
-                });
-
-                //dirty the form if rectangle created, edited, or deleted
-                map.on('draw:created draw:edited draw:deleted', function(e){
-                    $mapDiv.closest('form').FormNavigate('dirty');
-                });
-
-
-                $(".locateCoordsButton", $el).click(function() {
-                    var rec = _updateLayerFromFields($el, map, drawnItems, $mapDiv);
-                });
-            });
-
-
+//        var app = this;
+        return $(".leaflet-map-editable").map(function(i,el) {
+            return _initEditableMap($(el));
         });
     }
 
+    function _initEditableMap($target, onChange) {
+        
+        var $el = $target;
+        if ($el != undefined && onChange != undefined) {
+            $el.data("_onChange", onChange);
+        }
+        
+        // we create a div just before the div and copy the styles from the container. This is so that we can bind to class seletion for the fields.
+        // Currently, this is a bit of overkill but it would enable multiple forms on the same page
+
+        // An 'editable' map container needs two child nodes.
+        // - The first child node is a container for the latlong box form fields. Designate this node with
+        //   the .latlong-fields css class
+        //
+        // - The second child node contains the actual leaflet map (e.g. the mapdiv). Designate this node with
+        //   the .mapdiv css class.
+        var div = $el.find('div.mapdiv')[0];
+        //var div = document.createElement("div");
+        //$el.append(div);
+        // copy styles
+        div.setAttribute("style", $el.attr("style"));
+        $el.attr("style", "");
+        var $mapDiv = $(div);
+
+        //merge  data attributes from parent container to the actual map container
+        $.extend($mapDiv.data(), $el.data());
+
+        if ($mapDiv.height() == 0) {
+            $mapDiv.height(400);
+        }
+        return _initMap(div).done(function(map){
+            console.log('_initEditableMaps');
+            var drawnItems = new L.FeatureGroup();
+
+            // bind ids
+            var $dmx = $(".d_maxx", $el);
+            var $dix = $(".d_minx", $el);
+            var $dmy = $(".d_maxy", $el);
+            var $diy = $(".d_miny", $el);
+
+            // handling text based formats too    Geo.parseDMS("51°33′39″N" ); ...
+            $dmx.change(function() {
+                $(".maxx", $el).val(Geo.parseDMS($dmx.val()));
+            });
+            $dmy.change(function() {
+                $(".maxy", $el).val(Geo.parseDMS($dmy.val()));
+            });
+            $dix.change(function() {
+                $(".minx", $el).val(Geo.parseDMS($dix.val()));
+            });
+            $diy.change(function() {
+                $(".miny", $el).val(Geo.parseDMS($diy.val()));
+            });
+
+            // create a toolbar with just the rectangle and edit tool
+            var options = {
+                position: 'topleft',
+                draw: {
+                    polyline: false,
+                    polygon: false,
+                    circle: false, // Turns off this drawing tool
+                    rectangle: {
+                        shapeOptions: {
+                            clickable: true
+                        },
+                        repeatMode: false
+                    },
+                    marker: false
+                },
+                edit: {
+                    featureGroup: drawnItems,
+                    remove: true
+                }
+            };
+
+            // Initialise the draw control and pass it the FeatureGroup of editable layers
+            var drawControl = new L.Control.Draw(options);
+            map.addControl(drawControl);
+            $(div).data('drawControl', drawControl);
+            _updateLayerFromFields($el, map, drawnItems, $mapDiv);
+            map.addLayer(drawnItems);
+
+            /**
+             * Assumption of only one bounding box
+             */
+            map.on('draw:created', function(e) {
+                var type = e.layerType,
+                    layer = e.layer;
+                drawnItems.addLayer(layer);
+                var b = layer.getBounds();
+                var bnds = _setValuesFromBounds($el, b);
+                layer.setBounds(bnds);
+                map.addLayer(layer);
+                _disableRectangleCreate($mapDiv);
+            });
+
+            /**
+             * Assumption of only one bounding box
+             */
+            map.on('draw:edited', function(e) {
+                var layers = e.layers;
+                layers.eachLayer(function(layer) {
+                    var b = layer.getBounds();
+                    var bnds = _setValuesFromBounds($el, b);
+                    layer.setBounds(bnds);
+                });
+            });
+
+            /**
+             * Assumption of only one bounding box
+             */
+            map.on('draw:deleted', function(e) {
+                console.log("deleted fired");
+                var layers = e.layers;
+                var size = 1;
+                layers.eachLayer(function(layer) {
+                    drawnItems.removeLayer(layer);
+                    size--;
+                    // the change() watch deosn't always pay attention to these explicit calls
+                    $(".minx", $el).val('');
+                    $(".miny", $el).val('');
+                    $(".maxx", $el).val('');
+                    $(".maxy", $el).val('');
+                    $(".d_minx", $el).val('');
+                    $(".d_miny", $el).val('');
+                    $(".d_maxx", $el).val('');
+                    $(".d_maxy", $el).val('');
+                });
+
+                if (size == 0 ) {
+                    _enableRectangleCreate($mapDiv);
+                }
+            });
+
+            //dirty the form if rectangle created, edited, or deleted
+            map.on('draw:created draw:edited draw:deleted', function(e){
+                $mapDiv.closest('form').FormNavigate('dirty');
+            });
+
+
+            $(".locateCoordsButton", $el).click(function() {
+                var rec = _updateLayerFromFields($el, map, drawnItems, $mapDiv);
+            });
+        });
+
+        
+    }
+    
     function _enableRectangleCreate($el) {
         var $drawRec = $(".leaflet-draw-draw-rectangle", $el);
         $drawRec.fadeTo(1, 1);
@@ -616,6 +625,15 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         }
         console.log("west(set): " + $(".d_minx").val() + " east(set):" + $(".d_maxx").val());
         $(".d_maxy", $el).val(bnds.getNorth());
+        
+        if ($el != undefined) {
+            var $change = $el.data("_onChange");
+            console.log($el, $change);
+            if ($change != undefined ) {
+                console.log("change");
+                $change({maxx:$(".d_maxx", $el).val(), maxy:$(".d_maxy", $el).val(), minx: $(".d_minx", $el).val(), miny: $(".d_miny", $el).val() });
+            }
+        }
         return bnds;
     }
 
@@ -649,6 +667,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     return {
         initLeafletMaps: _initLeafletMaps,
         initEditableLeafletMaps: _initEditableMaps,
+        initEditableMap: _initEditableMap,
         initResultsMaps: _initResultsMaps,
         initialized: _isIntialized,
         defaults: _defaults,

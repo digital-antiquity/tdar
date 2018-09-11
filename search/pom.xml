@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>parent-base</artifactId>
-         <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
+         <version>18.2.0-DATABASE-SEARCH-SNAPSHOT</version>
         <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
     <!-- 3rd party dependencies and libraries -->

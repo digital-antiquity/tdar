@@ -70,6 +70,7 @@
         <@s.hidden name="epochTimeUpdated" />
         <@s.hidden name="doubleSubmitKey" />
 
+
     <#-- custom section ahead of the basic information -->
         <#if local_.topSection?? && local_.topSection?is_macro>
             <@local_.topSection />
@@ -487,7 +488,6 @@ Auth Info
         });
         </#noescape>
 </script>
-
 
 </body>
 

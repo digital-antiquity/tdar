@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>18.0.0-RADIOCARBON-SUBMODULE-SNAPSHOT</version>
+    <version>18.2.0-DATABASE-SEARCH-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>

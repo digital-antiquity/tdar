@@ -3,6 +3,7 @@ package org.tdar.core.service.resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -54,19 +55,19 @@ public interface DatasetService {
     /*
      * Find all Rows within a @link DataTable with Pagination. Used to browse a Data Table
      */
-    ResultMetadataWrapper selectAllFromDataTable(DataTable dataTable, int start, int page, boolean includeGenerated,
-            boolean returnRowId);
+    ResultMetadataWrapper selectAllFromDataTable(Dataset dataset, DataTable dataTable, int start, int page, boolean includeGenerated,
+            boolean returnRowId,TdarUser authenticatedUser);
 
     /*
      * Extracts a specific Row of data from a tdardata database and returns a map object with it's contents pre-mapped to @link DataTableColumn entries
      */
-    Map<DataTableColumn, String> selectRowFromDataTable(DataTable dataTable, Long rowId, boolean returnRowId);
+    Map<DataTableColumn, String> selectRowFromDataTable(Dataset dataset, DataTable dataTable, Long rowId, boolean returnRowId,TdarUser authenticatedUser);
 
     /*
      * Finds a set of Database rows from the TdarMetadata database that are associated with the String specified, and wraps them in a @link
      * ResultsMetadataWrapper
      */
-    ResultMetadataWrapper findRowsFromDataTable(DataTable dataTable, int start, int page, boolean includeGenerated, String query);
+    ResultMetadataWrapper findRowsFromDataTable(Dataset dataset, DataTable dataTable, int start, int page, boolean includeGenerated, String query,TdarUser authenticatedUser);
 
     /*
      * Extracts out all @link DataTableRelationship entries for a @link DataTableColumn.
@@ -141,5 +142,7 @@ public interface DatasetService {
     List<Dataset> findAll(String string);
 
     Dataset find(Long id);
+
+    Set<DataTableColumn> findSearchableColumns(Dataset ds, TdarUser user);
 
 }

@@ -90,11 +90,6 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         }
 
         @Override
-        public boolean isVisible() {
-            return false;
-        }
-
-        @Override
         public boolean isValid() {
             return true;
         };
@@ -187,8 +182,12 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @Column(columnDefinition = "boolean default TRUE")
     private boolean ignoreFileExtension = true;
 
-    @Column(columnDefinition = "boolean default TRUE")
-    private boolean visible = true;
+    @Column(name="visibility")
+    @Enumerated(EnumType.STRING)
+    private ColumnVisibiltiy visible = ColumnVisibiltiy.VISIBLE;
+
+    @Column(name="search_field",columnDefinition = "boolean default TRUE")
+    private boolean searchField = true;
 
     @Transient
     private Map<Long, List<String>> ontologyNodeIdToValuesMap;
@@ -374,14 +373,6 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         this.tempSubCategoryVariable = tempSubCategoryVariable;
     }
 
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
     @Override
     public boolean isValidForController() {
         // not implemented
@@ -559,6 +550,14 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         return sequenceNumber.compareTo(b.getSequenceNumber());
     }
 
+    public boolean isSearchField() {
+        return searchField;
+    }
+
+    public void setSearchField(boolean searchField) {
+        this.searchField = searchField;
+    }
+
     @Override
     public Set<String> getValues() {
         return values;
@@ -584,5 +583,13 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     public void setFloatValues(Set<Double> floatValues) {
         this.floatValues = floatValues;
+    }
+
+    public ColumnVisibiltiy getVisible() {
+        return visible;
+    }
+
+    public void setVisible(ColumnVisibiltiy visible) {
+        this.visible = visible;
     }
 }

@@ -52,7 +52,6 @@
             referencedTableName="tdar_user"
             baseColumnNames="uploader_id" baseTableName="files"
             referencedColumnNames="id" />
-
     </changeSet>
     <changeSet id="radiocarbon-file-first-4" author="abrin">
         <renameColumn tableName="files"
@@ -298,6 +297,57 @@
             
         <dropNotNullConstraint tableName="data_table" columnName="dataset_id"/>
     </changeSet>
+    
+    <changeSet id="radiocarbon-dataset-search-1"
+        author="abrin">
+
+        <createTable tableName="page">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="name" type="varchar(512)">
+                <constraints nullable="false" />
+            </column>
+            <column name="status" type="varchar(50)" />
+            <column name="creator_id" type="bigint">
+                <constraints referencedTableName="tdar_user"
+                    nullable="false" />
+            </column>
+            <column name="updator_id" type="bigint">
+                <constraints referencedTableName="tdar_user" />
+            </column>
+            <column name="date_created" valueComputed="now()" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="date_updated" valueComputed="now()"  type="timestamp"/>
+        </createTable>
+
+        <createTable tableName="page_block">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false"
+                    primaryKey="true" />
+            </column>
+            <column name="html" type="text" />
+            <column name="sequence_number" type="int">
+                <constraints nullable="false" />
+            </column>
+            <column name="block_type" type="varchar(50)" />
+            <column name="page_id" type="bigint">
+                <constraints referencedTableName="page" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="radiocarbon-dataset-search-2"
+        author="abrin">
+        <renameColumn tableName="page_block" oldColumnName="html" newColumnName="payload"/>
+    </changeSet>
+    <changeSet id="radiocarbon-dataset-search-3"
+        author="abrin">
+         <addColumn tableName="data_table_column">
+            <column name="search_field" type="boolean" defaultValueBoolean="true"/>
+        </addColumn>
+    </changeSet>
      <changeSet id="radiocarbon-fileprocessing-4" author="abrin" failOnError="false" >
          <createTable tableName="data_table_column_values">
             <column name="value" type="varchar(255)" />
@@ -324,6 +374,22 @@
         <addForeignKeyConstraint
             constraintName="fk_column_values" referencedTableName="data_table_column"
             baseColumnNames="column_id" baseTableName="data_table_column_float_values"
+            referencedColumnNames="id" />
+    </changeSet>
+    <changeSet id="radiocarbon-dataset-search-4"
+        author="abrin">
+         <addColumn tableName="data_table_column">
+            <column name="visibility" type="varchar(25)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="radiocarbon-dataset-search-5"
+        author="abrin">
+         <addColumn tableName="collection">
+            <column name="dataset_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint
+            constraintName="fk_collection_dataset" referencedTableName="dataset"
+            baseColumnNames="dataset_id" baseTableName="collection"
             referencedColumnNames="id" />
     </changeSet>
     <changeSet id="radiocarbon-fileprocessing-6" author="abrin">
