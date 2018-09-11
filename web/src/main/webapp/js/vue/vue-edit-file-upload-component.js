@@ -194,6 +194,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 ableToUpload : config.ableToUpload
             },
             computed : {
+                multiple: function() {
+                  if (this.maxNumberOfFiles > 1) {
+                      return true;
+                  }  
+                  return false;
+                },
                 valid : function() {
                     return this.validatePackage();
                 },
