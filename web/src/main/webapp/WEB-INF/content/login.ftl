@@ -18,7 +18,8 @@ vim:sts=2:sw=2:filetype=jsp
 </div>
 </#if>
 <#assign number = .now?long % 12 + 1/>
-
+</div>
+</section>
 <div class="row login-image image${number}">
 <div class="col-8"></div>
 <div class="col-4 ml-0 pl-0 pb-5 pt-5">

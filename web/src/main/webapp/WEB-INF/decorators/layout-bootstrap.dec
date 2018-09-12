@@ -268,8 +268,10 @@ ${head}
         </section>
         </#if>
 
+    <#if ownContainer?has_content == false >
         <section class="container ${part}">
             <div class="row">
+            
             <#if showLeftSidebar()>
                 <aside class="col-md-4 col-lg-3">
                 ${page.properties["div.sidebar-left"]}
@@ -277,9 +279,12 @@ ${head}
             </#if>
 
             <article class="${spanSize} results" id="articleBody">
+    </#if>
             <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
             <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
             ${body}
+            
+    <#if ownContainer?has_content == false >
             </article>
 
             <#if showRightSidebar() >
@@ -289,7 +294,7 @@ ${head}
             </#if>
         </div>
         </section>
-
+    </#if>
 
     </div>
 
