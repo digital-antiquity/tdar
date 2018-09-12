@@ -269,6 +269,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         console.log(response.data);
                         response.data.forEach(function(field){
                             var values = [];
+                            var type = "basic";
                             if (field.intValues.length > 0) {
                                 values = field.intValues;
                             }
@@ -277,11 +278,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                             }
                             if (field.values.length > 0) {
                                 values = field.values;
+                                if (values.length < 20) {
+                                    type = "checkbox";
+                                }
                             }
                             self.selectOptions.push({
                                 name: field.displayName,
                                 fieldName: "dataValues[]",
-                                type: 'basic',
+                                type: type,
                                 group: 'custom',
                                 id: field.id,
                                 fieldValues: values,

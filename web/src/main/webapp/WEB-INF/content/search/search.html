@@ -83,9 +83,10 @@
               <input type="date" :name="fieldName + '.start'" class=" span3">
               <input type="date" :name="fieldName + '.end'" class=" span3">
  		 </div>
-        <span v-if="option.columnType != undefined"> 
- 	        <value :choices="option.fieldValues" ref="valuepart" :values="[]" :idOnly="true" /> 
-
+        <span v-if="option.columnType != undefined">
+            <span v-if="option.type != 'basic'">
+     	        <value :choices="option.fieldValues" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/> 
+            </span>
 
             <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
         </span>
