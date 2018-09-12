@@ -1,6 +1,9 @@
 /**
  * common functions to the tDAR homepage
  */
+
+const common = require("./tdar.common");
+
 function _init() {
     $("#welcome-menu a").click(function() {
         $(".welcome-drop").toggle();
@@ -19,7 +22,7 @@ function _init() {
         $('.welcome-drop').hide();
     });
 
-    TDAR.common.applyWatermarks($('form.searchheader, form[name=searchheader]'));
+    common.applyWatermarks($('form.searchheader, form[name=searchheader]'));
 }
 
 module.exports = {

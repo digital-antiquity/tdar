@@ -415,10 +415,10 @@ var _getColors = function() {
         initAreaGraph : _initAreaGraph,
         initGaugeChart : _initGaugeChart,
         main : function() {
-            TDAR.c3graph.initPieChart();
-            TDAR.c3graph.initLineGraph();
-            TDAR.c3graph.initBarChart();
-            TDAR.c3graph.initAreaGraph();
-            TDAR.c3graph.initGaugeChart();
+            _initPieChart();
+            _initLineGraph();
+            _initBarChart;
+            _initAreaGraph();
+            _initGaugeChart();
         }
     }

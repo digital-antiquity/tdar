@@ -433,7 +433,7 @@ require("./tdar.formValidateExtensions");
         "initRightsForm": _initRightsForm,
         "prepareDateFields": _prepareDateFields,
         main : function() {
-            TDAR.validate.init();
+            _init();
         }
     }
 

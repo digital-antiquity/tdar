@@ -1,6 +1,8 @@
 /***
  * tdar.moreinfo.js
  */
+
+
     var _init = function() {
         $(".moreInfo").each(function() {
             var $t = $(this);
@@ -26,6 +28,6 @@
     module.exports = {
         "init": _init,
         main : function() {
-            TDAR.moreInfo.init();
+            _init();
         }
     };

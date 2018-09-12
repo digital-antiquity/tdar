@@ -4,7 +4,7 @@ const common = require("./tdar.common");
 var _init = function() {
         if ($("body").data("userid") != undefined) {
             _applyCollectionMenu();
-            $("body").on("click", ".bookmark-link", ajaxBookmark); //was TDAR.bookmark.ajaxBookmark
+            $("body").on("click", ".bookmark-link", _ajaxBookmark); //was TDAR.bookmark.ajaxBookmark
         }
     };
     

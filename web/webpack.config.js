@@ -5,11 +5,11 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 // webpack.autoProvidejQuery();
 module.exports = {
-    // mode: 'production',
+    //mode: 'production',
     mode : 'development',
 
     context : __dirname,
-    devtool: 'eval-source-map',
+    //devtool: 'eval-source-map',
     entry : {
         // jquery : ['jquery'],
         main : './src/main/webapp/js/webpack/tdar-entry-point.js'

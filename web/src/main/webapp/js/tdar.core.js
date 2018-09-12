@@ -187,6 +187,7 @@ var _ellipsify = function(text, n, useWordBoundary) {
  * Execute any main() functions found in the API
  */
  var main = function() {
+     let TDAR = window.TDAR;
 	// FIXME: I don't fully work, because some things are 3 levels down in the
 	// object tree tdar.vue.upload (e.g.)
 	for ( var key in TDAR) {

@@ -1,6 +1,13 @@
 const core = require("./../tdar.core");
-const L =require('leaflet-choropleth');
+//This will transitively include leaflet as defined in the Webpack configuration.
+//The current version of Leaflet that is in use will be registered as a global variable as `window.L`
+//Leaflet-cloropleth will append that namespace and add additional functions, but it won't return `L`, so 
+//it needs to be defined as a separate variable. 
+require('leaflet-choropleth'); 
 const c3graphsupport = require("./../tdar.c3graphsupport");
+
+const L = window.L;
+
 
     var _PLURAL = "_PLURAL";    
     var hlayer;
@@ -625,7 +632,7 @@ const c3graphsupport = require("./../tdar.c3graphsupport");
         main: function() {
             console.log("running main...");
             // if ($("#worldmap").length > 0) {
-            	initWorldMap("worldmap","horizontal", "");
+            	_initWorldMap("worldmap","horizontal", "");
             // }
         }
     }

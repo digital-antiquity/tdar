@@ -36,7 +36,7 @@
         "applyHidden": _applyHidden,
         "defaults": _defaults,
         main : function() {
-            TDAR.datepicker.init();
+            _init();
         }
 
     };
