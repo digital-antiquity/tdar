@@ -20,13 +20,14 @@
     "test",
     "tests"
   ],
-  "_release": "da4c76d52d",
+  "version": "0.3.5",
+  "_release": "0.3.5",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "da4c76d52d5c0c9ae98e3d8b1c938a286998f0df"
+    "type": "version",
+    "tag": "0.3.5",
+    "commit": "0452b091d2285f8574afab9d7aff49695f158da9"
   },
   "_source": "https://bitbucket.org/tdar/vue-values.git",
-  "_target": "*",
+  "_target": "0.3.5",
   "_originalSource": "https://bitbucket.org/tdar/vue-values.git"
 }

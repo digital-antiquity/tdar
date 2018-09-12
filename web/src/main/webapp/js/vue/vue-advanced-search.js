@@ -93,20 +93,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             }
         }
     });
-    /**
-     * 
-     * <!-- <optgroup label="Basic Fields"> <option value="TITLE">Title</option> <option value="DESCRIPTION">Description</option> <option
-     * value="CONTENTS">Full-Text</option> <option value="RESOURCE_CREATOR_PERSON">Person</option> <option value="RESOURCE_CREATOR_INSTITUTION">Institution</option>
-     * <option value="TDAR_ID">Id</option> <option value="COVERAGE_DATE_CALENDAR">Calendar Dates</option> <option
-     * value="COVERAGE_DATE_RADIOCARBON">RadioCarbon Dates</option> <option value="PROJECT">Project</option> <option value="COLLECTION">Collection</option>
-     * <option value="FILENAME">File Name</option> <option value="DATE_CREATED">Year</option> <option value="DATE_REGISTERED">Date Created</option> <option
-     * value="DATE_UPDATED">Date Updated</option> </optgroup> <optgroup label="Controlled Keywords"> <option value="KEYWORD_INVESTIGATION">Investigation Types</option>
-     * <option value="KEYWORD_SITE">Site Type(Controlled)</option> <option value="KEYWORD_MATERIAL">Material Types</option> <option
-     * value="KEYWORD_CULTURAL">Culture Keywords</option> </optgroup> <optgroup label="Freeform Keywords"> <option value="FFK_GEOGRAPHIC">Geographic Keywords</option>
-     * <option value="FFK_SITE">Site Names</option> <option value="FFK_SITE_TYPE">Site Type</option> <option value="FFK_CULTURAL">Culture Keywords</option>
-     * <option value="FFK_MATERIAL">Material Keywords</option> <option value="FFK_TEMPORAL">Temporal Keywords</option> <option value="FFK_GENERAL">General
-     * Keywords</option>
-     */
 
     var app = new Vue({
         el : "#advancedsearch",
@@ -282,12 +268,23 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     .then(function(response) {
                         console.log(response.data);
                         response.data.forEach(function(field){
+                            var values = [];
+                            if (field.intValues.length > 0) {
+                                values = field.intValues;
+                            }
+                            if (field.floatValues.length > 0) {
+                                values = field.floatValues;
+                            }
+                            if (field.values.length > 0) {
+                                values = field.values;
+                            }
                             self.selectOptions.push({
                                 name: field.displayName,
                                 fieldName: "dataValues[]",
                                 type: 'basic',
                                 group: 'custom',
                                 id: field.id,
+                                fieldValues: values,
                                 columnType: field.columnDataType
                             })
                             

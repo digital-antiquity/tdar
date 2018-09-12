@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -310,6 +311,9 @@ public class ResourceServiceImpl implements ResourceService {
     public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource,TdarUser tdarUser, boolean failOnMissing) {
         try {
             Map<DataTableColumn, String> map = datasetDao.getMappedDataForInformationResource(resource);
+            if (MapUtils.isEmpty(map)) {
+                return new HashMap<>();
+            }
             boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
             map.keySet().forEach(key -> {
                 if (key.getVisible() == null) {

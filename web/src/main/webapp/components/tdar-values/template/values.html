@@ -1,14 +1,18 @@
 <script  type="text/x-template" id="value-template">
+<div class="value-container">
 <div v-if="type == 'select' || type=='multiselect'">
-    <select  :name="fieldName" v-model="values"  :multiple="type == 'multiselect'">
-    <option v-for="(choice, idx) in choices" :value="choice[valueField]" >{{choice[labelField]}}</option>
+    <select  :name="fieldName" v-model="internalvalues"  :multiple="type == 'multiselect'" :class="disabledClass" :disabled="disabled">
+    <option v-for="(choice, idx) in choices" :value="getValue(choice,idx)" >{{getLabel(choice,idx)}}</option>
     </select>
 </div>
-<div v-else>{{numcols}} <br/>
-    <div v-for="start in collist()">
-        <div  v-for="(choice, idx) in subarray(start)">
-        <label>{{choice[labelField]}} <input :type="type" :name="fieldName" :value="choice[valueField]" v-model="values"/></label><br/>
+<div v-else>
+<div class="row">
+    <div v-for="start in collist()" class="col span2">
+<div  v-for="(choice, idx) in subarray(start)">
+        <label>{{getLabel(choice,idx)}} <input :type="type" :name="fieldName" :value="getValue(choice,idx)" :class="disabledClass" :disabled="disabled" v-model="internalvalues"/></label><br/>
         </div>
     </div>
+</div>
+</div>
 </div>
 </script>

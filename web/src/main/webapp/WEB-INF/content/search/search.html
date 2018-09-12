@@ -1,3 +1,6 @@
+<#include "/components/tdar-autocomplete/template/autocomplete.html" />
+<#include "/components/tdar-values/template/values.html" />
+
 <div class="advanced container" style="z-index: 10000; display: none" id="advancedsearch">
     <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
         <div class="row">
@@ -81,6 +84,9 @@
               <input type="date" :name="fieldName + '.end'" class=" span3">
  		 </div>
         <span v-if="option.columnType != undefined"> 
+ 	        <value :choices="option.fieldValues" ref="valuepart" :values="[]" :idOnly="true" /> 
+
+
             <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
         </span>
          <div id="latlongoptions" v-if="option.type == 'map'">
@@ -102,7 +108,6 @@
 </div>
 </script>
 
-<#include "/WEB-INF/macros/autocomplete.html" />
  <script>
 $(document).ready(function() {
 //    $("#advancedsearch").show();
