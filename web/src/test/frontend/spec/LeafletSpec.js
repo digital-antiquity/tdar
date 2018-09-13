@@ -297,7 +297,7 @@ describe("LeafletSpec.js", function() {
                 var bounds1 = map.getBounds();
                 TDAR.leaflet.update(map, markers, data, startRecord, true);
                 var bounds2 = map.getBounds();
-                
+                console.log("bounds:", bounds1, bounds2);
                 expect(bounds1.equals(bounds2)).toBe(false);
 
                 //assert that all of the points fit in the new bounds

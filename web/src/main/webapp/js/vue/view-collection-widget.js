@@ -6,7 +6,7 @@
 
 
 const Vue = require("vue/dist/vue.esm.js").default;
-const axios = require("axios");
+var axios = require("axios");
 const common = require("./../tdar.common.js");
 const core = require("./../tdar.core.js");
 
@@ -115,7 +115,11 @@ var _getSelectizeOpts = function() {
 }
 
 //Instantiate and return a new Vue instance. 
-var _init = function(appId) {
+var _init = function(appId, _axios) {
+    
+    if (_axios != undefined) {
+        axios = _axios;
+    }
     $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
     
     var app2 = new Vue({
