@@ -63,7 +63,7 @@ div.mapcontainer {
 }
 
 div.mapcontainer img {
-    height: 304px !Important;
+    height: 304px !important;
     right: 0px;
     display: block;
     position: relative;

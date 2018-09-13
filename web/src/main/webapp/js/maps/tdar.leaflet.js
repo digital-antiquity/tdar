@@ -4,7 +4,7 @@ require('leaflet-choropleth');
 require('./../../js_includes/includes/Leaflet.Sleep');
 require('leaflet-draw/dist/leaflet.draw');
 require('leaflet.markercluster');
-require('leaflet-control-geocoder/dist/Control.Geocoder');
+require('./../../js_includes/components/leaflet-control-geocoder/dist/Control.Geocoder');
 
 const L = window.L;
 

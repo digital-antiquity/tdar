@@ -1,5 +1,8 @@
 // webpack v4
 var webpack = require("webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const devMode = false; //process.env.NODE_ENV !== 'production'
+
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
@@ -41,12 +44,25 @@ module.exports = {
                 options : "$j",
             }
             ]
-            
-        }
-        
+        },
+        {
+            test: /\.(sa|sc|c)ss$/,
+            use: [
+              devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+              'css-loader',
+              'sass-loader',
+            ],
+          },
+
+          {
+            test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+            loader: 'url-loader',
+            options: {
+              limit: 10
+            }
+          }
         ]
     },
-
     optimization : {
         // runtimeChunk: false,
         splitChunks : {
@@ -63,7 +79,13 @@ module.exports = {
 
     plugins : [
     //new BundleAnalyzerPlugin(),
-    new webpack.ProvidePlugin({
+        new MiniCssExtractPlugin({
+            // Options similar to the same options in webpackOptions.output
+            // both options are optional
+            filename: devMode ? '[name].css' : '[name].css',
+            chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
+          }),
+        new webpack.ProvidePlugin({
         $ : "jquery",
         $j : "jquery",
         jQuery : "jquery",

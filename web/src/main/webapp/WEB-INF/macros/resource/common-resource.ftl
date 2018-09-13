@@ -58,7 +58,7 @@ Common macros used in multiple contexts
         <#if mode !='vertical'></div></#if>
 	<script>
 	$(function() {
-    	TDAR.worldmap.initWorldMap("worldmap","${mode}", "${extra}");
+//    	TDAR.worldmap.initWorldMap("worldmap","${mode}", "${extra}");
 	});
 	</script>
     </#macro>
