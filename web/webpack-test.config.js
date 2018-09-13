@@ -58,6 +58,8 @@ module.exports = {
          TDAR : 'JS/tdar.master',
          Vue : 'vue',
          LatLon: path.resolve(__dirname,'src/main/webapp/js/latLongUtil-1.0'),
+         L : 'leaflet'
+
      })
   ],
  
@@ -65,7 +67,12 @@ module.exports = {
   // https://github.com/webpack/webpack.js.org/issues/63
   resolve: {
          alias: {
-             JS : path.resolve(__dirname,'src/main/webapp/js/')
+            'leaflet':'Components/leaflet',
+            "jquery-ui" : path.join(__dirname, "src/main/webapp/includes/jquery-ui-1.11.4.custom/jquery-ui.js"),
+            modules : path.join(__dirname, "node_modules"),
+            JS : path.resolve(__dirname, 'src/main/webapp/js/'),
+            Components : path.resolve(__dirname, 'src/main/webapp/js_includes/components/'),
+            Includes : path.resolve(__dirname, 'src/main/webapp/js_includes/includes/')
          }
   }
 };
