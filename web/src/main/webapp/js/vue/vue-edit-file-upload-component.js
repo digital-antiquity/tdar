@@ -409,7 +409,7 @@ const vuejsupload = require("./vue-base-upload");
         main : function() {
             var appId = '#uploadWidget';
             if ($(appId).length == 1) {
-                TDAR.vuejs.uploadWidget.init(appId);
+                _init(appId);
             }
         }
     }
