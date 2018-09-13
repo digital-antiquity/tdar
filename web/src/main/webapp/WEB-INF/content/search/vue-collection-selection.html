@@ -27,10 +27,8 @@
 	        <span data-content="A collection must be selected">Select a collection, or create one</span>
 	        <div class="form-group">
 	           <div>
-	             <selectize v-bind:options="options" v-model="selectedCollection" size="1"
-	                  data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list" 
-	                  data-value-field='id' data-label-field='text' data-search-field='text' data-sort-field='text'>
-	             </selectize>
+                   <autocomplete url="/api/lookup/collection" field="term" resultsuffix="collections" @autocompletevalueset="selectCollection" ref="collection-list" id="collection-list"
+                        fieldname="title" span="span4" idname="id" ref="collection-list" createnewtext="Create New Collection" :suffix="autocompletesuffix"/>
 	           </div>
 	           
 	           <div v-if="isNaN(selectedCollection)" style="margin-top:10px;" >
