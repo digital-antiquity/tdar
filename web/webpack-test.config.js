@@ -2,6 +2,8 @@
 var webpack = require("webpack");
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const devMode = process.env.NODE_ENV !== 'production'
 
 
 // webpack.autoProvidejQuery();
@@ -20,7 +22,24 @@ module.exports = {
     },
   
     module: {
-        rules: []
+        rules: [
+            {
+                test: /\.(sa|sc|c)ss$/,
+                use: [
+                  devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+                  'css-loader',
+                  'sass-loader',
+                ],
+              },
+
+              {
+                test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
+                loader: 'url-loader',
+                options: {
+                  limit: 10
+                }
+              }
+        ]
     }
   ,
   
@@ -38,7 +57,7 @@ module.exports = {
          
          TDAR : 'JS/tdar.master',
          Vue : 'vue',
-         LatLon: path.resolve(__dirname,'src/main/webapp/js/latLongUtil-1.0')
+         LatLon: path.resolve(__dirname,'src/main/webapp/js/latLongUtil-1.0'),
      })
   ],
  

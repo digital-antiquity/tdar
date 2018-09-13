@@ -72,7 +72,7 @@ module.exports = function(config) {
 
             ],
             //files specified in wro.xml 
-            wroFiles,
+//            wroFiles,
             [
                 
                 //specs
