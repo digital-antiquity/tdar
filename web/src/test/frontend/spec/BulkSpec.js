@@ -7,27 +7,23 @@ describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
         jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
         loadFixtures("bulk-upload-form.html");
         jasmine.Ajax.install();
-        jasmine.clock().install();
+//        jasmine.clock().uninstall();
+//        jasmine.clock().install();
+        spyOn(window, 'setTimeout');
+        spyOn(window, 'alert');
     });
 
     afterEach(function(){
         jasmine.Ajax.uninstall();
-        jasmine.clock().uninstall();
-    });
-
-    it("should work when we call updateProgress", function() {
-        spyOn(TDAR.bulk, "updateProgress").and.callThrough();
-        var settings = TDAR.bulk.init($("#divUploadStatus"));
-        expect(TDAR.bulk.updateProgress).not.toHaveBeenCalled();
-        expect(settings.asyncUrl).toBe('/checkstatus');
-        jasmine.clock().tick(501);
-        expect(TDAR.bulk.updateProgress).toHaveBeenCalled();
+//        jasmine.clock().uninstall();
     });
 
     it("should update progress", function() {
         spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
-        jasmine.clock().tick(501);
+//        jasmine.clock().tick(501);
+        var cb = window.setTimeout.calls.mostRecent().args[0];
+        cb();
         expect(jasmine.Ajax.requests.mostRecent().url).toBe('/checkstatus');
 
         jasmine.Ajax.requests.mostRecent().respondWith({
@@ -46,7 +42,10 @@ describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
     it("knows when to stop", function() {
         spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
-        jasmine.clock().tick(501);
+//        jasmine.clock().tick(501);
+        var cb = window.setTimeout.calls.mostRecent().args[0];
+        cb();
+
         jasmine.Ajax.requests.mostRecent().respondWith({
             "status": 200,
             "responseText": JSON.stringify(
@@ -63,7 +62,10 @@ describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
     it("displays errors", function() {
         spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
-        jasmine.clock().tick(501);
+//        jasmine.clock().tick(501);
+        var cb = window.setTimeout.calls.mostRecent().args[0];
+        cb();
+
         expect($j("#unspecifiedError")).not.toBeVisible();
         jasmine.Ajax.requests.mostRecent().respondWith({
             "status": 500,

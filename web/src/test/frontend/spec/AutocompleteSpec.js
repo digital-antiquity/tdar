@@ -95,6 +95,11 @@ describe("cached objects", function() {
         setFixtures('<form id="testform"></form>');
         cache = new TDAR.autocomplete.ObjectCache({});
         $form = $("#testform");
+        jasmine.Ajax.install();
+    });
+
+    afterEach(function() {
+        jasmine.Ajax.uninstall();
     });
 
     it("registers input fields", function(){
@@ -136,6 +141,15 @@ describe("cached objects", function() {
 });
 
 describe("tests for TDAR.autocomplete methods", function() {
+
+    beforeEach(function(){
+        jasmine.getFixtures().fixturesPath = "base/src/test/frontend/fixtures";
+        jasmine.Ajax.install();
+    });
+
+    afterEach(function() {
+        jasmine.Ajax.uninstall();
+    });
 
 
     it("should treat record as 'not blank' ", function() {

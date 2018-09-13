@@ -14,7 +14,7 @@
 
         _updateProgressBar(0);
         //fixme: for testing purposes, call fqn of updateProgress instead of _updateProgress
-        setTimeout(window._updateProgress, TIMEOUT);
+        setTimeout(_updateProgress, TIMEOUT);
         return {asyncUrl: asyncUrl, percentDone: gPercentDone, timeout: TIMEOUT};
     };
 
@@ -41,7 +41,7 @@
                 if (data.percentDone != 100) {
                     _updateProgressBar(data.percentComplete);
                     $("#buildStatus").empty().append(data.message);
-                    setTimeout(window._updateProgress, TIMEOUT);
+                    setTimeout(_updateProgress, TIMEOUT);
                 } else {
                     _updateProgressBar(100);
                     $('#divUploadComplete').show();
