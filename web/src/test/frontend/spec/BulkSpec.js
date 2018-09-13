@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 const TDAR = require("JS/tdar.master");
 
-xdescribe("BulkSpec.js: tests for TDAR.bulk methods", function() {
+describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
 
     beforeEach(function() {
         jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";
@@ -15,17 +15,16 @@ xdescribe("BulkSpec.js: tests for TDAR.bulk methods", function() {
         jasmine.clock().uninstall();
     });
 
-    it("should work when we call updateProgress", function(done) {
+    it("should work when we call updateProgress", function() {
         spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
         expect(TDAR.bulk.updateProgress).not.toHaveBeenCalled();
         expect(settings.asyncUrl).toBe('/checkstatus');
         jasmine.clock().tick(501);
         expect(TDAR.bulk.updateProgress).toHaveBeenCalled();
-        done();
     });
 
-    it("should update progress", function(done) {
+    it("should update progress", function() {
         spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
         jasmine.clock().tick(501);
@@ -41,11 +40,10 @@ xdescribe("BulkSpec.js: tests for TDAR.bulk methods", function() {
                 })});
 
         expect($j("#buildStatus")).toHaveText("testing phase");
-        done();
-        
+
     });
 
-    it("knows when to stop", function(done) {
+    it("knows when to stop", function() {
         spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
         jasmine.clock().tick(501);
@@ -59,10 +57,10 @@ xdescribe("BulkSpec.js: tests for TDAR.bulk methods", function() {
                 })});
 
         expect($j("#buildStatus")).toHaveText("Upload complete.");
-        done();
+
     });
 
-    it("displays errors", function(done) {
+    it("displays errors", function() {
         spyOn(TDAR.bulk, "updateProgress").and.callThrough();
         var settings = TDAR.bulk.init($("#divUploadStatus"));
         jasmine.clock().tick(501);
@@ -77,7 +75,7 @@ xdescribe("BulkSpec.js: tests for TDAR.bulk methods", function() {
                 })});
 
         expect($j("#unspecifiedError")).toBeVisible();
-        done();
+
     });
 
 

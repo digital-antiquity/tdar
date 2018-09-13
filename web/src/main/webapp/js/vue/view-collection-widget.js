@@ -6,7 +6,7 @@
 
 
 const Vue = require("vue/dist/vue.esm.js").default;
-const axios = require("axios");
+let axios = require("axios");
 const common = require("./../tdar.common.js");
 const core = require("./../tdar.core.js");
 
@@ -38,7 +38,11 @@ Vue.component('selectize', {
                 // fixme: make generic to search subtree
                 if ($.isFunction(window['TDAR']['vuejs']['collectionwidget'][method])) {
                     method_ = window['TDAR']['vuejs']['collectionwidget'][method];
+                } else {
+                    alert("WINDOW MOUNTING ISSUES");
                 }
+            } else {
+                alert("WINDOW MOUNTING ISSUES");
             }
             if ($.isFunction(window[method])) {
                 method_ = window[method];
@@ -51,21 +55,21 @@ Vue.component('selectize', {
             }
         }
 
-        this.sel = $(this.$el).selectize(opts).on("change", function() {
-            vm.$emit('input', vm.sel.getValue());
-        })[0].selectize;
-        this.sel.setValue(this.value, true);
+        // this.sel = $(this.$el).selectize(opts).on("change", function() {
+        //     vm.$emit('input', vm.sel.getValue());
+        // })[0].selectize;
+        // this.sel.setValue(this.value, true);
     },
     watch : {
         value : function(value) {
-            this.sel.setValue(value, true);
+            // this.sel.setValue(value, true);
         },
         options : function(options) {
-            var val = this.sel.getValue();
-            this.sel.clearOptions();
-            this.sel.addOption(options);
-            this.sel.refreshOptions(false);
-            this.sel.setValue(val);
+            // var val = this.sel.getValue();
+            // this.sel.clearOptions();
+            // this.sel.addOption(options);
+            // this.sel.refreshOptions(false);
+            // this.sel.setValue(val);
         }
     },
     destroyed : function() {
@@ -115,9 +119,12 @@ var _getSelectizeOpts = function() {
 }
 
 //Instantiate and return a new Vue instance. 
-var _init = function(appId) {
+var _init = function(appId, _axios) {
     $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
-    
+    if (_axios != undefined) {
+        console.log('set axios', axios, 'to ', _axios);
+        axios = _axios;
+    }
     var app2 = new Vue({
     	el: appId,
     
@@ -179,7 +186,7 @@ var _init = function(appId) {
 	                Vue.set(this,"managedResource",true);
 	            }
 	            
-        	    this._getCollectionsForResource();
+//        	    this._getCollectionsForResource();
 	        }
 	    },
     
@@ -215,8 +222,8 @@ var _init = function(appId) {
 	            }
 
 	            
-	            var $select = $('#collection-list').selectize();
-	            $select[0].selectize.clear();
+                // var $select = $('#collection-list').selectize();
+                // $select[0].selectize.clear();
 	        },
 	        
 	        getCollections: function(){
@@ -350,13 +357,13 @@ var _init = function(appId) {
 	        	var progress = $("#upload-progress");
 	        	var progressMessage = $("#progress-message");
 	        	var form 	 = $("#upload-form");
-	            var $select = $('#collection-list').selectize();
+                // var $select = $('#collection-list').selectize();
 	            var title  = $("#progress-title");
 	            
 	            var vapp = this;
 	            
-	            $select[0].selectize.clear();
-	            $select[0].selectize.clearOptions()	
+                // $select[0].selectize.clear();
+                // $select[0].selectize.clearOptions()
 	            
 	            vapp._enableSubmitButton();
 	        	progress.hide();

@@ -734,11 +734,11 @@
                             <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
                             <ignoreMissingResources>false</ignoreMissingResources>
                         </configuration>
-                    </plugin>
+                    </plugin> -->
                     <plugin>
-                        <- this is to put an extra copy where other things 
+                        <!-- this is to put an extra copy where other things 
                             like the tDAR website can deal with it. JS doesn't change that often so, 
-                            it should be okay ->
+                            it should be okay -->
                         <artifactId>maven-antrun-plugin</artifactId>
                         <version>${antrun.version}</version>
                         <executions>
@@ -751,15 +751,15 @@
                                 <configuration>
                                     <target>
                                         <copy
-                                            todir="${project.build.directory}/generated/webapp/wro/">
+                                            todir="${project.build.directory}/src/main/webapp/webapp/dist/">
                                             <fileset
-                                                dir="${project.build.directory}/generated/webapp/wro/${hg.version}" />
+                                                dir="${project.build.directory}/src/main/webapp/dist/${hg.version}" />
                                         </copy>
                                     </target>
                                 </configuration>
                             </execution>
                         </executions>
-                    </plugin>-->
+                    </plugin>
                 </plugins>
             </build>
         </profile>

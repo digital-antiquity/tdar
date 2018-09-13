@@ -5,6 +5,8 @@ require('./../../js_includes/includes/Leaflet.Sleep');
 require('leaflet-draw/dist/leaflet.draw');
 require('leaflet.markercluster');
 
+const L = window.L;
+
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';

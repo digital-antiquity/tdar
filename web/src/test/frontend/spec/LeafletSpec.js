@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 const TDAR = require("JS/tdar.master");
-xdescribe("LeafletSpec.js", function() {
+describe("LeafletSpec.js", function() {
 
     beforeEach(function(){
         jasmine.getFixtures().fixturesPath  =  "base/src/test/frontend/fixtures/";

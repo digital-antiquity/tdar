@@ -3,7 +3,7 @@
 const Vue = require("vue/dist/vue.esm.js").default;
 const axios = require("axios");
 
-xdescribe("Vue-collection-widget.js: collection widget test", function() {
+describe("Vue-collection-widget.js: collection widget test", function() {
 
     beforeEach(function() {
     	moxios.install(axios);
