@@ -27,7 +27,7 @@
 <section class = "" id="pricing">
     <hr>
     <div class="container mb-4 d-none d-lg-block">
-        <div class="col-12 d-none d-lg-flex text-center justify-content-center align-items-center">
+        <div class="col-12 d-none d-lg-block text-center justify-content-center align-items-center">
         <div class="row">
             <div class="col-lg-1">
                 <a href="<@s.url value="/document"/>">

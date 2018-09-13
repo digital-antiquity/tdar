@@ -355,7 +355,7 @@ ${head}
         </section>
 
         <section id="references">
-            <div class="container d-flex">
+            <div class="container">
                 <div class="row align-items-center" id="foothumb">
                     <div class="col-lg-2 col-md-4 col-6"><a href="http://www.asu.edu"><img class="image-fluid ht" src="/images/logos/asu_veritcal.png" class="image ht"  title="Arizona State University" alt="Arizona State University" /></a></div>
                     <div class="col-lg-2 col-md-4 col-6"><a href="http://www.mellon.org"><img class="image-fluid ht" src="/images/logos/Mellon.png" class="image ht" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a></div>
