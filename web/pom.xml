@@ -750,11 +750,13 @@
                                 </goals>
                                 <configuration>
                                     <target>
+    <!-- 
                                         <copy
                                             todir="${project.build.directory}/src/main/webapp/webapp/dist/">
                                             <fileset
                                                 dir="${project.build.directory}/src/main/webapp/dist/${hg.version}" />
                                         </copy>
+     -->
                                     </target>
                                 </configuration>
                             </execution>
