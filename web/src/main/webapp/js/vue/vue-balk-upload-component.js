@@ -239,8 +239,12 @@ const VueRouter = require("./../../js_includes/components/vue-router/dist/vue-ro
                     this.$emit('showcomments',this.file);
 
                 },
-                deleteFile: function(){
-                    // delet the file
+                deleteFile: function(force){
+                    // delete the file
+                    if (force == true) {
+                        this.$emit('deletefile', this.file);
+                        return true;
+                    }
                     if (confirm("Are you sure you want to delete: "+this.file.name+"?")) {
                         console.log('delete');
                         this.$emit('deletefile', this.file);

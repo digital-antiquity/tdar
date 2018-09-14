@@ -872,7 +872,8 @@ describe("BalkSpec.js: fileupload suite - root", function(){
             setConfig(conf);
 
             var vapp = initFileComponent();
-            vapp.deleteFile();
+            // force delete to avoid "confirm" dialog
+            vapp.deleteFile(true);
             vapp.$destroy();
         });
 

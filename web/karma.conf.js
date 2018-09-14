@@ -96,11 +96,13 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/js_includes/components/**/*.*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/js/maps/**/*.*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/dist/templates/*.*", served:true, included:false, watched:false},
             ]),
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
         proxies: {
             '/images/': '/base/src/main/webapp/images/',
+            '/dist/': '/base/src/main/webapp/dist/',
             '/includes/': '/base/src/main/webapp/js_includes/includes/',
             '/js/maps/': '/base/src/main/webapp/js/maps/'
         },
