@@ -1,10 +1,10 @@
 const core = require("./../tdar.core");
 
 require('leaflet-choropleth');
-require('./../../js_includes/includes/Leaflet.Sleep');
+require('./../../includes/Leaflet.Sleep');
 require('leaflet-draw/dist/leaflet.draw');
 require('leaflet.markercluster');
-require('./../../js_includes/components/leaflet-control-geocoder/dist/Control.Geocoder');
+require('./../../components/leaflet-control-geocoder/dist/Control.Geocoder');
 
 const L = window.L;
 

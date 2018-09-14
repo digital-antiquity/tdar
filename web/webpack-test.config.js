@@ -71,8 +71,8 @@ module.exports = {
             "jquery-ui" : path.join(__dirname, "src/main/webapp/includes/jquery-ui-1.11.4.custom/jquery-ui.js"),
             modules : path.join(__dirname, "node_modules"),
             JS : path.resolve(__dirname, 'src/main/webapp/js/'),
-            Components : path.resolve(__dirname, 'src/main/webapp/js_includes/components/'),
-            Includes : path.resolve(__dirname, 'src/main/webapp/js_includes/includes/')
+            Components : path.resolve(__dirname, 'src/main/webapp/components/'),
+            Includes : path.resolve(__dirname, 'src/main/webapp/includes/')
          }
   }
 };

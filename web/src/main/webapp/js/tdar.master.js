@@ -43,32 +43,4 @@ if (TDAR['vuejs'] == undefined) {
 	TDAR['vuejs'] = {};
 }
 
-require("../css/tdar-svg.css");
-require("../css/tdar-bootstrap.css");
-require("../css/tdar.dashboard.css");
-require("../css/famfamfam.css");
-require("../css/tdar-svg.css");
-require("../css/tdar.homepage.css");
-require("../css/tdar.d3tree.css");
-require("../css/tdar.c3graph.css");
-require("../css/tdar.leaflet.css");
-require("../css/tdar.worldmap.css");
-require("../css/tdar.datatablemapping.css");
-require("../css/tdar.sprites.css");
-require("../css/tdar.datatables.css");
-require("../css/tdar.searchresults.css");
-require("../css/tdar.invoice.css");
-require("../css/tdar-integration.css");
-require("../js_includes/components/jquery.treeview/jquery.treeview.css");
-require("../js_includes/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css");
-require("../js_includes/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css");
-require("../js_includes/components/bootstrap-datepicker-eyecon/css/datepicker.css");
-require("../js_includes/components/leaflet/dist/leaflet.css");
-require("../js_includes/components/leaflet-draw/dist/leaflet.draw.css");
-require("../js_includes/components/leaflet-cluster/dist/MarkerCluster.css");
-require("../js_includes/components/leaflet-cluster/dist/MarkerCluster.Default.css");
-require("c3/c3.min.css");
-require("../js_includes/components/leaflet-control-geocoder/dist/Control.Geocoder.css");
-//require('tdar-autocomplete/css/tdar-autocomplete.css');
-
 module.exports = TDAR;

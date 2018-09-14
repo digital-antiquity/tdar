@@ -13,30 +13,30 @@ window.jQuery = $;
 window.$ = $;
 
 //used by jquery.treeview 
-import './../../js_includes/includes/jquery.cookie.js';
-//import './../../js_includes/includes/jquery-ui-1.11.4.custom/jquery-ui.js';
+import './../../includes/jquery.cookie.js';
+//import './../../includes/jquery-ui-1.11.4.custom/jquery-ui.js';
 import 'jquery-ui';
 
 import 'svgxuse';
 
-import './../../js_includes/includes/jquery.textarearesizer.js';
+import './../../includes/jquery.textarearesizer.js';
 
 /* LICENSE: MIT */
 import './../jquery.FormNavigate.js';
-import './../../js_includes/includes/jquery.watermark-3.1.3.min.js';
+import './../../includes/jquery.watermark-3.1.3.min.js';
 
 /* LICENSE: MIT */
-import './../../js_includes/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js';
+import './../../includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js';
 
 /* LICENSE: BSD /GPL 2.0 */
-import './../../js_includes/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js';
+import './../../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js';
 
 /* LICENSE: BSD /GPL 2.0 */
-import './../../js_includes/includes/jquery.treeview/jquery.treeview.js';
+import './../../includes/jquery.treeview/jquery.treeview.js';
 
-//import './../../js_includes/includes/blueimp-tmpl/js/tmpl.min.js';
+//import './../../includes/blueimp-tmpl/js/tmpl.min.js';
 //require('script-loader!blueimp-tmpl/js/tmpl.js');
-require('script-loader!./../../js_includes/includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js');
+require('script-loader!./../../includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js');
 
 
 
@@ -57,10 +57,10 @@ require('script-loader!blueimp-file-upload/js/jquery.fileupload-validate.js');
 require('script-loader!blueimp-file-upload/js/jquery.fileupload-ui.js');
 
 /* LICENSE: MIT */
-import './../../js_includes/includes/jquery.populate.js';
+import './../../includes/jquery.populate.js';
 
 /* LICENSE: MIT */
-import './../../js_includes/includes/jquery.tabby-0.12.js';
+import './../../includes/jquery.tabby-0.12.js';
 
 /* LICENSE:CC Attribution 3.0 Unported */
 //import './../latLongUtil-1.0.js';
@@ -74,10 +74,10 @@ import 'es6-promise/dist/es6-promise.auto.js';
 
 import 'qs/dist/qs.js';
 
-import './../../js_includes/includes/Leaflet.Sleep.js';
+import './../../includes/Leaflet.Sleep.js';
 
 import 'leaflet-draw/dist/leaflet.draw.js';
-import './../../js_includes/includes/leaflet-cluster/dist/leaflet.markercluster.js';
+import './../../includes/leaflet-cluster/dist/leaflet.markercluster.js';
 
 import 'd3/d3';
 import c3 from 'c3/c3';
@@ -120,39 +120,24 @@ import './../tdar.pricing';
 import './../tdar.contexthelp';
 import './../tdar.menu';
 import './../tdar.formValidateExtensions';
-import './../../js_includes/includes/bindWithDelay';
+import './../../includes/bindWithDelay';
 import './../tdar.bookmark';
 import './../maps/tdar.leaflet';
 **/
 
 
-import './../../js_includes/includes/js-emca-5.1-polyfill.js';
+import './../../includes/js-emca-5.1-polyfill.js';
 
 //import './../maps/tdar.worldmap';
 
 import "vue";
 //import 'axios/dist/axios.min.js';
 
-require('script-loader!../../js_includes/includes/bootstrap-2.32/js/bootstrap.js');
+require('script-loader!../../includes/bootstrap-2.32/js/bootstrap.js');
 import './../vue/view-collection-widget.js';
 import './../vue/edit-collection';
 
 TDAR.main();
-
-//import "bootstrap-2.3.2/js/bootstrap-affix.js";
-//import "bootstrap-2.3.2/js/bootstrap-alert.js";
-//import "bootstrap-2.3.2/js/bootstrap-button.js";
-//import "bootstrap-2.3.2/js/bootstrap-carousel.js";
-//import "bootstrap-2.3.2/js/bootstrap-collapse.js";
-//import "bootstrap-2.3.2/js/bootstrap-dropdown.js";
-//import "bootstrap-2.3.2/js/bootstrap-modal.js";
-//import "bootstrap-2.3.2/js/bootstrap-popover.js";
-//import "bootstrap-2.3.2/js/bootstrap-scrollspy.js";
-//import "bootstrap-2.3.2/js/bootstrap-tab.js";
-//import "bootstrap-2.3.2/js/bootstrap-tooltip.js";
-//import "bootstrap-2.3.2/js/bootstrap-transition.js";
-//import "bootstrap-2.3.2/js/bootstrap-typeahead.js";
-//import './src/main/webapp/css/tdar-svg.css';
 
 
 require("../css/tdar-svg.css");
@@ -171,16 +156,15 @@ require("../css/tdar.datatables.css");
 require("../css/tdar.searchresults.css");
 require("../css/tdar.invoice.css");
 require("../css/tdar-integration.css");
-require("../js_includes/components/jquery.treeview/jquery.treeview.css");
-require("../js_includes/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css");
-require("../js_includes/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css");
-require("../js_includes/components/jquery-file-upload/css/jquery.fileupload-ui.css");
-require("../js_includes/components/bootstrap-datepicker-eyecon/css/datepicker.css");
-require("../js_includes/components/leaflet/dist/leaflet.css");
-require("../js_includes/components/leaflet-draw/dist/leaflet.draw.css");
-require("../js_includes/components/leaflet-cluster/dist/MarkerCluster.css");
-require("../js_includes/components/leaflet-cluster/dist/MarkerCluster.Default.css");
-require("../js_includes/components/c3/c3.min.css");
-require("../js_includes/components/leaflet-control-geocoder/dist/Control.Geocoder.css");
-require("../js_includes/components/selectize/dist/css/selectize.css");
-require("../components/tdar-autocomplete/css/tdar-autocomplete.css");
+require("../includes/jquery.treeview/jquery.treeview.css");
+require("../includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css");
+require("../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css");
+require("../components/bootstrap-datepicker-eyecon/css/datepicker.css");
+require("leaflet/dist/leaflet.css");
+require("leaflet-draw/dist/leaflet.draw.css");
+require("leaflet.markercluster/dist/MarkerCluster.css");
+require("leaflet.markercluster/dist/MarkerCluster.Default.css");
+require("c3/c3.min.css");
+require("leaflet-control-geocoder/dist/Control.Geocoder.css");
+//require('tdar-autocomplete/css/tdar-autocomplete.css');
+

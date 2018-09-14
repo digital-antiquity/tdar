@@ -5,7 +5,7 @@ const core = require("./tdar.core");
 const datepicker = require("./tdar.datepicker");
 
 window.$ = window.jQuery = require('jquery'); // was import $ from 'jquery';
-require('./../js_includes/includes/jquery-ui-1.11.4.custom/jquery-ui');
+require('./../includes/jquery-ui-1.11.4.custom/jquery-ui');
 
 function _disableCheckbox($box) {
         $box.attr('disabled', true);
