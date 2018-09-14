@@ -114,7 +114,7 @@ module.exports = {
     // https://github.com/webpack/webpack.js.org/issues/63
     resolve : {
         alias : {
-            'leaflet':'Components/leaflet',
+            'leaflet':'leaflet',
             
             "jquery-ui" : path.join(__dirname, "src/main/webapp/includes/jquery-ui-1.11.4.custom/jquery-ui.js"),
             modules : path.join(__dirname, "node_modules"),

@@ -2,9 +2,9 @@ const core = require("./../tdar.core");
 
 require('leaflet-choropleth');
 require('./../../includes/Leaflet.Sleep');
-require('leaflet-draw/dist/leaflet.draw');
+require('leaflet-draw');
 require('leaflet.markercluster');
-require('./../../components/leaflet-control-geocoder/dist/Control.Geocoder');
+require('leaflet-control-geocoder');
 
 const L = window.L;
 
@@ -13,7 +13,7 @@ const L = window.L;
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
-    L.Icon.Default.imagePath = core.assetsUri('/components/leaflet/dist/images/');
+    L.Icon.Default.imagePath = core.assetsUri('/components/dist/images/');
 
     var $body = $('body');
 
