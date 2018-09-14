@@ -61,6 +61,7 @@
     "c3": "0.4.23",
     "d3": "3.5.17",
     "es6-promise": "4.2.4",
+    "tdar-autocomplete": "0.2.5",
     "grunt-cli": "1.2.0",
     "jquery": "1.11.3",
     "jquery-validation": "1.15.1",

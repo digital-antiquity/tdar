@@ -10,8 +10,12 @@ var axios = require("axios");
 const common = require("./../tdar.common.js");
 const core = require("./../tdar.core.js");
 
+var autocomplete = require('tdar-autocomplete/js/vue-autocomplete.js');
+require('tdar-autocomplete/css/tdar-autocomplete.css');
+
+//Vue.use(autocomplete);
+
 require("jquery");
-require("selectize");
 //require("./vue-selectize");
 
 Vue.component('selectize', {
