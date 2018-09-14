@@ -283,8 +283,7 @@ const L = window.L;
      * @param bFitBounds if true, this method tells the map to pan/zoom to fit updated set of markers
      * @private
      */
-    function _update(map, markers, data,startRecord, bFitBounds) {
-
+    function _update(map, markers, data,startRecord, bFitBounds, animate) {
         //translate datapoints to list of markers
         var layers = data.features
             .filter(function(feature){return feature.geometry.hasOwnProperty("type");})
@@ -298,6 +297,7 @@ const L = window.L;
 
         // clear any existing layers if starting w/ first page of data
         if (startRecord === 0) {
+            console.log("clear layers");
             markers.clearLayers();
         }
 
@@ -307,7 +307,11 @@ const L = window.L;
         // if we fit to bounds...
         // fixme: if user-interaction happens we probably shouldn't call fit-bounds
         if(bFitBounds && layers.length) {
-            map.fitBounds(markers.getBounds());
+            var param = {};
+            if (animate) {
+                param = {animate:false};
+            }
+            map.fitBounds(markers.getBounds(),param);
         }
     }
 

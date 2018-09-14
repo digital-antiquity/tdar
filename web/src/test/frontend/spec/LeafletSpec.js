@@ -295,7 +295,8 @@ describe("LeafletSpec.js", function() {
                 var startRecord = 0;
                 //get the original map bounds, then call update w/ marker coords
                 var bounds1 = map.getBounds();
-                TDAR.leaflet.update(map, markers, data, startRecord, true);
+                
+                TDAR.leaflet.update(map, markers, data, startRecord, true, true);
                 var bounds2 = map.getBounds();
                 console.log("bounds:", bounds1, bounds2);
                 expect(bounds1.equals(bounds2)).toBe(false);

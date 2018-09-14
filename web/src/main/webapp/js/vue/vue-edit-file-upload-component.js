@@ -18,7 +18,7 @@ var ERROR_TIMEOUT = 5000;
         
         var config = {
             files : [],
-            url : TDAR.uri('upload/upload'),
+            url : core.uri('upload/upload'),
             ticketId : -1,
             resourceId : -1,
             userId : -1,
