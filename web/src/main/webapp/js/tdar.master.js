@@ -62,15 +62,13 @@ require("../css/tdar-integration.css");
 require("../js_includes/components/jquery.treeview/jquery.treeview.css");
 require("../js_includes/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css");
 require("../js_includes/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css");
-require("../js_includes/components/jquery-file-upload/css/jquery.fileupload-ui.css");
 require("../js_includes/components/bootstrap-datepicker-eyecon/css/datepicker.css");
 require("../js_includes/components/leaflet/dist/leaflet.css");
 require("../js_includes/components/leaflet-draw/dist/leaflet.draw.css");
 require("../js_includes/components/leaflet-cluster/dist/MarkerCluster.css");
 require("../js_includes/components/leaflet-cluster/dist/MarkerCluster.Default.css");
-require("../js_includes/components/c3/c3.min.css");
+require("c3/c3.min.css");
 require("../js_includes/components/leaflet-control-geocoder/dist/Control.Geocoder.css");
-require("../js_includes/components/selectize/dist/css/selectize.css");
-require("../components/tdar-autocomplete/css/tdar-autocomplete.css");
+//require('tdar-autocomplete/css/tdar-autocomplete.css');
 
 module.exports = TDAR;

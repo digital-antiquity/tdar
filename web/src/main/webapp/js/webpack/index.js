@@ -35,7 +35,7 @@ import './../../js_includes/includes/jquery.datatables.plugins-1.9.4/integration
 import './../../js_includes/includes/jquery.treeview/jquery.treeview.js';
 
 //import './../../js_includes/includes/blueimp-tmpl/js/tmpl.min.js';
-require('script-loader!blueimp-tmpl/js/tmpl.js');
+//require('script-loader!blueimp-tmpl/js/tmpl.js');
 require('script-loader!./../../js_includes/includes/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js');
 
 
@@ -69,8 +69,8 @@ import 'leaflet/dist/leaflet';
 
 import 'leaflet-choropleth/dist/choropleth.js';
 
-import './../../js_includes/includes/es6-promise/lib/es6-promise.js';
-import './../../js_includes/includes/es6-promise/lib/es6-promise.auto.js';
+import 'es6-promise/dist/es6-promise.js';
+import 'es6-promise/dist/es6-promise.auto.js';
 
 import 'qs/dist/qs.js';
 
@@ -127,14 +127,12 @@ import './../maps/tdar.leaflet';
 
 
 import './../../js_includes/includes/js-emca-5.1-polyfill.js';
-import 'selectize/dist/js/standalone/selectize.js';
 
 //import './../maps/tdar.worldmap';
 
 import "vue";
 //import 'axios/dist/axios.min.js';
 
-import './../vue/vue-selectize.js';
 require('script-loader!../../js_includes/includes/bootstrap-2.32/js/bootstrap.js');
 import './../vue/view-collection-widget.js';
 import './../vue/edit-collection';

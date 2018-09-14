@@ -124,11 +124,20 @@ module.exports = function(config) {
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress',"junit",'coverage'],
+        reporters: ['progress',"junit",'coverage',"spec"],
         junitReporter: {
             outputDir: 'target/karma/reports/',
             suite: 'models'
         },
+        specReporter: {
+            maxLogLines: 5,             // limit number of lines logged per test
+            suppressErrorSummary: false, // do not print error summary
+            suppressFailed: false,      // do not print information about failed tests
+            suppressPassed: false,      // do not print information about passed tests
+            suppressSkipped: true,      // do not print information about skipped tests
+            showSpecTiming: false,      // print the time elapsed for each spec
+            failFast: false              // test would finish with error when a first fail occurs. 
+          },
 
 	    coverageReporter: {
 	        type : 'html',

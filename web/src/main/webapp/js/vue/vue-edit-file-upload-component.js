@@ -1,6 +1,8 @@
 const core = require("./../tdar.core.js");
 const datepicker = require("./../tdar.datepicker");
 const Vue = require("vue/dist/vue.esm.js").default;
+require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.iframe-transport.js');
+require('imports-loader?define=>false&exports=>false&$=jquery!blueimp-file-upload/js/jquery.fileupload.js');
 
 const vuejsupload = require("./vue-base-upload");
 

@@ -4,6 +4,8 @@ const common = require("./tdar.common");
 require('jquery-validation/dist/jquery.validate.js');
 require("./tdar.formValidateExtensions");
 
+window.$ = window.jQuery = require('jquery'); // was import $ from 'jquery';
+
     /**
      * Default settings for form validation in tDAR forms
      *

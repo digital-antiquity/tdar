@@ -96,7 +96,7 @@ describe("ValidateSpec.js: TDAR.validate tests", function () {
         var validator = TDAR.validate.initForm($form);
 
         //validation: ...but it's a valid radiocarbon date
-        console.log($(sel).val());
+        //console.log($(sel).val());
         $(sel).val('RADIOCARBON_DATE');
         $(sel).change();
         $form.find('.coverageStartYear').val('2001');

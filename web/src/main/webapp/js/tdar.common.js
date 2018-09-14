@@ -8,7 +8,6 @@
 const core = require("./tdar.core.js");
 const common = require("./tdar.common.js");
 const tmpl = require('blueimp-tmpl');//require('script-loader!blueimp-tmpl/js/tmpl.js')
-const fileupload = require("./tdar.upload");
 const repeatrow = require("./tdar.repeatrow");
 const autocomplete = require("./tdar.autocomplete");
 const contexthelp = require("./tdar.contexthelp");
