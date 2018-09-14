@@ -4,7 +4,11 @@ const Vue = require("vue/dist/vue.esm.js").default;
 
 const vuejsupload = require("./vue-base-upload");
 
-    var ERROR_TIMEOUT = 5000;
+var autocomplete = require('tdar-autocomplete/js/vue-autocomplete.js').init();
+require('tdar-autocomplete/css/tdar-autocomplete.css');
+
+var ERROR_TIMEOUT = 5000;
+
 
     var _init = function(widgetId) {
 
@@ -14,7 +18,7 @@ const vuejsupload = require("./vue-base-upload");
         
         var config = {
             files : [],
-            url : core.uri('upload/upload'),
+            url : TDAR.uri('upload/upload'),
             ticketId : -1,
             resourceId : -1,
             userId : -1,
@@ -32,10 +36,9 @@ const vuejsupload = require("./vue-base-upload");
             $.extend(config, JSON.parse($($(widgetId).data('config')).text()));
         }
         console.log("config:", config);
-        
         var _fpart = Vue.component('fpart', {
             template : "#fpart-template",
-            props : [ "file", "index", "abletoupload", "deletedisabled" ],
+            props : [ "file", "index", "abletoupload", "deletedisabled" , "inputdisabled"],
             data : function() {
                 return {
                     previousDeleteState : '',
@@ -62,6 +65,9 @@ const vuejsupload = require("./vue-base-upload");
                 },
                 restrictionFieldName : function() {
                     return "fileProxies[" + this.index + "].restriction";
+                },
+                undeleteDisabled: function() {
+                    return this.inputdisabled;
                 },
                 inputDisabled : function() {
                     return !this.abletoupload;
@@ -198,6 +204,12 @@ const vuejsupload = require("./vue-base-upload");
                 ableToUpload : config.ableToUpload
             },
             computed : {
+                multiple: function() {
+                  if (this.maxNumberOfFiles > 1) {
+                      return true;
+                  }  
+                  return false;
+                },
                 valid : function() {
                     return this.validatePackage();
                 },
@@ -261,8 +273,12 @@ const vuejsupload = require("./vue-base-upload");
                 append: function(a, b) {
                   return a + "" + b;  
                 },
-                validateAdd : function(file, replace) {
-                    return vuejsupload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
+                validateAdd : function(file, replace, increment_) {
+                    var increment = 0;
+                    if (increment_ != undefined) {
+                        increment = increment_;
+                    }
+                    return vuejsupload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files) + increment, this.maxNumberOfFiles , this.sideCarOnly, this  )
                 },
                 reValidateAllFilesWithChangedFile: function(file) {
                     return vuejsupload.validateAdd(file, this.files, file.name, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
@@ -403,17 +419,16 @@ const vuejsupload = require("./vue-base-upload");
 //        return {"app" : app,"fpart" : _fpart};
         return app;
     }
-
     module.exports = {
-        init : _init,
-        main : function() {
-            var appId = '#uploadWidget';
-            if ($(appId).length == 1) {
-                _init(appId);
+            init : _init,
+            main : function() {
+                var appId = '#uploadWidget';
+                if ($(appId).length == 1) {
+                    _init(appId);
+                }
             }
         }
-    }
-    
-//TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
-//    "use strict";    
-//})(console, jQuery, window, Vue);
+        
+    //TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
+//        "use strict";    
+    //})(console, jQuery, window, Vue);

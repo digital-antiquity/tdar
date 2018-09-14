@@ -2,6 +2,7 @@
 var webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const devMode = false; //process.env.NODE_ENV !== 'production'
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -85,6 +86,13 @@ module.exports = {
             filename: devMode ? '[name].css' : '[name].css',
             chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
           }),
+          new CopyWebpackPlugin([
+            {
+              from: 'node_modules/tdar-autocomplete/template/autocomplete.html',
+              to: 'templates/',
+              toType: 'dir'
+            }
+          ], {}),
         new webpack.ProvidePlugin({
         $ : "jquery",
         $j : "jquery",

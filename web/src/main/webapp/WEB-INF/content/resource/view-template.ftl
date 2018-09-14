@@ -533,6 +533,7 @@
 
 
    <div class="modal hide fade" id="modal">
+                <#include '../../..//dist/templates/autocomplete.html' />
                 <#include 'vue-collection-widget.html' />
     </div>
 

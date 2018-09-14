@@ -1,7 +1,7 @@
-/**TDAR
- * view-collection-widget.js
+/**
+ * TDAR view-collection-widget.js
  * 
- * This module is used to add/remove resources from the jQuery datatable. 
+ * This module is used to add/remove resources from the jQuery datatable.
  */
 
 
@@ -13,127 +13,22 @@ const core = require("./../tdar.core.js");
 var autocomplete = require('tdar-autocomplete/js/vue-autocomplete.js');
 require('tdar-autocomplete/css/tdar-autocomplete.css');
 
-//Vue.use(autocomplete);
+// Vue.use(autocomplete);
 
 require("jquery");
-//require("./vue-selectize");
 
-Vue.component('selectize', {
-    props : [ 'options', 'value' ],
-    template : '<select><slot></slot></select>',
-    mounted : function() {
-        var vm = this;
-        var $vm = $(this);
-        var $tag = $(this.$el);
-        var opt = $.extend({}, $(this.$el).data());
-        
-        if (this.options != null) {
-            opt.options = this.options;
-        }
-        
-        var method = $tag.data('config');
-        console.log("using init method: " + method);
-        var opts = {};
-       
-        if (method != undefined) {
-            var method_ = window[method];
-            // FIXME: There has to be a better way to bind these
-            if (window['TDAR']['vuejs'] != undefined) {
-                // fixme: make generic to search subtree
-                if ($.isFunction(window['TDAR']['vuejs']['collectionwidget'][method])) {
-                    method_ = window['TDAR']['vuejs']['collectionwidget'][method];
-                }
-            }
-            if ($.isFunction(window[method])) {
-                method_ = window[method];
-            }
-            if (method_ != undefined) {
-                // add options based on method ... here's where we implicitly call initBasicForm
-                opts = method_(this);
-            } else {
-                console.log("init method specified, but not a function");
-            }
-        }
-
-        this.sel = $(this.$el).selectize(opts).on("change", function() {
-            vm.$emit('input', vm.sel.getValue());
-        })[0].selectize;
-        this.sel.setValue(this.value, true);
-    },
-    watch : {
-        value : function(value) {
-            this.sel.setValue(value, true);
-        },
-        options : function(options) {
-            var val = this.sel.getValue();
-            this.sel.clearOptions();
-            this.sel.addOption(options);
-            this.sel.refreshOptions(false);
-            this.sel.setValue(val);
-        }
-    },
-    destroyed : function() {
-        this.sel.destroy();
-    }
-});
-
-
-//These are the default options for selectize. They are merged when the selectize box is created. 
-var _getSelectizeOpts = function() {
-   var opts = {
-        valueField: 'id',
-        labelField: 'name',
-        searchField: 'name',
-        create: true,
-        createOnBlur:true,
-        render: {
-            option: function(item, escape) {
-                    return '<div>' +
-                        '<span class="title">' +
-                            '<span class="name">' + escape(item.name) + '</span>' +
-                        '</span>' +
-                    '</div>';
-                }
-            },
-       
-	    load: function(query, callback) {
-	        if (!query.length) return callback();
-	        $.ajax({
-	            url: '/api/lookup/collection',
-	            type: 'GET',
-	            data: { 
-	               'term':query,
-	               'permission':'ADMINISTER_COLLECTION'
-	            },
-	            error: function() {
-	                callback();
-	            },
-	            success: function(res) {
-	                callback(res.collections);
-	            }
-	         });
-	     }
-     }; 
-   
-     return opts;
-}
-
-//Instantiate and return a new Vue instance. 
-var _init = function(appId, _axios) {
-    
-    if (_axios != undefined) {
-        axios = _axios;
-    }
+// Instantiate and return a new Vue instance.
+var _init = function(appId) {
     $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
     
     var app2 = new Vue({
     	el: appId,
     
 	    data: { 
-	    	//For use in the View Resource "Add to Collection" widget. 
+	    	// For use in the View Resource "Add to Collection" widget.
 	        items:[{id:"1",name:"Sample"}], 
 	        selectedCollection: 0 ,
-	        pick:"existing", //For the radio button of existing or new collection. 
+	        pick:"existing", // For the radio button of existing or new collection.
 	        options:[],
 	        unmanagedEnabled: true,
 	        newCollectionName:"",
@@ -145,15 +40,16 @@ var _init = function(appId, _axios) {
 	        managedResource: true,
 	        resourceId: -1,
 	        administrator: false,
+	        autocompletesuffix: "permission=ADMINISTER_COLLECTION",
 	        canEdit: false,
 	        collections: {managed:[], unmanaged:[]},
 	        
-	        //For use in the Save Search Results to Collection widget. 
+	        // For use in the Save Search Results to Collection widget.
 	        progressStatus:0,
 	        lastSavedCollectionId:0
 	    },
 	    
-	    //These are observed events that happen when a given property changes. 
+	    // These are observed events that happen when a given property changes.
 	    watch: {
 	        newCollectionName: function (value) {
 	            Vue.set(this,"changesMade",true);
@@ -163,12 +59,10 @@ var _init = function(appId, _axios) {
 	        }
 	    },
 	    
-	    //This is called when vue is instantiated and is set up. 
+	    // This is called when vue is instantiated and is set up.
 	    mounted: function() {
 	        var $e = $(this.$el);
-	        
-	        //console.debug("$e is ",this.$el);
-	        console.log("Calling mounting functions for Vue-collection-widget");
+	        console.log("Calling mounting functions");
 	        
 	        if($e.data('resourceId')!=null){
 	          	Vue.set(this, 'administrator',$e.data('administrator'));
@@ -180,8 +74,8 @@ var _init = function(appId, _axios) {
 	            console.log("Is Administrator: ",this.administrator);
 	            console.log("Is unmanagedEnabled: ",this.unmanagedEnabled);
 	            
-	            //If the resource is not set to allow unmanaged additions, then force the property to be set to true.
-	            //This will make the checkbox selected by default. 
+	            // If the resource is not set to allow unmanaged additions, then force the property to be set to true.
+	            // This will make the checkbox selected by default.
 	            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
 	            	console.log("Forcing resource to be managed");
 	                Vue.set(this,"managedResource",true);
@@ -192,7 +86,20 @@ var _init = function(appId, _axios) {
 	    },
     
 	    methods: {
-	    	//Helper methods: maybe move to a static library?
+	        selectCollection: function(coll) {
+	            console.log("select collection", coll);
+	            if (coll == undefined) {
+                    Vue.set(this,"selectedCollection", '');
+	                return;
+	            } 
+	            
+	            if (typeof coll == 'string') {
+                   Vue.set(this,"selectedCollection", coll);
+	            } else if (coll.id > -1) {
+	                Vue.set(this,"selectedCollection", coll.id);
+	            } 
+	        },
+	    	// Helper methods: maybe move to a static library?
 	        _arrayRemove: function(arr, item) {
 	            var idx = arr.indexOf(item);
 	            if(idx !== -1) {
@@ -217,29 +124,24 @@ var _init = function(appId, _axios) {
 	            
 	            Vue.set(this,"changesMade",false);
 	        
-	            //Reset forcing as a managed resource if unmanaged is not allowed. 
+	            // Reset forcing as a managed resource if unmanaged is not allowed.
 	            if (this.unmanagedEnabled == undefined || this.unmanagedEnabled == false) {
 	                Vue.set(this,"managedResource",true);
 	            }
-
-	            
-	            var $select = $('#collection-list').selectize();
-	            $select[0].selectize.clear();
+	
+	            this.$refs['collection-list'].reset();
 	        },
 	        
 	        getCollections: function(){
 	        	console.log("Getting list of all available collections");
 	            var self = this;
-	            
 	            var permission = "ADD_TO_COLLECTION";
-	            
 	            if (this.unmanagedEnabled == true) {
 	                permission = ADD_TO_COLLECTION;
 	            }
-	            
 	            axios.get("/api/lookup/collection?permission=" + permission).then(function(res) {
-                    self.items = res.data;
-                    Vue.set(this,'changesMade',true);
+	                    self.items = res.data;
+	                    Vue.set(this,'changesMade',true);
 	            });
 	        },
 	        
@@ -264,25 +166,26 @@ var _init = function(appId, _axios) {
 	        },
 	        
 	        _getCollectionsForResource : function(){
+	        	console.log("Getting all collections for the resource "+this.resourceId);
 	            var self = this;
-	            var called = false;
-	            var url = "/api/collection/resourcecollections?resourceId="+self.resourceId;
-
-	            console.log("Getting all collections for the resource "+self.resourceId);
+	            var url = "/api/collection/resourcecollections?resourceId="+this.resourceId;
+	            
 	            console.log("Calling ",url);
 	
+	            var called = false;
 	            axios.get(url).then(function(response) {
 	            	console.log("response is:", response.data);
 	            	called = true;
 	            	console.log("Managed collections: ",response.data.managed.length);
 	            	console.log("Unmanaged collections: ",response.data.unmanaged.length);
 	                Vue.set(self,'collections',response.data);
-    	            console.log("This was called? ", called);
-	            }).
-	            catch(function(error){
+	            }).catch(function(error){
 	                console.error("An error ocurred getting a list of collections for this resource");
 	                console.error(error);
 	            });
+	            
+	            console.log("This was called? ", called);
+	            
 	            
 	        },
 	        
@@ -328,8 +231,8 @@ var _init = function(appId, _axios) {
 	        },
 	        
 	        /**
-	         * "save results to collection" functions
-	         */
+             * "save results to collection" functions
+             */
 	        _addResultsToCollection: function(collectionId){
 	
 	        	var url = $(this.$el).data("url");
@@ -358,13 +261,10 @@ var _init = function(appId, _axios) {
 	        	var progress = $("#upload-progress");
 	        	var progressMessage = $("#progress-message");
 	        	var form 	 = $("#upload-form");
-	            var $select = $('#collection-list').selectize();
+                this.$refs['collection-list'].reset();
 	            var title  = $("#progress-title");
 	            
 	            var vapp = this;
-	            
-	            $select[0].selectize.clear();
-	            $select[0].selectize.clearOptions()	
 	            
 	            vapp._enableSubmitButton();
 	        	progress.hide();
@@ -376,18 +276,11 @@ var _init = function(appId, _axios) {
 	        
 	       
 	        /**
-	         * Exposed methods
-	         */ 
+             * Exposed methods
+             */ 
 	        removeResourceFromCollection: function(collection,section){
-
-	        	if(collection == undefined ){
-	        		console.error("removeResourceFromCollection expected collection to not be an array, but it was null instead");
-	        	}
-	        	
-	        	
 	            Vue.set(this,"changesMade",true);
 	            	console.log("Pending collection removal from "+collection.id+" - "+section);
-	            	
 	            	if(section=='MANAGED'){
 	            		this.managedCollectionsToRemove.push(collection.id);
 	            		this._arrayRemove(this.collections.managed, collection);
@@ -400,7 +293,8 @@ var _init = function(appId, _axios) {
 	        
 	        addToCollection:function(){
 	            var vapp = this;
-                console.log('selected collection:',this.selectedCollection);
+	            
+	            console.log("selectedCollection", this.selectedCollection);
 	            if(this.selectedCollection==""){
 	                $("#addToNew").popover('show');
 	                setTimeout(function () {
@@ -409,7 +303,7 @@ var _init = function(appId, _axios) {
 	              }
 	
 	            else if (isNaN(this.selectedCollection)) {
-	                	console.log("Creating a new collection");
+	                	console.log("Creating a new collection", this.selectedCollection);
 	                	console.log("Disabling submit button");
 	                    // post to create a new collection.
 	                    var data = {
@@ -445,7 +339,7 @@ var _init = function(appId, _axios) {
 	                }
 	        },
 	        
-	        //Determines if the list should show the grant permissions checkbox. 
+	        // Determines if the list should show the grant permissions checkbox.
 	        showGrant: function(){
 	           var index = $('#collection-list').prop('selectedIndex');
 	           if(index > 0 ){
@@ -478,8 +372,8 @@ var _init = function(appId, _axios) {
 	        
 	        
 	        /**
-	         * SAVE RESULTS TO COLLECTION FUNCTIONS
-	         */
+             * SAVE RESULTS TO COLLECTION FUNCTIONS
+             */
 	        saveResultsToCollection: function(){
 	        	var vapp = this;
 	        	if(this.selectedCollection==""){
@@ -491,7 +385,7 @@ var _init = function(appId, _axios) {
 	
 	            else if (isNaN(this.selectedCollection)) {
 	            		vapp._disableSubmitButton();
-	                    
+	                    console.log(this.selectedCollection);
 	            		// post to create a new collection.
 	                    var data = {
 	                        collectionName: this.selectedCollection,
@@ -512,6 +406,7 @@ var _init = function(appId, _axios) {
 	                vapp._addResultsToCollection(this.selectedCollection);
 	             }
 	        },
+	        
 	        updateProgressBar: function(collectionId){
 	            var vapp = this;
 	            
@@ -539,7 +434,7 @@ var _init = function(appId, _axios) {
 	        	    }
 	        	    else {
 	        	    	console.log("Progress is 100%");
-	        	    	//display the complete message.
+	        	    	// display the complete message.
 	        	    	var collection =  $('#collection-list').text();
 	        	    	$("#progress-complete-text").text("Results successfully saved to "+collection);
 	        	    	$("#progress-complete-alert").show();
@@ -556,17 +451,13 @@ var _init = function(appId, _axios) {
       return app2;
 }
 
-
 module.exports = {
-    init: _init,
-    collectionSelectizeOptions : _getSelectizeOpts,
-    main : function() {
-        var appId = '#add-resource-form';
-        if ($(appId).length  >0 ) {
-            _init(appId);
+        init: _init,
+        main : function() {
+            var appId = '#add-resource-form';
+            if ($(appId).length  >0 ) {
+                _init(appId);
+            }
         }
     }
-}
 
-//TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue, axios, TDAR) {
-//})(console, jQuery, window, Vue, axios, TDAR);

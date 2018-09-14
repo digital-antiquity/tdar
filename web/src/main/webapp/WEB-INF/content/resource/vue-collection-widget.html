@@ -5,15 +5,14 @@
   </div>
   
   <div class="modal-body" >
-          <form>
+          <form action="" onSubmit="return false;">
+            <button type="submit" disabled style="display: none" aria-hidden="true"></button>
               <div>
                 <span data-content="A collection must be selected">Select a collection, or create one</span>
                 <div class="form-group">
                   <div>
-                    <selectize v-bind:options="options" v-model="selectedCollection" size="1"
-                         data-max-options="100" data-config="collectionSelectizeOptions" id="collection-list" 
-                         data-value-field='id' data-label-field='text' data-search-field='text' data-sort-field='text'>
-                    </selectize>
+                   <autocomplete url="/api/lookup/collection" field="term" resultsuffix="collections" @autocompletevalueset="selectCollection" ref="collection-list"
+                        fieldname="title" span="span4" idname="id" ref="collection-list" createnewtext="Create New Collection" :suffix="autocompletesuffix"/>
                   </div>
                   <div style="margin-top:15px;" v-if="isNaN(selectedCollection)" >
                       <label for="newCollectionDescription">Collection Description</label>
@@ -47,8 +46,8 @@
         </form>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade">Cancel</button>
-    <button class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade == false">Close</button>
-    <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" v-on:click="saveAddToCollectionChanges" :disabled="!changesMade">Save Changes</button>
+    <button type="button" class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade">Cancel</button>
+    <button type="button" class="btn" data-dismiss="modal" aria-hidden="true" v-on:click="cancelAddToCollectionChanges" v-if="changesMade == false">Close</button>
+    <button type="button" class="btn btn-primary" data-dismiss="modal" aria-hidden="true" v-on:click="saveAddToCollectionChanges" :disabled="!changesMade">Save Changes</button>
   </div>
 </div>  

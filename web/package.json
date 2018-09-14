@@ -16,6 +16,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^1.0.0",
     "expose-loader": "^0.7.5",
     "extract-text-webpack-plugin": "^3.0.2",
@@ -61,7 +62,7 @@
     "c3": "0.4.23",
     "d3": "3.5.17",
     "es6-promise": "4.2.4",
-    "tdar-autocomplete": "0.2.5",
+    "tdar-autocomplete": "0.2.6",
     "grunt-cli": "1.2.0",
     "jquery": "1.11.3",
     "jquery-validation": "1.15.1",

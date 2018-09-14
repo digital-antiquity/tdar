@@ -7312,7 +7312,7 @@ div.DTFC_LeftFootWrapper table {
   display: inline-block;
   width: intrinsic; }
 
-.autocomplete-result.is-active, .autocomplete-result:hover {
+.autocomplete-result.is-active, .autocomplete-result:hover, .createnew:hover {
   background-color: #4aae9b;
   color: white; }
 
