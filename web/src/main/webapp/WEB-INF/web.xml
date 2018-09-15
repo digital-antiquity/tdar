@@ -23,5 +23,10 @@ version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.
     </error-page>
     <!--  do not enable, breaks SpringServlet work
         <absolute-ordering />
+
      -->
+    <mime-mapping>
+      <extension>js</extension>
+      <mime-type>application/javascript;charset=UTF-8</mime-type>
+    </mime-mapping>
 </web-app>

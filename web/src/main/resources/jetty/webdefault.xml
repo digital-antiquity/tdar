@@ -353,6 +353,10 @@ vim:sts=2:sw=2
     <mime-type>mymime/type</mime-type>
   </mime-mapping>
   -->
+  <mime-mapping>
+    <extension>js</extension>
+    <mime-type>application/javascript; charset=UTF-8</mime-type>
+  </mime-mapping>
 
   <!-- ==================================================================== -->
   <welcome-file-list>
