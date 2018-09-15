@@ -1,0 +1,182 @@
+<div id='vueupload'>
+<div id="uploadWidget" data-config="#${uploadConfigId}">
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody v-if="files.length > 0" v-for="(file,index) in files">
+            <tr class="template-download fade existing-file in" :inputdisabled="inputDisabled"
+                is="fpart" :index="index" :file="file" :abletoupload="ableToUpload" :deletedisabled="deleteDisabled"></tr>
+        </tbody>
+    </table>
+
+    <br />
+    <div class="row">
+    <div class="span2">
+    <!-- The fileinput-button span is used to style the file input field as button -->
+    <label :class="fileUploadButtonCss" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
+        class="glyphicon glyphicon-plus"></i> <span>Select files...</span> <!-- The file input field used as target for the file upload widget -->
+        <input id="fileupload" type="file" name="files[]" :multiple="multiple" :disabled="inputDisabled" >
+    </label> 
+    </div>
+    <div class="span6">
+        <div id="progress" class="progress progress-striped" style="margin-top:5px">
+            <div class="progress-bar progress-bar-success bar"></div>
+        </div>
+    <div id="fileUploadErrors" class="fileuploaderrors controls controls-row" >
+        
+        <ul v-for="(error,index) in errors"  class="unstyled">
+            <li>  <label :for="append('fue',index )"><i class="icon-ban-circle"></i> {{ error }}</label>
+                 <input type="text" :id="append('fue',index )" required="true" class=" required hidden"  :title="error" /> </li>
+        </ul>
+        <ul v-for="(error,index) in warnings" class="unstyled" >
+            <li> <label :for="append('fue',index )"><i class="icon-warning-sign"></i> {{ error }}</label>
+        </ul>
+        <ul v-for="(error,index) in packageMessages" >
+        <li><label :for="append('pm',index )"><i class="icon-ban-circle"></i> {{ error }} </label>
+            <input type="text" :id="append('pm',index )" required="true"  class=" required hidden"  :title="error" /> </li>
+        </ul>
+
+    </div>
+    <!-- The global progress bar -->
+    <div id="uploadstatus"></div>
+    </div>
+    </div>
+    <br> <br>
+
+
+    <!-- The container for the uploaded files -->
+    <div id="files" class="files"></div>
+    <!-- the following textarea is designed to handle the 'files' when a 'submit' is hit and then to support the issue when input is returned -->
+<textarea id="vueFilesFallback" name='vueFilesFallback' style="display:none;visibility:hidden;">
+${vueFilesFallback!'{{ files }}'}
+</textarea>
+</div>
+    
+</div>
+
+<script type="text/x-template"   id="fpart-template">
+<tr v-bind:id="rowId">
+    <td><label class="control-label">Filename</label>
+        <div class="controls controls-row">
+            <div class="span5">
+                <div>
+                    <em class="replacement-text "></em>
+                </div>
+                <span class="name uneditable-input subtle inpux-xlarge"
+                    :title="file.name">{{file.name}}</span> <span
+                    class="help-inline"><i>{{file.size}}</i> (bytes)</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label">Restriction</label>
+            <div class="controls">
+                <select :name="restrictionFieldName" :disabled="inputDisabled"
+                    v-model="file.restriction" id="proxy0_conf"
+                    class="fileProxyConfidential confidential-contact-required"
+                    style="padding-left: 20px;" datarestriction="PUBLIC">
+                    <option value="PUBLIC">Public</option>
+                    <option value="EMBARGOED_SIX_MONTHS">Embargoed
+                        Six Months</option>
+                    <option value="EMBARGOED_ONE_YEAR">Embargoed
+                        One Year</option>
+                    <option value="EMBARGOED_TWO_YEARS">Embargoed
+                        Two Years</option>
+                    <option value="EMBARGOED_FIVE_YEARS">Embargoed
+                        Five Years</option>
+                    <option value="CONFIDENTIAL">Confidential</option>
+                </select>
+
+            </div>
+            <label class="control-label" for="">Date Created</label>
+            <div class="controls controls-row">
+                <div class="span5">
+                    <div class="input-append">
+                        <input type="text" :name="createdDateFieldName" :disabled="inputDisabled"
+                            class="datepicker" placeholder="mm/dd/yyyy"
+                            v-model="file.fileCreatedDate" value=""
+                            data-date-format="mm/dd/yyyy"> <span
+                            class="add-on"><i class="icon-th"></i></span>
+                    </div>
+
+                </div>
+            </div>
+            <label class="control-label">Description</label>
+            <div class="controls controls-row">
+                <div class="span5">
+                    <textarea class="input-block-level" :disabled="inputDisabled"
+                        :name="descriptionFieldName" rows="2"
+                        placeholder="Enter a description here"
+                        v-model="file.description"></textarea>
+                </div>
+            </div>
+        </div></td>
+    <td style="width: 10%">
+    <!--  only show replace when we have an originalFileVersionId (which means we round-tripped to the server) -->
+    <span v-if="file.originalFileVersionId != undefined ">
+    <label
+        class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" :disabled="inputDisabled" :for="fileuploadId" v-if="file.replaceFile == undefined"
+        :id="wrapperId" style="width: 6em; text-align: left"> <i
+            class="icon-refresh icon-white"> </i> <span>Replace</span> 
+            <input :disabled="inputDisabled"
+            type="file" name="replaceFile" @change="replaceFileChange"
+            :id="fileuploadId" class="replace-file">
+    </label>
+        <button type="button" style="text-align: left" :disabled="inputDisabled"
+            v-if="file.replaceFile != undefined" @click="undoReplace"
+            class="btn btn-small btn-warning undo-replace-button btn-block"
+            title="Restore Original File">Cancel</button>
+      </span>
+
+
+        <div class="delete">
+            <button v-if="file.action != 'DELETE'" :disabled="deleteDisabled" type="button"
+                class="btn btn-danger delete-button btn-small btn-block"
+                @click="deleteFile" data-type="DELETE"
+                style="text-align: left">
+                <i class="icon-trash icon-white"></i> <span>Delete</span>
+            </button>
+            <button v-if="file.action == 'DELETE'" :disabled="undeleteDisabled" type="button"
+                class="btn btn-warning delete-button btn-small btn-block"
+                @click="unDeleteFile" data-type="DELETE"
+                style="text-align: left">
+                <i class="icon-trash icon-white"></i> <span>Undelete</span>
+            </button>
+        </div>
+
+
+        <div class="fileProxyFields">
+            <input type="hidden" v-model="file.action"
+                class="fileAction" :name="actionFieldName" value="NONE">
+                <input type="hidden" class="fileId" :name="fileIdFieldName" :value="file.fileId"> 
+                <input type="hidden" class="tdarFileId" :name="tdarFileIdFieldName" :value="file.tdarFileId"> 
+                <input type="hidden" class="fileReplaceName" :name="filenameFieldName" :value="file.name"> 
+                <input type="hidden" class="fileSequenceNumber" name="sequenceNumberFieldName" value="1">
+        </div> <span class="hidden debug">file: {{file}}</span> </td>
+</tr>
+</script>
+
+<!--  fallback for testing -->
+<div v-if="false">
+<noscript>
+    <#list fileProxies as p>
+                <assign fupval = ""/>
+                <#if (p.fileCreatedDate)?has_content>
+                    <#assign fupval="p.fileCreatedDate?string['MM/dd/yyyy']" />
+                </#if>
+                ${p.name} (id: ${(p.fileId!-1)?c} ; ${p.restriction} dateCreated: ${fupval!''} description: ${p.description!''})
+                <input type="hidden" name="fileProxies[${p_index}].restriction" value="${p.restriction}"/>
+                <input type="hidden" name="fileProxies[${p_index}].fileCreatedDate" value="${fupval!''}"/>
+                <input type="hidden" name="fileProxies[${p_index}].description" value="${p.description!''}"/>
+                <input type="hidden" name="fileProxies[${p_index}].name" value="${p.name}"/>
+                <input type="hidden" name="fileProxies[${p_index}].sequenceNumber" value="${p.sequenceNumber?c}"/>
+                <input type="hidden" name="fileProxies[${p_index}].action" value="${p.action}"/>
+                <input type="hidden" name="fileProxies[${p_index}].fileId" value="${(p.fileId!-1)?c}"/>
+    </#list>
+</noscript>
+
+
+
+</div>

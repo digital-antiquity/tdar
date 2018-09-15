@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- this is a simple test file to keep RSS requests for testing local -->
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+	<channel>
+		<title>Test</title>
+		<link>http://localhost</link>
+		<description>Trdy</description>
+		<pubDate>Wed, 15 Oct 2008 11:16:06 +0000</pubDate>
+		<language>en</language>
+		<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" href="http://localhost/index.xml" type="application/rss+xml"/>
+		<item>
+			<title>Non-Content Browser Content</title>
+			<link>http://localhost/~r/tdar/~3/421474894/non-ui</link>
+			<comments>http://localhost/non-ui#comments</comments>
+			<pubDate>Wed, 15 Oct 2008 11:16:06 +0000</pubDate>
+			<dc:creator>Whom Ever</dc:creator>
+			<category><![CDATA[Browsers]]></category>
+			<category><![CDATA[Front Page]]></category>
+			<category><![CDATA[UI]]></category>
+			<guid isPermaLink="false">http://localhost/?p=4770</guid>
+			<description>test</description>
+			<content:encoded>Encoded content</content:encoded>
+		</item>
+	</channel>
+</rss>
