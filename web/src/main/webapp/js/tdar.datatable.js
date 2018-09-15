@@ -5,7 +5,7 @@ require('./../includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js');
 require('./../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js');
 require("../includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css");
 require("../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css");
-//require("./../includes/bindWithDelay.js");
+require("../includes/bindWithDelay.js");
 core.namespace("datatable");
 
     /**
@@ -631,7 +631,7 @@ core.namespace("datatable");
     function fnRenderTitle(oObj) {
         // in spite of name, aData is an object containing the resource record for this row
         var objResource = oObj.aData;
-        var html = '<a href="' + core.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + TDAR.common.htmlEncode(objResource.title) +
+        var html = '<a href="' + core.uri(objResource.urlNamespace + '/' + objResource.id) + '" class=\'title\'>' + common.htmlEncode(objResource.title) +
                 '</a>';
         html += ' (ID: ' + objResource.id
         if (objResource.status != 'ACTIVE') {
@@ -1303,14 +1303,14 @@ core.namespace("datatable");
         // swallow cors exception. this can happen if window is a child but not an adhoc target
         try {
             if (window.opener) {
-                _windowOpener = window.opener.TDAR.common.adhocTarget;
+                _windowOpener = common.adhocTarget;
             }
         } catch (ex) {
             //console.log("window parent not available - skipping adhoctarget check");
         }
 
         if (_windowOpener) {
-            window.opener.TDAR.common.populateTarget({
+            window.opener.common.populateTarget({
                 id : id,
                 title : title
             });

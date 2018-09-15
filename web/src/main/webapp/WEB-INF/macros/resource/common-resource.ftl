@@ -33,7 +33,7 @@ Common macros used in multiple contexts
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false mode="horizontal" extra="">
-    <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>span6 map mapcontainer<#else> mapcontainer</#if> ${mode}">
+    <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>span6 map mapcontainer<#else> mapcontainer</#if> ${mode}" >
             <h3>${siteAcronym} Worldwide</h3>
         <#if (homepageGraphs.mapJson)?has_content>
         <script type="application/json" data-mapdata>
@@ -46,7 +46,7 @@ Common macros used in multiple contexts
 			<#noescape>${homepageGraphs.localesJson}</#noescape>
         </script>
 		</#if>
-             <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="" <#if (keyword.code)?has_content>data-code="${(keyword.code)!""}"</#if>>
+             <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="" <#if (keyword.code)?has_content>data-code="${(keyword.code)!""}"</#if> data-mode="${mode}" >
              </div>
         <#if mode =='vertical'></div></#if>
              <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="span4 offset1"<#else>style="width:100%"</#if>>

@@ -1042,7 +1042,7 @@
      * @param repeatableSelector selector for the repeatrow table.
      * @param newSize the number of rows the table will contain.
      */
-    var resetRepeatable = function (repeatableSelector, newSize) {
+    var _resetRepeatable = function (repeatableSelector, newSize) {
         //ignrore the element if it is a backing <select> for a select2 control.
         if($(repeatableSelector).is(".select2-hidden-accessible")) {return;}
         $(repeatableSelector).find(".repeat-row:not(:first)").remove();
@@ -1178,7 +1178,7 @@
     }
 
     module.exports = {
-        resetRepeatable: resetRepeatable,
+        resetRepeatable: _resetRepeatable,
         resetKeywords: resetKeywords,
         registerInheritSection: registerInheritSection,
         applyInheritance: applyInheritance,

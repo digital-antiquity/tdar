@@ -14,6 +14,8 @@ require("leaflet.markercluster/dist/MarkerCluster.Default.css");
 require("leaflet-sleep");
 require('leaflet-control-geocoder');
 require("leaflet-control-geocoder/dist/Control.Geocoder.css");
+const LatLon = require("JS/latLongUtil-1.0").LatLon;
+const Geo = require("JS/latLongUtil-1.0").Geo;
 
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';

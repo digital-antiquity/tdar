@@ -811,11 +811,11 @@ const common = require("./tdar.common");
                         _applyPersonAutoComplete($(".nameAutoComplete", id), false, showCreate);
                     });
             $(id).delegate(".institutionAutoComplete", "focusin", function () {
-                TDAR.autocomplete.applyInstitutionAutocomplete($(".institution", id), true);
+                _applyInstitutionAutocomplete($(".institution", id), true);
             });
         } else {
             $(id).delegate(".userAutoComplete", "focusin", function () {
-                TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete", id), true, false);
+                _applyPersonAutoComplete($(".userAutoComplete", id), true, false);
             });
         }
     };

@@ -145,6 +145,9 @@ const c3graphsupport = require("./../tdar.c3graphsupport");
         }
         
         _mode = mode;
+        if ($mapDiv.data("mode") != undefined) {
+            _mode = $mapDiv.data("mode");
+        }
         var showZoom = true;
         var canPan = true;
         if (_mode == 'mini') {
@@ -179,7 +182,7 @@ const c3graphsupport = require("./../tdar.c3graphsupport");
         _initializeGeoData(mapdata);
         locales = _getLocaleData($parent);
 
-        if (mode != 'mini') {
+        if (_mode != 'mini') {
             _setupLegend(map, grades, _getColor, max);
         }
         
