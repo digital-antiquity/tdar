@@ -77,7 +77,7 @@ import 'qs/dist/qs.js';
 import './../../includes/Leaflet.Sleep.js';
 
 import 'leaflet-draw/dist/leaflet.draw.js';
-import './../../includes/leaflet-cluster/dist/leaflet.markercluster.js';
+import 'leaflet.markercluster';
 
 import 'd3/d3';
 import c3 from 'c3/c3';
