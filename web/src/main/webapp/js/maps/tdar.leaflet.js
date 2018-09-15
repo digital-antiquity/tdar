@@ -1,12 +1,13 @@
+
 const core = require("./../tdar.core");
 
 const L = require('leaflet');
 //const L = window.L;
 
 require('leaflet-choropleth');
-require('./../../includes/Leaflet.Sleep');
 require('leaflet-draw');
 require('leaflet.markercluster');
+require("leaflet-sleep");
 require('leaflet-control-geocoder');
 
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
