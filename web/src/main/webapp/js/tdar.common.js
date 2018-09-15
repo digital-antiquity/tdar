@@ -26,7 +26,7 @@ require('./../includes/jquery.textarearesizer.js');
 require('./../includes/jquery.populate.js');
 require("./../includes/jquery.tabby-0.12.js");
 require("./../includes/bootstrap-2.32/js/bootstrap.js")
-require("./../components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker");
+
 
 jQuery.extend({
     /**

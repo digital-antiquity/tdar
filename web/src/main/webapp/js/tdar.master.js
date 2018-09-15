@@ -60,5 +60,5 @@ require("../css/tdar.datatables.css");
 require("../css/tdar.searchresults.css");
 require("../css/tdar.invoice.css");
 require("../css/tdar-integration.css");
-require("../components/bootstrap-datepicker-eyecon/css/datepicker.css");
+
 module.exports = TDAR;

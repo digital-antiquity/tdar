@@ -1,4 +1,7 @@
-    var _defaults = {format: "mm/dd/yyyy"}
+require("./../components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker");
+require("../components/bootstrap-datepicker-eyecon/css/datepicker.css");
+
+var _defaults = {format: "mm/dd/yyyy"}
     //scan for any inputs with .datepicker class and initialize them.
     var _init = function() {
         $('input.datepicker').each(function(idx, el) {
