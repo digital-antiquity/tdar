@@ -6,29 +6,29 @@
  */
 
 const core = require("./tdar.core.js");
-const common = require("./tdar.common.js");
+//const common = require("./tdar._js");
 const tmpl = require('blueimp-tmpl');//require('script-loader!blueimp-tmpl/js/tmpl.js')
 const repeatrow = require("./tdar.repeatrow");
 const autocomplete = require("./tdar.autocomplete");
 const contexthelp = require("./tdar.contexthelp");
 const inheritance = require("./tdar.inheritance");
 
-require("imports-loader?this=>window!./../includes/modernizr-custom-2.6.2.min.js");
+require("imports-loader?this=>window!Includes/modernizr-custom-2.6.2.min.js");
 
 //Various jQuery plugins
-require('./../includes/jquery-ui-1.11.4.custom/jquery-ui');
-require('./../includes/jquery.watermark-3.1.3.min.js');
-require('./../includes/jquery-treeview/jquery.treeview.js');
-require('./../includes/jquery.cookie.js');
+require('Includes/jquery-ui-1.11.4.custom/jquery-ui');
+require('Includes/jquery.watermark-3.1.3.min.js');
+require('Includes/jquery-treeview/jquery.treeview.js');
+require('Includes/jquery.cookie.js');
 require('./jquery.FormNavigate');
-require('./../includes/jquery.textarearesizer.js');
-require('./../includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js');
-require('./../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js');
-require('./../includes/jquery.populate.js');
-require("./../includes/jquery.tabby-0.12.js");
-require("./../includes/bindWithDelay.js");
-require("./../includes/bootstrap-2.32/js/bootstrap.js")
-require("./../components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker");
+require('Includes/jquery.textarearesizer.js');
+require('Includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js');
+require('Includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js');
+require('Includes/jquery.populate.js');
+require("Includes/jquery.tabby-0.12.js");
+//require("Includes/bindWithDelay.js");
+require("Includes/bootstrap-2.32/js/bootstrap.js")
+require("Components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker");
 
 jQuery.extend({
     /**
@@ -41,7 +41,7 @@ jQuery.extend({
      */
     compareArray: function (arrayA, arrayB, ignoreOrder) {
         //FIXME: break this into two functions (no bool args!)
-        //FIXME: no need to extend jquery, just add to common.
+        //FIXME: no need to extend jquery, just add to _
         if (arrayA.length !== arrayB.length) {
             return false;
         }
@@ -88,7 +88,7 @@ jQuery.extend({
         var adhocTarget = $(elem).closest(_selector);
         $('body').data("adhocTarget", adhocTarget);
         //expose target for use by child window
-        common.adhocTarget = adhocTarget;
+        _adhocTarget = adhocTarget;
         //return false;
     }
 
@@ -111,7 +111,7 @@ jQuery.extend({
         $('input[type=hidden]', adhocTarget).val(obj.id);
         $('input[type=text]', adhocTarget).val(obj.title);
         $body.removeData("adhocTarget");
-        common.adhocTarget = null;
+        _adhocTarget = null;
     }
 
     // FIXME: refactor.  needs better name and it looks brittle
@@ -671,7 +671,7 @@ jQuery.extend({
             if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
                 $("#timeoutDialog").html("<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
             } else {
-                setTimeout(common.sessionTimeoutWarning, 60000);
+                setTimeout(_sessionTimeoutWarning, 60000);
             }
         }
     }

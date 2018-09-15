@@ -116,11 +116,11 @@ module.exports = {
         alias : {
             'leaflet':'leaflet',
             
-            "jquery-ui" : path.join(__dirname, "src/main/webapp/includes/jquery-ui-1.11.4.custom/jquery-ui.js"),
+            "jquery-ui" : path.join(__dirname, "src/main/webapp/js_includes/includes/jquery-ui-1.11.4.custom/jquery-ui.js"),
             modules : path.join(__dirname, "node_modules"),
             JS : path.resolve(__dirname, 'src/main/webapp/js/'),
-            Components : path.resolve(__dirname, 'src/main/webapp/components/'),
-            Includes : path.resolve(__dirname, 'src/main/webapp/includes/')
+            Components : path.resolve(__dirname, 'src/main/webapp/js_includes/components/'),
+            Includes : path.resolve(__dirname, 'src/main/webapp/js_includes/includes/')
         }
 
     // alias: {
