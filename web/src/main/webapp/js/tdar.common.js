@@ -6,7 +6,7 @@
  */
 
 const core = require("./tdar.core.js");
-const common = require("./tdar.common.js");
+//const common = require("./tdar._js");
 const tmpl = require('blueimp-tmpl');//require('script-loader!blueimp-tmpl/js/tmpl.js')
 const repeatrow = require("./tdar.repeatrow");
 const autocomplete = require("./tdar.autocomplete");
@@ -41,7 +41,7 @@ jQuery.extend({
      */
     compareArray: function (arrayA, arrayB, ignoreOrder) {
         //FIXME: break this into two functions (no bool args!)
-        //FIXME: no need to extend jquery, just add to common.
+        //FIXME: no need to extend jquery, just add to _
         if (arrayA.length !== arrayB.length) {
             return false;
         }
@@ -88,7 +88,7 @@ jQuery.extend({
         var adhocTarget = $(elem).closest(_selector);
         $('body').data("adhocTarget", adhocTarget);
         //expose target for use by child window
-        common.adhocTarget = adhocTarget;
+        _adhocTarget = adhocTarget;
         //return false;
     }
 
@@ -111,7 +111,7 @@ jQuery.extend({
         $('input[type=hidden]', adhocTarget).val(obj.id);
         $('input[type=text]', adhocTarget).val(obj.title);
         $body.removeData("adhocTarget");
-        common.adhocTarget = null;
+        _adhocTarget = null;
     }
 
     // FIXME: refactor.  needs better name and it looks brittle
@@ -671,7 +671,7 @@ jQuery.extend({
             if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
                 $("#timeoutDialog").html("<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
             } else {
-                setTimeout(common.sessionTimeoutWarning, 60000);
+                setTimeout(_sessionTimeoutWarning, 60000);
             }
         }
     }
