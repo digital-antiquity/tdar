@@ -17,6 +17,7 @@
 const c3 = require("c3");
 const c3graphsupport = require("./tdar.c3graphsupport");
 const common = require("./tdar.common");
+require("c3/c3.min.css");
 
 var _getColors = function() {
         var c3colors = $("#c3colors");

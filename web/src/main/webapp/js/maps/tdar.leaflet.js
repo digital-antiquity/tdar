@@ -6,9 +6,14 @@ const L = require('leaflet');
 
 require('leaflet-choropleth');
 require('leaflet-draw');
+require("leaflet-draw/dist/leaflet.draw.css");
 require('leaflet.markercluster');
+require("leaflet/dist/leaflet.css");
+require("leaflet.markercluster/dist/MarkerCluster.css");
+require("leaflet.markercluster/dist/MarkerCluster.Default.css");
 require("leaflet-sleep");
 require('leaflet-control-geocoder');
+require("leaflet-control-geocoder/dist/Control.Geocoder.css");
 
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
