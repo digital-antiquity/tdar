@@ -28,7 +28,7 @@
 	        <div class="form-group">
 	           <div>
                    <autocomplete url="/api/lookup/collection" field="term" resultsuffix="collections" @autocompletevalueset="selectCollection" ref="collection-list" id="collection-list"
-                        fieldname="title" span="span4" idname="id" ref="collection-list" createnewtext="Create New Collection" :suffix="autocompletesuffix"/>
+                        fieldname="title" span="span4 collection-add-input" idname="id" ref="collection-list" createnewtext="Create New Collection" :suffix="autocompletesuffix"/>
 	           </div>
 	           
 	           <div v-if="isNaN(selectedCollection)" style="margin-top:10px;" >
