@@ -1,4 +1,5 @@
 const common = require("./tdar.common");
+const core = require("./tdar.core.js");
 var POLLING_INTERVAL = 1500; //poll every 1.5s
 
     //parse string to integer.  replace blank and NaN with 0.
@@ -182,7 +183,7 @@ var POLLING_INTERVAL = 1500; //poll every 1.5s
         var url= "/api/cart/" + invoiceid + "/polling-check";
 
         $.ajax({
-            url: TDAR.uri(url),
+            url: core.uri(url),
             dataType: 'json',
             type: 'POST',
             xhrFields: { withCredentials: true },
@@ -193,7 +194,7 @@ var POLLING_INTERVAL = 1500; //poll every 1.5s
                 } else {
                     $("#polling-status").html("done: " + data.transactionStatus);
                     if (data.transactionStatus == 'TRANSACTION_SUCCESSFUL') {
-                        window.document.location = TDAR.uri("/dashboard");
+                        window.document.location = core.uri("/dashboard");
                     }
                 }
                 if (data.errors != undefined && data.errors != "") {
