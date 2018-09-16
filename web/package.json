@@ -10,6 +10,7 @@
     "webpack-dev": "npm run webpack --config webpack.dev.js",
     "webpack-server": "webpack-dev-server --watch --https --port 9000 --mode development --content-base src/main/webapp -d",
     "webpack": "webpack",
+    "webpack-prod": "webpack --config webpack.production.js",
     "convert": "npm run webpack --config webpack-convert.config.js"
   },
   "keywords": [],
@@ -50,6 +51,8 @@
     "webpack-bundle-analyzer": "^2.13.1",
     "webpack-cli": "^2.1.4",
     "webpack-dev-server": "^3.1.4",
+    "webpack-merge": "^4.1.4",
+    "uglifyjs-webpack-plugin": "^2.0.0",
     "xml2js": "^0.4.9",
     "xmldoc": "^0.5.1"
   },
@@ -80,8 +83,7 @@
     "tdar-autocomplete": "0.2.6",
     "vue": "2.4.2",
     "vue-resource": "1.3.4",
-    "vue-router": "3.0.1",
-    "webpack-merge": "^4.1.4"
+    "vue-router": "3.0.1"
   },
   "ignored": {
     "karma-phantomjs-launcher": "^1.0.4",
