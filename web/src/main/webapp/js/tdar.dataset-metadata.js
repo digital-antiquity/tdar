@@ -1,4 +1,4 @@
-const common = require("./tdar.core");
+const common = require("./tdar.common");
 const contexthelp = require("./tdar.contexthelp");
 const autocomplete = require("./tdar.autocomplete");
 
@@ -115,7 +115,7 @@ const autocomplete = require("./tdar.autocomplete");
     function _init(formId) {
 
         var $form = $(formId);
-        TDAR.common.suppressKeypressFormSubmissions($form);
+        common.suppressKeypressFormSubmissions($form);
 
         //Use a plugin if browser doesn't support resizeable textareas
         //http://caniuse.com/#feat=css-resize
@@ -128,13 +128,13 @@ const autocomplete = require("./tdar.autocomplete");
             cache: false
         });
 
-        TDAR.common.applyWatermarks(document);
+        common.applyWatermarks(document);
 
         $('#table_select').change(function () {
             window.location = '?dataTableId=' + $(this).val();
         });
 
-        $form.delegate(":input", "blur change", TDAR.datasetMetadata.registerCheckboxInfo);
+        $form.delegate(":input", "blur change", _registerCheckboxInfo);
 
         contexthelp.initializeTooltipContent("#edit-metadata-form");
 
@@ -147,9 +147,9 @@ const autocomplete = require("./tdar.autocomplete");
         console.debug('intitializing columns');
         // determine when to show coding-sheet, ontology selection based on column encoding value
         // almost all of the startup time is spent here
-        $('input.ontologyfield').change(TDAR.datasetMetadata.registerCheckboxInfo).change();
+        $('input.ontologyfield').change(_registerCheckboxInfo).change();
         pageInitialized = true;
-        TDAR.datasetMetadata.updateSummaryTable();
+        _updateSummaryTable();
         // clear all hidden ontology/coding sheet hidden fields to avoid polluting the controller
         $form.submit(function () {
             $('input', $('.ontologyInfo:hidden')).val('');
@@ -163,7 +163,7 @@ const autocomplete = require("./tdar.autocomplete");
         var $window = $(window);
 
         $("#chooseColumn").change(function (e) {
-            TDAR.datasetMetadata.gotoColumn($(this));
+            _gotoColumn($(this));
         });
         
         $form.FormNavigate();

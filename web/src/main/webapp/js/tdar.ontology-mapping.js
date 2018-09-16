@@ -55,7 +55,7 @@
         var pairs = $(".mappingPair");
         for (var i = 0; i < pairs.length; i++) {
             var idx = $(pairs[i]).data("idx");
-            _applyLocalAutoComplete($("#autocomp_" + idx), ctx["autocomp_" + idx + "Suggestions"]);
+            _applyLocalAutoComplete($("#autocomp_" + idx), window["autocomp_" + idx + "Suggestions"]);
         }
     };
 
