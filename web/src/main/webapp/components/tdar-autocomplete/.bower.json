@@ -23,14 +23,14 @@
     "test",
     "tests"
   ],
-  "version": "0.2.5",
-  "_release": "0.2.5",
+  "version": "0.2.6",
+  "_release": "0.2.6",
   "_resolution": {
     "type": "version",
-    "tag": "0.2.5",
-    "commit": "7aedf3e53e1f4c81c51d0e7ede1e0761932baaf9"
+    "tag": "0.2.6",
+    "commit": "fd75808faec3268e337190c6bb1f0cea44cfa98d"
   },
   "_source": "https://bitbucket.org/tdar/autocomplete.git",
-  "_target": "0.2.5",
+  "_target": "0.2.6",
   "_originalSource": "https://bitbucket.org/tdar/autocomplete.git"
 }
