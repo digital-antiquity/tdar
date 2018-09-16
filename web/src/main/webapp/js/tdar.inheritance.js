@@ -12,6 +12,8 @@
     const validate = require("./tdar.validate");
     const common = require("./tdar.common");
     const repeatrow = require("./tdar.repeatrow");
+    const LatLon = require("JS/latLongUtil-1.0").LatLon;
+    const Geo = require("JS/latLongUtil-1.0").Geo;
     
     /**
      * convenience function for $.populate()

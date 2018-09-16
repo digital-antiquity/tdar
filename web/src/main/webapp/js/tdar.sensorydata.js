@@ -134,6 +134,6 @@
     }
 
     //expose public elements
-    module.export = {
+    module.exports = {
         "initEdit": _initEdit
     };
