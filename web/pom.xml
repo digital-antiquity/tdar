@@ -244,7 +244,6 @@
                     <exclude>tdar.properties</exclude>
                     <exclude>crowd.properties</exclude>
                     <exclude>hibernate.properties</exclude>
-                    <exclude>local-wro-config.properties</exclude>
                     <exclude>struts-local-settings.xml</exclude>
                     <exclude>common.json</exclude>
                     <exclude>liquibase.properties</exclude>
@@ -261,7 +260,6 @@
                     <include>tdar.properties</include>
                     <include>crowd.properties</include>
                     <include>hibernate.properties</include>
-                    <include>local-wro-config.properties</include>
                     <include>struts-local-settings.xml</include>
                     <include>common.json</include>
                     <include>liquibase.properties</include>
@@ -647,46 +645,6 @@
             </plugin>
         </plugins>
 
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>ro.isdc.wro4j</groupId>
-                    <artifactId>wro4j-maven-plugin</artifactId>
-                    <version>${wro4j.version}</version>
-                </plugin>
-                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>
-                                            org.codehaus.mojo
-                                        </groupId>
-                                        <artifactId>
-                                            exec-maven-plugin
-                                        </artifactId>
-                                        <versionRange>
-                                            [1.4.0,)
-                                        </versionRange>
-                                        <goals>
-                                            <goal>exec</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore></ignore>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
     </build>
 
     <profiles>
@@ -713,28 +671,6 @@
                          </execution>
                        </executions>
                      </plugin>
-<!--                       <plugin>
-                        <groupId>ro.isdc.wro4j</groupId>
-                        <artifactId>wro4j-maven-plugin</artifactId>
-                        <version>${wro4j.version}</version>
-                        <executions>
-                            <execution>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <targetGroups>default,ng-integrate</targetGroups>
-                            <minimize>true</minimize>
-                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version}</destinationFolder>
-                            <contextFolder>${basedir}/src/main/webapp/</contextFolder>
-                            <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
-                            <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
-                            <ignoreMissingResources>false</ignoreMissingResources>
-                        </configuration>
-                    </plugin> -->
                     <plugin>
                         <!-- this is to put an extra copy where other things 
                             like the tDAR website can deal with it. JS doesn't change that often so, 

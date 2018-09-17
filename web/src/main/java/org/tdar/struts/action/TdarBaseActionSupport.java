@@ -1,6 +1,5 @@
 package org.tdar.struts.action;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,14 +28,9 @@ import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
 import org.tdar.web.TdarServletConfiguration;
-import org.tdar.web.WebFileSystemResourceService;
-
-import ro.isdc.wro.model.resource.ResourceType;
 
 public class TdarBaseActionSupport extends TdarActionSupport {
 
-    @Autowired
-    private transient WebFileSystemResourceService webFilesystemResourceService;
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -95,20 +89,8 @@ public class TdarBaseActionSupport extends TdarActionSupport {
         return true;
     }
 
-    public List<String> getJavascriptFiles() {
-        return webFilesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.JS);
-    }
-
-    public List<String> getCssFiles() {
-        return webFilesystemResourceService.fetchGroupUrls(getWroProfile(), ResourceType.CSS);
-    }
-
     public String getWroProfile() {
         return WROProfile.DEFAULT.getProfileName();
-    }
-
-    public boolean isWebFilePreprocessingEnabled() {
-        return webFilesystemResourceService.testWRO();
     }
 
     protected void addActionErrorWithException(String message, Throwable exception) {
@@ -168,10 +150,6 @@ public class TdarBaseActionSupport extends TdarActionSupport {
 
         }
         return false;
-    }
-
-    public String getWroTempDirName() {
-        return webFilesystemResourceService.getWroDir();
     }
 
     /**

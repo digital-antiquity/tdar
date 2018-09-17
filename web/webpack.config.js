@@ -23,7 +23,7 @@ module.exports = {
     output : {
         path : path.resolve(__dirname, "./src/main/webapp/dist/"),
         filename : '[name].js',
-        chunkFilename : "[id].bundle.js"
+        chunkFilename : "[name]-[id].bundle.js"
     },
 
     // externals: ['axios'], this is a way to use an extenral version of jquery, whatever is referecned here should probably be a 'dev' dependency too
@@ -68,16 +68,16 @@ module.exports = {
     },
     optimization : {
         // runtimeChunk: false,
-        splitChunks : {
-            cacheGroups : {
-                commons : {
-                    test : /[\\/]node_modules[\\/]/,
-                    name : 'vendors',
-                    chunks : 'all',
-                    minChunks : 2
-                }
-            }
-        }
+//        splitChunks : {
+//            cacheGroups : {
+//                commons : {
+//                    test : /[\\/]node_modules[\\/]/,
+//                    name : 'vendors',
+//                    chunks : 'all',
+//                    minChunks : 2
+//                }
+//            }
+//        }
     },
 
     plugins : [

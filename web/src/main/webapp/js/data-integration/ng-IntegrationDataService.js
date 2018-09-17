@@ -1,5 +1,6 @@
 const angular = require("angular");
 var app = angular.module("integrationApp");
+var core_uri = require("./../tdar.core.js").uri;
 
 /**
  * generating a simpler JavaScript object that represents an integration.
@@ -202,7 +203,7 @@ function DataService($http, $cacheFactory, $q, $log, $rootScope) {
         // console.log(jsonData);
         var httpPromise = $http({
             method : "POST",
-            url : TDAR.uri(path),
+            url : core_uri(path),
             data : $.param({
                 integration : JSON.stringify(jsonData)
             }),
@@ -231,7 +232,7 @@ function DataService($http, $cacheFactory, $q, $log, $rootScope) {
 
         var httpPromise = $http({
             method : "GET",
-            url : TDAR.uri('/api/integration/view?id=' + id)
+            url : core_uri('/api/integration/view?id=' + id)
         });
 
         httpPromise.success(function(data) {
@@ -485,7 +486,7 @@ function DataService($http, $cacheFactory, $q, $log, $rootScope) {
         });
 
         if (missingOntologyIds.length > 0) {
-            var httpPromise = $http.get(TDAR.uri('/api/integration/ontology-details?' + $.param({
+            var httpPromise = $http.get(core_uri('/api/integration/ontology-details?' + $.param({
                 ontologyIds : missingOntologyIds
             }, true)));
 
@@ -527,7 +528,7 @@ function DataService($http, $cacheFactory, $q, $log, $rootScope) {
         // console.log("starting integration:");
         var integrationJson = self._dumpObject(integration);
 
-        var httpPromise = $http.get(TDAR.uri('/api/integration/integrate?' + $.param({
+        var httpPromise = $http.get(core_uri('/api/integration/integrate?' + $.param({
             integration : integrationJson
         }, true)));
 
@@ -564,7 +565,7 @@ function DataService($http, $cacheFactory, $q, $log, $rootScope) {
             timeout : _futureCancel.promise
         };
 
-        $http.get(TDAR.uri(url), config).success(function(rawData_) {
+        $http.get(core_uri(url), config).success(function(rawData_) {
             _futureCancel = null;
             var rawData = rawData_;
             if (prefix !== undefined) {
@@ -716,7 +717,7 @@ function DataService($http, $cacheFactory, $q, $log, $rootScope) {
         // FIXME: refactor struts action to accept 'Content-type: application/json'. This is the angular default.
         $http({
             method : 'POST',
-            url : TDAR.uri('/api/integration/integrate'),
+            url : core_uri('/api/integration/integrate'),
             headers : {
                 'Content-Type' : 'application/x-www-form-urlencoded'
             },

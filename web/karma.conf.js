@@ -1,21 +1,7 @@
 // Karma configuration
 var webpackConfig = require('./webpack-test.config.js');
-var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
 
-/**
- * @Param {string} [profile=default]
- */
-function buildFilesFromWro(profile) {
-    if(!profile) profile = 'default'
-    var xmldata = fs.readFileSync("src/main/resources/wro.xml", "utf-8");
-    var wroconfig = wro.parse(xmldata);
-    var files = ( 
-            wroconfig[profile].cssFiles
-           // .concat(wroconfig[profile].jsFiles)
-            .map(function(file){return "src/main/webapp" + file;}));
-    return files;
-}
 
 var specFiles = "src/test/frontend/spec/**/*.js";
 
@@ -37,7 +23,6 @@ if (process.argv != undefined  && process.argv.length > 0) {
 
 
 module.exports = function(config) {
-    var wroFiles = buildFilesFromWro('default');
     config.set({
        
         webpack: webpackConfig,
@@ -71,8 +56,6 @@ module.exports = function(config) {
 
 
             ],
-            //files specified in wro.xml 
-//            wroFiles,
             [
                 
                 //specs

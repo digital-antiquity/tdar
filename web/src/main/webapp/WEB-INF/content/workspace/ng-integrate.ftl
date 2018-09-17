@@ -325,7 +325,6 @@
     <script type="application/json" id="allCategories" raw-data>
     ${categoriesJson}
     </script>
-    <script type="text/javascript" src="/dist/ng-integration.js"></script>
     
 </div>
 
@@ -465,11 +464,11 @@
 <#-- fixme: hack: /workspace/integrate#addDatasets  -->
 <script>
     console.warn("Tell jim to remove his auto-open hack");
-    $(function() {
-        if(window.location.hash === "#addDatasets") {
-            $("#btnAddDataset").click();
-        }
-    })
+//    $(function() {
+//        if(window.location.hash === "#addDatasets") {
+//            $("#btnAddDataset").click();
+//        }
+//    })
 </script>
 
 
@@ -522,4 +521,5 @@
         </div>
     </div>
 </div>
+    <script type="text/javascript" src="/dist/ng-integration.js"></script>
 </body>

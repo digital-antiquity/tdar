@@ -10,6 +10,7 @@ const angular = require("angular");
 var AJAX_REQUEST_TIMEOUT_MS = 1000 * 60 * 20;
 
 var app = angular.module('integrationApp', []);
+console.log("hi");
 
 app.config([ '$compileProvider', '$httpProvider', function($compileProvider, $httpProvider) {
     $compileProvider.debugInfoEnabled(false);
@@ -26,7 +27,8 @@ app.config([ '$compileProvider', '$httpProvider', function($compileProvider, $ht
     });
 
 } ]);
-window.console.log("hi");
+
+console.log("hi");
 module.exports = {
     app : app
 }

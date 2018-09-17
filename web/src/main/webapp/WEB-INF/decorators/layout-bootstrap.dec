@@ -136,7 +136,7 @@
     
     
     <#-- @header.scripts ( webFilePreprocessingEnabled) / -->
-    <script type="text/javascript" src="${staticHost}/dist/bundle.js"></script>
+    <script type="text/javascript" src="${staticHost}/dist/main.js"></script>
     <link href="${staticHost}/dist/main.css" rel="stylesheet" media="all">
     
 ${head}
