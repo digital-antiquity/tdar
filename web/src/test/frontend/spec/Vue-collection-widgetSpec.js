@@ -325,15 +325,18 @@ describe("Vue-collection-widget.js: collection widget test", function() {
 
         moxios.install(axios);
 
-        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
         
         // stub out moxios resquest/responses
         moxios.stubRequest('/api/collection/resourcecollections?resourceId=5', {
                 status: 200,
                 response: {managed:[{id:5,name:'manhattan'}],unmanaged:[]}
         });
+            
+        var vapp = TDAR.vuejs.collectionwidget.init("#add-resource-form");
         
-        expect($("#collection-list")).toHaveLength(1);
+        vapp.$forceUpdate();
+//        console.log("results: ",vapp.$refs['collection-list'].results);
+//        expect($("#collection-list")).toHaveLength(1);
         // force vue to re-render
         vapp.$forceUpdate();
             
@@ -347,30 +350,28 @@ describe("Vue-collection-widget.js: collection widget test", function() {
             
             done();
         });
-
         // console.error(vapp.$el.querySelector("#existing-collections-list").innerHTML);
         // console.log(moxios.requests.mostRecent());
         // console.log(request.url);
         // })
-        
-        console.info("------------------------------------- vue ---------------------------------------");
     });
 
     function setupFixture(admin, editable, resourceid){
         // change the fixture path to point to our template
-        jasmine.getFixtures().fixturesPath = "base/src/main/webapp/WEB-INF/content/resource/";
+        jasmine.getFixtures().fixturesPath = "base/src/main/webapp/";
         
         // read the fixture as a string
-        var fixture = jasmine.getFixtures().read("vue-collection-widget.html");
-        
+        var fixture = jasmine.getFixtures().read("WEB-INF/content/resource/vue-collection-widget.html");
+        var fixture2 = jasmine.getFixtures().read("components/tdar-autocomplete/template/autocomplete.html");
         // set some IDs
         fixture = fixture.replace("${administrator?c}",admin);
         fixture = fixture.replace("${editor?c}",admin);
         fixture = fixture.replace("${editable?c}",editable);
         fixture = fixture.replace("${resource.id?c}",resourceid);
-
+        fixture = fixture2 + fixture; 
         // apply the fixxture
         var fix = jasmine.getFixtures().set(fixture);
+        TDAR.vuejs.autocomplete.init();
         return fix;
     };
     
