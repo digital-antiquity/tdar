@@ -17,11 +17,12 @@ module.exports = {
     //devtool: 'eval-source-map',
     entry : {
         // jquery : ['jquery'],
-        main : './src/main/webapp/js/webpack/tdar-entry-point.js'
+        main : './src/main/webapp/js/webpack/tdar-entry-point.js',
+        ng-integration : './src/main/webapp/js/webpack/tdar-angular-integration-entry-point.js'
     },
     output : {
         path : path.resolve(__dirname, "./src/main/webapp/dist/"),
-        filename : 'bundle.js',
+        filename : '[name].js',
         chunkFilename : "[id].bundle.js"
     },
 
@@ -96,6 +97,7 @@ module.exports = {
             }
           ], {}),
         new webpack.ProvidePlugin({
+            // undefined variables that are resolved automagically
         $ : "jquery",
         $j : "jquery",
         jQuery : "jquery",
@@ -115,6 +117,7 @@ module.exports = {
     // this seemed to make a difference:
     // https://github.com/webpack/webpack.js.org/issues/63
     resolve : {
+        // path resolution for a module to somewhere else, or resolve components of a path to a directory
         alias : {
             'leaflet':'leaflet',
             
