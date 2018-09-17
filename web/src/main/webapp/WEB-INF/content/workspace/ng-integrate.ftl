@@ -325,9 +325,8 @@
     <script type="application/json" id="allCategories" raw-data>
     ${categoriesJson}
     </script>
-    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
-    <script type="text/javascript" src="/components/angular.js"></script>
-
+    <script type="text/javascript" src="/dist/ng-integration.js"></script>
+    
 </div>
 
 <tdar-modal ng-controller="ModalDialogController"></tdar-modal>

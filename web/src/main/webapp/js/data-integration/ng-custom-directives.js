@@ -1,7 +1,6 @@
 /**
  * Directive for registering key/value data with the DataService. Data is expected to be in json format (presumably using script[type=application/json] tags)
  */
-// (function(angular) {
 const angular = require("angular");
 
 var app = angular.module('integrationApp');
@@ -36,5 +35,4 @@ app.directive('popover', function() {
     };
 });
 
-// })(angular);
 module.exports = {}

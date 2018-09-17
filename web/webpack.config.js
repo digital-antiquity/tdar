@@ -17,8 +17,8 @@ module.exports = {
     //devtool: 'eval-source-map',
     entry : {
         // jquery : ['jquery'],
-        main : './src/main/webapp/js/webpack/tdar-entry-point.js',
-        ng-integration : './src/main/webapp/js/webpack/tdar-angular-integration-entry-point.js'
+        'main' : './src/main/webapp/js/webpack/tdar-entry-point.js',
+        'ng-integration' : './src/main/webapp/js/webpack/tdar-angular-integration-entry-point.js'
     },
     output : {
         path : path.resolve(__dirname, "./src/main/webapp/dist/"),
