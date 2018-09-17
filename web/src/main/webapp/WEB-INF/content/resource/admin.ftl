@@ -45,13 +45,10 @@
         </tr>
         <#list resource.informationResourceFiles as file>
             <tr>
-            <@s.form action="/resource/admin/saveArchivalVersion" method="POST" enctype='multipart/form-data' >
                 <td colspan="2"><strong>${file.filename!"unnamed file"}</strong>
                     <#if file.latestThumbnail?? && !file.deleted>
                         <br><img src="<@s.url value="/files/sm/${file.latestThumbnail.id?c}"/>">
                     </#if>
-                    <@s.hidden name="id" />
-                    <@s.hidden name="fileId" value="${file.id?c}"/>
                 </td>
                 <td>${file.informationResourceFileType!'UNKNOWN'}</td>
                 <td>${file.latestVersion}</td>
@@ -61,14 +58,20 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' label="Add Archival Version" />
+                <td>
+                <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal " method='post' enctype='multipart/form-data' action="/resource/admin/saveArchivalVersion" >
+                        <@s.token name='struts.csrf.token' />
+                    <@s.hidden name="id" />
+                    <@s.hidden name="fileId" value="${file.id?c}"/>
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' />
+
                 	<@s.submit name="save" />
+            </@s.form>
 </td>
                 <td><#if !file.processed && file.errorMessage?has_content>${file.errorMessage}</#if></td>
-            </@s.form>
             </tr>
             <#list file.informationResourceFileVersions as vers>
-                <#if vers.uploaded >
+                <#if vers.uploaded || vers.archival >
                     <tr>
                         <td></td>
                         <td>
