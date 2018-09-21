@@ -1,5 +1,6 @@
 const angular = require("angular");
 var app = angular.module("integrationApp");
+require("./../../includes/bootstrap-2.32/js/bootstrap.js")
 
 /**
  * SearchFilter stores the current filter values specified by the user when interacting with the "Find Ontologies" and "Find Datasets" popup control
@@ -42,7 +43,7 @@ function SearchFilter() {
 }
 
 // Controller that drives the add-integration-column controller
-app.controller('ModalDialogController', [ '$scope', 'DataService', function($scope, dataService) {
+app.controller('ModalDialogController', [ '$scope', 'DataService',  function($scope, dataService) {
     var options = {}; // will be set by scope.openModal()
     var closeWait = 500;
 
@@ -183,6 +184,7 @@ app.directive("tdarModal", function() {
         restrict : 'E',
         link : function(scope, element, attr) {
             var modalRoot = element.children();
+            console.log(modalRoot);
             var closedCallback;
             scope.openTdarModal = function(options) {
                 modalRoot.modal();
