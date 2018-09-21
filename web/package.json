@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "angular": "1.5.7",
+    "angular-mocks": "1.5.7",
     "axios": "0.17.0",
     "blueimp-canvas-to-blob": "2.0.6",
     "blueimp-file-upload": "9.19.2",

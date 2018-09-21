@@ -1,3 +1,4 @@
+require("JS/data-integration/app.js");
 describe("sanity checks for angular integration testing", function() {
     "use strict";
 

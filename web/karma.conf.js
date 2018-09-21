@@ -38,30 +38,9 @@ module.exports = function(config) {
         // list of files / patterns to load in the browser (we aren't using requireJS, so order matters)
         files: [].concat(
             [
-                // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                /*'node_modules/es6-promise/dist/es6-promise.js',
-                'node_modules/es6-promise/dist/es6-promise.auto.js',
-                'node_modules/vue/dist/vue.js',
-                'node_modules/axios/dist/axios.js',*/
                 'node_modules/moxios/dist/moxios.js',
-                
-                /*{pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
-                {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
-                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},*/
-                {pattern: "src/main/webapp/js_includes/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
-                {pattern: "src/main/webapp/js_includes/includes/bootstrap-2.32/css/bootstrap.css", watched: false},
-
-
-            ],
-            [
-                
                 //specs
                 specFiles,
-                //"src/test/frontend/spec/WorldMapSpec.js",  
-
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
                 // more fixtures - added to DOM when you call loadFixtures(filename) in your test
@@ -77,16 +56,21 @@ module.exports = function(config) {
                 //static files: images used by js libraries, e.g. jquery-ui, jquery-file-upload
                 {pattern: "src/main/webapp/includes/**/images/**/*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
-                {pattern: "src/main/webapp/js_includes/components/**/*.*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/js/maps/**/*.*", served:true, included:false, watched:false},
                 {pattern: "src/main/webapp/dist/templates/*.*", served:true, included:false, watched:false},
+                
+                'node_modules/angular/angular.js',
+                'node_modules/angular-mocks/angular-mocks.js',
+                'src/main/webapp/js/data-integration/**/*.js',
+                'src/test/frontend/spec-integrate/**/*.js',
+                {pattern: 'src/test/frontend/fixtures/integrate/*.json', watched:true, served:true, included:false}
             ]),
 
         // certain html and css files may expect static resources at specific urls (e.g. /images/foo.gif)
         proxies: {
             '/images/': '/base/src/main/webapp/images/',
             '/dist/': '/base/src/main/webapp/dist/',
-            '/includes/': '/base/src/main/webapp/js_includes/includes/',
+            '/includes/': '/base/src/main/webapp/includes/',
             '/js/maps/': '/base/src/main/webapp/js/maps/'
         },
             ///Users/jimdevos/develop/tdar.src/src/main/webapp/js/maps/world.json
@@ -99,9 +83,11 @@ module.exports = function(config) {
         preprocessors: {
             //caveat: files deeclared here cannot also be used as jasmine fixtures (known bug)
             //TODO: do we need both jasmine + htmljs fixtures? Figure out advantages/disadvantages of each
-            'src/test/frontend/html2js/*.html': ['html2js']
-            ,'src/main/webapp/js/**/*.js': ['coverage'],
-            'src/test/frontend/spec/**/*.js' : ['webpack']
+            'src/test/frontend/html2js/*.html': ['html2js'],
+            'src/main/webapp/js/**/*.js': ['coverage'],
+            'src/main/webapp/js/data-integration/**/*.js' : ['coverage','webpack'],
+            'src/test/frontend/spec/**/*.js' : ['webpack'],
+            'src/test/frontend/spec-integrate/**/*.js': ['webpack']
         },
 
         // test results reporter to use

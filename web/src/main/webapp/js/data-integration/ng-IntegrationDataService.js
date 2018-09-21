@@ -737,4 +737,6 @@ function DataService($http, $cacheFactory, $q, $log, $rootScope) {
 
 app.service("DataService", [ '$http', '$cacheFactory', '$q', '$log', '$rootScope', DataService ]);
 
-module.exports = {}
+module.exports = {
+        "DataService" : DataService
+}
