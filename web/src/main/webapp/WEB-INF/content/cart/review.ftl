@@ -103,7 +103,7 @@
 
         <div class="form-actions">
             <#if invoice.modifiable>
-                <@s.a href="/cart/modify" cssClass="button muted">Modify This Invoice</@s.a>
+                <@s.a href="/cart/modify" cssClass="button tdar-button muted">Modify This Invoice</@s.a>
             </#if>
             <@s.submit name="submit" value="Next Step: Payment" cssClass="tdar-button"/>
 

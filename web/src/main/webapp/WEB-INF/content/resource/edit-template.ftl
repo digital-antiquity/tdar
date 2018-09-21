@@ -271,10 +271,16 @@
                 be inherited from the project further down this form" />
             </div>
 
-            <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="inheritOverwriteValidationErrorModalLabel" aria-hidden="true">
+            <@helptext.inheritance />
+
+    <div id="inheritOverwriteAlert" class="modal modal-lg " tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+
+			<div class="modal-content">
+
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     <h3 id="inheritOverwriteValidationErrorModalLabel">Overwrite Existing Values?</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <div class="modal-body">
                     <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections
@@ -287,8 +293,8 @@
                     <button type="button" class="btn" id="btnInheritOverwriteCancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
                 </div>
             </div>
-
-            <@helptext.inheritance />
+            </div>
+            </div>
 
             <div class="control-group" data-tiplabel="Inherit Metadata from Selected Project" data-tooltipcontent="#divSelectAllInheritanceTooltipContent"
                  id="divInheritFromProject">
@@ -496,3 +502,4 @@ Auth Info
             </div>
     </#macro>
 </#escape>
+

@@ -134,9 +134,7 @@ color: #7d7a77;
                 <h2>Preservation Packages
                 <span><a class="button pull-right" href="<@s.url value="/cart/add"/>">Start Now</a>&nbsp;<a class="button pull-right" style="margin-left: 5px;margin-right:5px" 
                 href="<@s.url value="/cart/add"/>">Redeem Voucher</a></span></h2>
-                <div class="row">
-                    <div class="col-2"></div>
-    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='/cart/process-choice'>
+    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-row disableFormNavigate" enctype='multipart/form-data' action='/cart/process-choice'>
                                <@s.hidden name="invoice.numberOfFiles" label="Number of Files" cssClass="integer col-2" maxlength=9  />
                                <@s.hidden name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer col-2" maxlength=9 />
                     
@@ -145,11 +143,9 @@ color: #7d7a77;
                     <@invoiceCommon.pricingOption label="Medium" files="10 Files" storage="100 MB" cost=100 />
                     <@invoiceCommon.pricingOption label="Large" files="100 Files" storage="1 GB" cost=500 />
     </@s.form>
-                </div>
             </div>
         </div>
 
-<hr>
 
 <h2>Confidentiality &amp; Access Rights</h2>
 

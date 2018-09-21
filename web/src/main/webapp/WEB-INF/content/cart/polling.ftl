@@ -39,7 +39,7 @@
     <div class="col-12">
         <span class="badge pull-right" id="polling-status" data-invoiceid="${invoice.id?c}"></span>
         <div class="form-actions">
-            <a class="button" id="btnOpenPaymentWindow" href="<#noescape>${redirectUrl}</#noescape>" target="_blank">Click Here To Begin Payment Process</a>
+            <a class="button tdar-button" id="btnOpenPaymentWindow" href="<#noescape>${redirectUrl}</#noescape>" target="_blank">Click Here To Begin Payment Process</a>
             <em>Note: opens in a new window</em>.
         </div>
     </div>

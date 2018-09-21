@@ -325,7 +325,7 @@
 
 <!-- Note: this modal is about col-10 wide. Form-horizontal labels are ~col-3 wide, leaving you ~col-7 for controls. -->
 <script type="text/ng-template" id="workspace/modal-dialog.html">
-    <div id="divModalContainer" class="modal modal-big " tabindex="-1" role="dialog">
+    <div id="divModalContainer" class="modal modal-lg " tabindex="-1" role="dialog">
       <div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
         <div class="modal-header alert-info">
