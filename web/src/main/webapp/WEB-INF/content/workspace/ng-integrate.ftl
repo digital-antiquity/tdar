@@ -1,5 +1,4 @@
 <#setting url_escaping_charset="UTF-8">
-<#global angular_version="1.5.7">
 
 <head>
     <title>Dataset Integration: Edit</title>
@@ -129,11 +128,11 @@
                             </div>
 
                             <div class="btn-group">
-                                <div class="btn-group" >
-                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
+                                <div class="btn-group dropdown" >
+                                    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
                                         Add Integration Column
                                         <span class="caret"></span>
-                                    </a>
+                                    </button>
                                     <ul class="dropdown-menu" id="btnSetAddIntegrationColumns">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
                                                 ><a ng-disabled="isReadOnly()" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>

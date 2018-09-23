@@ -15,6 +15,7 @@ TDAR.c3graph        = require("./tdar.c3graph");
 TDAR.c3graphsupport = require("./tdar.c3graphsupport");
 TDAR.contexthelp    = require("./tdar.contexthelp");
 TDAR.d3tree         = require("./tdar.d3tree");
+TDAR.jstree         = require("./tdar.jstree");
 TDAR.datasetMetadata = require("./tdar.dataset-metadata"); 
 TDAR.datatable       = require("./tdar.datatable");
 TDAR.datepicker      = require("./tdar.datepicker");
@@ -34,7 +35,7 @@ TDAR.vuejs.collectionwidget =   require("./vue/view-collection-widget.js");
 TDAR.vuejs.uploadWidget     =   require("./vue/vue-edit-file-upload-component");
 TDAR.vuejs.upload           =   require("./vue/vue-base-upload");
 TDAR.vuejs.balk             =   require("./vue/vue-balk-upload-component");
-TDAR.vuejs.advancedSearch   =   require("./vue/vue-autocomplete");
+//TDAR.vuejs.advancedSearch   =   require("./vue/vue-autocomplete");
 TDAR.vuejs.editcollectionapp =  require("./vue/edit-collection");
 require("./tdar.messages_en");
 

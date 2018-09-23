@@ -112,7 +112,7 @@ var _init = function(appId) {
 	            return common.htmlEncode(core.ellipsify(value, 80))
 	         }, 
 	                 
-	         //"Add to Collection" functions. 
+	         // "Add to Collection" functions.
 	        _resetForm: function(){
 	        	console.log("Resetting the 'Add to Collection' form");
 	            this.selectedCollection='';
@@ -453,12 +453,12 @@ var _init = function(appId) {
 }
 
 module.exports = {
-        init: _init,
-        main : function() {
-            var appId = '#add-resource-form';
-            if ($(appId).length  >0 ) {
-                _init(appId);
-            }
+    init: _init,
+    main : function() {
+        var appId = '#add-resource-form';
+        if ($(appId).length  >0 ) {
+            _init(appId);
         }
     }
+}
 

@@ -1,6 +1,4 @@
 
-'use strict';
-
 // define global TDAR object if not defined already
 var TDAR = window['TDAR'] || {};
 window.TDAR = TDAR;
