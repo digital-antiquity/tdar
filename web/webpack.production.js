@@ -2,9 +2,10 @@
 var webpack = require("webpack");
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const devMode = process.env.NODE_ENV !== 'production'
 var DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 
 const merge = require('webpack-merge');
 
@@ -32,9 +33,20 @@ module.exports = merge(common, {
                         options : "$j",
                     }
                     ]
+                },
+                {
+                  test: /\.(sa|sc|c)ss$/,
+                  use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader',
+                  ],
                 }
     ]},
     plugins: [
     //    new BundleAnalyzerPlugin()
-    ]
+    ],
+    optimization: {
+        minimizer: [new OptimizeCSSAssetsPlugin({})]
+    }
 });

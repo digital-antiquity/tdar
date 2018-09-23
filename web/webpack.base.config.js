@@ -1,7 +1,6 @@
 // webpack v4
 var webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const devMode = process.env.NODE_ENV !== 'production'
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 var DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 
@@ -32,7 +31,7 @@ module.exports = {
           {
             test: /\.(sa|sc|c)ss$/,
             use: [
-              devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+              'style-loader',
               'css-loader',
               'sass-loader',
             ],
@@ -67,8 +66,8 @@ module.exports = {
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
-            filename: devMode ? '[name].css' : '[name].css',
-            chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
+            filename: '[name].css',
+            chunkFilename: '[id].[hash].css',
           }),
           new CopyWebpackPlugin([
             {

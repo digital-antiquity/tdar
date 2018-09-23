@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --mode development --open -d",
     "build": "webpack",
-    "webpack-dev": "npm run webpack --config webpack.dev.js",
+    "webpack-dev": "webpack --config webpack.dev.js",
     "webpack-server": "webpack-dev-server --watch --https --port 9000 --mode development --content-base src/main/webapp -d",
     "webpack": "webpack",
     "webpack-prod": "webpack --config webpack.production.js"
@@ -42,6 +42,7 @@
     "mini-css-extract-plugin": "^0.4.2",
     "moxios": "^0.4.0",
     "node-sass": "^4.9.3",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^3.0.0",
     "sass-loader": "^7.1.0",
     "script-loader": "^0.7.2",

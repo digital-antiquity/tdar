@@ -370,43 +370,6 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-version}</version>
                 <executions>
-                    <!-- note, this may have some issues with symlinks in 
-                        /usr -->
-                    <!-- note - npm, bower, karma and other tools
-                        are installed globally on build -->
-<!--                    <execution>
-                        <id>exec-yarn-install</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <skip>${skipNode}</skip>
-                            <executable>npm</executable>
-                             <arguments>
-                                <argument>i</argument>
-                                <argument>yarn</argument>
-                                <argument>\-\-save \-\-cache-min 9999999</argument>
-                            </arguments>
-                        </configuration>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                
-                    <execution>
-                        <id>exec-run-yarn</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <skip>${skipNode}</skip>
-                            <executable>./node_modules/.bin/yarn</executable>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument>\-\-force</argument>
-                            </arguments>
-                        </configuration>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-    -->                    
                     <execution>
                         <id>exec-install-npm</id>
                         <phase>generate-sources</phase>
@@ -441,32 +404,6 @@
                     
                 </executions>
             </plugin>
-            <!-- plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-version}</version>
-                <executions>
-                    <! - - note, this may have some issues with symlinks in 
-                        /usr 
-                     note - npm, bower, karma and other tools
-                        are installed globally on build - ->
-                    <execution>
-                        <id>exec-npm-install</id>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <skip>${skipNode}</skip>
-                            <executable>npm</executable>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument> - -cache-min 9999999</argument>
-                            </arguments>
-                        </configuration>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -670,6 +607,30 @@
                            </configuration>
                          </execution>
                        </executions>
+                     </plugin>
+                     <plugin>
+                         <groupId>org.codehaus.mojo</groupId>
+                         <artifactId>exec-maven-plugin</artifactId>
+                         <version>${exec-maven-version}</version>
+                         <executions>
+                             <execution>
+                                 <id>exec-run-webpack</id>
+                                 <phase>generate-sources</phase>
+                                 <configuration>
+                                     <skip>${skipNode}</skip>
+                                     <executable>npm</executable>
+                                     <arguments>
+                                         <argument>run-script</argument>
+                                         <argument>webpack-prod</argument>
+                                     </arguments>
+                                 </configuration>
+                                 <goals>
+                                     <goal>exec</goal>
+                                 </goals>
+                             </execution>
+                    
+                    
+                         </executions>
                      </plugin>
                     <plugin>
                         <!-- this is to put an extra copy where other things 

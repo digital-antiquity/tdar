@@ -2,7 +2,6 @@
 var webpack = require("webpack");
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const devMode = process.env.NODE_ENV !== 'production'
 var DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
