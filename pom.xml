@@ -747,7 +747,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>${user.home}/clover/${hg.branch}</clover.dir>
+                <clover.dir>${user.home}/clover/${git.branch}</clover.dir>
             </properties>
             <build>
                 <plugins>
@@ -817,7 +817,7 @@
             <activation>
                 <!-- always run (except when told not to) -->
                 <file>
-                    <missing>target/git.properties</missing>
+                    <missing>target/classes/git.properties</missing>
                 </file>
             </activation>
             <build>
@@ -832,6 +832,15 @@
                                 <configuration>
                                     <tasks>
                                         <mkdir dir="target" />
+                                        <mkdir
+                                            dir="${project.build.directory}" />
+                                        <mkdir
+                                            dir="${project.build.directory}/generated" />
+                                        <mkdir
+                                            dir="${project.build.directory}/generated/webapp" />
+                                        <mkdir
+                                            dir="target/generated/webapp-test" />
+                                        
                                     </tasks>
                                 </configuration>
                                 <goals>
@@ -884,7 +893,7 @@
                                 <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
                                 <verbose>false</verbose>
                                 <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                                <generateGitPropertiesFilename>${project.build.directory}/target/git.properties</generateGitPropertiesFilename>
+                                <generateGitPropertiesFilename>${project.build.directory}/classes/git.properties</generateGitPropertiesFilename>
                                 <format>properties</format>
                                 <skipPoms>true</skipPoms>
 
@@ -979,150 +988,6 @@
                         <executions>
                         </executions>
                     </plugin> -->
-                </plugins>
-            </build>
-        </profile>
-        
-        <profile>
-            <id>maven-scm-branch</id>
-            <activation>
-                <!-- always run (except when told not to) -->
-                <property>
-                    <name>!skipMavenMercurialSetup</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${antrun.version}</version>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- <exportAntProperties>true</exportAntProperties> -->
-                                    <target>
-                                        <mkdir dir="target" />
-                                        <mkdir
-                                            dir="${project.build.directory}" />
-                                        <mkdir
-                                            dir="${project.build.directory}/generated" />
-                                        <mkdir
-                                            dir="${project.build.directory}/generated/webapp" />
-                                        <mkdir
-                                            dir="target/generated/webapp-test" />
-                                        <!--<rmdir dir="src/main/webapp/wro" 
-                                            /> -->
-                                        <condition property="hg.location"
-                                            value="/usr/local/bin/hg">
-                                            <available
-                                                file="/usr/local/bin/hg" />
-                                        </condition>
-                                        <condition property="hg.location"
-                                            value="/usr/bin/hg">
-                                            <available file="/usr/bin/hg" />
-                                        </condition>
-                                        <property name="hg.location"
-                                            value="hg" />
-                                        <echo
-                                            message=" using mercurial from: ${hg.location}" />
-                                        <mkdir dir="target/classes" />
-                                        <exec
-                                            output="target/classes/version.txt"
-                                            executable="${hg.location}">
-                                            <arg line="id -n" />
-                                        </exec>
-                                        <exec
-                                            output="target/classes/version-sum.txt"
-                                            executable="${hg.location}">
-                                            <arg line="id -i" />
-                                        </exec>
-                                        <exec
-                                            output="target/classes/branch.txt"
-                                            executable="${hg.location}">
-                                            <arg line="branch" />
-                                        </exec>
-                                        <loadfile property="hg.version"
-                                            srcFile="target/classes/version.txt" />
-                                        <loadfile property="hg.absoluteversion"
-                                            srcFile="target/classes/version-sum.txt">
-                                            <filterchain>
-                                                <deletecharacters
-                                                    chars="\t\r\n+" />
-                                            </filterchain>
-                                        </loadfile>
-                                        <loadfile property="hg.branch"
-                                            srcFile="target/classes/branch.txt">
-                                            <filterchain>
-                                                <tokenfilter>
-                                                    <replaceregex
-                                                        pattern="-"
-                                                        replace="_"
-                                                        flags="gi" />
-                                                </tokenfilter>
-                                                <deletecharacters
-                                                    chars="\t\r\n+" />
-                                            </filterchain>
-                                        </loadfile>
-                                        <loadfile property="hg.version.as_dir"
-                                            srcFile="target/classes/version.txt">
-                                            <filterchain>
-                                                <deletecharacters
-                                                    chars="\t\r\n+" />
-                                            </filterchain>
-                                        </loadfile>
-                                        <echo
-                                            message=" ${hg.branch}: ${hg.version.as_dir}" />
-                                        <echo file="target/hg.properties" append="false">
-hg.version=${hg.version.as_dir}
-hg.branch=${hg.branch}
-                                        </echo>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                          <groupId>org.codehaus.mojo</groupId>
-                          <artifactId>properties-maven-plugin</artifactId>
-                          <version>1.0.0</version>
-                          <executions>
-                            <execution>
-                              <phase>validate</phase>
-                              <goals>
-                                <goal>read-project-properties</goal>
-                              </goals>
-                              <configuration>
-                                <files>
-                                  <file>target/hg.properties</file>
-                                </files>
-                              </configuration>
-                            </execution>
-                          </executions>
-                        </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>1.4.1</version>
-                        <executions>
-                            <execution>
-                                <id>enforce-versions</id>
-                                <goals>
-                                    <goal>enforce</goal>
-                                </goals>
-                                <configuration>
-                                    <rules>
-                                        <DependencyConvergence />
-                                    </rules>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
                 </plugins>
             </build>
         </profile>
