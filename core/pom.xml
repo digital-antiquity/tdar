@@ -693,7 +693,6 @@
             <version>2.4</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <!-- Jakarta Commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
