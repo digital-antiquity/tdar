@@ -2,16 +2,19 @@
  * notification-specific functionality
  */
 
+const core = require("./tdar.core.js");
+
+
 function _init() {
     $("[data-dismiss-id]").each(function () {
         var $this = $(this);
         var id = $this.data('dismiss-id');
-        $this.click(function() {TDAR.notifications.dismiss(id)});
+        $this.click(function() {_dismiss(id)});
     });
 }
 
 function _dismiss(id) {
-        var url = TDAR.uri( "/api/notification/dismiss"); // the script where you handle the form input.
+        var url = core.uri( "/api/notification/dismiss"); // the script where you handle the form input.
         $.ajax({
             type : "POST",
             url : url,

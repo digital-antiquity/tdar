@@ -14,6 +14,7 @@ TDAR.bulk           = require("./tdar.bulk");
 TDAR.c3graph        = require("./tdar.c3graph");
 TDAR.c3graphsupport = require("./tdar.c3graphsupport");
 TDAR.contexthelp    = require("./tdar.contexthelp");
+TDAR.download       = require("./tdar.download");
 TDAR.d3tree         = require("./tdar.d3tree");
 TDAR.jstree         = require("./tdar.jstree");
 TDAR.datasetMetadata = require("./tdar.dataset-metadata"); 

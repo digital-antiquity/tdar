@@ -42,6 +42,6 @@ var _setup = function() {
     });
 }
 
-TDAR.download = {
+module.exports = {
     setup : _setup
 };
