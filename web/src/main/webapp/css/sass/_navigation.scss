@@ -1,0 +1,176 @@
+nav
+{
+  font-weight: bold;
+
+  .logIn
+  {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    .tdarLink
+    {
+      color: $darkRed;
+    }
+  }
+}
+
+.tdarNav
+{
+  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
+  /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
+  border-bottom:1px solid #CCC; 
+  font-size:14px;
+  
+  .tdarNavItem
+  {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgba(0,0,0,0.5);
+    border-right: $darkRed;
+    text-wrap:none;
+  }
+
+  .fa-chevron-up {
+      display:none;
+  }
+  .show {
+      .fa-chevron-up {
+          display:block;
+      }
+       .fa-chevron-down {
+          display:none;
+      }
+  }
+  .nav-chevron
+  {
+    stroke-width: 5px;
+    stroke: $darkRed;
+  }
+  
+  .show .nav-chevron
+  {
+    transform: rotate(180deg);
+  }
+}
+
+
+
+#tdarNavMenu {
+    margin-left:2em;
+}
+
+
+#tdarNavMenu {
+    margin-right:2em;
+}
+
+.navbar-brand {
+    margin-left:2em;
+    padding-top:0px;
+    padding-bottom:0px;
+}
+
+
+
+
+
+/***** NAV *******/
+
+
+.resource-nav.modern {
+    height:initial;
+    margin-top:1em;
+    line-height:1em;
+    background:rgb(250,250,250);
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 10px;
+    margin-left:0rem;
+    
+    label {
+        float:none;
+        padding-top: 0px;
+        margin-bottom:0rem;
+        padding-bottom:0rem;
+        margin-top:.44rem;
+        margin-left:.5rem;
+        padding-right:.5rem;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 11px;
+        color: #7d7a77;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    ul {
+        margin:0rem;
+        padding:0rem;
+        li {
+            float:none;
+            padding: 0px;
+            margin-right:0px;
+            margin-bottom:.4rem;
+            margin-top:.2rem;
+            b, a, span.disabled {
+                float:none;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 12px;
+                line-height: 11px;
+                padding-right:.5rem;
+                padding-left:.5rem;
+                color: #7d7a77;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                border-right: 1px solid #fff;
+            }
+            a {
+                color:$darkRed;
+            }
+            a:hover {
+                text-decoration: none;
+                color:black;
+            };
+        }
+    }
+    
+}
+
+
+
+
+@media(min-width:768px) {
+  .tdarDropdown
+  {
+    .flex-column:first-child
+    {
+      border-right: 2px solid $darkRed;
+    }
+  }
+  .dropdown-menu:after {
+    bottom: 100%;
+    left: 10%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .dropdown-menu-right:after {
+    left: 80% !important;
+  }
+
+  .dropdown-menu:after {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 10px;
+    margin-left: -10px;
+  }
+  .dropdown-menu:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 16.5px;
+    margin-left: -16.5px;
+  }
+}
