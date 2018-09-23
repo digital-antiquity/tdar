@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -268,22 +269,26 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     @Transactional(readOnly = false)
     public void groupTdarFiles(Collection<TdarFile> files) throws Throwable {
    
+        TdarFileReconciller reconciler = new TdarFileReconciller(analyzer.getExtensionsForType(ResourceType.values()));
+        Map<TdarFile, RequiredOptionalPairs> reconcile = reconciler.reconcile(files);
+        genericDao.saveOrUpdate(reconcile.keySet());
+        
+        for (Entry<TdarFile, RequiredOptionalPairs> entry : reconcile.entrySet()) {
+            validate(entry.getKey(), entry.getValue());
+            process(entry.getKey(), entry.getValue());
 
-        TdarFile file = null;
-        RequiredOptionalPairs pair = null;
-        // should we consider persisting the RequiredOptionalPair, or making it an ENUM or something that could be persisted on TdarFile? This would help if
-        // we're trying to make this process a bit more asynchronous
-        validate(file, pair);
-        process(file, pair);
-        // run validate
-        // run process
+        }
     }
 
     @Transactional(readOnly = false)
     public void validate(TdarFile file, RequiredOptionalPairs pair) {
         // validate that the package is complete and the files have a size
-        boolean success = true;
-        if (success) {
+        List<String> extensions = new ArrayList<>();
+        extensions.add(file.getExtension());
+        for (TdarFile part : file.getParts()) {
+            extensions.add(part.getExtension());
+        }
+        if (pair.isValid(extensions)) {
             file.setStatus(ImportFileStatus.VALIDATED);
         } else {
             file.setStatus(ImportFileStatus.VALIDATION_FAILED);

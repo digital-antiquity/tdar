@@ -23,6 +23,7 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -129,11 +130,12 @@ public class TdarFile extends AbstractFile implements HasTables {
     public TdarFile() {
     }
 
-    public TdarFile(String string, TdarUser tdarUser, BillingAccount act) {
-        this.setFilename(string);
+    public TdarFile(String filename, TdarUser tdarUser, BillingAccount act) {
+        this.setFilename(filename);
         this.setUploader(tdarUser);
         this.setAccount(act);
         this.setDateCreated(new Date());
+        this.setExtension(StringUtils.substringAfterLast(filename, "."));
     }
 
     public TdarFile(File file, TdarUser basicUser, BillingAccount act) {

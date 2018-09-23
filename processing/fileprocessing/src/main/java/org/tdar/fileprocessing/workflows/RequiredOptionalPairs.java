@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.tdar.db.conversion.converters.DatasetConverter;
 
 @XmlRootElement
@@ -98,5 +99,20 @@ public class RequiredOptionalPairs implements Serializable {
 
     public void setPrimaryExtension(String primaryExtension) {
         this.primaryExtension = primaryExtension;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s -> %s", getRequired(), getOptional());
+    }
+    
+    public boolean isValid(List<String> incoming) {
+        List<String> extensions = new ArrayList<>(required);
+        extensions.removeAll(incoming);
+        if (CollectionUtils.isEmpty(extensions)) {
+            return true;
+        }
+        return false;
+        
     }
 }
