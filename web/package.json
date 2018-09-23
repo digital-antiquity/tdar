@@ -10,13 +10,13 @@
     "webpack-dev": "npm run webpack --config webpack.dev.js",
     "webpack-server": "webpack-dev-server --watch --https --port 9000 --mode development --content-base src/main/webapp -d",
     "webpack": "webpack",
-    "webpack-prod": "webpack --config webpack.production.js",
-    "convert": "npm run webpack --config webpack-convert.config.js"
+    "webpack-prod": "webpack --config webpack.production.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "angular-mocks": "1.5.7",
     "copy-webpack-plugin": "^4.5.2",
     "css-loader": "^1.0.0",
     "duplicate-package-checker-webpack-plugin": "^3.0.0",
@@ -58,7 +58,6 @@
   },
   "dependencies": {
     "angular": "1.5.7",
-    "angular-mocks": "1.5.7",
     "axios": "0.17.0",
     "blueimp-canvas-to-blob": "2.0.6",
     "blueimp-file-upload": "9.19.2",
