@@ -1,46 +1,6 @@
 TDAR.vuejs.collectionwidget = (function(console, $, ctx, Vue,axios) {
     "use strict";
 
-//These are the default options for selectize. They are merged when the selectize box is created. 
-var _getSelectizeOpts = function() {
-   var opts = {
-        valueField: 'id',
-        labelField: 'name',
-        searchField: 'name',
-        create: true,
-        createOnBlur:true,
-        render: {
-            option: function(item, escape) {
-                    return '<div>' +
-                        '<span class="title">' +
-                            '<span class="name">' + escape(item.name) + '</span>' +
-                        '</span>' +
-                    '</div>';
-                }
-            },
-       
-	    load: function(query, callback) {
-	        if (!query.length) return callback();
-	        $.ajax({
-	            url: '/api/lookup/collection',
-	            type: 'GET',
-	            data: { 
-	               'term':query,
-	               'permission':'ADMINISTER_COLLECTION'
-	            },
-	            error: function() {
-	                callback();
-	            },
-	            success: function(res) {
-	                callback(res.collections);
-	            }
-	         });
-	     }
-     }; 
-   
-     return opts;
-}
-
 //Instantiate and return a new Vue instance. 
 var _init = function(appId) {
     $("#addToExisting").popover({placement:'right', delay:{hide:2000}});
@@ -64,6 +24,7 @@ var _init = function(appId) {
 	        managedResource: true,
 	        resourceId: -1,
 	        administrator: false,
+	        autocompletesuffix: "permission=ADMINISTER_COLLECTION",
 	        canEdit: false,
 	        collections: {managed:[], unmanaged:[]},
 	        
@@ -109,7 +70,19 @@ var _init = function(appId) {
 	    },
     
 	    methods: {
-	    	
+	        selectCollection: function(coll) {
+	            console.log("select collection", coll);
+	            if (coll == undefined) {
+                    Vue.set(this,"selectedCollection", '');
+	                return;
+	            } 
+	            
+	            if (typeof coll == 'string') {
+                   Vue.set(this,"selectedCollection", coll);
+	            } else if (coll.id > -1) {
+	                Vue.set(this,"selectedCollection", coll.id);
+	            } 
+	        },
 	    	//Helper methods: maybe move to a static library?
 	        _arrayRemove: function(arr, item) {
 	            var idx = arr.indexOf(item);
@@ -140,8 +113,7 @@ var _init = function(appId) {
 	                Vue.set(this,"managedResource",true);
 	            }
 	
-	            var $select = $('#collection-list').selectize();
-	            $select[0].selectize.clear();
+	            this.$refs['collection-list'].reset();
 	        },
 	        
 	        getCollections: function(){
@@ -273,13 +245,10 @@ var _init = function(appId) {
 	        	var progress = $("#upload-progress");
 	        	var progressMessage = $("#progress-message");
 	        	var form 	 = $("#upload-form");
-	            var $select = $('#collection-list').selectize();
+                this.$refs['collection-list'].reset();
 	            var title  = $("#progress-title");
 	            
 	            var vapp = this;
-	            
-	            $select[0].selectize.clear();
-	            $select[0].selectize.clearOptions()	
 	            
 	            vapp._enableSubmitButton();
 	        	progress.hide();
@@ -308,6 +277,8 @@ var _init = function(appId) {
 	        
 	        addToCollection:function(){
 	            var vapp = this;
+	            
+	            console.log("selectedCollection", this.selectedCollection);
 	            if(this.selectedCollection==""){
 	                $("#addToNew").popover('show');
 	                setTimeout(function () {
@@ -316,7 +287,7 @@ var _init = function(appId) {
 	              }
 	
 	            else if (isNaN(this.selectedCollection)) {
-	                	console.log("Creating a new collection");
+	                	console.log("Creating a new collection", this.selectedCollection);
 	                	console.log("Disabling submit button");
 	                    // post to create a new collection.
 	                    var data = {
@@ -398,7 +369,7 @@ var _init = function(appId) {
 	
 	            else if (isNaN(this.selectedCollection)) {
 	            		vapp._disableSubmitButton();
-	                    
+	                    console.log(this.selectedCollection);
 	            		// post to create a new collection.
 	                    var data = {
 	                        collectionName: this.selectedCollection,
@@ -466,7 +437,6 @@ var _init = function(appId) {
 
 return {
     init: _init,
-    collectionSelectizeOptions : _getSelectizeOpts,
     main : function() {
         var appId = '#add-resource-form';
         if ($(appId).length  >0 ) {

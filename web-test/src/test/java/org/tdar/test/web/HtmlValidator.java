@@ -29,7 +29,7 @@ import nu.validator.xml.SystemErrErrorHandler;
 public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<selectize>", "</selectize>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
+    protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<autocomplete>", "</autocomplete>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
             "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute", "<template>", "</template>",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
@@ -40,6 +40,8 @@ public class HtmlValidator {
             "missing </form> before </div>\n" , 
             "discarding unexpected </fieldset",
             "discarding unexpected </form",
+            "discarding unexpected autocomplete",
+            "autocomplete is not recognized",
             "missing </form> before </div",
             "discarding unexpected </a>",
             "missing </div> before link",
