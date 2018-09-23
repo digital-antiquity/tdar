@@ -2,7 +2,9 @@ package org.tdar.fileprocessing.workflows;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -18,6 +20,7 @@ public class RequiredOptionalPairs implements Serializable {
 
     List<String> required = new ArrayList<>();
     List<String> optional = new ArrayList<>();
+    private String primaryExtension = "";
 
     private Class<? extends Workflow> workflowClass;
 
@@ -71,4 +74,29 @@ public class RequiredOptionalPairs implements Serializable {
         this.datasetConverter = datasetConverter;
     }
 
+    public boolean requiresSidecar() {
+        int total = required.size() + optional.size();
+        if (total > 1) {
+            return true;
+        }
+        return false;
+    }
+
+    public Set<String> getAllExtensions() {
+        HashSet<String> toReturn = new HashSet<>();
+        toReturn.addAll(getRequired());
+        toReturn.addAll(getOptional());
+        return toReturn;
+    }
+    
+    public String getPrimaryExtension() {
+        if (this.getRequired().size() == 1) {
+            return this.getRequired().get(0);
+        }
+        return this.primaryExtension;
+    }
+
+    public void setPrimaryExtension(String primaryExtension) {
+        this.primaryExtension = primaryExtension;
+    }
 }

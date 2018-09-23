@@ -45,18 +45,16 @@ import org.tdar.core.dao.FileProcessingDao;
 import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
+import org.tdar.core.exception.TdarAuthorizationException;
+import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetImportService;
-import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.db.datatable.TDataTable;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.db.model.TargetDatabase;
 import org.tdar.fileprocessing.workflows.HasDatabaseConverter;
 import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
 import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.fileprocessing.workflows.WorkflowContext;
-import org.tdar.core.exception.TdarAuthorizationException;
-import org.tdar.core.service.collection.ResourceCollectionService;
-import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
@@ -88,7 +86,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Autowired
     public PersonalFilestoreServiceImpl(GenericDao genericDao, FileProcessingDao fileProcessingDao, FileAnalyzer analyzer,
-            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService, 
+            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService,
             @Qualifier("target") TargetDatabase tdarDataImportDatabase, DatasetImportService datasetImportService) {
         this.genericDao = genericDao;
         this.fileProcessingDao = fileProcessingDao;
@@ -269,7 +267,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Transactional(readOnly = false)
     public void groupTdarFiles(Collection<TdarFile> files) throws Throwable {
-        // do something to pull into sets using workflows...
+   
 
         TdarFile file = null;
         RequiredOptionalPairs pair = null;
@@ -676,7 +674,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         if (!authorizationService.canAddToCollection(user, file.getCollection())) {
             throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
         }
-        
+
         file.setCollection(null);
         genericDao.saveOrUpdate(file);
     }
