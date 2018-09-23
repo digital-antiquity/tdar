@@ -813,6 +813,177 @@
         </profile>
 
         <profile>
+            <id>maven-scm-branch-git</id>
+            <activation>
+                <!-- always run (except when told not to) -->
+                <file>
+                    <missing>target/git.properties</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-generated-target</id>
+                                <phase>process-resources</phase>
+                                <configuration>
+                                    <tasks>
+                                        <mkdir dir="target" />
+                                    </tasks>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>print-branch-info</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <echo message="Branch:${git.branch}     Version:${git.commit.id.abbrev}"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                            
+                        </executions>
+                     </plugin>
+                    
+                        <plugin>
+                            <groupId>pl.project13.maven</groupId>
+                            <artifactId>git-commit-id-plugin</artifactId>
+                            <version>2.2.1</version>
+                            <executions>
+                                <execution>
+                                    <id>get-the-git-infos</id>
+                                    <goals>
+                                        <goal>revision</goal>
+                                    </goals>
+                                    <phase>validate</phase>
+                                </execution>
+                            </executions>
+
+                            <configuration>
+                                <!--
+                                    If you'd like to tell the plugin where your .git directory is,
+                                    use this setting, otherwise we'll perform a search trying to
+                                    figure out the right directory. It's better to add it explicitly IMHO.
+                                -->
+                                <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+
+                                <!-- that's the default value, you don't have to set it -->
+                                <prefix>git</prefix>
+
+                                <!-- that's the default value -->
+                                <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+                                <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
+                                <verbose>false</verbose>
+                                <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                                <generateGitPropertiesFilename>${project.build.directory}/target/git.properties</generateGitPropertiesFilename>
+                                <format>properties</format>
+                                <skipPoms>true</skipPoms>
+
+                                <!-- @since 2.1.4 -->
+                                <!-- 
+                                    Tell maven-git-commit-id to inject the git properties into all reactor projects not just the current one.
+                                    For details about why you might want to skip this, read this issue: https://github.com/ktoso/maven-git-commit-id-plugin/pull/65
+                                    The property is set to ``false`` by default to prevent the overriding of properties that may be unrelated to the project.
+                                -->
+                                <injectAllReactorProjects>true</injectAllReactorProjects>
+                                <failOnNoGitDirectory>true</failOnNoGitDirectory>
+                                <failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
+                                <skip>false</skip>
+                                <runOnlyOnce>false</runOnlyOnce>
+                                <useNativeGit>false</useNativeGit>
+                                <abbrevLength>7</abbrevLength>
+                                <commitIdGenerationMode>flat</commitIdGenerationMode>
+
+                                <!-- @since 2.1.0 -->
+                                <!-- 
+                                    read up about git-describe on the in man, or it's homepage - it's a really powerful versioning helper 
+                                    and the recommended way to use git-commit-id-plugin. The configuration bellow is optional, 
+                                    by default describe will run "just like git-describe on the command line", even though it's a JGit reimplementation.
+                                -->
+                                <gitDescribe>
+                        
+                                    <!-- don't generate the describe property -->
+                                    <skip>false</skip>
+                        
+                                    <!-- 
+                                        if no tag was found "near" this commit, just print the commit's id instead, 
+                                        helpful when you always expect this field to be not-empty 
+                                    -->
+                                    <always>false</always>
+                                    <!--
+                                         how many chars should be displayed as the commit object id? 
+                                         7 is git's default, 
+                                         0 has a special meaning (see end of this README.md), 
+                                         and 40 is the maximum value here 
+                                    -->
+                                    <abbrev>7</abbrev>
+                        
+                                    <!-- when the build is triggered while the repo is in "dirty state", append this suffix -->
+                                    <dirty>-dirty</dirty>
+
+                                    <!-- Only consider tags matching the given pattern. This can be used to avoid leaking private tags from the repository. -->
+                                    <match>*</match>
+
+                                    <!--
+                                        when you run git-describe it only looks only for *annotated tags* by default
+                                        if you wish to consider *lightweight tags* in your describe as well you would need to switch this to *true*
+
+                                        The difference between *annotated tags* and *lightweight tags* is outlined in more depth here:
+                                        https://github.com/ktoso/maven-git-commit-id-plugin/#git-describe-and-a-small-gotcha-with-tags
+                                    -->
+                                    <tags>false</tags>
+
+                                    <!-- 
+                                         always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. 
+                                         The distance will always be 0 if you're "on" the tag. 
+                                    -->
+                                    <forceLongFormat>false</forceLongFormat>
+                                </gitDescribe>
+                                <!-- @since 2.2.2 -->
+                                <!-- 
+                                    Since version **2.2.2** the maven-git-commit-id-plugin comes equipped with an additional validation utility which can be used to verify if your project properties are set as you would like to have them set.
+                                    *Note*: This configuration will only be taken into account when the additional goal `validateRevision` is configured inside an execution.
+                                -->
+                                <validationProperties>
+                                    <validationProperty>
+                                        <!--
+                                             A descriptive name that will be used to be able to identify the validation that does not match up (will be displayed in the error message).
+                                        -->
+                                        <name>validating project version</name>
+                                        <!-- 
+                                             the value that needs the validation
+                                             *Note* : In order to be able to validate the generated git-properties inside the pom itself you may need to set the configutation `<injectAllReactorProjects>true</injectAllReactorProjects>`. 
+                                        -->
+                                        <value>${project.version}</value>
+                                        <!--
+                                            the expected value
+                                        -->
+                                        <shouldMatchTo><![CDATA[^.*(?<!-SNAPSHOT)$]]></shouldMatchTo>
+                                    </validationProperty>
+                                    <!-- the next validationProperty you would like to validate -->
+                                </validationProperties>
+                                <validationShouldFailIfNoMatch>true</validationShouldFailIfNoMatch>
+                            </configuration>
+                    </plugin>
+                    <!-- <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                        </executions>
+                    </plugin> -->
+                </plugins>
+            </build>
+        </profile>
+        
+        <profile>
             <id>maven-scm-branch</id>
             <activation>
                 <!-- always run (except when told not to) -->
