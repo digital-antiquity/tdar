@@ -9,6 +9,7 @@ var select2 = false;
 var _project = null;
 
 const core = require("./tdar.core");
+require('./../includes/jquery.populate.js');
 const validate = require("./tdar.validate");
 const common = require("./tdar.common");
 const repeatrow = require("./tdar.repeatrow");

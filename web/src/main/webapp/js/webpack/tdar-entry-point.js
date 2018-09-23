@@ -18,4 +18,7 @@ require("../../css/tdar.searchresults.css");
 require("../../css/tdar.invoice.css");
 require("../../css/tdar-integration.css");
 
+
+require('../../includes/js-emca-5.1-polyfill.js');
+
 TDAR.main();
