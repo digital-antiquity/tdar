@@ -840,9 +840,7 @@
             <id>prepare-target</id>
             <activation>
                 <!-- always run (except when told not to) -->
-                <file>
-                    <missing>target/generated/webapp</missing>
-                </file>
+                    <activeByDefault>true</activeByDefault>
             </activation>
             <build>
                 <plugins>
@@ -855,6 +853,7 @@
                                 <phase>process-resources</phase>
                                 <configuration>
                                     <tasks>
+                                        <echo message="mkdir: ${project.build.directory} "/>
                                         <mkdir dir="target" />
                                         <mkdir dir="${project.build.directory}" />
                                         <mkdir
