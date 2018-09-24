@@ -40,6 +40,7 @@
             <th>Size</th>
             <th>Date Uploaded</th>
             <th>MimeType</th>
+            <th>Add Archival Version</th>
             <th>Processing Errors?</th>
         </tr>
         <#list resource.informationResourceFiles as file>
@@ -57,10 +58,20 @@
                 <td></td>
                 <td></td>
                 <td></td>
+                <td>
+                <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal " method='post' enctype='multipart/form-data' action="/resource/admin/saveArchivalVersion" >
+                        <@s.token name='struts.csrf.token' />
+                    <@s.hidden name="id" />
+                    <@s.hidden name="fileId" value="${file.id?c}"/>
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' />
+
+                	<@s.submit name="save" />
+            </@s.form>
+</td>
                 <td><#if !file.processed && file.errorMessage?has_content>${file.errorMessage}</#if></td>
             </tr>
             <#list file.informationResourceFileVersions as vers>
-                <#if vers.uploaded >
+                <#if vers.uploaded || vers.archival >
                     <tr>
                         <td></td>
                         <td>

@@ -71,7 +71,7 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
         setConfiguration(method, currentConfig);
     }
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
+    protected final WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
 
     @SuppressWarnings("deprecation")
     protected void setConfiguration(FrameworkMethod method, String config) {

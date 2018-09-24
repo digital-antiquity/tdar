@@ -20,8 +20,12 @@
     </#macro>
 <#-- string representing current tdar version/build number -->
     <#assign tdarBuildId>
-        <#attempt><#include  "/version.txt" parse=false/><#recover></#attempt>
+        <#attempt><#include  "../../git.properties" parse=false/><#recover></#attempt>
     </#assign>
+    <#if tdarBuildId?contains("git.commit.id")>
+    <#assign tdarBuildId = tdarBuildId?keep_after_last("git.commit.id=") />
+    <#assign tdarBuildId = tdarBuildId?keep_before("\n") />
+    </#if>
     <#assign tdarBuildId = (tdarBuildId!'unknown')?trim?replace("+", ".001") />
 
 <#--
