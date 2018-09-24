@@ -11,6 +11,7 @@ import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.hssf.util.CellReference;
 import org.apache.poi.ss.formula.eval.NotImplementedException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -218,18 +219,18 @@ public class SheetEvaluator {
         errors.add(CellReference.convertNumToColString(cell.getColumnIndex()) + (cell.getRowIndex() + 1));
 
         try {
-            if (cell.getCellType() == Cell.CELL_TYPE_ERROR) {
+            if (cell.getCellType() == CellType.ERROR) {
                 throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_excel_error", "sheetEvaluator.parse_excel_error_url", errors);
             }
             return formatter.formatCellValue(cell, formulaEvaluator);
         } catch (IndexOutOfBoundsException e) {
             logger.trace("row {} col: {}", cell.getRowIndex(), cell.getColumnIndex());
             switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_STRING:
+                case STRING:
                     return cell.getStringCellValue();
-                case Cell.CELL_TYPE_NUMERIC:
+                case NUMERIC:
                     return Double.toString(cell.getNumericCellValue());
-                case Cell.CELL_TYPE_BOOLEAN:
+                case BOOLEAN:
                     return Boolean.toString(cell.getBooleanCellValue());
                 default:
                     throw new TdarRecoverableRuntimeException("sheetEvaluator.parse_error", errors);

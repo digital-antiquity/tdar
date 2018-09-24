@@ -19,7 +19,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.poi.hssf.util.HSSFColor.VIOLET;
 import org.hibernate.ScrollableResults;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

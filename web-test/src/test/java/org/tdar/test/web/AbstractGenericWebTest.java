@@ -71,7 +71,7 @@ import net.sf.json.JSONSerializer;
 
 public abstract class AbstractGenericWebTest {
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_52);
+    protected final WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
     protected boolean skipHtmlValidation = false;
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
             "problems with this submission", "TDAR:500", "TDAR:404", "TDAR:509");
@@ -272,7 +272,47 @@ public abstract class AbstractGenericWebTest {
     public static String getBaseSecureUrl() {
         return CONFIG.getBaseSecureUrl();
     }
-
+    //
+    // public Page getPage(String localPath) {
+    // try {
+    // if (localPath.startsWith("http")) {
+    // return webClient.getPage(localPath);
+    // } else {
+    // String url = pathToUrl(localPath);
+    // return webClient.getPage(url);
+    // }
+    // } catch (Exception e) {
+    // logger.error("couldn't find page at {}", localPath, e);
+    // }
+    // return null;
+    // }
+    //
+    // public String pathToUrl(String localPath_) {
+    // if(localPath_.startsWith("http")) {return localPath_;}
+    // String localPath = localPath_;
+    // String prefix = getBaseUrl();
+    // try {
+    // URL current = internalPage.getUrl();
+    // prefix = String.format("%s://%s:%s", current.getProtocol(), current.getHost(), current.getPort());
+    // logger.info("SETTING URL TO {}{}", prefix, localPath);
+    // } catch (Exception e) {
+    // logger.trace("{}", e);
+    // }
+    //
+    // if (localPath.startsWith("//")) {
+    // localPath = localPath.substring(1);
+    // }
+    //
+    // if (prefix.endsWith("/")) {
+    // while (localPath.startsWith("/")) {
+    // localPath = localPath.substring(1);
+    // }
+    // }
+    //
+    // String url = prefix + localPath;
+    // return url;
+    // }
+    //
 
     // TODO: implemnent this, if viable (not sure yet if it will be easy or crazy hard).
     /**

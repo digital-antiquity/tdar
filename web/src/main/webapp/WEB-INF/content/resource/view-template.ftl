@@ -539,6 +539,7 @@
 
 
    <div class="modal hide fade" id="modal">
+                <#include '/components/tdar-autocomplete/template/autocomplete.html' />
                 <#include 'vue-collection-widget.html' />
     </div>
 

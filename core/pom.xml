@@ -497,11 +497,10 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
+            <version>4.2</version>
             <type>jar</type>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-
         <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
@@ -589,6 +588,10 @@
             <version>1.2</version>
             <scope>runtime</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>orgjavax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
                     <artifactId>log4j-slf4j-impl</artifactId>

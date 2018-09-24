@@ -9,6 +9,7 @@ import java.io.InputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -162,45 +163,45 @@ public class ExcelUnit {
     }
 
     public void assertCellIsNumbericType(int row, int column) {
-        assertCellType(getCell(row, column), Cell.CELL_TYPE_NUMERIC);
+        assertCellType(getCell(row, column), CellType.NUMERIC);
     }
 
     public void assertCellIsString(int row, int column) {
-        assertCellType(getCell(row, column), Cell.CELL_TYPE_STRING);
+        assertCellType(getCell(row, column), CellType.STRING);
     }
 
     public void assertCellIsFormula(int row, int column) {
-        assertCellType(getCell(row, column), Cell.CELL_TYPE_FORMULA);
+        assertCellType(getCell(row, column), CellType.FORMULA);
     }
 
-    private void assertCellType(Cell cell, int type) {
+    private void assertCellType(Cell cell, CellType type) {
         switch (type) {
-            case Cell.CELL_TYPE_BLANK:
+            case BLANK:
                 if (type != cell.getCellType()) {
                     Assert.fail("cell was not 'blank'");
                 }
                 break;
-            case Cell.CELL_TYPE_BOOLEAN:
+            case BOOLEAN:
                 if (type != cell.getCellType()) {
                     Assert.fail("cell was not 'boolean'");
                 }
                 break;
-            case Cell.CELL_TYPE_ERROR:
+            case ERROR:
                 if (type != cell.getCellType()) {
                     Assert.fail("cell was not 'error'");
                 }
                 break;
-            case Cell.CELL_TYPE_FORMULA:
+            case FORMULA:
                 if (type != cell.getCellType()) {
                     Assert.fail("cell was not 'formula'");
                 }
                 break;
-            case Cell.CELL_TYPE_NUMERIC:
+            case NUMERIC:
                 if (type != cell.getCellType()) {
                     Assert.fail("cell was not 'numeric'");
                 }
                 break;
-            case Cell.CELL_TYPE_STRING:
+            case STRING:
                 if (type != cell.getCellType()) {
                     Assert.fail("cell was not 'string'");
                 }
