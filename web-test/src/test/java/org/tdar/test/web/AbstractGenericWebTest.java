@@ -71,7 +71,7 @@ import net.sf.json.JSONSerializer;
 
 public abstract class AbstractGenericWebTest {
 
-    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
+    protected final WebClient webClient = new WebClient(BrowserVersion.BEST_SUPPORTED);
     protected boolean skipHtmlValidation = false;
     public static List<String> errorPatterns = Arrays.asList("http error", "server error", "{0}", "{1}", "{2}", "{3}", "{4}", ".exception.", "caused by",
             "problems with this submission", "TDAR:500", "TDAR:404", "TDAR:509");
