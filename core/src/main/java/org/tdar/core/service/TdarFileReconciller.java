@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,7 +62,7 @@ public class TdarFileReconciller {
         Map<String, TdarFile> fileMap = new HashMap<>();
         files.forEach(file -> {
             if (fileMap.containsKey(file.getName())) {
-                throw new TdarRecoverableRuntimeException("duplicate file in evalation:" + file.getName());
+                throw new TdarRecoverableRuntimeException("tdarFileReconciller.duplicate",Arrays.asList(file.getName()));
             }
             fileMap.put(file.getName().toLowerCase(), file);
         });
