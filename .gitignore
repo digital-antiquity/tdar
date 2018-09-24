@@ -17,3 +17,5 @@ web/src/main/resources/spring-local-settings.xml
 web/src/main/resources/tdar.properties
 web/src/main/resources/jetty/jetty-ssl.keystore.old
 core/logs
+*/logs/tdar*
+*/*/logs/tdar*
