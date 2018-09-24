@@ -665,12 +665,34 @@
                            </goals>
                            <configuration>
                              <files>
-                               <file>target/hg.properties</file>
+                               <file>target/git.properties</file>
                              </files>
                            </configuration>
                          </execution>
                        </executions>
                      </plugin>
+                    <plugin>
+                        <groupId>ro.isdc.wro4j</groupId>
+                        <artifactId>wro4j-maven-plugin</artifactId>
+                        <version>${wro4j.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <targetGroups>default,ng-integrate</targetGroups>
+                            <minimize>true</minimize>
+                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${git.version}</destinationFolder>
+                            <contextFolder>${basedir}/src/main/webapp/</contextFolder>
+                            <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
+                            <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+                            <ignoreMissingResources>false</ignoreMissingResources>
+                        </configuration>
+                    </plugin>
                     <plugin>
                         <!-- this is to put an extra copy where other things 
                             like the tDAR website can deal with it. JS doesn't change that often so, 
@@ -691,6 +713,7 @@
                                             todir="${project.build.directory}/src/main/webapp/webapp/dist/">
                                             <fileset
                                                 dir="${project.build.directory}/src/main/webapp/dist/${hg.version}" />
+                                                dir="${project.build.directory}/generated/webapp/wro/${git.version}" />
                                         </copy>
      -->
                                     </target>
