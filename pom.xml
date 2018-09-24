@@ -818,7 +818,7 @@
             <activation>
                 <!-- always run (except when told not to) -->
                 <file>
-                    <missing>target/git.properties</missing>
+                    <missing>target/classes/git.properties</missing>
                 </file>
             </activation>
             <build>
@@ -832,15 +832,15 @@
                                 <phase>process-resources</phase>
                                 <configuration>
                                     <tasks>
-                                            <mkdir dir="target" />
-                                            <mkdir
-                                                dir="${project.build.directory}" />
-                                            <mkdir
-                                                dir="${project.build.directory}/generated" />
-                                            <mkdir
-                                                dir="${project.build.directory}/generated/webapp" />
-                                            <mkdir
-                                                dir="target/generated/webapp-test" />
+                                        <mkdir dir="target" />
+                                        <mkdir
+                                            dir="${project.build.directory}" />
+                                        <mkdir
+                                            dir="${project.build.directory}/generated" />
+                                        <mkdir
+                                            dir="${project.build.directory}/generated/webapp" />
+                                        <mkdir
+                                            dir="target/generated/webapp-test" />
                                     </tasks>
                                 </configuration>
                                 <goals>
@@ -893,7 +893,7 @@
                                 <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
                                 <verbose>false</verbose>
                                 <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                                <generateGitPropertiesFilename>${project.build.directory}/target/git.properties</generateGitPropertiesFilename>
+                                <generateGitPropertiesFilename>${project.build.directory}/classes/git.properties</generateGitPropertiesFilename>
                                 <format>properties</format>
                                 <skipPoms>true</skipPoms>
 
