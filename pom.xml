@@ -97,7 +97,7 @@
         <ant.version>1.10.1</ant.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <cglib.version>3.2.5</cglib.version>
-        <commons-compress.version>1.14</commons-compress.version>
+        <commons-compress.version>1.18</commons-compress.version>
         <commons-cli.version>1.3</commons-cli.version>
         <hamcrest.version>1.3</hamcrest.version>
         <jetty.version>9.4.9.v20180320</jetty.version>
@@ -747,7 +747,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>${user.home}/clover/${hg.branch}</clover.dir>
+                <clover.dir>${user.home}/clover/${git.branch}</clover.dir>
             </properties>
             <build>
                 <plugins>
