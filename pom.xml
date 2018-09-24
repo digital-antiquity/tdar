@@ -759,6 +759,7 @@
                             <!-- <cloverDatabase>${clover.dir}/database.db</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database.db</cloverMergeDatabase> -->
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
+                            <skip>true</skip>
                         </configuration>
                         <executions>
                             <execution>
