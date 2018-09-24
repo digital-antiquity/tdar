@@ -82,7 +82,9 @@ public class SaveSearchResultsSeleniumWebITCase extends AbstractEditorSeleniumWe
 
     public void enterCollectionInformation() {
         // Enter some text into the selectize text area.
-        find(By.id("collection-list-selectized")).val("collection-list-selectized").sendKeys(Keys.ENTER);
+        find(By.className("collection-add-input")).val("collection-list-selectized");
+        waitFor(By.className("createnew"));
+        find(By.className("createnew")).click();
         sleep(500);
         WebElementSelection descriptionBox = find(By.id(collectionDescription));
         assertTrue("The description box is displayed", descriptionBox.isDisplayed());

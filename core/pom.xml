@@ -693,13 +693,6 @@
             <version>2.4</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <!-- Jakarta Commons -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${dbcp.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
@@ -773,7 +766,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
+            <version>4.2</version>
             <type>jar</type>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
@@ -869,6 +862,10 @@
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -941,12 +938,6 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
-            <groupId>commons-dbutils</groupId>
-            <artifactId>commons-dbutils</artifactId>
-            <version>1.6</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>${commons-beanutils.version}</version>
@@ -958,6 +949,10 @@
             <version>1.2</version>
             <scope>runtime</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>orgjavax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
                     <artifactId>log4j-slf4j-impl</artifactId>

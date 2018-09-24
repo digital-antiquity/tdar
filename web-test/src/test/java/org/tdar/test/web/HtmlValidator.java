@@ -42,6 +42,8 @@ public class HtmlValidator {
             "missing </form> before </div>\n" , 
             "discarding unexpected </fieldset",
             "discarding unexpected </form",
+            "discarding unexpected autocomplete",
+            "autocomplete is not recognized",
             "missing </form> before </div",
             "discarding unexpected </a>",
             "missing </div> before link",
