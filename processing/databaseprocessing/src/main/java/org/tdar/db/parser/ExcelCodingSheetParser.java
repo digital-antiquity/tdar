@@ -73,7 +73,7 @@ public class ExcelCodingSheetParser implements CodingSheetParser {
         } catch (IOException e) {
             logger.error("Couldn't construct POI Workbook from input stream", e);
             throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_poi", e);
-        } catch (InvalidFormatException exception) {
+        } catch (Throwable exception) {
             logger.error("Couldn't create POI Workbook from input stream", exception);
             throw new CodingSheetParserException("excelCodingSheetParser.could_not_parse_poi", exception);
         }

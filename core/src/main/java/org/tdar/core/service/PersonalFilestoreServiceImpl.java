@@ -318,7 +318,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         ctx.setWorkflowClass(pair.getWorkflowClass());
         Workflow workflow_ = ctx.getWorkflowClass().newInstance();
         if (ctx.isCodingSheet() == false && ctx.isDataTableSupported() && workflow_ instanceof HasDatabaseConverter) {
-            ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaaseConverterForExtension(ctx.getPrimaryExtension()));
+            ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaseConverterForExtension(ctx.getPrimaryExtension()));
         }
         boolean success = workflow_.run(ctx);
         if (success) {

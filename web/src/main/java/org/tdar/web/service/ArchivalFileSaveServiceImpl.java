@@ -7,17 +7,17 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.filestore.VersionType;
 
 
 @Service

@@ -60,7 +60,7 @@ public class GeospatialWorkflow extends BaseWorkflow implements HasDatabaseConve
         return true;
     }
 
-    public Class<? extends AbstractDatabaseConverter> getDatabaaseConverterForExtension(String ext) {
+    public Class<? extends AbstractDatabaseConverter> getDatabaseConverterForExtension(String ext) {
         switch (ext) {
             case "shp":
                 return ShapeFileDatabaseConverter.class;

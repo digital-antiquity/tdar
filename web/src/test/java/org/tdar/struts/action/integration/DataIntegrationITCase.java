@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -327,7 +328,7 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
         row = summarySheet.getRow(4);
         for (int i = 0; i < names.size(); i++) {
             Cell cell = row.getCell(i);
-            if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+            if (cell.getCellType() == CellType.NUMERIC) {
                 assertEquals((int) Double.parseDouble(row3[i]), (int) cell.getNumericCellValue());
             } else {
                 assertEquals(row3[i], cell.getStringCellValue());
