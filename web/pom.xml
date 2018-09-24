@@ -612,8 +612,10 @@
                              <goal>read-project-properties</goal>
                            </goals>
                            <configuration>
+                               <quiet>true</quiet>
                              <files>
-                               <file>target/git.properties</file>
+                               <file>target/classes/git.properties</file>
+                               <file>../target/classes/git.properties</file>
                              </files>
                            </configuration>
                          </execution>
