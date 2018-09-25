@@ -16,3 +16,4 @@ web/src/main/resources/tdar.properties
 web/src/main/resources/jetty/jetty-ssl.keystore.old
 */logs
 */*/target
+.tern-project

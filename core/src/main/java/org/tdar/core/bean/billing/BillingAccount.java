@@ -50,6 +50,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonAccountFilter;
+import org.tdar.utils.json.JsonIdNameFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -75,7 +76,7 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
 
     @Length(max = FieldLength.FIELD_LENGTH_255, min = 1)
     @NotNull
-    @JsonView({JsonAccountFilter.class })
+    @JsonView({JsonAccountFilter.class, JsonIdNameFilter.class })
     private String name;
 
     @Length(max = FieldLength.FIELD_LENGTH_255)

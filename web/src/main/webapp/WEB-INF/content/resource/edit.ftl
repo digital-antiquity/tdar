@@ -27,4 +27,16 @@ ${materialTypes}
 ${investigationTypes}
 </#noescape>
 </script>
+
+<script id="submitter" type="text/json">
+<#noescape>
+${submitter}
+</#noescape>
+</script>
+
+<script id="activeAccounts" type="text/json">
+<#noescape>
+${activeAccounts}
+</#noescape>
+</script>
 </#escape>

@@ -20,8 +20,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 nameField: 'title',
                 idField: 'id',
                 accountId: 219,
+                accountName: "account name",
                 epochtime: -1,
                 submitterId: undefined,
+                submitterName: undefined,
                 projectId: undefined,
                 inheritanceDisabled: true,
                 investigationTypes: [],
@@ -51,10 +53,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 created: function() {
                     if (document.getElementById('json') != undefined) {
                         var json = JSON.parse(document.getElementById('json').innerText );
-                        // json.submitter = {id:135028};
                         Vue.set(this,'resource',json);
                          if (json.submitterRef != undefined && json.submitterRef.indexOf(":") != -1) {
                             Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
+                            Vue.set(this,"submitterName",JSON.parse(document.getElementById('submitter').innerText).properName );
                         }
                         if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
                             json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
@@ -79,6 +81,12 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     }
                     Vue.set(this,"epochtime", Date.now() + 15000);
                     Vue.set(this,"accountId",220);
+                    Vue.set(this,"accounts",JSON.parse(document.getElementById('activeAccounts').innerText ));
+                    this.accounts.forEach(function(act) {
+                       if (act.id == this.accountId) {
+                           Vue.set(this,"accountName",act.name);
+                       } 
+                    });
                     // Vue.set("resource","submitter",{});
                     // this.resource.submitter = {id:8344, properName:'adam brin'};
                     var self = this.resource.activeLatitudeLongitudeBoxes[0];

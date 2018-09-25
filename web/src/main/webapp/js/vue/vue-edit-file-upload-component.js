@@ -52,6 +52,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             restrictionFieldName : function() {
                 return "fileProxies[" + this.index + "].restriction";
             },
+                undeleteDisabled: function() {
+                    return this.inputdisabled;
+                },
             inputDisabled : function() {
                 return !this.abletoupload;
             },
@@ -190,6 +193,12 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             }
         },
         computed : {
+                multiple: function() {
+                  if (this.maxNumberOfFiles > 1) {
+                      return true;
+                  }  
+                  return false;
+                },
             valid : function() {
                 return this.validatePackage();
             },
@@ -253,13 +262,15 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             append : function(a, b) {
                 return a + "" + b;
             },
-            validateAdd : function(file, replace) {
-                return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files),
-                        this.maxNumberOfFiles, this.sideCarOnly, this)
+                validateAdd : function(file, replace, increment_) {
+                    var increment = 0;
+                    if (increment_ != undefined) {
+                        increment = increment_;
+                    }
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, replace, this.validFormats, this.getCurrentNumberOfFiles(this.files) + increment, this.maxNumberOfFiles , this.sideCarOnly, this  )
             },
             reValidateAllFilesWithChangedFile : function(file) {
-                return TDAR.vuejs.upload.validateAdd(file, this.files, file.name, this.validFormats, this.getCurrentNumberOfFiles(this.files),
-                        this.maxNumberOfFiles, this.sideCarOnly, this)
+                    return TDAR.vuejs.upload.validateAdd(file, this.files, file.name, this.validFormats, this.getCurrentNumberOfFiles(this.files), this.maxNumberOfFiles , this.sideCarOnly, this  )
             },
             updateFileProgress : function(e, data) {
                 // update the progress of uploading a file
@@ -443,3 +454,4 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
         }
     }
 })(console, jQuery, window, Vue);
+
