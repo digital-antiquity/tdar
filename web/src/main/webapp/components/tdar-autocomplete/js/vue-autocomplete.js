@@ -1,7 +1,7 @@
 TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
     "use strict";
 
-    if (document.getElementById("autocomplete") != undefined ) {
+    var _init = function() {
     // https://alligator.io/vuejs/vue-autocomplete-component/
     var autocomplete = Vue.component('autocomplete', {
         name: "autocomplete",
@@ -20,7 +20,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           url: {
               type: String
           },
-          suffix: {},
+          suffix: {type: String},
           field: {
               type: String,
               required: true
@@ -45,7 +45,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           deletekey: {type: Function},
           enterkey: {type: Function},
           anykey: {type: Function},
-          customcreatenew: {type:Function},
+          customcreatenew: {type:Function, default: function() {
+              this.$emit("autocompletevalueset", this.search);              
+          }},
           createnewtext: {type:String, default:'Create New'},
           initial_id: {type:Number},
           initial_value:{type:String}
@@ -73,8 +75,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
         
         methods: {
             createNew: function() {
-                this.reset();
                 this.customcreatenew();
+                this.isOpen = false;
+                // this.reset();
             },
             getValue: function() {
                 return this.search;
@@ -161,7 +164,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           onChange: function() { // Let's warn the parent that a change was made
             this.$emit("input", this.search);
-    
+            Vue.set(this, 'width',this.$refs['searchfield'].offsetWidth);
+            Vue.set(this, 'top',this.$refs['searchfield'].offsetHeight + this.$refs['searchfield'].offsetTop );
+
             // Is the data given by an outside ajax request?
             if (this.isAsync) {
               this._setResult();
@@ -277,8 +282,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           }
         },
         mounted: function() {
-          Vue.set(this, 'width',this.$refs['searchfield'].offsetWidth);
-          Vue.set(this, 'top',this.$refs['searchfield'].offsetHeight + this.$refs['searchfield'].offsetTop );
           Vue.set(this,"search", this.initial_value);
           Vue.set(this,"id", this.initial_id);
           document.addEventListener("click", this.handleClickOutside);
@@ -288,4 +291,14 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
         }
     });
     }
+
+        if ($("#autocomplete").length == 1) {
+            _init();
+        }
+
+    return {
+        init : _init,
+    }
+
+
 })(console, window, Vue, axios);

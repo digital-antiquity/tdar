@@ -186,7 +186,7 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
             return false;
         }
         // check number of files
-
+        console.log("maxFiles:", maxNumberOfFiles, "current:", currentNumberOfFiles);
         if (replace == undefined && currentNumberOfFiles >= maxNumberOfFiles) {
             console.error("too many files", maxNumberOfFiles);
             errorListener.addWarning("you have exceeded the number of files you can add");
@@ -220,9 +220,11 @@ TDAR.vuejs.upload = (function(console, $, ctx, Vue) {
     
     var _fileUploadAdd = function($upload, data, _app, unfiled ) {
         var validFiles = new Array();
+        var count = 0;
         data.originalFiles.forEach(function(file) {
-            if (_app.validateAdd(file)) {
+            if (_app.validateAdd(file, undefined, count)) {
                 validFiles.push(file);
+                count++;
             } else {
                 console.log("INVALID FILE: ", JSON.stringify(file));
             }

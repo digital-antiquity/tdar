@@ -36,7 +36,7 @@
     <properties>
         <lucene.version>7.3.1</lucene.version>
         <hibernate.version>5.2.17.Final</hibernate.version>
-        <spring.framework.version>5.0.7.RELEASE</spring.framework.version>
+        <spring.framework.version>5.1.0.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>42.2.1</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
         <aws.java.version>1.11.286</aws.java.version>
@@ -70,7 +70,7 @@
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
-        <poi.version>3.17</poi.version>
+        <poi.version>4.0.0</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <jena.version>3.3.0</jena.version>
@@ -78,14 +78,14 @@
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
         <geotools.version>19.1</geotools.version>
-        <tika.version>1.18</tika.version>
+        <tika.version>1.19</tika.version>
         <rome.version>1.10.0</rome.version>
-        <jackson.version>2.9.5</jackson.version>
+        <jackson.version>2.9.7</jackson.version>
         <pdfbox.version>2.0.11</pdfbox.version>
         <bouncycastle.version>1.58</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
         <http-client.version>4.5.5</http-client.version>
-        <jackcess.version>2.1.12</jackcess.version>
+        <jackcess.version>2.2.0</jackcess.version>
         <guava.version>23.6-jre</guava.version>
         <jt-utils.version>1.4.0</jt-utils.version>
         <commons-io.version>2.6</commons-io.version>
@@ -97,15 +97,15 @@
         <ant.version>1.10.1</ant.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <cglib.version>3.2.5</cglib.version>
-        <commons-compress.version>1.14</commons-compress.version>
+        <commons-compress.version>1.18</commons-compress.version>
         <commons-cli.version>1.3</commons-cli.version>
         <hamcrest.version>1.3</hamcrest.version>
         <jetty.version>9.4.9.v20180320</jetty.version>
         <struts2.version>2.5.17</struts2.version>
         <jersey.version>2.27</jersey.version>
         <icu4j.version>58.2</icu4j.version>
-        <htmlunit.version>2.31</htmlunit.version>
-        <selenium.version>3.13.0</selenium.version>
+        <htmlunit.version>2.33</htmlunit.version>
+        <selenium.version>3.14.0</selenium.version>
         <dbcp.version>2.2.0</dbcp.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
@@ -747,7 +747,7 @@
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
                 <use.test.classpath>true</use.test.classpath>
-                <clover.dir>${user.home}/clover/${hg.branch}</clover.dir>
+                <clover.dir>${user.home}/clover/${git.branch}</clover.dir>
             </properties>
             <build>
                 <plugins>
@@ -811,30 +811,25 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
-            <id>maven-scm-branch</id>
+            <id>setup-target</id>
             <activation>
-                <!-- always run (except when told not to) -->
                 <property>
-                    <name>!skipMavenMercurialSetup</name>
+                  <name>!skipDefault</name>
                 </property>
             </activation>
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>${antrun.version}</version>
                         <executions>
                             <execution>
-                                <id>default-cli</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
+                                <id>create-generated-target</id>
+                                <phase>initialize</phase>
                                 <configuration>
-                                    <!-- <exportAntProperties>true</exportAntProperties> -->
                                     <target>
+                                        <echo message="dir:${project.build.directory}"/>
                                         <mkdir dir="target" />
                                         <mkdir
                                             dir="${project.build.directory}" />
@@ -844,114 +839,172 @@
                                             dir="${project.build.directory}/generated/webapp" />
                                         <mkdir
                                             dir="target/generated/webapp-test" />
-                                        <!--<rmdir dir="src/main/webapp/wro" 
-                                            /> -->
-                                        <condition property="hg.location"
-                                            value="/usr/local/bin/hg">
-                                            <available
-                                                file="/usr/local/bin/hg" />
-                                        </condition>
-                                        <condition property="hg.location"
-                                            value="/usr/bin/hg">
-                                            <available file="/usr/bin/hg" />
-                                        </condition>
-                                        <property name="hg.location"
-                                            value="hg" />
-                                        <echo
-                                            message=" using mercurial from: ${hg.location}" />
-                                        <mkdir dir="target/classes" />
-                                        <exec
-                                            output="target/classes/version.txt"
-                                            executable="${hg.location}">
-                                            <arg line="id -n" />
-                                        </exec>
-                                        <exec
-                                            output="target/classes/version-sum.txt"
-                                            executable="${hg.location}">
-                                            <arg line="id -i" />
-                                        </exec>
-                                        <exec
-                                            output="target/classes/branch.txt"
-                                            executable="${hg.location}">
-                                            <arg line="branch" />
-                                        </exec>
-                                        <loadfile property="hg.version"
-                                            srcFile="target/classes/version.txt" />
-                                        <loadfile property="hg.absoluteversion"
-                                            srcFile="target/classes/version-sum.txt">
-                                            <filterchain>
-                                                <deletecharacters
-                                                    chars="\t\r\n+" />
-                                            </filterchain>
-                                        </loadfile>
-                                        <loadfile property="hg.branch"
-                                            srcFile="target/classes/branch.txt">
-                                            <filterchain>
-                                                <tokenfilter>
-                                                    <replaceregex
-                                                        pattern="-"
-                                                        replace="_"
-                                                        flags="gi" />
-                                                </tokenfilter>
-                                                <deletecharacters
-                                                    chars="\t\r\n+" />
-                                            </filterchain>
-                                        </loadfile>
-                                        <loadfile property="hg.version.as_dir"
-                                            srcFile="target/classes/version.txt">
-                                            <filterchain>
-                                                <deletecharacters
-                                                    chars="\t\r\n+" />
-                                            </filterchain>
-                                        </loadfile>
-                                        <echo
-                                            message=" ${hg.branch}: ${hg.version.as_dir}" />
-                                        <echo file="target/hg.properties" append="false">
-hg.version=${hg.version.as_dir}
-hg.branch=${hg.branch}
-                                        </echo>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                     </plugin>
+                 </plugins>
+             </build>
+         </profile>
+        <profile>
+            <id>maven-scm-branch-git</id>
+            <activation>
+                <!-- always run (except when told not to) -->
+                <file>
+                    <missing>target/classes/git.properties</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>print-branch-info</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <echo message="Branch:${git.branch}     Version:${git.commit.id.abbrev}"/>
                                     </target>
                                 </configuration>
                             </execution>
+                            
                         </executions>
-                    </plugin>
-                    <plugin>
-                          <groupId>org.codehaus.mojo</groupId>
-                          <artifactId>properties-maven-plugin</artifactId>
-                          <version>1.0.0</version>
-                          <executions>
-                            <execution>
-                              <phase>validate</phase>
-                              <goals>
-                                <goal>read-project-properties</goal>
-                              </goals>
-                              <configuration>
-                                <files>
-                                  <file>target/hg.properties</file>
-                                </files>
-                              </configuration>
-                            </execution>
-                          </executions>
-                        </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>1.4.1</version>
-                        <executions>
-                            <execution>
-                                <id>enforce-versions</id>
-                                <goals>
-                                    <goal>enforce</goal>
-                                </goals>
-                                <configuration>
-                                    <rules>
-                                        <DependencyConvergence />
-                                    </rules>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
+                     </plugin>
+                    
+                        <plugin>
+                            <groupId>pl.project13.maven</groupId>
+                            <artifactId>git-commit-id-plugin</artifactId>
+                            <version>2.2.1</version>
+                            <executions>
+                                <execution>
+                                    <id>get-the-git-infos</id>
+                                    <goals>
+                                        <goal>revision</goal>
+                                    </goals>
+                                    <phase>validate</phase>
+                                </execution>
+                            </executions>
 
+                            <configuration>
+                                <!--
+                                    If you'd like to tell the plugin where your .git directory is,
+                                    use this setting, otherwise we'll perform a search trying to
+                                    figure out the right directory. It's better to add it explicitly IMHO.
+                                -->
+                                <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+
+                                <!-- that's the default value, you don't have to set it -->
+                                <prefix>git</prefix>
+
+                                <!-- that's the default value -->
+                                <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
+                                <dateFormatTimeZone>${user.timezone}</dateFormatTimeZone>
+                                <verbose>false</verbose>
+                                <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                                <generateGitPropertiesFilename>${project.build.directory}/classes/git.properties</generateGitPropertiesFilename>
+                                <format>properties</format>
+                                <skipPoms>true</skipPoms>
+
+                                <!-- @since 2.1.4 -->
+                                <!-- 
+                                    Tell maven-git-commit-id to inject the git properties into all reactor projects not just the current one.
+                                    For details about why you might want to skip this, read this issue: https://github.com/ktoso/maven-git-commit-id-plugin/pull/65
+                                    The property is set to ``false`` by default to prevent the overriding of properties that may be unrelated to the project.
+                                -->
+                                <injectAllReactorProjects>true</injectAllReactorProjects>
+                                <failOnNoGitDirectory>true</failOnNoGitDirectory>
+                                <failOnUnableToExtractRepoInfo>true</failOnUnableToExtractRepoInfo>
+                                <skip>false</skip>
+                                <runOnlyOnce>false</runOnlyOnce>
+                                <useNativeGit>false</useNativeGit>
+                                <abbrevLength>7</abbrevLength>
+                                <commitIdGenerationMode>flat</commitIdGenerationMode>
+
+                                <!-- @since 2.1.0 -->
+                                <!-- 
+                                    read up about git-describe on the in man, or it's homepage - it's a really powerful versioning helper 
+                                    and the recommended way to use git-commit-id-plugin. The configuration bellow is optional, 
+                                    by default describe will run "just like git-describe on the command line", even though it's a JGit reimplementation.
+                                -->
+                                <gitDescribe>
+                        
+                                    <!-- don't generate the describe property -->
+                                    <skip>false</skip>
+                        
+                                    <!-- 
+                                        if no tag was found "near" this commit, just print the commit's id instead, 
+                                        helpful when you always expect this field to be not-empty 
+                                    -->
+                                    <always>false</always>
+                                    <!--
+                                         how many chars should be displayed as the commit object id? 
+                                         7 is git's default, 
+                                         0 has a special meaning (see end of this README.md), 
+                                         and 40 is the maximum value here 
+                                    -->
+                                    <abbrev>7</abbrev>
+                        
+                                    <!-- when the build is triggered while the repo is in "dirty state", append this suffix -->
+                                    <dirty>-dirty</dirty>
+
+                                    <!-- Only consider tags matching the given pattern. This can be used to avoid leaking private tags from the repository. -->
+                                    <match>*</match>
+
+                                    <!--
+                                        when you run git-describe it only looks only for *annotated tags* by default
+                                        if you wish to consider *lightweight tags* in your describe as well you would need to switch this to *true*
+
+                                        The difference between *annotated tags* and *lightweight tags* is outlined in more depth here:
+                                        https://github.com/ktoso/maven-git-commit-id-plugin/#git-describe-and-a-small-gotcha-with-tags
+                                    -->
+                                    <tags>false</tags>
+
+                                    <!-- 
+                                         always print using the "tag-commits_from_tag-g_commit_id-maybe_dirty" format, even if "on" a tag. 
+                                         The distance will always be 0 if you're "on" the tag. 
+                                    -->
+                                    <forceLongFormat>false</forceLongFormat>
+                                </gitDescribe>
+                                <!-- @since 2.2.2 -->
+                                <!-- 
+                                    Since version **2.2.2** the maven-git-commit-id-plugin comes equipped with an additional validation utility which can be used to verify if your project properties are set as you would like to have them set.
+                                    *Note*: This configuration will only be taken into account when the additional goal `validateRevision` is configured inside an execution.
+                                -->
+                                <validationProperties>
+                                    <validationProperty>
+                                        <!--
+                                             A descriptive name that will be used to be able to identify the validation that does not match up (will be displayed in the error message).
+                                        -->
+                                        <name>validating project version</name>
+                                        <!-- 
+                                             the value that needs the validation
+                                             *Note* : In order to be able to validate the generated git-properties inside the pom itself you may need to set the configutation `<injectAllReactorProjects>true</injectAllReactorProjects>`. 
+                                        -->
+                                        <value>${project.version}</value>
+                                        <!--
+                                            the expected value
+                                        -->
+                                        <shouldMatchTo><![CDATA[^.*(?<!-SNAPSHOT)$]]></shouldMatchTo>
+                                    </validationProperty>
+                                    <!-- the next validationProperty you would like to validate -->
+                                </validationProperties>
+                                <validationShouldFailIfNoMatch>true</validationShouldFailIfNoMatch>
+                            </configuration>
+                    </plugin>
+                    <!-- <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                        </executions>
+                    </plugin> -->
                 </plugins>
             </build>
         </profile>
