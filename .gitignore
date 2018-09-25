@@ -19,3 +19,6 @@ web/src/main/resources/jetty/jetty-ssl.keystore.old
 */logs/tdar*
 */*/logs/tdar*
 */*/target
+.DS_Store
+ldap.properties
+struts-local-settings.xml

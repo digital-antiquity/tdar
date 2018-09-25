@@ -210,7 +210,7 @@
                                 </systemProperty>
                                 <systemProperty>
                                     <name>solr.data.dir</name>
-                                    <value>../Indexes/${hg.branch}/</value>
+                                    <value>../Indexes/${git.branch}/</value>
                                 </systemProperty>
                             </systemProperties>
                             <webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>
