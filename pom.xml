@@ -882,38 +882,6 @@
             </activation>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>print-branch-info</id>
-                                <phase>initialize</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <echo message="Branch:${git.branch}     Version:${git.commit.id.abbrev}"/>
-                                    </target>
-                                </configuration>
-                            </execution>
-                            
-                        </executions>
-                     </plugin>
-                 </plugins>
-             </build>
-         </profile>
-        <profile>
-            <id>maven-scm-branch-git</id>
-            <activation>
-                <!-- always run (except when told not to) -->
-                <file>
-                    <missing>target/classes/git.properties</missing>
-                </file>
-            </activation>
-            <build>
-                <plugins>
                         <plugin>
                             <groupId>pl.project13.maven</groupId>
                             <artifactId>git-commit-id-plugin</artifactId>
