@@ -25,11 +25,14 @@
 <textarea v-model="resource.description" name="document.description" cols="80" rows="4" id="resourceDescription" class="required resizable resize-vertical input-xxlarge trim" title="A description is required" required="true"></textarea></div>
 </div>
             </div>
-<b>epochtime</b>
-    <input type="text" name="startTime" v-model="epochtime" id="metadataForm_epochTimeUpdated">
-    <b>accountId</b>
-    <input type="text" v-model="accountId" name="accountId" maxlength="512">
-    
+    <input type="hidden" name="startTime" v-model="epochtime" id="metadataForm_epochTimeUpdated">
+    <b>account</b>
+    <select name="account" v-model="accountId">
+     <option v-for="account in accounts" v-bind:value="account.id">
+    {{ account.name }}
+  </option>
+    </select>
+    <br/>
     <b>submitter</b>
     <div>
         <autocomplete url="/api/lookup/person"

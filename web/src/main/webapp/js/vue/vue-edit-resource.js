@@ -21,6 +21,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 idField: 'id',
                 accountId: 219,
                 accountName: "account name",
+                accounts: [],
                 epochtime: -1,
                 submitterId: undefined,
                 submitterName: undefined,
@@ -51,6 +52,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     individualInstitutionalRoles: [ {id: undefined, role: undefined , creator: {institution:{ name: undefined}, id: undefined} } ] }
                 },
                 created: function() {
+                    var self = this;
                     if (document.getElementById('json') != undefined) {
                         var json = JSON.parse(document.getElementById('json').innerText );
                         Vue.set(this,'resource',json);
@@ -83,8 +85,8 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     Vue.set(this,"accountId",220);
                     Vue.set(this,"accounts",JSON.parse(document.getElementById('activeAccounts').innerText ));
                     this.accounts.forEach(function(act) {
-                       if (act.id == this.accountId) {
-                           Vue.set(this,"accountName",act.name);
+                       if (act.id == self.accountId) {
+                           Vue.set(self,"accountName",act.name);
                        } 
                     });
                     // Vue.set("resource","submitter",{});
