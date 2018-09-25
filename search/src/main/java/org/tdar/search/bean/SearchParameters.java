@@ -52,6 +52,10 @@ import org.tdar.utils.StringPair;
 import org.tdar.utils.range.DateRange;
 import org.tdar.utils.range.StringRange;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.opensymphony.xwork2.TextProvider;
 
 /**
@@ -61,6 +65,9 @@ import com.opensymphony.xwork2.TextProvider;
  * @author jimdevos
  * 
  */
+
+@JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
+@JsonInclude(Include.NON_EMPTY)
 public class SearchParameters {
 
     public SearchParameters() {

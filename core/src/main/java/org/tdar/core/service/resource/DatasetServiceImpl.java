@@ -743,6 +743,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     }
 
     @Override
+    @Transactional(readOnly=true)
     public Set<DataTableColumn> findSearchableColumns(Dataset ds, TdarUser user) {
         Set<DataTableColumn> cols = new HashSet<>();
         boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(user, ds);
@@ -758,5 +759,14 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
             });
         });
         return cols;
+    }
+    
+    
+    @Transactional(readOnly=true)
+    @Override
+    public List<String> findAutocompleteValues(Dataset dataset, DataTableColumn column, String value, TdarUser authenticatedUser) {
+        return null;
+
+        
     }
 }
