@@ -4,6 +4,6 @@ import org.tdar.db.conversion.converters.AbstractDatabaseConverter;
 
 public interface HasDatabaseConverter {
 
-    Class<? extends AbstractDatabaseConverter> getDatabaaseConverterForExtension(String ext);
+    Class<? extends AbstractDatabaseConverter> getDatabaseConverterForExtension(String ext);
 
 }

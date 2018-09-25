@@ -47,7 +47,6 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         Dataset dataset = createAndSaveNewDataset();
         Project project = createAndSaveNewProject("test project");
         DataTableColumn dtc = setup(dataset, project);
-
         SolrInputDocument doc = DataValueDocumentConverter.createDocument(dtc, dataset, "Concorde");
         template.add(CoreNames.DATA_MAPPINGS, doc);
         template.commit(CoreNames.DATA_MAPPINGS);

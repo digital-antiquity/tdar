@@ -76,7 +76,7 @@ public class GenericColumnarDataWorkflow extends BaseWorkflow implements HasData
     }
 
     @Override
-    public Class<? extends AbstractDatabaseConverter> getDatabaaseConverterForExtension(String ext) {
+    public Class<? extends AbstractDatabaseConverter> getDatabaseConverterForExtension(String ext) {
         switch (ext.toLowerCase()) {
             case "xls":
             case "xlsx":

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -46,8 +47,7 @@ import org.tdar.core.dao.RecentFileSummary;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.exception.FileUploadException;
 import org.tdar.core.service.resource.DatasetImportService;
-import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.db.datatable.TDataTable;
+import org.tdar.core.service.resource.ErrorHandling;
 import org.tdar.db.model.TargetDatabase;
 import org.tdar.fileprocessing.workflows.HasDatabaseConverter;
 import org.tdar.fileprocessing.workflows.RequiredOptionalPairs;
@@ -88,7 +88,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Autowired
     public PersonalFilestoreServiceImpl(GenericDao genericDao, FileProcessingDao fileProcessingDao, FileAnalyzer analyzer,
-            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService, 
+            AuthorizationService authorizationService, ResourceCollectionService resourceCollectionService,
             @Qualifier("target") TargetDatabase tdarDataImportDatabase, DatasetImportService datasetImportService) {
         this.genericDao = genericDao;
         this.fileProcessingDao = fileProcessingDao;
@@ -269,23 +269,27 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
 
     @Transactional(readOnly = false)
     public void groupTdarFiles(Collection<TdarFile> files) throws Throwable {
-        // do something to pull into sets using workflows...
+   
+        TdarFileReconciller reconciler = new TdarFileReconciller(analyzer.getExtensionsForType(ResourceType.values()));
+        Map<TdarFile, RequiredOptionalPairs> reconcile = reconciler.reconcile(files);
+        genericDao.saveOrUpdate(reconcile.keySet());
+        
+        for (Entry<TdarFile, RequiredOptionalPairs> entry : reconcile.entrySet()) {
+            validate(entry.getKey(), entry.getValue());
+            process(entry.getKey(), entry.getValue());
 
-        TdarFile file = null;
-        RequiredOptionalPairs pair = null;
-        // should we consider persisting the RequiredOptionalPair, or making it an ENUM or something that could be persisted on TdarFile? This would help if
-        // we're trying to make this process a bit more asynchronous
-        validate(file, pair);
-        process(file, pair);
-        // run validate
-        // run process
+        }
     }
 
     @Transactional(readOnly = false)
     public void validate(TdarFile file, RequiredOptionalPairs pair) {
         // validate that the package is complete and the files have a size
-        boolean success = true;
-        if (success) {
+        List<String> extensions = new ArrayList<>();
+        extensions.add(file.getExtension());
+        for (TdarFile part : file.getParts()) {
+            extensions.add(part.getExtension());
+        }
+        if (pair.isValid(extensions)) {
             file.setStatus(ImportFileStatus.VALIDATED);
         } else {
             file.setStatus(ImportFileStatus.VALIDATION_FAILED);
@@ -315,7 +319,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         ctx.setWorkflowClass(pair.getWorkflowClass());
         Workflow workflow_ = ctx.getWorkflowClass().newInstance();
         if (ctx.isCodingSheet() == false && ctx.isDataTableSupported() && workflow_ instanceof HasDatabaseConverter) {
-            ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaaseConverterForExtension(ctx.getPrimaryExtension()));
+            ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaseConverterForExtension(ctx.getPrimaryExtension()));
         }
         boolean success = workflow_.run(ctx);
         if (success) {
@@ -676,7 +680,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         if (!authorizationService.canAddToCollection(user, file.getCollection())) {
             throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
         }
-        
+
         file.setCollection(null);
         genericDao.saveOrUpdate(file);
     }

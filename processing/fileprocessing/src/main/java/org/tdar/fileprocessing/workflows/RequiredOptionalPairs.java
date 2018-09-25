@@ -2,12 +2,15 @@ package org.tdar.fileprocessing.workflows;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.tdar.db.conversion.converters.DatasetConverter;
 
 @XmlRootElement
@@ -18,6 +21,7 @@ public class RequiredOptionalPairs implements Serializable {
 
     List<String> required = new ArrayList<>();
     List<String> optional = new ArrayList<>();
+    private String primaryExtension = "";
 
     private Class<? extends Workflow> workflowClass;
 
@@ -71,4 +75,44 @@ public class RequiredOptionalPairs implements Serializable {
         this.datasetConverter = datasetConverter;
     }
 
+    public boolean requiresSidecar() {
+        int total = required.size() + optional.size();
+        if (total > 1) {
+            return true;
+        }
+        return false;
+    }
+
+    public Set<String> getAllExtensions() {
+        HashSet<String> toReturn = new HashSet<>();
+        toReturn.addAll(getRequired());
+        toReturn.addAll(getOptional());
+        return toReturn;
+    }
+    
+    public String getPrimaryExtension() {
+        if (this.getRequired().size() == 1) {
+            return this.getRequired().get(0);
+        }
+        return this.primaryExtension;
+    }
+
+    public void setPrimaryExtension(String primaryExtension) {
+        this.primaryExtension = primaryExtension;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("%s -> %s", getRequired(), getOptional());
+    }
+    
+    public boolean isValid(List<String> incoming) {
+        List<String> extensions = new ArrayList<>(required);
+        extensions.removeAll(incoming);
+        if (CollectionUtils.isEmpty(extensions)) {
+            return true;
+        }
+        return false;
+        
+    }
 }

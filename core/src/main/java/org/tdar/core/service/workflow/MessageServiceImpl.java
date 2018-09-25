@@ -80,7 +80,7 @@ public class MessageServiceImpl implements MessageService {
         try {
             Workflow workflow_ = ctx.getWorkflowClass().newInstance();
             if (ctx.isCodingSheet() == false && ctx.isDataTableSupported() && workflow instanceof HasDatabaseConverter) {
-                ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaaseConverterForExtension(ctx.getPrimaryExtension()));
+                ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaseConverterForExtension(ctx.getPrimaryExtension()));
             }
             boolean success = workflow_.run(ctx);
             // Martin: the following mandates that we wait for run to complete.

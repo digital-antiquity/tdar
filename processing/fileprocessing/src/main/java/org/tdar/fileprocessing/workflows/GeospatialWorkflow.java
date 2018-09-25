@@ -34,12 +34,14 @@ public class GeospatialWorkflow extends BaseWorkflow implements HasDatabaseConve
 
         RequiredOptionalPairs shapefile = new RequiredOptionalPairs(GenericColumnarDataWorkflow.class);
         shapefile.getRequired().addAll(Arrays.asList("shp", "shx", "dbf"));
+        shapefile.setPrimaryExtension("shp");
         shapefile.getOptional().addAll(Arrays.asList("sbn", "sbx", "fbn", "fbx", "ain", "aih", "atx", "ixs", "mxs", "prj", "cbg", "ixs", "rrd","xml"));
         getRequiredOptionalPairs().add(shapefile);
         shapefile.setDatasetConverter(ShapeFileDatabaseConverter.class);
         RequiredOptionalPairs layer = new RequiredOptionalPairs();
         layer.setHasDimensions(true);
         layer.getRequired().addAll(Arrays.asList("lyr", "jpg"));
+        layer.setPrimaryExtension("lyr");
         layer.getOptional().addAll(Arrays.asList("mxd","xml"));
         getRequiredOptionalPairs().add(layer);
 
@@ -58,7 +60,7 @@ public class GeospatialWorkflow extends BaseWorkflow implements HasDatabaseConve
         return true;
     }
 
-    public Class<? extends AbstractDatabaseConverter> getDatabaaseConverterForExtension(String ext) {
+    public Class<? extends AbstractDatabaseConverter> getDatabaseConverterForExtension(String ext) {
         switch (ext) {
             case "shp":
                 return ShapeFileDatabaseConverter.class;

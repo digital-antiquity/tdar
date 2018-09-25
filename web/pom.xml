@@ -640,7 +640,7 @@
                         <configuration>
                             <targetGroups>default,ng-integrate</targetGroups>
                             <minimize>true</minimize>
-                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${git.version}</destinationFolder>
+<destinationFolder>${project.build.directory}/generated/webapp/wro/${git.version}</destinationFolder>
                             <contextFolder>${basedir}/src/main/webapp/</contextFolder>
                             <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
                             <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>

@@ -259,6 +259,7 @@
             baseTableName="files" referencedColumnNames="id" />
 
     </changeSet>
+
     <changeSet id="radiocarbon-fileprocessing-1" author="abrin">
         <addColumn tableName="files">
             <column name="version_of_id" type="bigint"/>
