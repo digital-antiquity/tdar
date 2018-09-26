@@ -853,10 +853,9 @@
         <profile>
             <id>maven-scm-branch-git</id>
             <activation>
-                <!-- always run (except when told not to) -->
-                <file>
-                    <missing>target/classes/git.properties</missing>
-                </file>
+                <property>
+                  <name>!skipDefault</name>
+                </property>
             </activation>
             <build>
                 <plugins>
