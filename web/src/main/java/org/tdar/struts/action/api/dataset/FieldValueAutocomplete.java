@@ -1,8 +1,8 @@
 package org.tdar.struts.action.api.dataset;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -22,7 +22,7 @@ import org.tdar.struts.action.api.AbstractJsonApiAction;
 public class FieldValueAutocomplete extends AbstractJsonApiAction {
 
     private static final long serialVersionUID = -1403433795930971910L;
-    private List<String> values = new ArrayList<>();
+    private Set<String> values = new HashSet<>();
     private Long id;
     private Dataset dataset;
     private Long columnId;
@@ -55,11 +55,11 @@ public class FieldValueAutocomplete extends AbstractJsonApiAction {
         this.id = id;
     }
 
-    public List<String> getValues() {
+    public Set<String> getValues() {
         return values;
     }
 
-    public void setValues(List<String> values) {
+    public void setValues(Set<String> values) {
         this.values = values;
     }
 

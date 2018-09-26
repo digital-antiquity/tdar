@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -57,6 +58,7 @@ import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.TitleSortComparator;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -764,8 +766,14 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     
     @Transactional(readOnly=true)
     @Override
-    public List<String> findAutocompleteValues(Dataset dataset, DataTableColumn column, String value, TdarUser authenticatedUser) {
-        return null;
+    public Set<String> findAutocompleteValues(Dataset dataset, DataTableColumn column, String value, TdarUser authenticatedUser) {
+        TreeSet<String> toReturn = new TreeSet<String>();
+        for (String val : column.getValues()) {
+            if (StringUtils.containsIgnoreCase(val, value)) {
+                toReturn.add(val);
+            }
+        }
+        return toReturn;
 
         
     }
