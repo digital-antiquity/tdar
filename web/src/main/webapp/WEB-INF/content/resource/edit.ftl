@@ -39,4 +39,15 @@ ${submitter}
 ${activeAccounts}
 </#noescape>
 </script>
+
+<script id="fileUploadSettings" type="application/json">
+<#noescape>
+${fileUploadSettings!''}
+</#noescape>
+</script>
+<script id="filesJson" type="text/json">
+<#noescape>
+${filesJson}
+</#noescape>
+</script>
 </#escape>

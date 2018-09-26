@@ -60,6 +60,15 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
                             Vue.set(this,"submitterName",JSON.parse(document.getElementById('submitter').innerText).properName );
                         }
+                         
+                         var uploadConfig = document.getElementById('fileUploadSettings').innerText;
+                         if (uploadConfig != undefined && uploadConfig.trim() != '') {
+                             uploadConfig = JSON.parse(uploadConfig);
+                             if (uploadConfig != undefined) {
+                                 Vue.set(this,"fileUploadConfig", uploadConfig);
+                             }
+                         }
+                         
                         if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
                             json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
                         }
