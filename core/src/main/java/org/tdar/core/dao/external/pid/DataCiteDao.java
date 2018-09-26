@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.UrlService;
 import org.tdar.transform.DataCiteTransformer;
 
 import edu.asu.lib.datacite.DataCiteDocument;
@@ -262,9 +263,10 @@ public class DataCiteDao implements ExternalIDProvider {
          * "$(printf 'doi=10.5072/JQX3-61AT\nurl=http://example.org/')" https://mds.test.datacite.org/doi/10.5072/JQX3-61AT
          */
         HttpPut put = new HttpPut(url);
-        EntityBuilder e = EntityBuilder.create();
-        e.setParameters(new BasicNameValuePair("doi", constructDoi(r)), new BasicNameValuePair("url", r.getAbsoluteUrl()));
-        put.setEntity(e.build());
+        String format = String.format("doi= %s\nurl= %s", constructDoi(r), UrlService.absoluteSecureUrl(r));
+        HttpEntity entity_ = EntityBuilder.create().setText(format).
+                setContentType(ContentType.TEXT_PLAIN.withCharset(UTF_8)).build();
+        put.setEntity(entity_);
         CloseableHttpResponse execute = httpclient.execute(put);
         put.releaseConnection();
         if (isNotOkStatusCode(execute.getStatusLine().getStatusCode())) {
