@@ -22,3 +22,4 @@ web/src/main/resources/jetty/jetty-ssl.keystore.old
 .DS_Store
 ldap.properties
 struts-local-settings.xml
+.tern-project
