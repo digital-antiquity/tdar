@@ -189,7 +189,7 @@ nav {
       color: #7a1501; }
 
 .tdarNav {
-  background: url(../../images/r4/bg-sub.jpg) no-repeat bottom center;
+  background: url(../../images/r4/bg-sub.jpg) bottom center;
   /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
   border-bottom: 1px solid #CCC;
   font-size: 14px; }

@@ -217,7 +217,7 @@
   <ol class="carousel-indicators">
     <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
     <li data-target="#homepageCarousel" data-slide-to="1"></li>
-    <li data-target="#homepageCarousel" data-slide-to="2"></li>
+    <!-- <li data-target="#homepageCarousel" data-slide-to="2"></li> -->
   </ol>
   <div class="carousel-inner">
     <div class="carousel-item active">
@@ -226,9 +226,9 @@
     <div class="carousel-item">
 		<@imageheader />
     </div>
-    <div class="carousel-item">
+<!--    <div class="carousel-item">
 		<@imageheader2 />
-    </div>
+    </div> -->
   </div>
 <!-- 
   <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
