@@ -16,3 +16,8 @@ web/src/main/resources/tdar.properties
 web/src/main/resources/jetty/jetty-ssl.keystore.old
 */logs
 */*/target
+.DS_Store
+ldap.properties
+struts-local-settings.xml
+*/*/logs/tdar*
+.tern-project
