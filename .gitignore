@@ -21,3 +21,4 @@ web/src/main/resources/jetty/jetty-ssl.keystore.old
 ldap.properties
 struts-local-settings.xml
 */*/logs/tdar*
+.tern-project
