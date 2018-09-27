@@ -3,34 +3,40 @@ package org.tdar.struts.action.resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.dataset.DatasetController;
-import org.tdar.struts.action.geospatial.GeospatialController;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.web.service.ResourceEditControllerService;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
-public class ResourceEditAction<P extends Persistable & Addressable> extends AbstractAuthenticatableAction implements Preparable {
+public class ResourceEditAction<P extends Persistable & Addressable> extends AbstractAuthenticatableAction implements Preparable , Validateable{
 
     @Autowired
     private SerializationService serializationService;
@@ -51,15 +57,21 @@ public class ResourceEditAction<P extends Persistable & Addressable> extends Abs
     private ArrayList fileProxies;
     private List<TdarFile> tdarFiles;
     private List<Long> fileIds;
-
+    private ResourceType type = ResourceType.DOCUMENT;
+    
     @Override
     public void prepare() throws Exception {
         if (PersistableUtils.isNotNullOrTransient(id)) {
             resource = getGenericService().find(Resource.class, id);
+        } else {
+            resource = getType().getResourceClass().newInstance();
+            resource.setSubmitter(getAuthenticatedUser());
+            if (resource instanceof InformationResource) {
+                ((InformationResource) resource).setDate(null);
+            }
         }
-        json = serializationService.convertToJson(resource);
-        
         setTdarFiles(getGenericService().findAll(TdarFile.class, getFileIds()));
+
 //        for (TdarFile file : getTdarFiles()) {
 //            if (file.getAccount() != null) {
 //                setAccountId(file.getAccount().getId());
@@ -71,6 +83,8 @@ public class ResourceEditAction<P extends Persistable & Addressable> extends Abs
     @Override
     @Action(value = "edit", results = { @Result(name = SUCCESS, location = "edit.ftl") })
     public String execute() throws Exception {
+        json = serializationService.convertToJson(resource);
+        
         // TODO Auto-generated method stub
         return super.execute();
     }
@@ -95,12 +109,29 @@ public class ResourceEditAction<P extends Persistable & Addressable> extends Abs
         List<InvestigationType> types = genericService.findAll(InvestigationType.class);
         return serializationService.convertToJson(types);
     }
+    
+    public String getPrimaryCreatorRoles() throws IOException {
+        Map<CreatorType, List<ResourceCreatorRole>> to = new HashMap<>();
+        to.put(CreatorType.INSTITUTION, ResourceCreatorRole.getAuthorshipRoles(CreatorType.INSTITUTION, resource.getResourceType()));
+        to.put(CreatorType.PERSON, ResourceCreatorRole.getAuthorshipRoles(CreatorType.PERSON, resource.getResourceType()));
+        return serializationService.convertToJson(to);
+        
+    }
+
+    public String getCreditCreatorRoles() throws IOException {
+        Map<CreatorType, List<ResourceCreatorRole>> to = new HashMap<>();
+        to.put(CreatorType.INSTITUTION, ResourceCreatorRole.getCreditRoles(CreatorType.INSTITUTION, resource.getResourceType()));
+        to.put(CreatorType.PERSON, ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, resource.getResourceType()));
+        return serializationService.convertToJson(to);
+        
+    }
 
     public String getSubmitter() throws IOException {
+        TdarUser user = getAuthenticatedUser();
         if (resource != null) {
-            return serializationService.convertToJson(resource.getSubmitter());
+            user = resource.getSubmitter();
         }
-        return "";
+        return serializationService.convertToJson(user);
     }
 
     public String getActiveAccounts() throws IOException {
@@ -183,5 +214,13 @@ public class ResourceEditAction<P extends Persistable & Addressable> extends Abs
 
     public void setFileIds(List<Long> fileIds) {
         this.fileIds = fileIds;
+    }
+
+    public ResourceType getType() {
+        return type;
+    }
+
+    public void setType(ResourceType type) {
+        this.type = type;
     }
 }

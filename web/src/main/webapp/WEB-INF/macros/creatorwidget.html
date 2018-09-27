@@ -49,8 +49,8 @@
         </div>
     </div>
     <div class="span4">
-        <input type="hidden" :name="getRootPrefix('id')" v-model="resourcecreator.id" class="toggleValue">
-        <input type="hidden" :name="getPrefix('id')" v-model="resourcecreator.creator.id" id="idfield">
+        <input type="hidden" :name="getRootPrefix('id')" v-model="resourcecreator.id" :class="toggleValue">
+        <input type="hidden" :name="getRootPrefix('creator.id')" v-model="resourcecreator.creator.id" :value="creatorId" > {{creatorId}} HELLO!
         <div v-if="toggle == 'PERSON'">
 			<person :creator="resourcecreator.creator" ref="inputperson" @autocompleteset="updatecreator" :row="row" :prefix="prefix"/>
         </div>
@@ -61,7 +61,7 @@
     <div class="span2">
     
     <select :name="getRootPrefix('role')" class="creator-role-select span2" v-model="resourcecreator.role">
-        <option v-for="(value, index) in roles">{{value}}</option>
+        <option v-for="(value, index) in actualRoles">{{value}}</option>
     </select>
     </div>
     <div class="span1">

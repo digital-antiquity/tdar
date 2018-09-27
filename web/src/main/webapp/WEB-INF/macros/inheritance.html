@@ -1,5 +1,6 @@
 
 <div id="sel">
+<form method="POST" action="/document/save" ref='form'>
 
 <b>id</b>
 <input type="text" v-model="resource.id" name="id" maxlength="512" />
@@ -27,7 +28,7 @@
             </div>
     <input type="hidden" name="startTime" v-model="epochtime" id="metadataForm_epochTimeUpdated">
     <b>account</b>
-    <select name="account" v-model="accountId">
+    <select name="accountId" v-model="accountId">
      <option v-for="account in accounts" v-bind:value="account.id">
     {{ account.name }}
   </option>
@@ -89,7 +90,7 @@
 <div>
         <h5>Creators</h5>
         <div v-for="(creator, idx) in resource.contentOwners" class="row">
-                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="authorshipProxies" @deleterow="deleteCreatorRow" ref='contentOwner'/>
+                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="primaryRoles" prefix="authorshipProxies" @deleterow="deleteCreatorRow" ref='contentOwner'/>
         </div> 
           <button class="btn addanother"  @click="addCreatorRow(resource.contentOwners)" type="button"><i class="icon-plus-sign"></i>add another</button>
         
@@ -257,5 +258,7 @@
         <hr>
         {{project}}
         
+<button type="button" name="submitbutton" @click="submitForm">Submit</button>
 
+</form>
 </div>

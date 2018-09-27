@@ -36,6 +36,7 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     files: [],
                     requiredOptionalPairs:[]
                 },
+                primaryRoles: [],
                 creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
                 coverageDateTypes: [
                     {value:"CALENDAR_DATE", name:"Calendar Date"},
@@ -60,6 +61,9 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                             Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
                             Vue.set(this,"submitterName",JSON.parse(document.getElementById('submitter').innerText).properName );
                         }
+                         Vue.set(this,"primaryRoles",JSON.parse(document.getElementById('primaryRoles').innerText));
+                         Vue.set(this,"creditRoles",JSON.parse(document.getElementById('otherRoles').innerText));
+
                          if (this.resource.resourceNotes == undefined) {
                              this.resource.resourceNotes = [];
                          } 
@@ -173,10 +177,10 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     "resource.inheritingSpatialInformation": function(o, b) {
                         this.inherit(o,b,'geographic', 'activeGeographicKeywords');
                         if (this.project != undefined && this.project.activeLatitudeLongitudeBoxes != undefined) {
-                        this.resource.activeLatitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
-                        this.resource.activeLatitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
-                        this.resource.activeLatitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
-                        this.resource.activeLatitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
+                            this.resource.activeLatitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
+                            this.resource.activeLatitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
+                            this.resource.activeLatitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
+                            this.resource.activeLatitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
                         console.log(this.resource.activeLatitudeLongitudeBoxes[0]);
                         Vue.nextTick(function() {
                             $(".locateCoordsButton").click();
@@ -246,6 +250,9 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     setsubmitter: function(submitter) {
                         console.log("setsubmitter", submitter);
                         Vue.set(this.resource,"submitter",submitter );
+                    },
+                    submitForm:function(){
+                        this.$refs['form'].submit();
                     },
                     applyMaterialKeywords: function(keywords) {
                         var controlled = this.resource.controlledMaterialKeywords;
