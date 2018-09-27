@@ -1,264 +1,591 @@
 
 <div id="sel">
-<form method="POST" action="/document/save" ref='form'>
+    <form method="POST" action="/document/save" ref='form'>
 
-<b>id</b>
-<input type="text" v-model="resource.id" name="id" maxlength="512" />
-<div data-tiplabel="Title" data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'." data-original-title="" title="">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item"><a class="nav-link active"
+                id="home-tab" data-toggle="tab" href="#basictab"
+                role="tab" aria-controls="basictab" aria-selected="true">Basic
+                    Information</a></li>
+            <li class="nav-item"><a class="nav-link" id="files-tab"
+                data-toggle="tab" href="#files" role="tab"
+                aria-controls="files" aria-selected="false">Files</a></li>
+            <li class="nav-item"><a class="nav-link" id="where-tab"
+                data-toggle="tab" href="#where" role="tab"
+                aria-controls="where" aria-selected="false">Where</a></li>
+            <li class="nav-item"><a class="nav-link" id="when-tab"
+                data-toggle="tab" href="#when" role="tab"
+                aria-controls="when" aria-selected="false">When</a></li>
+            <li class="nav-item"><a class="nav-link" id="notes-tab"
+                data-toggle="tab" href="#notes" role="tab"
+                aria-controls="sink" aria-selected="false">Notes</a></li>
+            <li class="nav-item"><a class="nav-link" id="siteinfo-tab"
+                data-toggle="tab" href="#siteinfo" role="tab"
+                aria-controls="siteinfo" aria-selected="false">Site Information</a></li>
+            <li class="nav-item"><a class="nav-link" id="sink-tab"
+                data-toggle="tab" href="#sink" role="tab"
+                aria-controls="sink" aria-selected="false">Kitchen
+                    Sink</a></li>
+            <li class="nav-item"><a class="nav-link" id="tech-tab"
+                data-toggle="tab" href="#tech" role="tab"
+                aria-controls="tech" aria-selected="false">Tech</a></li>
+        </ul>
 
-<div class="control-group "><label class="control-label" for="resourceRegistrationTitle">Title <span class="required">*</span></label>    <div class="controls">
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane active" id="basictab" role="tabpanel"
+                aria-labelledby="home-tab">
+                <h3>Basic Information</h3>
 
-<input type="text" v-model="resource.title" name="document.title" maxlength="512"  id="resourceRegistrationTitle" class="required descriptiveTitle input-xxlarge trim" title="A title is required for all Documents" required="true"></div>
-</div>
-            </div>
-            
-<div data-tiplabel="Year" data-tooltipcontent="Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created.">
+                <b>id</b> <input type="text" v-model="resource.id"
+                    name="id" maxlength="512" />
+                <div data-tiplabel="Title"
+                    data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'."
+                    data-original-title="" title="">
 
-<div class="control-group "><label class="control-label" for="dateCreated">Year <span class="required">*</span></label>    <div class="controls">
+                    <div class="control-group ">
+                        <label class="control-label"
+                            for="resourceRegistrationTitle">Title
+                            <span class="required">*</span>
+                        </label>
+                        <div class="controls">
 
-<input v-model="resource.date" type="text" name="document.date" maxlength="7" id="dateCreated" class="reasonableDate required input-mini trim" title="Please enter the year this Document was created" required="true"></div>
-</div>
+                            <input type="text" v-model="resource.title"
+                                name="document.title" maxlength="512"
+                                id="resourceRegistrationTitle"
+                                class="required descriptiveTitle input-xxlarge trim"
+                                title="A title is required for all Documents"
+                                required="true">
+                        </div>
+                    </div>
+
+
+
                 </div>
-<div id="t-abstract" class="clear" data-tiplabel="Abstract / Description" data-tooltipcontent="Short description of the             Document
-." data-original-title="" title="">
 
-<div class="control-group "><label class="control-label" for="resourceDescription">Abstract / Description <span class="required">*</span></label>    <div class="controls">
-<textarea v-model="resource.description" name="document.description" cols="80" rows="4" id="resourceDescription" class="required resizable resize-vertical input-xxlarge trim" title="A description is required" required="true"></textarea></div>
-</div>
-            </div>
-    <input type="hidden" name="startTime" v-model="epochtime" id="metadataForm_epochTimeUpdated">
-    <b>account</b>
-    <select name="accountId" v-model="accountId">
-     <option v-for="account in accounts" v-bind:value="account.id">
-    {{ account.name }}
-  </option>
-    </select>
-    <br/>
-    <b>submitter</b>
-    <div>
-        <autocomplete url="/api/lookup/person"
-        suffix="user=true" field="term"
-        resultsuffix="people" 
-        ref="submitter" @autocompletevalueset="setsubmitter"
-        fieldname="submitter.properName" allowCreate="false" idname="submitter.id"  :initial_id="submitterId"  :initial_value="submitterName"/>
-        </div>
-    <div>
-    <b>Project</b>
-    <autocomplete url="/api/lookup/resource"
-        suffix="resourceTypes=PROJECT" field="term"
-        resultsuffix="resources" 
-        @autocompletevalueset="selectProject" ref="input"
-        fieldname="title" allowCreate="false" idname="projectId" />
-    </div>
-    
-    
-    <div>
-            <upload :config="fileUploadConfig" />
-    </div>
-    
-    <div>
-        <h5>Notes</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingNoteInformation" :disabled="inheritanceDisabled"/></b>
-        <div v-for="(note, idx) in resource.resourceNotes" class="row">
-              <div class="repeat-row">
-        <div class="controls controls-row">
-            <div class="span6">
-                <div class="controls-row">
-                    <select :name="'resourceNotes[' + idx + '].type'" v-model="note.type">
-                        <option v-for="(opt, idx) in noteTypes" :value="opt.value">{{opt.name}}</option>
-                    </select>
+                <div data-tiplabel="Year"
+                    data-tooltipcontent="Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created.">
+
+                    <div class="control-group ">
+                        <label class="control-label" for="dateCreated">Year
+                            <span class="required">*</span>
+                        </label>
+                        <div class="controls">
+
+                            <input v-model="resource.date" type="text"
+                                name="document.date" maxlength="7"
+                                id="dateCreated"
+                                class="reasonableDate required input-mini trim"
+                                title="Please enter the year this Document was created"
+                                required="true">
+                        </div>
+                    </div>
                 </div>
-                <div class="controls-row">
-                    <textarea  :name="'resourceNotes[' + idx + '].note'" v-model="note.note" cols="80" rows="4" 
-                        class="span6 resizable resize-vertical" maxlength="5000" placeholder="enter note contents"></textarea>
+                <div id="t-abstract" class="clear"
+                    data-tiplabel="Abstract / Description"
+                    data-tooltipcontent="Short description of the             Document
+."
+                    data-original-title="" title="">
+
+                    <div class="control-group ">
+                        <label class="control-label"
+                            for="resourceDescription">Abstract /
+                            Description <span class="required">*</span>
+                        </label>
+                        <div class="controls">
+                            <textarea v-model="resource.description"
+                                name="document.description" cols="80"
+                                rows="4" id="resourceDescription"
+                                class="required resizable resize-vertical input-xxlarge trim"
+                                title="A description is required"
+                                required="true"></textarea>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="span1">
-    <button class="btn btn-mini " @click="removeNote(idx)" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
-            </div>
-        </div>
-    </div>
-        
-    <div class="control-group add-another-control">
-    <div class="controls">
-        <button class="btn addanother" @click="resource.resourceNotes.push(getBlankNote())" type="button"><i class="icon-plus-sign"></i>add another</button>
-    </div>
-</div>
-        </div>
-    </div>
-
-<div>
-        <h5>Creators</h5>
-        <div v-for="(creator, idx) in resource.contentOwners" class="row">
-                    <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="primaryRoles" prefix="authorshipProxies" @deleterow="deleteCreatorRow" ref='contentOwner'/>
-        </div> 
-          <button class="btn addanother"  @click="addCreatorRow(resource.contentOwners)" type="button"><i class="icon-plus-sign"></i>add another</button>
-        
-</div> 
-<div>
-        <h5>Individual and Institutional Roles</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingIndividualAndInstitutionalCredit" :disabled="inheritanceDisabled"/></b>
-        <div v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit" class="row">
-                <creatorrolelookup :resourcecreator="creator" :row="idx" :roles="creditRoles" prefix="creditProxies" @deleterow="deleteCreatorRow" ref='contentCredit'/>
-        </div> 
-          <button class="btn addanother"  @click="addCreatorRow(resource.activeIndividualAndInstitutionalCredit)" type="button"><i class="icon-plus-sign"></i>add another</button>
-        
-</div> 
-    
-    <div>
-        <h5>Other Keywords</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingOtherInformation" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="other" :values="resource.otherKeywords" prefix="otherKeywords" 
-            name_field="label" autocomplete_suffix="keywordType=OtherKeyword" :include_id="false" :use_name_field="false"
-            result_suffix="items"  />
-    </div>
-    <div>
-        <h5>Culture Keywords</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingCulturalInformation" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="culture"  :values="resource.cultureKeywords" prefix="uncontrolledCultureKeywords" 
-            name_field="label" autocomplete_suffix="keywordType=CultureKeyword" :include_id="false" :use_name_field="false"
-            result_suffix="items"  />
-    </div>
-    <div>
-        <h5>Temporal Keywords</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingTemporalInformation" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="temporal" :values="resource.temporalKeywords" prefix="temporalKeywords" 
-            name_field="label" autocomplete_suffix="keywordType=TemporalKeyword" :include_id="false" :use_name_field="false"
-            result_suffix="items"  />
-    </div>
-    
-    
-    <div>
-        <h5>Temporal</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingTemporalInformation" :disabled="inheritanceDisabled"/></b>
-        <div v-for="(date, idx) in resource.coverageDates" class="row">
-              <div class="repeat-row">
-        <div class="controls controls-row">
-            <div class="span6">
-                <div class="controls-row">
-                    <select :name="'coverageDates' + idx + '].type'" v-model="date.type">
-                        <option v-for="(opt, idx) in coverageDateTypes" :value="opt.value">{{opt.name}}</option>
-                    </select>
+                <input type="hidden" name="startTime"
+                    v-model="epochtime"
+                    id="metadataForm_epochTimeUpdated"> <b>account</b>
+                <select name="accountId" v-model="accountId">
+                    <option v-for="account in accounts"
+                        v-bind:value="account.id">{{
+                        account.name }}</option>
+                </select> <br /> <b>submitter</b>
+                <div>
+                    <autocomplete url="/api/lookup/person"
+                        suffix="user=true" field="term"
+                        resultsuffix="people" ref="submitter"
+                        @autocompletevalueset="setsubmitter"
+                        fieldname="submitter.properName"
+                        allowCreate="false" idname="submitter.id"
+                        :initial_id="submitterId"
+                        :initial_value="submitterName" />
                 </div>
-                <div class="controls-row">
-                Start: <input type="text" :name="'coverageDates' + idx + '].startDate'"  v-bind="date.startDate" >
-                End: <input type="text" :name="'coverageDates' + idx + '].endDate'"  v-bind="date.endDate" >
+
+                <div>
+                    <h5>Creators</h5>
+                    <div
+                        v-for="(creator, idx) in resource.contentOwners"
+                        class="row">
+                        <creatorrolelookup :resourcecreator="creator"
+                            :row="idx" :roles="primaryRoles"
+                            prefix="authorshipProxies"
+                            @deleterow="deleteCreatorRow"
+                            ref='contentOwner' />
+                    </div>
+                    <button class="btn addanother"
+                        @click="addCreatorRow(resource.contentOwners)"
+                        type="button">
+                        <i class="icon-plus-sign"></i>add another
+                    </button>
+
                 </div>
+                <div>
+
+                    <b>Project</b>
+                    <autocomplete url="/api/lookup/resource"
+                        suffix="resourceTypes=PROJECT" field="term"
+                        resultsuffix="resources"
+                        @autocompletevalueset="selectProject"
+                        ref="input" fieldname="title"
+                        allowCreate="false" idname="projectId" />
             </div>
-            <div class="span1">
-    <button class="btn btn-mini " @click="removeDate(idx)" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
             </div>
-        </div>
-    </div>
-        
-    <div class="control-group add-another-control">
-    <div class="controls">
-        <button class="btn addanother" @click="resource.coverageDates.push(getBlankDate())" type="button"><i class="icon-plus-sign"></i>add another</button>
-    </div>
-</div>
-        </div>
-    </div>
-    
-    <div>
-        <h5>Site Information</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingSiteInformation" :disabled="inheritanceDisabled"/></b>
-        <div>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteName" :values="resource.siteNameKeywords" prefix="siteNameKeywords" 
-            name_field="label" autocomplete_suffix="keywordType=SiteNameKeyword" :include_id="false" :use_name_field="false"
-            result_suffix="items"  />
-        </div>
-        <br/>
-        <div>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="siteType" :values="resource.siteTypeKeywords" prefix="uncontrolledSiteTypeKeywords" 
-            name_field="label" autocomplete_suffix="keywordType=SiteTypeKeyword"  :include_id="false" :use_name_field="false"
-            result_suffix="items"  />
-        </div>
-    </div>
-    <div>
-        <h5>Investigation Type</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingInvestigationInformation" :disabled="inheritanceDisabled"/></b>
-        <div>
-        <value :choices="investigationTypes" ref="investigationType" :values="resource.investigationTypes" />
-        </div>
-
-    </div>
-    <div>
-        <h5>Material</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingMaterialInformation" :disabled="inheritanceDisabled"/></b>
-        <div>
-        controlled: {{resource.controlledMaterialKeywords.length}}</br>
-        uncontrolled:{{resource.uncontrolledMaterialKeywords.length}}</br>
-        </div>
-        <div>
-        <value :choices="materialTypes" ref="materialControlled" :values="resource.controlledMaterialKeywords" />
-        </div>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="material" :values="resource.uncontrolledMaterialKeywords" prefix="uncontrolledMaterialKeywords"  
-            name_field="label" autocomplete_suffix="keywordType=MaterialKeyword" :include_id="false" :use_name_field="false"
-            result_suffix="items"  />
-    </div>
-    <div>
-        <h5>Geographic</h5>
-        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingSpatialInformation" :disabled="inheritanceDisabled"/></b>
-        <tagbox autocomplete_url="/api/lookup/keyword" ref="geographic" :values="resource.geographicKeywords" prefix="geographicKeywords"
-            name_field="label" autocomplete_suffix="keywordType=GeographicKeyword" :include_id="false" :use_name_field="false"
-            result_suffix="items"  />
-            
-
-    </div>
-
-    
-
-
-    
-    
-        <div id='vueeditablemap' style="height:300px" class=" span9" data-search="true">
-            <div id="divManualCoordinateEntry2" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
-                <input type="checkbox" id="viewCoordinatesCheckbox2" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
-                <div id='explicitCoordinatesDiv' style='text-align:center;'>
-            
-            <table cellpadding="0" cellspacing="0" style="margin-left:auto;margin-right:auto;text-align:left;">
-                        <tbody><tr>
-                            <td></td>
-                            <td>
-<input type="text" name="latitudeLongitudeBoxes[0].north"size="14" value="" class="maxy float latLong ne-lat hidden" title="Please enter a valid Maximum Latitude" v-model="resource.activeLatitudeLongitudeBoxes[0].north">
-                                <input type="text" placeholder="Latitude (max)" class="ne-lat-display span2 d_maxy"   >
-                            </td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td style="width:33%;text-align:center">
-<input type="text" name="latitudeLongitudeBoxes[0].west" size="14" value=""  class="minx float latLong sw-lng hidden" title="Please enter a valid Minimum Longitude" v-model="resource.activeLatitudeLongitudeBoxes[0].west"> 
-                               <input type="text"  placeholder="Longitude (min)" class="sw-lng-display span2 d_minx"  >
-                            </td>
-                            <td style="width:33%;text-align:center">
-                                <input type="button" id="locate" ref="updateMap" value="Locate" class="btn locateCoordsButton">
-                            </td>
-                            <td style="width:33%;text-align:center">
-<input type="text" name="latitudeLongitudeBoxes[0].east" v-model="resource.activeLatitudeLongitudeBoxes[0].east" size="14" class="maxx float latLong ne-lng hidden" title="Please enter a valid Maximum Longitude" >
-                                <input type="text" placeholder="Longitude (max)" class="d_maxx ne-lng-display span2">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-<input type="text" name="latitudeLongitudeBoxes[0].south" v-model="resource.activeLatitudeLongitudeBoxes[0].south" size="14"  class="miny float latLong sw-lat hidden" title="Please enter a valid Minimum Latitude" >
-                                <input type="text"  placeholder="Latitude (min)" class="d_miny sw-lat-display span2">
-                            </td>
-                            <td></td>
-                        </tr>
-                    </tbody></table>
-                    
-                    
+            <div class="tab-pane" id="files" role="tabpanel"
+                aria-labelledby="settings-tab">
+                <h3>Files</h3>
+                <div>
+                    <upload :config="fileUploadConfig" />
                 </div>
             </div>
-                                <div class="mapdiv"></div>
-        </div>
-    
-        {{resource}}
-        <hr>
-        {{project}}
-        
-<button type="button" name="submitbutton" @click="submitForm">Submit</button>
+            <div class="tab-pane" id="where" role="tabpanel"
+                aria-labelledby="profile-tab">
 
-</form>
+                <h3>Where</h3>
+                <div>
+                    <h5>Geographic</h5>
+                    <b :class="inheritanceDisabledClass">inherit
+                        from: {{project.title}} <input type="checkbox"
+                        v-model="resource.inheritingSpatialInformation"
+                        :disabled="inheritanceDisabled" />
+                    </b>
+                    <tagbox autocomplete_url="/api/lookup/keyword"
+                        ref="geographic"
+                        :values="resource.geographicKeywords"
+                        prefix="geographicKeywords" name_field="label"
+                        autocomplete_suffix="keywordType=GeographicKeyword"
+                        :include_id="false" :use_name_field="false"
+                        result_suffix="items" />
+
+
+                </div>
+
+
+
+
+
+
+                <div id='vueeditablemap' style="height: 300px"
+                    class=" span9" data-search="true">
+                    <div id="divManualCoordinateEntry2"
+                        data-tooltipcontent="#divManualCoordinateEntryTip"
+                        class="latlong-fields">
+                        <input type="checkbox"
+                            id="viewCoordinatesCheckbox2"
+                            name="_tdar.viewCoordinatesCheckbox"
+                            onclick="TDAR.common.coordinatesCheckboxClicked(this);"
+                            label='Enter / View Coordinates'
+                            labelposition='right' />
+                        <div id='explicitCoordinatesDiv'
+                            style='text-align: center;'>
+
+                            <table cellpadding="0" cellspacing="0"
+                                style="margin-left: auto; margin-right: auto; text-align: left;">
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td><input type="text"
+                                            name="latitudeLongitudeBoxes[0].north"
+                                            size="14" value=""
+                                            class="maxy float latLong ne-lat hidden"
+                                            title="Please enter a valid Maximum Latitude"
+                                            v-model="resource.activeLatitudeLongitudeBoxes[0].north">
+                                            <input type="text"
+                                            placeholder="Latitude (max)"
+                                            class="ne-lat-display span2 d_maxy">
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td
+                                            style="width: 33%; text-align: center">
+                                            <input type="text"
+                                            name="latitudeLongitudeBoxes[0].west"
+                                            size="14" value=""
+                                            class="minx float latLong sw-lng hidden"
+                                            title="Please enter a valid Minimum Longitude"
+                                            v-model="resource.activeLatitudeLongitudeBoxes[0].west">
+                                            <input type="text"
+                                            placeholder="Longitude (min)"
+                                            class="sw-lng-display span2 d_minx">
+                                        </td>
+                                        <td
+                                            style="width: 33%; text-align: center">
+                                            <input type="button"
+                                            id="locate" ref="updateMap"
+                                            value="Locate"
+                                            class="btn locateCoordsButton">
+                                        </td>
+                                        <td
+                                            style="width: 33%; text-align: center">
+                                            <input type="text"
+                                            name="latitudeLongitudeBoxes[0].east"
+                                            v-model="resource.activeLatitudeLongitudeBoxes[0].east"
+                                            size="14"
+                                            class="maxx float latLong ne-lng hidden"
+                                            title="Please enter a valid Maximum Longitude">
+                                            <input type="text"
+                                            placeholder="Longitude (max)"
+                                            class="d_maxx ne-lng-display span2">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><input type="text"
+                                            name="latitudeLongitudeBoxes[0].south"
+                                            v-model="resource.activeLatitudeLongitudeBoxes[0].south"
+                                            size="14"
+                                            class="miny float latLong sw-lat hidden"
+                                            title="Please enter a valid Minimum Latitude">
+                                            <input type="text"
+                                            placeholder="Latitude (min)"
+                                            class="d_miny sw-lat-display span2">
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+
+                        </div>
+                    </div>
+                    <div class="mapdiv"></div>
+                </div>
+            </div>
+            <div class="tab-pane" id="when" role="tabpanel"
+                aria-labelledby="when-tab">
+                <h3>When</h3>
+                <div>
+                    <h5>Temporal Keywords</h5>
+                    <b :class="inheritanceDisabledClass">inherit
+                        from: {{project.title}} <input type="checkbox"
+                        v-model="resource.inheritingTemporalInformation"
+                        :disabled="inheritanceDisabled" />
+                    </b>
+                    <tagbox autocomplete_url="/api/lookup/keyword"
+                        ref="temporal"
+                        :values="resource.temporalKeywords"
+                        prefix="temporalKeywords" name_field="label"
+                        autocomplete_suffix="keywordType=TemporalKeyword"
+                        :include_id="false" :use_name_field="false"
+                        result_suffix="items" />
+                </div>
+
+
+                <div>
+                    <h5>Temporal</h5>
+                    <b :class="inheritanceDisabledClass">inherit
+                        from: {{project.title}} <input type="checkbox"
+                        v-model="resource.inheritingTemporalInformation"
+                        :disabled="inheritanceDisabled" />
+                    </b>
+                    <div v-for="(date, idx) in resource.coverageDates"
+                        class="row">
+                        <div class="repeat-row">
+                            <div class="controls controls-row">
+                                <div class="span6">
+                                    <div class="controls-row">
+                                        <select
+                                            :name="'coverageDates' + idx + '].type'"
+                                            v-model="date.type">
+                                            <option
+                                                v-for="(opt, idx) in coverageDateTypes"
+                                                :value="opt.value">{{opt.name}}</option>
+                                        </select>
+                                    </div>
+                                    <div class="controls-row">
+                                        Start: <input type="text"
+                                            :name="'coverageDates' + idx + '].startDate'"
+                                            v-bind="date.startDate">
+                                        End: <input type="text"
+                                            :name="'coverageDates' + idx + '].endDate'"
+                                            v-bind="date.endDate">
+                                    </div>
+                                </div>
+                                <div class="span1">
+                                    <button class="btn btn-mini "
+                                        @click="removeDate(idx)"
+                                        type="button" tabindex="-1"
+                                        title="delete this item from the list">
+                                        <i class="icon-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control-group add-another-control">
+                            <div class="controls">
+                                <button class="btn addanother"
+                                    @click="resource.coverageDates.push(getBlankDate())"
+                                    type="button">
+                                    <i class="icon-plus-sign"></i>add
+                                    another
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="notes" role="tabpanel"
+                aria-labelledby="notes-tab">
+                <h3>Notes</h3>
+                                    <div>
+                        <b :class="inheritanceDisabledClass">inherit
+                            from: {{project.title}} <input
+                            type="checkbox"
+                            v-model="resource.inheritingNoteInformation"
+                            :disabled="inheritanceDisabled" />
+                        </b>
+                        <div
+                            v-for="(note, idx) in resource.resourceNotes"
+                            class="row">
+                            <div class="repeat-row">
+                                <div class="controls controls-row">
+                                    <div class="span6">
+                                        <div class="controls-row">
+                                            <select
+                                                :name="'resourceNotes[' + idx + '].type'"
+                                                v-model="note.type">
+                                                <option
+                                                    v-for="(opt, idx) in noteTypes"
+                                                    :value="opt.value">{{opt.name}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="controls-row">
+                                            <textarea
+                                                :name="'resourceNotes[' + idx + '].note'"
+                                                v-model="note.note"
+                                                cols="80" rows="4"
+                                                class="span6 resizable resize-vertical"
+                                                maxlength="5000"
+                                                placeholder="enter note contents"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="span1">
+                                        <button class="btn btn-mini "
+                                            @click="removeNote(idx)"
+                                            type="button" tabindex="-1"
+                                            title="delete this item from the list">
+                                            <i class="icon-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                class="control-group add-another-control">
+                                <div class="controls">
+                                    <button class="btn addanother"
+                                        @click="resource.resourceNotes.push(getBlankNote())"
+                                        type="button">
+                                        <i class="icon-plus-sign"></i>add
+                                        another
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <div class="tab-pane" id="siteinfo" role="tabpanel"
+                aria-labelledby="siteinfo-tab">
+                <h3>Site Information</h3>
+                
+                
+
+                    <div>
+                        <h5>Site Information</h5>
+                        <b :class="inheritanceDisabledClass">inherit
+                            from: {{project.title}} <input
+                            type="checkbox"
+                            v-model="resource.inheritingSiteInformation"
+                            :disabled="inheritanceDisabled" />
+                        </b>
+                        <div>
+                            <tagbox
+                                autocomplete_url="/api/lookup/keyword"
+                                ref="siteName"
+                                :values="resource.siteNameKeywords"
+                                prefix="siteNameKeywords"
+                                name_field="label"
+                                autocomplete_suffix="keywordType=SiteNameKeyword"
+                                :include_id="false"
+                                :use_name_field="false"
+                                result_suffix="items" />
+                        </div>
+                        <br />
+                        <div>
+                            <tagbox
+                                autocomplete_url="/api/lookup/keyword"
+                                ref="siteType"
+                                :values="resource.siteTypeKeywords"
+                                prefix="uncontrolledSiteTypeKeywords"
+                                name_field="label"
+                                autocomplete_suffix="keywordType=SiteTypeKeyword"
+                                :include_id="false"
+                                :use_name_field="false"
+                                result_suffix="items" />
+                        </div>
+                    </div>
+            </div>
+
+            <div class="tab-pane" id="sink" role="tabpanel"
+                aria-labelledby="sink-tab">
+                <h3>Everything Else</h3>
+                <div>
+
+
+
+                    <div>
+                        <h5>Individual and Institutional Roles</h5>
+                        <b :class="inheritanceDisabledClass">inherit
+                            from: {{project.title}} <input
+                            type="checkbox"
+                            v-model="resource.inheritingIndividualAndInstitutionalCredit"
+                            :disabled="inheritanceDisabled" />
+                        </b>
+                        <div
+                            v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit"
+                            class="row">
+                            <creatorrolelookup
+                                :resourcecreator="creator" :row="idx"
+                                :roles="creditRoles"
+                                prefix="creditProxies"
+                                @deleterow="deleteCreatorRow"
+                                ref='contentCredit' />
+                        </div>
+                        <button class="btn addanother"
+                            @click="addCreatorRow(resource.activeIndividualAndInstitutionalCredit)"
+                            type="button">
+                            <i class="icon-plus-sign"></i>add another
+                        </button>
+
+                    </div>
+
+                    <div>
+                        <h5>Other Keywords</h5>
+                        <b :class="inheritanceDisabledClass">inherit
+                            from: {{project.title}} <input
+                            type="checkbox"
+                            v-model="resource.inheritingOtherInformation"
+                            :disabled="inheritanceDisabled" />
+                        </b>
+                        <tagbox autocomplete_url="/api/lookup/keyword"
+                            ref="other" :values="resource.otherKeywords"
+                            prefix="otherKeywords" name_field="label"
+                            autocomplete_suffix="keywordType=OtherKeyword"
+                            :include_id="false" :use_name_field="false"
+                            result_suffix="items" />
+                    </div>
+                    <div>
+                        <h5>Culture Keywords</h5>
+                        <b :class="inheritanceDisabledClass">inherit
+                            from: {{project.title}} <input
+                            type="checkbox"
+                            v-model="resource.inheritingCulturalInformation"
+                            :disabled="inheritanceDisabled" />
+                        </b>
+                        <tagbox autocomplete_url="/api/lookup/keyword"
+                            ref="culture"
+                            :values="resource.cultureKeywords"
+                            prefix="uncontrolledCultureKeywords"
+                            name_field="label"
+                            autocomplete_suffix="keywordType=CultureKeyword"
+                            :include_id="false" :use_name_field="false"
+                            result_suffix="items" />
+                    </div>
+
+                    <div>
+                        <h5>Investigation Type</h5>
+                        <b :class="inheritanceDisabledClass">inherit
+                            from: {{project.title}} <input
+                            type="checkbox"
+                            v-model="resource.inheritingInvestigationInformation"
+                            :disabled="inheritanceDisabled" />
+                        </b>
+                        <div>
+                            <value :choices="investigationTypes"
+                                ref="investigationType"
+                                :values="resource.investigationTypes" />
+                        </div>
+
+                    </div>
+                    <div>
+                        <h5>Material</h5>
+                        <b :class="inheritanceDisabledClass">inherit
+                            from: {{project.title}} <input
+                            type="checkbox"
+                            v-model="resource.inheritingMaterialInformation"
+                            :disabled="inheritanceDisabled" />
+                        </b>
+                        <div>
+                            controlled:
+                            {{resource.controlledMaterialKeywords.length}}</br>
+                            uncontrolled:{{resource.uncontrolledMaterialKeywords.length}}</br>
+                        </div>
+                        <div>
+                            <value :choices="materialTypes"
+                                ref="materialControlled"
+                                :values="resource.controlledMaterialKeywords" />
+                        </div>
+                        <tagbox autocomplete_url="/api/lookup/keyword"
+                            ref="material"
+                            :values="resource.uncontrolledMaterialKeywords"
+                            prefix="uncontrolledMaterialKeywords"
+                            name_field="label"
+                            autocomplete_suffix="keywordType=MaterialKeyword"
+                            :include_id="false" :use_name_field="false"
+                            result_suffix="items" />
+                    </div>
+                </div>
+
+
+
+            </div>
+
+            <div class="tab-pane" id="tech" role="tabpanel"
+                aria-labelledby="tech-tab">
+                <h3>Tech stuff</h3>
+                {{resource}}
+                <hr>
+                {{project}}
+
+
+                <div>
+                    <upload :config="fileUploadConfig" />
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+
+
+
+        <button type="button" name="submitbutton" @click="submitForm">Submit</button>
+
+    </form>
 </div>

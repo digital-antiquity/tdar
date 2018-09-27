@@ -50,7 +50,7 @@
     </div>
     <div class="span4">
         <input type="hidden" :name="getRootPrefix('id')" v-model="resourcecreator.id" :class="toggleValue">
-        <input type="hidden" :name="getRootPrefix('creator.id')" v-model="resourcecreator.creator.id" :value="creatorId" > {{creatorId}} HELLO!
+        <input type="hidden" :name="getRootPrefix('creator.id')" v-model="resourcecreator.creator.id" :value="creatorId" >
         <div v-if="toggle == 'PERSON'">
 			<person :creator="resourcecreator.creator" ref="inputperson" @autocompleteset="updatecreator" :row="row" :prefix="prefix"/>
         </div>
