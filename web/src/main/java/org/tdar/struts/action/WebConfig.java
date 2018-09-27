@@ -221,6 +221,7 @@ public class WebConfig {
         return props.getProperty("git.commit.id");
     }
 
+
     private Properties loadChangesetProps() {
         if (changesetProps != null) {
             return changesetProps;
