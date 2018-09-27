@@ -109,8 +109,10 @@ View freemarker macros
         <#else>
             <@common.truncate version.filename 65 />
         </#if>
-        <#if (!version.viewable || !version.informationResourceFile.public )>
-        <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
+        <#if version.viewable == false>
+        <i class="fas fa-lock"></i>
+        <#elseif version.informationResourceFile.public == false >
+        <i class="fas fa-unlock"></i>
         </#if>
         <#if showSize>(<@common.convertFileSize version.fileLength />)</#if>
         <#if showDownloadCount><@downloadCount version /></#if>
@@ -121,7 +123,7 @@ View freemarker macros
     <#--<a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"-->
     <#-- fixme:should we change the google analytics event name, or will this be a pain? -->
         <#if resource.hasConfidentialFiles() && !ableToViewConfidentialFiles >
-            Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
+            Download All        <i class="fas fa-lock"></i>
         <#else>
         <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" 
            onclick="TDAR.common.registerDownload('/filestore/download?informationResourceId=${resource.id?c}', '${id?c}')"
