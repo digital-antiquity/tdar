@@ -41,6 +41,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     requiredOptionalPairs:[]
                 },
                 creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
+                coverageDateTypes: [
+                    {value:"CALENDAR_DATE", name:"Calendar Date"},
+                    {value:"RADIOCARBON_DATE", name:"Radiocarbon Date"},
+                ],
                 noteTypes: [
                     {value:"GENERAL", name:"General Note"},
                     {value:"REDACTION", name:"Redaction Note"},
@@ -48,7 +52,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     {value:"ADMIN", name:"Administration Note"}
                     ],
                 resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], controlledMaterialKeywords:[], uncontrolledMaterialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
-                    resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
+                    latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
                     individualInstitutionalRoles: [ {id: undefined, role: undefined , creator: {institution:{ name: undefined}, id: undefined} } ] }
                 },
                 created: function() {
@@ -60,7 +64,18 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
                             Vue.set(this,"submitterName",JSON.parse(document.getElementById('submitter').innerText).properName );
                         }
-                         
+                         if (this.resource.resourceNotes == undefined) {
+                             this.resource.resourceNotes = [];
+                         } 
+                         if (this.resource.resourceNotes.length == 0) {
+                             this.resource.resourceNotes.push(this.getBlankNote());
+                         }
+                         if (this.resource.coverageDates == undefined) {
+                             this.resource.coverageDates = [];
+                         } 
+                         if (this.resource.coverageDates.length == 0) {
+                             this.resource.coverageDates.push(this.getBlankDate());
+                         }
                          var uploadConfig = document.getElementById('fileUploadSettings').innerText;
                          if (uploadConfig != undefined && uploadConfig.trim() != '') {
                              uploadConfig = JSON.parse(uploadConfig);
@@ -109,7 +124,8 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             Vue.set(self, "south", e.miny);
                             });
                     });
-                },                watch: {
+                },
+                watch: {
                     "resource.inheritingInvestigationInformation": function(o, b) {
                         this.inherit(o,b,'investigationType', 'activeInvestigationTypes');
                     },
@@ -119,6 +135,18 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     },
                     "resource.inheritingTemporalInformation": function(o, b) {
                         this.inherit(o,b,'temporal', 'activeTemporalKeywords');
+                        if (this.project != undefined && this.project.activeCoverageDates != undefined) {
+                            this.resource.coverageDates.length = 0;
+                            var _app = this;
+                            this.project.activeCoverageDates.forEach(function(n) {
+                                console.log(n);
+                                _app.resource.coverageDates.push(derefrence(n) );
+                            });
+                            if (this.resource.coverageDates.length == 0) {
+                                this.resource.coverageDates.push(this.getBlankDate());
+                            }
+                        }
+
                     },
                     "resource.inheritingIndividualAndInstitutionalCredit": function(o, b) {
                         if (this.project != undefined && this.project.activeIndividualAndInstitutionalCredit != undefined) {
@@ -177,7 +205,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                                 _app.resource.resourceNotes.push(derefrence(n) );
                             });
                             if (this.resource.resourceNotes.length == 0) {
-                                this.resource.resourceNotes.push({});
+                                this.resource.resourceNotes.push(this.getBlankNote());
                             }
                         }
                     }
@@ -196,11 +224,28 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             this.resource.resourceNotes.splice(idx,1);
                         }
                         if (this.resource.resourceNotes.length == 0) {
-                            this.resource.resourceNotes.push({});
+                            this.resource.resourceNotes.push(this.getBlankNote());
                         }
                         if (this.resource.resourceNotes.length == 1) {
-                            this.resource.resourceNotes[0]= {};
+                            this.resource.resourceNotes[0]= this.getBlankNote();
                         }
+                    },
+                    removeDate: function(idx) {
+                        if (this.resource.coverageDates.length > 1) {
+                            this.resource.coverageDates.splice(idx,1);
+                        }
+                        if (this.resource.coverageDates.length == 0) {
+                            this.resource.coverageDates.push(this.getBlankDate());
+                        }
+                        if (this.resource.coverageDates.length == 1) {
+                            this.resource.coverageDates[0]= this.getBlankDate();
+                        }
+                    },
+                    getBlankNote: function() {
+                        return {type:"GENERAL"};
+                    },
+                    getBlankDate: function() {
+                        return {type:"CALENDAR_DATE"};
                     },
                     setsubmitter: function(submitter) {
                         console.log("setsubmitter", submitter);

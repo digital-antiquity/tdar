@@ -122,6 +122,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     this.$refs.input.focus();
                 }
             },
+            labelFocus: function(event) {
+                if (event) event.preventDefault()
+                return false;
+            },
             addAutocompleteValue: function(result) {
                 if (result != undefined) {
                     if (this.allow_create == false && result[this.id_field] != undefined || this.allow_create == true) {
@@ -193,7 +197,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 }
             },
             deleteLast: function(input) {
-                console.log(input.selectionStart ,input.selectionEnd);
+//                console.log(input.selectionStart ,input.selectionEnd);
                 if (input.selectionStart == 0 && input.selectionEnd == 0) {
                     this.remove(this.values.length -1);
                 }

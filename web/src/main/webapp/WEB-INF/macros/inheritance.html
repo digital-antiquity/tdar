@@ -63,12 +63,12 @@
         <div class="controls controls-row">
             <div class="span6">
                 <div class="controls-row">
-                    <select :name="'resourceNotes[' + idx + '].type'" v-model="resource.resourceNotes[idx].type">
+                    <select :name="'resourceNotes[' + idx + '].type'" v-model="note.type">
                         <option v-for="(opt, idx) in noteTypes" :value="opt.value">{{opt.name}}</option>
                     </select>
                 </div>
                 <div class="controls-row">
-                    <textarea  :name="'resourceNotes[' + idx + '].note'" v-model="resource.resourceNotes[idx].note" cols="80" rows="4" 
+                    <textarea  :name="'resourceNotes[' + idx + '].note'" v-model="note.note" cols="80" rows="4" 
                         class="span6 resizable resize-vertical" maxlength="5000" placeholder="enter note contents"></textarea>
                 </div>
             </div>
@@ -80,7 +80,7 @@
         
     <div class="control-group add-another-control">
     <div class="controls">
-        <button class="btn addanother" @click="resource.resourceNotes.push({})" type="button"><i class="icon-plus-sign"></i>add another</button>
+        <button class="btn addanother" @click="resource.resourceNotes.push(getBlankNote())" type="button"><i class="icon-plus-sign"></i>add another</button>
     </div>
 </div>
         </div>
@@ -125,6 +125,39 @@
             name_field="label" autocomplete_suffix="keywordType=TemporalKeyword" :include_id="false" :use_name_field="false"
             result_suffix="items"  />
     </div>
+    
+    
+    <div>
+        <h5>Temporal</h5>
+        <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingTemporalInformation" :disabled="inheritanceDisabled"/></b>
+        <div v-for="(date, idx) in resource.coverageDates" class="row">
+              <div class="repeat-row">
+        <div class="controls controls-row">
+            <div class="span6">
+                <div class="controls-row">
+                    <select :name="'coverageDates' + idx + '].type'" v-model="date.type">
+                        <option v-for="(opt, idx) in coverageDateTypes" :value="opt.value">{{opt.name}}</option>
+                    </select>
+                </div>
+                <div class="controls-row">
+                Start: <input type="text" :name="'coverageDates' + idx + '].startDate'"  v-bind="date.startDate" >
+                End: <input type="text" :name="'coverageDates' + idx + '].endDate'"  v-bind="date.endDate" >
+                </div>
+            </div>
+            <div class="span1">
+    <button class="btn btn-mini " @click="removeDate(idx)" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
+            </div>
+        </div>
+    </div>
+        
+    <div class="control-group add-another-control">
+    <div class="controls">
+        <button class="btn addanother" @click="resource.coverageDates.push(getBlankDate())" type="button"><i class="icon-plus-sign"></i>add another</button>
+    </div>
+</div>
+        </div>
+    </div>
+    
     <div>
         <h5>Site Information</h5>
         <b :class="inheritanceDisabledClass">inherit from: {{project.title}} <input type="checkbox" v-model="resource.inheritingSiteInformation" :disabled="inheritanceDisabled"/></b>
@@ -171,6 +204,10 @@
             
 
     </div>
+
+    
+
+
     
     
         <div id='vueeditablemap' style="height:300px" class=" span9" data-search="true">
