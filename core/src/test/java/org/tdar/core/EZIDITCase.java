@@ -21,6 +21,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
@@ -42,6 +43,7 @@ import edu.asu.lib.jaxb.JaxbDocumentWriter;
  * @author Adam Brin
  * 
  */
+@Ignore
 public class EZIDITCase extends AbstractIntegrationTestCase {
     // public static final String EZID_URL = "https://n2t.net/ezid";
     // public static final String SHOULDER = "doi:10.5072/FK2";
