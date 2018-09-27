@@ -1,13 +1,17 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Properties;
 
 import org.tdar.core.configuration.TdarConfiguration;
 
 public class WebConfig {
 
     private TdarConfiguration config = TdarConfiguration.getInstance();
+    private Properties changesetProps;
 
     public String getThemeDir() {
         return config.getThemeDir();
@@ -200,6 +204,44 @@ public class WebConfig {
         }
         return output.toString();
     }
+    
+    public String getChangeset() {
+        Properties props = loadChangesetProps();
+        if (props == null) {
+            return "";
+        }
+        return String.format("%s (%s)", props.getProperty("git.commit.id") , props.getProperty("git.branch") );
+    }
+
+    public String getChangesetId() {
+        Properties props = loadChangesetProps();
+        if (props == null) {
+            return "";
+        }
+        return props.getProperty("git.commit.id");
+    }
+
+
+    private Properties loadChangesetProps() {
+        if (changesetProps != null) {
+            return changesetProps;
+        }
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("git.properties");
+        if (resourceAsStream == null) {
+            return null;
+        }
+        try {
+            Properties props = new Properties(); 
+            props.load(resourceAsStream);
+            changesetProps = props;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            org.apache.commons.io.IOUtils.closeQuietly(resourceAsStream);
+        }
+        return changesetProps;
+    }
+
 
     public boolean isListCollectionsEnabled() {
         return config.isListCollectionsEnabled();
