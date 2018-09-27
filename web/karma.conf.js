@@ -77,7 +77,7 @@ module.exports = function(config) {
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
                 {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
                 // more fixtures - added to DOM when you call loadFixtures(filename) in your test
-                {pattern:"src/main/webapp/WEB-INF/content/**/*.html", watched:true, served:true, included:false},
+                {pattern:"src/main/webapp/WEB-INF/**/*.html", watched:true, served:true, included:false},
 
                 // html2js fixtures - globally accessible via  window.__html__[filepath]
                 "src/test/frontend/html2js/**/*.html",

@@ -1,15 +1,11 @@
-TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
+TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
-
-    if (document.getElementById("sel") == undefined) {
-        return;
-    }
 
     function dereference(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
     
-    var app = new Vue({
+    var __init = {
         el : "#sel",
         data : {
                 separator: ";" ,
@@ -311,6 +307,17 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     }
                     
                 }
-    });
+    };
 
+    var _init = function(selector){
+        if (selector != undefined){
+            __init["el"] = selector;
+        }
+        var app = new Vue(__init);
+        return app;
+    }
+    
+    return {
+        init : _init,
+    }
 })(console, window, Vue, axios, TDAR);
