@@ -20,11 +20,12 @@
             <@view.ontology />
         </div>
         </#if>
-    <div class="glide">
+    <div class="glide col-12">
         <h3>Categorize this Ontology</h3>
         <@edit.categoryVariable />
 
     </div>
+    <div class="col-12">
         <@edit.manualTextInput
         typeLabel="Ontology"
         type="ontology"
@@ -63,6 +64,7 @@ Flake (Debris; Debitage)
 Core
 	        </pre>
             </#if>
+            </div>
         </@edit.manualTextInput>
     </#macro>
 

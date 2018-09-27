@@ -5,7 +5,8 @@
     <div class="glide compact">
         <h3>${title}</h3>
         <table id="${id}">
-            <thead>
+              <thead class="thead-dark">
+
             <tr>
                 <th>Keyword</th>
                 <#if hier>

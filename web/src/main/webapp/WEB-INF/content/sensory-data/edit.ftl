@@ -62,32 +62,32 @@
                         <div class='controls controls-row'>
                     <span data-tiplabel="Scan Filename"
                           data-tooltipcontent="The name of the scan. A suggested filename for original raw scans for archiving is in this format: ProjectName_scan1.txt.">
-                        <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].filename" placeholder="Filename" cssClass="span3 shortfield" />
+                        <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].filename" placeholder="Filename" cssClass="col-3 shortfield" />
                     </span>
                             <#assign _scanDate="" />
                             <#if _scan.scanDate?? >
                                 <#assign _scanDate><@view.shortDate _scan.scanDate!"" /></#assign>
                             </#if>
                             <span data-tiplabel="Scan Date" data-tooltipcontent="Date the object/monument was scanned">
-                                <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" placeholder="mm/dd/yyyy" cssClass="span2 date" />
+                                <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].scanDate" value="${_scanDate}" placeholder="mm/dd/yyyy" cssClass="col-2 date" />
                             </span>
                             <@nav.clearDeleteButton id="sensoryDataScanRow" />
                         </div>
                         <div class='controls controls-row'>
                     <span data-tiplabel="Data Resolution" data-tooltipcontent="Fixed resolution or data resolution at specific range.">
-                        <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].resolution" placeholder="Resolution" cssClass="span3" />
+                        <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].resolution" placeholder="Resolution" cssClass="col-3" />
                     </span>
                     <span data-tiplabel="Number of Points in Scan" data-tooltipcontent="Number of points generated in scan">
-                        <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].pointsInScan" placeholder="# points" cssClass="span2 shortfield number" />
+                        <@s.textfield theme='simple' maxLength="255" name="sensoryDataScans[${_scan_index}].pointsInScan" placeholder="# points" cssClass="col-2 shortfield number" />
                     </span>
                         </div>
                         <div class='controls controls-row'>
                     <span data-tiplabel="Scan Transformation Matrix"
                           data-tooltipcontent="The name of the transformation matrix used in Global Registration. Suggested file name: ProjectName_scan1_mtrx.txt">
-                        <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].transformationMatrix" placeholder="Transformation Matrix" cssClass="span3" />
+                        <@s.textfield maxLength="255" theme='simple' name="sensoryDataScans[${_scan_index}].transformationMatrix" placeholder="Transformation Matrix" cssClass="col-3" />
                     </span>
                     <span data-tooltipcontent="Check this box if this transformation matrix has been applied to the archived scan">
-                    <label class='checkbox span2'>
+                    <label class='checkbox col-2'>
                         <@s.checkbox theme='simple' name="sensoryDataScans[${_scan_index}].matrixApplied" id="cbMatrixApplied_${_scan_index}_" />
                         Matrix Applied to Scan
                     </label>

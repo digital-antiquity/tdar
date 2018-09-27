@@ -8,7 +8,8 @@
     </#if>
     <!-- FOR testing total:$${calculatedCost!0} -->
     <table class="table  table-invoice">
-        <thead>
+          <thead class="thead-dark">
+
             <tr>
                 <th>Item</th>
                 <th>Quantity</th>
@@ -139,7 +140,7 @@
     </#macro>
 
     <#macro pricingOption label files storage cost id=label?lower_case>
-    <div class="span2 well" id=div${id}>
+    <div class="col card m-3 p-3" id=div${id}>
         <h3><span class="red">$${cost}</span>: ${label}</h3>
         <ul>
             <li>${files}</li>

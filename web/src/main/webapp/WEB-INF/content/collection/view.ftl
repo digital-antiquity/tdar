@@ -9,15 +9,17 @@
 <body>
 
     <@commonCollection.header />
+        <@commonCollection.sidebar />
 
-        <h1>${resourceCollection.name!"untitled collection"}</h1>
-    
+<div class="row">
+<div class="col-12">
+        <h1>${resourceCollection.name!"untitled collection"}     <@view.pageStatusCallout /></h1>
+    </div>
     <#if !visible>
     This collection is not accessible
     
     <#else>
-
-        <@commonCollection.sidebar />
+        <@commonCollection.toolbar />
 
         <@commonCollection.descriptionSection/>
 
@@ -29,7 +31,7 @@
     </#if>
 
     <@commonCollection.javascript />
-
+</div>
 </body>
 
 </#escape>

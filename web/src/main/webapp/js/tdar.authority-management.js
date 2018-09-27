@@ -25,11 +25,10 @@ TDAR.authority = function () {
                 {sTitle: "Last", mDataProp: "lastName", tdarSortOption: 'LAST_NAME'},
                 {sTitle: "Email", mDataProp: "email", tdarSortOption: 'CREATOR_EMAIL', bSortable: false}
             ], //FIXME: make sortable
-            sPaginationType: "bootstrap",
             sAjaxDataProp: 'people',
             selectableRows: true,
             requestCallback: _getPersonSearchData,
-            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
+            "sDom": "<'row'<'col-6'l><'float-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>"
         },
         institution: {
             tableSelector: '#dupe_datatable',
@@ -40,8 +39,7 @@ TDAR.authority = function () {
                 {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
                 {sTitle: "Name", mDataProp: "name", tdarSortOption: 'CREATOR_NAME'}
             ],
-            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>",  //no text filter!
-            sPaginationType: "bootstrap",
+            "sDom": "<'row'<'col-6'l><'float-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>",  //no text filter!
             sAjaxDataProp: 'institutions',
             selectableRows: true,
             requestCallback: function (searchBoxContents) {
@@ -61,7 +59,6 @@ TDAR.authority = function () {
                 {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
                 {sTitle: "Label", mDataProp: "label", tdarSortOption: 'LABEL'}
             ],
-            sPaginationType: "bootstrap",
             sAjaxDataProp: 'items',
             selectableRows: true,
             requestCallback: function (searchBoxContents) {
@@ -69,7 +66,7 @@ TDAR.authority = function () {
                     term: $('#txtKeyword').val()
                 };
             },
-            "sDom": "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
+            "sDom": "<'row'<'col-6'l><'float-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>"
         }
     };
 

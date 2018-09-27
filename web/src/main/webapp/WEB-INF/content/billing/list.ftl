@@ -6,8 +6,9 @@
 </head>
 <body>
 <h1>All Accounts</h1>
-<table class="table tableFormat" id="tblAllAccounts">
-    <thead>
+<table class="table table-sm table-striped" id="tblAllAccounts">
+      <thead class="thead-dark">
+
         <tr>
             <th>Name</th>
             <th>Owner</th>

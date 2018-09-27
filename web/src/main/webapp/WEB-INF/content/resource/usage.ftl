@@ -18,7 +18,7 @@
 
  <#macro totalTable map={} label="" id="">
  <h3>${label}</h3> 
-<table class="tableFormat table" id="${id}">
+<table class="table table-sm table-striped"" id="${id}">
  <tr>
  <th>Date</th>
  <th>Views</th>

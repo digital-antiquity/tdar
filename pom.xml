@@ -70,6 +70,7 @@
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
+        <apache.cxf.version>3.2.4</apache.cxf.version>
         <poi.version>4.0.0</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
@@ -616,6 +617,11 @@
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <!-- LICENSE: ECLIPSE -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+            <version>${apache.cxf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

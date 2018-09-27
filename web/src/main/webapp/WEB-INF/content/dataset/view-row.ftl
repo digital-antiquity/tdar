@@ -5,7 +5,8 @@
     <p><strong>Dataset:</strong> <a href="<@s.url value="${dataset.detailUrl}"/>">${dataset.name}</a></p>
     <p><strong>Description:</strong> ${dataset.description}</p>
     <table class="table table-striped">
-        <thead>
+          <thead class="thead-dark">
+
         <tr>
             <th>Field</th>
             <th>Value</th>

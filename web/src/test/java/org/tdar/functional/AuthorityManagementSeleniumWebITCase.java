@@ -29,7 +29,7 @@ public class AuthorityManagementSeleniumWebITCase extends AbstractAdminSeleniumW
         assertTrue("page contains 'congrats'", getText().contains("Congratulations"));
 
         gotoPage("/browse/creators/11153");
-        assertTrue("page contains Duplicate", getText().contains("Duplicate"));
+        assertTrue("page contains Duplicate", getText().toLowerCase().contains("duplicate"));
         find(By.linkText("City of Alexandria, Virginia")).click();
         find(By.linkText("City of Alexandria")).click();
     }

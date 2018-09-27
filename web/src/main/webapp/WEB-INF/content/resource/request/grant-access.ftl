@@ -40,14 +40,14 @@
         <label class="control-label" for="dp3">Grant Access Until</label>
     <div class="controls">
         <div class="input-append">
-          <input class="span2 datepicker" size="16" type="text" name="expiresString" value="" id="dp3" data-date-format="mm/dd/yyyy" >
+          <input class="col-2 datepicker" size="16" type="text" name="expiresString" value="" id="dp3" data-date-format="mm/dd/yyyy" >
           <span class="add-on"><i class="icon-th"></i></span>
         </div>
     </div>
     </div>
 
         <br/>
-        <@s.textarea name="comment" id="messageBody" rows="4" label="Message" cssClass="span5" cols="80" />
+        <@s.textarea name="comment" id="messageBody" rows="4" label="Message" cssClass="col-5" cols="80" />
         
     <@s.submit name="submit" cssClass="button btn btn-primary"/>
     <script>

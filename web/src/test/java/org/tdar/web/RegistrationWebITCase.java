@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
@@ -23,9 +24,9 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user" + System.currentTimeMillis());
         personmap.remove("registration.contributorReason");
-        testRegister(personmap, TERMS.TOS, true);
+        testRegister(personmap, TERMS.BOTH, true);
         assertCurrentUrlContains("dashboard");
-        assertTextNotPresentIgnoreCase("new project");
+        assertTextPresentIgnoreCase("new project");
         logout();
     }
 
@@ -36,7 +37,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.BOTH, true);
         assertCurrentUrlContains("dashboard");
         assertTextPresentIgnoreCase("Start a new Project");
-        clickLinkWithText("UPLOAD");
+        clickLinkWithText("Upload");
         assertPageTitleEquals("add a new resource");
         logout();
     }
@@ -51,7 +52,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.BOTH, true);
         assertCurrentUrlContains("dashboard");
         assertTextPresentIgnoreCase("Start a new Project");
-        clickLinkWithText("UPLOAD");
+        clickLinkWithText("Upload");
         assertPageTitleEquals("add a new resource");
         gotoPage("/entity/user/myprofile");
         clickElementWithId("disable-account");
@@ -64,6 +65,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     }
 
     @Test
+    @Ignore("not enabling this anymore")
     public void testRegisterNonContributor() {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "contributor" + System.currentTimeMillis());
