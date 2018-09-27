@@ -383,7 +383,7 @@ ${head}
             <div>
                 <p>
                     <small>
-                        <@s.text name="footer.build_num"/>: ${common.tdarBuildId}
+                        ${config.changeset}
                         <#if authenticatedUser??>
                             - <@s.text name="footer.logged_in_as"/>: <a
                                 href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.email}</a>

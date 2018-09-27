@@ -1,7 +1,10 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Properties;
 
 import org.tdar.core.configuration.TdarConfiguration;
 
@@ -199,6 +202,18 @@ public class WebConfig {
             output.append(";");
         }
         return output.toString();
+    }
+    
+    public String getChangeset() {
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("git.properties");
+        Properties props = new Properties();
+        try {
+            props.load(resourceAsStream);
+            return String.format("%s (%s)", props.getProperty("git.commit.id") , props.getProperty("git.branch") );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public boolean isListCollectionsEnabled() {
