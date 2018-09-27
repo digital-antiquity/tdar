@@ -11,6 +11,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 public class WebConfig {
 
     private TdarConfiguration config = TdarConfiguration.getInstance();
+    private Properties changesetProps;
 
     public String getThemeDir() {
         return config.getThemeDir();
@@ -205,16 +206,34 @@ public class WebConfig {
     }
     
     public String getChangeset() {
+        Properties props = loadChangesetProps();
+        if (props == null) {
+            return "";
+        }
+        return String.format("%s (%s)", props.getProperty("git.commit.id") , props.getProperty("git.branch") );
+    }
+
+    public String getChangesetId() {
+        Properties props = loadChangesetProps();
+        if (props == null) {
+            return "";
+        }
+        return props.getProperty("git.commit.id");
+    }
+
+    private Properties loadChangesetProps() {
+        if (changesetProps != null) {
+            return changesetProps;
+        }
         InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("git.properties");
-        Properties props = new Properties();
         try {
-            props.load(resourceAsStream);
-            return String.format("%s (%s)", props.getProperty("git.commit.id") , props.getProperty("git.branch") );
+            changesetProps.load(resourceAsStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "";
+        return changesetProps;
     }
+
 
     public boolean isListCollectionsEnabled() {
         return config.isListCollectionsEnabled();
