@@ -38,8 +38,8 @@ public class PersonalFilestoreTicketITCase extends AbstractIntegrationTestCase {
     
     @Test
     @Rollback
-    public void testFileProcessing() {
-        fileProcessingService.sweepFiles();
+    public void testFileProcessing() throws Throwable {
+        filestoreService.sweepFiles();
     }
     
     @Test

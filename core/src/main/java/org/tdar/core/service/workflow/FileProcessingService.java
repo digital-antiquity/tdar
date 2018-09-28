@@ -38,10 +38,4 @@ public class FileProcessingService {
         
     }
 
-    @Transactional(readOnly=false) 
-    public void sweepFiles() {
-        fileProcessingDao.sweepFiles();
-    }
-
-    
 }
