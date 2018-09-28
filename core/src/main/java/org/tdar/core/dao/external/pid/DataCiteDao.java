@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
@@ -164,7 +165,7 @@ public class DataCiteDao implements ExternalIDProvider {
         CloseableHttpResponse execute = httpclient.execute(request);
         logger.debug("done request");
         if (execute.getStatusLine().getStatusCode() != 200) {
-            throw new TdarRecoverableRuntimeException("error getting doi metadata:" + execute.getStatusLine().toString());
+            throw new TdarRecoverableRuntimeException("dataCiteDao.metadata_error",Arrays.asList(execute.getStatusLine().toString()));
         }
         String xml = IOUtils.toString(execute.getEntity().getContent());
         logger.trace("result: {}", xml);
@@ -206,7 +207,7 @@ public class DataCiteDao implements ExternalIDProvider {
         CloseableHttpResponse execute = httpclient.execute(delete);
         logger.debug("{}",execute.getStatusLine());
         if (execute.getStatusLine().getStatusCode() != 200) {
-            throw new TdarRecoverableRuntimeException("error deleting doi:" + execute.getStatusLine().toString());
+            throw new TdarRecoverableRuntimeException("dataCiteDao.deletion_error", Arrays.asList( execute.getStatusLine().toString()));
         }
         delete.releaseConnection();
         return null;
@@ -242,7 +243,7 @@ public class DataCiteDao implements ExternalIDProvider {
             put.releaseConnection();
             if (execute.getStatusLine().getStatusCode() != 201) {
                 logger.debug(execute.toString());
-                throw new TdarRecoverableRuntimeException("error registering doi:" + execute.getStatusLine().toString());
+                throw new TdarRecoverableRuntimeException("dataCiteDao.registration_error" , Arrays.asList( execute.getStatusLine().toString()));
             }
             if (StringUtils.isBlank(r.getExternalId())) {
                 registerUrl(constructDataCiteUrl(r, "doi"), r);
@@ -270,7 +271,7 @@ public class DataCiteDao implements ExternalIDProvider {
         CloseableHttpResponse execute = httpclient.execute(put);
         put.releaseConnection();
         if (isNotOkStatusCode(execute.getStatusLine().getStatusCode())) {
-            throw new TdarRecoverableRuntimeException("error registering doi:" + execute.getStatusLine().toString());
+            throw new TdarRecoverableRuntimeException("dataCiteDao.registration_error", Arrays.asList( execute.getStatusLine().toString()));
         }
 
     }
