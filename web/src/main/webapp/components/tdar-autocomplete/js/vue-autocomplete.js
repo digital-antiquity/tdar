@@ -20,6 +20,10 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           url: {
               type: String
           },
+          bootstrap4: {
+              type:Boolean,
+              default: false
+          },
           suffix: {type: String},
           field: {
               type: String,
@@ -133,8 +137,15 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             return "width: " + (this.width - 8)+ "px;";
           }, 
           getStyleTop: function() {
-              return "top:" + (this.top) + "px; ";
+              return "top:" + (this.top) + "px; left:0px;";
           }, 
+          getRootClass: function() {
+              if (this.bootstrap4 == true) {
+                  return "row";
+              }
+              return "autocomplete";
+          },
+
           fieldName: function() {
               return this.name;
           },

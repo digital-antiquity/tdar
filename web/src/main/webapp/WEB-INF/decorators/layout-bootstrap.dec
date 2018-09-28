@@ -41,7 +41,7 @@
 <#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
 <head>
     <title>${title!siteName}</title>
-	<link rel="stylesheet" href="https://use.typekit.net/yrw4dsr.css">
+	<!-- <link rel="stylesheet" href="https://use.typekit.net/yrw4dsr.css"> -->
     <#if authenticatedUser??>
         <!-- logged-in-as: ${authenticatedUser.email} -->
     </#if>

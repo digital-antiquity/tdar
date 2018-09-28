@@ -116,6 +116,8 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     // Vue.set("resource","submitter",{});
                     // this.resource.submitter = {id:8344, properName:'adam brin'};
                     var self = this.resource.activeLatitudeLongitudeBoxes[0];
+                },
+                mounted: function() {
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
                             Vue.set(self, "west", e.minx);
@@ -124,6 +126,7 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                             Vue.set(self, "south", e.miny);
                             });
                     });
+
                 },
                 watch: {
                     "resource.inheritingInvestigationInformation": function(o, b) {
