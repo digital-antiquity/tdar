@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.query.Query;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -155,6 +156,7 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
 
     public List<TdarFile> sweepFiles() {
         Query<TdarFile> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_FILE_UPLOAD_SWEEP, TdarFile.class);
+        query.setParameter("date", DateTime.now().minusDays(7).toDate());
         return query.list();
         
     }

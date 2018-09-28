@@ -588,7 +588,7 @@
                         + ") and (:dir is null or :dir = f.parent) "),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.QUERY_FILE_UPLOAD_SWEEP,
-                query = "from TdarFile f where f.parent_id in (select f_.parent_id from TdarFile f_ where f_.dateCreated > now() - interval '1 week') and (f.status='UPLOADED' or f.status='') ")
+                query = "from TdarFile f where f.parent.id in (select f_.parent.id from TdarFile f_ where f_.dateCreated > :date) and (f.status='UPLOADED' or f.status='') ")
 })
 package org.tdar.core.dao;
 
