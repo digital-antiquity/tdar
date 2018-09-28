@@ -554,6 +554,16 @@
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
+                <artifactId>jetty-servlet</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-webapp</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
                 <artifactId>jetty-http</artifactId>
                 <groupId>org.eclipse.jetty</groupId>
                 <version>${jetty.version}</version>
@@ -737,7 +747,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.13.0</version>
+            <version>2.19.0</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
