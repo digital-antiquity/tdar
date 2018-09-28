@@ -17,6 +17,7 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
@@ -30,6 +31,8 @@ import org.tdar.core.dao.external.pid.EZIDDao;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.processes.daily.DoiProcess;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 /**
  * @author Adam Brin
  * 
@@ -37,6 +40,10 @@ import org.tdar.core.service.processes.daily.DoiProcess;
 public class EZIDITCase extends AbstractIntegrationTestCase {
     // public static final String EZID_URL = "https://n2t.net/ezid";
     // public static final String SHOULDER = "doi:10.5072/FK2";
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(12301); 
+
 
     public static final String TEST_USER = "apitest";
     public static final String TEST_PASSWORD = "apitest";

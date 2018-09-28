@@ -38,7 +38,7 @@
             <artifactId>xchart</artifactId>
             <version>${xchart.version}</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
