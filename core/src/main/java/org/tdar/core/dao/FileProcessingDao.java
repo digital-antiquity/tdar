@@ -153,4 +153,10 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
         return new RecentFileSummary(query.getResultList(), dateStart, dateEnd, actor);
     }
 
+    public List<TdarFile> sweepFiles() {
+        Query<TdarFile> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_FILE_UPLOAD_SWEEP, TdarFile.class);
+        return query.list();
+        
+    }
+
 }

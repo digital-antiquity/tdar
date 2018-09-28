@@ -267,6 +267,11 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
     }
 
     @Transactional(readOnly = false)
+    public void sweepFiles() throws Throwable {
+        groupTdarFiles(fileProcessingDao.sweepFiles());
+    }
+    
+    @Transactional(readOnly = false)
     public void groupTdarFiles(Collection<TdarFile> files) throws Throwable {
    
         TdarFileReconciller reconciler = new TdarFileReconciller(analyzer.getExtensionsForType(ResourceType.values()));

@@ -81,12 +81,15 @@ public class ScheduledProcessServiceImpl implements SchedulingConfigurer, Applic
     private transient final AuthenticationService authenticationService;
     private transient final ProcessManager manager;
 
+    private transient final PersonalFilestoreService personalFilestoreService;
+
     @Autowired
     public ScheduledProcessServiceImpl(@Qualifier("genericService") GenericService gs,
-            AuthenticationService auth, @Qualifier("processManager") ProcessManager pm) {
+            AuthenticationService auth, @Qualifier("processManager") ProcessManager pm, PersonalFilestoreService personalFilestoreService) {
         this.genericService = gs;
         this.authenticationService = auth;
         this.manager = pm;
+        this.personalFilestoreService = personalFilestoreService;
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -120,6 +123,16 @@ public class ScheduledProcessServiceImpl implements SchedulingConfigurer, Applic
     @Scheduled(fixedDelay = ONE_HOUR_MS)
     public void cronClearPermissionsCache() {
         authenticationService.clearPermissionsCache();
+    }
+
+    @Override
+    @Scheduled(fixedDelay = ONE_MIN_MS)
+    public void sweepFiles() {
+        try {
+        personalFilestoreService.sweepFiles();
+        } catch (Throwable t) {
+            logger.error("{}",t,t);
+        }
     }
 
     /*
