@@ -758,7 +758,6 @@
                             <!-- <cloverDatabase>${clover.dir}/database.db</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database.db</cloverMergeDatabase> -->
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
-                            <skip>true</skip>
                         </configuration>
                         <executions>
                             <execution>
@@ -811,14 +810,12 @@
                 </plugins>
             </build>
         </profile>
-
         <profile>
-            <id>maven-scm-branch-git</id>
+            <id>setup-target</id>
             <activation>
-                <!-- always run (except when told not to) -->
-                <file>
-                    <missing>target/classes/git.properties</missing>
-                </file>
+                <property>
+                  <name>!skipDefault</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -828,9 +825,10 @@
                         <executions>
                             <execution>
                                 <id>create-generated-target</id>
-                                <phase>process-resources</phase>
+                                <phase>initialize</phase>
                                 <configuration>
-                                    <tasks>
+                                    <target>
+                                        <echo message="dir:${project.build.directory}"/>
                                         <mkdir dir="target" />
                                         <mkdir
                                             dir="${project.build.directory}" />
@@ -840,15 +838,33 @@
                                             dir="${project.build.directory}/generated/webapp" />
                                         <mkdir
                                             dir="target/generated/webapp-test" />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                             </execution>
+                        </executions>
+                     </plugin>
+                 </plugins>
+             </build>
+         </profile>
+        <profile>
+            <id>maven-scm-branch-git</id>
+            <activation>
+                <property>
+                  <name>!skipDefault</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
                             <execution>
                                 <id>print-branch-info</id>
-                                <phase>process-resources</phase>
+                                <phase>initialize</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
@@ -882,7 +898,7 @@
                                     use this setting, otherwise we'll perform a search trying to
                                     figure out the right directory. It's better to add it explicitly IMHO.
                                 -->
-                                <dotGitDirectory>${project.build.directory}/.git</dotGitDirectory>
+                                <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
 
                                 <!-- that's the default value, you don't have to set it -->
                                 <prefix>git</prefix>

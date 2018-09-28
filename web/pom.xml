@@ -359,7 +359,7 @@
                   </goals>
                   <configuration>
                     <files>
-                      <file>target/hg.properties</file>
+                      <file>target/classes/git.properties</file>
                     </files>
                   </configuration>
                 </execution>
@@ -602,7 +602,7 @@
                            </goals>
                            <configuration>
                              <files>
-                               <file>target/hg.properties</file>
+                               <file>target/classes/git.properties</file>
                              </files>
                            </configuration>
                          </execution>

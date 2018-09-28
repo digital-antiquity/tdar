@@ -128,11 +128,11 @@
                             </div>
 
                             <div class="btn-group">
-                                <div class="btn-group dropdown" >
-                                    <button type="button" class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
+                                <div class="btn-group" >
+                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length || isBusy() || isReadOnly() }">
                                         Add Integration Column
                                         <span class="caret"></span>
-                                    </button>
+                                    </a>
                                     <ul class="dropdown-menu" id="btnSetAddIntegrationColumns">
                                         <li ng-repeat="ontology in ctrl.integration.ontologies"
                                                 ><a ng-disabled="isReadOnly()" ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
@@ -462,12 +462,9 @@
 
 <#-- fixme: hack: /workspace/integrate#addDatasets  -->
 <script>
-    console.warn("Tell jim to remove his auto-open hack");
-//    $(function() {
-//        if(window.location.hash === "#addDatasets") {
-//            $("#btnAddDataset").click();
-//        }
-//    })
+    $(function() {
+    $('.dropdown-toggle').dropdown();
+    })
 </script>
 
 
