@@ -206,7 +206,7 @@ public class WebConfig {
     }
     
     public String getChangeset() {
-        Properties props = loadChangesetProps();
+        Properties props = config.loadChangesetProps();
         if (props == null) {
             return "";
         }
@@ -214,34 +214,12 @@ public class WebConfig {
     }
 
     public String getChangesetId() {
-        Properties props = loadChangesetProps();
+        Properties props = config.loadChangesetProps();
         if (props == null) {
             return "";
         }
         return props.getProperty("git.commit.id");
     }
-
-
-    private Properties loadChangesetProps() {
-        if (changesetProps != null) {
-            return changesetProps;
-        }
-        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("git.properties");
-        if (resourceAsStream == null) {
-            return null;
-        }
-        try {
-            Properties props = new Properties(); 
-            props.load(resourceAsStream);
-            changesetProps = props;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            org.apache.commons.io.IOUtils.closeQuietly(resourceAsStream);
-        }
-        return changesetProps;
-    }
-
 
     public boolean isListCollectionsEnabled() {
         return config.isListCollectionsEnabled();
