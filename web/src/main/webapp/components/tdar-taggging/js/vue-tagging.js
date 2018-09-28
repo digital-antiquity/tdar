@@ -31,6 +31,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     type:Boolean,
                     default: true
                 },
+                label_class: {
+                    type: String,
+                    default: "badge badge-secondary"
+                },
                 disabled_initially: {
                     type:Boolean,
                     default: false
@@ -127,14 +131,19 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 return false;
             },
             addAutocompleteValue: function(result) {
+                console.log(result);
                 if (result != undefined) {
-                    if (this.allow_create == false && result[this.id_field] != undefined || this.allow_create == true) {
+                    if (this.allow_create == false && result[this.id_field] != undefined) {
                         this._addEntry(result[this.name_field], result[this.id_field]);
-                        this.$refs.input.reset();
-                     } else {
-                         this._addEntry(result[this.name_field], result[this.id_field]);
-                         this.$refs.input.reset();
-                     }
+                     } 
+                    if (this.allow_create == true) {
+                        if (typeof result == 'string') {
+                            this._addEntry(result, undefined);
+                        } else {
+                            this._addEntry(result[this.name_field], result[this.id_field]);
+                        }
+                    }
+                    this.$refs.input.reset();
                 }
             },
             _addEntry: function(entry, id) {

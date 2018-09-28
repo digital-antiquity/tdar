@@ -71,17 +71,6 @@
         <js>/js/tdar.validate.js</js>
         <js>/js/tdar.messages_en.js</js>
         <js>/js/tdar.d3tree.js</js>
-        <css>/css/tdar.homepage.css</css>
-        <css>/css/tdar-autocomplete.css</css>
-        <css>/css/tdar.d3tree.css</css>
-        <css>/css/tdar.c3graph.css</css>
-        <css>/css/tdar.leaflet.css</css>
-        <css>/css/tdar.worldmap.css</css>
-        <css>/css/tdar.datatablemapping.css</css>
-        <css>/css/tdar.sprites.css</css>
-        <css>/css/tdar.datatables.css</css>
-        <css>/css/tdar.searchresults.css</css>
-        <css>/css/tdar.invoice.css</css>
         <js>/js/tdar.datatable.js</js>
         <js>/js/tdar.dataset-metadata.js</js>
         <js>/js/tdar.ontology-mapping.js</js>

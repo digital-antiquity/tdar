@@ -2,7 +2,7 @@
 <div>
             <div v-if="!showEditPerson">
                 <autocomplete url="https://localhost:8443/api/lookup/person" suffix=""  field="term"   
-                resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="col-4"
+                resultsuffix="people" @autocompletevalueset="addAutocompleteValue" span="col-12"
                 :customcreatenew="clickNew" createnewtext="Create New Person" :initial_id="creator.id" :initial_value="creator.properName"
                                 ref="input" fieldname="properName" :allowCreate="false" idname="personid" /> 
             </div>
@@ -23,7 +23,7 @@
 <div>
             <div class="" v-if="!showEditInstitution">
                 <autocomplete url="https://localhost:8443/api/lookup/institution" suffix=""  field="institution"   
-                resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="col-4"
+                resultsuffix="institutions" @autocompletevalueset="addAutocompleteValue" span="col-12"
                 :customcreatenew="clickNew" createnewtext="Create New Institution" :initial_id="creator.id" :initial_value="creator.properName"
                 ref="input" fieldname="properName" :allowCreate="false" idname="institutionid" />
             </div>
@@ -39,16 +39,16 @@
 <script type="text/x-template" id="creatorwidget-template">
 
 <div class="row" id="autotool">
-    <div class="col-2">
+    <div class="col-4">
         <div class="control-label">
-            <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+			<div class="btn-group creator-toggle-button btn-group-toggle" data-toggle="buttons">
                 <button type="button" :class="personClass" data-toggle="button" @click="toggleValue('PERSON')">Person</button>
                 <input type="hidden" :name="getRootPrefix('type')" v-model="toggle">
                 <button type="button" :class="institutionClass" @click="toggleValue('INSTITUTION')" data-toggle="button">Institution</button>
             </div>
         </div>
     </div>
-    <div class="col-4">
+    <div class="col-5">
         <input type="hidden" :name="getRootPrefix('id')" v-model="resourcecreator.id" :class="toggleValue">
         <input type="hidden" :name="getRootPrefix('creator.id')" v-model="resourcecreator.creator.id" :value="creatorId" >
         <div v-if="toggle == 'PERSON'">
@@ -60,12 +60,12 @@
     </div>
     <div class="col-2">
     
-    <select :name="getRootPrefix('role')" class="creator-role-select col-2" v-model="resourcecreator.role">
+    <select :name="getRootPrefix('role')" class="creator-role-select " v-model="resourcecreator.role">
         <option v-for="(value, index) in actualRoles">{{value}}</option>
     </select>
     </div>
     <div class="col-1">
-        <a  :class="deleteClass" @click="deleteRow"><i class='icon-trash'></i></a>
+        <a  :class="deleteClass" @click="deleteRow"><i class="fas fa-trash-alt float-right"></i></i></a>
     </div>
 </div>
 </script>

@@ -77,17 +77,21 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
             },
             computed: {
                 personClass: function() {
-                    var ret = "btn btn-small personButton";
+                    var ret = "btn btn-xs  personButton";
                     if (this.toggle == 'PERSON') {
-                        ret = ret+ " btn-active active"
-                    };
+                        ret = ret+ " btn-active active btn-dark";
+                    } else {
+                        ret = ret += " btn-secondary";
+                    }
                     return ret;
                 },
                 institutionClass: function() {
-                    var ret = "btn btn-small institutionButton";
+                    var ret = "btn btn-xs  institutionButton";
                     if (this.toggle == 'INSTITUTION') {
-                        ret = ret+ " btn-active active"
-                    };
+                        ret = ret+ " btn-active btn-dark active";
+                    } else {
+                        ret = ret += " btn-secondary";
+                    }
                     return ret;
                 },
                 editClass: function() {

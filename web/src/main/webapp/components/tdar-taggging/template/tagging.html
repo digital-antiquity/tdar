@@ -2,7 +2,7 @@
 <div :class="rootClass" >
 <div @click="focus" >
      <span v-for="(value, index) in values">
-        <div class="item label" :idx="index">
+        <div :class="'item ' + label_class " :idx="index">
 		    <input type="hidden" :name="nameField(index)" v-model="value[name_field]"> 
 		    <input type="hidden" :name="idField(index)" v-model="value[id_field]" v-if="include_id" /> 
             <span @click.stop="labelFocus">{{ getLabel(value) }} </span>
