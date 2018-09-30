@@ -145,4 +145,6 @@ public interface DatasetService {
 
     Set<DataTableColumn> findSearchableColumns(Dataset ds, TdarUser user);
 
+    Set<String> findAutocompleteValues(Dataset dataset, DataTableColumn column, String value, TdarUser authenticatedUser);
+
 }

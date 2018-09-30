@@ -131,7 +131,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @JsonIgnoreProperties(ignoreUnknown = true, allowGetters = true)
-@JsonInclude(value = Include.NON_NULL)
+@JsonInclude(value = Include.NON_EMPTY)
 // @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 // @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
 // @XmlSeeAlso(value = { ResourceCollection.class })

@@ -1,5 +1,6 @@
 package org.tdar.search;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -71,9 +73,14 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         Dataset dataset = createAndSaveNewDataset();
         Project project = createAndSaveNewProject("test project");
         DataTableColumn dtc = setup(dataset, project);
+        dtc.setVisible(ColumnVisibiltiy.VISIBLE);
         SolrInputDocument doc = DataValueDocumentConverter.createDocument(dtc, dataset, "Concorde");
+        logger.debug("doc: {}", doc);
+        logger.debug("DTC: {} / {}" , dtc, dtc.getVisible());
         template.add(CoreNames.DATA_MAPPINGS, doc);
         template.commit(CoreNames.DATA_MAPPINGS);
+        searchIndexService.index(dataset);
+//        searchIndexService.indexAll(getAdminUser());
         // search exact
         searchFor(dataset, dtc, "Concorde");
         // search lowercase
@@ -81,8 +88,23 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
 
     }
 
+    
+    @Test
+    @Rollback
+    public void testFieldedSearchHidden() throws SearchException, SearchIndexException, IOException, SolrServerException {
+        Dataset dataset = createAndSaveNewDataset();
+        Project project = createAndSaveNewProject("test project");
+        DataTableColumn dtc = setup(dataset, project);
+        dtc.setVisible(ColumnVisibiltiy.HIDDEN);
+        SolrInputDocument doc = DataValueDocumentConverter.createDocument(dtc, dataset, "Concorde");
+        logger.debug("doc: {}", doc);
+        logger.debug("DTC: {} / {}" , dtc, dtc.getVisible());
+        assertNull(doc);
+    }
+
     private DataTableColumn setup(Dataset dataset, Project project) {
         dataset.setProject(project);
+        dataset.setStatus(Status.ACTIVE);
         DataTable dt = new DataTable();
         dt.setName("est");
         dataset.getDataTables().add(dt);
@@ -90,13 +112,14 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         genericService.save(dt);
         DataTableColumn dtc = new DataTableColumn();
         dtc.setDataTable(dt);
+        dtc.setVisible(ColumnVisibiltiy.VISIBLE);
+        dtc.setSearchField(true);
         dtc.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         dtc.setName("test");
         dtc.setDisplayName("Test");
         dt.getDataTableColumns().add(dtc);
         genericService.saveOrUpdate(dt);
         genericService.saveOrUpdate(dtc);
-        dataset.setStatus(Status.ACTIVE);
         return dtc;
     }
 

@@ -60,10 +60,6 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         } else {
             content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         }
-        if (StringUtils.isNotBlank(getFieldName())) {
-            FieldQueryPart<String> field = new FieldQueryPart<String>(QueryFieldNames.NAME, getFieldName());
-            kvp.append(field);
-        }
         if (PersistableUtils.isNotNullOrTransient(getFieldId())) {
             FieldQueryPart<Long> field = new FieldQueryPart<Long>(QueryFieldNames.COLUMN_ID, getFieldId());
             kvp.append(field);

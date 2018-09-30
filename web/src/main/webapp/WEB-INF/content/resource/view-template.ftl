@@ -227,7 +227,9 @@
 
 
                         <td class="guide" nowrap <#if hasDescription>rowspan=2</#if>><span class="columnSquare ${typeLabel}"></span><b>
-                        ${column.displayName}
+                        <#if ableToViewConfidentialFiles><a href="${namespace}/column/${id?c}/${column.id?c}">${column.displayName}</a> 
+                        <#else>${column.displayName}
+                        </#if>
                         </b></td>
                         <#if hasDescription>
                             <td colspan="6" class="${oddEven} descriptionRow" >${column.description}</td></tr><tr>

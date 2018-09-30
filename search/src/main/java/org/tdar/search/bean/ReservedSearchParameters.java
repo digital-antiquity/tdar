@@ -15,8 +15,14 @@ import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.opensymphony.xwork2.TextProvider;
 
+@JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
+@JsonInclude(Include.NON_EMPTY)
 public class ReservedSearchParameters extends SearchParameters {
     private List<Status> statuses = new ArrayList<Status>();
     private TdarUser authenticatedUser;
