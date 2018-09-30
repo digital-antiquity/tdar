@@ -7,7 +7,7 @@
             </tr>
         </thead>
         <tbody v-if="files.length > 0" v-for="(file,index) in files">
-            <tr class="template-download fade existing-file in"
+            <tr class="template-download fade existing-file in" :inputdisabled="inputDisabled"
                 is="fpart" :index="index" :file="file" :abletoupload="ableToUpload" :deletedisabled="deleteDisabled"></tr>
         </tbody>
     </table>
@@ -18,7 +18,7 @@
     <!-- The fileinput-button span is used to style the file input field as button -->
     <label :class="fileUploadButtonCss" :disabled="inputDisabled" for="fileupload" id="fileuploadWrapper"> <i
         class="glyphicon glyphicon-plus"></i> <span>Select files...</span> <!-- The file input field used as target for the file upload widget -->
-        <input id="fileupload" type="file" name="files[]" multiple :disabled="inputDisabled" >
+        <input id="fileupload" type="file" name="files[]" :multiple="multiple" :disabled="inputDisabled" >
     </label> 
     </div>
     <div class="span6">
@@ -138,7 +138,7 @@ ${vueFilesFallback!'{{ files }}'}
                 style="text-align: left">
                 <i class="icon-trash icon-white"></i> <span>Delete</span>
             </button>
-            <button v-if="file.action == 'DELETE'" :disabled="inputDisabled" type="button"
+            <button v-if="file.action == 'DELETE'" :disabled="undeleteDisabled" type="button"
                 class="btn btn-warning delete-button btn-small btn-block"
                 @click="unDeleteFile" data-type="DELETE"
                 style="text-align: left">

@@ -1,0 +1,36 @@
+{
+  "name": "tdar-autocomplete",
+  "authors": [
+    "Adam Brin <adam@brin.org>"
+  ],
+  "description": "Vue Autocomplete for tDAR",
+  "main": "js/tdar-autocomplete.js",
+  "keywords": [
+    "autocomplete"
+  ],
+  "license": "APACHE",
+  "homepage": "",
+  "devDependencies": {
+    "qunit": "~1.16.0"
+  },
+  "dependencies": {
+    "vue": "^2.4.2"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "version": "0.2.6",
+  "_release": "0.2.6",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.2.6",
+    "commit": "fd75808faec3268e337190c6bb1f0cea44cfa98d"
+  },
+  "_source": "https://bitbucket.org/tdar/autocomplete.git",
+  "_target": "0.2.6",
+  "_originalSource": "https://bitbucket.org/tdar/autocomplete.git"
+}

@@ -1,13 +1,17 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Properties;
 
 import org.tdar.core.configuration.TdarConfiguration;
 
 public class WebConfig {
 
     private TdarConfiguration config = TdarConfiguration.getInstance();
+    private Properties changesetProps;
 
     public String getThemeDir() {
         return config.getThemeDir();
@@ -199,6 +203,22 @@ public class WebConfig {
             output.append(";");
         }
         return output.toString();
+    }
+    
+    public String getChangeset() {
+        Properties props = config.loadChangesetProps();
+        if (props == null) {
+            return "";
+        }
+        return String.format("%s (%s)", props.getProperty("git.commit.id") , props.getProperty("git.branch") );
+    }
+
+    public String getChangesetId() {
+        Properties props = config.loadChangesetProps();
+        if (props == null) {
+            return "";
+        }
+        return props.getProperty("git.commit.id");
     }
 
     public boolean isListCollectionsEnabled() {

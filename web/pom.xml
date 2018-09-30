@@ -612,8 +612,10 @@
                              <goal>read-project-properties</goal>
                            </goals>
                            <configuration>
+                               <quiet>true</quiet>
                              <files>
-                               <file>target/hg.properties</file>
+                               <file>target/classes/git.properties</file>
+                               <file>../target/classes/git.properties</file>
                              </files>
                            </configuration>
                          </execution>
@@ -634,7 +636,7 @@
                         <configuration>
                             <targetGroups>default,ng-integrate</targetGroups>
                             <minimize>true</minimize>
-                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version}</destinationFolder>
+                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${git.version}</destinationFolder>
                             <contextFolder>${basedir}/src/main/webapp/</contextFolder>
                             <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
                             <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
@@ -659,7 +661,7 @@
                                         <copy
                                             todir="${project.build.directory}/generated/webapp/wro/">
                                             <fileset
-                                                dir="${project.build.directory}/generated/webapp/wro/${hg.version}" />
+                                                dir="${project.build.directory}/generated/webapp/wro/${git.version}" />
                                         </copy>
                                     </target>
                                 </configuration>

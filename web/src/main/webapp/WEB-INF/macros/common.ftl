@@ -18,11 +18,7 @@
             </#if>
         </#compress><#t>
     </#macro>
-<#-- string representing current tdar version/build number -->
-    <#assign tdarBuildId>
-        <#attempt><#include  "/version.txt" parse=false/><#recover></#attempt>
-    </#assign>
-    <#assign tdarBuildId = (tdarBuildId!'unknown')?trim?replace("+", ".001") />
+
 
 <#--
 //Emit Javascript intended for every page in tDAR (regardless of login status)
