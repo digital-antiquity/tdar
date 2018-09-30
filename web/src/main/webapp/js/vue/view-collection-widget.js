@@ -9,7 +9,7 @@ const Vue = require("vue/dist/vue.esm.js").default;
 var axios = require("axios");
 const common = require("./../tdar.common.js");
 const core = require("./../tdar.core.js");
-
+const Qs = require("qs");
 var autocomplete = require('tdar-autocomplete/js/vue-autocomplete.js');
 require('tdar-autocomplete/css/tdar-autocomplete.css');
 
