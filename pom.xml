@@ -558,6 +558,16 @@
                 <version>${jetty.version}</version>
             </dependency>
             <dependency>
+                <artifactId>jetty-servlet</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jetty-webapp</artifactId>
+                <groupId>org.eclipse.jetty</groupId>
+                <version>${jetty.version}</version>
+            </dependency>
+            <dependency>
                 <artifactId>jetty-http</artifactId>
                 <groupId>org.eclipse.jetty</groupId>
                 <version>${jetty.version}</version>
@@ -769,6 +779,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock</artifactId>
+            <version>2.19.0</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
     <profiles>
@@ -888,10 +905,9 @@
         <profile>
             <id>maven-scm-branch-git</id>
             <activation>
-                <!-- always run (except when told not to) -->
-                <file>
-                    <missing>target/classes/git.properties</missing>
-                </file>
+                <property>
+                  <name>!skipDefault</name>
+                </property>
             </activation>
             <build>
                 <plugins>

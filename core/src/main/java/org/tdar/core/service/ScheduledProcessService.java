@@ -94,4 +94,6 @@ public interface ScheduledProcessService {
      */
     void configureTasks(ScheduledTaskRegistrar taskRegistrar);
 
+    void sweepFiles();
+
 }

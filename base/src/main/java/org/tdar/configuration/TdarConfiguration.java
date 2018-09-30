@@ -3,11 +3,13 @@ package org.tdar.configuration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -250,6 +252,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     boolean personalFilestorePathInitialized = false;
+    private Properties changesetProps;
 
     // verify that the personal filestore location exists, attempt to make it if it doesn't, and System.exit() if that fails
     private void initPersonalFilestorePath() {
@@ -1022,6 +1025,26 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public String getDatasetCellDelimiter() {
         return assistant.getStringProperty("dataset.string.delimiter", "|");
+    }
+
+    public Properties loadChangesetProps() {
+        if (changesetProps != null) {
+            return changesetProps;
+        }
+        InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("git.properties");
+        if (resourceAsStream == null) {
+            return null;
+        }
+        try {
+            Properties props = new Properties(); 
+            props.load(resourceAsStream);
+            changesetProps = props;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            org.apache.commons.io.IOUtils.closeQuietly(resourceAsStream);
+        }
+        return changesetProps;
     }
 
 }

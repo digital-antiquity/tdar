@@ -18,7 +18,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.tdar.configuration.PooledDataSourceWrapper;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
-import org.tdar.core.dao.external.pid.EZIDDao;
+import org.tdar.core.dao.external.pid.DataCiteDao;
 import org.tdar.core.dao.external.pid.ExternalIDProvider;
 
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
@@ -39,7 +39,7 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
 
     @Bean(name = "DoiProvider")
     public ExternalIDProvider getIdProvider() throws IOException {
-        return new EZIDDao();
+        return new DataCiteDao();
     }
 
     @Bean

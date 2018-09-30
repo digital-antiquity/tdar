@@ -65,7 +65,7 @@
 
     <div id="subtitle">
         <p>Part of the
-            <#if resource.projectVisible || editable>
+            <#if resource.projectActive || editable>
                 <a href="<@s.url value='${resource.project.detailUrl}'/>">${resource.project.coreTitle}</a>
             <#else>
             ${resource.project.coreTitle}
@@ -316,7 +316,7 @@
 
     <#if resource.containsActiveKeywords >
     <h2>Keywords</h2>
-        <#if resource.project?has_content && resource.project.id != -1 && resource.projectVisible?? && !resource.projectVisible && resource.inheritingSomeMetadata>
+        <#if resource.project?has_content && resource.project.id != -1 && resource.projectInheritable?? && !resource.projectInheritable && resource.inheritingSomeMetadata>
         <em>Note: Inherited values from this project are not available because the project is not active</em>
         </#if>
     <div class="row">

@@ -135,4 +135,6 @@ public interface PersonalFilestoreService {
 
     void unlinkLinkedCollection(TdarDir file, TdarUser authenticatedUser);
 
+    void sweepFiles() throws Throwable;
+
 }

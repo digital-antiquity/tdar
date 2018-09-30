@@ -288,4 +288,8 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
                 return false;
         }
     }
+
+    public boolean isCreatorRole() {
+        return getRolesOfType(ResourceCreatorRoleType.AUTHORSHIP).contains(this);
+    }
 }
