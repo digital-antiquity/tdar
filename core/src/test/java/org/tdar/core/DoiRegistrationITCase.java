@@ -9,7 +9,6 @@ package org.tdar.core;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,7 +20,7 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.ClientProtocolException;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
@@ -36,6 +35,9 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.processes.daily.DoiProcess;
 import org.tdar.transform.DataCiteTransformer;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import edu.asu.lib.datacite.DataCiteDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
 
@@ -43,10 +45,13 @@ import edu.asu.lib.jaxb.JaxbDocumentWriter;
  * @author Adam Brin
  * 
  */
-@Ignore
-public class EZIDITCase extends AbstractIntegrationTestCase {
+public class DoiRegistrationITCase extends AbstractIntegrationTestCase {
     // public static final String EZID_URL = "https://n2t.net/ezid";
     // public static final String SHOULDER = "doi:10.5072/FK2";
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(12301); 
+
 
     public static final String TEST_USER = "apitest";
     public static final String TEST_PASSWORD = "apitest";
@@ -112,6 +117,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
     public void testCreateAndDelete() {
         try {
             Resource r = resourceService.find(TestConstants.DOCUMENT_INHERITING_CULTURE_ID);
+            setupTrivialResponses(r);
             ezidDao.connect();
             String absoluteUrl = UrlService.absoluteUrl(r);
             r.setExternalId("");
@@ -125,7 +131,8 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
 
             r.setTitle("test");
             ezidDao.modify(r, absoluteUrl, doi);
-
+            // resetting responses with new title
+            setupTrivialResponses(r);
             metadata = ezidDao.getMetadata(doi);
             assertTrue(metadata.get("xml").contains("<title>test</title>"));
 
@@ -145,6 +152,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
     public void testCreateImage() {
         try {
             Resource r = genericService.findRandom(Image.class, 1).get(0);
+            setupTrivialResponses(r);
             r.setStatus(Status.ACTIVE);
             ezidDao.connect();
             String absoluteUrl = UrlService.absoluteUrl(r);
@@ -184,6 +192,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
     
     @Test
     public void testCreateSensoryData() {
+
         try {
             SensoryData r = new SensoryData();
             r.setTitle("test sensory object");
@@ -191,6 +200,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
             r.setDate(1234);
             r.markUpdated(getAdminUser());
             r.setStatus(Status.ACTIVE);
+            setupTrivialResponses(r);
             genericService.saveOrUpdate(r);
             logger.debug("connect");
             ezidDao.connect();
@@ -210,5 +220,31 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupTrivialResponses(Resource r) {
+        WireMock.stubFor(WireMock.put(WireMock.urlMatching("/metadata/10.5072/.*"))
+                .willReturn(WireMock.aResponse()
+                    .withStatus(201)
+                    .withHeader("Content-Type", "text/xml")
+                    .withBody("<response>Some content</response>" + "<title>" + r.getTitle() + "</title>")));
+
+        WireMock.stubFor(WireMock.get(WireMock.urlMatching("/metadata/10.5072/.*"))
+                .willReturn(WireMock.aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "text/xml")
+                    .withBody("<response>Some content</response>"+ "<title>" + r.getTitle() + "</title>")));
+
+        WireMock.stubFor(WireMock.put(WireMock.urlMatching("/doi/10.5072/.*"))
+                .willReturn(WireMock.aResponse()
+                    .withStatus(200)
+                    .withHeader("Content-Type", "text/xml")
+                    .withBody("<response>Some content</response>"+ "<title>" + r.getTitle() + "</title>")));
+
+        WireMock.stubFor(WireMock.delete(WireMock.urlMatching("/metadata/10.5072/.*"))
+                .willReturn(WireMock.aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "text/xml")
+                        .withBody("<response>Some content</response>"+ "<title>" + r.getTitle() + "</title>")));
     }
 }
