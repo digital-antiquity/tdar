@@ -371,6 +371,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             datasetImportService.reconcileDataset(file, ctx.getDataTables(), ctx.getRelationships());
             file.setStatus(ImportFileStatus.PROCESSED);
         } else {
+            logger.error(ctx.getExceptionAsString());
             file.setStatus(ImportFileStatus.PROCESING_FAILED);
         }
         genericDao.saveOrUpdate(file);
