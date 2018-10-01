@@ -1699,20 +1699,10 @@ TDAR.datatable = function() {
                 title : title
             });
 
-            $("#datatable-child").dialog({
-                resizable : false,
-                modal : true,
-                buttons : {
-                    "Return to original page" : function() {
-                        window.opener.focus();
-                        window.close();
-                    },
-                    "Stay on this page" : function() {
-                        window.opener.adhocTarget = null;
-                        $(this).dialog("close");
-                    }
-                }
-            });
+            $("#errorsection .row").append("<div id='dialogactions' class='alert alert-warning error-banner col-12 mt-4'><h2>Actions</h2><div>" +
+            		"<button onClick='$(\"#dialogactions\").hide()' class='button btn btn-primary'>Stay on Page</button> " +
+            		"<button onClick='window.opener.focus();window.close();' class='button btn btn-primary'>Close</button>" +
+            		"</div></div>");
         }
     }
 

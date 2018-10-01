@@ -177,9 +177,9 @@ ${head}
 
 
 
-        <#if errorWarningSectionVisible >
-        <div class="container">
+        <div class="container" id="errorsection">
         <div class="row">
+        <#if errorWarningSectionVisible >
             <div class="alert alert-warning error-banner col-12 mt-4">
                 <#if stackTraces?has_content>
                     <div class="error-codes pull-right">
@@ -211,21 +211,16 @@ ${head}
                     </#if>
                 </div>
             </div>
-            </div>
-            </div>
         </#if>
-
         <#if actionMessages?has_content || (page.properties["div.messages"])?has_content>
-            <div class="container">
-            <div class="row">
                 <div class="col-12">
                     <@s.actionmessage />
         ${(page.properties["div.messages"])!}
                 </div>
             </div>
-            </div>
-            </div>
         </#if>
+            </div>
+            </div>
 
 
         <#assign part="" />
