@@ -28,6 +28,26 @@ module.exports = {
     // externals: ['axios'], this is a way to use an extenral version of jquery, whatever is referecned here should probably be a 'dev' dependency too
     module : {
         rules : [
+            {
+                test : require.resolve('jquery'),
+                use : [ {
+                    loader : 'expose-loader',
+                    options : 'window.jQuery'
+                }, 
+                {
+                    loader : 'expose-loader',
+                    options : '$'
+                }, 
+                {
+                    loader : 'expose-loader',
+                    options : "global.jQuery",
+                }, 
+                {
+                    loader : 'expose-loader',
+                    options : "$j",
+                }
+                ]
+            },
           {
             test: /\.(sa|sc|c)ss$/,
             use: [
