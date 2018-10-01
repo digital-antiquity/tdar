@@ -9,8 +9,8 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 // webpack.autoProvidejQuery();
 module.exports = {
-    //mode: 'production',
-    mode : 'development',
+    mode: 'production',
+    // mode : 'development',
 
     context : __dirname,
     //devtool: 'eval-source-map',

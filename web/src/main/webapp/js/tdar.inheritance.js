@@ -884,7 +884,7 @@ function _updateInheritableSections(formId, projectJson) {
     var jsonid = projectJson.id;
 //    console.log(json);
     _id = null;
-    delete(_id);
+//    delete(_id);
 
     // indicate in each section which project the section will inherit from.
     var labelText = "Inherit values from parent project";
