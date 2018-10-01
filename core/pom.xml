@@ -86,11 +86,11 @@
             </exclusions>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>3.3.1.Final</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-ehcache</artifactId>
@@ -502,7 +502,6 @@
             <type>jar</type>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-
         <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>

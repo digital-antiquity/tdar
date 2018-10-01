@@ -45,7 +45,6 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     InformationResourceFileService informationResourceFileService;
-
     @Autowired
     InformationResourceFileVersionDao informationResourceFileVersionDao;
 
