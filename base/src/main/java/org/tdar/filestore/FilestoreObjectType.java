@@ -8,7 +8,7 @@ public enum FilestoreObjectType {
     LOG,
     RESOURCE,
     CREATOR,
-    COLLECTION;
+    COLLECTION, FILE;
 
 
     public String getRootDir() {

@@ -394,4 +394,7 @@
     <changeSet id="radiocarbon-fileprocessing-6" author="abrin">
         <modifyDataType tableName="data_table_column_int_values" columnName="value" newDataType="bigint"/>
     </changeSet>
+    <changeSet id="radiocarbon-fileprocessing-7" author="abrin">
+        <sql>alter table files alter column file_type type varchar(15)</sql>
+    </changeSet>
 </databaseChangeLog>

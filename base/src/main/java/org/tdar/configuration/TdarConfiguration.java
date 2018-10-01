@@ -1047,4 +1047,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return changesetProps;
     }
 
+    public String getFileDir() {
+        return assistant.getStringProperty("file.dir.location", getFileStoreLocation() + "/files");
+        
+    }
+
 }
