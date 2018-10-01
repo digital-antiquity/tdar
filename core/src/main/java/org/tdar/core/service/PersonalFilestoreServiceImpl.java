@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import org.tdar.core.bean.file.FileComment;
 import org.tdar.core.bean.file.Mark;
 import org.tdar.core.bean.file.TdarDir;
 import org.tdar.core.bean.file.TdarFile;
+import org.tdar.core.bean.file.TdarFileVersion;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.dao.DirSummary;
@@ -58,12 +60,15 @@ import org.tdar.fileprocessing.workflows.Workflow;
 import org.tdar.fileprocessing.workflows.WorkflowContext;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.personal.BagitPersonalFilestore;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.utils.FileStoreFileUtils;
 import org.tdar.utils.PersistableUtils;
+
+import com.amazonaws.util.IOUtils;
 
 /**
  * Manages adding and saving files in the @link PersonalFilestore
@@ -361,9 +366,19 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             ctx.setDatasetConverter(((HasDatabaseConverter) workflow_).getDatabaseConverterForExtension(ctx.getPrimaryExtension()));
         }
         boolean success = workflow_.run(ctx);
+        String fileDir = TdarConfiguration.getInstance().getFileDir();
         if (success) {
             for (FileStoreFile f : ctx.getVersions()) {
-                file.getVersions().add(FileStoreFileUtils.copyToTdarFileVersion(f));
+                TdarFileVersion version = FileStoreFileUtils.copyToTdarFileVersion(f);
+                file.getVersions().add(version);
+                logger.debug("{} -- {} ", file, f.getTransientFile().getAbsolutePath());
+                File dir = new File(fileDir, file.getId().toString() + File.separator);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                File destFile = new File(dir, version.getName());
+                FileUtils.copyFile(f.getTransientFile(), destFile);
+                version.setLocalPath(destFile.getPath());
             }
             file.setLength(ctx.getNumPages());
             file.setHeight(ctx.getOriginalFile().getHeight());
@@ -371,6 +386,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
             datasetImportService.reconcileDataset(file, ctx.getDataTables(), ctx.getRelationships());
             file.setStatus(ImportFileStatus.PROCESSED);
         } else {
+            logger.error("{}", ctx.getExceptionAsString());
             file.setStatus(ImportFileStatus.PROCESING_FAILED);
         }
         genericDao.saveOrUpdate(file);
