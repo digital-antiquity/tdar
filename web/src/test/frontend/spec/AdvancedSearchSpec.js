@@ -1,6 +1,6 @@
 /* global describe, it, expect */
 
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 
 describe("AdvancedSearchSpec.js: advanced search form", function() {
     "use strict";

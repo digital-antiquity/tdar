@@ -1,5 +1,5 @@
 /* global jasmine, describe, it, expect, loadFixtures, $j, $, beforeEach, afterEach, TDAR */
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 
 describe("ValidateSpec.js: TDAR.validate tests", function () {
     "use strict";

@@ -1,5 +1,5 @@
 window.$ = window.jQuery = require('jquery'); // or import $ from 'jquery';
-const TDAR = require("JS/tdar.master.js");
+const TDAR = require("JS/tdar.root.js");
 
 require("../../css/tdar-svg.css");
 require("../../css/tdar-bootstrap.css");

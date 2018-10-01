@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 describe("LeafletSpec.js", function() {
 
     beforeEach(function(){

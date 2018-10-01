@@ -14,18 +14,7 @@ const common = require('./webpack.base.config.js');
 module.exports = merge(common, {
     mode: 'development',
     module: {rules:[
-        {
-               test: /\.js$/,
-               use: {
-                 loader: 'babel-loader',
-                 options: {
-                   presets: ['env']
-                 }
-               }
-             }
     ]},
     devtool: 'eval-source-map',
-    plugins: [
-    new MinifyPlugin()
-    ]
+    plugins: [    ]
 });

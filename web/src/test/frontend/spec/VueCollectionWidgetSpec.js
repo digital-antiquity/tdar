@@ -1,6 +1,6 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 const Vue = require("vue/dist/vue.esm.js").default;
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 const axios = require("axios");
 import moxios from "moxios";
 

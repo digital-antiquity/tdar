@@ -1,5 +1,5 @@
 /* global describe, it, expect, beforeEach */
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 require("./SpecHelper");
 
 describe("AutocompleteSpec.js: collection autocomplete", function(){

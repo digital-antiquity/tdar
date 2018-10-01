@@ -89,7 +89,7 @@ module.exports = {
         //axios : "Axios",
         c3 : "c3",
         d3 : "d3",
-        TDAR : "JS/tdar.master",
+        TDAR : "JS/tdar.root",
         LatLon : 'JS/latLongUtil-1.0',
         L : 'leaflet'
     }) ],

@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 
 describe("BulkSpec.js: tests for TDAR.bulk methods", function() {
 

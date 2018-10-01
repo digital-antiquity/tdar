@@ -1,4 +1,4 @@
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 
 describe("FormNavigateSpec.js: form navigate tests", function() {
     function status() {

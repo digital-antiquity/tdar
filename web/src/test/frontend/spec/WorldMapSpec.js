@@ -1,6 +1,6 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 
 describe("WorldMapSpec.js: worldmap tests (tdar.worldmap.js)", function() {
     var mapdata = {

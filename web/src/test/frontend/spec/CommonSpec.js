@@ -3,7 +3,7 @@
 //import TDAR from "JS/tdar.core";
 //import "jquery";
 
-const TDAR = require("JS/tdar.master");
+const TDAR = require("JS/tdar.root");
 //const $ = require("jquery");
 //window.$ = $;
 
