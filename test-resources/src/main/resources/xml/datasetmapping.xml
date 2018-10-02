@@ -75,6 +75,7 @@
                     <tdar:length>-1</tdar:length>
                     <tdar:mappingColumn>false</tdar:mappingColumn>
                     <tdar:name>column_1</tdar:name>
+                    <tdar:searchField>true</tdar:searchField>
                     <tdar:visible>VISIBLE</tdar:visible>
                 </tdar:dataTableColumn>
             </tdar:dataTableColumns>

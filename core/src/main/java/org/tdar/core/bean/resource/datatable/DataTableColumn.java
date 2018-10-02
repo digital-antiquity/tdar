@@ -108,6 +108,11 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         public boolean isStatic() {
             return true;
         }
+        
+        @Override
+        public ColumnVisibiltiy getVisible() {
+            return ColumnVisibiltiy.HIDDEN;
+        }
     };
 
     @Override

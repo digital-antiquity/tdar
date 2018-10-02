@@ -193,6 +193,7 @@ public class CodingSheetMappingITCase extends AbstractAdminControllerITCase {
             }
         }
         assertFalse(colRow == -1);
+        logger.debug("{} / idrow", idRow);
         assertTrue("id row is hidden and should be -1", idRow == -1);
 
         idRow = 1;
