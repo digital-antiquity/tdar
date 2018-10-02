@@ -20,13 +20,11 @@
 
 
         };
-
         var self =  {
             restrict: 'A',
-            link: function(scope, element, attrs){
+            link: function(scope, element, attrs, ctrl){
                 console.debug("linking to dom element:%s", attrs.id);
                 var widget = false;
-
                 // If THEAD has columns, we are ready to init datatable
                 if(element.find("thead th").length) {
                     widget = element.DataTable();
@@ -35,41 +33,42 @@
                 //if controller sets/modifies  $scope[attrs.aoColumns], (re)initialize the datatable
                 if(typeof attrs.aoColumns !== "undefined") {
                     scope.$watch(attrs.aoColumns, function(val){
-                        console.debug("%s:: ao-columns:'%s'", attrs.id, val);
+                        console.debug("%s:: ao-columns:'", attrs.id, attrs);
                         if(!val){return}
-
+                        console.debug(scope);
                         //aoColumns needs to be in specific format. for now we define all columns
                         var aoColumns = val.map(function(colname){
                             return {sTitle: colname};
                         });
 
                         //if datatable already exists, we need to destroy it and start over
-                        if(widget) {
-                            widget.fnClearTable();
-                            widget.fnDestroy();
+                        if(widget && widget.clear != undefined) {
+                            widget.clear();
+                            widget.destroy();
                             widget = null;
-                        }
+                        } 
                         var options = $.extend({}, _defaultOptions, {
                             aoColumns: aoColumns,
-                            aaData: []
+                            aaData: val.aoData
                         });
-
                         widget = element.DataTable(options);
-
+                        console.debug(widget);
+                        element.widget = widget;
                     });
                 }
-
+                console.debug("%s:: ", attrs.id, element, self);
                 //look for changes to the aa-data attribute (which corresponds to the options.aaData value you would pass to $.Datatable() )
                 scope.$watch(attrs.aaData, function(val){
-                    console.debug("%s:: aa-data:%s", attrs.id,  val);
-                    self.updateRowData(widget, val);
+                    console.debug("%s:: aa-data:", attrs.id,  val, widget);
+                    self.updateRowData(element.widget, val);
                 });
             },
 
             updateRowData: function(widget, rowData) {
                     if(!rowData) {return}
-                    widget.fnClearTable();
-                    widget.fnAddData(rowData);
+                        widget.clear();
+                        console.log(widget);
+                        widget.rows.add(rowData);
                 }
         };
         return self;

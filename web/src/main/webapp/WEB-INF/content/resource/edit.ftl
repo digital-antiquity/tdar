@@ -10,8 +10,6 @@
 <#include "/WEB-INF/macros/creatorwidget.html">
 <#include "/WEB-INF/macros/inheritance.html">
 
-<button type="button" name="submit">Submit</button>
-</form>
 <script id="json" type="text/json">
 <#noescape>
 ${json}
@@ -39,4 +37,32 @@ ${submitter}
 ${activeAccounts}
 </#noescape>
 </script>
+<script id="primaryRoles" type="text/json">
+<#noescape>
+${primaryCreatorRoles}
+</#noescape>
+</script>
+<script id="otherRoles" type="text/json">
+<#noescape>
+${creditCreatorRoles}
+</#noescape>
+</script>
+
+<script id="fileUploadSettings" type="application/json">
+<#noescape>
+${fileUploadSettings!''}
+</#noescape>
+</script>
+<script id="filesJson" type="text/json">
+<#noescape>
+<#if filesJson?has_content>${filesJson}<#else>[]</#if>
+</#noescape>
+</script>
+<script>
+$(document).ready(function(){
+
+TDAR.vuejs.resourceEdit.init();
+});
+</script>
+</form>
 </#escape>

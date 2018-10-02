@@ -48,7 +48,8 @@
         <#if resource.sensoryDataScans?has_content>
         <h3>Scan Information</h3>
         <table class="table table-striped tableFormat">
-            <thead>
+              <thead class="thead-dark">
+
             <tr>
                 <th>Filename</th>
                 <th title="Transformation Matrix">Transformation Matrix</th>
@@ -96,7 +97,8 @@
         <#if resource.sensoryDataImages?has_content>
         <h3>Sensory Data Image Information</h3>
         <table class="table table-striped tableFormat">
-            <thead>
+              <thead class="thead-dark">
+
             <tr>
                 <th>Filename</th>
                 <th>Description</th>

@@ -41,7 +41,6 @@
         
     </div>
 </div>
-        <@nav.keywordToolbar "view" />
 
 <div class="glide">
     <h1>${keyword.label} <span class="xsmall red">(<@s.text name="${keywordType.localeKey}"/>)</span></h1>
@@ -52,19 +51,20 @@
     <p><b>Parent:</b><@search.searchFor keyword.parent false /></p>
     </#if>
     
+        <@nav.keywordToolbar "view" />
     <p>${keyword.definition!''}</p>
 </div>
 
     <#if ( results?? && results?size > 0) >
         <div id="divResultsSortControl">
             <div class="row">
-                <div class="span4">
+                <div class="col-4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"  />
                 </div>
             </div>
         </div>
         <div class="tdarresults">
-            <@list.listResources resourcelist=results  listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+            <@list.listResources resourcelist=results  listTag="span" itemTag="span" titleTag="b" orientation=orientation mapPosition="top" mapHeight="450"/>
         </div>
     
     </#if>

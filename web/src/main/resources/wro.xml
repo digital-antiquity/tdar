@@ -2,15 +2,11 @@
 
 <groups xmlns="http://www.isdc.ro/wro">
     <group name='default'>
-        <css>/css/tdar-bootstrap.css</css>
-        <css>/css/tdar.dashboard.css</css>
-        <css>/css/famfamfam.css</css>
+        <!-- <css>/css/tdar-bootstrap.css</css> -->
         <css>/components/jquery.treeview/jquery.treeview.css</css>
-        <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
-        <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css</css>
         <!--  used by jquery.treeview -->
         <js>/includes/jquery.cookie.js</js>
-        <css>/css/tdar-svg.css</css>
+        
         <js>/components/svgxuse/svgxuse.min.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
         <!--  not sure who uses this -->
@@ -21,14 +17,15 @@
         <js>/js/jquery.FormNavigate.js</js>
         <js>/includes/jquery.watermark-3.1.3.min.js</js>
         <!-- LICENSE: MIT -->
-        <js>/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js</js>
         <!-- LICENSE: BSD /GPL 2.0 -->
-        <js>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js</js>
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/components/jquery.treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
-        <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
+        <js>/components/datatables.net/js/jquery.dataTables.min.js</js>
+        <js>/components/datatables.net-bs4/js/dataTables.bootstrap4.js</js>
+        <css>/components/datatables.net-bs4/css/dataTables.bootstrap4.min.css</css>
         <js>/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js</js>
+        <css>/components/bootstrap-datepicker-eyecon/css/datepicker.css</css>
         <!--  we use the template for the person autocomplete, we should fix this and then remove it -->
         <js>/components/blueimp-file-upload/js/jquery.iframe-transport.js</js>
         <js>/components/blueimp-file-upload/js/jquery.fileupload.js</js>
@@ -64,6 +61,7 @@
         <js>/js/tdar.moreinfo.js</js>
         <js>/js/tdar.common.js</js>
         <js>/js/tdar.bulk.js</js>
+        <js>/js/tdar.scrollspy.js</js>
         <js>/js/tdar.repeatrow.js</js>
         <js>/js/tdar.autocomplete.js</js>
         <!-- <js>/js/tdar.select2-autocomplete.js</js> -->
@@ -73,17 +71,6 @@
         <js>/js/tdar.validate.js</js>
         <js>/js/tdar.messages_en.js</js>
         <js>/js/tdar.d3tree.js</js>
-        <css>/css/tdar.homepage.css</css>
-        <css>/css/tdar-autocomplete.css</css>
-        <css>/css/tdar.d3tree.css</css>
-        <css>/css/tdar.c3graph.css</css>
-        <css>/css/tdar.leaflet.css</css>
-        <css>/css/tdar.worldmap.css</css>
-        <css>/css/tdar.datatablemapping.css</css>
-        <css>/css/tdar.sprites.css</css>
-        <css>/css/tdar.datatables.css</css>
-        <css>/css/tdar.searchresults.css</css>
-        <css>/css/tdar.invoice.css</css>
         <js>/js/tdar.datatable.js</js>
         <js>/js/tdar.dataset-metadata.js</js>
         <js>/js/tdar.ontology-mapping.js</js>
@@ -135,7 +122,6 @@
     </group>
     <group name="ng-integrate">
 
-        <css>/css/tdar-integration.css</css>
 
 <!--          <js minimize="false">https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js</js> -->
         <!-- LICENSE: MIT -->

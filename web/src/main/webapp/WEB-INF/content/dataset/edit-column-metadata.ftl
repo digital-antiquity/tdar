@@ -51,7 +51,8 @@
     </#if>
 
     <#if (dataset.dataTables?size > 1) >
-        <div class="well">
+        <div class="card">
+            <div class="card-body">
             <p>
                 There are multiple tables in this dataset. To switch between, click
                 on one of the links below. Please remember to save any changes before switching tables.
@@ -65,6 +66,7 @@
                     <option value="${table.id?c}" <#if table?? && table.id == dataTable.id>selected</#if>>${count}. ${table.displayName}</option>
                 </@s.iterator>
             </select>
+        </div>
         </div>
     </#if>
 
@@ -155,37 +157,36 @@
         </#macro>
 
         <#if dataTable.dataTableColumns??>
-        <div id="datatablecolumns">
+        <div id="datatablecolumns" class="row">
             <#list dataTableColumns?sort_by("sequenceNumber") as column>
                 <#if column_index != 0>
                     <hr/></#if>
 
-                <div class="datatablecolumn" id="columnDiv_${column_index}">
-                    <h3>
-                        <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions"
-                              class="columnSquare"><span>&nbsp;</span></span>
-                        <!-- Column: -->
-                        <span class="displayName">${column.displayName}</span>
-                        <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>
+                <div class="datatablecolumn col-12" id="columnDiv_${column_index}">
+                        <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions">
+                        
+                    <h3 class="displayName">
+<span class="columnSquare">&nbsp;</span>                    
+                    ${column.displayName}</h3>
 
     <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
-        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
-        cssClass="columnEncoding" target="#columnDiv_${column_index}"
+        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:" inline=true
+        cssClass="columnEncoding" target="#columnDiv_${column_index}" labelposition="left"
         listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
     </span>
                     <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" />
                     <@s.hidden name="dataTableColumns[${column_index}].columnDataType" value="${column.columnDataType}" cssClass="dataType" />
                     <@s.hidden name="dataTableColumns[${column_index}].name" value="${column.name}" />
                     <span data-tooltipcontent="#displayNameToolTip" data-tiplabel="Display Name">
-                        <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" cssClass="input-xxlarge" />
+                        <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" cssClass="input-xxlarge" labelposition="left"/>
                     </span>
 
                     <div class="measurementInfo" style='display:none;'>
-                        <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit"
+                        <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit" labelposition="left"
                         label="Meas. Unit:" listValue='fullName' emptyOption='true' list='%{allMeasurementUnits}'/>
                     </div>
-                    <div data-tooltipcontent="#categoryVariableToolTip" data-tiplabel="Category Variable" class="control-group">
-                        <label class="control-label">Category:</label>
+                    <div data-tooltipcontent="#categoryVariableToolTip" data-tiplabel="Category Variable" class="form-group row">
+                        <label class="col-form-label col-2">Category:</label>
                         <#assign subCategoryId="" />
                         <#assign categoryId="" />
                         <#if column.categoryVariable??>
@@ -196,30 +197,27 @@
                                 <#assign categoryId="${column.categoryVariable.id?c}" />
                             </#if>
                         </#if>
-                        <div class="controls">
+                        <div class="controls col-10">
+                        <div class="row">
                             <@s.select id='categoryVariableId_${column_index}'
                             name='dataTableColumns[${column_index}].categoryVariable.id'
                             onchange='TDAR.common.changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
                             headerKey="-1"
                             headerValue=""
-                            cssClass="categorySelect span3"
+                            cssClass="categorySelect col-6"
                             listKey='id'
                             listValue='name'
                             list='%{allDomainCategories}'
-                            label="Category:"
-                            theme="simple"
                             autocompleteName="sortCategoryId"
                             value="${categoryId}"
                             />
 
-                            <span id="subcategoryDivId_${column_index}">
                                 <#if subCategoryId != "">
                                     <@s.select  target="#columnDiv_${column_index}"
                                     id='subcategoryId_${column_index}'
-                                    cssClass="subcategorySelect span3"
+                                    cssClass="subcategorySelect col-6"
                                     name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
                                     list='%{subcategories[${column_index}]}'
-                                    theme="simple"
                                     headerKey="-1"
                                     headerValue=""
                                     listKey='id'
@@ -231,12 +229,12 @@
                                     />
                                 <#else>
                                     <select id='subcategoryId_${column_index}' name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
-                                            class="span3" autocompleteName="subCategoryId">
+                                            class="col-6 form-control" autocompleteName="subCategoryId">
                                         <option value='-1'>N/A</option>
                                     </select>
                                 </#if>
-                            </span>
                             <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+                        </div>
                         </div>
                     </div>
     <span data-tooltipcontent="#descriptionToolTip" data-tiplabel="Column Description">
@@ -270,7 +268,7 @@
                     autocompleteParentElement="#divOntology-${column_index}"
                     autocompleteIdElement="#${column_index}_oid"
                     addNewLink="/ontology/add?returnToResourceMappingId=${resource.id?c}"
-                    cssClass="input-xxlarge-combo ontologyfield" />
+                    cssClass="col-10 ontologyfield" />
                     </div>
                 </div>
             </#list>
@@ -305,7 +303,7 @@
         </div>
         </#if>
     <h2>Summary</h2>
-    <table id="summaryTable" class="table tableFormat">
+    <table id="summaryTable" class="table table-sm table-striped">
         <tr>
             <th></th>
             <th></th>

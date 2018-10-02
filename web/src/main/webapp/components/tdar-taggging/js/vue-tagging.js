@@ -31,6 +31,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     type:Boolean,
                     default: true
                 },
+                label_class: {
+                    type: String,
+                    default: "badge badge-secondary"
+                },
                 disabled_initially: {
                     type:Boolean,
                     default: false
@@ -122,15 +126,24 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     this.$refs.input.focus();
                 }
             },
+            labelFocus: function(event) {
+                if (event) event.preventDefault()
+                return false;
+            },
             addAutocompleteValue: function(result) {
+                console.log(result);
                 if (result != undefined) {
-                    if (this.allow_create == false && result[this.id_field] != undefined || this.allow_create == true) {
+                    if (this.allow_create == false && result[this.id_field] != undefined) {
                         this._addEntry(result[this.name_field], result[this.id_field]);
-                        this.$refs.input.reset();
-                     } else {
-                         this._addEntry(result[this.name_field], result[this.id_field]);
-                         this.$refs.input.reset();
-                     }
+                     } 
+                    if (this.allow_create == true) {
+                        if (typeof result == 'string') {
+                            this._addEntry(result, undefined);
+                        } else {
+                            this._addEntry(result[this.name_field], result[this.id_field]);
+                        }
+                    }
+                    this.$refs.input.reset();
                 }
             },
             _addEntry: function(entry, id) {
@@ -193,7 +206,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 }
             },
             deleteLast: function(input) {
-                console.log(input.selectionStart ,input.selectionEnd);
+//                console.log(input.selectionStart ,input.selectionEnd);
                 if (input.selectionStart == 0 && input.selectionEnd == 0) {
                     this.remove(this.values.length -1);
                 }

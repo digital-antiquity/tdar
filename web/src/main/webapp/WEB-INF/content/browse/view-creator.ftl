@@ -24,63 +24,21 @@
 </head>
 
 
-    <@nav.creatorToolbar "view" />
-
-    <@view.pageStatusCallout />
 
     <#if creator?? >
     
-        <#if  creatorFacetMap?has_content || keywordFacetMap?has_content >
-        <div id="sidebar-right" parse="true">
-            <div class="sidebar-spacer">
-                <#list creatorFacetMap?values >
-                    <div id="related-creators">
-                        <h3>Related Creators</h3>
-                        <ul>
-                            <#items as collab>
-                                <li>
-                                   <#if authenticatedUser?has_content>
-                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
-                                    <#else>
-                                        ${collab.label}
-                                    </#if>
-                                </li>
-                            </#items>
-                        </ul>
-                    </div>
-                </#list>
-
-                <#list keywordFacetMap?values >
-                    <div id="related-keywords">
-                        <h3>Related Keywords</h3>
-                        <ul>
-                            <#items as collab>
-                                <li>
-                                   <#if authenticatedUser?has_content>
-                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
-                                    <#else>
-                                        ${collab.label}
-                                    </#if>
-                                </li>
-                            </#items>
-                        </ul>
-                    </div>
-                </#list>
-
-                <div>
-                    <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
-                        associated with a Creator and highlighting the most commonly used.
-                    </small>
-                </div>
-            </div>
-        </div>
-        </#if>
+    <@sidebar />
 
     <h1>
     <#if logoUrl?has_content>
 		<img class="pull-right"  src="${logoUrl}" alt="logo" title="logo" />
     </#if>
-        <#if creator.properName??>${creator.properName}</#if></h1>
+        <#if creator.properName??>${creator.properName}</#if>
+        
+
+        <@view.pageStatusCallout />
+        </h1>
+            <@nav.creatorToolbar "view" />
 
         <#assign scope="http://schema.org/Person"/>
         <#if creator.creatorType.institution >
@@ -212,7 +170,7 @@
 
                 <div class="row">
                     <#list creator.addresses  as address>
-                        <div class="span3">
+                        <div class="col-3">
                             <@commonr.printAddress  address=address creatorType=creator.creatorType?lower_case creatorId=creator.id />
                         </div>
                     </#list>
@@ -238,10 +196,10 @@
 
                     <#if creator.registered?? >
                         <div class="row">
-                            <div class="span6">
+                            <div class="col-6">
                                 <@common.billingAccountList accounts />
                             </div>
-                            <div class="span6">
+                            <div class="col-6">
                             <#if editor>
                                 <h2>Group Membership</h2>
                                 <ul>
@@ -256,7 +214,7 @@
                         <#if editor>
                             <#list ownerCollections![]>
                         <div class="row">
-                            <div class="span12">
+                            <div class="col-12">
                                 <h2>Collection Membership</h2>
                                 <ul>
 					        		<#items as collection>
@@ -282,10 +240,10 @@
     <#if ( results?? && results?size > 0) >
     <div id="divResultsSortControl">  
         <div class="row">
-            <div class="span4">
+            <div class="col-4">
                 <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
             </div>
-            <div class="span5">
+            <div class="col-5">
                 <#if !hideFacetsAndSort>
                     <div class="form-horizontal pull-right">
                         <@search.sortFields true/>
@@ -300,7 +258,7 @@
         </#if>
 
     <div class="tdarresults">
-        <@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="h5" orientation="LIST"/>
+        <@list.listResources resourcelist=results sortfield="RESOURCE_TYPE" titleTag="b" orientation="LIST"/>
     </div>
         <@search.basicPagination "Results"/>
     <#else>
@@ -335,6 +293,66 @@
         <#if _show>
         <b>${_label}:</b>
             <#if _val>${trueString}<#else>${falseString}</#if>
+        </#if>
+    </#macro>
+    
+    <#macro sidebar>
+            <#if  creatorFacetMap?has_content || keywordFacetMap?has_content >
+        <div id="sidebar-right" parse="true" class="row">
+        <div class="col-10 offset-2">
+            <div class="sidebar-spacer">
+                <#list creatorFacetMap?values >
+                    <div id="related-creators">
+                        <h3>Related Creators</h3>
+                        <ul class="list-unstyled ml-0 pl-0">
+                        <#assign count = 0 />
+                            <#items as collab>
+                                <#assign count = count + 1 />
+                                <li>
+                                   <#if authenticatedUser?has_content>
+                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
+                                    <#else>
+                                        ${collab.label}
+                                    </#if>
+                                </li>
+                                <#if (count > results?size / 2) >
+                                 <#break>
+                                </#if>
+                            </#items>
+                        </ul>
+                    </div>
+                </#list>
+
+                <#list keywordFacetMap?values >
+                    <div id="related-keywords">
+                        <h3>Related Keywords</h3>
+                        <ul class="list-unstyled ml-0 pl-0">
+                        <#assign count = 0 />
+                            <#items as collab>
+                                <#assign count = count + 1 />
+                                <li>
+                                   <#if authenticatedUser?has_content>
+                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
+                                    <#else>
+                                        ${collab.label}
+                                    </#if>
+                                </li>
+                                <#if (count > results?size / 2) >
+                                 <#break>
+                                </#if>
+                            </#items>
+                        </ul>
+                    </div>
+                </#list>
+
+                <div>
+                    <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
+                        associated with a Creator and highlighting the most commonly used.
+                    </small>
+                </div>
+            </div>
+        </div>
+        </div>
         </#if>
     </#macro>
 </#escape>

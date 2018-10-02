@@ -28,19 +28,30 @@
             alert("Your session has timed out, please reload the page.");
 //            location.reload(true);
         }, timeout);
-        $('#contributor-id').click(function () {
+        $('#contributor-id, #tou-id').click(function () {
             _switchContributorReasonDisplay($(this).is(':checked'));
         });
         var contributor = $("#contributor-id").is(':checked');
-        _switchContributorReasonDisplay(contributor);
+        var contributor2 = $("#tou-id").is(':checked');
+        var c = false;
+        if (contributor2 == true || contributor == true) {
+            c = true;
+        }
+        console.log(contributor2, contributor, c);
+        _switchContributorReasonDisplay(c);
 
         $('#firstName').focus();
 
     };
 
     var _switchContributorReasonDisplay = function (shouldDisplay) {
-        var opt = shouldDisplay ? 'show' : 'hide';
-        $('#contributorReasonTextArea').collapse(opt);
+        var opt = "hidden";
+        if (shouldDisplay) {
+            opt = "show";
+            $('#contributorReasonTextArea').removeClass("hidden");
+        } else {
+            $('#contributorReasonTextArea').addClass("hidden");
+        }
         $('#contributorReasonId').attr("disabled", !shouldDisplay);
     };
 

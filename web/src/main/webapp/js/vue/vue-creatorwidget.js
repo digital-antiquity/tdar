@@ -15,10 +15,8 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     default: 0
                 },
                 roles: {
-                    type:Array,
-                    default: function() {
-                        return ['AUTHOR','EDITOR'];
-                    }
+                    type:Object,
+                    default: function() { return {'INSTITUTION':[], 'PERSON':[]}; }
                 },
                 prefix: {
                     type:String,
@@ -29,6 +27,8 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 return {
                 showEditInstitution: false,
                 showEditPerson: false,
+                actualRoles:[],
+                creatorId:-1,
                 toggle: "PERSON"
                 }
             },
@@ -36,6 +36,8 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 if (this.resourcecreator.creator.firstName == undefined) {
                     this.toggle = 'PERSON';
                     Vue.set(this, "toggle", 'PERSON');
+                    Vue.set(this,"actualRoles", this.roles[this.toggle]);
+                    Vue.set(this,"creatorId", -1);
                 }
             },
             beforeUpdate: function(e) {
@@ -63,32 +65,33 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                         this.$refs.inputperson.setId(creator.id);
                     }
                 }
-                
+                Vue.set(this,"creatorId", creator.id);
+                Vue.set(this,"actualRoles", this.roles[this.toggle]);
             },
             watch: {
-                resourcecreator: function(n, o) {
-//                    console.log("creatorchange:", n, o);
+                toggle: function(n, a) {
+                    Vue.set(this,"actualRoles", this.roles[n]);
+                    Vue.set(this,"creatorId", -1);
+                    console.log(n, this.roles[n]);
                 }
             },
             computed: {
-                creatorId: function() {
-                    if (this.resourcecreator.creator == undefined || this.resourcecreator.creator.id == undefined || this.resourcecreator.creator.id == -1) {
-                        return -1;
-                    }
-                    return this.resourcecreator.creator.id;  
-                },
                 personClass: function() {
-                    var ret = "btn btn-small personButton";
+                    var ret = "btn btn-xs  personButton";
                     if (this.toggle == 'PERSON') {
-                        ret = ret+ " btn-active active"
-                    };
+                        ret = ret+ " btn-active active btn-dark";
+                    } else {
+                        ret = ret += " btn-secondary";
+                    }
                     return ret;
                 },
                 institutionClass: function() {
-                    var ret = "btn btn-small institutionButton";
+                    var ret = "btn btn-xs  institutionButton";
                     if (this.toggle == 'INSTITUTION') {
-                        ret = ret+ " btn-active active"
-                    };
+                        ret = ret+ " btn-active btn-dark active";
+                    } else {
+                        ret = ret += " btn-secondary";
+                    }
                     return ret;
                 },
                 editClass: function() {
@@ -110,9 +113,11 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     Vue.set(this,"toggle",key);
                 },
                 updatecreator: function(result) {
-                    this.resourcecreator.creator = result;
                     Vue.set(this.resourcecreator,"creator", result);
-                    console.log("setting resourcecreator to", result);
+                    this.resourcecreator.creator = result;
+                    console.log("setting resourcecreator to", this.resourcecreator.creator);
+                    console.log(this.resourcecreator.creator.id)
+                    Vue.set(this,"creatorId", this.resourcecreator.creator.id);
                 },
                 getPrefix: function(part) {
                     var ret = this.prefix;
@@ -155,13 +160,16 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     if (this.$refs.inputinstitution != undefined) {
                         this.$refs.inputinstitution.clear();
                     }
+                    Vue.set(this,"creatorId", -1);
                 },
                 addAutocompleteValue: function(result) {
                     if (result != undefined && result.id != undefined) {
                         Vue.set(this.resourcecreator,"creator", result);
+                        Vue.set(this,"creatorId", result.id);
                     }
                 },
                 clickEdit: function() {
+                    Vue.set(this,"creatorId", -1);
                     if (this.toggle == 'PERSON') {
                         Vue.set(this, "showEditPerson",true);
                     } 
@@ -190,12 +198,18 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     type:Number,
                     default: 0
                 },
+                roles: {
+                    type: Array,
+                    default: function() { return []; }
+                },
+                prefix: {
+                    type: String,
+                    default: "authorshipProxies"
+                }
             },
             data: function() {
                 return {
-                roles: ['AUTHOR','EDITOR'],
                 showEditPerson: false,
-                prefix: "authorshipProxies",
                 }
             },
             beforeMount: function() {
@@ -269,12 +283,18 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                     type:Number,
                     default: 0
                 },
+                roles: {
+                    type: Array,
+                    default: function() { return []; }
+                },
+                prefix: {
+                    type: String,
+                    default: "authorshipProxies"
+                }
             },
             data: function() {
                 return {
-                roles: ['AUTHOR','EDITOR'],
-                showEditInstitution: false,
-                prefix: "authorshipProxies",
+                    showEditInstitution: false,
                 }
             },
             beforeMount: function() {

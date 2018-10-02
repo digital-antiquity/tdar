@@ -7,7 +7,7 @@ There was an error :(.
 
 
         <#if actionMessages?has_content>
-                <div class="span12">
+                <div class="col-12">
                     <@s.actionmessage />
                 </div>
         </#if>

@@ -13,8 +13,9 @@
 <br/>
     <@admin.statsTable historicalUserStats "User Statistics" "userstats" />
 <h3>Repeated Logins</h3>
-<table class="table tableFormat">
-    <thead>
+<table class="table table-sm table-striped">
+      <thead class="thead-dark">
+
     <tr>
         <th># of logins</th>
         <th>user count</th>
@@ -32,7 +33,7 @@
 
 <h3>User Agreement Stats</h3>
 <div class="row">
-    <div class="span6">
+    <div class="col-6">
         <table class="table table-bordered table-condensed table-hover">
             <colgroup>
                 <col style="width:40%">
@@ -51,7 +52,7 @@
 
 <h3>User Affiliation Stats</h3>
 <div class="row">
-    <div class="span6">
+    <div class="col-6">
         <h4>All Users</h4>
         <table class="table table-bordered table-condensed table-hover">
             <colgroup>
@@ -67,7 +68,7 @@
         </table>
     </div>
 
-    <div class="span6">
+    <div class="col-6">
         <h4>Contributors</h4>
         <table class="table table-bordered table-condensed table-hover">
             <colgroup>
@@ -88,8 +89,9 @@
 
 <div>
     <h3>Recently Registered Users </h3>
-    <table class="table tableFormat">
-        <thead>
+    <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+
         <tr>
             <th>User</th>
             <th>Email</th>
@@ -110,9 +112,13 @@
     </table>
 </div>
 
-<div class="glide">
+<div class="row">
     <h3>Registered Users</h3>
-    <table id="dataTable" class="tableFormat"></table>
+    <div class="col-12">
+    <table id="dataTable" class="table table-striped" style="width:100%">
+        <thead class="thead-dark"></thead>
+    </table>
+</div>
 </div>
 <script>
 $(document).ready(function () {

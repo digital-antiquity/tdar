@@ -1,15 +1,11 @@
-TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
+TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
-
-    if (document.getElementById("sel") == undefined) {
-        return;
-    }
 
     function dereference(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
     
-    var app = new Vue({
+    var __init = {
         el : "#sel",
         data : {
                 separator: ";" ,
@@ -40,7 +36,12 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     files: [],
                     requiredOptionalPairs:[]
                 },
+                primaryRoles: [],
                 creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
+                coverageDateTypes: [
+                    {value:"CALENDAR_DATE", name:"Calendar Date"},
+                    {value:"RADIOCARBON_DATE", name:"Radiocarbon Date"},
+                ],
                 noteTypes: [
                     {value:"GENERAL", name:"General Note"},
                     {value:"REDACTION", name:"Redaction Note"},
@@ -48,7 +49,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     {value:"ADMIN", name:"Administration Note"}
                     ],
                 resource: { otherKeywords:[], siteNameKeywords:[], siteTypeKeywords:[], controlledMaterialKeywords:[], uncontrolledMaterialKeywords:[], geographicKeywords:[], investigationTypes:[], cultureKeywords:[], temporalKeywords:[],
-                    resourceNotes: [{}],  latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
+                    latitudeLongitudeBoxes: [{north: undefined, south: undefined, east: undefined,west: undefined } ],
                     individualInstitutionalRoles: [ {id: undefined, role: undefined , creator: {institution:{ name: undefined}, id: undefined} } ] }
                 },
                 created: function() {
@@ -60,6 +61,29 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             Vue.set(this,'submitterId',parseInt(json.submitterRef.substring(json.submitterRef.indexOf(":") + 1)));
                             Vue.set(this,"submitterName",JSON.parse(document.getElementById('submitter').innerText).properName );
                         }
+                         Vue.set(this,"primaryRoles",JSON.parse(document.getElementById('primaryRoles').innerText));
+                         Vue.set(this,"creditRoles",JSON.parse(document.getElementById('otherRoles').innerText));
+
+                         if (this.resource.resourceNotes == undefined) {
+                             this.resource.resourceNotes = [];
+                         } 
+                         if (this.resource.resourceNotes.length == 0) {
+                             this.resource.resourceNotes.push(this.getBlankNote());
+                         }
+                         if (this.resource.coverageDates == undefined) {
+                             this.resource.coverageDates = [];
+                         } 
+                         if (this.resource.coverageDates.length == 0) {
+                             this.resource.coverageDates.push(this.getBlankDate());
+                         }
+                         var uploadConfig = document.getElementById('fileUploadSettings').innerText;
+                         if (uploadConfig != undefined && uploadConfig.trim() != '') {
+                             uploadConfig = JSON.parse(uploadConfig);
+                             if (uploadConfig != undefined) {
+                                 Vue.set(this,"fileUploadConfig", uploadConfig);
+                             }
+                         }
+                         
                         if (json.activeIndividualAndInstitutionalCredit == undefined || json.activeIndividualAndInstitutionalCredit.length == 0) {
                             json.activeIndividualAndInstitutionalCredit = [{creator:{person:{institution:{}}}}];
                         }
@@ -92,6 +116,8 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     // Vue.set("resource","submitter",{});
                     // this.resource.submitter = {id:8344, properName:'adam brin'};
                     var self = this.resource.activeLatitudeLongitudeBoxes[0];
+                },
+                mounted: function() {
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
                             Vue.set(self, "west", e.minx);
@@ -100,7 +126,9 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             Vue.set(self, "south", e.miny);
                             });
                     });
-                },                watch: {
+
+                },
+                watch: {
                     "resource.inheritingInvestigationInformation": function(o, b) {
                         this.inherit(o,b,'investigationType', 'activeInvestigationTypes');
                     },
@@ -110,6 +138,18 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     },
                     "resource.inheritingTemporalInformation": function(o, b) {
                         this.inherit(o,b,'temporal', 'activeTemporalKeywords');
+                        if (this.project != undefined && this.project.activeCoverageDates != undefined) {
+                            this.resource.coverageDates.length = 0;
+                            var _app = this;
+                            this.project.activeCoverageDates.forEach(function(n) {
+                                console.log(n);
+                                _app.resource.coverageDates.push(derefrence(n) );
+                            });
+                            if (this.resource.coverageDates.length == 0) {
+                                this.resource.coverageDates.push(this.getBlankDate());
+                            }
+                        }
+
                     },
                     "resource.inheritingIndividualAndInstitutionalCredit": function(o, b) {
                         if (this.project != undefined && this.project.activeIndividualAndInstitutionalCredit != undefined) {
@@ -140,10 +180,10 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     "resource.inheritingSpatialInformation": function(o, b) {
                         this.inherit(o,b,'geographic', 'activeGeographicKeywords');
                         if (this.project != undefined && this.project.activeLatitudeLongitudeBoxes != undefined) {
-                        this.resource.activeLatitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
-                        this.resource.activeLatitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
-                        this.resource.activeLatitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
-                        this.resource.activeLatitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
+                            this.resource.activeLatitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
+                            this.resource.activeLatitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
+                            this.resource.activeLatitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
+                            this.resource.activeLatitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
                         console.log(this.resource.activeLatitudeLongitudeBoxes[0]);
                         Vue.nextTick(function() {
                             $(".locateCoordsButton").click();
@@ -168,7 +208,7 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                                 _app.resource.resourceNotes.push(derefrence(n) );
                             });
                             if (this.resource.resourceNotes.length == 0) {
-                                this.resource.resourceNotes.push({});
+                                this.resource.resourceNotes.push(this.getBlankNote());
                             }
                         }
                     }
@@ -187,15 +227,35 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                             this.resource.resourceNotes.splice(idx,1);
                         }
                         if (this.resource.resourceNotes.length == 0) {
-                            this.resource.resourceNotes.push({});
+                            this.resource.resourceNotes.push(this.getBlankNote());
                         }
                         if (this.resource.resourceNotes.length == 1) {
-                            this.resource.resourceNotes[0]= {};
+                            this.resource.resourceNotes[0]= this.getBlankNote();
                         }
+                    },
+                    removeDate: function(idx) {
+                        if (this.resource.coverageDates.length > 1) {
+                            this.resource.coverageDates.splice(idx,1);
+                        }
+                        if (this.resource.coverageDates.length == 0) {
+                            this.resource.coverageDates.push(this.getBlankDate());
+                        }
+                        if (this.resource.coverageDates.length == 1) {
+                            this.resource.coverageDates[0]= this.getBlankDate();
+                        }
+                    },
+                    getBlankNote: function() {
+                        return {type:"GENERAL"};
+                    },
+                    getBlankDate: function() {
+                        return {type:"CALENDAR_DATE"};
                     },
                     setsubmitter: function(submitter) {
                         console.log("setsubmitter", submitter);
                         Vue.set(this.resource,"submitter",submitter );
+                    },
+                    submitForm:function(){
+                        this.$refs['form'].submit();
                     },
                     applyMaterialKeywords: function(keywords) {
                         var controlled = this.resource.controlledMaterialKeywords;
@@ -257,6 +317,17 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                     }
                     
                 }
-    });
+    };
 
+    var _init = function(selector){
+        if (selector != undefined){
+            __init["el"] = selector;
+        }
+        var app = new Vue(__init);
+        return app;
+    }
+    
+    return {
+        init : _init,
+    }
 })(console, window, Vue, axios, TDAR);

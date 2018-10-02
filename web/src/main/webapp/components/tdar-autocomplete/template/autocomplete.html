@@ -1,5 +1,5 @@
 <script type="text/x-template" id="autocomplete">
-  <div class="autocomplete" ref="autocompleteroot" @mouseover="addFocus('mouse')" @mouseout="removeFocus('mouse')">
+  <div :class="getRootClass()" ref="autocompleteroot" @mouseover="addFocus('mouse')" @mouseout="removeFocus('mouse')">
     <input type="hidden" v-model="id"  :name="idname" v-if="idname != undefined" />
     <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter"
 		@keydown.delete="deleteKey" @keyup.enter="enterKey" @keyup="anyKey" autocomplete="off" :disabled="disabled" 

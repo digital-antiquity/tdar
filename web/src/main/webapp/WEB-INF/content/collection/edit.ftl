@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/macros/helptext.ftl" as helptext>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "../collection/common-collection.ftl" as commonCollection>
     <#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
@@ -15,95 +16,82 @@
 </head>
 <body>
 
-    <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
-        <div class="">
-            <div class="container">
-                <ul class="nav">
-                    <li class="alwaysHidden"><a href="#top">top</a></li>
-                    <li class="active"><a href="#basicInformationSection">Basic</a></li>
-                    <li><a href="#divResourcesSesction">Resources</a></li>
-                </ul>
-                <div id="fakeSubmitDiv" class="pull-right">
-                    <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div id="sidebar-right" parse="true">
-        <div id="notice">
-            <h3>Introduction</h3>
-            This is the editing form for a Collection.
-        </div>
-    </div>
 
     <#assign newRecord = false>
     <#if persistable.id == -1>
         <#assign newRecord = true />
     </#if>
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
+    <div class="row">
+    <div class="col-10">
+        <div class="row">
         <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
-        <h2>Basic Information</h2>
+        <h2>Basic Information <@helptext.info title="Basic Information"
+             content="Enter a name and description for this collection.  You may also choose a &quot;parent
+    collection&quot; which allows you to inherit all of the access permissions defined by the parent." /></h2>
 
-        <div class="" id="basicInformationSection" data-tiplabel="Basic Information"
-             data-tooltipcontent="Enter a name and description for this collection.  You may also choose a &quot;parent
-    collection&quot; which allows you to inherit all of the access permissions defined by the parent.">
+        <div class="col-12" id="basicInformationSection">
             <#if resourceCollection.id?? &&  resourceCollection.id != -1>
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
             <@edit.hiddenStartTime />
-            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
+            <@s.textfield labelposition='left' label='Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
 
-            <div id="parentIdContainer" class="control-group">
-                <label class="control-label">Parent Collection</label>
+            <div id="parentIdContainer" class="form-group row">
+                <label class="col-form-label col-2">Parent Collection</label>
 
-                <div class="controls">
+                <div class="controls col-10">
+                <div class="row">
                     <@s.hidden name="parentId"  id="hdnParentId" cssClass=""
                     autocompleteParentElement="#parentIdContainer"  />
-            <@s.textfield theme="simple" name="parentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+            <@s.textfield name="parentCollectionName" cssClass="col-12 collectionAutoComplete"  autocomplete="off"
                 autocompleteIdElement="#hdnParentId" maxlength=255 autocompleteParentElement="#parentIdContainer" autocompleteName="name"
                 placeholder="parent collection name" id="txtParentCollectionName"
                 />
                 </div>
+                </div>
             </div>
 
-        <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
+        <@s.textarea rows="4" labelposition='top' label='Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge trim' title="Please enter the description " />
 
         <#if editor>
-            <h4>Admin Options</h4>
-            <div class="control-group" id="divSubmitter">
-                <label class="control-label">Submitter</label>
-
-                <div class="controls controls-row">
+            <h2>Admin Options</h2>
+            <div class="form-group row" id="divSubmitter">
+                <label class="control-label col-form-label col-2">Submitter</label>
+				<div class="col-10">
+                <div class="row">
                     <#if owner?has_content>
-                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
+                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8"
                     prefix="owner" includeRights=false includeRepeatRow=false />
 	 	        <#else>
-                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
+                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''  textfieldCssClass="col-8"
                         prefix="owner" includeRights=false includeRepeatRow=false />
                     </#if>
                 </div>
+                </div>
             </div>
             
-            <div id="altParentIdContainer" class="control-group">
-                <label class="control-label">Secondary Parent Collection (No rights)</label>
-                <div class="controls">
+            <div id="altParentIdContainer" class="control-group row">
+                <label class="control-label col-form-label col-2">Secondary Parent Collection (No rights)</label>
+                <div class="col-10">
+                <div class="row">
                     <@s.hidden name="alternateParentId"  id="hdnAltParentId" cssClass=""
                     autocompleteParentElement="#altParentIdContainer"  />
-            <@s.textfield theme="simple" name="alternateParentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+            <@s.textfield  name="alternateParentCollectionName" cssClass="col-12 collectionAutoComplete"  autocomplete="off"
                 autocompleteIdElement="#hdnAltParentId" maxlength=255 autocompleteParentElement="#altParentIdContainer" autocompleteName="name"
                 placeholder="parent collection name" id="txtAltParentCollectionName"
                 />
+                </div>
                 </div>
             </div>
 
 
             <#if administrator>
-                <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
+                <@s.textarea rows="4" labelposition='top' label='Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
                 cssClass='resizable input-xxlarge' title="Please enter the description " />
             </#if>
 
@@ -114,7 +102,7 @@
                     labelposition='left' size='40' dynamicAttributes={
                         "data-rule-extension":"jpg,tiff,jpeg,png"
                     }/>
-                    <button name="clear" type="button" id="clearButton" class="button btn btn-mini">clear</button>
+                    <button name="clear" type="button" id="clearButton" class="button btn btn-sm">clear</button>
                 </div>
             </div>
         </#if>
@@ -129,26 +117,37 @@
                 <li>Private collections are only viewable to the users specified in the <a href="#accessRights">Access Rights</a> section.</li>
             </ul>
         </div>
-        <div class="glide" data-tiplabel="Browse and Display Options" data-tooltipcontent="#divBrowseOptionsTips">
+        <div class="glide" data-tooltip="#divBrowseOptionsTips">
             <h2>Browse and Display Options</h2>
 
         
-            <div class="control-group">
-                <label class="control-label">Hide this collection?</label>
-
-                <div class="controls">
-                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
-                                                                            value="true" <@commonr.checkedif resourceCollection.hidden true /> />Yes</label>
-                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
-                                                                             value="false" <@commonr.checkedif resourceCollection.hidden false /> />No</label>
+            <div class="row">
+                <label class="col-form-label col-2">Hide this collection?</label>
+                <div class="col-10">
+					<div class="form-row">
+						<div  class="form-check form-check-inline">    
+								<input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden" class="form-check-input" value="true" <@commonr.checkedif resourceCollection.hidden true />
+		                    /> <label for="rdoVisibleTrue" class="form-check-label  "> Yes</label>
+		                </div>
+						<div  class="form-check form-check-inline">    
+		                    <input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
+								class="form-check-input" value="false" <@commonr.checkedif resourceCollection.hidden false /> />
+		                    <label for="rdoVisibleFalse" class="radio form-check-label"> No</label>
+		                </div>
+	                </div>
                 </div>
             </div>
     
+    		<div class="row">
+    		<div class="col">
             <@s.select labelposition='top' label='When Browsing Sort Resource By' name='resourceCollection.sortBy'
             listValue='label' list='%{sortOptions}' title="Sort resource by" />
-
+			</div>
+    		<div class="col">
             <@s.select labelposition='top' label='Display Collection as' name='resourceCollection.orientation'
             list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
+	        </div>
+	        </div>
         </div>
 
         <div id="divCollectionAccessRightsTips" style="display:none">
@@ -181,27 +180,24 @@
         </ul>
         </div>
 
-        <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="#divResourcesOptionsTips">
-            <h2>Resources</h2>
+        <div class="glide" id="divResourcesSesction">
+            <h2>Resources <@helptext.info content="Share Resources with Users" contentDiv="#divResourcesOptionsTips" /></h2>
             <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <#assign showLimitToCollection = (actionName=='edit') && ((resourceCollection.managedResources![])?size > 0 || (resourceCollection.unmanagedResources![])?size > 0)>
         
     <#if (resourceCollection.id?? &&  resourceCollection.id != -1 && resourceCollection.size > 0)> 
         <ul class="nav nav-tabs" id="tabs">
-          <li class="active"><a data-toggle="tab" href="#existingResources" id="existingResourceTab">Resources in this collection</a></li>
-          <li><a data-toggle="tab" href="#addResources" id="addResourceTab">Add Resources to this collection</a></li>
+          <li class="nav-item"><a data-toggle="tab" class="nav-link active" href="#existingResources" id="existingResourceTab">Resources in this collection</a></li>
+          <li class="nav-item"><a data-toggle="tab" class="nav-link " href="#addResources" id="addResourceTab">Add Resources to this collection</a></li>
         </ul>
         
         <div class="tab-content">
-          <div id="existingResources" class="tab-pane fade in active">
+          <div id="existingResources" class="tab-pane  active  m-3 mt-4">
           
-                   <@s.textfield theme="tdar" name="_tdar.existing.query" id="existing_res_query" cssClass='span8'
-                            placeholder="Enter a full or partial title to filter results" />
+                   <@s.textfield name="_tdar.existing.query" id="existing_res_query"  placeholder="Enter a full or partial title to filter results" />
           
-                <#--The HTML table for resources. -->
-                <div class="row">
-                    <div class="span9">
-                    <table class="display table table-striped table-bordered tableFormat" id="existing_resources_datatable">
+                
+                    <table class="table table-striped" id="existing_resources_datatable">
                             <colgroup>
                                 <col style="width: 10%">
                                 <col style="width: 60%">
@@ -211,7 +207,8 @@
                                 </#if>
                                 <col style="">
                             </colgroup>
-                            <thead>
+                              <thead class="thead-dark">
+
                                 <tr>
                                     <th>ID</th>
                                     <th>Title</th>
@@ -235,16 +232,18 @@
                             </tbody>
                         </table>
                                     
-                    </div>
-                </div>
           </div>
-          <div id="addResources" class="tab-pane fade">
-                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="span9" useUnmanagedCollections=administrator>
+          <div id="addResources" class="tab-pane m-3 mt-4">
+          	<div class="row">
+          		<div class="col-12">
+                <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection span="col-12" useUnmanagedCollections=administrator>
                 </@edit.resourceDataTable>
+                </div>
+                </div>
           </div>
     </div>
     <#else>
-         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="span9" useUnmanagedCollections=administrator>
+         <@edit.resourceDataTable showDescription=false clickable=true limitToCollection=showLimitToCollection  span="col-12" useUnmanagedCollections=administrator>
          </@edit.resourceDataTable>
     </#if>
     
@@ -271,7 +270,7 @@
 			</p>
             </@edit.submit>
         </@s.form>
-
+        </div>
         <#noescape>
         <script type='text/javascript'>
         
@@ -287,12 +286,13 @@
 
     $(function () {
         'use strict';
-        TDAR.datatable.setupDashboardDataTable({
+        TDAR.datatable.setupCollectionDataTable({
             enableUnmanagedCollections : ${(administrator!false)?string},
             isAdministrator: ${(editor!false)?string},
             limitContext: ${((!editor)!true)?string},
             isSelectable: false,
             isClickable: true,
+            collectionClick: true,
             showDescription: false,
             selectResourcesFromCollectionid: $("#metadataForm_id").val()
         });
@@ -321,5 +321,22 @@
         </script>
         </#noescape>
 <div style="display:none"></div>
+</div>
+<div class="col-2">
+    <nav id='subnavbar'  class="bg-light" >
+    <div class=" col-12">
+        <p>Jump to Section:</p>
+    <ul class="list-unstyled">
+                    <li class="active"><a class="nav-link" href="#basicInformationSection">Basic</a></li>
+                    <li><a class="nav-link" href="#divResourcesSesction">Resources</a></li>
+                    </ul>
+                    <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
+                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+		</div>
+		</div>
+    </nav>
+
+</div>
+</div>
 </body>
 </#escape>

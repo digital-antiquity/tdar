@@ -16,7 +16,7 @@
     <h1>Invite to Edit: ${persistable.title}</span></h1>
 </div>
 <div class="row">
-    <div class="span12">
+    <div class="col-12">
         <@edit.shareSection formAction="/resource/share/save?id=${id?c}" />
     </div>
 </div>

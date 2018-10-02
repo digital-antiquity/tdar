@@ -24,8 +24,9 @@
 
 <#if bouncedMessages?hasContent && (bouncedMessages?size > 0)>
     <h4>Bounced Messages</h4>
-    <table class="tableFormat table">
-    <thead>
+    <table class="table table-sm table-striped"">
+      <thead class="thead-dark">
+
         <tr>
             <th>Status</th>
             <th>Message</th>
@@ -42,8 +43,9 @@
 
 
 <h4>All Messages</h4>
-<table class="tableFormat table">
-<thead>
+<table class="table table-sm table-striped"">
+  <thead class="thead-dark">
+
     <tr>
         <th>Status</th>
         <th>Message</th>
