@@ -115,37 +115,6 @@ describe("CommonSpec.js: edit page tests", function () {
         });
     });
 
-    describe("TDAR.common: session timeout tests", function() {
-        var sessionTimeout;
-        beforeEach(function(){
-            //intercept calls to setTimeout() and $.fn.dialog(). Confirm that our function called them later. 
-            spyOn(window, 'setTimeout');
-            spyOn($.fn, 'dialog');
-            setFixtures('<div id="timeoutDialog"></div>');
-            sessionTimeout = $(document).data("sessionTimeout");
-        });
-    
-        afterEach(function() {
-            $(document).data("sessionTimeout", sessionTimeout);
-        });
-    
-        it("shows a warning when you your session has nearly expired", function() {
-            $(document).data("sessionTimeout", 960);
-            $(document).data("currentTime", 600);
-            TDAR.common.sessionTimeoutWarning();
-            //verify that sessionTimeoutwarning() opened a dialog with the title 'session timeout warning'
-            expect($.fn.dialog.calls.count()).toBe(1);
-            expect($.fn.dialog.calls.argsFor(0)[0].title).toContain('Session Timeout Warning');
-        });
-    
-        it("notifies user when session has timed out", function () {
-            $(document).data("sessionTimeout", 90 * 60);
-            $(document).data("currentTime", 90 * 60);
-            TDAR.common.sessionTimeoutWarning();
-            expect($('#timeoutDialog').text()).toContain('Your Session has timed out');
-        });
-    
-    });
 
     describe("TDAR.common: tests that override Modernizer", function() {
         var placeholder;
