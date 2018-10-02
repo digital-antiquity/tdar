@@ -1,6 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 
-<form method="POST" action="/document/save">
+<form method="POST" action="/resource/save">
 <#assign uploadConfigId=''/>
 <#assign fileProxies=[] />
 <#include "vue-file-upload-template.html">
