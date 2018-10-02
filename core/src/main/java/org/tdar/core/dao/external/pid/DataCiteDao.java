@@ -279,7 +279,7 @@ public class DataCiteDao implements ExternalIDProvider {
         put.releaseConnection();
         if (isNotOkStatusCode(execute.getStatusLine().getStatusCode())) {
             logger.error("{}", execute.getStatusLine());
-            logger.error("{}", execute.getEntity());
+            logger.error("{}", IOUtils.toString(execute.getEntity().getContent()));
             throw new TdarRecoverableRuntimeException("dataCiteDao.registration_error", Arrays.asList( execute.getStatusLine().toString()));
         }
 
