@@ -30,7 +30,7 @@ public class HtmlValidator {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected String[] ignores = { "<header>", "<nav>", "<section>", "<article>", "<aside>", "<autocomplete>", "</autocomplete>", "<footer>", "</header>", "</nav>","<svg>","</svg>","<use>","</use>",
-            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute", "<template>", "</template>",
+            "</section>", "</article>", "</aside>", "</footer>", "unknown attribute", "trimming empty", "lacks \"type\" attribute", "<template>", "</template>","<part>","</part>",
             "replacing illegal character code", "lacks \"summary\" attribute", "unescaped & which",
             "Warning: '<' + '/' + letter not allowed here", /* javascript */
             "missing </a> before <div>",
@@ -55,6 +55,8 @@ public class HtmlValidator {
             "Warning: discarding unexpected </form",
             "Warning: input isn't allowed in <table> elements",
             "Error: assign is not recognized",
+            "Error: part is not recognized",
+            "Warning: discarding unexpected part",
             "Warning: discarding unexpected assign",
             "Warning: discarding unexpected </fieldset",
             "discarding unexpected </span>", "missing </span> before ",
