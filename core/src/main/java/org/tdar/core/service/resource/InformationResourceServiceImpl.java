@@ -80,12 +80,25 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
     @Override
     @Transactional
     public <T extends InformationResource> ErrorTransferObject importFileProxiesAndProcessThroughWorkflow(T resource, TdarUser user, Long ticketId,
-            List<FileProxy> fileProxiesToProcess) throws IOException {
-        if (CollectionUtils.isEmpty(fileProxiesToProcess)) {
+            List<FileProxy> proxies_) throws IOException {
+        if (CollectionUtils.isEmpty(proxies_)) {
             getLogger().debug("Nothing to process, returning.");
             return null;
         }
 
+        List<FileProxy> fileProxiesToProcess = new ArrayList<>(proxies_);
+        Iterator<FileProxy> iter = fileProxiesToProcess.iterator();
+        List<FileProxy> filesToProcess =new ArrayList<>();
+        while (iter.hasNext()) {
+            FileProxy proxy = iter.next();
+            if (proxy.getTdarFile() != null) {
+                filesToProcess.add(proxy);
+                iter.remove();
+            }
+        }
+        
+        // FIXME: need to link TdarFile and InformationResourceFile / FileVersion
+        
         // prepare the metadata
         FileProxyWrapper wrapper = new FileProxyWrapper(resource, analyzer, datasetDao, fileProxiesToProcess);
 
