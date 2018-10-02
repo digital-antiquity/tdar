@@ -585,7 +585,10 @@
                         "(:dateStart < f.dateCreated or :dateStart < f.dateCurated or :dateStart < f.dateInitialReviewed or :dateStart < f.dateReviewed or :dateStart < f.dateExternalReviewed)"
                         + ")  AND  (cast(:dateEnd as date) is null or "
                         + "(:dateEnd < f.dateCreated or :dateEnd < f.dateCurated or :dateEnd < f.dateInitialReviewed or :dateEnd < f.dateReviewed or :dateEnd < f.dateExternalReviewed)"
-                        + ") and (:dir is null or :dir = f.parent) ")
+                        + ") and (:dir is null or :dir = f.parent) "),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.QUERY_FILE_UPLOAD_SWEEP,
+                query = "select f from TdarFile f where (f.parentId in (select f_.parentId from TdarFile f_ where f_.dateCreated >= :date) or f.parentId is null) and (f.status='UPLOADED' or f.status='') ")
 })
 package org.tdar.core.dao;
 

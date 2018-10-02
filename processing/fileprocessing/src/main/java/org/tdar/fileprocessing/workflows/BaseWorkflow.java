@@ -15,7 +15,6 @@ import org.tdar.configuration.TdarConfiguration;
 import org.tdar.fileprocessing.tasks.LoggingTask;
 import org.tdar.fileprocessing.tasks.Task;
 import org.tdar.filestore.FileStoreFile;
-import org.tdar.filestore.FileStoreFileProxy;
 import org.tdar.filestore.FilestoreObjectType;
 
 public abstract class BaseWorkflow implements Workflow {
@@ -26,7 +25,7 @@ public abstract class BaseWorkflow implements Workflow {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private String extension;
     private Set<RequiredOptionalPairs> requiredOptionalPairs = new HashSet<>();
-    
+
     public String getExtension() {
         return extension;
     }
@@ -44,7 +43,6 @@ public abstract class BaseWorkflow implements Workflow {
         return true;
     }
 
-    
     @Override
     public boolean canProcess(String extension) {
         if (getAnyRequiredExtensions().contains(extension)) {
@@ -52,20 +50,22 @@ public abstract class BaseWorkflow implements Workflow {
         }
         return false;
     }
-    
+
     @Override
     public boolean run(WorkflowContext workflowContext) throws Exception {
         boolean successful = true;
         // this may be more complex than it needs to be, but it may be useful in debugging later; or organizationally.
         // by default tasks are processed in the order they are added within the phase that they're part of.
 
-        try {
-            FileStoreFile version = workflowContext.getOriginalFile();
-            version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
-        } catch (Exception e) {
-            workflowContext.addException(e);
-            workflowContext.setErrorFatal(true);
-            return false;
+        FileStoreFile version = workflowContext.getOriginalFile();
+        if (version.getTransientFile() == null) {
+            try {
+                version.setTransientFile(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
+            } catch (Exception e) {
+                workflowContext.addException(e);
+                workflowContext.setErrorFatal(true);
+                return false;
+            }
         }
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
@@ -112,7 +112,6 @@ public abstract class BaseWorkflow implements Workflow {
         taskList.add(task);
     }
 
-    
     protected void addRequired(Class<? extends Workflow> cls, List<String> asList) {
         for (String ext : asList) {
             RequiredOptionalPairs rop = new RequiredOptionalPairs(cls);
@@ -121,9 +120,6 @@ public abstract class BaseWorkflow implements Workflow {
         }
     }
 
-    
-    
-    
     public Logger getLogger() {
         return logger;
     }
@@ -139,7 +135,7 @@ public abstract class BaseWorkflow implements Workflow {
         }
         return extensions;
     }
- 
+
     public List<String> getAllValidExtensions() {
         List<String> extensions = new ArrayList<>();
         for (RequiredOptionalPairs pair : requiredOptionalPairs) {
@@ -148,5 +144,5 @@ public abstract class BaseWorkflow implements Workflow {
         }
         return extensions;
     }
- 
+
 }

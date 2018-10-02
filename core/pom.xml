@@ -47,6 +47,7 @@
             <artifactId>fileprocessing</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.github.tomakehurst/wiremock -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
@@ -85,11 +86,11 @@
             </exclusions>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>3.3.1.Final</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-ehcache</artifactId>
@@ -482,7 +483,7 @@
         <dependency>
             <groupId>edu.asu.lib</groupId>
             <artifactId>jaxb-document-api</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.8</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
