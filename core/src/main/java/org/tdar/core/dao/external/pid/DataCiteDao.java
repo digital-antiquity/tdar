@@ -165,6 +165,8 @@ public class DataCiteDao implements ExternalIDProvider {
         CloseableHttpResponse execute = httpclient.execute(request);
         logger.debug("done request");
         if (execute.getStatusLine().getStatusCode() != 200) {
+            logger.error("{}", execute.getStatusLine());
+            logger.error("{}", execute.getEntity());
             throw new TdarRecoverableRuntimeException("dataCiteDao.metadata_error",Arrays.asList(execute.getStatusLine().toString()));
         }
         String xml = IOUtils.toString(execute.getEntity().getContent());
@@ -207,6 +209,8 @@ public class DataCiteDao implements ExternalIDProvider {
         CloseableHttpResponse execute = httpclient.execute(delete);
         logger.debug("{}",execute.getStatusLine());
         if (execute.getStatusLine().getStatusCode() != 200) {
+            logger.error("{}", execute.getStatusLine());
+            logger.error("{}", execute.getEntity());
             throw new TdarRecoverableRuntimeException("dataCiteDao.deletion_error", Arrays.asList( execute.getStatusLine().toString()));
         }
         delete.releaseConnection();
@@ -243,6 +247,8 @@ public class DataCiteDao implements ExternalIDProvider {
             put.releaseConnection();
             if (execute.getStatusLine().getStatusCode() != 201) {
                 logger.debug(execute.toString());
+                logger.error("{}", execute.getStatusLine());
+                logger.error("{}", execute.getEntity());
                 throw new TdarRecoverableRuntimeException("dataCiteDao.registration_error" , Arrays.asList( execute.getStatusLine().toString()));
             }
             if (StringUtils.isBlank(r.getExternalId())) {
@@ -271,6 +277,8 @@ public class DataCiteDao implements ExternalIDProvider {
         CloseableHttpResponse execute = httpclient.execute(put);
         put.releaseConnection();
         if (isNotOkStatusCode(execute.getStatusLine().getStatusCode())) {
+            logger.error("{}", execute.getStatusLine());
+            logger.error("{}", execute.getEntity());
             throw new TdarRecoverableRuntimeException("dataCiteDao.registration_error", Arrays.asList( execute.getStatusLine().toString()));
         }
 
