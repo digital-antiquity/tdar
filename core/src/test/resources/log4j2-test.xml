@@ -34,6 +34,7 @@
             level="debug" />
         <Logger name="org.liquibase" level="error" />
         <Logger name="org.tdar" level="DEBUG" />
+        <!-- <Logger name="org.hibernate" level="trace" /> -->
         <Logger name="uk.org" level="debug" />
 
         <!--// log parameterized SQL statements -->

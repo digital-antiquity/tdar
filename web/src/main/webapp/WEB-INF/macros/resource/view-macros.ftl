@@ -676,7 +676,7 @@ View freemarker macros
             <#else>
                 <#if showNotice && (!resource.publicallyAccessible) && !resource.citationRecord >
                 <span class="label label-inverse">Restricted Access</span>
-                <em>This resource is restricted from general view; however, you have been granted access to it.</em>
+                <em>This resource is restricted from general view; <b>however, you have been granted access to it</b>.</em>
                     <#if embargoDate?has_content>  They will be released on ${embargoDate?date}</#if>
                 </#if>
             </#if>
