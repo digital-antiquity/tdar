@@ -271,7 +271,7 @@ public class DataCiteDao implements ExternalIDProvider {
          */
         HttpPut put = new HttpPut(url);
         String format = String.format("doi= %s\nurl= %s", constructDoi(r), UrlService.absoluteSecureUrl(r));
-        logger.debug("sending...", format);
+        logger.debug("sending... {}", format);
         HttpEntity entity_ = EntityBuilder.create().setText(format).
                 setContentType(ContentType.TEXT_PLAIN.withCharset(UTF_8)).build();
         put.setEntity(entity_);
