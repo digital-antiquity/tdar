@@ -10,7 +10,7 @@
     <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 
     <#macro subNavMenu>
-    <li class="hidden-tablet hidden-phone"><a href="#enter-data">Coding Rules</a></li>
+	    <li class=""><a class="nav-link" href="#enter-data">Coding Rules</a></li>
     </#macro>
 
 
@@ -56,6 +56,7 @@
                    href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create An Ontology</a>
             </div>
         </div>
+    </div>
     </div>
     </#macro>
 
