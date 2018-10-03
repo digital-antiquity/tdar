@@ -3860,6 +3860,11 @@ a.button, a.btn {
   background: #7a1501;
   border: none; }
 
+.tdar-btn-link {
+  margin: 0px;
+  padding: 0px;
+  color: #7a1501; }
+
 a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
   font-family: helvetica, arial, sans-serif;
   height: 35px;
