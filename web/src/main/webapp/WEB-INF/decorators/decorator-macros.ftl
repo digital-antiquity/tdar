@@ -42,7 +42,7 @@
             <div class = "container">
                 <div class="collapse navbar-collapse" id="tdarNavMenu">
                     <ul class="navbar-nav">
-                        <li class="nav-item mr-sm-3">
+<!--                        <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
                                 <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                  About <svg class="svgicon svg-icons_chevron nav-chevron"> <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                         </li>
-<!--                        <li class="nav-item mr-sm-3">
+                        <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
                                 <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects
                                  <svg class="svgicon svg-icons_chevron nav-chevron">
@@ -98,11 +98,18 @@
                                 </div>
                             </div>
                         </li>
--->                        <li class="nav-item mr-sm-3">
+-->
+                        <li class="nav-item mr-sm-3">
+                            <a href="https://www.tdar.org/about/" class="nav-link align-middle tdarNavItem">About</a>
+                        </li>
+                        <li class="nav-item mr-sm-3">
+                            <a href="https://www.tdar.org/using-tdar/" class="nav-link align-middle tdarNavItem">Using tDAR</a>
+                        </li>
+                        <li class="nav-item mr-sm-3">
                             <a href="/contribute" class="nav-link align-middle tdarNavItem">Upload</a>
                         </li>
                         <li class="nav-item mr-sm-3">
-                            <a href="/contribute" class="nav-link align-middle tdarNavItem">Help</a>
+                            <a href="https://www.tdar.org/news/" class="nav-link align-middle tdarNavItem">News</a>
                         </li>
 
                     </ul>
