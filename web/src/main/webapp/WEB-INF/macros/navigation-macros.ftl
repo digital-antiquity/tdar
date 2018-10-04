@@ -42,7 +42,7 @@ navigation freemarker macros
 
 
     <#macro _toolbar editor=false >
-    <#if ((editable?has_content == false) || editable == false) && (editor?has_content == false || editor == false)>
+    <#if sessionData.authenticated)!false == false || ((editable?has_content == false) || editable == false) && (editor?has_content == false || editor == false)>
         <#return>
     </#if>
         <#if (sessionData.authenticated)!false && (persistable?has_content && persistable.id > 0)>
