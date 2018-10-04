@@ -25,3 +25,4 @@ struts-local-settings.xml
 */*/logs/tdar*
 .tern-project
 datacite.properties
+logs
