@@ -1,5 +1,11 @@
 <#escape _untrusted as _untrusted?html>
 
+                <style>
+                .fileinput-button input {
+left: 1000px !important;
+}
+                </style>
+
 <form method="POST" action="/resource/save">
 <#assign uploadConfigId=''/>
 <#assign fileProxies=[] />

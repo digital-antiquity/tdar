@@ -8,12 +8,12 @@
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
       <a class="nav-link active" id="basictab" data-toggle="pill" href="#basic" role="tab" aria-col-10="basic" aria-selected="true">Home</a>
       <a class="nav-link" id="files-tab" data-toggle="pill" href="#files" role="tab" aria-col-10="files" aria-selected="false">Files</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#where" role="tab" aria-col-10="files" aria-selected="false">Where</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#when" role="tab" aria-col-10="files" aria-selected="false">When</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#notes" role="tab" aria-col-10="files" aria-selected="false">Notes</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-col-10="files" aria-selected="false">Site Info</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#sink" role="tab" aria-col-10="files" aria-selected="false">Kitchen Sink</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#tech" role="tab" aria-col-10="files" aria-selected="false">Tech</a>
+      <a class="nav-link" id="where-tab" data-toggle="pill" href="#where" role="tab" aria-col-10="files" aria-selected="false">Where</a>
+      <a class="nav-link" id="when-tab" data-toggle="pill" href="#when" role="tab" aria-col-10="files" aria-selected="false">When</a>
+      <a class="nav-link" id="notes-tab" data-toggle="pill" href="#notes" role="tab" aria-col-10="files" aria-selected="false">Notes</a>
+      <a class="nav-link" id="site-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-col-10="files" aria-selected="false">Site Info</a>
+      <a class="nav-link" id="sink-tab" data-toggle="pill" href="#sink" role="tab" aria-col-10="files" aria-selected="false">Kitchen Sink</a>
+      <a class="nav-link" id="tech-tab" data-toggle="pill" href="#tech" role="tab" aria-col-10="files" aria-selected="false">Tech</a>
               <button type="button" name="submitbutton" @click="submitForm">Submit</button>
       
     </div>
@@ -161,8 +161,10 @@
        </div>
       <div class="tab-pane" id="files" role="tabpanel" aria-labelledby="settings-tab">
                 <h3>Files</h3>
-                <div>
-                    <upload :config="fileUploadConfig" />
+                <div class="row">
+                    <div class="col-12">
+                        <upload :config="fileUploadConfig" />
+                    </div>
                 </div>
       </div>
       <div class="tab-pane fade show" id="where" role="tabpanel"
@@ -471,8 +473,7 @@
                         :disabled="inheritanceDisabled" />
                     </b>
                     <div
-                        v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit"
-                        class="row">
+                        v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit">
                         <creatorrolelookup
                             :resourcecreator="creator" :row="idx"
                             :roles="creditRoles"
