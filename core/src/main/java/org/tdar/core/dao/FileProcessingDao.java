@@ -92,16 +92,20 @@ public class FileProcessingDao extends HibernateBase<TdarFile> {
             query.setParameter("name", TdarDir.UNFILED);
             query.setParameter("account", null);
             query.setParameter("uploader", authenticatedUser);
-            return query.getSingleResult();
+            TdarDir result = query.getSingleResult();
+            if (result != null) {
+                return result;
+            }
         } catch (Exception e) {
-            TdarDir dir = new TdarDir();
-            dir.setDateCreated(new Date());
-            dir.setFilename(TdarDir.UNFILED);
-            dir.setInternalName(TdarDir.UNFILED);
-            dir.setUploader(authenticatedUser);
-            saveOrUpdate(dir);
-            return dir;
         }
+        TdarDir dir = new TdarDir();
+        dir.setDateCreated(new Date());
+        dir.setFilename(TdarDir.UNFILED);
+        dir.setInternalName(TdarDir.UNFILED);
+        dir.setUploader(authenticatedUser);
+        saveOrUpdate(dir);
+        return dir;
+        
     }
 
     public List<TdarDir> listDirectoriesFor(TdarDir parent, BillingAccount account, TdarUser authenticatedUser) {
