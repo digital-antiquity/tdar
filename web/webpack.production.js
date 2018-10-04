@@ -14,6 +14,7 @@ const common = require('./webpack.base.config.js');
 module.exports = merge(common, {
     mode: 'production',
     module: {rules:[
+/* Note this doesn't seem to work properly... produces  JS errors 
         {
                test: /\.js$/,
                exclude: /node_modules/,
@@ -24,6 +25,7 @@ module.exports = merge(common, {
                  }
                }
              },
+*/
                 {
                   test: /\.(sa|sc|c)ss$/,
                   use: [
@@ -31,11 +33,11 @@ module.exports = merge(common, {
                     'css-loader',
                     'sass-loader',
                   ],
-                }
+                } 
     ]},
     plugins: [
-    //    new BundleAnalyzerPlugin()
-    new MinifyPlugin()
+/* Note this doesn't seem to work properly... produces  JS errors  */
+//    new MinifyPlugin()
     ],
     optimization: {
         minimizer: [new OptimizeCSSAssetsPlugin({})
