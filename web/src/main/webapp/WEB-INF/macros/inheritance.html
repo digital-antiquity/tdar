@@ -6,14 +6,14 @@
 <div class="row">
   <div class="col-2">
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      <a class="nav-link active" id="basictab" data-toggle="pill" href="#basic" role="tab" aria-controls="basic" aria-selected="true">Home</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#files" role="tab" aria-controls="files" aria-selected="false">Files</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#where" role="tab" aria-controls="files" aria-selected="false">Where</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#when" role="tab" aria-controls="files" aria-selected="false">When</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#notes" role="tab" aria-controls="files" aria-selected="false">Notes</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-controls="files" aria-selected="false">Site Info</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#sink" role="tab" aria-controls="files" aria-selected="false">Kitchen Sink</a>
-      <a class="nav-link" id="files-tab" data-toggle="pill" href="#tech" role="tab" aria-controls="files" aria-selected="false">Tech</a>
+      <a class="nav-link active" id="basictab" data-toggle="pill" href="#basic" role="tab" aria-col-10="basic" aria-selected="true">Home</a>
+      <a class="nav-link" id="files-tab" data-toggle="pill" href="#files" role="tab" aria-col-10="files" aria-selected="false">Files</a>
+      <a class="nav-link" id="files-tab" data-toggle="pill" href="#where" role="tab" aria-col-10="files" aria-selected="false">Where</a>
+      <a class="nav-link" id="files-tab" data-toggle="pill" href="#when" role="tab" aria-col-10="files" aria-selected="false">When</a>
+      <a class="nav-link" id="files-tab" data-toggle="pill" href="#notes" role="tab" aria-col-10="files" aria-selected="false">Notes</a>
+      <a class="nav-link" id="files-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-col-10="files" aria-selected="false">Site Info</a>
+      <a class="nav-link" id="files-tab" data-toggle="pill" href="#sink" role="tab" aria-col-10="files" aria-selected="false">Kitchen Sink</a>
+      <a class="nav-link" id="files-tab" data-toggle="pill" href="#tech" role="tab" aria-col-10="files" aria-selected="false">Tech</a>
               <button type="button" name="submitbutton" @click="submitForm">Submit</button>
       
     </div>
@@ -21,26 +21,29 @@
   <div class="col-10">
     <div class="tab-content" id="v-pills-tabContent">
       <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="basictab">
-
+            <div class="">
                 <h3>Basic Information</h3>
 
-                <b>id</b> <input type="text" v-model="resource.id"
+                    <div class="row">
+                        <label class="col-form-label col-2">Id</label>
+                        <div class="col-10">
+                 <input type="text" v-model="resource.id" 
                     name="id" maxlength="512" />
-                <div data-tiplabel="Title"
-                    data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'."
-                    data-original-title="" title="">
+                    
+                </div>
+                </div>
 
-                    <div class="control-group ">
-                        <label class="control-label"
+                    <div class="row">
+                        <label class="col-form-label col-2"
                             for="resourceRegistrationTitle">Title
                             <span class="required">*</span>
                         </label>
-                        <div class="controls">
+                        <div class="col-10">
 
                             <input type="text" v-model="resource.title"
                                 name="document.title" maxlength="512"
                                 id="resourceRegistrationTitle"
-                                class="required descriptiveTitle input-xxlarge trim"
+                                class="required descriptiveTitle input-xxlarge trim col-12"
                                 title="A title is required for all Documents"
                                 required="true">
                         </div>
@@ -50,14 +53,12 @@
 
                 </div>
 
-                <div data-tiplabel="Year"
-                    data-tooltipcontent="Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created.">
 
-                    <div class="control-group ">
-                        <label class="control-label" for="dateCreated">Year
+                    <div class="row ">
+                        <label class="form-col-label col-2" for="dateCreated">Year
                             <span class="required">*</span>
                         </label>
-                        <div class="controls">
+                        <div class="col-10">
 
                             <input v-model="resource.date" type="text"
                                 name="document.date" maxlength="7"
@@ -67,19 +68,18 @@
                                 required="true">
                         </div>
                     </div>
-                </div>
                 <div id="t-abstract" class="clear"
                     data-tiplabel="Abstract / Description"
                     data-tooltipcontent="Short description of the             Document
 ."
                     data-original-title="" title="">
 
-                    <div class="control-group ">
-                        <label class="control-label"
+                    <div class="row ">
+                        <label class="form-col-label col-2"
                             for="resourceDescription">Abstract /
                             Description <span class="required">*</span>
                         </label>
-                        <div class="controls">
+                        <div class="col-10">
                             <textarea v-model="resource.description"
                                 name="document.description" cols="80"
                                 rows="4" id="resourceDescription"
@@ -91,13 +91,26 @@
                 </div>
                 <input type="hidden" name="startTime"
                     v-model="epochtime"
-                    id="metadataForm_epochTimeUpdated"> <b>account</b>
+                    id="metadataForm_epochTimeUpdated">
+                    
+                    
+                    <div class="row ">
+                        <label class="form-col-label col-2"
+                            for="resourceDescription">Account</label>
+                        <div class="col-10">
                 <select name="accountId" v-model="accountId">
                     <option v-for="account in accounts"
                         v-bind:value="account.id">{{
                         account.name }}</option>
-                </select> <br /> <b>submitter</b>
-                <div>
+                </select> 
+                
+                </div>
+                </div>
+                
+            <div class="row ">
+                <label class="form-col-label col-2"
+                    for="resourceDescription">Submitter</label>
+                <div class="col-10">
                     <autocomplete url="/api/lookup/person"
                         suffix="user=true" field="term"
                         resultsuffix="people" ref="submitter"
@@ -107,7 +120,9 @@
                         :initial_id="submitterId"
                         :initial_value="submitterName" />
                 </div>
+                </div>
 
+<br/>
                 <div>
                     <h5>Creators</h5>
                     <div
@@ -128,14 +143,20 @@
                 </div>
                 <div>
 
-                    <b>Project</b>
+                 <div class="row ">
+                        <label class="form-col-label col-2"
+                            for="resourceDescription">Project
+                        </label>
+                        <div class="col-10">
                     <autocomplete url="/api/lookup/resource"
                         suffix="resourceTypes=PROJECT" field="term"
                         resultsuffix="resources"
                         @autocompletevalueset="selectProject"
                         ref="input" fieldname="title"
                         allowCreate="false" idname="projectId" />
+                </div>
             </div>
+        </div>
 
        </div>
       <div class="tab-pane" id="files" role="tabpanel" aria-labelledby="settings-tab">
@@ -288,9 +309,9 @@
                 <div v-for="(date, idx) in resource.coverageDates"
                     class="row">
                     <div class="repeat-row">
-                        <div class="controls controls-row">
+                        <div class="col-10 col-10-row">
                             <div class="span6">
-                                <div class="controls-row">
+                                <div class="col-10-row">
                                     <select
                                         :name="'coverageDates' + idx + '].type'"
                                         v-model="date.type">
@@ -299,7 +320,7 @@
                                             :value="opt.value">{{opt.name}}</option>
                                     </select>
                                 </div>
-                                <div class="controls-row">
+                                <div class="col-10-row">
                                     Start: <input type="text"
                                         :name="'coverageDates' + idx + '].startDate'"
                                         v-bind="date.startDate">
@@ -319,8 +340,8 @@
                         </div>
                     </div>
 
-                    <div class="control-group add-another-control">
-                        <div class="controls">
+                    <div class="row add-another-control">
+                        <div class="col-10">
                             <button class="btn addanother"
                                 @click="resource.coverageDates.push(getBlankDate())"
                                 type="button">
@@ -346,9 +367,9 @@
                         v-for="(note, idx) in resource.resourceNotes"
                         class="row">
                         <div class="repeat-row">
-                            <div class="controls controls-row">
+                            <div class="col-10 col-10-row">
                                 <div class="span6">
-                                    <div class="controls-row">
+                                    <div class="col-10-row">
                                         <select
                                             :name="'resourceNotes[' + idx + '].type'"
                                             v-model="note.type">
@@ -357,7 +378,7 @@
                                                 :value="opt.value">{{opt.name}}</option>
                                         </select>
                                     </div>
-                                    <div class="controls-row">
+                                    <div class="col-10-row">
                                         <textarea
                                             :name="'resourceNotes[' + idx + '].note'"
                                             v-model="note.note"
@@ -379,8 +400,8 @@
                         </div>
 
                         <div
-                            class="control-group add-another-control">
-                            <div class="controls">
+                            class="row add-another-control">
+                            <div class="col-10">
                                 <button class="btn addanother"
                                     @click="resource.resourceNotes.push(getBlankNote())"
                                     type="button">
