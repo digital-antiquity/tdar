@@ -1189,18 +1189,18 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                         <li><a class="nav-link" href="#authorshipSection">Authors</a></li>
                     </#if>
                     <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT'  && (!supporting)>
-                        <li><a class="nav-link"href="#divFileUpload">Files</a></#if></li>
+                        <li><a class="nav-link" href="#divFileUpload">Files</a></#if></li>
                     <#nested />
                     <#if persistable.resourceType?has_content && persistable.resourceType != 'PROJECT' >
-                        <li><a class="nav-link"href="#organizeSection">Project</a></li>
+                        <li><a class="nav-link" href="#organizeSection">Project</a></li>
                     </#if>
                     <#if !supporting>
-                        <li><a class="nav-link"href="#spatialSection">Spatial Coverage</a></li>
-                        <li><a class="nav-link"href="#temporalSection">Temporal Coverage</a></li>
-                        <li><a class="nav-link"href="#investigationSection">What</a></li>
-                        <li><a class="nav-link"href="#siteSection">Site Information</a></li>
+                        <li><a class="nav-link" href="#spatialSection">Spatial Coverage</a></li>
+                        <li><a class="nav-link" href="#temporalSection">Temporal Coverage</a></li>
+                        <li><a class="nav-link" href="#investigationSection">What</a></li>
+                        <li><a class="nav-link" href="#siteSection">Site Information</a></li>
                     </#if>
-                    <li><a class="nav-link"href="#resourceNoteSectionGlide">Notes</a></li>
+                    <li><a class="nav-link" href="#resourceNoteSectionGlide">Notes</a></li>
                     <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
                     <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
 		</div>

@@ -1699,20 +1699,10 @@ TDAR.datatable = function() {
                 title : title
             });
 
-            $("#datatable-child").dialog({
-                resizable : false,
-                modal : true,
-                buttons : {
-                    "Return to original page" : function() {
-                        window.opener.focus();
-                        window.close();
-                    },
-                    "Stay on this page" : function() {
-                        window.opener.adhocTarget = null;
-                        $(this).dialog("close");
-                    }
-                }
-            });
+            $("#errorsection .row").append("<div id='dialogactions' class='alert alert-warning error-banner col-12 mt-4'><h2>Actions</h2><div>" +
+            		"<button onClick='$(\"#dialogactions\").hide()' class='button btn btn-primary'>Stay on Page</button> " +
+            		"<button onClick='window.opener.focus();window.close();' class='button btn btn-primary'>Close</button>" +
+            		"</div></div>");
         }
     }
 
@@ -1802,8 +1792,6 @@ TDAR.datatable = function() {
             if (viewRowSupported) {
                 if (f.displayName == 'Row Id') {
                     col.render = function(data, type, row, meta) {
-                        row.unshift("");
-                        // console.log(row);
                         var url = TDAR.uri(namespace + '/row/' + resourceId + '/' + dataTableId + '/' + row[1]);
                         return '<a href="' + url + '" title="View row as page..."><i class="fas fa-table"></i></a> ' + data +' </li>';
                     };

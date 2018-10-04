@@ -116,6 +116,36 @@
     </div>
     </#macro>
 
+	<#macro columninfo>
+    <div style="display:none" id="columnInfo">
+    
+    <span class="hidden" id="generalToolTip">
+         Each "column" subform shown on the table metadata page represents a column in the dataset, and provides fields to describe the data in that column. This is important documentation for researchers that wish to use the dataset, and where relevant the form links to coding sheets and ${siteAcronym}
+        ontologies to faciliate research.
+    </span>
+    <span class="hidden" id="columnTypeToolTip">
+        Select the option that best describes the data in this column. The form will display fields relevant to your selection. <br/>
+        <b>Note:</b> measurement and count cannot be selected for fields that have any non-numerical data.
+    </span>
+    <span class="hidden" id="displayNameToolTip">
+        If needed, edit the name displayed for the column to help users understand the column's contents.
+    </span>
+    <span class="hidden" id="categoryVariableToolTip"> 
+        Select the category and subcategory that best describes the data in this column.
+    </span>
+    <span class="hidden" id="descriptionToolTip">
+        Add any notes that would help a researcher understand the data in the column. 
+    </span>
+    <span class="hidden" id="codingSheetToolTip">
+        If the data in this column is coded and the right coding sheet has been added to ${siteAcronym}, please select a coding sheet that translates and explains the codes. 
+    </span>
+    <span class="hidden" id="ontologyToolTip">
+        If you would like to link this column to a ${siteAcronym} ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the ${siteAcronym}
+        data integration tool.
+    </span>
+            </div>
+
+	</#macro>
     <#macro basicHelp>
     <div style="display:none" id="basicHelp">
             <h5>Status</h5>

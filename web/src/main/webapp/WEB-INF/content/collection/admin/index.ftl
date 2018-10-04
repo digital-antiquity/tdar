@@ -84,14 +84,16 @@
 
 </div>
           <div class="col-3">
-          <h5>Search</h5>
+          <p><b>Search</b></p>
           <@s.form action="" method="GET">
               <input type="search" class="form-control" placeholder="Search... " name="term"  value="${term!''}" />
           </@s.form>
-          <h5>Sort</h5>
+                    <br>
+          <p><b>Sort</b></p>
           <@s.select value="sortField" name='sortField' cssClass="input-large" theme="simple"
                       emptyOption='false' listValue='label' list='%{sortOptions}'/>
-          <h5>Resource Type</h5>
+                                <br>
+          <p><b>Resource Type</b></p>
           <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=true liCssClass="" ulClass="unstyled" pictoralIcon=true />
           <#if (selectedResourceTypes?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
@@ -100,7 +102,7 @@
             </@s.url>">[remove this filter]</a></sup>
           </#if>
 
-          <h5>Status</h5>
+          <p><b>Status</b></p>
           <@search.facetBy facetlist=statusFacets label="" facetParam="selectedResourceStatuses" link=true liCssClass="" ulClass="unstyled"  />
           <#if (selectedResourceStatuses?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
@@ -109,7 +111,7 @@
             </@s.url>">[remove this filter]</a></sup>
           </#if>
 
-          <h5>File Access</h5>
+          <p><b>File Access</b></p>
           <@search.facetBy facetlist=fileAccessFacets label="" facetParam="fileAccessTypes" link=true liCssClass="" ulClass="unstyled"  />
           <#if (fileAccessTypes?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
@@ -118,8 +120,8 @@
             </@s.url>">[remove this filter]</a></sup>
           </#if>
           
-          
-          <h5>Admin Tools</h5>
+          <br>
+          <p><b>Admin Tools</b></p>
             <ul>
              <li> <a href="<@s.url value="/collection/admin/report/${collection.id?c}"/>">Admin Metadata Report</a></li>
              <li> <a href="<@s.url value="/resource/compare?collectionId=${collection.id?c}"/>">Compare Resources in Collection</a></li>

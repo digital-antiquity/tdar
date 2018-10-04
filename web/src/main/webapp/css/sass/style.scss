@@ -81,6 +81,12 @@ a.button, a.btn {
     border:none;
 }
 
+.tdar-btn-link {
+    margin: 0px;
+    padding: 0px;
+    color: $darkRed;
+}
+
 a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
         font-family: helvetica, arial, sans-serif;
         height: 35px;
@@ -848,3 +854,4 @@ table {
 p.san-serif {
     font-family: "soleil", sans-serif !important;
 }
+

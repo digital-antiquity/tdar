@@ -56,8 +56,10 @@
 
         <div id="divSelectedItemsSection">
             <div class="row">
-                        <label class="col-form-label col-2">Datasets & Ontologies</label>
-                        <div class="controls form-row">
+            	<div class="col-10">
+            		<div class="row">
+                        <label class="col-form-label col-2">Datasets &amp; Ontologies</label>
+                        <div class="col-10 controls form-row">
                             <div class="col-6">
                                 <table class="table table-condensed table-hover selected-datasets">
                                       <thead class="">
@@ -106,7 +108,9 @@
 
                             </div>
                         </div>
+                    </div>
             </div>
+        </div>
         </div>
         </form>
         <form>
