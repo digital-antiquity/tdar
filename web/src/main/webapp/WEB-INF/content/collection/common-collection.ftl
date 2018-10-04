@@ -21,17 +21,16 @@
 <#macro sidebar minimal=false>
 
     <!-- Don't show header if header doesn't exist -->
-    <div id="sidebar-right" parse="true">
-        <br/><br/>
+    <div id="sidebar-right" parse="true" class="row pl-3">
+    	<div class="col-12">
         <#if !minimal>
             <#if (logoAvailable && ((resourceCollection.properties.whitelabel)!false || ((resourceCollection.properties.customHeaderEnabled)!false) == false)) >
                 <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
             </#if>
             <#if results?has_content>
-            <hr class="light"/>
             <@commonr.renderWorldMap mode="mini" />
             <hr class="light"/>
-                <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
+                <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="list-unstyled" pictoralIcon=true />
     <i class="icon-document-red"></i>
             </#if>
 		<#else>
@@ -42,13 +41,13 @@
 		    </div>
         </#if>
         <#if collections?has_content && !collections.empty  && !(resourceCollection.properties.hideCollectionSidebar)!false> 
-            <h3>ChildCollections</h3>
+            <h3>Child Collections</h3>
             <@commonr.listCollections collections=collections showOnlyVisible=true />
         </#if>
 		<@list.displayWidget />
 
             <hr/>
-        <ul class="media-list">
+        <ul class="media-list ml-0 pl-0">
         <#if false >
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
@@ -62,7 +61,7 @@
         </ul>
             <hr/>
 
-            <ul class="unstyled-list">
+            <ul class="list-unstyled">
             <li>
                 <strong>Submitter</strong><br>
                     <a href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
@@ -73,44 +72,10 @@
     </ul>
 
     </div>
+    </div>
 </#macro>
 
 <#macro header>
-    <#if editable>
-    <#local path="${resourceCollection.urlNamespace}"/>
-        <@nav.collectionToolbar "collection" "view">
-            <@nav.makeLink
-            namespace="${path}"
-            action="add?parentId=${id?c}"
-            label="add child collection"
-            name="child_collection"
-            current=current
-            includeResourceId=false
-            disabled=disabled
-            extraClass="hidden-tablet hidden-phone"/>
-
-            <@nav.makeLink
-                namespace="${path}"
-                action="${id?c}/rights"
-                label="permissions"
-                name="rights"
-                includeResourceId=false
-                current=current
-                disabled=disabled
-            extraClass=""/>
-
-        <#if editor && ((resourceCollection.managedResources![])?size > 0) >
-            <@nav.makeLink
-            namespace="${path}/admin/batch"
-            action="${id?c}"
-            label="batch title (beta)"
-            name="batch"
-            current=current
-            disabled=disabled
-            extraClass="hidden-tablet hidden-phone"/>
-        </#if>
-        </@nav.collectionToolbar>
-    </#if>
 
     <div id="divSearchContext" parse="true">
         <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
@@ -118,7 +83,7 @@
     </div>
     
 
-    <@view.pageStatusCallout />
+
 
 </#macro>
 
@@ -143,11 +108,8 @@
 </#macro>
 
 <#macro descriptionSection>
-    <#if editor>
-    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/collection/admin/${id?c}"/>">ADMIN</a></div>
-    </#if>
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.formattedDescription?? || collections??>
-        <div>
+        <div class="col-12">
             <#if resourceCollection.parent??><p><b>Part of:</b>
                     <@formatCollectionLink resourceCollection.parent />
                 <#if resourceCollection.alternateParent?has_content>
@@ -175,76 +137,101 @@
 
 <#macro keywordSection>
             <#if keywordSectionVisible>
-            <!-- <h5>Common Keywords found within this Collection</h5> -->
-            <div class="row">
-                <div class="span4">
+            <!-- <div class="col-12">
+            <div class="row"> -->
+                <div class="col">
                 <@_keywordSection "Site Name Keywords" facetWrapper.facetResults['activeSiteNameKeywords']![] "query" />
                 <@_keywordSection "Site Type Keywords" facetWrapper.facetResults['activeSiteTypeKeywords']![] "query" />
                 <@_keywordSection "Other Keywords" facetWrapper.facetResults['activeOtherKeywords']![] "query" />
                 <@_keywordSection "Culture Keywords" facetWrapper.facetResults['activeCultureKeywords']![] "query" />
                 </div>
 
-                <div class="span4">
+                <div class="col">
                 <@_keywordSection "Investigation Types" facetWrapper.facetResults['activeInvestigationTypes']![] "query" />
                 <@_keywordSection "Material Types" facetWrapper.facetResults['activeMaterialKeywords']![] "query" />
                 <@_keywordSection "Temporal Keywords" facetWrapper.facetResults['activeTemporalKeywords']![] "query" />
                 <@_keywordSection "Geographic Keywords" facetWrapper.facetResults['activeGeographicKeywords']![] "query" />
                 </div>
-            </div>
+<!--            </div>
+            </div> -->
             <hr/>
             </#if>
 </#macro>
+<#macro toolbar>
+<div class="col-12">
+    <#if editable>
+    <#local path="${resourceCollection.urlNamespace}"/>
+        <@nav.collectionToolbar "collection" "view">
+            <@nav.makeLink2
+            namespace="${path}"
+            link="add?parentId=${id?c}"
+            label="add child collection"
+            disabled=disabled
+            icon="add" />
+
+            <@nav.makeLink2
+                namespace="${path}"
+                link="${id?c}/rights"
+                label="permissions"
+                icon="permissions"
+                disabled=disabled/>
+
+        <#if editor && ((resourceCollection.managedResources![])?size > 0) >
+            <@nav.makeLink2
+            namespace="${path}"
+            link="admin/batch/${id?c}"
+            label="batch title (beta)"
+            icon="batch"
+            disabled=disabled />
+        </#if>
+        </@nav.collectionToolbar>
+    </#if>
+</div>
+</#macro>
 
 <#macro resultsSection header="Inside This Collection">
-
-        <#if results?has_content>
-        <div id="divResultsSortControl">
-            <div class="row">
-                <div class="span12">
+<div class="col-12">
+		<div class="">
+	        <#if results?has_content>
+    		    <div id="divResultsSortControl" class="">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
-                </div>
-            </div>
-        </div>
+		        </div>
         
-        
-        
-        <div class="collection-facets">
+        <div class="collection-facets col-12">
             <#assign mapSize="450" />
-<#-- for when map orientiation is 'left' or 'right'  
-            <#if (totalRecords > 10)>
-                <#assign mapSize="700" />
-            </#if>
-            <#if (totalRecords > 18)>
-                <#assign mapSize="1000" />
-            </#if>
--->
-			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" />
+			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" 'horizontal' />
         </div>
 
         <div class="tdarresults">
             <#assign itemsPerRow = 5 />
-        <#if ((rightSidebar!false) || (leftSidebar!false)) >
-            <#assign itemsPerRow = 4 />
-        </#if>
+            <#if ((rightSidebar!false) || (leftSidebar!false)) >
+                <#assign itemsPerRow = 4 />
+            </#if>
 
 
 
             <#nested />
-            <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
+            <@list.listResources resourcelist=results sortfield=sortField titleTag="b"  headerTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
                     orientation=orientation    mapPosition="top" mapHeight=mapSize />
-        </div>
+            </div>
             <@search.basicPagination "Records" />
         <#else>
+        <div class="col-12">
+        <hr>
         This collection is either empty or you do not currently have permissions to view the contents.
+        <hr>
+        </div> 
         </#if>
+        </div> 
+        </div> 
 </#macro>
 
 <#macro adminSection type="">
         <#if editable>
+        <div class="col-12">
         <h3>Administrative Information</h3>
-
         <div class="row">
-            <div class="span4">
+            <div class="col">
                 <#local _type="Collection"/>
                 <#if resourceCollection.properties.whitelabel>
                    <#local _type="Whitelabel"/>
@@ -252,33 +239,33 @@
 
                 <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)', _type)}" />
             </div>
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />
             </div>
         </div>
         <div class="row">
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Sort By" val=resourceCollection.sortBy.label />
             </div>
-            <div class="span4">
-<#--                <#assign viewed>${viewCount} times</#assign>
-                <@view.kvp key="Viewed" val=viewed /> -->
+            <div class="col">
             </div>
         </div>
         <div class="row">
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Created By" nested=true><a
                         href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
                     on ${resourceCollection.dateCreated?datetime}</@view.kvp>
             </div>
-            <div class="span4">
+            <div class="col">
                 <@view.kvp key="Updated By" nested=true><a
                         href="<@s.url value="${resourceCollection.updater.detailUrl}"/>">${resourceCollection.updater.properName}</a>
                     on ${resourceCollection.dateUpdated?datetime}</@view.kvp>
             </div>
         </div>
-
+        <div class="row">
             <@_authorizedUsers resourceCollection />
+        </div>
+        </div>
         </#if>
 
 </#macro>
@@ -294,7 +281,9 @@
 
 
     <#macro _authorizedUsers collection >
+        <div class="col-12">
         <@rights.resourceCollectionsRights collections=collection.hierarchicalResourceCollections />
+        </div>
     </#macro>
 
 </#escape>

@@ -1,145 +1,309 @@
 <#macro layout_header>
 
-<h1 id="top"><img src="${staticHost}/images/r4/bg-logo.png" title="tDAR - the Digital Archaeological Record" usemap="#tdarmap" alt="tDAR Logo">
-    <map name="tdarmap">
-        <area shape="rect" coords="0,0,187,65" href="/" alt="tDAR" tabindex="-1">
-        <area shape="rect" coords="0,65,187,77" href="http://www.digitalantiquity.org/" alt="digital antiquity" tabindex="-1">
-    </map>
-</h1>
-<#if (authenticatedUser??) >
+    <div id="mdScreenNav">
+        <nav class="navbar navbar-expand-md navbar-light">
+            <div class = "container">
+                <a href="/" class="navbar-brand">
+                    <img src="${staticHost}/images/r4/bg-logo-transparent.png" title="tDAR - the Digital Archaeological Record" alt="tDAR - the Digital Archaeological Record"  usemap="#tdarmap">
+                </a>
 
-<p id="welcome-menu" class="welcome  screen ">
-    <@s.text name="menu.welcome_back"/> <a href="">${authenticatedUser.properName}
-    <i class="caret drop-down"></i>
-</a>
-</p>
+                <div class="d-flex flex-column d-md-none">
+                    <div class = "ml-auto">
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                    </div>
+                    <@searchform false />
+                </div>
 
-<div class="welcome-drop  screen ">
 
-    <p>${authenticatedUser.properName}</p>
+                <div class="collapse navbar-collapse d-none d-md-flex align-items-end" id="tdarNavMenu">
+                    <div class="d-flex flex-column ml-auto">
+                        <div class="mr-0 d-flex align-items-top justify-content-end">
+                            <#if (authenticatedUser??) >
+                            <p id="welcome-menu" class="welcome  screen san-serif ">
+                                <@s.text name="menu.welcome_back"/>
+                                ${authenticatedUser.properName}
+                            </p>
+                            <#else>
+                            <p class ="logIn san-serif"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
+                        </#if>
+                    </div>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <@searchform true />
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
-    <ul>
-        <li><a href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a></li>
-        <li><a href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a></li>
-        <li><a href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a></li>
-        <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
-        <li><a href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a></li>
-    </ul>
+        <nav class="navbar navbar-expand-md navbar-light tdarNav py-0">
+            <div class = "container">
+                <div class="collapse navbar-collapse" id="tdarNavMenu">
+                    <ul class="navbar-nav">
+<!--                        <li class="nav-item mr-sm-3">
+                            <div class="dropdown tdarDropdown">
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                 About <svg class="svgicon svg-icons_chevron nav-chevron"> <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
 
-    <ul>
-        <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
-        <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
-        <li>
-             <form class="form-complete-inline seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout" >
-                    <button type="submit" class="btn btn-link tdar-btn-link serif" name="logout" value="Logout">Logout</button>
-             </form>
-         </li>
-    </ul>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <h5 class = "ml-4">About</h5>
+                                    <div class="d-flex flex-row">
+                                        <div class="d-flex flex-column">
+                                            <a class="dropdown-item" href="#">Our Team</a>
+                                            <a class="dropdown-item" href="#">Organization</a>
+                                            <a class="dropdown-item" href="#">Publications</a>
+                                            <a class="dropdown-item" href="#">History</a>
+                                            <a class="dropdown-item" href="#">Contact Us</a>
+                                            <a class="dropdown-item" href="#">Current Versions</a>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <a class="dropdown-item" href="#"><strong>Search</strong></a>
+                                            <a class="dropdown-item" href="#"><strong>Explore</strong></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item mr-sm-3">
+                            <div class="dropdown tdarDropdown">
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Find Data
+                                	 <svg class="svgicon svg-icons_chevron nav-chevron">
+                                    <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <h5 class = "ml-4">Find Data</h5>
+                                    <div class="d-flex flex-row">
+                                        <div class="d-flex flex-column">
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item mr-sm-3">
+                            <div class="dropdown tdarDropdown">
+                                <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects
+                                 <svg class="svgicon svg-icons_chevron nav-chevron">
+                                    <use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <h5 class = "ml-4">Projects</h5>
+                                    <div class="d-flex flex-row">
+                                        <div class="d-flex flex-column">
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+-->
+                        <li class="nav-item mr-sm-3">
+                            <a href="https://www.tdar.org/about/" class="nav-link align-middle tdarNavItem">About</a>
+                        </li>
+                        <li class="nav-item mr-sm-3">
+                            <a href="https://www.tdar.org/using-tdar/" class="nav-link align-middle tdarNavItem">Using tDAR</a>
+                        </li>
+                        <li class="nav-item mr-sm-3">
+                            <a href="/contribute" class="nav-link align-middle tdarNavItem">Upload</a>
+                        </li>
+                        <li class="nav-item mr-sm-3">
+                            <a href="https://www.tdar.org/news/" class="nav-link align-middle tdarNavItem">News</a>
+                        </li>
 
-    <#if administrator>
-        <ul>
-            <li><@s.text name="menu.admin_header"/></li>
-            <li><a href="<@s.url value='/admin'/>"><@s.text name="menu.admin_main"/></a></li>
-            <li><a href="<@s.url value='/admin/system/activity'/>"><@s.text name="menu.admin_activity"/></a></li>
-            <li><a href="<@s.url value='/admin/searchindex/build'/>"><@s.text name="menu.admin_reindex"/></a></li>
-        </ul>
-    </#if>
+                    </ul>
+                    <div class="dropdown ml-auto tdarDropdown" id = "myAccountNav">
+                        <div class="d-none d-md-block">
+                            <button class="btn btn-link align-middle tdarNavItem" type="button" id="myAccountMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                <@dec.myAccountMenu />
+                            </div>
+                        </div>
+                        <div class="d-md-none">
+                            <button class="btn btn-link align-middle tdarNavItem" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <svg class="svgicon svg-icons_chevron nav-chevron"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_chevron"></use></svg></button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <@dec.myAccountMenu />
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </nav>
+    </div>
 
-</div>
-</#if>
-
-<nav>
-    <ul class="hidden-phone-portrait">
-<!-- <li><a href="https://www.tdar.org/saa/">SAA</a></li> -->
-<li><a href="https://www.tdar.org/news/">News</a></li>
-<li><a href="https://www.tdar.org/about">About</a></li>
-<li><a href="https://www.tdar.org/using-tdar">Using ${siteAcronym}</a></li>
-
-<!--        <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li> -->
-        <#if ((authenticatedUser.contributor)!true)>
-            <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
-        <li>
-            <#if navSearchBoxVisible>
-                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
-                <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
-                    <input type="text" name="query" class="searchbox" accesskey="s" placeholder="Search ${siteAcronym} &hellip; "  value="${(query!'')?html}" maxlength="512">
-                    <input type="hidden" name="_tdar.searchType" value="simple">
-                ${(page.properties["div.divSearchContext"])!""}
-                </form>
-            </#if>
-        </li>
-    </ul>
-
-</nav>
 
 
 </#macro>
 
-<#macro homepageHeader>
-    <div class="row">
-        <div class="hero">
-<h2>What can you dig up?</h2>
-
-<p><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive <br/>for archaeological information.</p>
-
-<form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
-    <input type="text" name="query" placeholder="Find archaeological data..." accesskey="s" class="searchbox input-xxlarge">
-    <a href="<@s.url value="/search"/>">advanced</a>
-    <input type="hidden" name="_tdar.searchType" value="simple">
-</form>
-
-        <@auth.loginMenu true/>
+<#macro myAccountMenu>
+    <#if (authenticatedUser??) >
+    <h5 class = "ml-4">${authenticatedUser.properName}</h5>
+    <div class="d-flex flex-row">
+        <div class="d-flex flex-column">
+            <a class="dropdown-item" href="<@s.url value="/contribute"/>"><@s.text name="menu.create_a_resource"/></a>
+            <a class="dropdown-item" href="<@s.url value="/project/add"/>"><@s.text name="menu.create_a_project"/></a>
+            <a class="dropdown-item" href="<@s.url value="/collection/add"/>"><@s.text name="menu.create_a_collection"/></a>
+            <a class="dropdown-item" href="<@s.url value="/dashboard#bookmarks"/>"><@s.text name="menu.bookmarks"/></a>
+            <br>
+            <a class="dropdown-item" href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a>
+            <a class="dropdown-item" href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a>
+            <form class="seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout">
+                <button type="submit" class="dropdown-item btn-link" name="logout" id="logout-button" value="Logout">Sign Out</button>
+            </form>
         </div>
-        <ul class="inline-menu hidden-desktop"><@auth.loginMenu false/></ul>
+        <div class="d-flex flex-column">
+            <a class="dropdown-item" href="/dashboard">Dashboard</a>
+            <a class="dropdown-item" href="/browse/explore">Explore</a>
+            <a class="dropdown-item" href="/search">Search</a>
+            <a class="dropdown-item" href="/workspace/list">Integrate</a>
+            <#if editor><a class="dropdown-item" href="/admin/internal">Admin</a></#if>
+        </div>
     </div>
+    <#else>
+        <a class="dropdown-item" href="<@s.url value="/account/new" />" rel="nofollow">Sign Up</a>
+        <a class="dropdown-item" href="${auth.loginLink()}" rel="nofollow">Log In</a>
+    </#if>
+</#macro>
 
+<#macro searchform topRight=false>
+                    <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
+                        <div class="input-group">
+                            <input type="hidden" name="_tdar.searchType" value="simple">
+                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..."name="query">
+                            <span class="input-group-append">
+                                        <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
+                            </span>
+                            <#if topRight?has_content && topRight >
+                ${(page.properties["div.divSearchContext"])!""}
+                </#if>
+                        </div>
+                    </form>
+</#macro>
 
-<div class="row">
-    <div class="span3 bucket">
-        <img src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
+<#macro searchHero>
+        <div class="whatcanyoudig-image"><!-- had container -->
+            <h2 >What can you dig up?</h2>
+            <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
+            <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
+                <div class="input-group col-md-6 noleftmargin right-bottom-dropshadow">
+                    <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
+                    <span class="input-group-append" name="_tdar.searchType" value="simple">
+                        <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
+                    </span>
+                </div>
+                    <a class="ml-3 align-self-center" href="<@s.url value="/search"/>">advanced</a>
+                    <input type="hidden" name="_tdar.searchType" value="simple">
+            </form>
+        </div>
+</#macro>
 
-        <h3><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h3>
-
-        <p style="min-height:4em">Broadening the access to archaeological data through simple search and browse functionality.</p>
-
-        <p>
-            <a href="http://www.tdar.org/why-tdar/data-access/" class="button">Learn More</a>
-        </p>
-    </div>
-    <div class="span3 bucket">
-        <img src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
-
-        <h3><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h3>
-
-        <p style="min-height:4em">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
-
-        <p>
-            <a href="http://www.tdar.org/why-tdar/preservation/" class="button">Learn More</a>
-        </p>
-    </div>
-    <div class="span3 bucket">
-        <img src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
-
-        <h3><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h3>
-
-        <p style="min-height:4em">Contribute documents, data sets , images, and other critical archaeological materials.</p>
-
-        <p>
-            <a href="http://www.tdar.org/why-tdar/contribute/" class="button">Learn More</a>
-        </p>
-    </div>
-    <div class="span3 bucket">
-        <img src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
-
-        <h3><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h3>
-
-        <p style="min-height:4em">Researchers like you. Uncover knowledge of the past, and preserve and protect archaeological resources.</p>
-
-        <p>
-            <a href="http://www.tdar.org/using-tdar/" class="button">Learn More</a>
-        </p>
+<#macro imageheader>
+<div class="image login-image image1">
+    <div class='hero-note rounded-left'>
+        <h2><a href="/cart/add">Archive a file <br/>for as little as <span class="red">$5</span></a></h2>
     </div>
 </div>
+
+</#macro>
+
+<#macro imageheader2>
+<div class="image login-image image11">
+    <div class='hero-note rounded-left'>
+        <h2>Learn about our <br/> digital curation services</h2>
+    </div>
+</div>
+
+</#macro>
+
+<#macro homepageHeader>
+
+<section id="hero-wide">
+  <div class = "">  
+    <div class="px-0 pb-0 pt-0">
+    <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+  <ol class="carousel-indicators">
+    <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#homepageCarousel" data-slide-to="1"></li>
+    <!-- <li data-target="#homepageCarousel" data-slide-to="2"></li> -->
+  </ol>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+		<@searchHero /> 
+    </div>
+    <div class="carousel-item">
+		<@imageheader />
+    </div>
+<!--    <div class="carousel-item">
+		<@imageheader2 />
+    </div> -->
+  </div>
+<!-- 
+  <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+-->
+</div>
+    
+    
+    </div>
+  </div>
+</section>
+
+
+<section id="learnMore">
+  <div class="container px-5 py-3">
+      <div class="row">
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+              <div class="card text-center h-100 border border-0">
+                  <div class="card-body">
+                      <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
+                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h5>
+                      <p class="card-text">Broadening the access to archaeological data through simple search and browse functionality.</p>
+                      <a href="http://www.tdar.org/why-tdar/data-access/" class="btn tdarButton">Learn More</a>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+              <div class="card text-center h-100 border border-0">
+                  <div class="card-body">
+                      <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
+                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h5>
+                      <p class="card-text">Contribute documents, datasets, images, and other critical archaeological materials.</p>
+                      <a href="/contribute" class="btn tdarButton">Learn More</a>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+              <div class="card text-center h-100 border border-0">
+                  <div class="card-body">
+                      <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-pres.png" alt="Preservation" title="Preservation" />
+                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/preservation/">Preservation</a></h5>
+                      <p class="card-text">Dedicated to ensuring long-term preservation of digital archaeological data.</p>
+                      <a href="http://www.tdar.org/why-tdar/preservation/" class="btn tdarButton">Learn More</a>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-sm-12 mb-3">
+              <div class="card text-center h-100 border border-0">
+                  <div class="card-body">
+                      <img class="img-fluid mb-3" src="${staticHost}/images/r4/icn-uses.png" alt="Use" title="Use" />
+                      <h5 class="card-title"><a href="http://www.tdar.org/using-tdar/">Who Uses tDAR</a></h5>
+                      <p class="card-text">Researchers like you. Uncover knowledge of the past, and preserve and protect resources.</p>
+                      <a href="http://www.tdar.org/using-tdar/" class="btn tdarButton">Learn More</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+
+
 </#macro>
 
 <#macro subnav>
@@ -147,7 +311,7 @@
 <div class="subnav-section">
     <div class="container">
         <div class="row">
-            <div class="span12 subnav">
+            <div class="col-12 subnav">
                 <ul class="subnav-lft">
                     <li><a href="<@s.url value="/search"/>"><@s.text name="menu.search"/></a></li>
                     <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>

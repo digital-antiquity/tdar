@@ -219,6 +219,31 @@ TDAR.common = function (TDAR, fileupload) {
         //fun fact: because we have a form field named "ID",  form.id actually refers to this DOM element,  not the ID attribute of the form.
         var formid = $form.attr("id");
         
+//        $('[data-toggle="popover"]').popover();
+        $("[data-popover-content]").popover({
+            html : true,
+            content: function() {
+                var content = $(this).attr("data-popover-content");
+                if (content && content.startsWith("#")) {
+                    return $(content).html();
+                } else {
+                    return content;
+                }
+            },
+            title: function() {
+                var title = $(this).attr("data-popover-content");
+                return $(title).children(".popover-heading").html();
+            }
+        });
+        $("[data-tooltip]").each(function(i,el) {
+            var tip = $(el).data("tooltip");
+            if (tip) {
+            $(el).tooltip({
+            placement:"top",
+            title: tip 
+            });
+            }
+        });
 
         //information needed re: existing file uploads - needed by TDAR.upload library
 
@@ -262,14 +287,20 @@ TDAR.common = function (TDAR, fileupload) {
             var $this = $(this);
             var $top = $this.closest(".repeat-row");
             if ($top == undefined) {
-                $top = $this.closest(".control-group");
+                $top = $this.closest(".control-row");
             }
+            console.log($top);
             var $toggle = $(".creator-toggle-button input:hidden", $this);
+            console.log($toggle);
             if ($(event.target).hasClass("personButton")) {
                 $(".creatorPerson", $top).removeClass("hidden");
                 $(".creatorInstitution", $top).removeClass("hidden").addClass("hidden");
+                $(".personButton",$top).addClass("btn-dark").addClass("active").removeClass("btn-secondary");
+                $(".institutionButton",$top).removeClass("btn-dark").removeClass("active").addClass("btn-secondary");
                 $toggle.val("PERSON");
             } else {
+                $(".institutionButton",$top).addClass("btn-dark").addClass("active").removeClass("btn-secondary");
+                $(".personButton",$top).removeClass("btn-dark").removeClass("active").addClass("btn-secondary");
                 $(".creatorPerson", $top).removeClass("hidden").addClass("hidden");
                 $(".creatorInstitution", $top).removeClass("hidden");
                 $toggle.val("INSTITUTION");
@@ -321,7 +352,7 @@ TDAR.common = function (TDAR, fileupload) {
             });
         });
 
-        TDAR.contexthelp.initializeTooltipContent(form);
+        TDAR.contexthelp.initializeTooltipContent(form,true);
         _applyWatermarks(form);
 
         // prevent "enter" from submitting
@@ -397,7 +428,7 @@ TDAR.common = function (TDAR, fileupload) {
             $('.view-project', $row).remove();
             if ($select.val().length > 0 && $select.val() !== "-1") {
                 var href = TDAR.uri('project/' + $select.val());
-                var $button = '<a class="view-project btn btn-small" target="_project" href="' + href + '">View project in new window</a>';
+                var $button = '<a class="view-project btn btn-sm" target="_project" href="' + href + '">View project in new window</a>';
                 $row.append($button);
             }
         }).change();
@@ -449,7 +480,8 @@ TDAR.common = function (TDAR, fileupload) {
         var $divSearchContext = $("#divSearchContext");
 
         if ($divSearchContext.length === 1) {
-            $(".searchbox").focus(function () {
+            $(".searchbox:visible").focus(function () {
+                console.log("adding active");
                 $divSearchContext.addClass("active");
             }).blur(function () {
                 //$divSearchContext.removeClass("active");
@@ -650,19 +682,10 @@ TDAR.common = function (TDAR, fileupload) {
                 console.log("remaining time in session:" + remainingTime);
             }
             if (remainingTime == 300) {
-                var dialog = $('<div id=timeoutDialog></div>').html("<B>Warning!</B><br/>Your session will timeout in 5 minutes, please save the document you're currently working on").dialog({
-                            modal: true,
-                            title: "Session Timeout Warning",
-                            closeText: "Ok",
-                            buttons: {
-                                "Ok": function () {
-                                    $(this).dialog("close");
-                                }
-                            }
-                        });
+                alert("<B>Warning!</B><br/>Your session will timeout in 5 minutes, please save the document you're currently working on");
             }
-            if ($("#timeoutDialog").length != 0 && remainingTime <= 0) {
-                $("#timeoutDialog").html("<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
+            if (remainingTime <= 0) {
+                alert("<B>WARNING!</B><BR>Your Session has timed out, any pending changes will not be saved");
             } else {
                 setTimeout(TDAR.common.sessionTimeoutWarning, 60000);
             }

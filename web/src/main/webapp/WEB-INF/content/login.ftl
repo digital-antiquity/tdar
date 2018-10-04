@@ -12,32 +12,42 @@ vim:sts=2:sw=2:filetype=jsp
 </head>
 <body>
 <#if sessionData.returnUrl?? && sessionData.returnUrl.contains("/filestore/") >
-<div class="alert alert-warning">
+<div class="alert alert-warning pt-4">
     <button type="button" class="close" data-dismiss="alert">×</button>
     <strong>Note:</strong>You must be logged-in to download materials. Please log in below, or signup for a free user account.
 </div>
 </#if>
+<#assign number = .now?long % 12 + 1/>
+</div>
+</section>
+<div class="row login-image image${number}">
+<div class="col-7"></div>
+<div class="col-4 ml-0 pl-0 pb-5 pt-5">
+<div class="card ">
+<div class="card-body">
 <h1>Log in to ${siteAcronym}</h1>
-
-<div class="well">
 <@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal">
 	<@auth.loginWarning />
-    <@auth.login>    
+    <@auth.login>
     <@s.hidden name="url" />
     <div class="form-actions">
-        <button type="submit" class="button btn btn-primary input-small submitButton" name="_tdar.Login" id="btnLogin">Login</button>
-        <div class="pull-right">
-            <div class="btn-group">
-                <a class="btn " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a>
-                <a class="btn " href='<@s.url value="/account/recover"/>' rel="nofollow">Reset Password</a>
-            </div>
-        </div>
+                <button type="submit" class="button btn btn-primary input-small submitButton float-right" name="_tdar.Login" id="btnLogin">Login</button>
+                <p class="mt-2 ">Need an account? <a class=" " href='<@s.url value="/account/new"/>' rel="nofollow">Register </a></p>
+                
     </div>
     </@auth.login>
 </@s.form>
     <div id="error"></div>
 </div>
-<#include "/WEB-INF/notice.ftl">
+</div>
+</div>
 
+</div>
+<#include "/WEB-INF/notice.ftl">
+<script>
+$(document).ready(function() {
+setTimeout(200,function() {$("#loginUsername").focus();});
+});
+</script>
 </body>
 

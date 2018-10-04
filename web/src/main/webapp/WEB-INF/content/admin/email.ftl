@@ -42,14 +42,15 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
 <h3>Emails to be Reviewed</h3>
 
 <div class="row">
-    <div class="span2">
+    <div class="col-2">
         <@s.select name="emailAction" list=emailActions listValue=name label="Change Status To"/>
         <@s.submit name="submit" />
     </div>
 </div>
 
-<table class="tableFormat table">
-<thead>
+<table class="table table-sm table-striped"">
+  <thead class="thead-dark">
+
 <tr>
     <th>Id</th>
     <th>To</th>
@@ -88,8 +89,9 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
 <hr />
 
     <h3>All Emails</h3>
-    <table class="tableFormat table" style="border:1px solid #eee;">
-    <thead>
+    <table class="table table-sm table-striped"" style="border:1px solid #eee;">
+      <thead class="thead-dark">
+
     <tr>
         <th>Id</th>
         <th>To</th>
@@ -110,8 +112,8 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
             <td>${email.subject!'no subject'}</td>
             <td>
                 <div class="btn-group inline">
-                    <a class="btn btn-mini" href="javascript:showMessage(${email.id?c})">Show/Hide</a>
-                    <a class="btn btn-mini" href="javascript:sendMessage(${email.id?c})">Resend Email</a>
+                    <a class="btn btn-sm" href="javascript:showMessage(${email.id?c})">Show/Hide</a>
+                    <a class="btn btn-sm" href="javascript:sendMessage(${email.id?c})">Resend Email</a>
                 </div>
             </td>
         </tr>

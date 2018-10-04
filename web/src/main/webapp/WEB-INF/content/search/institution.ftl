@@ -26,8 +26,8 @@
 
 	<@search.toolbar />
         <div id="institution" class="tab-pane active">
-            <div class="glide">
-                <h3>Search For Institutions By Name</h3>
+            <div class="glide mt-5">
+                <h5>Search For Institutions By Name</h5>
                 <@s.form action="institutions" method="GET" id='searchForm3'>
                     <@search.queryField freeTextLabel="Institution Name" showLimits=false showAdvancedLink=false />
                 </@s.form>

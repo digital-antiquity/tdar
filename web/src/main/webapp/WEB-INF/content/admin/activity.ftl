@@ -9,7 +9,8 @@
     <@s.actionerror />
 
 <table class="table table-striped">
-    <thead>
+      <thead class="thead-dark">
+
     <tr>
         <th>Resource ID</th>
         <th>Modified by</th>

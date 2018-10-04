@@ -21,7 +21,7 @@
     <@invoicecommon.printInvoice />
 
 <div class="container row">
-    <div class="span3">
+    <div class="col-3">
         <h3>Billing Information</h3>
         <#if invoice.owner??>
             <b>Account Owner</b>
@@ -35,7 +35,7 @@
         </#if>
     </div>
 
-    <div class="span3">
+    <div class="col-3">
         <h3>Transaction Info</h3>
         <b>Transaction Type: </b>${invoice.paymentMethod!"Unknown"}<br/>
         <b>Transaction Status: </b>${invoice.transactionStatus}<br/>

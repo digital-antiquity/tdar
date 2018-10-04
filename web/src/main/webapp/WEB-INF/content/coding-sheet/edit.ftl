@@ -10,7 +10,7 @@
     <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 
     <#macro subNavMenu>
-    <li class="hidden-tablet hidden-phone"><a href="#enter-data">Coding Rules</a></li>
+	    <li class=""><a class="nav-link" href="#enter-data">Coding Rules</a></li>
     </#macro>
 
 
@@ -21,7 +21,7 @@
         data integration tool.
     </span>
 
-    <div id='divOntology' class="glide ontologyInfo" data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
+    <div id='divOntology' class="glide ontologyInfo col-12" data-tooltipcontent="#ontologyToolTip" data-tiplabel="Ontology">
 
         <@edit.categoryVariable />
 
@@ -51,11 +51,12 @@
                     </span>
 
 
-                <a class="btn btn-small" target="_blank"
+                <a class="btn btn-sm" target="_blank"
                    onclick="TDAR.common.setAdhocTarget(this, '#divOntology');"
                    href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create An Ontology</a>
             </div>
         </div>
+    </div>
     </div>
     </#macro>
 
@@ -74,8 +75,9 @@
                 To be parsed properly a coding sheet should have <b>Code, Term, Description (optional)</b> columns, in order. For example:
             </p>
 
-            <table class="table">
-                <thead>
+            <table class="table table-sm table-striped">
+                  <thead class="thead-dark">
+
                 <tr>
                     <th>Code</th>
                     <th>Term</th>

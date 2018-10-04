@@ -7,7 +7,7 @@
 
 
 <h2>Revision History</h2>
-<table class="table tableFormat">
+<table class="table table-sm table-striped">
     <tr>
         <th>When</th>
         <th>Who</th>
@@ -30,7 +30,7 @@
 
     <#if (resource.informationResourceFiles?has_content )>
     <h2>File History</h2>
-    <table class="table tableFormat">
+    <table class="table table-sm table-striped">
         <tr>
             <th colspan="2">Name</th>
             <th>Type</th>
@@ -93,8 +93,9 @@
     </table>
     </#if>
 
-	<table class="table">
-		<thead>
+	<table class="table table-sm table-striped">
+		  <thead class="thead-dark">
+
 			<tr><th>filename</th><th>date</th><th>size</th></tr>
 		</thead>
 		<tbody>

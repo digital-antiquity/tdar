@@ -11,6 +11,7 @@
 .price {padding-top:.2em; display:inline-block;}
 .small {font-size: 85%;}
 .xsmall {font-size: 75%;}
+
 .rateTable {margin-bottom: 0px;}
 .borderRight {border-right:1px solid #DDD;}
 .pTable input  {margin:0px;}
@@ -48,12 +49,13 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 
 
         <div class="row">
-            <div class="span4">
+            <div class="col-5">
                 <h3>
                     Digital Preservation Fees
                 </h3>
                 <table class="table rateTable small">
-                    <thead>
+                      <thead class="thead-dark">
+
                         <tr style="background-color:#EEE">
                             <th>
                                 Digital Preservation
@@ -80,10 +82,8 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                         </tr>
                     </thead>
                 </table>
-                <ul class="unstyled">
-                    <li class="xsmall">* Each tDAR file comes with 10MB of space. To upload digital resources larger than 10MB, simply purchase additional tDAR files.
-                    </li><!--                <li  class="xsmall">** Space is “pooled.” If you buy more than one file, space can be distributed between those files in any way you choose.</li>
-             -->
+                    <span class="xsmall">* Each tDAR file comes with 10MB of space. To upload digital resources larger than 10MB, simply purchase additional tDAR files.
+                    </span>
                 </ul>
             </div>
 
@@ -93,7 +93,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 <!--                                        <tbody id="estimated">
                                             <td colspan=5>enter number of files and mb above</td> -->
 
-            <div class="span6">
+            <div class="col-7">
                 <h3>
                     Digital Preservation Fee Calculator
                 </h3>
@@ -104,7 +104,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 # of Files
                             </th>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer span2 orderinfo" maxlength=9  />
+                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer col-4 orderinfo" maxlength=9  />
                             </td>
                         </tr>
                         <tr>
@@ -112,7 +112,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 Total File Size (MB)
                             </th>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer span2 orderinfo" maxlength=9 />
+                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer col-4 orderinfo" maxlength=9 />
                             </td>
                         </tr>
                         <tr>
@@ -137,14 +137,16 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
         </div>
 
     <div class="row">
-        <div class="span10">
+        <div class="col-12">
 <h4>Redeem a Coupon Code</h4>
-<div class="well">
+<div class="card">
+  <div class="card-body">
 <div class="input-append">
 
 
             <@s.textfield type="text" id="couponCode" name="code" label="Redeem Code" class="input-xxlarge orderinfo" />
                 <input type="submit" class="btn" name="submitAction" value="Redeem">
+    </div>
     </div>
 </div>
 
@@ -154,10 +156,11 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 
 <!--
     <div class="row">
-        <div class="span10">
+        <div class="col-12">
             <h3>Choose a Package</h3>
             <table class="table pTable">
-            <thead>
+              <thead class="thead-dark">
+
              <tr>
             <th>Package</th>
               <th>
@@ -199,11 +202,11 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
             <tr>
                 <th class="borderRight"></th>
                 <td><div class="center">
-            <button class="btn btn-small  tdar-button" type="button">select</button></div></td>
+            <button class="btn btn-sm  tdar-button" type="button">select</button></div></td>
                 <td><div class="center">
-            <button class="btn btn-small  tdar-button" type="button">select</button></div></td>
+            <button class="btn btn-sm  tdar-button" type="button">select</button></div></td>
                 <td><div class="center">
-            <button class="btn btn-small  tdar-button" type="button">select</button>
+            <button class="btn btn-sm  tdar-button" type="button">select</button>
             </div></td>
             </tr>
             </tbody>
@@ -218,9 +221,9 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
     </div>
 -->
 
-
+<br/>
         <div class='row'>
-            <div class="span4">
+            <div class="col-6">
                 <h3>
                     Service Fees
                 </h3>
@@ -251,20 +254,22 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     </tr>
                 </table>
             </div>
-            <div class='span6'>
+            <div class='col-6'>
                 <h3>
                     Additional Services
                 </h3>
+                <div class="rounded-border">
                 <p>
                     Our full service digital curation covers everything necessary to migrate your paper library or born-digital files into a discoverable, accessible (with you in control of who gets access), searchable, and preserved digital archive in tDAR. <a href="mailto:info@digitalantiquity.org">Contact us for a quote</a>.
                 </p>
                 <p>
                     Service packages coming soon.
                 </p>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="span10">
+            <div class="col-12">
                 <h3>
                     About
                 </h3>
@@ -280,14 +285,14 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 
 
         <div class="row">
-            <div class="span10 well how-works">
-                <h4>
+            <div class="col-12 well">
+                <h2>
                     Learn How tDAR Works
-                </h4>
+                </h2>
                 <div class="row">
-                    <div class="span5">
+                    <div class="col">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-edit.png"/>" width="60" alt="edit" title="edit"></a>
+                            <a class="align-self-start mr-3" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-edit.png"/>" width="60" alt="edit" title="edit"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Create &amp; Edit Metadata
@@ -298,9 +303,9 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                             </div>
                         </div>
                     </div>
-                    <div class="span5">
+                    <div class="col">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-institution.png"/>" width="60" alt="institution" title="institution"></a>
+                            <a class="align-self-start mr-3" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-institution.png"/>" width="60" alt="institution" title="institution"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Agency &amp; CRM Ready
@@ -313,9 +318,9 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     </div>
                 </div>
                 <div class="row topspace">
-                    <div class="span5">
+                    <div class="col">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-cloud.png"/>" width="60" alt="upload" title="upload"></a>
+                            <a class="align-self-start mr-3" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-cloud.png"/>" width="60" alt="upload" title="upload"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Easy Upload
@@ -326,9 +331,9 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                             </div>
                         </div>
                     </div>
-                    <div class="span5">
+                    <div class="col">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-share.png"/>" width="60" alt="share" title="share"></a>
+                            <a class="align-self-start mr-3" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-share.png"/>" width="60" alt="share" title="share"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Share &amp; Cite
@@ -341,9 +346,9 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                     </div>
                 </div>
                 <div class="row topspace">
-                    <div class="span5">
+                    <div class="col">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-lock.png"/>" width="60" alt="secure" title="secure"></a>
+                            <a class="align-self-start mr-3" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-lock.png"/>" width="60" alt="secure" title="secure"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Confidential &amp; Secure
@@ -354,9 +359,9 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                             </div>
                         </div>
                     </div>
-                    <div class="span5">
+                    <div class="col">
                         <div class="media">
-                            <a class="pull-left" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-safe.png"/>" width="60" alt="preserve" title="preserve"></a>
+                            <a class="align-self-start mr-3" href="#"><img class="media-object" src="<@s.url value="/images/r4/icn-safe.png"/>" width="60" alt="preserve" title="preserve"></a>
                             <div class="media-body">
                                 <h5 class="media-heading">
                                     Preserve
@@ -398,7 +403,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
             <@invoicecommon.paymentMethod />
         </#if>
 
-        <#--<@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="span5"  label="Additional Information" />-->
+        <#--<@s.textarea name="invoice.otherReason" cols="" rows="" id="txtOtherReason" cssClass="col-5"  label="Additional Information" />-->
 
         <#--<@s.hidden name="id" value="${invoice.id?c!-1}" />-->
 
@@ -407,7 +412,8 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
             This lets us send arbitrary parameters.  Please skip this section if the previous sentence sounded like gibberish.
         </div>
         <table class="table table-bordered table-compact">
-            <thead>
+              <thead class="thead-dark">
+
             <tr>
                 <th>Item</th>
                 <th>Quantity</th>
@@ -418,7 +424,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                 <#if !act.production >
                     <tr>
                         <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
-                        <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer span2 orderinfo" theme="simple"/></td>
+                        <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer col-2 orderinfo" theme="simple"/></td>
                     </tr>
                 </#if>
             </#list>
@@ -452,7 +458,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
     <#macro rates>
     <div class="tdar-rates" >
         <h2>Rates</h2>
-        <table class="tableFormat table">
+        <table class="table table-sm table-striped"">
             <tr>
                 <th>Item/Service</th>
                 <th>Cost</th>

@@ -8,8 +8,9 @@
 
 
 <h1>Files with processing Errors and Warnings</h1>
-<table class="table tableFormat">
-    <thead>
+<table class="table table-sm table-striped">
+      <thead class="thead-dark">
+
     <th>file ID</th>
     <th>Resource Id</th>
     <th>created</th>
@@ -54,7 +55,7 @@ ${file.errorMessage!""}
     <h3>Uploaded File Usage by extension</h3>
 <div id="graphUsageByExtension" class="pieChart" data-table="#tableUsageByExtension" data-val="#" data-label="Extension">
 </div>
-    <table class="tableFormat table" id="tableUsageByExtension">
+    <table class="table table-sm table-striped"" id="tableUsageByExtension">
         <tr>
             <th>Extension</th>
 			<th>#</th>
@@ -77,7 +78,7 @@ ${file.errorMessage!""}
 
 <div class="glide">
     <h3>All File Usage by extension</h3>
-    <table class="tableFormat table">
+    <table class="table table-sm table-striped"">
         <tr>
             <th>Extension</th>
             <th>Average</th>
@@ -97,7 +98,7 @@ ${file.errorMessage!""}
 
 <div class="glide">
     <h3>Total File Space Usage by extension</h3>
-    <table class="tableFormat table">
+    <table class="table table-sm table-striped"">
         <tr>
             <th>Extension</th>
             <th>size</th>

@@ -811,37 +811,39 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void logout() {
         if (CollectionUtils.isNotEmpty(getDriver().getWindowHandles())) {
-            WebElementSelection find = find("#logout-button");
-            // driver.manage().deleteAllCookies();
-            logger.debug("LOGOUT: {} ", find);
-
-            if (find.size() > 0) {
-                // handle modal dialogs
-                try {
-                    find.click();
-                    try {
-                        Thread.sleep(TimeUnit.SECONDS.toMillis(2));
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                    return;
-                } catch (WebDriverException se) {
-                    logger.error("error trying to logout {}", se);
-                }
-            }
-        }
-
-        gotoPage("/login");
-        WebElementSelection find = find("#logout-button");
-        if (find.size() > 0) {
-            find.click();
+            findAndClickLogout();
+        } else {
+            gotoPage("/login");
+            findAndClickLogout();
         }
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+    }
+
+    private void findAndClickLogout() {
+        WebElementSelection find = find("#myAccountMenu");
+        // driver.manage().deleteAllCookies();
+        logger.debug("LOGOUT: {} ", find);
+
+        if (find.size() > 0) {
+            // handle modal dialogs
+            try {
+                find.click();
+                find("#logout-button").click();
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return;
+            } catch (WebDriverException se) {
+                logger.error("error trying to logout {}", se);
+            }
         }
     }
 

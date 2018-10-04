@@ -242,12 +242,12 @@ public class TdarEventListener extends WebDriverEventAdapter {
     }
 
     @Override
-    public void beforeGetText(WebElement we, WebDriver wd) {
+    public void beforeGetText(WebElement element, WebDriver driver) {
         logger.trace("beforeGetText");
     }
 
     @Override
-    public void afterGetText(WebElement we, WebDriver wd, String str) {
+    public void afterGetText(WebElement element, WebDriver driver, String text) {
         logger.trace("afterGetText");
     }
 

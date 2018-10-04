@@ -16,7 +16,7 @@
 </div>
     <@s.form class="form-horizontal tdarvalidate rightsform" action="rights-save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
 <div class="row">
-    <div class="span12">
+    <div class="col-12">
     <p><b>This collection is currently shared with <#if (proxies?size == 1)>person<#else>people</#if>.</b></p>
     <@s.hidden name="id" />
     

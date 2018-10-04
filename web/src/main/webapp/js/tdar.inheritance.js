@@ -951,6 +951,9 @@ TDAR.inheritance = (function () {
             $modalDiv.unbind("hidden", cancelSelected);
             $modalDiv.one("hidden", okaySelected);
             $modalDiv.modal('hide');
+            var $sectionCheckboxes = $('.divInheritSection input[type=checkbox]');
+            _attemptMultipleInheritance($sectionCheckboxes.not(':checked'), true);
+
         });
 
         $modalDiv.modal();
@@ -960,7 +963,7 @@ TDAR.inheritance = (function () {
 //get options for each
 //if any unsafe,   fire prompt
 //for prompt,  wire yes and no buttons
-    function _attemptMultipleInheritance($checkboxes) {
+    function _attemptMultipleInheritance($checkboxes, force) {
         var unsafeSections = [];
         var optionsList = $.map($checkboxes, function (checkbox, idx) {
             var options = $(checkbox).data("inheritOptions");
@@ -979,7 +982,7 @@ TDAR.inheritance = (function () {
         };
 
         //if any sections unsafe (i.e. inheritance would overwrite previous values),  throw a prompt to the user
-        if (unsafeSections.length) {
+        if (unsafeSections.length && force == undefined || force == false) {
             _displayOverwritePrompt(unsafeSections, _inheritMultiple, function () {
                 $('#cbSelectAllInheritance').prop("checked", false);
             });

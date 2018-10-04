@@ -7,35 +7,33 @@
     <div>
         <h3> Menu</h3>
         <ul class="nav nav-tabs">
-            <li><a href="<@s.url value="/admin/"/>">Admin Home</a></li>
-            <li class='dropdown'>
-            <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Statistics <b class='caret'></b></a>
+            <li class="nav-item"><a class="nav-link" href="<@s.url value="/admin/"/>">Admin Home</a></li>
+            <li class='dropdown nav-item'>
+            <a class='dropdown-toggle nav-link' data-toggle='dropdown' href='#'>Statistics <b class='caret'></b></a>
             <ul class='dropdown-menu'>
-                <li><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
-                <!-- <li><a href="<@s.url value="/admin/usage/stats"/>">Usage Statistics</a></li> 
-                <li><a href="<@s.url value="/admin/usage/downloads"/>">Download Statistics</a></li>-->
-                <li><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
-                <li><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
+                <li class="dropdown-item"><a href="<@s.url value="/admin/resource"/>">Resource Statistics</a></li>
+                <li class="dropdown-item"><a href="<@s.url value="/admin/user"/>">User Statistics</a></li>
+                <li class="dropdown-item"><a href="<@s.url value="/admin/keyword-stats"/>">Keyword Statistics</a></li>
             </ul>
             </li>
-            <li><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
-            <li><a href="<@s.url value="/admin/authority/index"/>">DeDupe</a></li>
+            <li class="nav-item"><a class=" nav-link" href="<@s.url value="/admin/file-info"/>">File Information</a></li>
+            <li class="nav-item"><a class=" nav-link" href="<@s.url value="/admin/authority/index"/>">DeDupe</a></li>
             <#if billingManager || editor>
-                <li class="dropdown">
-                    <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Billing <b class='caret'></b></a>
+                <li class="dropdown nav-item">
+                    <a class='dropdown-toggle nav-link' data-toggle='dropdown' href='#'>Billing <b class='caret'></b></a>
                     <ul class='dropdown-menu'>
-                        <li><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
-                        <li><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
+                        <li class="dropdown-item"><a href="<@s.url value="/billing/list"/>">List Billing Accounts</a></li>
+                        <li class="dropdown-item"><a href="<@s.url value="/billing/listInvoices"/>">List Invoices</a></li>
                     </ul>
                 </li>
             </#if>
             <#if administrator >
-                <li><a href="<@s.url value="/admin/system/activity"/>">System Activity</a></li>
-                <li><a href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
-                <li><a href="<@s.url value="/admin/notifications/index"/>">Notifications</a></li>
+                <li class="nav-item"><a  class=" nav-link" href="<@s.url value="/admin/system/activity"/>">System Activity</a></li>
+                <li class="nav-item"><a class=" nav-link" href="<@s.url value="/admin/searchindex/build"/>">Reindex</a></li>
+                <li class="nav-item"><a class=" nav-link" href="<@s.url value="/admin/notifications/index"/>">Notifications</a></li>
             </#if>
             <#if editor >
-                <li><a href="<@s.url value="/admin/email"/>">Email</a></li>
+                <li class="nav-item"><a class=" nav-link" href="<@s.url value="/admin/email"/>">Email</a></li>
             </#if>
         </ul>
     </div>
@@ -51,13 +49,14 @@
         <#assign statsObjKeys = statsObj?keys?sort?reverse />
         <#assign numSets = 0/>
         <#assign totalRows = 0/>
-        <table class="tableFormat table" id="table${cssid}">
+        <table class="table table-sm table-striped"" id="table${cssid}">
             <#assign first = true/>
             <#list statsObjKeys as key>
                 <#assign vals = statsObj.get(key) />
                 <#assign valsKeys = vals?keys />
                 <#if first>
-                    <thead>
+                      <thead class="thead-dark">
+
                     <tr>
                         <th>Date</th>
                         <#list valsKeys as key_>

@@ -220,7 +220,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
                 clickLinkOnPage(type.getLabel());
             }
             boolean sawSomething = false;
-            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("h3 a")) {
+            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".listItem a")) {
                 Element element = (Element) element_;
                 String href = element.getAttribute("href");
                 if (!element.getAttribute("href").toLowerCase()
@@ -250,7 +250,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testPagination() {
         gotoPage("/search/results?recordsPerPage=2&includedStatuses=DRAFT&includedStatuses=ACTIVE&includedStatuses=DELETED");
         boolean sawSomething = false;
-        for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".pagin a")) {
+        for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll(".pagination a")) {
             Element element = (Element) element_;
             String href = element.getAttribute("href");
             if (!element.getAttribute("href").toLowerCase().contains("bookmark")) {

@@ -42,7 +42,7 @@
 
 </div>
 <div class="row">
-<div class="span2">
+<div class="col-2">
     <@dash.sidebar current="files" />
 </div>
 

@@ -119,20 +119,31 @@
     <#macro billingAccountList accountList>
         <#if (config.payPerIngestEnabled!false)>
         <h2 id="billingSection">Billing Accounts</h2>
+        <div class="row">
+        <div class="col">
         <ul>
+        <#local itemCount = 0/>
+
             <#list accountList as account>
                 <#if account.active>
                 <li>
                     <a href="<@s.url value="/billing/${account.id?c}"  />">${account.name!"unamed"}</a>
                 </li>
                 </#if>
+       <#if (itemCount > 2 && accountList?size / 2 == itemCount ) >
+         </ul></div><div class="col"><ul>
+       </#if>
+        <#local itemCount = itemCount + 1/>
+
             </#list>
 <#--
             <#if billingManager>
                 <li><a href="<@s.url value="/billing/list" />">All Accounts</a></li>
             </#if> -->
-            <li><a href="/cart/add">Create a new account or add more to an existing one</a></li>
         </ul>
+        </div>
+        </div>
+        <a href="/cart/add">Create a new account or add more to an existing one</a>
         </#if>
     </#macro>
 
@@ -176,7 +187,7 @@ true for our registration page or our profile page).-->
     <#macro resourceUsageInfo>
         <#local _isProject =  ((persistable.resourceType)!'') == "PROJECT" >
         <#if uploadedResourceAccessStatistic?has_content >
-        <table class="table tableFormat">
+        <table class="table table-sm table-striped">
             <tr>
                 <#if _isProject >
                     <th>Total # of Resources</th></#if>
@@ -195,15 +206,15 @@ true for our registration page or our profile page).-->
 
 <#macro listUsers users=[] span=10 baseUrl="/entity/user/rights" well=true>
         <div class="<#if well>row</#if>" id="sharedPeople">
-            <div class="<#if well>well</#if> span${span}">
+            <div class="<#if well>well</#if> span-${span}">
                 <div class="row">
                     <#assign showMore=false />
                     <#assign listGroups = [users]>
                     <#if (users?size > (span/2-1))><#assign listGroups =  users?chunk(users?size /(span/2-1) )> </#if>
                     <#list listGroups as row>
-                        <div  class="span2">
+                        <div  class="col">
                             <#list row>
-                            <ul class="unstyled">
+                            <ul class="list-unstyled">
                             <#items as item>
                                 <li class="<#if (item_index > 3)>hidden<#assign showMore=true /></#if>">
 	                           <#if authenticatedUser?has_content>
