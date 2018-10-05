@@ -39,7 +39,7 @@
 
 <#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
 <head>
-	<link rel="stylesheet" href="https://use.typekit.net/yrw4dsr.css">
+	<link rel="stylesheet" href="//use.typekit.net/yrw4dsr.css">
     <title>${title!siteName}</title>
     <#if authenticatedUser??>
         <!-- logged-in-as: ${authenticatedUser.email} -->
@@ -194,7 +194,7 @@ ${head}
         <#assign subtitle = (resourceCollection.properties.subtitle!(resourceCollection.institution.name)!'')>
         <@dec.homepageHero>
             <@dec.searchHero imageClass="whitelabelImageClass" 
-                title="${resourceCollection.title}" subtitle="${subtitle}" 
+                title="${resourceCollection.title}" subtitle="${subtitle}" searchPrompt="Search within this collection..." 
                     idField="collectionId" idValue="${resourceCollection.id?c}" />
         </@dec.homepageHero>
             <div class="container">

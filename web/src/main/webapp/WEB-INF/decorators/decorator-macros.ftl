@@ -187,7 +187,7 @@
 </#macro>
 
 <#macro searchHero imageClass="whatcanyoudig-image" title="What can you dig up?" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."
- idField="" idValue="">
+ idField="" idValue="" searchPrompt="Find archaeological data...">
         <div class="${imageClass} homepage-header-image"><!-- had container -->
             <h2 class="color-title">${title}</h2>
             <#if subtitle?has_content>
@@ -195,7 +195,7 @@
             </#if>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
                 <div class="input-group col-md-6 noleftmargin right-bottom-dropshadow">
-                    <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
+                    <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="${searchPrompt}" placeholder="${searchPrompt}">
                     <span class="input-group-append" name="_tdar.searchType" value="simple">
                         <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
                     </span>

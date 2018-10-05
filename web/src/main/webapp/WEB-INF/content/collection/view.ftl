@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/decorators/decorator-macros.ftl" as decorator>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "common-collection.ftl" as commonCollection>
 
 <#if (whiteLabelCollection)>
@@ -48,7 +48,7 @@
         <@commonCollection.descriptionSection/>
 
 
-        <#if whitelabelCollection.properties.featuredResourcesEnabled>
+        <#if whitelabelCollection?has_content && whitelabelCollection.properties.featuredResourcesEnabled>
             <@view.featured colspan="12" resourceList=whitelabelCollection.properties.featuredResources />
             <div class="col-12">
                 <div class="row">
@@ -64,7 +64,7 @@
         </div>
 
 
-        <#if whitelabelCollection.properties.subCollectionsEnabled>
+        <#if whitelabelCollection?has_content && whitelabelCollection.properties.subCollectionsEnabled>
             <div class="col-12">
                 <#list collections>
                 <h2>Collections</h2>
