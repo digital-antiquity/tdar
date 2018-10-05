@@ -103,6 +103,12 @@
                             <a href="https://www.tdar.org/about/" class="nav-link align-middle tdarNavItem">About</a>
                         </li>
                         <li class="nav-item mr-sm-3">
+                            <a href="/search/" class="nav-link align-middle tdarNavItem">Search</a>
+                        </li>
+<!--                        <li class="nav-item mr-sm-3">
+                            <a href="/search/" class="nav-link align-middle tdarNavItem">Explore</a>
+                        </li> -->
+                        <li class="nav-item mr-sm-3">
                             <a href="https://www.tdar.org/using-tdar/" class="nav-link align-middle tdarNavItem">Using tDAR</a>
                         </li>
                         <li class="nav-item mr-sm-3">

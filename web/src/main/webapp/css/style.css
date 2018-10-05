@@ -4415,3 +4415,12 @@ p.san-serif {
   font-family: "soleil", sans-serif !important; }
 
 /*# sourceMappingURL=style.css.map */
+
+
+.file-row {
+    padding-top:1rem;
+    padding-bottom:1rem;
+}
+.file-row + .file-row {
+    border-top:1px solid #EEE;
+}
