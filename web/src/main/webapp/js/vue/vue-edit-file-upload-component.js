@@ -144,6 +144,10 @@ var _init = function(widgetId) {
                     Vue.set(this.file, "size", this.originalFileSize);
                     vuejsupload.setProgress(0);
                     Vue.set(this.file, "progress", undefined);
+                    Vue.set(this, "originalFileName", '');
+                    Vue.set(this.file, "originalFileSize", '');
+                    Vue.set(this, "originalFileSize", '');
+                    Vue.set(this.file, "originalFileName", '');
                 }
             },
             replaceFileChange : function(e) {

@@ -1,4 +1,3 @@
-
 var _initLogin = function() {
     $('#loginForm').validate({
         messages : {
@@ -37,8 +36,14 @@ var _initRegister = function(timeout) {
 };
 
 var _switchContributorReasonDisplay = function(shouldDisplay) {
-    var opt = shouldDisplay ? 'show' : 'hide';
-    $('#contributorReasonTextArea').collapse(opt);
+       var opt = "hidden";
+        if (shouldDisplay) {
+            opt = "show";
+            $('#contributorReasonTextArea').removeClass("hidden");
+        } else {
+            $('#contributorReasonTextArea').addClass("hidden");
+        }
+        $('#contributorReasonTextArea').collapse(opt);
     $('#contributorReasonId').attr("disabled", !shouldDisplay);
 };
 

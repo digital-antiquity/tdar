@@ -23,58 +23,114 @@
 </head>
 <body>
 <#escape _untrusted as _untrusted?html >
-<hr>
-<div class="row">
-    <div class="pricing">
-        <div class="span1 center">
-        
-            <a href="<@s.url value="/document"/>">
-                <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
-            </a>
-        </div>
-        <div class="span1 center">
-            <a href="<@s.url value="/dataset"/>">
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
-            </a>
-        </div>
-        <div class="span1 center">
-            <a href="<@s.url value="/image"/>">
-                <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
-            </a>
-        </div>
-        <div class="span1 center">
-            <a href="<@s.url value="/sensory-data"/>">
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory_data"></use></svg>
-            </a>
-        </div>
-        <div class="span4 center" style="margin-top: 10px;">
+
+<section class = "" id="pricing">
+    <hr>
+    <div class="container mb-4 d-none d-lg-block">
+        <div class="col-12 d-none d-lg-block text-center justify-content-center align-items-center">
+        <div class="row">
+            <div class="col-lg-1">
+                <a href="<@s.url value="/document"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
+                </a>
+            </div>
+            <div class="col-lg-1 text-center">
+                <a href="<@s.url value="/dataset"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
+                </a>
+            </div>
+            <div class="col-lg-1 text-center">
+                <a href="<@s.url value="/image"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
+                </a>
+            </div>
+            <div class="col-lg-1 text-center">
+                <a href="<@s.url value="/sensory-data"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory_data"></use></svg>
+                </a>
+            </div>
             <#if config.payPerIngestEnabled >
-                <a href="<@s.url value="/cart/add"/>" class="button">Archive a file for as low as $5</a>
+                <div class="col-lg-4 text-center">
+                    <a href="<@s.url value="/cart/add"/>" class="btn tdarButton btn-block">ARCHIVE A FILE FOR AS LOW AS $5</a>
+                </div>
             </#if>
+            <div class="col-lg-1 text-center">
+                <a href="<@s.url value="/ontology"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_ontology"></use></svg>
+                </a>
+            </div>
+            <div class="col-lg-1 text-center">
+                <a href="<@s.url value="/geospatial"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_geospatial"></use></svg>
+                </a>
+            </div>
+            <div class="col-lg-1 text-center">
+                <a href="<@s.url value="/project"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
+                </a>
+            </div>
+            <div class="col-lg-1 text-center">
+                <a href="<@s.url value="/collection"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                </a>
+            </div>
         </div>
-        <div class="span1 center">
-            <a href="<@s.url value="/ontology"/>">
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_ontology"></use></svg>
-            </a>
-        </div>
-        <div class="span1 center">
-            <a href="<@s.url value="/geospatial"/>">
-                <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_geospatial"></use></svg>
-            </a>
-        </div>
-        <div class="span1 center">
-            <a href="<@s.url value="/project"/>">
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
-            </a>
-        </div>
-        <div class="span1 center">
-            <a href="<@s.url value="/collection"/>">
-                <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-            </a>
         </div>
     </div>
-</div>
-<hr>
+
+    <div class="container d-block d-lg-none">
+        <div class="row">
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/document"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
+                </a>
+            </div>
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/dataset"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
+                </a>
+            </div>
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/image"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
+                </a>
+            </div>
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/sensory-data"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory_data"></use></svg>
+                </a>
+            </div>
+        </div>
+        <#if config.payPerIngestEnabled >
+            <div class="col-lg-4 text-center my-4">
+                <a href="<@s.url value="/cart/add"/>" class="btn btn-secondary btn-block">tDAR Pricing Information</a>
+            </div>
+        </#if>
+        <div class="row">
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/ontology"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_ontology"></use></svg>
+                </a>
+            </div>
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/geospatial"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_geospatial"></use></svg>
+                </a>
+            </div>
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/project"/>">
+                    <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
+                </a>
+            </div>
+            <div class="col-3 text-center">
+                <a href="<@s.url value="/collection"/>">
+                    <svg class="svgicon svg-small black"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+        <hr>
+</section>
 
 <div class="row">
     <#include "featured.ftl" />
@@ -88,22 +144,24 @@
     
     <div class="row">
             <@commonr.renderWorldMap />
-        <div class="span6 news">
-    
+        <div class="col-12 col-md-6 news">
+
             <h3><a href="${config.newsUrl}">What's New at ${siteAcronym}?</a></h3>
-    
+
             <#if rssEntries?has_content>
-                <ul>
+                <ul class = "list-unstyled">
                     <#assign maxEntries =6 />
                     <#list rssEntries as entry>
                         <#assign maxEntries = maxEntries -1 />
                         <#if maxEntries == 0>
                             <#break>
                         </#if>
-                        <li>
-                            <span>${entry.publishedDate?string("MMM")?upper_case}<em>${entry.publishedDate?string("dd")}</em></span>
-                            <a href="${entry.link}" class="title">${entry.title}</a>
-                            Posted by ${entry.author}
+                        <li class = "media">
+                            <span class = "mr-3">${entry.publishedDate?string("MMM")?upper_case}<em>${entry.publishedDate?string("dd")}</em></span>
+                            <div class="media-body">
+                                <h6><a href="${entry.link}" class="title">${entry.title}</a></h6>
+                                <p class="text-muted">Posted by ${entry.author}</p>
+                            </div>
                         </li>
                     </#list>
                 </ul>
@@ -112,24 +170,24 @@
         </div>
     </div>
 </#if>
-<br/>
+
 <hr />
 <div class="row">
-    <div class="span6">
+    <div class="col-12 col-md-6 mt-2">
 		<#if featuredCollection?has_content>
             <@commonr.featuredCollection featuredCollection />
 		<#else>
-<h3>Getting Started with ${siteAcronym}</h3>
-<ul>
-    <li><a href="${config.documentationUrl}">a tutorial that can help you get started</a>.</li>
-    <li><a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
-    <li><a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
-    <li><a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
-</ul>
-<!--    <a href="<@s.url value="/register"/>" class="button">Register</a> or <a href="<@s.url value="/login"/>" class="button">Log in</a> -->
+        <h3>Getting Started with ${siteAcronym}</h3>
+        <ul class = "list-group list-group-flush">
+            <li class = "list-group-item" ><a href="${config.documentationUrl}">a tutorial that can help you get started</a>.</li>
+            <li class = "list-group-item" ><a href="<@s.url value="/search/results?query=&resourceTypes=PROJECT"/>">browse</a> all projects</li>
+            <li class = "list-group-item" ><a href="<@s.url value="/browse/collections"/>">browse</a> all collections</li>
+            <li class = "list-group-item" ><a href="<@s.url value="/browse/explore"/>">explore</a> ${siteAcronym} by keyword</li>
+        </ul>
+        <!--    <a href="<@s.url value="/register"/>" class="button">Register</a> or <a href="<@s.url value="/login"/>" class="button">Log in</a> -->
 		</#if>
     </div>
-    <div class="span6">
+    <div class="col-md-6">
         <@commonr.resourceBarGraph />
     </div>
 </div>

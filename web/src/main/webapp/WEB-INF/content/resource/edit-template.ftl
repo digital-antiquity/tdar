@@ -33,23 +33,8 @@
 
 </head>
 <body>
-    <@edit.sidebar />
-    <@edit.subNavMenu>
-    <#-- include local scrollspy menu details -->
-        <#if local_.subNavMenu?? && local_.subNavMenu?is_macro>
-            <@local_.subNavMenu />
-        </#if>
-
-    </@edit.subNavMenu>
-
-<#-- allow for overriding of the page title -->
-    <#if  local_.customH1?? && local_.customH1?is_macro>
-        <@local_.customH1 />
-    <#else>
-        <#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
-    <h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
-    </#if>
-
+<div class="row">
+<div class="col-md-9 col-sm-12 col-lg-9">
     <#assign fileReminder=true />
     <#assign prefix="${resource.resourceType.label?lower_case}" />
 
@@ -69,37 +54,50 @@
         <@s.token name='struts.csrf.token' />
         <@s.hidden name="epochTimeUpdated" />
         <@s.hidden name="doubleSubmitKey" />
+    <div class="row">
+	<div class="col-12">
+
+<#-- allow for overriding of the page title -->
+    <#if  local_.customH1?? && local_.customH1?is_macro>
+        <@local_.customH1 />
+    <#else>
+        <#assign newTitle>New <#noescape>${resource.resourceType.label}</#noescape></#assign>
+    <h1><#if resource.id == -1>Creating<#else>Editing</#if>:<span> <#if resource.title?has_content>${resource.title}<#else>${newTitle}</#if> </span></h1>
+    </#if>
 
     <#-- custom section ahead of the basic information -->
         <#if local_.topSection?? && local_.topSection?is_macro>
             <@local_.topSection />
         </#if>
-
-    <div class="well-alt" id="basicInformationSection">
-        <h2>Basic Information</h2>
-
+	</div>
+    <div class="col-12" id="basicInformationSection">
+        <h2>Basic Information
+          <@helptext.info title="Basic Information" contentDiv="#basicHelp" /></h2>
+            <@helptext.basicHelp />
         <#if resource.id?? &&  resource.id != -1>
             <@s.hidden name="id"  value="${resource.id?c}" />
         </#if>
 
         <@edit.hiddenStartTime />
 
-        <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
+        <div id="spanStatus" class="form-group row">
             <#if editor && !administrator>
                 <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to draft</p>
             </#if>
-            <label class="control-label">Status</label>
+            <label class="col-2 col-form-label">Status</label>
 
-            <div class="controls">
                 <#if config.guestUserId != -1 && config.guestUserId == authenticatedUser.id>
-                    <select name="status">
+                    <select name="status" class="form-control col-3">
                         <option value='DRAFT' selected>Draft</option>
                     </select>
                 <#else>
-                    <@s.select theme="tdar" value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+                    <@s.select  value="resource.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}' cssClass="col-3"/>
                 </#if>
-                <#if resource.resourceType.project><span class="help-block">Note: project status does not affect status of child resources.</span></#if>
-            </div>
+                <#if resource.resourceType.project>
+                <div class="col-10 offset-2">
+                <span class="help-block">Note: project status does not affect status of child resources.</span>
+                </div>
+                </#if>
         </div>
 
         <@helptext.status />
@@ -107,26 +105,25 @@
     <#-- the bulk upload hides some common fields, but the validator requires them, so we set the values to hidden ones -->
         <#if bulkUpload >
 
-            <@s.hidden labelposition='left' id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
-            <@s.hidden labelposition='left' id='dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
+            <@s.hidden id='resourceTitle' label='Title' name='image.title' cssClass="" value="BULK_TEMPLATE_TITLE"/>
+            <@s.hidden 'dateCreated' placeholder='YYYY' label='Year Created' name='image.date' cssClass="" value="-100"/>
             <@s.hidden id='ImageDescription' name='image.description' value="placeholder description"/>
 
         <#else>
-            <div data-tiplabel="Title"
-                 data-tooltipcontent="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'.">
-                <@s.textfield label="Title" id="resourceRegistrationTitle"
+            <div>
+                <@s.textfield label="Title" id="resourceRegistrationTitle" labelposition="left"
                 title="A title is required for all ${resource.resourceType.plural}" name='${itemPrefix}.title'
-                cssClass="required descriptiveTitle input-xxlarge trim" required=true maxlength="512"/>
+                cssClass="required descriptiveTitle trim" required=true maxlength="512" helptext="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'."/>
+                <@helptext.helpBelow text="If a formal title is given for the resource (as with a report) use this. If no title is supplied, the suggested formula is 'Content, Investigation Type or Site Name, Site Name or Specific Geographic Location'." />
             </div>
             <#if resource.resourceType != 'PROJECT'>
-                <div data-tiplabel="Year"
-                     data-tooltipcontent="Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created.">
+                <div>
                     <#assign dateVal = ""/>
 	        <#if resource.date?? && resource.date != -1>
                     <#assign dateVal = resource.date?c />
                 </#if>
-	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required input-mini trim" required=true
-                maxlength=7 title="Please enter the year this ${resource.resourceType.label} was created" />
+	        <@s.textfield label="Year" id='dateCreated' name='${itemPrefix}.date' value="${dateVal}" cssClass="reasonableDate required col-2 trim" required=true labelposition="left"
+                maxlength=7 title="Please enter the year this ${resource.resourceType.label} was created" tooltip="Four digit year, e.g. 1966 or 2005. The publication year for a document, or the year a photograph was taken. Otherwise, the year the resource was created."/>
                 </div>
             </#if>
         </#if>
@@ -138,29 +135,26 @@
 
     <#-- if we're an editor or administrator, we allow them to set the submitter of the resource to 'not them' -->
         <#if editor>
-            <div class="control-group" id="divSubmitter">
-                <label class="control-label">Submitter</label>
-
-                <div class="controls controls-row">
+            <div class="form-group row" id="divSubmitter">
+                <label class="col-form-label col-2">Submitter</label>
                     <#if submitter?has_content>
-                <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber=''
-                    prefix="submitter" includeRights=false includeRepeatRow=false />
- 	        <#else>
-                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
+		                <@edit.registeredUserRow person=submitter isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8"
+		                    prefix="submitter" includeRights=false includeRepeatRow=false />
+		 	        <#else>
+                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber='' textfieldCssClass="col-8 "
                         prefix="submitter" includeRights=false includeRepeatRow=false />
                     </#if>
-                </div>
             </div>
         </#if>
     </div>
 
-        <@edit.accountSection />
+        <@_accountSection />
 
         <#if !resource.resourceType.project>
             <@edit.resourceCreators '${rtLabel} Creators' authorshipProxies 'authorship' />
         </#if>
 
-    <div id="citationInformation" class="well-alt">
+    <div id="citationInformation" class="col-12">
         <h2>Additional Citation Information</h2>
         <#if local_.citationInformationToggle?? && local_.citationInformationToggle?is_macro>
             <@local_.citationInformationToggle />
@@ -174,15 +168,15 @@
         <#if !resource.resourceType.codingSheet && !resource.resourceType.ontology>
 
             <#if !resource.resourceType.project>
-                <div data-tiplabel="Department / Publisher Location" data-tooltipcontent="Department name, or City,State (and Country, if relevant)">
+                <div>
 	        <span id="publisher-hints" book="Publisher" report="Publisher" book_section="Publisher" journal_article="Publisher" conference_presentation="Conference"
                   thesis="Institution" other="Publisher">
-                <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution input-xxlarge"  />
+                <@s.textfield id='publisher'  maxlength=255 label="Publisher" name='publisherName' cssClass="institution" labelposition="left"  />
             </span>
 	
-	        <span id="publisherLocation-hints" book="Publisher Loc." report="Publisher Loc." book_section="Publisher Loc." journal_article="Publisher Loc."
-                  conference_presentation="Conference Location" thesis="Department" other="Publisher Loc.">
-                <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Loc." name='${itemPrefix}.publisherLocation' cssClass='input-xxlarge' />
+	        <span id="publisherLocation-hints" book="Publisher Location" report="Publisher Location" book_section="Publisher Location" journal_article="Publisher Location"
+                  conference_presentation="Conference Location" thesis="Department" other="Publisher Location">
+                <@s.textfield id='publisherLocation'  maxlength=255 label="Publisher Location" name='${itemPrefix}.publisherLocation'  labelposition="left" cssClass="" />
             </span>
                 </div>
             </#if>
@@ -193,29 +187,28 @@
             </#if>
 
             <#if !resource.resourceType.project>
-            <div id="t-doi" data-tiplabel="DOI" data-tooltipcontent="Digital Object Identifier.">
-                <@s.textfield labelposition='left' id='doi' label='DOI' name='${itemPrefix}.doi' cssClass="shortfield doi"  maxlength=255 />
+            <div id="t-doi">
+                <@s.textfield labelposition='left' id='doi' label='DOI' name='${itemPrefix}.doi' cssClass="shortfield doi"  maxlength=255 tooltip="Digital Object Identifier." />
             </div>
             </#if>        
 
-            <div id="divUrl" data-tiplabel="URL" data-tooltipcontent="Website address for this resource, if applicable">
-                <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url input-xxlarge" placeholder="http://" />
+            <div id="divUrl" >
+                <@s.textfield name="${itemPrefix}.url"  maxlength=255 id="txtUrl" label="URL" labelposition="left" cssClass="url" placeholder="http://" tooltip="Website address for this resource, if applicable" />
             </div>
 
         </#if>
     </div>
 
         <#if !bulkUpload >
-        <div class="well-alt">
+        <div class="col-12">
             <h2>Abstract / Description</h2>
 
-            <div id="t-abstract" class="clear"
-                 data-tiplabel="Abstract / Description"
-                 data-tooltipcontent="Short description of the <@edit.resourceTypeLabel />.">
-                <@s.textarea rows="4" cols="80" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge trim' required=true title="A description is required" />
+            <div id="t-abstract" class="clear">
+                <@s.textarea rows="4" cols="80" id='resourceDescription'  label="Abstract / Description" name='${itemPrefix}.description' cssClass='required resizable resize-vertical input-xxlarge trim' required=true title="A description is required" tooltip="Short description of the <@edit.resourceTypeLabel />."/>
             </div>
         </div>
         </#if>
+
 
     <#-- if tdarConfiguration has copyright holders enabled -->
         <#if resource.resourceType.label?lower_case != 'project'>
@@ -250,9 +243,8 @@
         </#if>
 
 
-
     <#-- Emit choose-project section:  including project dropdown and inheritance checkbox -->
-    <div class="" id="organizeSection">
+    <div class="col-12" id="organizeSection">
 			<#-- use 1 beacause we prepend with a blank for -1 -->
 		<#assign showProjects = (potentialParents?has_content && potentialParents?size > 1) />
     	<#if !showProjects && !resource.resourceType.project >
@@ -263,52 +255,32 @@
 
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <!-- <h4>Add to a Collection</h4> -->
-            <@edit.resourceCollectionSection prefix="shares" label="Collections" list=shares />
+            <@edit.resourceCollectionSection prefix="shares" label="Collection" list=shares />
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
                 <#assign _projectId = request.getParameter('projectId')!'' />
             </#if>
-            <div id="projectTipText" style="display:none;">
-                Select a project with which your <@edit.resourceTypeLabel /> will be associated. This is an important choice because it will allow metadata to
-                be inherited from the project further down this form
-            </div>
 
             <h4>Choose a Project</h4>
 
-            <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-            <#if select2SingleEnabled>
-                <div class="control-group">
-                    <label class="control-label">Project</label>
-                    <div class="controls">
-                        <div class="">
-                            <select id="projectId" name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
-                                    data-ajax--url="/api/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
-                                    data-allow-clear="false"
-                                    data-placeholder="Search for a project..."
-                                    data-minimum-input-length="0">
-                                <option value=""></option>
-                                <option value="-1">No parent project</option>
-                                <#if resource.project?has_content && resource.project.id &gt; -1>
-                                    <option selected="selected" value="${resource.project.id?c}">${resource.project.title}</option>
-                                </#if>
-                            </select>
-                            <button type="button" class="btn btn-mini btn-clear-select" id="btnClearProjectId"><i class="icon-trash"> </i></button>
-                        </div>
-
-                        </div>
-                </div>
-
-            <#else>
+            <div id="t-project">
                 <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
                 labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
                 truncate="70" value='${_projectId}'  cssClass="input-xxlarge" />
-			</#if>
+                <@helptext.helpBelow text="Select a project with which your resource will be associated. This is an important choice because it will allow metadata to
+                be inherited from the project further down this form" />
             </div>
 
-            <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="inheritOverwriteValidationErrorModalLabel" aria-hidden="true">
+            <@helptext.inheritance />
+
+    <div id="inheritOverwriteAlert" class="modal modal-lg " tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+
+			<div class="modal-content">
+
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     <h3 id="inheritOverwriteValidationErrorModalLabel">Overwrite Existing Values?</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
                 <div class="modal-body">
                     <p>Inheriting values from <span class="labeltext">the parent project</span> would overwrite existing information in the following sections
@@ -321,8 +293,8 @@
                     <button type="button" class="btn" id="btnInheritOverwriteCancel" data-dismiss="modal" aria-hidden="true">Cancel</button>
                 </div>
             </div>
-
-            <@helptext.inheritance />
+            </div>
+            </div>
 
             <div class="control-group" data-tiplabel="Inherit Metadata from Selected Project" data-tooltipcontent="#divSelectAllInheritanceTooltipContent"
                  id="divInheritFromProject">
@@ -347,10 +319,10 @@
 
         <#if !resource.resourceType.project>
         <#-- emit resourceProvider section -->
-        <div class="well-alt" id="divResourceProvider" data-tiplabel="Resource Provider"
-             data-tooltipcontent="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access.">
+        <div class="col-12" id="divResourceProvider">
             <h2>Institution Authorizing Upload of this <@edit.resourceTypeLabel /></h2>
-            <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
+            <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255' labelposition="left"
+                tooltip="The institution authorizing ${siteAcronym} to ingest the resource for the purpose of preservation and access." />
             <br/>
         </div>
             <#if config.licensesEnabled?? && config.licensesEnabled || resource.licenseType?has_content>
@@ -365,8 +337,8 @@
                     <@edit._inheritsection checkboxId="cbInheritingCreditRoles" name='resource.inheritingIndividualAndInstitutionalCredit' sectionId='#creditTable' />
                 </#if>
             </@edit.resourceCreators>
-        </#if>
         <@helptext.resourceCreator />
+        </#if>
 
         <#if !(hideKeywordsAndIdentifiersSection??)>
             <@edit.identifiers inheritanceEnabled />
@@ -404,12 +376,14 @@
         </#if>
             <@edit.submit fileReminder=reminder class=submitClasses>
             <p><b>Where to go after save:</b><br/>
-				<input type="radio" name="alternateSubmitAction" id="alt-submit-view" <#if !newRecord>checked=checked</#if> value="" class="inline radio" emptyoption="false">
-				<label for="alt-submit-view" class="inline radio">View Page</label>
-				<input type="radio" name="alternateSubmitAction" id="alt-submit-rights" value="Assign Permissions" class="inline radio" emptyoption="false" >
-				<label for="alt-submit-rights" class="inline radio" <#if newRecord>checked=checked</#if>>Assign Permissions</label>
-            <br>
-            <br>
+            <div class='form-check'>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-view" <#if !newRecord>checked=checked</#if> value="" class="form-check-input" emptyoption="false">
+				<label for="alt-submit-view" class="form-check-label">View Page</label>
+			</div>
+            <div class='form-check'>
+				<input type="radio" name="alternateSubmitAction" id="alt-submit-rights" value="Assign Permissions" class="form-check-input" emptyoption="false" >
+				<label for="alt-submit-rights" class="form-check-label" <#if newRecord>checked=checked</#if>>Assign Permissions</label>
+			</div>
         </p>
             </@edit.submit>
     </@s.form>
@@ -488,7 +462,44 @@ Auth Info
         </#noescape>
 </script>
 
-
+</div>
+</div>
+<div class="col-md-3 col-lg-3 d-sm-none d-md-block ">
+    <@edit.subNavMenu>
+    <#-- include local scrollspy menu details -->
+        <#if local_.subNavMenu?? && local_.subNavMenu?is_macro>
+            <@local_.subNavMenu />
+        </#if>
+    </@edit.subNavMenu>
+</div>
 </body>
 
+
+<#-- emit account information section -->
+    <#macro _accountSection>
+        <div class="col-12" id="accountsection">
+        <#if config.payPerIngestEnabled>
+            <#if activeAccounts?size == 1>
+                <h2>Billing Account Information</h2>
+
+                <div class="form-group row">
+                    <label class="col-form-label col-2">Account Name</label>
+
+                    <div class="controls">
+                        <#list activeAccounts as activeAccount>
+                            <span class="uneditable-input">${activeAccount.name}</span>
+                            <@s.hidden name="accountId" value="${activeAccounts?first.id}" />
+                        </#list>
+                    </div>
+                </div>
+            <#else>
+                <h2>Choose an account to bill from</h2>
+                <@s.select name="accountId" list="%{activeAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" required=true cssClass="required" labelposition="left" cssClass="col-5"/>
+            </#if>
+        <#else>
+        <i>Charging is disabled (TESTING), re-enable in tdar.properties</i>    
+        </#if>
+            </div>
+    </#macro>
 </#escape>
+

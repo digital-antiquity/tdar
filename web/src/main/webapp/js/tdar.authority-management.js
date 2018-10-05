@@ -11,102 +11,67 @@ const common = require("./tdar.common");
 var searchControls;
 var selEntityType;
 var dataTable = null;
-
-// map of datatable init options for each search type
+//map of datatable init options for each search type
 var g_settingsMap = {
-    person : {
-        tableSelector : '#dupe_datatable',
-        sAjaxSource : core.uri() + 'api/lookup/person',
-        "bLengthChange" : true,
-        "bFilter" : true,
-        aoColumns : [ {
-            sTitle : "person id",
-            bUseRendered : false,
-            mDataProp : "id",
-            tdarSortOption : 'ID'
-        }, {
-            sTitle : "registered",
-            mDataProp : "registered",
-            tdarSortOption : 'ID',
-            bSortable : false
-        }, {
-            sTitle : "First",
-            mDataProp : "firstName",
-            tdarSortOption : 'FIRST_NAME'
-        }, {
-            sTitle : "Last",
-            mDataProp : "lastName",
-            tdarSortOption : 'LAST_NAME'
-        }, {
-            sTitle : "Email",
-            mDataProp : "email",
-            tdarSortOption : 'CREATOR_EMAIL',
-            bSortable : false
-        } ], // FIXME: make sortable
-        sPaginationType : "bootstrap",
-        sAjaxDataProp : 'people',
-        selectableRows : true,
-        requestCallback : _getPersonSearchData,
-        "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
+    person: {
+        tableSelector: '#dupe_datatable',
+        sAjaxSource: core.uri() + 'api/lookup/person',
+        "bLengthChange": true,
+        "bFilter": true,
+        aoColumns: [
+            {sTitle: "person id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
+            {sTitle: "registered", mDataProp: "registered", tdarSortOption: 'ID', bSortable: false},
+            {sTitle: "First", mDataProp: "firstName", tdarSortOption: 'FIRST_NAME'},
+            {sTitle: "Last", mDataProp: "lastName", tdarSortOption: 'LAST_NAME'},
+            {sTitle: "Email", mDataProp: "email", tdarSortOption: 'CREATOR_EMAIL', bSortable: false}
+        ], //FIXME: make sortable
+        sAjaxDataProp: 'people',
+        selectableRows: true,
+        requestCallback: _getPersonSearchData,
+        "sDom": "<'row'<'col-6'l><'float-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>"
     },
-    institution : {
-        tableSelector : '#dupe_datatable',
-        sAjaxSource : core.uri() + 'api/lookup/institution',
-        "bLengthChange" : true,
-        "bFilter" : true,
-        aoColumns : [ {
-            sTitle : "id",
-            bUseRendered : false,
-            mDataProp : "id",
-            tdarSortOption : 'ID'
-        }, {
-            sTitle : "Name",
-            mDataProp : "name",
-            tdarSortOption : 'CREATOR_NAME'
-        } ],
-        "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>", // no text filter!
-        sPaginationType : "bootstrap",
-        sAjaxDataProp : 'institutions',
-        selectableRows : true,
-        requestCallback : function(searchBoxContents) {
+    institution: {
+        tableSelector: '#dupe_datatable',
+        sAjaxSource: core.uri() + 'api/lookup/institution',
+        "bLengthChange": true,
+        "bFilter": true,
+        aoColumns: [
+            {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
+            {sTitle: "Name", mDataProp: "name", tdarSortOption: 'CREATOR_NAME'}
+        ],
+        "sDom": "<'row'<'col-6'l><'float-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>",  //no text filter!
+        sAjaxDataProp: 'institutions',
+        selectableRows: true,
+        requestCallback: function (searchBoxContents) {
             return {
-                minLookupLength : 0,
-                institution : $('#txtInstitution').val()
+                minLookupLength: 0,
+                institution: $('#txtInstitution').val()
             };
         }
-    // sDom:'<"datatabletop"ilrp>t<>' //omit the search box
+//        sDom:'<"datatabletop"ilrp>t<>' //omit the search box
     },
-    keyword : {
-        tableSelector : '#dupe_datatable',
-        sAjaxSource : core.uri() + 'api/lookup/keyword',
-        "bLengthChange" : true,
-        "bFilter" : true,
-        aoColumns : [ {
-            sTitle : "id",
-            bUseRendered : false,
-            mDataProp : "id",
-            tdarSortOption : 'ID'
-        }, {
-            sTitle : "Label",
-            mDataProp : "label",
-            tdarSortOption : 'LABEL'
-        } ],
-        sPaginationType : "bootstrap",
-        sAjaxDataProp : 'items',
-        selectableRows : true,
-        requestCallback : function(searchBoxContents) {
-            return {
-                keywordType : _getKeywordType(selEntityType.val()),
-                term : $('#txtKeyword').val()
+    keyword: {
+        tableSelector: '#dupe_datatable',
+        sAjaxSource: core.uri() + 'api/lookup/keyword',
+        "bLengthChange": true,
+        "bFilter": true,
+        aoColumns: [
+            {sTitle: "id", bUseRendered: false, mDataProp: "id", tdarSortOption: 'ID'},
+            {sTitle: "Label", mDataProp: "label", tdarSortOption: 'LABEL'}
+        ],
+        sAjaxDataProp: 'items',
+        selectableRows: true,
+        requestCallback: function (searchBoxContents) {
+            return {keywordType: _getKeywordType(selEntityType.val()),
+                term: $('#txtKeyword').val()
             };
         },
-        "sDom" : "<'row'<'span6'l><'pull-right span3'r>>t<'row'<'span4'i><'span5'p>>"
+        "sDom": "<'row'<'col-6'l><'float-right col-3'r>>t<'row'<'col-4'i><'col-5'p>>"
     }
 };
 
 /**
  * initialize a datatable that will display search results for the currently selected search type
- * 
  * @private
  */
 var _registerDataTable = function() {
@@ -147,47 +112,44 @@ var _updateSearchControl = function() {
     }
 }
 
-// FIXME: this is a dumb, hackey way to get the keywordType to send the lookup controller.
+//FIXME: this is a dumb, hackey way to get the keywordType to send the lookup controller.
 /**
- * return the keyword class name for the specified enumVal (used for "lookupType" when performing keyword lookup search.
- * 
- * @param enumVal
- *            value of the "search type" select input
+ * return the keyword class name for the specified enumVal (used for "lookupType" when performing keyword lookup
+ * search.
+ *
+ * @param enumVal value of the "search type" select input
  * @returns {string} lookupType value to include in keyword lookup request
  * @private
  */
 var _getKeywordType = function(enumVal) {
     return {
-        KEYWORD_CULTURE_KEYWORD : 'CultureKeyword',
-        KEYWORD_GEOGRAPHIC_KEYWORD : 'GeographicKeyword',
-        KEYWORD_INVESTIGATION_TYPE : 'InvestigationType',
-        KEYWORD_MATERIAL_KEYWORD : 'MaterialKeyword',
-        KEYWORD_OTHER_KEYWORD : 'OtherKeyword',
-        KEYWORD_SITE_NAME_KEYWORD : 'SiteNameKeyword',
-        KEYWORD_SITE_TYPE_KEYWORD : 'SiteTypeKeyword'
+        KEYWORD_CULTURE_KEYWORD: 'CultureKeyword',
+        KEYWORD_GEOGRAPHIC_KEYWORD: 'GeographicKeyword',
+        KEYWORD_INVESTIGATION_TYPE: 'InvestigationType',
+        KEYWORD_MATERIAL_KEYWORD: 'MaterialKeyword',
+        KEYWORD_OTHER_KEYWORD: 'OtherKeyword',
+        KEYWORD_SITE_NAME_KEYWORD: 'SiteNameKeyword',
+        KEYWORD_SITE_TYPE_KEYWORD: 'SiteTypeKeyword'
     }[enumVal];
 }
 
 /**
- * Convert name, value attributes in person search fields into a jsobject (for use as "data" argument in $.ajax request)
- * 
+ * Convert name, value attributes in person search fields into a jsobject  (for use as "data" argument in $.ajax request)
  * @returns {{minLookupLength: number}}
  * @private
  */
 var _getPersonSearchData = function() {
-    var data = {
-        minLookupLength : 0
-    };
-    $.each($(':text', '#divPersonSearchControl'), function(ignored, txtElem) {
+    var data = {minLookupLength: 0};
+    $.each($(':text', '#divPersonSearchControl'), function (ignored, txtElem) {
         data[txtElem.name] = $(txtElem).val();
     });
     return data;
 }
 
 /**
- * This is a row-selection callback for the datatable widget. It displays a running list of selected rows in a separate UL under the table. The callback
- * parameters are unused - they exist merely to satisfy the datatable callback spec
- * 
+ * This is a row-selection callback for the datatable widget.  It displays a running list of selected rows
+ * in a separate UL under the table.  The callback parameters are unused - they exist merely to satisfy the
+ * datatable callback spec
  * @param ignored1
  * @param ignored2
  * @param ignored3
@@ -198,17 +160,16 @@ var _renderSelectedDupes = function(ignored1, ignored2, ignored3) {
     var $ul = $(document.createElement('ul'));
     var dupeCount = 0;
 
-    $.each(dataTable.data('selectedRows'), function(idx, data) {
+    $.each(dataTable.data('selectedRows'), function (idx, data) {
         dupeCount++;
-        // FIXME: need a better way to display summary label for selected item, or maybe we should just have the same table structure as datatable.
+        //FIXME: need a better way to display summary label for selected item, or maybe we should just have the same table structure as datatable.
         var label = data.name;
         if (!label) {
             label = data.label;
         }
-        var $li = $('<li></li>').append('<input type="hidden" name="selectedDupeIds" value="' + idx + '" />').append(
-                '<span>' + label + ' (id:' + idx + ')</span>');
+        var $li = $('<li></li>').append('<input type="hidden" name="selectedDupeIds" value="' + idx + '" />').append('<span>' + label + ' (id:' + idx + ')</span>');
         $ul.append($li);
-        // console.log('renderdupes:item:' + idx + ":" + data.name);
+        //console.log('renderdupes:item:' + idx + ":" + data.name);
     });
     $('#frmDupes').append($ul);
     $('#spanDupeCount').text(dupeCount);
@@ -217,8 +178,7 @@ var _renderSelectedDupes = function(ignored1, ignored2, ignored3) {
 
 /**
  * clear current list of selected dupelicates.
- * 
- * @returns {boolean} false. because.
+ * @returns {boolean} false.  because.
  */
 var _clearDupeList = function() {
     dataTable.data('selectedRows', {});
@@ -238,6 +198,7 @@ var _initAuthTable = function() {
         common.applyWatermarks(document);
         $('span.button').button().click(_clearDupeList);
     }
+
 }
 
 module.exports = {

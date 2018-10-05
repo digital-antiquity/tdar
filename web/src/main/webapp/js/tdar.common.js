@@ -230,6 +230,33 @@ var _initEditPage = function(form, props) {
     // fun fact: because we have a form field named "ID", form.id actually refers to this DOM element, not the ID attribute of the form.
     var formid = $form.attr("id");
 
+
+//  $('[data-toggle="popover"]').popover();
+  $("[data-popover-content]").popover({
+      html : true,
+      content: function() {
+          var content = $(this).attr("data-popover-content");
+          if (content && content.startsWith("#")) {
+              return $(content).html();
+          } else {
+              return content;
+          }
+      },
+      title: function() {
+          var title = $(this).attr("data-popover-content");
+          return $(title).children(".popover-heading").html();
+      }
+  });
+  $("[data-tooltip]").each(function(i,el) {
+      var tip = $(el).data("tooltip");
+      if (tip) {
+      $(el).tooltip({
+      placement:"top",
+      title: tip 
+      });
+      }
+  });
+  
     // information needed re: existing file uploads - needed by TDAR.upload library
 
     if (props.multipleUpload) {
@@ -463,7 +490,7 @@ var _initializeView = function() {
     var $divSearchContext = $("#divSearchContext");
 
     if ($divSearchContext.length === 1) {
-        $(".searchbox").focus(function() {
+        $(".searchbox:visible").focus(function() {
             $divSearchContext.addClass("active");
         }).blur(function() {
             // $divSearchContext.removeClass("active");

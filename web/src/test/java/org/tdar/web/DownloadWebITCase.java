@@ -64,7 +64,7 @@ public class DownloadWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         Map<String, String> personmap = new HashMap<>();
         setupBasicUser(personmap, "downloadwebtest", DOWNLOAD_REGISTRATION);
-        personmap.put(DOWNLOAD_REGISTRATION + ".acceptTermsOfUse", "true");
+        personmap.put(DOWNLOAD_REGISTRATION + ".acceptTermsOfUseAndContributorAgreement", "true");
         // deleteUser(personmap.get(DOWNLOAD_REGISTRATION + ".person.username"));
         personmap.remove("downloadRegistration.contributorReason");
         personmap.remove("downloadRegistration.person.phone");

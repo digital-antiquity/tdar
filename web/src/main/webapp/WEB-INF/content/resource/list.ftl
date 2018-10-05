@@ -16,7 +16,7 @@
 </#if>
         <@search.basicPagination resourceType.plural />
 <hr class="smallmargin">
-    <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow orientation="LIST" />
+    <@list.listResources resourcelist=results sortfield=sortField titleTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow orientation="LIST" />
 <hr class="smallmargin">
         <@search.basicPagination resourceType.plural />
 

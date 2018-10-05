@@ -84,7 +84,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoEdit(url);
         applyEditPageHacks();
         submitForm();
-        find(".toolbar-rights").click();
+        find(".toolbar-permissions").click();
         addUserWithRights(person.getProperName(), person.getUsername(), person.getId(), Permissions.VIEW_ALL);
         submitForm();
 
@@ -164,7 +164,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String url = setupCollectionForTest(TITLE + " (collection retain)", titles, CollectionVisibility.HIDDEN);
         gotoEdit(url);
         submitForm();
-        find(".toolbar-rights").click();
+        find(".toolbar-permissions").click();
         waitForPageload();
 
         addUserWithRights("test user", config.getUsername(), config.getUserId(), Permissions.ADMINISTER_COLLECTION);
@@ -203,9 +203,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage(url);
         assertThat(getText(), containsString(TITLE));
         gotoPage("/");
-        find(".searchbox").val("Selenium").sendKeys(Keys.RETURN);
+        find(".contextsearchbox").val("Selenium").sendKeys(Keys.RETURN);
         waitForPageload();
         clearPageCache();
+        logger.debug(getCurrentUrl());
         assertThat(getText(), containsString(TITLE));
     }
 

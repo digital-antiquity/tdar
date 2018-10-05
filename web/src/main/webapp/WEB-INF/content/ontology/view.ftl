@@ -11,25 +11,35 @@
 
 
     <#macro afterBasicInfo>
+    
+        <div class="section">
+        <@view.categoryVariables />
+        </div>
+
         <#if codingSheetsWithMappings?has_content>
-        <h3>This Ontology is used by the following Coding Sheets</h3>
+        <div class="section">
+        <h2>This Ontology is used by the following Coding Sheets</h2>
         <ul>
             <#list codingSheetsWithMappings as cs>
                 <li><a href="<@s.url value="${cs.detailUrl}"/>">${cs.title}</a></li>
             </#list>
         </ul>
+        </div>
         </#if>
 
-	<form class="pull-right" onSubmit="return false;">
+        <div class="section">
+	<form class="float-right" onSubmit="return false;">
 	    <div class="btn-group">
-		    <input type="search" id="search" placeholder="search"/>
+		    <input type="search" id="search" class="form-control" placeholder="search"/>
 			<span id="searchclear" class="remove">X</span>
 		</div>
 	</form>
-    <h3>${resource.title}</h3>
+    <h2>${resource.title}</h2>
     <div id="d3" class="d3tree" style="min-height:600px">
 
     </div>
+    </div>
+    
     <script>
     $(function() {
 	    $("#btnOntologyShowMore").click(function() {

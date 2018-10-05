@@ -37,7 +37,7 @@ View freemarker macros
                 <#if (size >= previewSize)>
                     <div id='divOntologyShowMore' class="alert">
                         <span>Showing first ${previewSize?c} ontology nodes.</span>
-                        <button type="button" class="btn btn-small" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
+                        <button type="button" class="btn btn-sm" id="btnOntologyShowMore">Show all ${resource.ontologyNodes?size?c} nodes...</button>
                     </div>
                 </#if>
             </#if>
@@ -110,8 +110,10 @@ View freemarker macros
         <#else>
             <@common.truncate version.filename 65 />
         </#if>
-        <#if (!version.viewable || !version.informationResourceFile.public )>
-        <span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
+        <#if version.viewable == false>
+        <i class="fas fa-lock"></i>
+        <#elseif version.informationResourceFile.public == false >
+        <i class="fas fa-unlock"></i>
         </#if>
         <#if showSize>(<@common.convertFileSize version.fileLength />)</#if>
         <#if showDownloadCount><@downloadCount version /></#if>
@@ -122,7 +124,7 @@ View freemarker macros
     <#--<a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"-->
     <#-- fixme:should we change the google analytics event name, or will this be a pain? -->
         <#if resource.hasConfidentialFiles() && !ableToViewConfidentialFiles >
-            Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
+            Download All        <i class="fas fa-lock"></i>
         <#else>
         <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" 
            onclick="TDAR.common.registerDownload('/filestore/download?informationResourceId=${resource.id?c}', '${id?c}')"
@@ -168,7 +170,10 @@ View freemarker macros
 <#-- emit download link for translated dataset file -->
     <#macro translatedFileSection irfile>
         <#if irfile.hasTranslatedVersion >
-        <blockquote>
+        </li>
+<li class="  media ml-0 pl-3 pr-3 mr-0">
+    <i class="iconf page-excel mr-2"></i>
+                                <div class="media-body">
             <b>Translated version</b> <@createFileLink irfile.latestTranslatedVersion /></br>
             Data column(s) in this dataset have been associated with coding sheet(s) and translated:
             <#if userAbleToReTranslate>
@@ -177,7 +182,7 @@ View freemarker macros
                     <b>Note: this process may take some time</b>)
                 </small>
             </#if>
-        </blockquote>
+        </div>
         </#if>
     </#macro>
 
@@ -221,33 +226,33 @@ View freemarker macros
         <#if (resource.totalNumberOfFiles!0) == 0 >
             <h3 class="downloads">Find a Copy</h3>
             <div id="fileSummaryContainer">
-                <ul class="downloads media-list">
-                    <li class="citationNote"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
+                <ul class="downloads media-list  pl-0 ml-0">
+                    <li class="citationNote ml-0 pl-3 pr-3 mr-0"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
                     at ${resource.copyLocation}.</#if></li>
                 </ul>
             </div>
         <#else>
             <h3 class="downloads">
                 Downloads
-                <span class="downloadNumber hidden-tablet">${resource.totalNumberOfActiveFiles!0?c}</span>
+                <span class="downloadNumber d-none d-md-block">${resource.totalNumberOfActiveFiles!0?c}</span>
             </h3>
             <div id="fileSummaryContainer">
-                <ul class="downloads media-list">
+                <ul class="downloads media-list  pl-0 ml-0">
                     <#if ((resource.totalNumberOfFiles!0) > 0) >
 
                         <#if resource.hasConfidentialFiles()>
-                            <li><@embargoCheck/></li></#if>
+                            <li class="ml-0 pl-3 pr-3 mr-0"><@embargoCheck/></li></#if>
                         <@fileInfoSection extended=false; irfile, showAll>
                             <#local showAll = showAll>
-                            <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media">
-                                <@fileIcon irfile=irfile extraClass="pull-left" />
+                            <li class="<#if irfile.deleted>view-deleted-file</#if> ${showAll} media ml-0 pl-3 pr-3 mr-0">
+                                <@fileIcon irfile=irfile extraClass="mr-2" />
                                 <div class="media-body"><@createFileLink irfile true /></div>
                                 <@translatedFileSection irfile />
                             </li>
                         </@fileInfoSection>
                         <#if (resource.totalNumberOfActiveFiles > 1)>
-                            <li class="archiveLink media">
-                                <i class="iconf page-white-zip pull-left"></i>
+                            <li class="archiveLink media ml-0 pl-3 pr-3 mr-0">
+                                <i class="iconf page-white-zip ml-1 mr-2"></i>
 
                                 <div class="media-body"><@createArchiveFileLink resource=resource /></div>
                             </li>
@@ -265,15 +270,20 @@ View freemarker macros
     </#macro>
 
 <#macro resourceCitationSection resource>
-<h2>Cite this Record</h2>
-<div class="citeMe">
-    <p class="sml">
+<div class="card lightbeige">
+<div class="card-body">
+<h2 class="card-title">Cite this Record</h2>
+    <p class="sml card-text">
         <#noescape>${resourceCitation.fullCitation!''}</#noescape>
         <#if !resource.externalId?has_content && resource.lessThanDayOld && !resource.citationRecord>
             <br/>
             <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
         </#if>
     </p>
+    <#if openUrl?has_content>
+        <span class="Z3988" title="<#noescape>${openUrl!""}</#noescape>"></span>
+    </#if>
+</div>
 </div>
 
 </#macro>
@@ -283,10 +293,11 @@ View freemarker macros
     <#macro extendedFileInfo>
         <#if (resource.informationResourceFiles?has_content)>
             <#local showDownloads = authenticatedUser?? />
-        <div id="extendedFileInfoContainer">
-            <h3 id="allfiles">File Information</h3>
-            <table class="table tableFormat">
-                <thead>
+        <div id="extendedFileInfoContainer" class="section">
+            <h2 id="allfiles">File Information</h2>
+            <table class="table table-sm table-striped">
+                  <thead class="thead-dark">
+
                 <tr>
                     <th>&nbsp;</th>
                     <th>Name</th>
@@ -376,9 +387,7 @@ View freemarker macros
         </#if>
     <#local alt="${c.properName}"/>
     <#if c.institutionName?has_content><#local alt="${c.properName?xhtml} (${c.institutionName?xhtml})"/></#if>
-    <span class="creator" title="${alt}" alt="${alt}">
         <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
-    </span>
     </#compress>
     </#macro>
 
@@ -399,8 +408,15 @@ View freemarker macros
     <#macro keywordSearch _keywords fieldName="query" quoted=true>
         <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
             <#if !_keyword.deleted>
+            <#if (_keyword_index == 25)>
+                <span class="hidden showMore">
+            </#if>
                 <@searchm.searchFor keyword=_keyword asList=false showOccurrence=false />
                 <#sep>&bull;</#sep> 
+                <#if (_keyword?index > 25) && _keyword?is_last >
+                </span>
+                <i><a href="#" onClick="$(this).siblings('.showMore').removeClass('hidden');$(this).hide();return false">Show More</a></i>
+                </#if>
             </#if>
         </#list>
     </#macro>
@@ -430,41 +446,41 @@ View freemarker macros
         <#if sessionData?? && sessionData.authenticated>
         <h2>Administrative Information</h2>
 
-            <@common.resourceUsageInfo />
         <div>
-            <dl class="dl-horizontal">
-                <dt>
-                <p><strong>Created by</strong></p></dt>
-                <dd><p><a
+            <dl class="row">
+                <dt class="col-2">
+                <strong>Created</strong></dt>
+                <dd class="col-4"><a
                         href="<@s.url value="${resource.submitter.detailUrl}"/>">${resource.submitter.properName}</a> <#if resource.submitter.id == resource.uploader.id>
-                    on ${resource.dateCreated}</#if></p></dd>
+                    on ${resource.dateCreated}</#if></dd>
+                <dt class="col-2">
+                <strong>Last Updated</strong></dt>
+                <dd class="col-4"><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
+                    on ${resource.dateUpdated?date!""}</dd>
                 <#if resource.submitter.id != resource.uploader.id>
-                    <dt>
-                    <p><strong>Uploaded by</strong></p></dt>
-                    <dd><p><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
-                    </p></dd>
+                    <dt class="col-2">
+                    <strong>Uploaded</strong></dt>
+                    <dd class="col-4"><a href="<@s.url value="${resource.uploader.detailUrl}"/>">${resource.uploader.properName}</a> on ${resource.dateCreated}
+                    </dd>
                 </#if>
                 <#if resource.account?has_content && (administrator || editable) >
-                    <dt>
-                    <p><strong>Account</strong></p></dt>
-                    <dd><p><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></p></dd>
+                    <dt class="col-2">
+                    <strong>Account</strong></dt>
+                    <dd class="col-4"><a href="<@s.url value="/billing/${resource.account.id?c}"/>">${resource.account.name}</a></dd>
                 </#if>
 
                 <#if administrator>
-                    <dt>
-                    <p><strong>Status</strong></p></dt>
-                    <dd><p>${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>
-                        (${resource.previousStatus.label})</#if></p></dd>
+                    <dt class="col-2">
+                    <strong>Status</strong></dt>
+                    <dd class="col-4">${resource.status.label} <#if resource.previousStatus?has_content && resource.previousStatus != resource.status>
+                        (${resource.previousStatus.label})</#if></dd>
                 </#if>
-                <dt>
-                <p><strong>Last Updated by</strong></p></dt>
-                <dd><p><a href="<@s.url value="${resource.updatedBy.detailUrl}"/>">${resource.updatedBy.properName!""}</a>
-                    on ${resource.dateUpdated?date!""}</p></dd>
-                <dt>
-                <p><strong>Viewed</strong></p></dt>
-                <dd><p>${resource.transientAccessCount!"0"} time(s)</p></dd>
+                <dt class="col-2">
+                <strong>Viewed</strong></dt>
+                <dd class="col-4">${resource.transientAccessCount!"0"} time(s)</dd>
             </dl>
         </div>
+            <@common.resourceUsageInfo />
 
             <#nested>
             <@rights.resourceCollectionsRights collections=effectiveShares owner=resource.submitter />
@@ -508,11 +524,10 @@ View freemarker macros
 
                 <@_statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
             <#if persistable.status.flaggedForBilling && namespace=='/billing'>
-                This account has been marked as <strong>${persistable.status.label}</strong>, please add funds to it.
+                - please add funds to it.
             <#else>
-                This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of
-                <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>.
-                    <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
+                <#if authorityForDup?has_content> - of
+                <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>
             </#if>
                 </@_statusCallout>
 
@@ -520,38 +535,39 @@ View freemarker macros
     </#macro>
     <#macro _statusCallout onStatus cssClass>
         <#if persistable.status.toString().equalsIgnoreCase(onStatus) >
-        <div class="alert-${cssClass} alert">
-            <p><#nested></p>
+        <div class="badge-${cssClass} badge statusbadge"> ${onStatus}<#nested>
         </div>
         </#if>
     </#macro>
 
 <#-- emit an image gallery for the accessible image/video files for the current resource -->
     <#macro imageGallery>
+    <div class="section">
     <div class="slider">
         <#local numThumbnails = resource.visibleFilesWithThumbnails?size!0 />
         <#local numThumbnailsPerSection = 4 />
         <#local numIndicators = ( numThumbnails / numThumbnailsPerSection)?ceiling  />
-        <#--  from http://bootsnipp.com/snipps/thumbnail-carousel
-        <div class="hidden">
-        <p><strong># Indicators per section: </strong>${numIndicatorsPerSection}</p>
-        <p><strong># Visible Thumbnails: </strong>${resource.visibleFilesWithThumbnails?size!0}</p>
-        <p><strong># Indicators: </strong>${numIndicators}</p>
-        </div>
-        -->
-        <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
-            <div id="myCarousel" class="image-carousel carousel slide pagination-centered">
 
+        <#if (resource.visibleFilesWithThumbnails?size > 1 || !authenticatedUser??)>
+            <div id="myCarousel" class="image-carousel carousel slide pagination-centered pt-3 pb-5" data-ride="carousel">
+                <#if (numIndicators > 1)>
+                    <ol class="carousel-indicators ">
+                        <li data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</li>
+                        <#list 1..(numIndicators -1) as x>
+                            <li data-target="#myCarousel" data-slide-to="${x}">&nbsp;</li>
+                        </#list>
+                    </ol>
+                    </#if>
                 <!-- Carousel items -->
-                <div class="carousel-inner">
+                <div class="carousel-inner px-5">
 
                     <#list resource.visibleFilesWithThumbnails as irfile>
                         <#local lazyLoad = (irfile_index > (2 * numThumbnailsPerSection)) />
                         <#if (irfile_index % numThumbnailsPerSection) == 0>
-                        <div class="item pagination-centered <#if irfile_index == 0>active</#if>"> <#t>
-                        <div class="row-fluid"> <#t>
+                        <div class="carousel-item <#if irfile_index == 0>active</#if>"> <#t>
+                        <div class="row"> <#t>
                         </#if>
-                        <div class="span3"> <#t>
+                        <div class="col"> <#t>
                           <span class="primary-thumbnail thumbnail-border <#if irfile_index == 0>thumbnail-border-selected</#if>"> <#t>
                               <span class="thumbnail-center-spacing "></span> <#t>
                               <img class="thumbnailLink img-polaroid"<#t>
@@ -581,27 +597,27 @@ View freemarker macros
                 </div>
                 <!--/carousel-inner-->
                 <#if (numIndicators > 1)>
-                    <a class="left carousel-control" href="#myCarousel" data-slide="prev">‹</a>
-                    <a class="right carousel-control" href="#myCarousel" data-slide="next">›</a>
-                    <div class="carousel-indicators ">
-                        <span data-target="#myCarousel" data-slide-to="0" class="active">&nbsp;</span>
-                        <#list 1..(numIndicators -1) as x>
-                            <span data-target="#myCarousel" data-slide-to="${x}">&nbsp;</span>
-                        </#list>
-                    </div>
+                  <a class="carousel-control-prev" href="#myCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#myCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
                 </#if>
             </div>
             <!--/myCarousel-->
         </#if>
         <br/>
 
-    </div><!--/well-->
+    </div>
         <#if authenticatedUser?? >
-        <div class="bigImage pagination-centered">
+        <div class="bigImage justify-content-center">
             <#list resource.visibleFilesWithThumbnails as irfile>
                 <div>
             <span id="imageContainer">
-            <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}"
+            <img id="bigImage" alt="#${irfile_index} - ${irfile.filename!''}" title="#${irfile_index} - ${irfile.filename!''}" class="rounded mx-auto d-block"
                  src="<@s.url value="/filestore/get/${irfile.informationResource.id?c}/${irfile.zoomableVersion.id?c}"/>"/>
             <#if !irfile.public><span id="confidentialLabel">This file is <em>${irfile.restriction.label}</em>, but you have rights to see it.</span></#if>
                 </div>
@@ -619,6 +635,7 @@ View freemarker macros
             TDAR.common.initImageGallery();
         });
     </script>
+    </div>
     </#macro>
 
     <#macro _altText irfile description = irfile.description!"">
@@ -688,7 +705,8 @@ View freemarker macros
             <col>
             <col style="width:3em">
         </colgroup>
-        <thead>
+          <thead class="thead-dark">
+
         <tr>
             <th style="width: 4em">ID
             <th colspan="2">Name
@@ -700,7 +718,7 @@ View freemarker macros
                 <td>${resource.id?c}
                 <td><a href="<@s.url value="${resource.detailUrl}"/>" target="_b">${(resource.title)!""}</a>
             <td>
-                <button class="btn btn-mini" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
+                <button class="btn btn-sm" type="button" data-rid="${resource.id?c}"><i class="icon-trash"></i></button>
             </#list>
         </tbody>
     </table>
@@ -745,33 +763,35 @@ View freemarker macros
 
 <#--emit the citation section of a view page (including map depicting bounding box, if bounding box defined) -->
     <#macro tdarCitation resource=resource showLabel=true count=0 forceAddSchemeHostAndPort=false>
-    <div class="item <#if count==0>active</#if>">
+    <div class="carousel-item <#if count==0>active</#if>">
         <#local url><@s.url forceAddSchemeHostAndPort=forceAddSchemeHostAndPort value="${resource.detailUrl}"/></#local>
-        <div class="row-fluid">
-            <div class="span8">
-                <p class="title">
-                    <a target="_top" href="${url}">${resource.title} </a><br>
-                    <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
-                        <br></#if>
-                </p>
+        <div class="row">
+            <div class="col-8">
+                <div class = "p-3">
+                    <p class="title">
+                        <a target="_top" href="${url}">${resource.title} </a><br>
+                        <#if resource.formattedAuthorList?has_content>${resource.formattedAuthorList}
+                            <br></#if>
+                    </p>
 
-                <p><@common.truncate resource.description 150 /></p>
+                    <p class = "lead"><@common.truncate resource.description 150 /></p>
 
-                <p>
-                    <a target="_top" href="${url}" class="button">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
-                    Resources</a>
-                </p>
+                    <p class = "lead">
+                        <a target="_top" href="${url}" class="tdarButton">View ${resource.resourceType.label}</a> or &nbsp; <a target="_top" href="/search/results">Browse all
+                        Resources</a>
+                    </p>
                 </div>
-            <div class="span4">
+            </div>
+            <div class="col-4">
                 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-                    <img title="map" alt="map" class="" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
+                    <img title="map" alt="map" class="img-fluid h-100" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
                 <#else>
                     <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
                 </#if>
             </div>
         </div>
-
     </div>
+
     </#macro>
     <#function _staticGoogleMapUrl boundingBox apikey>
         <#local bb=boundingBox>
@@ -790,7 +810,8 @@ View freemarker macros
 <#-- emit license information section -->
     <#macro license>
         <#if (resource.licenseType??) >
-        <h3>License</h3>
+    <div class="section">
+        <h2>License</h2>
             <#if (resource.licenseType.imageURI != "")>
             <a href="${resource.licenseType.URI}"><img alt="license image" title="license image"
                                                        src="<#if secure>${resource.licenseType.secureImageURI}<#else>${resource.licenseType.imageURI}</#if>"/></a>
@@ -803,30 +824,62 @@ View freemarker macros
             <h4>Custom License Type - See details below</h4>
             <p>${resource.licenseText}</p>
             </#if>
+        </div>
         </#if>
     </#macro>
 
 <#macro featured header="Featured Content" colspan="12" resourceList=featuredResources>
-<#local span = "span${colspan}">
-<div class="tdar-slider slider ${span}">
+<#local span = "col-${colspan}">
+<#-- <div class="tdar-slider slider ${span}">
     <h3>${header}</h3>
 
     <div id="slider" class="carousel slide">
-        <!-- Carousel items -->
+        <!-- Carousel items --><#--
         <div class="carousel-inner">
             <#list resourceList as featuredResource>
-        <#if featuredResource?has_content>
-                <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
-            </#if>
-        </#list>
+                <#if featuredResource?has_content>
+                    <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
+                </#if>
+            </#list>
         </div>
-        <!-- Carousel nav -->
+        <!-- Carousel nav --><#--
     <#if (resourceList?size > 1) >
         <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>
         <a class="carousel-control right" href="#slider" data-slide="next">&rsaquo;</a>
     </#if>
     </div>
+</div>-->
+
+
+<div class="tdar-slider slider ${span} w-100 h-100">
+    <h3>${header}</h3>
+
+    <div id="slider" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#slider" data-slide-to="0" class="active"></li>
+        <li data-target="#slider" data-slide-to="1"></li>
+        <li data-target="#slider" data-slide-to="2"></li>
+        <li data-target="#slider" data-slide-to="3"></li>
+        <li data-target="#slider" data-slide-to="4"></li>
+      </ol>
+      <div class="carousel-inner">
+        <#list resourceList as featuredResource>
+            <#if featuredResource?has_content>
+                <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
+            </#if>
+        </#list>
+      </div>
+      <a class="carousel-control-prev" href="#slider" role="button" data-slide="prev">
+        <span class="carousel-control left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#slider" role="button" data-slide="next">
+        <span class="carousel-control right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
 </div>
+
 </#macro>
 
 </#escape>

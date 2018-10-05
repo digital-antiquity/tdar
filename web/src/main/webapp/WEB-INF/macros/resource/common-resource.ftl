@@ -33,7 +33,7 @@ Common macros used in multiple contexts
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false mode="horizontal" extra="">
-    <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>span6 map mapcontainer<#else> mapcontainer</#if> ${mode}" >
+    <div class=" <#if mode == 'vertical'>col-7<#elseif mode == 'horizontal'>col-md-6 col-12 map mapcontainer mb-3 mb-md-0<#else> mapcontainer</#if> ${mode}">
             <h3>${siteAcronym} Worldwide</h3>
         <#if (homepageGraphs.mapJson)?has_content>
         <script type="application/json" data-mapdata>
@@ -49,7 +49,7 @@ Common macros used in multiple contexts
              <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="" <#if (keyword.code)?has_content>data-code="${(keyword.code)!""}"</#if> data-mode="${mode}" >
              </div>
         <#if mode =='vertical'></div></#if>
-             <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="span4 offset1"<#else>style="width:100%"</#if>>
+             <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="col-4 offset-1"<#else>style="width:100%"</#if>>
         <#if mode =='vertical'><br/><br/></#if>
                  <h5 id="mapGraphHeader"></h5>
                  <div id='mapgraphpie'>                 
@@ -65,7 +65,8 @@ Common macros used in multiple contexts
 
     <#macro cartouche persistable useDocumentType=false>
         <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
-    <span class="cartouche">
+    <span class="cartouche badge badge-secondary nowrap">
+        <span class="-flex">
     <#local type=""/>
     <#if persistable.resourceType?has_content>
         <#local type>svg-icons_icon-${persistable.resourceType?lower_case}</#local>
@@ -78,7 +79,13 @@ Common macros used in multiple contexts
     <#--        <#if (persistable.status)?? && !persistable.active>
             ${persistable.status} <#t>
         </#if>  -->
+        <span class="rs">
         <@upperPersistableTypeLabel persistable />
+        </span>
+<!--        <span class='id'>
+        <#if editor> (${persistable.id?c})</#if>
+        </span> -->
+         </span>
      </span>
         <#nested />
     </#macro>
@@ -105,7 +112,7 @@ Common macros used in multiple contexts
     <#macro listAddresses entity=person entityType="person" choiceField="" addressId=-1>
     <div class="row">
         <#list entity.addresses  as address>
-            <div class="span3">
+            <div class="col-3">
                 <#local label = ""/>
                 <#if address.type?has_content>
                     <#local label = address.type.label>
@@ -123,7 +130,7 @@ Common macros used in multiple contexts
                 </@printAddress>
             </div>
         </#list>
-        <div class="span3">
+        <div class="col-3">
             <#local retUrl><@s.url includeParams="all"/></#local>
             <a class="button btn btn-primary submitButton" href="/entity/address/${entity.id?c}/add?returnUrl=${retUrl?url}">Add Address</a>
         </div>
@@ -185,40 +192,38 @@ Common macros used in multiple contexts
 <#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
  as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
     <#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="" collectionType="">
-        <#if bootstrapControl>
-        <div class="control-group">
-            <label class="control-label">${label}</label>
-        <div class="controls">
-        </#if>
-        <div class="input-append">
+    <#if label?has_content && label != ''><div class="row">
+        <label class="col-form-label col-2">${label}</label>
+        <div class="col-10">
+        <div class="row"></#if>
+        <div class="input-group mb-3">
         <#--if 'value' is not a string,  omit the 'value' attribute so that we don't override the
         s.textfield default (i.e. the value described by the 'name' attribute) -->
             <#if value?is_string>
-                <@s.textfield theme="simple" name="${name}"  target="${target}"
-                label="${label}"
+                <@s.textfield  name="${name}"  target="${target}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
-                placeholder="${placeholder}" cssClass="${cssClass}"
+                placeholder="${placeholder}" cssClass="${cssClass}" includeGroup=false
                 collectionType="${collectionType}"
                 value="${value}"  />
             <#else>
-                <@s.textfield theme="simple" name="${name}"  target="${target}"
-                label="${label}"
+                <@s.textfield name="${name}"  target="${target}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
-                collectionType="${collectionType}"
+                collectionType="${collectionType}" includeGroup=false
                 placeholder="${placeholder}" cssClass="${cssClass}" />
             </#if>
-            <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
-            <#if addNewLink?has_content>
-                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn show-all"
-                   target="_blank">add new</a>
-            </#if>
-        </div>
-        <#if bootstrapControl>
-        </div>
-        </div>
-        </#if>
+                <div class="input-group-append">
+        	        <button type="button" class="btn btn-outline-secondary"><i class="fas fa-chevron-down"></i></button>
+    	            <#if addNewLink?has_content>
+    	                <a href="${addNewLink}" onClick="TDAR.common.setAdhocTarget(this, '${autocompleteParentElement?js_string}');" class="btn btn-outline-secondary show-all"
+    	                   target="_blank">add new</a>
+    	            </#if>
+                </div>
+            </div>
+<#if label?has_content && label != ''>            </div>
+            </div>
+        </div></#if>
     </#macro>
 
 
@@ -253,9 +258,10 @@ Common macros used in multiple contexts
 
 <#-- emit the coding rules section for the current coding-sheet resource. Used on view page and edit page -->
     <#macro codingRules>
+    <div class="section">
         <#if resource.id != -1>
             <#nested>
-        <h3 onClick="$(this).next().toggle('fast');return false;">Coding Rules</h3>
+        <h2>Coding Rules</h2>
             <#if resource.codingRules.isEmpty() >
             <div>
                 No coding rules have been entered for this coding sheet yet.
@@ -263,7 +269,7 @@ Common macros used in multiple contexts
             <#else>
             <div id='codingRulesDiv'>
                 <table width="60%" class="table table-striped tableFormat">
-                    <thead class='highlight'>
+                    <thead class='thead-dark'>
                     <tr>
                         <th>Code</th>
                         <th>Term</th>
@@ -322,6 +328,7 @@ Common macros used in multiple contexts
             </div>
             </#if>
         </#if>
+        </div>
     </#macro>
 
 

@@ -63,11 +63,11 @@
 <style>
     @media screen {
         /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
-        h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+        h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .col-3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
             font-family: "soleil", sans-serif !important;
         }
 
-        #home .news li, .cols p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+        #home .news li, .cols p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .col-3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
             font-family: "ff-tisa-web-pro", serif !important;
         }
 
@@ -163,7 +163,7 @@
 <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
 <#import "/WEB-INF/macros/header.ftl" as header>
 <#assign mode>horizontal</#assign>
-    <div class=" <#if mode == 'vertical'>span7<#else>span6 map mapcontainer</#if>">
+    <div class=" <#if mode == 'vertical'>col-7<#else>col-6 map mapcontainer</#if>">
             <h3>${siteAcronym} Worldwide</h3>
         <script type="application/json" data-mapdata>
 			${homepageGraphs.mapJson}
@@ -175,7 +175,7 @@
              <div id="worldmap" style="height:350px" data-max="">
              </div>
         <#if mode =='vertical'></div></#if>
-             <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="span4 offset1"<#else>style="width:100%"</#if>>
+             <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="col-4 offset1"<#else>style="width:100%"</#if>>
         <#if mode =='vertical'><br/><br/></#if>
                  <h5 id="mapGraphHeader"></h5>
                  <div id='mapgraphpie'>                 

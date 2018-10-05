@@ -6,8 +6,9 @@
 </head>
 <body>
 <h1>All Invoices</h1>
-<table class="table tableFormat" id="tblAllInvoices">
-    <thead>
+<table class="table table-sm table-striped" id="tblAllInvoices">
+      <thead class="thead-dark">
+
     <tr>
 		<th></th>	
         <th>Date</th>

@@ -5,6 +5,30 @@
     <#import "../search-macros.ftl" as search>
     <#assign DEFAULT_SORT = 'RELEVANCE' />
     <#assign DEFAULT_ORIENTATION = 'LIST_FULL' />
+    
+    
+    <#macro _itemOpen itemTag_ itemClass rowCount resource orientation>
+                <${itemTag_} class="listItem ${itemClass!''} "
+            <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content>
+            
+                <#local box = resource.firstActiveLatitudeLongitudeBox />
+                data-scale="${box.scale?c}"
+                <#if resource.latLongVisible >
+                    data-lat="${box.obfuscatedCenterLatitude?c}"
+                    data-long="${box.obfuscatedCenterLongitude?c}"
+                    data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
+                    data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
+                </#if>
+                <#-- disabled for Obsidian 
+                <#if editor || resource.confidentialViewable  >
+                    data-real-lat="${box.centerLatitude?c}"
+                    data-real-long="${box.centerLongitude?c}"
+                    data-real-lat-length="${box.absoluteLatLength?c}"
+                    data-real-long-length="${box.absoluteLongLength?c}"
+                </#if> -->
+                </#if>
+            id="resource-${resource.id?c}">
+    </#macro>
 
 <#-- emit a list of resource summary information (e.g. for a a search results page, or a resource collection view page
     @param resourcelist:list<Persistable> List of Resources or Collections. Required.
@@ -19,7 +43,7 @@
     @param mapPositon: where to show the map in relation to the result list
     @param mapHeight: how high the map should be
 -->
-    <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=4
+    <#macro listResources resourcelist sortfield=DEFAULT_SORT itemsPerRow=5
     listTag='ul' itemTag='li' headerTag="h3" titleTag="h3" orientation=DEFAULT_ORIENTATION mapPosition="" mapHeight="">
 
         <#local showProject = false />
@@ -36,7 +60,7 @@
     <#-- set default ; add map wrapper -->
         <#if orientation == "GRID">
             <#local listTag_="div"/>
-            <#local itemClass = "span2"/>
+            <#local itemClass = "col"/>
             <#local itemTag_="div"/>
         <#elseif orientation == "MAP" >
             <#local listTag_="ol"/>
@@ -45,7 +69,7 @@
             <#if mapPosition=="top" || mapPosition == "right">
                 <@_mapDiv mapPosition mapHeight />
             </#if>
-        <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
+        <div class="<#if mapPosition=='left' || mapPosition=="right">col-3<#else>col-12</#if>">
         </#if>
 
         <#local rowCount = -1 />
@@ -59,31 +83,13 @@
                     <#local rowCount= rowCount+1 />
 
                 <#-- list headers are displayed when sorting by specific fields ResourceType and Project -->
-                    <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
+                <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
                 <#-- printing item tag start / -->
-                    <${itemTag_} class="listItem ${itemClass!''}"
-                    <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content>
-                    
-                        <#local box = resource.firstActiveLatitudeLongitudeBox />
-                        data-scale="${box.scale?c}"
-                        <#if resource.latLongVisible >
-                            data-lat="${box.obfuscatedCenterLatitude?c}"
-                            data-long="${box.obfuscatedCenterLongitude?c}"
-                            data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
-                            data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
-                        </#if>
-                        <#-- disabled for Obsidian 
-                        <#if editor || resource.confidentialViewable  >
-                            data-real-lat="${box.centerLatitude?c}"
-                            data-real-long="${box.centerLongitude?c}"
-                            data-real-lat-length="${box.absoluteLatLength?c}"
-                            data-real-long-length="${box.absoluteLongLength?c}"
-                        </#if> -->
-                        </#if>
-                    id="resource-${resource.id?c}">
-
+				<#if (orientation != 'GRID' || first ||  rowCount % itemsPerRow != 0 )>
+				<@_itemOpen itemTag_ itemClass rowCount resource orientation />
+				</#if>
                 <#-- if we're at a new row; close the above tag and re-open it (bug) -->
-                    <@_printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation />
+                    <@_printDividerBetweenResourceRows itemTag_ itemClass resource first rowCount itemsPerRow orientation />
 
                 <#-- add grid thumbnail -->
                     <#if isGridLayout>
@@ -125,15 +131,7 @@
     </#macro>
 
     <#macro _mapDiv mapPosition mapHeight>
-        <#local spans = 12 />
-        <#if (mapPosition == 'left' || mapPosition == 'right')>
-            <#local spans = 9 />
-        </#if>
-
-        <#if ((rightSidebar!false) || (leftSidebar!false)) >
-            <#local spans = spans - 3 />
-        </#if>
-        <div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
+        <div class="col-12 leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
         <#if id?has_content && namespace=="/collection">
         data-infinite-url="/api/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
         </#if>
@@ -157,17 +155,17 @@
     </#macro>
 
 <#-- divider between the sections of results -->
-    <#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
+    <#macro _printDividerBetweenResourceRows itemTag_ itemClass resource first rowCount itemsPerRow orientation>
         <#if itemTag_?lower_case != 'li'>
         <#-- if not first result -->
             <#if !first>
                 <#if (!isGridLayout)>
                 <hr/>
                 <#elseif rowCount % itemsPerRow == 0>
-                </div>    </div>
-                <hr/>
+                </div> 
+                <hr />
                 <div class=" ${orientation} resource-list row">
-                <div class="span2">
+                <@_itemOpen itemTag_ itemClass rowCount resource orientation />
                 </#if>
             </#if>
         </#if>
@@ -201,7 +199,7 @@
                 <#if isGridLayout>
                     <div class='resource-list row ${orientation}'>
                 <#else>
-                    <#if listTag_ == 'ul'><#local styling="unstyled"><#else><#local styling=""></#if>
+                    <#if listTag_ == 'ul'><#local styling="list-unstyled"><#else><#local styling=""></#if>
                     <${listTag_} class="resource-list ${orientation} ${styling}">
                 </#if>
             </#if>
@@ -232,11 +230,13 @@
 
             <#if orientation == 'LIST_FULL'>
                 <div class="listItemPart">
-                    <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
-                        <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
-                    </#if>
                     
                     <@commonr.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i> </#if><#if permissionsCache?has_content && permissionsCache.isManaged(resource.id) == false>[not managed]</#if></@commonr.cartouche>
+                    <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
+                        <span class='badge badge-secondary all-caps' title="Citation only; this record has no attached files.">        <span class="rs">Citation Only</span></span>
+                        <#elseif resource.resourceType?has_content && resource.resourceType.document == true >
+                        <span class='badge badge-secondary all-caps'><span class="rs">Full-Text</span></span>
+                    </#if>
                     <@_listCreators resource />
                     <#if resource.resourceType?has_content>
                         <@view.unapiLink resource  />
@@ -275,7 +275,7 @@ bookmark indicator, etc..
     @param titleTag:String  name of the html tag that will wrap the actual resource title (e.g. "li", "div", "td")
  -->
     <#macro searchResultTitleSection result titleTag >
-        <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
+        <#local titleCssClass="srt search-result-title-${result.status!('ACTIVE')}" />
 <#--        <@bookmark result false/>  --> 
         <#if titleTag?has_content>
             <${titleTag} class="${titleCssClass}">
@@ -354,14 +354,14 @@ bookmark indicator, etc..
                 </#if>
                 <#if _resource.bookmarked>
                     <#local state = "bookmarked" />
-                    <#local icon = "icon-star" />
+                    <#local icon = "fas fa-star" />
                 <#else>
                     <#local state = "bookmark" />
-                    <#local icon = "icon-star-empty" />
+                    <#local icon = "far fa-star" />
                 </#if>
 
-                  <button class="btn btn-mini btn-link bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
-                        <i title="bookmark or unbookmark" class="${icon} bookmarkicon"></i>
+                  <button class="btn btn-sm btn-link bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
+                        <i title="bookmark or unbookmark" class="${icon} bookmarkicon icon-push-down mr-3"></i>
                       <#if showLabel>
                           <span class="bookmark-label">${label}</span>
                       </#if>
@@ -381,14 +381,14 @@ bookmark indicator, etc..
                 </#if>
                 <#if _resource.bookmarked>
                     <#local state = "bookmarked" />
-                    <#local icon = "icon-star" />
+                    <#local icon = "fas fa-star" />
                 <#else>
                     <#local state = "bookmark" />
-                    <#local icon = "icon-star-empty" />
+                    <#local icon = "far fa-star" />
                 </#if>
 
             <li class="media bookmark-container">
-                    <i title="bookmark or unbookmark" class="${icon} bookmarkicon pull-left"></i>
+                    <i title="bookmark or unbookmark" class="${icon} bookmarkicon icon-push-down  mr-2 ml-1"></i>
                 <div class="media-body">
                   <a class="bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}" >
                           <span class="bookmark-label">${label}</span>
@@ -401,9 +401,10 @@ bookmark indicator, etc..
     </#macro>
 
 
-    <#macro table data cols id="tbl${data.hashCode()?string?url}" cssClass="table tableFormat datatableSortable"  colLabels=cols>
+    <#macro table data cols id="tbl${data.hashCode()?string?url}" cssclass="table table-sm table-striped datatableSortable"  colLabels=cols>
     <table id="${id}" class="${cssClass}">
-        <thead>
+          <thead class="thead-dark">
+
         <tr>
             <#list colLabels as colLabel>
                 <th>${colLabel}</th>
@@ -420,7 +421,7 @@ bookmark indicator, etc..
     </table>
     </#macro>
 
-    <#macro easytable data cols id="tblEasyTable" cssClass="table tableFormat datatableSortable" cols=data?keys >
+    <#macro easytable data cols id="tblEasyTable" cssclass="table table-sm table-striped datatableSortable" cols=data?keys >
         <@table data cols id cssClass colLabels; rowdata>
             <#list cols as key>
                 <#local val = rowdata[key]!"">
@@ -431,9 +432,10 @@ bookmark indicator, etc..
     </#macro>
 
 
-    <#macro hashtable data id="tblNameValue" keyLabel="Key" valueLabel="Value" cssClass="table tableFormat datatableSortable">
-    <table id="${id}" class="${cssClass}">
-        <thead>
+    <#macro hashtable data id="tblNameValue" keyLabel="Key" valueLabel="Value" cssclass="table table-sm table-striped datatableSortable">
+    <table id="${id}" class="${cssclass!''}">
+          <thead class="thead-dark">
+
         <tr>
             <th>${keyLabel}</th>
             <th>${valueLabel}</th>
@@ -457,13 +459,16 @@ bookmark indicator, etc..
     <#macro displayWidget>
             <#list availableOrientations>
                 <h3>View Options</h3>
-                <ul class="tools media-list">
+                <ul class="tools media-list ml-0 pl-0"">
                 <#items as orientation>
-                    <li class="media"><a href="<@s.url includeParams="all">
+                    <li class="media">
+                    <svg class="svgicon mr-3 red icon-height"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${orientation.svg!orientation}"></use></svg>
+                    <div class="media-body">
+
+                    <a href="<@s.url includeParams="all">
                         <@s.param name="orientation">${orientation}</@s.param>
                     </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${orientation.svg!orientation}"></use></svg>
-                    <@s.text name="${orientation.localeKey}"/></a></li>
+                    <@s.text name="${orientation.localeKey}"/></a></div></li>
                     </#items>
                 </ul>
                     </#list>

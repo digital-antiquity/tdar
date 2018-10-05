@@ -1,3 +1,4 @@
+<#import "/WEB-INF/macros/navigation-macros.ftl" as nav>
 <#escape _untrusted as _untrusted?html>
 
 
@@ -8,52 +9,53 @@
 	    <p><i>Use this to share this resource with someone who's not currently a tDAR user</i></p>
     </div>
             <div class="row">
-                <div class="span6" id="invites">
-	                <div class="controls-row" >
-	                	<div class="span2"><b>First Name</b></div>
-	                    <div class="span4">
-	                        <@s.textfield name="invites[0].firstName" cssClass="span4 inviteForm" id="firstName" />
+                <div class="col-6" id="invites">
+	                <div class="form-row" >
+	                	<div class="col-4"><b>First Name</b></div>
+	                    <div class="col-8">
+	                        <@s.textfield name="invites[0].firstName" cssClass=" inviteForm" id="firstName" />
 	                    </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="span2"><b>Last Name</b></div>
-    	                <div class="span4">
-        	                <@s.textfield name="invites[0].lastName" cssClass="span4 inviteForm" id="lastName" />
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Last Name</b></div>
+    	                <div class="col-8">
+        	                <@s.textfield name="invites[0].lastName" cssClass=" inviteForm" id="lastName" />
             	        </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="span2"><b>Email</b></div>
-	                    <div class="span4">
-	                        <@s.textfield name="invites[0].email" cssClass="span4 inviteForm" id="email" />
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Email</b></div>
+	                    <div class="col-8">
+	                        <@s.textfield name="invites[0].email" cssClass=" inviteForm" id="email" />
 	                    </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="span2"><b>Permission</b></div>
-	                    <div class="span4">
-	                        <@s.select theme="tdar" cssClass="controls creator-rights-select span4" name="invites[0].permission" emptyOption='false'
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Permission</b></div>
+	                    <div class="col-8">
+	                        <@s.select  cssClass="controls creator-rights-select" name="invites[0].permission" emptyOption='false'
 	                            listValue='label' list='%{availablePermissions}' disabled=isDisabled />
 	                    </div>
 	                </div>
                     
-	                <div class="controls-row" >
-	                	<div class="span2"><b>Expires?</b></div>
-	                    <div class=" span4">
-	                        <div class="input-append">
-	                              <input class="controls datepicker" name="invites[0].until" style="width:6em" 
+	                <div class="form-row" >
+	                	<div class="col-4"><b>Expires?</b></div>
+	                    <div class=" col-8">
+	                        <div class="input-group">
+	                              <input class="form-control datepicker" name="invites[0].until" style="width:6em" 
 	                                size="16" type="text" value="" data-date-format="mm-dd-yyyy" >
-	
-	                              <span class="add-on"><i class="icon-th"></i></span>
+	                               <div class="input-group-append">
+	                              <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+	                              </div>
 	                        </div>
 	                    </div>
                     </div>
                 </div>
-                <div class="span6">
-	                <div class="controls-row" >
+                <div class="col-6">
+	                <div class="form-row" >
 	                <p><b>Add a Note</b></p>
-	                <@s.textarea name="invites[0].note" cssClass="span4" rows=5 />
+	                <@s.textarea name="invites[0].note" cssClass="col-12" rows=8 />
 	                </div>
                 </div>
             </div>
@@ -66,18 +68,18 @@
     <h3>Add / Modify User(s)</h3>
     <div id="divAccessRights" class="repeatLastRow" data-addanother="add another user">
     <div class="row">
-        <div class='span6'>
+        <div class='col-<#if showDate>6<#else>8</#if>'>
         <b>User or Email </b>
         </div>
-        <div class="span2">
+        <div class="col-3">
          <b>Permissions</b>
         </div>
         <#if showDate>
-        <div class='span2'>
+        <div class='col-2'>
         <b>Remove access after</b>
         </div>
         </#if>
-                <div class='span1'>
+                <div class='col-1'>
         </div>
 
     </div>
@@ -96,50 +98,41 @@
 
     <#macro _proxy proxy_index proxy showDate=true>
     
-                <div class="">
-                        <div class=" control-group repeat-row" id="authorizedUsersRow_${proxy_index}_">
-                            <div class="controls-row" >
-                                <div class="span6">
-                                    <div id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
+                        <div class=" control-group repeat-row mb-3" id="authorizedUsersRow_${proxy_index}_">
+                            <div class="form-row"  id="authorizedUsersRow_${proxy_index}_p" class="creatorPerson  ">
+                                    <div class="col-<#if showDate>6<#else>8</#if>">
                                         <input type="hidden" name="proxies[${proxy_index}].inviteId" value="<#if proxy.inviteId?has_content>${(proxy.inviteId!-1)?c}</#if>">
 
                                         <input type="hidden" name="proxies[${proxy_index}].id" value="${(proxy.id!-1)?c}" id="authorizedUsersId__id_${proxy_index}_p" autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p">
                                         <input type="text" name="proxies[${proxy_index}].displayName" maxlength="255" value="${proxy.displayName!''} <#if proxy.inviteId?has_content> (invite) </#if>" id="metadataForm_authorizedUsersFullNames_${proxy_index}_"
-                                                 class="span6 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input"
+                                                 class="mr-2 userAutoComplete notValidIfIdEmpty   ui-autocomplete-input form-control"
                                                  <#if proxy.inviteId?has_content> disabled=true </#if>
                                                  
                                                  autocompleteparentelement="#authorizedUsersRow_${proxy_index}_p"
                                                  data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below."
                                                  autocomplete="off" placeholder="Username or Email Address" autocompletename="properName"
                                                  autocompleteidelement="#authorizedUsersId__id_${proxy_index}_p">
-                                    </div>
-                                </div>
-                                <div class="span2">
-                                    <@s.select theme="tdar" cssClass="creator-rights-select span2" name="proxies[${proxy_index}].permission" emptyOption='false'
+                                            </div>
+                                            <@s.select cssClass="creator-rights-select col-3" name="proxies[${proxy_index}].permission" emptyOption='false'
                                         listValue='label' list='%{availablePermissions}' disabled=isDisabled />
-                                </div>
                                 <#if showDate>
-                                <div class=" span2">
-                                    <div class="input-append">
+                                    <div class="input-append col-2">
                                     <#local val=""/>
                                     <#if proxy.until?has_content>
                                         <#local val=proxy.until />
                                     </#if>
-                                          <input class="datepicker" name="proxies[${proxy_index}].until" style="width:6em" 
+                                            <div class="input-group ml-2">
+                                          <input class="datepicker form-input" name="proxies[${proxy_index}].until" style="width:6em" 
                                             size="16" type="text" value="${val}" data-date-format="mm-dd-yyyy" >
-
-                                          <span class="add-on"><i class="icon-th"></i></span>
+                                           <div class="input-group-append">
+                                              <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                          </div>
+                                          </div>
                                     </div>
-                                </div>
                                 </#if>
-
-                                <div class="span1">
-                                    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
-                                </div>
+									<@nav.clearDeleteButton  />
                             </div>
-
-            </div>
-        </div>
+			        </div>
     </#macro>
     
     <#macro javascript>
@@ -167,10 +160,11 @@ $(function() {
 <#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
     <#macro resourceCollectionsRights collections=[] owner="">
         <#if editable && (collections?has_content || invites?has_content || ((persistable.authorizedUsers)![])?has_content) >
-        <h3>Access Permissions</h3>
+        <h2>Access Permissions</h2>
             <#nested />
-        <table class="tableFormat table">
-            <thead>
+        <table class="table table-sm table-striped"">
+              <thead class="thead-dark">
+
             <tr>
                 <th>Where</th>
                 <th>User</th>
@@ -207,9 +201,9 @@ $(function() {
                     <#list availablePermissions as permission>
                         <td>
                             <#if (user.generalPermission.effectivePermissions >= permission.effectivePermissions )>
-                                <i class="icon-ok"></i>
+                                <i class="fas fa-check"></i>
                             <#else>
-                                <i class="icon-remove"></i>
+                                <i class="fas fa-times"></i>
                             </#if>
                         </td>
                     </#list>
@@ -235,9 +229,9 @@ $(function() {
                     <#list availablePermissions as permission>
                         <td>
                             <#if (user.generalPermission.effectivePermissions >= permission.effectivePermissions )>
-                                <i class="icon-ok"></i>
+                                <i class="fas fa-check"></i>
                             <#else>
-                                <i class="icon-remove"></i>
+                                <i class="fas fa-times"></i>
                             </#if>
                         </td>
                     </#list>

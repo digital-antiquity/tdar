@@ -11,7 +11,7 @@ facetWrapper<#escape _untrusted as _untrusted?html>
 
 <h1>Metadata Report: ${resourceCollection.name!"untitled collection"}</h1>
 <div class="row">
-<div class="span6">
+<div class="col-6">
 <h3>Status Breakdown</h3>
 <#list facetWrapper.facetResults['status']>
     <#items  as val>
@@ -22,7 +22,7 @@ facetWrapper<#escape _untrusted as _untrusted?html>
 
 </#list>
 </div>
-<div class="span6">
+<div class="col-6">
 <h3>ResourceType Breakdown</h3>
 <#list facetWrapper.facetResults['resourceType']>
     <#items  as val>
@@ -36,8 +36,9 @@ facetWrapper<#escape _untrusted as _untrusted?html>
 </div>
 
 <h3>Occurence Counts</h3>
-<table class="table tableFormat sortable" id="ocur">
-<thead>
+<table class="table table-sm table-striped sortable" id="ocur">
+  <thead class="thead-dark">
+
 	<tr><th>type</th><th>subtype</th><th>label</th><th>count</th></tr>
 		</thead>
 		<tbody>

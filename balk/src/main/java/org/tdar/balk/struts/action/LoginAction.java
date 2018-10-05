@@ -213,5 +213,9 @@ public class LoginAction extends AbstractAuthenticatedAction implements Validate
     public boolean isBillingManager() {
         return false;
     }
+    
+    public boolean isOwnContainer() {
+        return true;
+    }
 
 }

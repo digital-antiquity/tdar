@@ -14,10 +14,10 @@
 
     <h1>${pageTitle}</h1>
     <div class="row">
-        <div class="span2">
+        <div class="col-2">
             <@dash.sidebar current="myprofile"/>
         </div>
-        <div class="span10">
+        <div class="col-10">
             <@entityEdit.userEditForm person/>
         </div>
     </div>

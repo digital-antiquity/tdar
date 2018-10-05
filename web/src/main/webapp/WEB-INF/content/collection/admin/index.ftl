@@ -11,13 +11,13 @@
 <h1>Collection Admin: <span class="red small">${collection.name}</span></h1>
 
 <div class="row">
-<div class="span12">
+<div class="col-12">
             <@common.resourceUsageInfo />
 </div>
 </div>
 
 <div class="row">
-<div class="span9">
+<div class="col-9">
 
 
 
@@ -26,8 +26,9 @@
     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
             <#if term?has_content >Limited to: ${term}</#if>
     
-    <table class="table tableformat">
-        <thead>
+    <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+
             <tr> <th>id</th><th>status</th><th>type</th><th>title</th><th>files</th></tr>
         </thead>
         <tbody>
@@ -49,7 +50,7 @@
 <br/>
 <br/>
 <h4>Revision History</h4>
-<table class="table tableFormat">
+<table class="table table-sm table-striped">
     <tr>
         <th>When</th>
         <th>Who</th>
@@ -69,8 +70,9 @@
 </table>
 
 <h4>Revisions</h4>
-    <table class="table">
-        <thead>
+    <table class="table table-sm table-striped">
+          <thead class="thead-dark">
+
             <tr><th>filename</th><th>date</th><th>size</th></tr>
         </thead>
         <tbody>
@@ -81,15 +83,17 @@
     </table>
 
 </div>
-          <div class="span3">
-          <h5>Search</h5>
+          <div class="col-3">
+          <p><b>Search</b></p>
           <@s.form action="" method="GET">
               <input type="search" class="form-control" placeholder="Search... " name="term"  value="${term!''}" />
           </@s.form>
-          <h5>Sort</h5>
+                    <br>
+          <p><b>Sort</b></p>
           <@s.select value="sortField" name='sortField' cssClass="input-large" theme="simple"
                       emptyOption='false' listValue='label' list='%{sortOptions}'/>
-          <h5>Resource Type</h5>
+                                <br>
+          <p><b>Resource Type</b></p>
           <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=true liCssClass="" ulClass="unstyled" pictoralIcon=true />
           <#if (selectedResourceTypes?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
@@ -98,7 +102,7 @@
             </@s.url>">[remove this filter]</a></sup>
           </#if>
 
-          <h5>Status</h5>
+          <p><b>Status</b></p>
           <@search.facetBy facetlist=statusFacets label="" facetParam="selectedResourceStatuses" link=true liCssClass="" ulClass="unstyled"  />
           <#if (selectedResourceStatuses?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
@@ -107,7 +111,7 @@
             </@s.url>">[remove this filter]</a></sup>
           </#if>
 
-          <h5>File Access</h5>
+          <p><b>File Access</b></p>
           <@search.facetBy facetlist=fileAccessFacets label="" facetParam="fileAccessTypes" link=true liCssClass="" ulClass="unstyled"  />
           <#if (fileAccessTypes?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
@@ -116,8 +120,8 @@
             </@s.url>">[remove this filter]</a></sup>
           </#if>
           
-          
-          <h5>Admin Tools</h5>
+          <br>
+          <p><b>Admin Tools</b></p>
             <ul>
              <li> <a href="<@s.url value="/collection/admin/report/${collection.id?c}"/>">Admin Metadata Report</a></li>
              <li> <a href="<@s.url value="/resource/compare?collectionId=${collection.id?c}"/>">Compare Resources in Collection</a></li>

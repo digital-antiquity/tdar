@@ -959,6 +959,8 @@ function _displayOverwritePrompt(optionsList, okaySelected, cancelSelected) {
         $modalDiv.unbind("hidden", cancelSelected);
         $modalDiv.one("hidden", okaySelected);
         $modalDiv.modal('hide');
+        var $sectionCheckboxes = $('.divInheritSection input[type=checkbox]');
+        _attemptMultipleInheritance($sectionCheckboxes.not(':checked'), true);
     });
 
     $modalDiv.modal();

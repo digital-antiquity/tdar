@@ -3,7 +3,7 @@
 var TDAR = window['TDAR'] || {};
 window.TDAR = TDAR;
 if (TDAR['vuejs'] == undefined) {
-	TDAR['vuejs'] = {};
+    TDAR['vuejs'] = {};
 }
 
 /**
@@ -12,33 +12,33 @@ if (TDAR['vuejs'] == undefined) {
  * http://yuiblog.com/blog/2007/06/12/module-pattern/) for more information
  */
 var namespace = function() {
-	var a = arguments, o = null, i, j, d;
-	for (i = 0; i < a.length; i = i + 1) {
-		d = ("" + a[i]).split(".");
-		o = TDAR;
+    var a = arguments, o = null, i, j, d;
+    for (i = 0; i < a.length; i = i + 1) {
+        d = ("" + a[i]).split(".");
+        o = TDAR;
 
-		// TDAR is implied, so it is ignored if it is included
-		for (j = (d[0] == "TDAR") ? 1 : 0; j < d.length; j = j + 1) {
-			o[d[j]] = o[d[j]] || {};
-			o = o[d[j]];
-		}
-	}
-	return o;
+        // TDAR is implied, so it is ignored if it is included
+        for (j = (d[0] == "TDAR") ? 1 : 0; j < d.length; j = j + 1) {
+            o[d[j]] = o[d[j]] || {};
+            o = o[d[j]];
+        }
+    }
+    return o;
 };
 
 var configureJiraCollector = function(ctx, username) {
-	if (!username)
-		return;
+    if (!username)
+        return;
 
-	if (!ctx.ATL_JQ_PAGE_PROPS) {
-		ctx.ATL_JQ_PAGE_PROPS = {};
-	}
-	;
-	if (ctx.ATL_JQ_PAGE_PROPS) {
-		ctx.ATL_JQ_PAGE_PROPS.fieldValues = {
-			summary : "bug report from " + username + "."
-		};
-	}
+    if (!ctx.ATL_JQ_PAGE_PROPS) {
+        ctx.ATL_JQ_PAGE_PROPS = {};
+    }
+    ;
+    if (ctx.ATL_JQ_PAGE_PROPS) {
+        ctx.ATL_JQ_PAGE_PROPS.fieldValues = {
+            summary : "bug report from " + username + "."
+        };
+    }
 };
 
 /**
@@ -52,28 +52,28 @@ var configureJiraCollector = function(ctx, username) {
  * @returns {*}
  */
 var loadScript = function(url) {
-	var _url = url;
-	var head = document.getElementsByTagName("head")[0];
-	var script = document.createElement("script");
-	var deferred, promise;
-	// console.debug("loading url: %s", _url);
-	if (typeof jQuery === "function") {
-		deferred = $.Deferred()
-		promise = deferred.promise();
+    var _url = url;
+    var head = document.getElementsByTagName("head")[0];
+    var script = document.createElement("script");
+    var deferred, promise;
+    // console.debug("loading url: %s", _url);
+    if (typeof jQuery === "function") {
+        deferred = $.Deferred()
+        promise = deferred.promise();
 
-		script.onload = function() {
-			deferred.resolve();
-			// console.debug("successfully loaded:%s", _url);
-		};
+        script.onload = function() {
+            deferred.resolve();
+            // console.debug("successfully loaded:%s", _url);
+        };
 
-		script.onerror = function(err) {
-			deferred.rejectWith(err);
-			// console.log("failed to load url:%s error:%s", _url, err);
-		};
-	}
-	script.src = _url;
-	head.appendChild(script);
-	return promise;
+        script.onerror = function(err) {
+            deferred.rejectWith(err);
+            // console.log("failed to load url:%s error:%s", _url, err);
+        };
+    }
+    script.src = _url;
+    head.appendChild(script);
+    return promise;
 };
 
 /**
@@ -85,75 +85,75 @@ var loadScript = function(url) {
  * @private
  */
 var loadDocumentData = function _loadDocumentData() {
-	var dataElements = $('[type="application/json"][id]').toArray();
-	var map = {};
-	dataElements.forEach(function(elem) {
-		var key = elem.id;
-		var val = JSON.parse(elem.innerHTML);
-		map[key] = val;
-	});
-	return map;
+    var dataElements = $('[type="application/json"][id]').toArray();
+    var map = {};
+    dataElements.forEach(function(elem) {
+        var key = elem.id;
+        var val = JSON.parse(elem.innerHTML);
+        map[key] = val;
+    });
+    return map;
 };
 
 // define TDAR.uri(). Note, if deploying app in other than root context, you
 // must set <base href="${request.contextPath}">
 var uri = function(path) {
-	if (!window.location.origin) {
-		window.location.origin = window.location.protocol + "//"
-				+ window.location.hostname
-				+ (window.location.port ? ':' + window.location.port : '');
-	}
-	var base = window.location.origin;
-	var baseElems = document.getElementsByTagName('base');
-	if (baseElems.length) {
-		if (baseElems[0].href != undefined) {
-			base = baseElems[0].href;
-		}
-	}
-	var uri = base;
-	if (uri.lastIndexOf("/") != uri.length - 1) {
-		uri += "/";
-	}
-	if (uri.lastIndexOf("/") == uri.length - 1 && path != undefined
-			&& path.indexOf("/") == 0) {
-		uri = uri.substring(0, uri.lastIndexOf("/"));
-	}
+    if (!window.location.origin) {
+        window.location.origin = window.location.protocol + "//"
+                + window.location.hostname
+                + (window.location.port ? ':' + window.location.port : '');
+    }
+    var base = window.location.origin;
+    var baseElems = document.getElementsByTagName('base');
+    if (baseElems.length) {
+        if (baseElems[0].href != undefined) {
+            base = baseElems[0].href;
+        }
+    }
+    var uri = base;
+    if (uri.lastIndexOf("/") != uri.length - 1) {
+        uri += "/";
+    }
+    if (uri.lastIndexOf("/") == uri.length - 1 && path != undefined
+            && path.indexOf("/") == 0) {
+        uri = uri.substring(0, uri.lastIndexOf("/"));
+    }
 
-	if (path) {
-		uri += path;
-	}
-	return uri;
+    if (path) {
+        uri += path;
+    }
+    return uri;
 };
 
 var assetsUri = function(path) {
-	if (!window.location.origin) {
-		window.location.origin = window.location.protocol + "//"
-				+ window.location.hostname
-				+ (window.location.port ? ':' + window.location.port : '');
-	}
-	var base = window.location.origin;
-	var baseElems = document.getElementsByTagName('base');
-	if (baseElems.length) {
-		base = baseElems[0].assetsHref;
-	}
-	var uri = base;
+    if (!window.location.origin) {
+        window.location.origin = window.location.protocol + "//"
+                + window.location.hostname
+                + (window.location.port ? ':' + window.location.port : '');
+    }
+    var base = window.location.origin;
+    var baseElems = document.getElementsByTagName('base');
+    if (baseElems.length) {
+        base = baseElems[0].assetsHref;
+    }
+    var uri = base;
 
-	if (base == undefined) {
-		return TDAR.uri(path);
-	}
+    if (base == undefined) {
+        return TDAR.uri(path);
+    }
 
-	if (uri.lastIndexOf("/") != uri.length - 1) {
-		uri += "/";
-	}
-	if (uri.lastIndexOf("/") == uri.length - 1 && path != undefined
-			&& path.indexOf("/") == 0) {
-		uri = uri.substring(0, uri.lastIndexOf("/"));
-	}
+    if (uri.lastIndexOf("/") != uri.length - 1) {
+        uri += "/";
+    }
+    if (uri.lastIndexOf("/") == uri.length - 1 && path != undefined
+            && path.indexOf("/") == 0) {
+        uri = uri.substring(0, uri.lastIndexOf("/"));
+    }
 
-	if (path) {
-		uri += path;
-	}
-	return uri;
+    if (path) {
+        uri += path;
+    }
+    return uri;
 };
 
 /* istanbul ignore next */
@@ -163,7 +163,7 @@ var assetsUri = function(path) {
  * @param url
  */
 var windowLocation = function(url) {
-	window.location = url;
+    window.location = url;
 };
 
 
@@ -186,30 +186,33 @@ var _ellipsify = function(text, n, useWordBoundary) {
  */
  var main = function() {
      let TDAR = window.TDAR;
-	// FIXME: I don't fully work, because some things are 3 levels down in the
-	// object tree tdar.vue.upload (e.g.)
-	for ( var key in TDAR) {
-		if (typeof TDAR[key] !== 'object') {
-			continue
-		}
-		if (typeof (TDAR[key]['main']) !== 'function') {
-			continue
-		}
-		var pkg = TDAR[key];
-		console.log('executing main in package:' + key);
-		pkg.main();
-	}
-};
+    // FIXME: I don't fully work, because some things are 3 levels down in the
+    // object tree tdar.vue.upload (e.g.)
+    for ( var key in TDAR) {
+        if (typeof TDAR[key] !== 'object') {
+            continue
+        }
+        if (typeof (TDAR[key]['main']) !== 'function') {
+            continue
+        }
+        var pkg = TDAR[key];
+        console.log('executing main in package:' + key);
+        pkg.main();
+    }
+}
+      $(".input-group-append .fa-search").click(function(){
+            $(this).parents('form:first').submit();
+        });;
 
 /**
  * Define dummy console + log methods if not defined by browser.
  */
 if (!window.console) {
-	console = {};
+    console = {};
 }
 
 var _noop = function() {
-	
+    
 };
 
 console.log = console.log || _noop;
@@ -220,13 +223,13 @@ console.debug = console.debug || console.log;
 console.table = console.table || console.log;
 
 module.exports = {
-	main: main,
-	configureJiraCollector:configureJiraCollector,
-	loadScript: loadScript,
-	loadDocumentData: loadDocumentData,
-	uri : uri,
-	assetsUri : assetsUri,
-	windowLocation: windowLocation,
-	namespace: namespace,
-	ellipsify: _ellipsify
+    main: main,
+    configureJiraCollector:configureJiraCollector,
+    loadScript: loadScript,
+    loadDocumentData: loadDocumentData,
+    uri : uri,
+    assetsUri : assetsUri,
+    windowLocation: windowLocation,
+    namespace: namespace,
+    ellipsify: _ellipsify
 }

@@ -237,7 +237,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPageWithoutErrorCheck(currentUrlPath);
         logger.debug("{}", internalPage);
         assertTrue(getPageCode().contains("my fancy collection"));
-        assertTrue(getPageCode().contains("Deleted"));
+        assertTrue(getPageCode().toLowerCase().contains("deleted"));
 
     }
 

@@ -9,8 +9,9 @@
 </#macro>
 
 <#macro renderPersonTable>
-<table class="tableFormat table ">
-    <thead>
+<table class="table table-sm table-striped" ">
+      <thead class="thead-dark">
+
     <tr>
         <th>ID</th>
         <th>Name</th>
@@ -34,8 +35,9 @@
 </#macro>
 
 <#macro renderInstitutionTable>
-<table class="tableFormat table ">
-    <thead>
+<table class="table table-sm table-striped" ">
+      <thead class="thead-dark">
+
     <tr>
         <th>ID</th>
         <th>Name</th>
@@ -53,8 +55,9 @@
 </#macro>
 
 <#macro renderKeywordTable>
-<table class="tableFormat table ">
-    <thead>
+<table class="table table-sm table-striped" ">
+      <thead class="thead-dark">
+
     <tr>
         <th>ID</th>
         <th>Name</th>

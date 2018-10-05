@@ -1,3 +1,4 @@
+<#assign formControlClass="cls" >
 <!DOCTYPE html>
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
@@ -14,6 +15,10 @@
 
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.15.1" >
+<#global bootstrapVersion="4.1.3" >
+
+
+
 <#assign pageType ="view">
 <#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
     <#assign pageType=actionName>
@@ -35,6 +40,7 @@
 
 <#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
 <head>
+	<link rel="stylesheet" href="https://use.typekit.net/yrw4dsr.css">
     <title>${title!siteName}</title>
     <#if authenticatedUser??>
         <!-- logged-in-as: ${authenticatedUser.email} -->
@@ -46,20 +52,16 @@
 
 <#--  per: http://stackoverflow.com/questions/12246096/bootstrap-printing-width && https://github.com/netdna/bootstrap-cdn/pull/106 -->
     <#if useCDN>
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/${bootstrapVersion}/css/bootstrap.min.css" crossorigin="anonymous">
     <#else>
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${staticHost}/includes/bootstrap-2.32/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link rel="stylesheet" href="${staticHost}/components/bootstrap/dist/css/bootstrap.min.css" >
     </#if>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css"  crossorigin="anonymous">
 
         <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.min.css">
         <link rel="stylesheet" type="text/css" href="/includes/jquery-ui-${jquery_ui_css_version}.custom/jquery-ui.theme.min.css">
 
-    <link href="${staticHost}/css/tdar-base.css" rel="stylesheet">
-    <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print">
-    <#-- @header.css (webFilePreprocessingEnabled ) / -->
 
     <!-- rollbar support -->
     <script>
@@ -79,57 +81,20 @@
     
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
     
-    <meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
+<meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
 <meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
 <meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
 <Meta name = "baidu-site-verification" content = "QBf6pGiSwd" />
 
+<link rel="stylesheet" href="/css/style.css">
 <link rel='shortcut icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
 <link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
 <link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
 <link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
 <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
-<#if !(test!false)>
-<script type="text/javascript">
-    (function(d) {
-        var config = {
-                    kitId: 'czp6njc',
-                    scriptTimeout: 3000
-                },
-                h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(
-                        /\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement(
-                        "script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";
-                        tk.src='//use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;
-                        f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-    })(document);
-</script>
-</#if>
-<style>
-    @media screen {
-        /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
-        h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
-            font-family: "soleil", sans-serif !important;
-        }
 
-        #home .news li, .cols p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
-            font-family: "ff-tisa-web-pro", serif !important;
-        }
 
-    }
-
-    /* for typekit to prevent flash of unstyled content */
-    .wf-loading {
-        font-family: "helvetica";
-        visibility: hidden;
-    }
-
-    .wf-active {
-        visibility: visible;
-    }
-</style>
-    
-    
     <#if whiteLabelCollection??>  
         <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
     </#if>
@@ -186,7 +151,7 @@ ${head}
     	</style>
     </#if>
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${pageType} <#if !production>not-production</#if>"
+<body id="${bodyid}" class="${pageType} <#if !production>not-production</#if>" data-spy="scroll" data-target="#subnavbar" 
 	 data-leaflet-api-key="${config.leafletApiKey}" data-leaflet-tile-provider="${config.leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${config.mapDefaultLat}" data-centerLong="${config.mapDefaultLng}"  data-useGeoLoc="${config.geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
      <#if authenticatedUser?has_content>data-userid="${authenticatedUser.id?c}" data-currentTime="1" </#if>
@@ -211,26 +176,21 @@ ${head}
         catch(e){window.attachEvent("onload", $buo_f)}
     </script>
     <!--<![endif]-->
-        
+    <@header.outdatedBrowserWarning />
+        <header>
+            <@dec.layout_header />
+        </header>
 
-    <div class="${bs.container()}">
-        <div class="row">
-            <header class="span12">
-                <@dec.layout_header />
-            </header>
-        </div>
         <#if (homepage!false)>
             <@dec.homepageHeader />
         </#if>
 
-		<#if searchHeaderEnabled!false>
-		</div>
-			<@wdec.searchHeader />
+        <#if searchHeaderEnabled!false>
+            <@wdec.searchHeader />
             <div class="container">
-		</#if>
+        </#if>
 
-        <@dec.subnav />
-            <!-- BEGIN-TDAR-CONTENT -->
+             <!-- BEGIN-TDAR-CONTENT -->
 
         <#if  page.properties["div.toolbars"]?? && page.properties["div.toolbars"] != "">
             <!-- toolbar -->
@@ -242,7 +202,9 @@ ${head}
 
 
         <#if errorWarningSectionVisible >
-            <div class="alert alert-error error-banner">
+        <div class="container">
+        <div class="row">
+            <div class="alert alert-warning error-banner col-12 mt-4">
                 <#if stackTraces?has_content>
                     <div class="error-codes pull-right">
                         <strong><@s.text name="error.action_error_codes"/></strong>
@@ -251,7 +213,7 @@ ${head}
                         </#list>
                     </div>
                 </#if>
-                <h4>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h4>
+                <h2>${siteAcronym} <#if (resourceEditPage??)><@s.text name="error.action_resource_edit_error_header"/><#else><@s.text name="error.action_error_header"/></#if></h2>
 
                 <div>
                     <@s.actionerror cssClass="action-errors" theme="simple" />
@@ -273,142 +235,143 @@ ${head}
                     </#if>
                 </div>
             </div>
+            </div>
+            </div>
         </#if>
 
         <#if actionMessages?has_content || (page.properties["div.messages"])?has_content>
-            <div class="${bs.row()}">
-                <div class="span12">
+            <div class="container">
+            <div class="row">
+                <div class="col-12">
                     <@s.actionmessage />
         ${(page.properties["div.messages"])!}
                 </div>
+            </div>
+            </div>
             </div>
         </#if>
 
 
         <#assign part="" />
-        <#assign spanSize = 12/>
+        <#assign spanSize = "col-12" />
         <#if  showLeftSidebar() || showRightSidebar() >
-            <#assign part="cols" />
-            <#assign spanSize = 9/>
+            <#assign part="" />
+            <#assign spanSize = 'col-md-8 col-lg-9 col-sm-12 '/>
         <#elseif showLeftSidebar() && showRightSidebar() >
-            <#assign part="cols" />
-            <#assign spanSize = 6/>
+            <#assign part="" />
+            <#assign spanSize = "col-6" />
         </#if>
         
         
         <#function showLeftSidebar>
-        	<#if (leftSidebar!false) && (page.properties["div.sidebar-left"]?has_content) >
-        	
-	        	<#return true />
-        	</#if>
-        	<#return false />
+            <#if (leftSidebar!false) && (page.properties["div.sidebar-left"]?has_content) >
+            
+                <#return true />
+            </#if>
+            <#return false />
         </#function>
 
         <#function showRightSidebar>
-        	<#if (rightSidebar!false) && (page.properties["div.sidebar-right"]?has_content) >
-        	
-	        	<#return true />
-        	</#if>
-        	<#return false />
+            <#if (rightSidebar!false) && (page.properties["div.sidebar-right"]?has_content) >
+            
+                <#return true />
+            </#if>
+            <#return false />
         </#function>
 
-    <#--FIXME: need a better way to hint to layout that we are rendering search results, or perhaps just use a separate layout file  -->
-        <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
+<#--         <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if> -->
 
         <#if page.properties["div.titlebar"]?has_content>
+        <section class="container titlesection">
+        <div class="row">
+        <div class="col-12">
         ${page.properties["div.titlebar"]}
+        </div>
+        </div>
+        </section>
         </#if>
 
-        <section class="${bs.row()} ${part}">
-
+    <#if ownContainer?has_content == false >
+        <section class="container ${part}">
+            <div class="row">
+            
             <#if showLeftSidebar()>
-                <aside class="span3">
+                <aside class="col-md-4 col-lg-3">
                 ${page.properties["div.sidebar-left"]}
                 </aside>
             </#if>
 
-            <article class="span${spanSize} results" id="articleBody">
-            <#--Keep in mind.your body is inside a div.span element. now would be a good time to review bootstrap grid layout conventions (esp. 'Nesting Columns') -->
-            <#--http://twitter.github.com/bootstrap/scaffolding.html#gridSystem -->
+            <article class="${spanSize} results" id="articleBody">
+    </#if>
             ${body}
+            
+    <#if ownContainer?has_content == false >
             </article>
 
             <#if showRightSidebar() >
-                <aside class="span3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
+                <aside class="col-md-4 col-lg-3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
                 ${page.properties["div.sidebar-right"]}
                 </aside>
             </#if>
+        </div>
         </section>
-
+    </#if>
 
     </div>
-    
+
+    <!-- BEGIN-TDAR-FOOTER -->
+
     <footer>
-        <div class="container">
+        <section id="footer">
+           <div class="container">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6">
+                        <h6>About</h6>
+                        <ul class = "list-unstyled">
+                            <li><a href="http://www.tdar.org/news/">News</a></li>
+                            <li><a href="http://www.tdar.org/about/staff/">Our Team</a></li>
+                            <li><a href="http://www.digitalantiquity.org/">Organization</a></li>
+                            <li><a href="http://www.tdar.org/about/contact-us">Contact Us</a></li>
+                            <li><a href="http://www.tdar.org/about/history/">History</a></li>
+                            <li><a href="http://www.tdar.org/news/tdar-software-update-in-situ/">Current Version of tDAR</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <h6>Use</h6>
+                        <ul class = "list-unstyled">
+                            <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li>
+                            <li><a href="http://www.tdar.org/about/help/">Help & Tutorials</a></li>
+                            <li><a href="http://www.tdar.org/about/policies/">Policies</a></li>
+                            <li><a href="http://www.tdar.org/why-tdar/contribute/">Contributing Resources to tDAR</a></li>
+                            <li><a href="http://www.tdar.org/about/pricing/">Pricing</a></li>
+                            <li><a href="http://www.tdar.org/why-tdar/compliance/">Compliance</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <h6>Contact</h6>
+                        <ul class = "list-unstyled">
+                            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">comments@tdar.org</a></li>
+                            <li><a href="https://twitter.com/DigArcRec">Follow @DigArcRec on twitter</a></li>
+                            <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
+                            <li><a href="http://instagram.com/digitalantiquity">Follow @digitalantiquity on Instagram</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 col-sm-6">
+                        <h6>Start Digging</h6>
+                        <ul class = "list-unstyled">
+                            <li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
+                            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+                            <li><a href="<@s.url value="/resource/add"/>">Start a project & add data</a></li>
+                            <li><a href="<@s.url value="/login"/>">Log In</a></li>
+                            <li><a href="<@s.url value="/account/new"/>">Sign Up</a></li>
+                        </ul>
+                    </div>
+                </div>
 
-<div class="row  screen">
-    <div class="span3">
-        <h4>About</h4>
-        <ul>
-            <li><a href="http://www.tdar.org/news/">News</a></li>
-            <li><a href="http://www.tdar.org/about/staff/">Our Team</a></li>
-            <li><a href="http://www.digitalantiquity.org/">Organization</a></li>
-            <li><a href="http://www.tdar.org/about/contact-us">Contact Us</a></li>
-            <li><a href="http://www.tdar.org/about/history/">History</a></li>
-            <li><a href="http://www.tdar.org/news/tdar-software-update-in-situ/">Current Version of tDAR</a></li>
-        </ul>
-    </div>
-    <div class="span3">
-        <h4>Use</h4>
-        <ul>
-            <li><a href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li>
-            <li><a href="http://www.tdar.org/about/help/">Help &amp; Tutorials</a></li>
-            <li><a href="http://www.tdar.org/about/policies/">Policies</a></li>
-            <li><a href="http://www.tdar.org/why-tdar/contribute/">Contributing Resources to tDAR</a></li>
-            <li><a href="http://www.tdar.org/about/pricing/">Pricing</a></li>
-            <li><a href="http://www.tdar.org/why-tdar/compliance/">Compliance</a></li>
-        </ul>
-    </div>
-    <div class="span3">
-        <h4>Contact</h4>
-        <ul>
-            <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>
-            </li>
-            <li><a href="https://twitter.com/DigArcRec" class="twitter-follow-button" data-show-count="false">Follow @DigArcRec on twitter</a></li>
-            <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
-            <li><a href="http://instagram.com/digitalantiquity">Follow @digitalantiquity on Instagram</a></li>
+                <p>tDAR (the Digital Archaeological Record) is the digital repository of the <a href="http://www.digitalantiquity.org/">Center for Digital Antiquity</a>, a collaborative organization and university Center at <a href="http://www.asu.edu">Arizona State University</a>. Digital Antiquity extends our knowledge of the human past and improves the management of our cultural heritage by permanently preserving digital archaeological data and supporting their discovery, access, and reuse. Digital Antiquity and tDAR are and have been supported by a number of organizations, including the <a href="http://www.mellon.org">Andrew W. Mellon Foundation</a>, the <a href="http://www.nsf.gov">National Science Foundation</a>, and the <a href="http://www.neh.gov">National Endowment for the Humanities</a>. A more complete set of acknowledgements are provided <a href="http://www.tdar.org/about/acknowledgements">here</a>.</p>
 
-        </ul>
-    </div>
-    <div class="span3">
-        <h4>Start Digging</h4>
-        <ul>
-            <li><a href="<@s.url value="/browse/explore"/>">Explore</a></li>
-            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
-            <li><a href="<@s.url value="/resource/add"/>">Start a project &amp; add data</a></li>
-            <li><a href="<@s.url value="/login"/>">Log In</a></li>
-            <li><a href="<@s.url value="/account/new"/>">Sign Up</a></li>
-        </ul>
-
-    </div>
-</div>
-<div class="row  screen" id="copyright">
-    <p class="copyright-notice span12">
-
-        tDAR (the Digital Archaeological Record) is the digital repository of the <a href="http://www.digitalantiquity.org/">Center for Digital Antiquity</a>, 
-        a collaborative organization and university Center at <a href="http://www.asu.edu">Arizona State University</a>.
-        Digital Antiquity extends our knowledge of the human past and improves the management of our cultural heritage by 
-        permanently preserving digital archaeological data and supporting their discovery, access, and reuse. Digital Antiquity and tDAR are and have
-        been supported by a number of organizations, including the <a href="http://www.mellon.org">Andrew W. Mellon Foundation</a>, the 
-        <a href="http://www.nsf.gov">National Science Foundation</a>, and the <a href="http://www.neh.gov">National Endowment for the Humanities</a>.  A
-        more complete set of acknowledgements are provided <a href="http://www.tdar.org/about/acknowledgements">here</a>.
-        <br/><br/>
-        Copyright &copy; 2017 Digital Antiquity. <a href="/credit">Design Credits</a>.
-    </p>
-</div>
-
-            <div>
                 <p>
+                    Copyright © 2018 Digital Antiquity. <a href="/credit">Design Credits</a>.
                     <small>
                         ${config.changeset}
                         <#if authenticatedUser??>
@@ -419,10 +382,21 @@ ${head}
                     </small>
                 </p>
             </div>
-        </div>
+        </section>
 
+        <section id="references">
+            <div class="container">
+                <div class="row align-items-center" id="foothumb">
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.asu.edu"><img class="image-fluid ht" src="/images/logos/asu_veritcal.png" class="image ht"  title="Arizona State University" alt="Arizona State University" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.mellon.org"><img class="image-fluid ht" src="/images/logos/Mellon.png" class="image ht" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.nsf.gov"><img class="image-fluid ht" src="/images/logos/nsf.jpg" class="image ht" title="National Science Foundation" alt="National Science Foundation" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.neh.gov"><img class="image-fluid ht" src="/images/logos/neh_logo_stckd.jpg" class="image ht" title="National Endowment for the Humanities" alt="National Endowment for the Humanities" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.saa.org"><img class="image-fluid ht" src="/images/logos/saa-small.png" class="image ht" title="Society for American Archaeology" alt="Society for American Archaeology" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.archaeological.org"><img class="image-fluid ht" src="/images/logos/aia.png" class="image ht" title="Archaeological Institute of America" alt="Archaeological Institute of America" /></a></div>
+                </div>
+            </div>
+        </section>
     </footer>
-
 
 
 
@@ -454,21 +428,6 @@ ${head}
     $(TDAR.main);
 </script>
 
-    <!-- BEGIN-TDAR-FOOTER -->
-    
-<div class="container"  style="margin-top:10px;margin-bottom:10px">
-<div class="row">
-    <div class="span12" id="foothumb">
-        <a href="http://www.asu.edu"><img src="/images/logos/asu_veritcal.png" class="image ht"  title="Arizona State University" alt="Arizona State University" /></a>
-        <a href="http://www.mellon.org"><img src="/images/logos/Mellon.png" class="image ht" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a>
-        <a href="http://www.nsf.gov"><img src="/images/logos/nsf.jpg" class="image ht" title="National Science Foundation" alt="National Science Foundation" /></a>
-        <a href="http://www.neh.gov"><img src="/images/logos/neh_logo_stckd.jpg" class="image ht" title="National Endowment for the Humanities" alt="National Endowment for the Humanities" /></a>
-        <a href="http://www.saa.org"><img src="/images/logos/saa-small.png" class="image ht" title="Society for American Archaeology" alt="Society for American Archaeology" /></a>
-        <a href="http://www.archaeological.org"><img src="/images/logos/aia.png" class="image ht" title="Archaeological Institute of America" alt="Archaeological Institute of America" /></a>
-            <span class="stretch"></span>
-    </div>
-</div>
-</div>
 
 </body>
 </html>

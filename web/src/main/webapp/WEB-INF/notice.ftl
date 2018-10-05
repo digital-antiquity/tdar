@@ -1,7 +1,7 @@
 <div class='info'>
 <#if !production>
 
-    <div class="alert alert-warning">
+    <div class="alert alert-warning pt-4 mt-4">
         <p>
             <strong>Note:</strong>
             You are using tDAR's <strong>staging development server</strong>. This server is only

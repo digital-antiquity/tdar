@@ -1,39 +1,39 @@
 <#escape _untrusted as _untrusted?html>
 <#macro sidebar current="dashboard">
-    <ul class="nav nav-list nav-stacked dashboard-nav">
-        <li class="nav-header">Dashboard</li>
+    <ul class="nav nav-pills nav-fill nav-list nav-stacked dashboard-nav">
+<!--        <li class="nav-header"><b>Dashboard</b></li> -->
 
-        <li <@activeIf current "dashboard" />><a href="/dashboard">Resources</a></li>
-<!--        <li <@activeIf current "collections" />> <a href="/dashboard/collections">Collections</a></li> -->
+        <li class="nav-item"><a  <@activeIf current "dashboard" /> href="/dashboard">Resources</a></li>
+<!--        <li class="nav-item"><a  <@activeIf current "collections" /> href="/dashboard/collections">Collections</a></li> -->
 	<#if contributor>
-        <li <@activeIf current "rights" />> <a href="/dashboard/rights">Collections</a></li>
+        <li class="nav-item"><a  <@activeIf current "rights" /> href="/dashboard/rights">Collections</a></li>
     </#if>
-        <li <@activeIf current "bookmarks" />> <a href="/dashboard/bookmarks"> Bookmarks</a></li>
+        <li class="nav-item"><a  <@activeIf current "bookmarks" /> href="/dashboard/bookmarks"> Bookmarks</a></li>
 
         <#--<li <@activeIf current "share" />><a href="/share">Share</a></li>-->
 
     <#if editor>
-        <li <@activeIf current "files" />> <a href="/dashboard/files">Files</a></li>
+        <li class="nav-item"><a  <@activeIf current "files" /> href="/dashboard/files">Files</a></li>
     </#if>
 
 
         <#--<li class="nav-header">My Library</li>-->
-        <li <@activeIf current "myprofile"/>><a href="/entity/user/myprofile">My Profile</a></li>
+        <li class="nav-item" ><a <@activeIf current "myprofile"/> href="/entity/user/myprofile">My Profile</a></li>
         <#if contributor>
-            <li <@activeIf current "billing" />><a href="/dashboard/billing">Billing Accounts</a></li>
-            <li <@activeIf current "export" />><a href="/export/request">Export</a></li>
+            <li class="nav-item" ><a <@activeIf current "billing" /> href="/dashboard/billing">Billing Accounts</a></li>
+            <li class="nav-item" ><a <@activeIf current "export" /> href="/export/request">Export</a></li>
         </#if>
     </ul>
 </#macro>
 
 <#macro activeIf current test>
-<#if current == test>class="active"</#if>
+class="<#if current == test>active<#else></#if> nav-link"
 </#macro>
 
 
 <#macro headerNotifications>
     <#list currentNotifications as notification>
-        <div class="${notification.messageType} alert" id="note_${notification.id?c}">
+        <div class="${notification.messageType} alert alert-warning" id="note_${notification.id?c}" role="alert">
         <button type="button" id="close_note_${notification.id?c}" class="close" data-dismiss="alert" data-dismiss-id="${notification.id?c}" >&times;</button>
         <#if notification.messageDisplayType.normal>
         <@s.text name="${notification.messageKey}"/> [${notification.dateCreated?date?string.short}]

@@ -242,7 +242,7 @@ var _button = function (label, id) {
     if (!id) {
         buttonId = "btn" + label.replace(" ", "").toLowerCase();
     }
-    var html = "<div class='control-group add-another-control'>" + "<div class='controls'>" + "<button class='btn addanother' id='" + buttonId + "' type='button'><i class='icon-plus-sign'></i>" + label + "</button>" + "</div>" + "</div>";
+    var html = "<div class='control-group add-another-control'>" + "<div class='controls offset-3'>" + "<button class=' btn-xs  btn btn-light addanother' id='" + buttonId + "' type='button'><i class=\"fas fa-plus-circle\"></i> " + label + "</button>" + "</div>" + "</div>";
     return $(html);
 };
 

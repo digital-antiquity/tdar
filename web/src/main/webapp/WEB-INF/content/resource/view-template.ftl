@@ -33,20 +33,6 @@
 </head>
 
 
-    <@nav.toolbar "${resource.urlNamespace}" "view">
-        <#if resource.resourceType.dataTableSupported && editable>
-            <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
-            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
-            <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
-            <#if mappingFeatureEnabled >
-            <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
-            </#if>
-        </#if>
-
-        <#if local_.toolbarAdditions?? && local_.toolbarAdditions?is_macro>
-            <@local_.toolbarAdditions />
-        </#if>
-    </@nav.toolbar>
 
         <#if local_.notifications?? && local_.notifications?is_macro>
             <@local_.notifications />
@@ -58,9 +44,25 @@
     </p>
 </div>
 
-    <@view.pageStatusCallout />
+    
 
-    <h1 class="view-page-title">${resource.title!"No Title"}</h1>
+    
+    <h1 class="view-page-title">${resource.title!"No Title"} <@view.pageStatusCallout /></h1>
+    <@nav.toolbar "${resource.urlNamespace}" "view" true>
+        <#if resource.resourceType.dataTableSupported && editable>
+            <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
+            <@nav.makeLink2 namespace="dataset" link="columns/${persistable.id?c}" label="table metadata" disabled=disabled icon="columns" />
+            <#if mappingFeatureEnabled >
+            <@nav.makeLink2 namespace="dataset" link="resource-mapping?id=${persistable.id?c}" label="res. mapping" disabled=disabled icon="columns" />
+            </#if>
+        </#if>
+
+        <#if local_.toolbarAdditions?? && local_.toolbarAdditions?is_macro>
+            <@local_.toolbarAdditions />
+        </#if>
+    </@nav.toolbar>
+<div class="section mt-25">
+
     <#if hasProject>
 
     <div id="subtitle">
@@ -74,11 +76,7 @@
         </p></div>
     </#if>
 
-    <#if editor>
-    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/resource/admin?id=${resource.id?c}"/>">ADMIN</a></div>
-    </#if>
 
-<p class="meta">
     <@view.showCreatorProxy proxyList=authorshipProxies />
     <#if resource.date?has_content>
         <#assign dateval = "unknown" />
@@ -91,22 +89,23 @@
     <#if config.copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
         <strong>Primary Copyright Holder:</strong>
         <@view.browse resource.copyrightHolder "copyrightHolder" />
-    </p>
     </#if>
 
-</p>
-
-<p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
-
+</div>
+<div class="section">
 <h2>Summary</h2>
     <@common.description resource.description />
-<hr>
+</div>
+
+<@view.resourceCitationSection resource />
+
 <#list viewableResourceCollections>
-    <h3>This Resource is Part of the Following Collections</h3>
+<div class="section">
+    <h2>This Resource is Part of the Following Collections</h2>
     <p>
-    <ul class="inline">
+    <ul class="list-inline">
     <#items as collection>
-        <li>
+        <li class="list-inline-item">
             <a class="sml moreInfo" data-type="collection" data-size="${(((collection.managedResources![])?size!0) + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 
             data-submitter="${collection.submitter.properName}"
             data-description="<@common.truncate collection.description!'no description' />"
@@ -118,12 +117,9 @@
     </#items>
 </ul>
 </p>
-<hr>
+</div>
 </#list>
 
-<@view.resourceCitationSection resource />
-
-<hr/>
     <#noescape>
         <#if resource.url! != ''>
         <p><strong>URL: </strong><a href="${resource.url?html}" onclick="TDAR.common.outboundLink(this)" rel="nofollow"
@@ -138,19 +134,17 @@
 
     <#if ( resource.hasBrowsableImages && resource.visibleFilesWithThumbnails?size > 0)>
         <@view.imageGallery />
-    <br/>
-    <hr/>
     </#if>
 
     <#if resource.resourceType.dataTableSupported>
         <#if (resource.dataTables?has_content)>
             <#if resource.viewable && authenticated && (resource.publicallyAccessible || ableToViewConfidentialFiles)>
-            <h3 id="browseTable" data-namespace="${namespace}">Browse ${resource.title}</h3>
+            <h2 id="browseTable" data-namespace="${namespace}">Browse ${resource.title}</h2>
 
                 <#if (resource.dataTables?size > 1)>
                 <form>
                     <label for="table_select">Choose Table:</label>
-                    <select id="table_select" name="dataTableId">
+                    <select id="table_select" name="dataTableId" class="form-control">
                         <#list resource.importSortedDataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>
@@ -162,12 +156,12 @@
             <p><@view.embargoCheck /></p>
 
             <div class="row">
-                <div class="span9">
-                    <table id="dataTable"
+                <div class="col-12">
+                    <table id="view-data-table" style="width:100%"
                            data-data-table-selector="#table_select"
                            data-default-data-table-id="${dataTable.id?c}"
                            data-resource-id="${resource.id?c}"
-                           class="dataTable table tableFormat table-striped table-bordered"></table>
+                           class="table table-striped"></table>
                 </div>
             </div>
                 <#if config.xmlExportEnabled>
@@ -179,15 +173,15 @@
 
             </#if>
 
-        <h3>Data Set Structure</h3>
+        <h2>Data Set Structure</h2>
         <div class="row">
-            <div class="span3"><span class="columnSquare measurement"></span>Measurement Column</div>
-            <div class="span3"><span class="columnSquare count"></span>Count Column</div>
-            <div class="span3"><span class="columnSquare coded"></span>Coded Column</div>
+            <div class="col-3"><span class="columnSquare measurement"></span>Measurement Column</div>
+            <div class="col-3"><span class="columnSquare count"></span>Count Column</div>
+            <div class="col-3"><span class="columnSquare coded"></span>Coded Column</div>
         </div>
         <div class="row">
-            <div class="span3"><span class="columnSquare mapped"></span>Filename Column</div>
-            <div class="span3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
+            <div class="col-3"><span class="columnSquare mapped"></span>Filename Column</div>
+            <div class="col-3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
     <br/>
             <#list resource.sortedDataTables as dataTable>
@@ -195,8 +189,8 @@
             <#if dataTable.description?has_content>
             <p class="tableDescription">${dataTable.description}</p>
             </#if>
-            <table class="tableFormat table table-bordered">
-                <thead class='highlight'>
+            <table class="table table-sm table-striped" table-bordered">
+                <thead class='thead-dark'>
                 <tr>
                     <th class="guide">Column Name</th>
                     <th>Data Type</th>
@@ -254,8 +248,8 @@
             </#list>
                 <#if resource.relationships?size != 0>
                 <h4>Data Table Relationships:</h4>
-                <table class="tableFormat table table-striped table-bordered">
-                    <thead class="highlight">
+                <table class="table table-sm table-striped" table-striped table-bordered">
+                    <thead class="thead-dark">
                     <tr>
                         <th>Type</th>
                         <th>Local Table</th>
@@ -297,34 +291,28 @@
 
 
 
-    <#if resource.resourceType.supporting >
-        <@view.categoryVariables />
-    </#if>
     <#if !resource.resourceType.project >
         <#if config.licensesEnabled?? &&  config.licensesEnabled || resource.licenseType?has_content >
             <@view.license />
         </#if>
     </#if>
 
-    <span class="Z3988" title="<#noescape>${openUrl!""}</#noescape>"></span>
 
     <#if resource.containsActiveKeywords >
+    <div class="section">
+
     <h2>Keywords</h2>
         <#if resource.project?has_content && resource.project.id != -1 && resource.projectInheritable?? && !resource.projectInheritable && resource.inheritingSomeMetadata>
         <em>Note: Inherited values from this project are not available because the project is not active</em>
         </#if>
     <div class="row">
-        <#if (resource.keywordProperties?size > 1)>
-        <div class="span45">
-        <#elseif resource.keywordProperties?size == 1>
-        <div class="span9">
-        </#if>
+        <div class="col">
 
         <#list resource.keywordProperties as prop>
         <#-- FIXME: somehow this should be folded into SearchFieldType to not have all of this if/else -->
             <#if ((resource.keywordProperties?size /2)?ceiling == prop_index)>
             </div>
-            <div class="span45">
+            <div class="col">
             </#if>
             <#if prop == "activeSiteNameKeywords">
                 <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" resource.inheritingSiteInformation!false />
@@ -362,7 +350,7 @@
         </div>
         </#if>
     </div>
-    <hr/>
+    </div>
     </#if>
 
 
@@ -376,6 +364,7 @@
     </#macro>
 
         <#list resource.activeCoverageDates>
+        <div class="section">
         <h2>Temporal Coverage <#if editor && resource.inheritingTemporalInformation!false><small>(from project)</small></#if> </h2>
         <#items as coverageDate>
             <#assign value>
@@ -385,11 +374,12 @@
             </#assign>
             <@view.kvp key=coverageDate.dateType.label val=value />
             </#items>
-            <hr/>
+            </div>
         </#list>
 
 
     <#if (resource.activeLatitudeLongitudeBoxes?has_content) || (userAbleToViewUnobfuscatedMap && geoJson?has_content)>
+    <div class="section">
     <h2>Spatial Coverage <#if editor && resource.inheritingSpatialInformation!false><small>(from project)</small></#if> </h2>
     <div class="title-data">
         <#if (resource.activeLatitudeLongitudeBoxes?has_content) >
@@ -408,8 +398,7 @@
         </#if>
     </div>
 
-    <div class="row">
-        <div id='large-map' style="height:300px" class="leaflet-map span9" 
+        <div id='large-map' style="height:300px" class="leaflet-map col-12" 
         <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>data-geojson="#localGeoJson"</#if>
         <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
             <#assign llb = resource.firstActiveLatitudeLongitudeBox />
@@ -426,21 +415,23 @@
         </#if> -->
         </#if>
         ></div>
-    </div>
     <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>
         <#noescape>
             <script id="localGeoJson" type="application/json">${geoJson}</script>
         </#noescape>
     </#if>
+    </div>
     </#if>
     <#if creditProxies?has_content >
-    <h3>Individual &amp; Institutional Roles <#if editor && resource.inheritingIndividualAndInstitutionalCredit!false ><small>(from project)</small></#if> </h3>
+        <div class="section">
+    <h2>Individual &amp; Institutional Roles <#if editor && resource.inheritingIndividualAndInstitutionalCredit!false ><small>(from project)</small></#if> </h2>
         <@view.showCreatorProxy proxyList=creditProxies />
-    <hr/>
+        </div>
     </#if>
 
         <#list allResourceAnnotationKeys>
-        <h3>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h3>
+        <div class="section">
+        <h2>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h2>
 
         <#items as key>
             <#assign contents = "" />
@@ -454,39 +445,52 @@
                 <@view.kvp key=keyLabel val=contents noescape=true />
             </#if>
             </#items>
+            </div>
         </#list>
 
 
     <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber")>
+    <div class="section">
     <h2>Notes <#if editor && resource.inheritingNoteInformation!false ><small>(from project)</small></#if> </h2>
         <#items as resourceNote>
             <@view.kvp key=resourceNote.type.label val=resourceNote.note />
         </#items>
-    <hr/>
+        </div>
         </#list>
 
     <@_relatedSimpleItem resource.activeSourceCollections "Source Collections"/>
     <@_relatedSimpleItem resource.activeRelatedComparativeCollections "Related Comparative Collections" />
     <#if resource.activeSourceCollections?has_content || resource.activeRelatedComparativeCollections?has_content>
-    <hr/>
     </#if>
 <#-- display linked data <-> ontology nodes -->
         <#list relatedResources![]>
-        <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
-        <ol style='list-style-position:inside'>
+        <div class="section">
+        <h2>This ${resource.resourceType.label} is Used by the Following Datasets:</h2>
+        <div class="row">
+        <div class="col">
+        <ul>
+            <#assign  half = (relatedResources?size / 2 )?ceiling />
             <#items as related >
             <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${related.title} </a></li>
+            <#if related?index == half>
+	            </ul>
+            	</div>
+            	<div class="col">
+    			    <ul>
+            </#if>
             </#items>
-    </ol>
+	    </ul>
+	    </div>
+	    </div>
+	</div>
         </#list>
-
     <@view.unapiLink resource />
 
 <#--emit additional dataset metadata as a list of key/value pairs  -->
     <#if mappedData?has_content >
         <#assign map = mappedData />
         <#if map?? && !map.empty>
-        <h3>Additional Metadata</h3>
+        <h2>Additional Metadata</h2>
             <#list map?keys as key>
                 <#if key?? && map.get(key)?? && key.visible?? && key.visible>
                     <@view.kvp key=key.displayName!"unknown field" val=map.get(key)!"unknown value" />
@@ -502,11 +506,12 @@
     </#if>
 
 <#list visibleUnmanagedCollections>
-    <h3>This Resource is Part of the Following User Created Collections</h3>
+    <h2>This Resource is Part of the Following User Created Collections</h2>
         <ul class="inline">
     <#items as collection>
     
-        <li>
+    
+        <li class="list-inline-item">
             <a class="sml moreInfo" data-type="collection" data-size="${((collection.managedResources![])?size!0 + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 
             data-submitter="${collection.submitter.properName}"
             data-description="<@common.truncate collection.description!'no description' />"
@@ -521,6 +526,7 @@
     <hr>
 </#list>
 
+    <div class="section">
     <@view.accessRights>
     <div>
         <#if resource.embargoedFiles?? && !resource.embargoedFiles>
@@ -529,16 +535,18 @@
         </#if>
     </div>
     </@view.accessRights>
+    </div>
 
 
 
-   <div class="modal hide fade" id="modal">
+   <div class="modal" id="modal">
                 <#include '../../..//dist/templates/autocomplete.html' />
                 <#include 'vue-collection-widget.html' />
     </div>
 
-<div id="sidebar-right" parse="true">
-    <div class="beige white-border-bottom">
+<div id="sidebar-right" parse="true" class="row pl-3">
+	<div class="col-12">
+    <div class="beige white-border-bottom d-sm-none d-md-block">
         <div class="iconbox">
             <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${resource.resourceType?lower_case}"></use></svg>
         </div>
@@ -553,13 +561,13 @@
     <#else>
         <#if resourceTypeFacets?has_content >
         <p>Project Contents</p>
-            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
+            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="list-inline-item" ulClass="list-inline" icon=false />
         </#if>
     </#if>
-        <ul class="media-list">
+        <ul class="media-list pl-0 ml-0">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media">
-            <i class="icon-comment pull-left"></i>
+                <i class="fas fa-comment-alt icon-push-down mr-2 ml-1"></i>
                 <div class="media-body">
                         <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
                     <#if !(authenticatedUser.id)?has_content>
@@ -570,7 +578,9 @@
             </li>
         <#if (authenticatedUser.id)?has_content && editable>
             <@list.bookmarkMediaLink resource />
-            <li class="media "><i class="icon-folder-open pull-left"></i>
+    
+                 <li class="media ">
+                    <i class="fas fa-folder-open icon-push-down  mr-2 ml-1"></i>
                 <div class="media-body">
                     <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
                 </div>
@@ -579,11 +589,11 @@
 
             <@nav.shareSection />
         </ul>
-    <h3>Basic Information</h3>
+    <h2>Basic Information</h2>
 
     <p>
 
-    <ul class="unstyled-list">
+    <ul class="list-unstyled">
         <#if resource.resourceProviderInstitution?? && resource.resourceProviderInstitution.id != -1>
             <li>
                 <strong>Resource Provider</strong><br>
@@ -633,6 +643,7 @@
         </li>
     </ul>
 </div>
+</div>
 
 
 
@@ -664,14 +675,12 @@ $(function(){
 <#--emit a list of related items (e.g. list of source collections or list of comparative collections -->
     <#macro _relatedSimpleItem listitems label>
         <#list listitems>
-        <h3>${label}</h3>
-        <table>
+        <div class="section">
+        <h2>${label}</h2>
             <#items as citation>
-                <tr>
-                    <td>${citation}</td>
-                </tr>
+                    <p>${citation}</p>
             </#items>
-        </table>
+        </div>
         </#list>
     </#macro>
 
@@ -679,7 +688,7 @@ $(function(){
 <div class="modal hide fade" id="modal">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h3>Add to a Collection</h3>
+    <h2>Add to a Collection</h2>
   </div>
   
   <div class="modal-body">
