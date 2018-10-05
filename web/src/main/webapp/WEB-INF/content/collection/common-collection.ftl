@@ -197,11 +197,7 @@
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
 		        </div>
         
-        <div class="collection-facets col-12">
-            <#assign mapSize="450" />
-			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" 'horizontal' />
-        </div>
-
+        <#assign mapSize="450" />
         <div class="tdarresults">
             <#assign itemsPerRow = 5 />
             <#if ((rightSidebar!false) || (leftSidebar!false)) >
@@ -209,10 +205,14 @@
             </#if>
 
 
-
             <#nested />
             <@list.listResources resourcelist=results sortfield=sortField titleTag="b"  headerTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
-                    orientation=orientation    mapPosition="top" mapHeight=mapSize />
+                    orientation=orientation    mapPosition="top" mapHeight=mapSize>
+                            <div class="collection-facets col-12">
+            <@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" 'horizontal' />
+            <hr/>
+        </div>
+                    </@list.listResources>
             </div>
             <@search.basicPagination "Records" />
         <#else>

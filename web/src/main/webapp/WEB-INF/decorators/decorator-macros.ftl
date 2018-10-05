@@ -186,10 +186,13 @@
                     </form>
 </#macro>
 
-<#macro searchHero>
-        <div class="whatcanyoudig-image"><!-- had container -->
-            <h2 >What can you dig up?</h2>
-            <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
+<#macro searchHero imageClass="whatcanyoudig-image" title="What can you dig up?" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."
+ idField="" idValue="">
+        <div class="${imageClass} homepage-header-image"><!-- had container -->
+            <h2 class="color-title">${title}</h2>
+            <#if subtitle?has_content>
+            <p class="color-subtitle">${subtitle}</p>
+            </#if>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
                 <div class="input-group col-md-6 noleftmargin right-bottom-dropshadow">
                     <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
@@ -198,6 +201,9 @@
                     </span>
                 </div>
                     <a class="ml-3 align-self-center" href="<@s.url value="/search"/>">advanced</a>
+                    <#if idField?has_content && idValue?has_content>
+                    <input type="hidden" name="${idField}" value="${idValue}">
+                    </#if>
                     <input type="hidden" name="_tdar.searchType" value="simple">
             </form>
         </div>
@@ -221,44 +227,20 @@
 
 </#macro>
 
+<#macro homepageHero>
+<section id="hero-wide">
+          <div class = "">  
+            <div class="px-0 pb-0 pt-0">
+    <#nested />
+            </div>
+          </div>
+</section>
+
+</#macro>
+
+
 <#macro homepageHeader>
 
-<section id="hero-wide">
-  <div class = "">  
-    <div class="px-0 pb-0 pt-0">
-    <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
-  <ol class="carousel-indicators">
-    <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
-    <li data-target="#homepageCarousel" data-slide-to="1"></li>
-    <!-- <li data-target="#homepageCarousel" data-slide-to="2"></li> -->
-  </ol>
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-		<@searchHero /> 
-    </div>
-    <div class="carousel-item">
-		<@imageheader />
-    </div>
-<!--    <div class="carousel-item">
-		<@imageheader2 />
-    </div> -->
-  </div>
-<!-- 
-  <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
--->
-</div>
-    
-    
-    </div>
-  </div>
-</section>
 
 
 <section id="learnMore">

@@ -6,7 +6,6 @@
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 <#import "decorator-macros.ftl" as dec>
-<#import "whitelabel-decorator-macros.ftl" as wdec>
 <#import "/WEB-INF/macros/bootstrap-macros.ftl" as bs>
 
 <!-- README - UPDATE BOWER.JSON in lockstep -->
@@ -158,11 +157,46 @@ ${head}
         </header>
 
         <#if (homepage!false)>
-            <@dec.homepageHeader />
+        <@dec.homepageHero>
+                <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+                  <ol class="carousel-indicators">
+                    <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#homepageCarousel" data-slide-to="1"></li>
+                    <!-- <li data-target="#homepageCarousel" data-slide-to="2"></li> -->
+                  </ol>
+                  <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <@dec.searchHero /> 
+                    </div>
+                    <div class="carousel-item">
+                        <@dec.imageheader />
+                    </div>
+                <!--    <div class="carousel-item">
+                        <@dec.imageheader2 />
+                    </div> -->
+                  </div>
+                <!-- 
+                  <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                -->
+                </div>
+        </@dec.homepageHero>
+            <@dec.homepageHeader/>
+                
         </#if>
-
-        <#if searchHeaderEnabled!false>
-            <@wdec.searchHeader />
+        <#if searchHeaderEnabled!false && whitelabelCollection>
+        <#assign subtitle = (resourceCollection.properties.subtitle!(resourceCollection.institution.name)!'')>
+        <@dec.homepageHero>
+            <@dec.searchHero imageClass="whitelabelImageClass" 
+                title="${resourceCollection.title}" subtitle="${subtitle}" 
+                    idField="collectionId" idValue="${resourceCollection.id?c}" />
+        </@dec.homepageHero>
             <div class="container">
         </#if>
 
