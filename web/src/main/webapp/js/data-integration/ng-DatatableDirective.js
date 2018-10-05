@@ -1,10 +1,9 @@
 const angular = require("angular");
 
 var app = angular.module('integrationApp');
-require('./../../includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js');
-require('./../../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js');
-require("../../includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css");
-require("../../includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css");
+require('datatables.net/js/jquery.dataTables.js');
+require('datatables.net-bs4/js/dataTables.bootstrap4.js');
+require('datatables.net-bs4/css/dataTables.bootstrap4.css');
 // AngularJS directive that provides binding to a simple Datatables.net table component.
 
 // Based on example here http://jsfiddle.net/zdam/pb9ba/

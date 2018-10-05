@@ -23,7 +23,7 @@ require('./../includes/jquery.cookie.js');
 require('./jquery.FormNavigate');
 require('./../includes/jquery.textarearesizer.js');
 require("./../includes/jquery.tabby-0.12.js");
-require("./../includes/bootstrap-2.32/js/bootstrap.js");
+require("bootstrap/dist/js/bootstrap.bundle.js");
 require("./tdar.formValidateExtensions.js");
 
 jQuery.extend({
