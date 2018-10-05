@@ -25,6 +25,6 @@ module.exports = merge(common, {
         //      }
 
     ]},
-    devtool: 'eval-source-map',
+   // devtool: 'eval-source-map',
     plugins: [    /* new MinifyPlugin() */    ]
 });

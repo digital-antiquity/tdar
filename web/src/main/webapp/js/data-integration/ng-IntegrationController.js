@@ -1,7 +1,7 @@
 const angular = require("angular");
 
 var app = angular.module('integrationApp');
-require("./../../includes/bootstrap-2.32/js/bootstrap.js")
+require("bootstrap/dist/js/bootstrap.bundle.js");
 
 // top-level controller for the integration viewmodel
 app.controller('IntegrationController', [

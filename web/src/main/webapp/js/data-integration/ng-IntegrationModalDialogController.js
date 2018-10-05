@@ -1,6 +1,6 @@
 const angular = require("angular");
 var app = angular.module("integrationApp");
-require("./../../includes/bootstrap-2.32/js/bootstrap.js")
+require("bootstrap/dist/js/bootstrap.bundle.js");
 
 /**
  * SearchFilter stores the current filter values specified by the user when interacting with the "Find Ontologies" and "Find Datasets" popup control

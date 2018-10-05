@@ -7,7 +7,7 @@ const TDAR = require("JS/tdar.root");
 //const $ = require("jquery");
 //window.$ = $;
 
-describe("CommonSpec.js: edit page tests", function () {
+xdescribe("CommonSpec.js: edit page tests", function () {
     "use strict";
 
     var formProps = {
@@ -52,7 +52,7 @@ describe("CommonSpec.js: edit page tests", function () {
         expect($('#resourceRegistrationTitle')).toHaveValue(trimmedTitle);
 
     });
-
+});
 
     describe("TDAR.common functions that utilize ajax", function() {
         "use strict";
@@ -484,4 +484,3 @@ describe("CommonSpec.js: edit page tests", function () {
             expect(array2).toEqual(array2Copy);
         });
     });
-});

@@ -43,7 +43,7 @@ var _switchContributorReasonDisplay = function(shouldDisplay) {
         } else {
             $('#contributorReasonTextArea').addClass("hidden");
         }
-        $('#contributorReasonTextArea').collapse(opt);
+//        $('#contributorReasonTextArea').collapse(opt);
     $('#contributorReasonId').attr("disabled", !shouldDisplay);
 };
 

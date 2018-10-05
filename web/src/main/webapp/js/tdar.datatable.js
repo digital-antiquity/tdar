@@ -1927,7 +1927,7 @@ core.namespace("datatable");
 
     }
 
-    modules.export = {
+    module.exports = {
         extendSorting : _extendSorting,
         registerLookupDataTable : _registerLookupDataTable,
         initUserDataTable : _registerUserLookupDatatable,

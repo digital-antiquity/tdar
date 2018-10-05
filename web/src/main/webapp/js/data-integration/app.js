@@ -4,6 +4,7 @@
  * 
  */
 const angular = require("angular");
+require('bootstrap/dist/css/bootstrap.css');
 
 // Ajax request timeout, in millis. This varies across browser vendors (FF: infinite, Chrome: 5 mins) , so it's a good idea to set it explicitly to 20 minutes.
 // pro tip: to test out how your app handles broken sockets, set timeout to 1 (or another small, nonzero number)
