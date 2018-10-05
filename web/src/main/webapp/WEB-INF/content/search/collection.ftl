@@ -25,8 +25,8 @@
 <div class="usual">
 	<@search.toolbar />
         <div id="collection" class="tab-pane active">
-            <div class="glide">
-                <h3>Search For Collections By Name</h3>
+            <div class="glide mt-5">
+                <h5>Search For Collections By Name</h5>
                 <@s.form action="collections" method="GET" id='searchForm2'>
                     <@search.queryField freeTextLabel="Collection Name" showLimits=false showAdvancedLink=false />
                 </@s.form>

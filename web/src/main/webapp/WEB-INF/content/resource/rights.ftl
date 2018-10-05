@@ -15,7 +15,7 @@
 
 <@s.form class="form-horizontal tdarvalidate rightsform" action="save" method="POST" dynamicAttributes={"data-validate-method":"initRightsForm"}>
     <div class="row">
-        <div class="span12">
+        <div class="col-12">
             <p>
                 <i>This ${persistable.resourceType.label?lower_case} is currently shared with ${proxies?size} <#if (proxies?size == 1)>person<#else>people</#if>
                 <#if (persistable.managedResourceCollections?size > 0)>, and is in

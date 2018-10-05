@@ -6,7 +6,7 @@
         <@s.textfield placeholder="${freeTextLabel}" id='queryField' name='query' size='81' value="${query!}" cssClass="input-xxlarge" maxlength="512" />
         
         <#if showPersonField && editor>
-          <@s.select id="personSearchOption" numColumns=4 spanClass="span2" name='personSearchOption' list='personSearchOptions'  listValue='label' label="Search By"/>
+          <@s.select id="personSearchOption" numColumns=4 spanClass="col-2" name='personSearchOption' list='personSearchOptions'  listValue='label' label="Search By"/>
         </#if>
         
         <#if showAdvancedLink>
@@ -24,10 +24,10 @@
     <#macro narrowAndSort>
     <h2>Narrow Your Search</h2>
 
-        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
+        <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="col" name='objectTypes' list='allObjectTypes'  listValue='label' label="Object Type"/>
 
         <#if authenticated>
-        <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="span2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
+        <@s.checkboxlist numColumns=3 spanClass="col" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
         </#if>
 
     <h4>Limit by geographic region:</h4>
@@ -45,7 +45,7 @@
 
 
     <h2>Sorting Options and Submit</h2>
-        <@sortFields />
+        <@sortFields "Sort" "form-control" />
     </#macro>
 
     <#macro typeSelected type>
@@ -78,9 +78,10 @@
     </div>
     </#macro>
 
-    <#macro sortFields label="Sort By">
-    <label>${label}
-        <select name="sortField" class="input-large" id="sortField">
+    <#macro sortFields label="Sort" sortClass="">
+    <div class="row">
+    <label class="col-form-label col-3 mt-0 pt-0 mb-0 pb-0">${label}</label>
+        <select name="sortField" class="col-8 ${sortClass}" id="sortField">
         <#list sortOptions as sort>
             <#local type="" />
             <#if sort.name() == 'PROJECT' || sort.name() == 'RESOURCE_TYPE' || sort.name() == "RESOURCE_TYPE_REVERSE">
@@ -89,8 +90,7 @@
             <option value="${sort.name()}" <#if sort==sortField!>selected</#if> <#if type!=''>class="${type}"</#if>>${sort.label}</option>
         </#list>
         </select>
-    <#--FIXME: move this block to tdar.common.js, bind if select has 'autoreload' class -->
-    </label>
+    </div>
     </#macro>
 
     <#macro rssUrlTag url>
@@ -136,7 +136,7 @@
     </#macro>
 
     <#macro paginationLink startRecord path linkText>
-    <span class="paginationLink">
+    <span class="page-link">
         <@searchLink path linkText>
         <#if startRecord != 0>
             <@s.param name="startRecord" value="${startRecord?c}" />
@@ -155,48 +155,35 @@
     </#macro>
 
     <#macro pagination path="results" helper=paginationHelper>
-    <div id="divPaginationSection" class="">
+    <nav id="divPaginationSection" class="">
         <#if (helper.totalNumberOfItems >0)>
-            <table class="pagin">
-                <tr>
+                        <ul class="pagination">
                     <#if helper.hasPrevious()>
-                        <td class="prev">
+                        <li class="page-item">
                             <@paginationLink startRecord=helper.previousPageStartRecord path=path linkText="Previous" />
-                        </td>
                     </#if>
-                    <td class="page">
-                        <ul>
                             <#if (0 < helper.minimumPageNumber) >
-                                <li>
+                                <li class="page-item">
                                     <@paginationLink startRecord=0 path=path linkText="First" />
                                 </li>
-                                <li>...</li>
+                                <li class="page-item disabled"><span class="page-link">...</li>
                             </#if>
                             <#list helper.minimumPageNumber..helper.maximumPageNumber as i>
-                                <li>
-                                    <#if i == helper.currentPage>
-                                        <span class="currentResultPage">${i + 1}</span>
-                                    <#else>
-                                        <@paginationLink startRecord=(i * helper.itemsPerPage) path=path linkText=(i + 1) />
-                                    </#if>
+                                <li class="page-item <#if i == helper.currentPage>active</#if>">
+                                    <@paginationLink startRecord=(i * helper.itemsPerPage) path=path linkText=(i + 1) />
                                 </li>
                             </#list>
                             <#if (helper.maximumPageNumber < (helper.pageCount - 1))>
-                                <li>...</li>
-                                <li>
+                                <li class="page-item disabled"><span class="page-link">...</li>
+                                <li class="page-item">
                                     <@paginationLink startRecord=helper.lastPage path=path linkText="Last" />
                                 </li>
                             </#if>
-                        </ul>
-                    </td>
                     <#if (helper.hasNext()) >
-                        <td class="next">
                             <@paginationLink startRecord=helper.nextPageStartRecord path=path linkText="Next" />
-                        </td>
                     </#if>
-                </tr>
-            </table>
-        </div>
+            </ul>
+        </nav>
         </#if>
     </#macro>
 
@@ -225,7 +212,7 @@
     </#macro>
 
 
-    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools" liCssClass="media" action=actionName link=true icon=true pictoralIcon=false>
+    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools ml-0 pl-0" liCssClass="media" action=actionName link=true icon=true pictoralIcon=false>
         <#if (facetlist?has_content && !facetlist.empty)>
             <#if label != ''>
                 <h4>${label}:</h4>
@@ -319,16 +306,16 @@
                                     <#nested>
                                     -->
                                 </@s.url></#local>
-                <ul class="media-list tools">
+<!--                <ul class="media-list tools ml-0 pl-0">
                     <li class="media">
-                        <span class="media-body">
+                        <span class="media-body"> -->
                             <a rel="noindex" id="${facetParam}${facet.name()}" href="${removeUrl?trim}">
                                 <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
                                 ${facetText}
                             </a>
-                        </span>
+<!--                        </span>
                     </li>
-                </ul>
+                </ul> -->
 
             </#if>
         </#if>
@@ -342,17 +329,14 @@
         <div id="sidebar-left" parse="true" class="options hidden-phone">
 
             <h2 class="totalRecords">Search Options</h2>
-            <ul class="tools media-list">
-                <li class="media"><a href="<@refineUrl/>" rel="noindex"><i class="search-magnify-icon-red"></i> Refine your search &raquo;</a></li>
+            <ul class="tools media-list ml-0 pl-0">
+                <li class="media">
+                    <i class="mr-3 search-magnify-icon-red"></i> 
+                    <div class="media-body">
 
-                <#if (contextualSearch!false)>
-                    <#if projectId??>
-                        <li class="media"><@s.a href="/project/${projectId?c}"><i class="icon-project icon-red"></i> Return to project page &raquo;</@s.a></li>
-                    <#else>
-                        <li class="media"><@s.a href="/collection/${collectionId?c}"><i class="icon-collection icon-red"></i> Return To collection
-                            page &raquo;</@s.a></li>
-                    </#if>
-                </#if>
+                <a href="<@refineUrl/>" rel="noindex">Refine your search &raquo;</a>
+                </div>
+                </li>
 
                 <!--        <li>Subscribe via &raquo;
                 <a class="subscribe"  href="${rssUrl}">RSS</a>
@@ -360,18 +344,15 @@
             </ul>
 
         </div>
-        <div class="visible-phone">
-            <a href="<@refineUrl />">Refine your search &raquo;</a>
-        </div>
         </#if>
 
     <div id="divResultsSortControl">
         <div class="row">
-            <div class="span3">
+            <div class="col-6">
                 <@totalRecordsSection tag="h2" helper=paginationHelper itemType="Result" />
             </div>
-            <div class="span6 form-inline">
-                <div class="pull-right">
+            <div class="col-6">
+                <div class="float-right">
                     <div class="control-group"></div>
                     <label>Records Per Page
                         <@s.select  theme="simple" id="recordsPerPage" cssClass="input-small" name="recordsPerPage"
@@ -393,13 +374,10 @@
                     <hr/></#if>
                 <#assign indx = indx + 1/>
                 <div class="listItemPart">
-                    <h3 class="search-result-title-${result.status}">
+                    <b class="search-result-title-${result.status}">
                         <a class="resourceLink" href="${result.detailUrl}">${result.properName}</a>
-                    </h3>
+                    </b>
                     <#if result.institution?has_content><p>${result.institution.name}</p></#if>
-                    <blockquote class="luceneExplanation">${result.explanation!""}</blockquote>
-                    <blockquote class="luceneScore">
-                    <b>score:</b>${result.score!""}<br> </blockquote>
                 </div>
             </#if>
         </#list>
@@ -422,16 +400,21 @@
 
 <#macro toolbar>
     <ul class="nav nav-tabs" id="myTab">
-        <li class="${activeWhen('basic,advanced,results')}"><a href="advanced">Resource</a></li>
-        <li class="${activeWhen('collection,collections')}"><a href="/search/collection">Collection</a></li>
-        <li class="${activeWhen('institution,institutions')}"><a href="/search/institution">Institution</a></li>
-        <li class="${activeWhen('person,people')}"><a href="/search/person">Person</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('basic,advanced,results')}" href="advanced">Resource</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('collection,collections')}" href="/search/collection">Collection</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('institution,institutions')}" href="/search/institution">Institution</a></li>
+        <li class="nav-item"><a class="nav-link ${activeWhen('person,people')}" href="/search/person">Person</a></li>
     </ul>
 </#macro>
 
-<#macro partFacet selectedResourceTypes paginationHelper name tag>
+<#macro partFacet selectedResourceTypes paginationHelper name tag mode="vertical">
       <#if selectedResourceTypes.empty>
-            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" pictoralIcon=true />
+          <#if mode == "horizontal">
+            <#local liCssClass="list-inline-item" />
+            <#local ulClass="tools ml-0 pl-0 list-inline" />
+        </#if>
+
+            <@facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" pictoralIcon=true liCssClass=liCssClass ulClass=ulClass />
         <#else>
         <${tag}>
             There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
@@ -483,7 +466,7 @@
     
 <#-- Create a search-link for a keyword -->
     <#macro searchFor keyword=keyword asList=true showOccurrence=false>
-        <#if asList><li class="bullet"></#if>
+        <#if asList><li class="bullet list-inline-item"></#if>
             <a href="<@s.url value="${keyword.detailUrl}" />">${keyword.label}
             <#if showOccurrence && keyword.occurrence?has_content && keyword.occurrence != 0 >(${keyword.occurrence?c})</#if>
             </a>

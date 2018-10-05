@@ -1,0 +1,4430 @@
+header + #hero {
+  margin-bottom: 0em !important;
+  margin-top: 3em; }
+
+header + #hero-wide {
+  margin-bottom: 0em !important;
+  margin-top: 0em !important; }
+
+@media (max-width: 768px) {
+  #sidebar-right {
+    background-image: none; } }
+@media (min-width: 1px) {
+  #hero-wide h2 {
+    font-size: 2rem !important; } }
+@media (min-width: 768px) {
+  #hero-wide h2 {
+    font-size: 2.5rem !important; } }
+@media (min-width: 992px) {
+  #hero-wide h2 {
+    font-size: 3.0rem !important; } }
+#homepageCarousel .carousel-indicators {
+  left: initial;
+  bottom: 0; }
+
+.whatcanyoudig-image {
+  background: url(/images/r4/bg-home.jpg) no-repeat center; }
+
+.homepage-header-image {
+  background-size: cover !important;
+  height: 25em;
+  padding-top: 1.5em;
+  padding-left: 10em;
+  border-radius: .25em; }
+
+.image {
+  position: relative;
+  height: 25em; }
+  .image .hero-note {
+    position: absolute;
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.5);
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+    padding-bottom: 2em;
+    padding-top: 2em;
+    bottom: 2em;
+    float: right; }
+    .image .hero-note h2 {
+      margin: 0px !important;
+      font-weight: 400 !Important;
+      line-height: 4rem !Important;
+      margin-top: 0px !important; }
+      .image .hero-note h2 .red {
+        font-weight: 700; }
+
+#home .card p, p.lead {
+  min-height: 4em;
+  color: #7d7a77;
+  display: block;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 13px; }
+
+#home #hero .carousel-inner, #hero-wide .carousel-inner {
+  padding-left: 0px;
+  padding-right: 0px; }
+#home #hero h2, #hero-wide h2 {
+  font-weight: 700;
+  font-size: 60px;
+  line-height: 50px;
+  letter-spacing: -2px;
+  margin: 50px 0 0 0; }
+#home #hero p, #hero-wide p {
+  margin: 18px 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px; }
+
+#home .card p {
+  line-height: 18px;
+  margin-bottom: 13px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-top: 0px;
+  min-height: 5.8em;
+  text-align: center; }
+#home .card h5 {
+  min-height: 2.4em;
+  font-weight: bold;
+  font-size: 24px; }
+#home .title {
+  display: block;
+  font-family: helvetica,arial,sans-serif;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 700; }
+#home .news li {
+  font-size: 12px;
+  line-height: 20px;
+  color: #7d7a77;
+  font-style: italic;
+  display: block;
+  position: relative;
+  padding: 12px 0 26px 60px;
+  border-bottom: 1px solid #e8e3d7;
+  min-height: 4em; }
+#home .news li:first-child {
+  padding: 0 0 0px 60px; }
+#home .news span {
+  font-weight: 700;
+  color: #e3dfd8;
+  display: block;
+  width: 35px;
+  position: absolute;
+  left: 0;
+  text-align: center;
+  font-size: 16px;
+  line-height: 24px;
+  font-style: normal; }
+#home .news em {
+  font-size: 30px;
+  font-style: normal;
+  display: block; }
+#home .news a .title {
+  font-family: helvetica, arial, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  font-style: normal;
+  display: block; }
+#home .topRight {
+  font-weight: bold;
+  text-transform: uppercase; }
+
+#slider {
+  /* Changes the position of the indicators */
+  /* Removes the default 20px margin and creates some padding space for the indicators and controls */ }
+  #slider .carousel-inner {
+    padding-left: 0px;
+    padding-right: 0px; }
+  #slider .carousel-control {
+    display: block;
+    width: 24px;
+    height: 38px;
+    background: url(/images/r4/btns-slider.png) 0 0;
+    background-repeat: no-repeat;
+    text-indent: -999em;
+    opacity: 0.5;
+    transition: opacity 0.1s ease-out; }
+  #slider .carousel-item {
+    padding-left: 3em !important;
+    padding-right: 3em !important; }
+  #slider .car-btn:hover {
+    opacity: 1; }
+  #slider .carousel-control.left {
+    left: 0; }
+  #slider .carousel-control-next, #slider .carousel-control-prev {
+    width: 5%; }
+  #slider .carousel-control.right {
+    right: 0;
+    background-position: -24px 0; }
+  #slider .carousel-indicators {
+    width: 100%;
+    top: auto;
+    bottom: 0px;
+    /* override bootstrap defaults so that page indicators don't overflow into thumbnail section when they wrap (e.g. carousel w/ 100's of images) */
+    /*margin-right: -19px;*/
+    position: inherit !important;
+    margin: 1em 0 0 0; }
+  #slider .carousel-indicators .active {
+    background: #333333; }
+  #slider .carousel-indicators span {
+    border-radius: 10px;
+    padding: 4px;
+    margin: 1pt;
+    width: 3px;
+    height: 3px;
+    display: inline-block;
+    background: #c0c0c0; }
+  #slider .image-carousel.carousel {
+    margin-bottom: 10px;
+    padding: 0 40px 10px 40px; }
+
+.right-bottom-dropshadow {
+  box-shadow: 4px 4px rgba(0, 0, 0, 0.09);
+  padding-right: 0px; }
+
+.hero-note a:hover {
+  color: black; }
+
+nav {
+  font-weight: bold; }
+  nav .logIn {
+    font-size: 0.85rem;
+    text-transform: uppercase; }
+    nav .logIn .tdarLink {
+      color: #7a1501; }
+
+.tdarNav {
+  background: url(../../images/r4/bg-sub.jpg) bottom center;
+  /* background-size: cover;  this doesn't help with smalleer sizes, because the background doesn't fill top-to-botom */
+  border-bottom: 1px solid #CCC;
+  font-size: 14px; }
+  .tdarNav .tdarNavItem {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.5);
+    border-right: #7a1501;
+    text-wrap: none; }
+  .tdarNav .fa-chevron-up {
+    display: none; }
+  .tdarNav .show .fa-chevron-up {
+    display: block; }
+  .tdarNav .show .fa-chevron-down {
+    display: none; }
+  .tdarNav .nav-chevron {
+    stroke-width: 5px;
+    stroke: #7a1501; }
+  .tdarNav .show .nav-chevron {
+    transform: rotate(180deg); }
+
+#tdarNavMenu {
+  margin-left: 2em; }
+
+#tdarNavMenu {
+  margin-right: 2em; }
+
+.navbar-brand {
+  margin-left: 2em;
+  padding-top: 0px;
+  padding-bottom: 0px; }
+
+/***** NAV *******/
+.resource-nav.modern {
+  height: initial;
+  margin-top: 1em;
+  line-height: 1em;
+  background: #fafafa;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 10px;
+  margin-left: 0rem; }
+  .resource-nav.modern label {
+    float: none;
+    padding-top: 0px;
+    margin-bottom: 0rem;
+    padding-bottom: 0rem;
+    margin-top: .44rem;
+    margin-left: .5rem;
+    padding-right: .5rem;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 11px;
+    color: #7d7a77;
+    text-transform: uppercase;
+    letter-spacing: 1px; }
+  .resource-nav.modern ul {
+    margin: 0rem;
+    padding: 0rem; }
+    .resource-nav.modern ul li {
+      float: none;
+      padding: 0px;
+      margin-right: 0px;
+      margin-bottom: .4rem;
+      margin-top: .2rem; }
+      .resource-nav.modern ul li b, .resource-nav.modern ul li a, .resource-nav.modern ul li span.disabled {
+        float: none;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 11px;
+        padding-right: .5rem;
+        padding-left: .5rem;
+        color: #7d7a77;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-right: 1px solid #fff; }
+      .resource-nav.modern ul li a {
+        color: #7a1501; }
+      .resource-nav.modern ul li a:hover {
+        text-decoration: none;
+        color: black; }
+
+@media (min-width: 768px) {
+  .tdarDropdown .flex-column:first-child {
+    border-right: 2px solid #7a1501; }
+
+  .dropdown-menu:after {
+    bottom: 100%;
+    left: 10%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none; }
+
+  .dropdown-menu-right:after {
+    left: 80% !important; }
+
+  .dropdown-menu:after {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 10px;
+    margin-left: -10px; }
+
+  .dropdown-menu:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-bottom-color: white;
+    border-width: 16.5px;
+    margin-left: -16.5px; } }
+/********** LEAFLET **************/
+/** leaflet maps - **/
+.disable-map .leaflet-draw {
+  display: none;
+  visibility: hidden; }
+
+.disable-map .leaflet-container, .leaflet-container.disable-map {
+  opacity: .5; }
+
+/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
+#large-google-map img, .google-map img {
+  border: inherit;
+  height: auto;
+  max-width: inherit; }
+
+.tdar-map-large, #large-google-map {
+  height: 450px; }
+
+#large-google-map label, .google-map label {
+  width: auto;
+  display: inline; }
+
+.tdar-gmap-control button:disabled {
+  display: none; }
+
+form.leaflet-control-geocoder-form {
+  padding: 0px;
+  margin: 0px; }
+
+.columnSquare {
+  display: inline-block;
+  border: 1px solid #999;
+  position: relative;
+  margin-right: 5px;
+  width: 10px;
+  height: 10px;
+  padding: 0px; }
+
+.columnSquare.uncoded {
+  background: #ffffff; }
+
+.countColumn, .buttontable div[data-count], .columnSquare.count {
+  background: #e5e696;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+.measurementColumn, .buttontable div[data-measurement], .columnSquare.measurement {
+  background: #deefff;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+.integrationColumn, .buttontable div[data-ontology], .columnSquare.integration {
+  background: #e4efc0;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+.columnSquare span:before {
+  font-size: 14px;
+  font-weight: bold;
+  position: relative;
+  font-family: helvetica;
+  display: inline-block;
+  text-align: center;
+  width: 1em;
+  top: -3px; }
+
+.columnSquare.complete span:before {
+  content: "\2713";
+  /* check mark */
+  color: #000; }
+
+.columnSquare.invalid span:before {
+  content: "X";
+  color: #7a1501; }
+
+.defaultColumn, .buttontable div, .columnSquare.coded {
+  background: #eeeeee;
+  border: 1px solid #999999; }
+
+.columnSquare.mapped {
+  background: #8b755e; }
+
+.mappingInfo label {
+  position: static; }
+
+.mappingInfo input {
+  margin-left: 1em; }
+
+.columnSquare.filename {
+  background: #8b755e;
+  /* Old browsers */
+  border: 1px solid #999999; }
+
+#cbCheckAllToggle, .sorting_1 input[type='checkbox'] {
+  margin-right: 10px !Important;
+  margin-left: 10px !Important; }
+
+.legend {
+  line-height: 1.2em; }
+
+.displayColumn {
+  background: #e9e4cd;
+  border: 1px solid #999999; }
+
+.buttontable td, .integrationColumn, .displayColumn {
+  vertical-align: top; }
+
+.short button {
+  visibility: hidden; }
+
+.short .ontology {
+  display: none; }
+
+/* Error banners are a more attention-grabbing form of user notifications. */
+.error-banner {
+  background-repeat: no-repeat;
+  background-size: 1.5em;
+  margin-top: 3em;
+  padding: 0.2em 0.2em 0.2em 2em;
+  border: 2px solid #444;
+  color: black; }
+
+.error-banner h1, .error-banner h2, .error-banner h3, .error-banner h4 {
+  color: #7a1501; }
+
+.bg-red {
+  background-color: #7a1501;
+  color: white; }
+
+/* Put error codes in a block-level container w/ class of  .pull-right.error-codes to inset them in the
+upper-right corner. Individual codes should be wrapped in span.error-code elements */
+.error-banner > .pull-right.error-codes {
+  position: relative;
+  margin-left: -15px;
+  margin-top: 5px;
+  font-size: 8pt;
+  border-radius: 2px;
+  padding: 1px 3px 1px 3px;
+  border: 1px solid #dcc;
+  color: #555; }
+
+.error-banner .error-code {
+  font-family: monospace;
+  padding-right: 1em; }
+
+.error-code:last-child {
+  padding-right: inherit; }
+
+/* Overide bootstrap default error alert color. Note: avoid modifying anything other than fonts and colors, as the styles here
+are governed by several media queries and thus easy to screw up the formatting of various responsive profiles. */
+.alert.alert-error {
+  background-color: #fffecc; }
+
+.alert.alert-error p, .alert.alert-error ul, .alert.alert-error li {
+  color: #000; }
+
+.modal-dialog {
+  background: white; }
+
+.d3tree svg {
+  border: 1px solid #CCC; }
+
+.d3tree .node {
+  cursor: pointer; }
+
+.d3tree .node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px; }
+
+.d3tree .node circle.children {
+  fill: lightsteelblue; }
+
+.d3tree .found {
+  fill: #7a1501;
+  stroke: #7a1501;
+  stroke-width: 1.5px; }
+
+.d3tree circle.found {
+  fill: #7a1501;
+  stroke: #7a1501;
+  stroke-width: 1.5px; }
+
+.d3tree .node text {
+  font: 10px sans-serif; }
+
+.d3tree .node text.found {
+  font: 10px sans-serif;
+  stroke: #000 !important;
+  stroke-width: .6px; }
+
+.d3tree .link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px; }
+
+.d3tree .foundLink {
+  fill: none;
+  stroke: #7a1501;
+  stroke-width: 1.5px; }
+
+/*Just to ensure the select2 box is "glued" to the top*/
+.d3tree .search {
+  width: 100%; }
+
+#searchclear {
+  position: absolute;
+  right: 10px;
+  top: -12px;
+  font-weight: bold;
+  bottom: 0;
+  height: 14px;
+  margin: auto;
+  font-size: 14px;
+  cursor: pointer;
+  color: #ccc; }
+
+/** set width and height properly **/
+.svgicon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  fill: currentColor; }
+
+.svg-small {
+  height: 40px !important;
+  width: 40px !important; }
+
+.svg100 {
+  height: 100px !important;
+  width: 100px !important; }
+
+.iconbox125 {
+  padding-top: 3%;
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-bottom: 3%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0% !Important;
+  margin-bottom: 0% !important;
+  height: 125px;
+  width: 125px;
+  float: none; }
+
+.svg-dynamic125 {
+  width: 80%;
+  height: 80%;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; }
+
+.iconbox {
+  float: none;
+  padding: 10%;
+  margin-left: auto;
+  margin-right: auto; }
+
+.svg-dynamic {
+  max-width: 80% !important;
+  max-height: 80% !important;
+  margin-top: 15%;
+  margin-bottom: 15%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  height: 100%;
+  width: 100%;
+  margin-top: 15%;
+  margin-bottom: 15%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block; }
+
+.svg-cartouche {
+  height: 1em;
+  width: 1em;
+  margin: 0 auto;
+  display: block;
+  margin-right: 3px; }
+
+.flex {
+  display: flex; }
+
+.grey {
+  fill-color: #555555;
+  color: #555555; }
+
+/*** WORLDMAP *****/
+#mapgraphdata {
+  text-align: center;
+  height: 100px; }
+
+#worldmap.leaflet-container {
+  background-color: #D5F0FD;
+  border: 1px solid #AAA; }
+
+#worldmap .info {
+  background-color: #fff;
+  opacity: .8;
+  padding: 2px; }
+
+#worldmap .legend {
+  background-color: #fff;
+  float: right; }
+
+#worldmap .leaflet-control-attribution {
+  display: none; }
+
+.worldmap {
+  border: 1px solid #aaa; }
+
+#map_legend {
+  position: absolute;
+  display: block;
+  width: 300px;
+  height: 1.8em;
+  bottom: 0px;
+  /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
+  right: 100px; }
+
+.mapcontainer .legendText {
+  padding-top: 0px !important;
+  margin-left: 5px;
+  margin-right: 5px; }
+
+.mapcontainer .legendBox, .mapcontainer .legendText {
+  clear: none;
+  float: left; }
+
+.mapcontainer .legendBox {
+  border: 1px solid #666666;
+  width: 10px;
+  margin-top: 3px;
+  height: 10px;
+  padding: 2px; }
+
+div.mapcontainer {
+  position: relative; }
+
+div.mapcontainer img {
+  height: 304px !Important;
+  right: 0px;
+  display: block;
+  position: relative; }
+
+.mapcontainer #data {
+  font-weight: bold; }
+
+#mapGraphZoomOut, #mapGraphZoomOut *, #mapGraphSearch, #mapGraphSearch * {
+  cursor: hand;
+  cursor: pointer; }
+
+.mapcontainer.mini h3, .mapcontainer.mini #mapgraphdata {
+  display: none; }
+
+.mini #worldmap.leaflet-container {
+  border: none;
+  background-color: #fff; }
+
+.mini .leaflet-interactive {
+  cursor: default; }
+
+ul.treeview li {
+  margin-top: 0px !important; }
+ul.treeview ul {
+  margin-top: 0px !important; }
+ul.treeview label {
+  margin-bottom: 0px !important; }
+
+/******** GRAPHING **********/
+.barChart .c3-text {
+  fill: black !important; }
+
+.barGraph {
+  position: relative; }
+
+/**** VIEW ****/
+.view-deleted-file {
+  background-color: #edd87b;
+  text-decoration: line-through;
+  display: none; }
+
+.view-hidden-extra-files {
+  display: none; }
+
+/* contextual help styling - based off of 'downloads' box on view page */
+#notice {
+  font-family: 'ff-tisa-web-pro', serif;
+  background-color: #f0eeeb; }
+
+#notice h2 {
+  font-size: 15px; }
+
+/*use in column-sized div to scale image if width exceeds parent width */
+img.responsive-image {
+  max-width: 100%;
+  height: auto; }
+
+#downloadsMoreArea {
+  background-color: #ddd;
+  padding-left: 35px; }
+
+.view aside li strong {
+  font-weight: 700;
+  font-size: 12px;
+  color: #1b1a18;
+  letter-spacing: 1px;
+  line-height: 14px;
+  text-transform: uppercase; }
+.view aside h3.downloads {
+  font-family: helvetica, arial, sans-serif;
+  font-size: 16px;
+  color: #fff;
+  height: 45px;
+  line-height: 45px;
+  margin: 0 !important;
+  padding: 0 10px;
+  background: #7a1501;
+  -webkit-border-radius: 2px 2px 0 0;
+  border-radius: 2px 2px 0 0;
+  border-bottom: none; }
+.view aside h3.downloads span.downloadNumber {
+  display: inline-block;
+  float: right;
+  font-size: 13px;
+  line-height: 22px !important;
+  background: #641b11;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  width: 22px;
+  text-align: center;
+  margin-top: 11px;
+  -webkit-border-radius: 2px 2px 0 0;
+  border-radius: 2px 2px 0 0; }
+.view aside ul.downloads, .view aside ul.downloads li {
+  background: #f0eeeb;
+  margin: 0 !important; }
+.view aside ul.downloads li {
+  color: #7d7a77;
+  padding: 14px 10px 14px 32px;
+  border-bottom: 1px solid #fff; }
+.view aside li strong {
+  font-weight: 700;
+  font-size: 12px;
+  color: #1b1a18;
+  letter-spacing: 1px;
+  line-height: 14px;
+  text-transform: uppercase; }
+.view aside li {
+  font-size: 13px;
+  line-height: 17px;
+  color: #7d7a77;
+  margin-top: 15px; }
+.view aside h3 {
+  font-size: 16px;
+  line-height: 22px;
+  border-bottom: 1px solid #e5e5e5;
+  padding-bottom: 5px;
+  margin: 20px 0; }
+
+.section + .section, .section + abbr {
+  padding-top: 1.5em;
+  border-top: 1px solid #EEE; }
+
+.section, .section + .card {
+  margin-bottom: 1.5em; }
+
+#subnavbar .nav-link {
+  font-weight: normal;
+  padding-top: 4px;
+  padding-bottom: 4px; }
+#subnavbar .nav-link.active {
+  font-weight: bold; }
+
+#subnavbar.affix {
+  position: fixed;
+  top: 10px; }
+
+#myCarousel .carousel-control-prev {
+  width: 5%; }
+#myCarousel .carousel-indicators .active {
+  background-color: black; }
+
+div.tdarresults {
+  border-top: double #222;
+  border-bottom: double #222;
+  padding-bottom: 3em;
+  padding-top: 1em;
+  margin-bottom: 0.1em; }
+
+.LIST.list-unstyled li, .MAP li {
+  line-height: 20px;
+  margin-bottom: 10px; }
+
+.page-item.active .page-link {
+  background-color: #7a1501;
+  border-color: #7a1501; }
+  .page-item.active .page-link a {
+    color: #fff; }
+
+/* @formatter:off */
+/* http://www.manuel-bieh.de/blog/famfamfam-silk-icons-css-sprite-version */
+.iconf {
+  background-color: transparent;
+  background-image: url(/images/famfamfam.png);
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin: 0;
+  vertical-align: baseline; }
+
+.iconf.add {
+  background-position: -0px -0px; }
+
+.iconf.anchor {
+  background-position: -18px -0px; }
+
+.iconf.application {
+  background-position: -36px -0px; }
+
+.iconf.application-add {
+  background-position: -54px -0px; }
+
+.iconf.application-cascade {
+  background-position: -72px -0px; }
+
+.iconf.application-delete {
+  background-position: -90px -0px; }
+
+.iconf.application-double {
+  background-position: -108px -0px; }
+
+.iconf.application-edit {
+  background-position: -126px -0px; }
+
+.iconf.application-error {
+  background-position: -144px -0px; }
+
+.iconf.application-form {
+  background-position: -162px -0px; }
+
+.iconf.application-form-add {
+  background-position: -180px -0px; }
+
+.iconf.application-form-delete {
+  background-position: -198px -0px; }
+
+.iconf.application-form-edit {
+  background-position: -216px -0px; }
+
+.iconf.application-form-magnify {
+  background-position: -234px -0px; }
+
+.iconf.application-get {
+  background-position: -252px -0px; }
+
+.iconf.application-go {
+  background-position: -270px -0px; }
+
+.iconf.application-home {
+  background-position: -288px -0px; }
+
+.iconf.application-key {
+  background-position: -306px -0px; }
+
+.iconf.application-lightning {
+  background-position: -324px -0px; }
+
+.iconf.application-link {
+  background-position: -342px -0px; }
+
+.iconf.application-osx {
+  background-position: -360px -0px; }
+
+.iconf.application-osx-terminal {
+  background-position: -378px -0px; }
+
+.iconf.application-put {
+  background-position: -396px -0px; }
+
+.iconf.application-side-boxes {
+  background-position: -414px -0px; }
+
+.iconf.application-side-contract {
+  background-position: -432px -0px; }
+
+.iconf.application-side-expand {
+  background-position: -450px -0px; }
+
+.iconf.application-side-list {
+  background-position: -468px -0px; }
+
+.iconf.application-side-tree {
+  background-position: -486px -0px; }
+
+.iconf.application-split {
+  background-position: -504px -0px; }
+
+.iconf.application-tile-horizontal {
+  background-position: -522px -0px; }
+
+.iconf.application-tile-vertical {
+  background-position: -540px -0px; }
+
+.iconf.application-view-columns {
+  background-position: -558px -0px; }
+
+.iconf.application-view-detail {
+  background-position: -576px -0px; }
+
+.iconf.application-view-gallery {
+  background-position: -0px -18px; }
+
+.iconf.application-view-icons {
+  background-position: -18px -18px; }
+
+.iconf.application-view-list {
+  background-position: -36px -18px; }
+
+.iconf.application-view-tile {
+  background-position: -54px -18px; }
+
+.iconf.application-xp {
+  background-position: -72px -18px; }
+
+.iconf.application-xp-terminal {
+  background-position: -90px -18px; }
+
+.iconf.arrow-branch {
+  background-position: -108px -18px; }
+
+.iconf.arrow-divide {
+  background-position: -126px -18px; }
+
+.iconf.arrow-down {
+  background-position: -144px -18px; }
+
+.iconf.arrow-in {
+  background-position: -162px -18px; }
+
+.iconf.arrow-inout {
+  background-position: -180px -18px; }
+
+.iconf.arrow-join {
+  background-position: -198px -18px; }
+
+.iconf.arrow-left {
+  background-position: -216px -18px; }
+
+.iconf.arrow-merge {
+  background-position: -234px -18px; }
+
+.iconf.arrow-out {
+  background-position: -252px -18px; }
+
+.iconf.arrow-redo {
+  background-position: -270px -18px; }
+
+.iconf.arrow-refresh {
+  background-position: -288px -18px; }
+
+.iconf.arrow-refresh-small {
+  background-position: -306px -18px; }
+
+.iconf.arrow-right {
+  background-position: -324px -18px; }
+
+.iconf.arrow-rotate-anticlockwise {
+  background-position: -342px -18px; }
+
+.iconf.arrow-rotate-clockwise {
+  background-position: -360px -18px; }
+
+.iconf.arrow-switch {
+  background-position: -378px -18px; }
+
+.iconf.arrow-turn-left {
+  background-position: -396px -18px; }
+
+.iconf.arrow-turn-right {
+  background-position: -414px -18px; }
+
+.iconf.arrow-undo {
+  background-position: -432px -18px; }
+
+.iconf.arrow-up {
+  background-position: -450px -18px; }
+
+.iconf.asterisk-orange {
+  background-position: -468px -18px; }
+
+.iconf.asterisk-yellow {
+  background-position: -486px -18px; }
+
+.iconf.attach {
+  background-position: -504px -18px; }
+
+.iconf.award-star-add {
+  background-position: -522px -18px; }
+
+.iconf.award-star-bronze-1 {
+  background-position: -540px -18px; }
+
+.iconf.award-star-bronze-2 {
+  background-position: -558px -18px; }
+
+.iconf.award-star-bronze-3 {
+  background-position: -576px -18px; }
+
+.iconf.award-star-delete {
+  background-position: -0px -36px; }
+
+.iconf.award-star-gold-1 {
+  background-position: -18px -36px; }
+
+.iconf.award-star-gold-2 {
+  background-position: -36px -36px; }
+
+.iconf.award-star-gold-3 {
+  background-position: -54px -36px; }
+
+.iconf.award-star-silver-1 {
+  background-position: -72px -36px; }
+
+.iconf.award-star-silver-2 {
+  background-position: -90px -36px; }
+
+.iconf.award-star-silver-3 {
+  background-position: -108px -36px; }
+
+.iconf.basket {
+  background-position: -126px -36px; }
+
+.iconf.basket-add {
+  background-position: -144px -36px; }
+
+.iconf.basket-delete {
+  background-position: -162px -36px; }
+
+.iconf.basket-edit {
+  background-position: -180px -36px; }
+
+.iconf.basket-error {
+  background-position: -198px -36px; }
+
+.iconf.basket-go {
+  background-position: -216px -36px; }
+
+.iconf.basket-put {
+  background-position: -234px -36px; }
+
+.iconf.basket-remove {
+  background-position: -252px -36px; }
+
+.iconf.bell {
+  background-position: -270px -36px; }
+
+.iconf.bell-add {
+  background-position: -288px -36px; }
+
+.iconf.bell-delete {
+  background-position: -306px -36px; }
+
+.iconf.bell-error {
+  background-position: -324px -36px; }
+
+.iconf.bell-go {
+  background-position: -342px -36px; }
+
+.iconf.bell-link {
+  background-position: -360px -36px; }
+
+.iconf.bin {
+  background-position: -378px -36px; }
+
+.iconf.bin-closed {
+  background-position: -396px -36px; }
+
+.iconf.bin-empty {
+  background-position: -414px -36px; }
+
+.iconf.bomb {
+  background-position: -432px -36px; }
+
+.iconf.book {
+  background-position: -450px -36px; }
+
+.iconf.book-add {
+  background-position: -468px -36px; }
+
+.iconf.book-addresses {
+  background-position: -486px -36px; }
+
+.iconf.book-delete {
+  background-position: -504px -36px; }
+
+.iconf.book-edit {
+  background-position: -522px -36px; }
+
+.iconf.book-error {
+  background-position: -540px -36px; }
+
+.iconf.book-go {
+  background-position: -558px -36px; }
+
+.iconf.book-key {
+  background-position: -576px -36px; }
+
+.iconf.book-link {
+  background-position: -0px -54px; }
+
+.iconf.book-next {
+  background-position: -18px -54px; }
+
+.iconf.book-open {
+  background-position: -36px -54px; }
+
+.iconf.book-previous {
+  background-position: -54px -54px; }
+
+.iconf.box {
+  background-position: -72px -54px; }
+
+.iconf.brick {
+  background-position: -90px -54px; }
+
+.iconf.brick-add {
+  background-position: -108px -54px; }
+
+.iconf.brick-delete {
+  background-position: -126px -54px; }
+
+.iconf.brick-edit {
+  background-position: -144px -54px; }
+
+.iconf.brick-error {
+  background-position: -162px -54px; }
+
+.iconf.brick-go {
+  background-position: -180px -54px; }
+
+.iconf.brick-link {
+  background-position: -198px -54px; }
+
+.iconf.bricks {
+  background-position: -216px -54px; }
+
+.iconf.briefcase {
+  background-position: -234px -54px; }
+
+.iconf.bug {
+  background-position: -252px -54px; }
+
+.iconf.bug-add {
+  background-position: -270px -54px; }
+
+.iconf.bug-delete {
+  background-position: -288px -54px; }
+
+.iconf.bug-edit {
+  background-position: -306px -54px; }
+
+.iconf.bug-error {
+  background-position: -324px -54px; }
+
+.iconf.bug-go {
+  background-position: -342px -54px; }
+
+.iconf.bug-link {
+  background-position: -360px -54px; }
+
+.iconf.building {
+  background-position: -378px -54px; }
+
+.iconf.building-add {
+  background-position: -396px -54px; }
+
+.iconf.building-delete {
+  background-position: -414px -54px; }
+
+.iconf.building-edit {
+  background-position: -432px -54px; }
+
+.iconf.building-error {
+  background-position: -450px -54px; }
+
+.iconf.building-go {
+  background-position: -468px -54px; }
+
+.iconf.building-key {
+  background-position: -486px -54px; }
+
+.iconf.building-link {
+  background-position: -504px -54px; }
+
+.iconf.bullet-add {
+  background-position: -522px -54px; }
+
+.iconf.bullet-arrow-bottom {
+  background-position: -540px -54px; }
+
+.iconf.bullet-arrow-down {
+  background-position: -558px -54px; }
+
+.iconf.bullet-arrow-top {
+  background-position: -576px -54px; }
+
+.iconf.bullet-arrow-up {
+  background-position: -0px -72px; }
+
+.iconf.bullet-black {
+  background-position: -18px -72px; }
+
+.iconf.bullet-blue {
+  background-position: -36px -72px; }
+
+.iconf.bullet-delete {
+  background-position: -54px -72px; }
+
+.iconf.bullet-disk {
+  background-position: -72px -72px; }
+
+.iconf.bullet-error {
+  background-position: -90px -72px; }
+
+.iconf.bullet-feed {
+  background-position: -108px -72px; }
+
+.iconf.bullet-go {
+  background-position: -126px -72px; }
+
+.iconf.bullet-green {
+  background-position: -144px -72px; }
+
+.iconf.bullet-key {
+  background-position: -162px -72px; }
+
+.iconf.bullet-orange {
+  background-position: -180px -72px; }
+
+.iconf.bullet-picture {
+  background-position: -198px -72px; }
+
+.iconf.bullet-pink {
+  background-position: -216px -72px; }
+
+.iconf.bullet-purple {
+  background-position: -234px -72px; }
+
+.iconf.bullet-red {
+  background-position: -252px -72px; }
+
+.iconf.bullet-star {
+  background-position: -270px -72px; }
+
+.iconf.bullet-toggle-minus {
+  background-position: -288px -72px; }
+
+.iconf.bullet-toggle-plus {
+  background-position: -306px -72px; }
+
+.iconf.bullet-white {
+  background-position: -324px -72px; }
+
+.iconf.bullet-wrench {
+  background-position: -342px -72px; }
+
+.iconf.bullet-yellow {
+  background-position: -360px -72px; }
+
+.iconf.cake {
+  background-position: -378px -72px; }
+
+.iconf.calculator {
+  background-position: -396px -72px; }
+
+.iconf.calculator-add {
+  background-position: -414px -72px; }
+
+.iconf.calculator-delete {
+  background-position: -432px -72px; }
+
+.iconf.calculator-edit {
+  background-position: -450px -72px; }
+
+.iconf.calculator-error {
+  background-position: -468px -72px; }
+
+.iconf.calculator-link {
+  background-position: -486px -72px; }
+
+.iconf.calendar {
+  background-position: -504px -72px; }
+
+.iconf.calendar-add {
+  background-position: -522px -72px; }
+
+.iconf.calendar-delete {
+  background-position: -540px -72px; }
+
+.iconf.calendar-edit {
+  background-position: -558px -72px; }
+
+.iconf.calendar-link {
+  background-position: -576px -72px; }
+
+.iconf.calendar-view-day {
+  background-position: -0px -90px; }
+
+.iconf.calendar-view-month {
+  background-position: -18px -90px; }
+
+.iconf.calendar-view-week {
+  background-position: -36px -90px; }
+
+.iconf.camera {
+  background-position: -54px -90px; }
+
+.iconf.camera-add {
+  background-position: -72px -90px; }
+
+.iconf.camera-delete {
+  background-position: -90px -90px; }
+
+.iconf.camera-edit {
+  background-position: -108px -90px; }
+
+.iconf.camera-error {
+  background-position: -126px -90px; }
+
+.iconf.camera-go {
+  background-position: -144px -90px; }
+
+.iconf.camera-link {
+  background-position: -162px -90px; }
+
+.iconf.camera-small {
+  background-position: -180px -90px; }
+
+.iconf.cancel {
+  background-position: -198px -90px; }
+
+.iconf.car {
+  background-position: -216px -90px; }
+
+.iconf.car-add {
+  background-position: -234px -90px; }
+
+.iconf.car-delete {
+  background-position: -252px -90px; }
+
+.iconf.cart {
+  background-position: -270px -90px; }
+
+.iconf.cart-add {
+  background-position: -288px -90px; }
+
+.iconf.cart-delete {
+  background-position: -306px -90px; }
+
+.iconf.cart-edit {
+  background-position: -324px -90px; }
+
+.iconf.cart-error {
+  background-position: -342px -90px; }
+
+.iconf.cart-go {
+  background-position: -360px -90px; }
+
+.iconf.cart-put {
+  background-position: -378px -90px; }
+
+.iconf.cart-remove {
+  background-position: -396px -90px; }
+
+.iconf.cd {
+  background-position: -414px -90px; }
+
+.iconf.cd-add {
+  background-position: -432px -90px; }
+
+.iconf.cd-burn {
+  background-position: -450px -90px; }
+
+.iconf.cd-delete {
+  background-position: -468px -90px; }
+
+.iconf.cd-edit {
+  background-position: -486px -90px; }
+
+.iconf.cd-eject {
+  background-position: -504px -90px; }
+
+.iconf.cd-go {
+  background-position: -522px -90px; }
+
+.iconf.chart-bar {
+  background-position: -540px -90px; }
+
+.iconf.chart-bar-add {
+  background-position: -558px -90px; }
+
+.iconf.chart-bar-delete {
+  background-position: -576px -90px; }
+
+.iconf.chart-bar-edit {
+  background-position: -0px -108px; }
+
+.iconf.chart-bar-error {
+  background-position: -18px -108px; }
+
+.iconf.chart-bar-link {
+  background-position: -36px -108px; }
+
+.iconf.chart-curve {
+  background-position: -54px -108px; }
+
+.iconf.chart-curve-add {
+  background-position: -72px -108px; }
+
+.iconf.chart-curve-delete {
+  background-position: -90px -108px; }
+
+.iconf.chart-curve-edit {
+  background-position: -108px -108px; }
+
+.iconf.chart-curve-error {
+  background-position: -126px -108px; }
+
+.iconf.chart-curve-go {
+  background-position: -144px -108px; }
+
+.iconf.chart-curve-link {
+  background-position: -162px -108px; }
+
+.iconf.chart-line {
+  background-position: -180px -108px; }
+
+.iconf.chart-line-add {
+  background-position: -198px -108px; }
+
+.iconf.chart-line-delete {
+  background-position: -216px -108px; }
+
+.iconf.chart-line-edit {
+  background-position: -234px -108px; }
+
+.iconf.chart-line-error {
+  background-position: -252px -108px; }
+
+.iconf.chart-line-link {
+  background-position: -270px -108px; }
+
+.iconf.chart-organisation {
+  background-position: -288px -108px; }
+
+.iconf.chart-organisation-add {
+  background-position: -306px -108px; }
+
+.iconf.chart-organisation-delete {
+  background-position: -324px -108px; }
+
+.iconf.chart-pie {
+  background-position: -342px -108px; }
+
+.iconf.chart-pie-add {
+  background-position: -360px -108px; }
+
+.iconf.chart-pie-delete {
+  background-position: -378px -108px; }
+
+.iconf.chart-pie-edit {
+  background-position: -396px -108px; }
+
+.iconf.chart-pie-error {
+  background-position: -414px -108px; }
+
+.iconf.chart-pie-link {
+  background-position: -432px -108px; }
+
+.iconf.clock {
+  background-position: -450px -108px; }
+
+.iconf.clock-add {
+  background-position: -468px -108px; }
+
+.iconf.clock-delete {
+  background-position: -486px -108px; }
+
+.iconf.clock-edit {
+  background-position: -504px -108px; }
+
+.iconf.clock-error {
+  background-position: -522px -108px; }
+
+.iconf.clock-go {
+  background-position: -540px -108px; }
+
+.iconf.clock-link {
+  background-position: -558px -108px; }
+
+.iconf.clock-pause {
+  background-position: -576px -108px; }
+
+.iconf.clock-play {
+  background-position: -0px -126px; }
+
+.iconf.clock-red {
+  background-position: -18px -126px; }
+
+.iconf.clock-stop {
+  background-position: -36px -126px; }
+
+.iconf.cog {
+  background-position: -54px -126px; }
+
+.iconf.cog-add {
+  background-position: -72px -126px; }
+
+.iconf.cog-delete {
+  background-position: -90px -126px; }
+
+.iconf.cog-edit {
+  background-position: -108px -126px; }
+
+.iconf.cog-error {
+  background-position: -126px -126px; }
+
+.iconf.cog-go {
+  background-position: -144px -126px; }
+
+.iconf.coins {
+  background-position: -162px -126px; }
+
+.iconf.coins-add {
+  background-position: -180px -126px; }
+
+.iconf.coins-delete {
+  background-position: -198px -126px; }
+
+.iconf.color-swatch {
+  background-position: -216px -126px; }
+
+.iconf.color-wheel {
+  background-position: -234px -126px; }
+
+.iconf.comment {
+  background-position: -252px -126px; }
+
+.iconf.comment-add {
+  background-position: -270px -126px; }
+
+.iconf.comment-delete {
+  background-position: -288px -126px; }
+
+.iconf.comment-edit {
+  background-position: -306px -126px; }
+
+.iconf.comments {
+  background-position: -324px -126px; }
+
+.iconf.comments-add {
+  background-position: -342px -126px; }
+
+.iconf.comments-delete {
+  background-position: -360px -126px; }
+
+.iconf.compress {
+  background-position: -378px -126px; }
+
+.iconf.computer {
+  background-position: -396px -126px; }
+
+.iconf.computer-add {
+  background-position: -414px -126px; }
+
+.iconf.computer-delete {
+  background-position: -432px -126px; }
+
+.iconf.computer-edit {
+  background-position: -450px -126px; }
+
+.iconf.computer-error {
+  background-position: -468px -126px; }
+
+.iconf.computer-go {
+  background-position: -486px -126px; }
+
+.iconf.computer-key {
+  background-position: -504px -126px; }
+
+.iconf.computer-link {
+  background-position: -522px -126px; }
+
+.iconf.connect {
+  background-position: -540px -126px; }
+
+.iconf.contrast {
+  background-position: -558px -126px; }
+
+.iconf.contrast-decrease {
+  background-position: -576px -126px; }
+
+.iconf.contrast-high {
+  background-position: -0px -144px; }
+
+.iconf.contrast-increase {
+  background-position: -18px -144px; }
+
+.iconf.contrast-low {
+  background-position: -36px -144px; }
+
+.iconf.control-eject {
+  background-position: -54px -144px; }
+
+.iconf.control-eject-blue {
+  background-position: -72px -144px; }
+
+.iconf.control-end {
+  background-position: -90px -144px; }
+
+.iconf.control-end-blue {
+  background-position: -108px -144px; }
+
+.iconf.control-equalizer {
+  background-position: -126px -144px; }
+
+.iconf.control-equalizer-blue {
+  background-position: -144px -144px; }
+
+.iconf.control-fastforward {
+  background-position: -162px -144px; }
+
+.iconf.control-fastforward-blue {
+  background-position: -180px -144px; }
+
+.iconf.control-pause {
+  background-position: -198px -144px; }
+
+.iconf.control-pause-blue {
+  background-position: -216px -144px; }
+
+.iconf.control-play {
+  background-position: -234px -144px; }
+
+.iconf.control-play-blue {
+  background-position: -252px -144px; }
+
+.iconf.control-repeat {
+  background-position: -270px -144px; }
+
+.iconf.control-repeat-blue {
+  background-position: -288px -144px; }
+
+.iconf.control-rewind {
+  background-position: -306px -144px; }
+
+.iconf.control-rewind-blue {
+  background-position: -324px -144px; }
+
+.iconf.control-start {
+  background-position: -342px -144px; }
+
+.iconf.control-start-blue {
+  background-position: -360px -144px; }
+
+.iconf.control-stop {
+  background-position: -378px -144px; }
+
+.iconf.control-stop-blue {
+  background-position: -396px -144px; }
+
+.iconf.controller {
+  background-position: -414px -144px; }
+
+.iconf.controller-add {
+  background-position: -432px -144px; }
+
+.iconf.controller-delete {
+  background-position: -450px -144px; }
+
+.iconf.controller-error {
+  background-position: -468px -144px; }
+
+.iconf.creditcards {
+  background-position: -486px -144px; }
+
+.iconf.cross {
+  background-position: -504px -144px; }
+
+.iconf.css {
+  background-position: -522px -144px; }
+
+.iconf.css-add {
+  background-position: -540px -144px; }
+
+.iconf.css-delete {
+  background-position: -558px -144px; }
+
+.iconf.css-go {
+  background-position: -576px -144px; }
+
+.iconf.css-valid {
+  background-position: -0px -162px; }
+
+.iconf.cup {
+  background-position: -18px -162px; }
+
+.iconf.cup-add {
+  background-position: -36px -162px; }
+
+.iconf.cup-delete {
+  background-position: -54px -162px; }
+
+.iconf.cup-edit {
+  background-position: -72px -162px; }
+
+.iconf.cup-error {
+  background-position: -90px -162px; }
+
+.iconf.cup-go {
+  background-position: -108px -162px; }
+
+.iconf.cup-key {
+  background-position: -126px -162px; }
+
+.iconf.cup-link {
+  background-position: -144px -162px; }
+
+.iconf.cursor {
+  background-position: -162px -162px; }
+
+.iconf.cut {
+  background-position: -180px -162px; }
+
+.iconf.cut-red {
+  background-position: -198px -162px; }
+
+.iconf.database {
+  background-position: -216px -162px; }
+
+.iconf.database-add {
+  background-position: -234px -162px; }
+
+.iconf.database-connect {
+  background-position: -252px -162px; }
+
+.iconf.database-delete {
+  background-position: -270px -162px; }
+
+.iconf.database-edit {
+  background-position: -288px -162px; }
+
+.iconf.database-error {
+  background-position: -306px -162px; }
+
+.iconf.database-gear {
+  background-position: -324px -162px; }
+
+.iconf.database-go {
+  background-position: -342px -162px; }
+
+.iconf.database-key {
+  background-position: -360px -162px; }
+
+.iconf.database-lightning {
+  background-position: -378px -162px; }
+
+.iconf.database-link {
+  background-position: -396px -162px; }
+
+.iconf.database-refresh {
+  background-position: -414px -162px; }
+
+.iconf.database-save {
+  background-position: -432px -162px; }
+
+.iconf.database-table {
+  background-position: -450px -162px; }
+
+.iconf.date {
+  background-position: -468px -162px; }
+
+.iconf.date-add {
+  background-position: -486px -162px; }
+
+.iconf.date-delete {
+  background-position: -504px -162px; }
+
+.iconf.date-edit {
+  background-position: -522px -162px; }
+
+.iconf.date-error {
+  background-position: -540px -162px; }
+
+.iconf.date-go {
+  background-position: -558px -162px; }
+
+.iconf.date-link {
+  background-position: -576px -162px; }
+
+.iconf.date-magnify {
+  background-position: -0px -180px; }
+
+.iconf.date-next {
+  background-position: -18px -180px; }
+
+.iconf.date-previous {
+  background-position: -36px -180px; }
+
+.iconf.delete {
+  background-position: -54px -180px; }
+
+.iconf.disconnect {
+  background-position: -72px -180px; }
+
+.iconf.disk {
+  background-position: -90px -180px; }
+
+.iconf.disk-multiple {
+  background-position: -108px -180px; }
+
+.iconf.door {
+  background-position: -126px -180px; }
+
+.iconf.door-in {
+  background-position: -144px -180px; }
+
+.iconf.door-open {
+  background-position: -162px -180px; }
+
+.iconf.door-out {
+  background-position: -180px -180px; }
+
+.iconf.drink {
+  background-position: -198px -180px; }
+
+.iconf.drink-empty {
+  background-position: -216px -180px; }
+
+.iconf.drive {
+  background-position: -234px -180px; }
+
+.iconf.drive-add {
+  background-position: -252px -180px; }
+
+.iconf.drive-burn {
+  background-position: -270px -180px; }
+
+.iconf.drive-cd {
+  background-position: -288px -180px; }
+
+.iconf.drive-cd-empty {
+  background-position: -306px -180px; }
+
+.iconf.drive-delete {
+  background-position: -324px -180px; }
+
+.iconf.drive-disk {
+  background-position: -342px -180px; }
+
+.iconf.drive-edit {
+  background-position: -360px -180px; }
+
+.iconf.drive-error {
+  background-position: -378px -180px; }
+
+.iconf.drive-go {
+  background-position: -396px -180px; }
+
+.iconf.drive-key {
+  background-position: -414px -180px; }
+
+.iconf.drive-link {
+  background-position: -432px -180px; }
+
+.iconf.drive-magnify {
+  background-position: -450px -180px; }
+
+.iconf.drive-network {
+  background-position: -468px -180px; }
+
+.iconf.drive-rename {
+  background-position: -486px -180px; }
+
+.iconf.drive-user {
+  background-position: -504px -180px; }
+
+.iconf.drive-web {
+  background-position: -522px -180px; }
+
+.iconf.dvd {
+  background-position: -540px -180px; }
+
+.iconf.dvd-add {
+  background-position: -558px -180px; }
+
+.iconf.dvd-delete {
+  background-position: -576px -180px; }
+
+.iconf.dvd-edit {
+  background-position: -0px -198px; }
+
+.iconf.dvd-error {
+  background-position: -18px -198px; }
+
+.iconf.dvd-go {
+  background-position: -36px -198px; }
+
+.iconf.dvd-key {
+  background-position: -54px -198px; }
+
+.iconf.dvd-link {
+  background-position: -72px -198px; }
+
+.iconf.email {
+  background-position: -90px -198px; }
+
+.iconf.email-add {
+  background-position: -108px -198px; }
+
+.iconf.email-attach {
+  background-position: -126px -198px; }
+
+.iconf.email-delete {
+  background-position: -144px -198px; }
+
+.iconf.email-edit {
+  background-position: -162px -198px; }
+
+.iconf.email-error {
+  background-position: -180px -198px; }
+
+.iconf.email-go {
+  background-position: -198px -198px; }
+
+.iconf.email-link {
+  background-position: -216px -198px; }
+
+.iconf.email-open {
+  background-position: -234px -198px; }
+
+.iconf.email-open-image {
+  background-position: -252px -198px; }
+
+.iconf.emoticon-evilgrin {
+  background-position: -270px -198px; }
+
+.iconf.emoticon-grin {
+  background-position: -288px -198px; }
+
+.iconf.emoticon-happy {
+  background-position: -306px -198px; }
+
+.iconf.emoticon-smile {
+  background-position: -324px -198px; }
+
+.iconf.emoticon-surprised {
+  background-position: -342px -198px; }
+
+.iconf.emoticon-tongue {
+  background-position: -360px -198px; }
+
+.iconf.emoticon-unhappy {
+  background-position: -378px -198px; }
+
+.iconf.emoticon-waii {
+  background-position: -396px -198px; }
+
+.iconf.emoticon-wink {
+  background-position: -414px -198px; }
+
+.iconf.error {
+  background-position: -432px -198px; }
+
+.iconf.error-add {
+  background-position: -450px -198px; }
+
+.iconf.error-delete {
+  background-position: -468px -198px; }
+
+.iconf.error-go {
+  background-position: -486px -198px; }
+
+.iconf.exclamation {
+  background-position: -504px -198px; }
+
+.iconf.eye {
+  background-position: -522px -198px; }
+
+.iconf.feed {
+  background-position: -540px -198px; }
+
+.iconf.feed-add {
+  background-position: -558px -198px; }
+
+.iconf.feed-delete {
+  background-position: -576px -198px; }
+
+.iconf.feed-disk {
+  background-position: -0px -216px; }
+
+.iconf.feed-edit {
+  background-position: -18px -216px; }
+
+.iconf.feed-error {
+  background-position: -36px -216px; }
+
+.iconf.feed-go {
+  background-position: -54px -216px; }
+
+.iconf.feed-key {
+  background-position: -72px -216px; }
+
+.iconf.feed-link {
+  background-position: -90px -216px; }
+
+.iconf.feed-magnify {
+  background-position: -108px -216px; }
+
+.iconf.female {
+  background-position: -126px -216px; }
+
+.iconf.film {
+  background-position: -144px -216px; }
+
+.iconf.film-add {
+  background-position: -162px -216px; }
+
+.iconf.film-delete {
+  background-position: -180px -216px; }
+
+.iconf.film-edit {
+  background-position: -198px -216px; }
+
+.iconf.film-error {
+  background-position: -216px -216px; }
+
+.iconf.film-go {
+  background-position: -234px -216px; }
+
+.iconf.film-key {
+  background-position: -252px -216px; }
+
+.iconf.film-link {
+  background-position: -270px -216px; }
+
+.iconf.film-save {
+  background-position: -288px -216px; }
+
+.iconf.find {
+  background-position: -306px -216px; }
+
+.iconf.flag-blue {
+  background-position: -324px -216px; }
+
+.iconf.flag-green {
+  background-position: -342px -216px; }
+
+.iconf.flag-orange {
+  background-position: -360px -216px; }
+
+.iconf.flag-pink {
+  background-position: -378px -216px; }
+
+.iconf.flag-purple {
+  background-position: -396px -216px; }
+
+.iconf.flag-red {
+  background-position: -414px -216px; }
+
+.iconf.flag-yellow {
+  background-position: -432px -216px; }
+
+.iconf.folder {
+  background-position: -450px -216px; }
+
+.iconf.folder-add {
+  background-position: -468px -216px; }
+
+.iconf.folder-bell {
+  background-position: -486px -216px; }
+
+.iconf.folder-brick {
+  background-position: -504px -216px; }
+
+.iconf.folder-bug {
+  background-position: -522px -216px; }
+
+.iconf.folder-camera {
+  background-position: -540px -216px; }
+
+.iconf.folder-database {
+  background-position: -558px -216px; }
+
+.iconf.folder-delete {
+  background-position: -576px -216px; }
+
+.iconf.folder-edit {
+  background-position: -0px -234px; }
+
+.iconf.folder-error {
+  background-position: -18px -234px; }
+
+.iconf.folder-explore {
+  background-position: -36px -234px; }
+
+.iconf.folder-feed {
+  background-position: -54px -234px; }
+
+.iconf.folder-find {
+  background-position: -72px -234px; }
+
+.iconf.folder-go {
+  background-position: -90px -234px; }
+
+.iconf.folder-heart {
+  background-position: -108px -234px; }
+
+.iconf.folder-image {
+  background-position: -126px -234px; }
+
+.iconf.folder-key {
+  background-position: -144px -234px; }
+
+.iconf.folder-lightbulb {
+  background-position: -162px -234px; }
+
+.iconf.folder-link {
+  background-position: -180px -234px; }
+
+.iconf.folder-magnify {
+  background-position: -198px -234px; }
+
+.iconf.folder-page {
+  background-position: -216px -234px; }
+
+.iconf.folder-page-white {
+  background-position: -234px -234px; }
+
+.iconf.folder-palette {
+  background-position: -252px -234px; }
+
+.iconf.folder-picture {
+  background-position: -270px -234px; }
+
+.iconf.folder-star {
+  background-position: -288px -234px; }
+
+.iconf.folder-table {
+  background-position: -306px -234px; }
+
+.iconf.folder-user {
+  background-position: -324px -234px; }
+
+.iconf.folder-wrench {
+  background-position: -342px -234px; }
+
+.iconf.font {
+  background-position: -360px -234px; }
+
+.iconf.font-add {
+  background-position: -378px -234px; }
+
+.iconf.font-delete {
+  background-position: -396px -234px; }
+
+.iconf.font-go {
+  background-position: -414px -234px; }
+
+.iconf.group {
+  background-position: -432px -234px; }
+
+.iconf.group-add {
+  background-position: -450px -234px; }
+
+.iconf.group-delete {
+  background-position: -468px -234px; }
+
+.iconf.group-edit {
+  background-position: -486px -234px; }
+
+.iconf.group-error {
+  background-position: -504px -234px; }
+
+.iconf.group-gear {
+  background-position: -522px -234px; }
+
+.iconf.group-go {
+  background-position: -540px -234px; }
+
+.iconf.group-key {
+  background-position: -558px -234px; }
+
+.iconf.group-link {
+  background-position: -576px -234px; }
+
+.iconf.heart {
+  background-position: -0px -252px; }
+
+.iconf.heart-add {
+  background-position: -18px -252px; }
+
+.iconf.heart-delete {
+  background-position: -36px -252px; }
+
+.iconf.help {
+  background-position: -54px -252px; }
+
+.iconf.hourglass {
+  background-position: -72px -252px; }
+
+.iconf.hourglass-add {
+  background-position: -90px -252px; }
+
+.iconf.hourglass-delete {
+  background-position: -108px -252px; }
+
+.iconf.hourglass-go {
+  background-position: -126px -252px; }
+
+.iconf.hourglass-link {
+  background-position: -144px -252px; }
+
+.iconf.house {
+  background-position: -162px -252px; }
+
+.iconf.house-go {
+  background-position: -180px -252px; }
+
+.iconf.house-link {
+  background-position: -198px -252px; }
+
+.iconf.html {
+  background-position: -216px -252px; }
+
+.iconf.html-add {
+  background-position: -234px -252px; }
+
+.iconf.html-delete {
+  background-position: -252px -252px; }
+
+.iconf.html-go {
+  background-position: -270px -252px; }
+
+.iconf.html-valid {
+  background-position: -288px -252px; }
+
+.iconf.image {
+  background-position: -306px -252px; }
+
+.iconf.image-add {
+  background-position: -324px -252px; }
+
+.iconf.image-delete {
+  background-position: -342px -252px; }
+
+.iconf.image-edit {
+  background-position: -360px -252px; }
+
+.iconf.image-link {
+  background-position: -378px -252px; }
+
+.iconf.images {
+  background-position: -396px -252px; }
+
+.iconf.information {
+  background-position: -414px -252px; }
+
+.iconf.ipod {
+  background-position: -432px -252px; }
+
+.iconf.ipod-cast {
+  background-position: -450px -252px; }
+
+.iconf.ipod-cast-add {
+  background-position: -468px -252px; }
+
+.iconf.ipod-cast-delete {
+  background-position: -486px -252px; }
+
+.iconf.ipod-sound {
+  background-position: -504px -252px; }
+
+.iconf.joystick {
+  background-position: -522px -252px; }
+
+.iconf.joystick-add {
+  background-position: -540px -252px; }
+
+.iconf.joystick-delete {
+  background-position: -558px -252px; }
+
+.iconf.joystick-error {
+  background-position: -576px -252px; }
+
+.iconf.key {
+  background-position: -0px -270px; }
+
+.iconf.key-add {
+  background-position: -18px -270px; }
+
+.iconf.key-delete {
+  background-position: -36px -270px; }
+
+.iconf.key-go {
+  background-position: -54px -270px; }
+
+.iconf.keyboard {
+  background-position: -72px -270px; }
+
+.iconf.keyboard-add {
+  background-position: -90px -270px; }
+
+.iconf.keyboard-delete {
+  background-position: -108px -270px; }
+
+.iconf.keyboard-magnify {
+  background-position: -126px -270px; }
+
+.iconf.layers {
+  background-position: -144px -270px; }
+
+.iconf.layout {
+  background-position: -162px -270px; }
+
+.iconf.layout-add {
+  background-position: -180px -270px; }
+
+.iconf.layout-content {
+  background-position: -198px -270px; }
+
+.iconf.layout-delete {
+  background-position: -216px -270px; }
+
+.iconf.layout-edit {
+  background-position: -234px -270px; }
+
+.iconf.layout-error {
+  background-position: -252px -270px; }
+
+.iconf.layout-header {
+  background-position: -270px -270px; }
+
+.iconf.layout-link {
+  background-position: -288px -270px; }
+
+.iconf.layout-sidebar {
+  background-position: -306px -270px; }
+
+.iconf.lightbulb {
+  background-position: -324px -270px; }
+
+.iconf.lightbulb-add {
+  background-position: -342px -270px; }
+
+.iconf.lightbulb-delete {
+  background-position: -360px -270px; }
+
+.iconf.lightbulb-off {
+  background-position: -378px -270px; }
+
+.iconf.lightning {
+  background-position: -396px -270px; }
+
+.iconf.lightning-add {
+  background-position: -414px -270px; }
+
+.iconf.lightning-delete {
+  background-position: -432px -270px; }
+
+.iconf.lightning-go {
+  background-position: -450px -270px; }
+
+.iconf.link {
+  background-position: -468px -270px; }
+
+.iconf.link-add {
+  background-position: -486px -270px; }
+
+.iconf.link-break {
+  background-position: -504px -270px; }
+
+.iconf.link-delete {
+  background-position: -522px -270px; }
+
+.iconf.link-edit {
+  background-position: -540px -270px; }
+
+.iconf.link-error {
+  background-position: -558px -270px; }
+
+.iconf.link-go {
+  background-position: -576px -270px; }
+
+.iconf.lock {
+  background-position: -0px -288px; }
+
+.iconf.lock-add {
+  background-position: -18px -288px; }
+
+.iconf.lock-break {
+  background-position: -36px -288px; }
+
+.iconf.lock-delete {
+  background-position: -54px -288px; }
+
+.iconf.lock-edit {
+  background-position: -72px -288px; }
+
+.iconf.lock-go {
+  background-position: -90px -288px; }
+
+.iconf.lock-open {
+  background-position: -108px -288px; }
+
+.iconf.lorry {
+  background-position: -126px -288px; }
+
+.iconf.lorry-add {
+  background-position: -144px -288px; }
+
+.iconf.lorry-delete {
+  background-position: -162px -288px; }
+
+.iconf.lorry-error {
+  background-position: -180px -288px; }
+
+.iconf.lorry-flatbed {
+  background-position: -198px -288px; }
+
+.iconf.lorry-go {
+  background-position: -216px -288px; }
+
+.iconf.lorry-link {
+  background-position: -234px -288px; }
+
+.iconf.magifier-zoom-out {
+  background-position: -252px -288px; }
+
+.iconf.magnifier {
+  background-position: -270px -288px; }
+
+.iconf.magnifier-zoom-in {
+  background-position: -288px -288px; }
+
+.iconf.male {
+  background-position: -306px -288px; }
+
+.iconf.map {
+  background-position: -324px -288px; }
+
+.iconf.map-add {
+  background-position: -342px -288px; }
+
+.iconf.map-delete {
+  background-position: -360px -288px; }
+
+.iconf.map-edit {
+  background-position: -378px -288px; }
+
+.iconf.map-go {
+  background-position: -396px -288px; }
+
+.iconf.map-magnify {
+  background-position: -414px -288px; }
+
+.iconf.medal-bronze-1 {
+  background-position: -432px -288px; }
+
+.iconf.medal-bronze-2 {
+  background-position: -450px -288px; }
+
+.iconf.medal-bronze-3 {
+  background-position: -468px -288px; }
+
+.iconf.medal-bronze-add {
+  background-position: -486px -288px; }
+
+.iconf.medal-bronze-delete {
+  background-position: -504px -288px; }
+
+.iconf.medal-gold-1 {
+  background-position: -522px -288px; }
+
+.iconf.medal-gold-2 {
+  background-position: -540px -288px; }
+
+.iconf.medal-gold-3 {
+  background-position: -558px -288px; }
+
+.iconf.medal-gold-add {
+  background-position: -576px -288px; }
+
+.iconf.medal-gold-delete {
+  background-position: -0px -306px; }
+
+.iconf.medal-silver-1 {
+  background-position: -18px -306px; }
+
+.iconf.medal-silver-2 {
+  background-position: -36px -306px; }
+
+.iconf.medal-silver-3 {
+  background-position: -54px -306px; }
+
+.iconf.medal-silver-add {
+  background-position: -72px -306px; }
+
+.iconf.medal-silver-delete {
+  background-position: -90px -306px; }
+
+.iconf.money {
+  background-position: -108px -306px; }
+
+.iconf.money-add {
+  background-position: -126px -306px; }
+
+.iconf.money-delete {
+  background-position: -144px -306px; }
+
+.iconf.money-dollar {
+  background-position: -162px -306px; }
+
+.iconf.money-euro {
+  background-position: -180px -306px; }
+
+.iconf.money-pound {
+  background-position: -198px -306px; }
+
+.iconf.money-yen {
+  background-position: -216px -306px; }
+
+.iconf.monitor {
+  background-position: -234px -306px; }
+
+.iconf.monitor-add {
+  background-position: -252px -306px; }
+
+.iconf.monitor-delete {
+  background-position: -270px -306px; }
+
+.iconf.monitor-edit {
+  background-position: -288px -306px; }
+
+.iconf.monitor-error {
+  background-position: -306px -306px; }
+
+.iconf.monitor-go {
+  background-position: -324px -306px; }
+
+.iconf.monitor-lightning {
+  background-position: -342px -306px; }
+
+.iconf.monitor-link {
+  background-position: -360px -306px; }
+
+.iconf.mouse {
+  background-position: -378px -306px; }
+
+.iconf.mouse-add {
+  background-position: -396px -306px; }
+
+.iconf.mouse-delete {
+  background-position: -414px -306px; }
+
+.iconf.mouse-error {
+  background-position: -432px -306px; }
+
+.iconf.music {
+  background-position: -450px -306px; }
+
+.iconf.new {
+  background-position: -468px -306px; }
+
+.iconf.newspaper {
+  background-position: -486px -306px; }
+
+.iconf.newspaper-add {
+  background-position: -504px -306px; }
+
+.iconf.newspaper-delete {
+  background-position: -522px -306px; }
+
+.iconf.newspaper-go {
+  background-position: -540px -306px; }
+
+.iconf.newspaper-link {
+  background-position: -558px -306px; }
+
+.iconf.note {
+  background-position: -576px -306px; }
+
+.iconf.note-add {
+  background-position: -0px -324px; }
+
+.iconf.note-delete {
+  background-position: -18px -324px; }
+
+.iconf.note-edit {
+  background-position: -36px -324px; }
+
+.iconf.note-error {
+  background-position: -54px -324px; }
+
+.iconf.note-go {
+  background-position: -72px -324px; }
+
+.iconf.overlays {
+  background-position: -90px -324px; }
+
+.iconf.package {
+  background-position: -108px -324px; }
+
+.iconf.package-add {
+  background-position: -126px -324px; }
+
+.iconf.package-delete {
+  background-position: -144px -324px; }
+
+.iconf.package-go {
+  background-position: -162px -324px; }
+
+.iconf.package-green {
+  background-position: -180px -324px; }
+
+.iconf.package-link {
+  background-position: -198px -324px; }
+
+.iconf.page {
+  background-position: -216px -324px; }
+
+.iconf.page-add {
+  background-position: -234px -324px; }
+
+.iconf.page-attach {
+  background-position: -252px -324px; }
+
+.iconf.page-code {
+  background-position: -270px -324px; }
+
+.iconf.page-copy {
+  background-position: -288px -324px; }
+
+.iconf.page-delete {
+  background-position: -306px -324px; }
+
+.iconf.page-edit {
+  background-position: -324px -324px; }
+
+.iconf.page-error {
+  background-position: -342px -324px; }
+
+.iconf.page-excel {
+  background-position: -360px -324px; }
+
+.iconf.page-find {
+  background-position: -378px -324px; }
+
+.iconf.page-gear {
+  background-position: -396px -324px; }
+
+.iconf.page-go {
+  background-position: -414px -324px; }
+
+.iconf.page-green {
+  background-position: -432px -324px; }
+
+.iconf.page-key {
+  background-position: -450px -324px; }
+
+.iconf.page-lightning {
+  background-position: -468px -324px; }
+
+.iconf.page-link {
+  background-position: -486px -324px; }
+
+.iconf.page-paintbrush {
+  background-position: -504px -324px; }
+
+.iconf.page-paste {
+  background-position: -522px -324px; }
+
+.iconf.page-red {
+  background-position: -540px -324px; }
+
+.iconf.page-refresh {
+  background-position: -558px -324px; }
+
+.iconf.page-save {
+  background-position: -576px -324px; }
+
+.iconf.page-white {
+  background-position: -0px -342px; }
+
+.iconf.page-white-acrobat {
+  background-position: -18px -342px; }
+
+.iconf.page-white-actionscript {
+  background-position: -36px -342px; }
+
+.iconf.page-white-add {
+  background-position: -54px -342px; }
+
+.iconf.page-white-c {
+  background-position: -72px -342px; }
+
+.iconf.page-white-camera {
+  background-position: -90px -342px; }
+
+.iconf.page-white-cd {
+  background-position: -108px -342px; }
+
+.iconf.page-white-code {
+  background-position: -126px -342px; }
+
+.iconf.page-white-code-red {
+  background-position: -144px -342px; }
+
+.iconf.page-white-coldfusion {
+  background-position: -162px -342px; }
+
+.iconf.page-white-compressed {
+  background-position: -180px -342px; }
+
+.iconf.page-white-copy {
+  background-position: -198px -342px; }
+
+.iconf.page-white-cplusplus {
+  background-position: -216px -342px; }
+
+.iconf.page-white-csharp {
+  background-position: -234px -342px; }
+
+.iconf.page-white-cup {
+  background-position: -252px -342px; }
+
+.iconf.page-white-database {
+  background-position: -270px -342px; }
+
+.iconf.page-white-delete {
+  background-position: -288px -342px; }
+
+.iconf.page-white-dvd {
+  background-position: -306px -342px; }
+
+.iconf.page-white-edit {
+  background-position: -324px -342px; }
+
+.iconf.page-white-error {
+  background-position: -342px -342px; }
+
+.iconf.page-white-excel {
+  background-position: -360px -342px; }
+
+.iconf.page-white-find {
+  background-position: -378px -342px; }
+
+.iconf.page-white-flash {
+  background-position: -396px -342px; }
+
+.iconf.page-white-freehand {
+  background-position: -414px -342px; }
+
+.iconf.page-white-gear {
+  background-position: -432px -342px; }
+
+.iconf.page-white-get {
+  background-position: -450px -342px; }
+
+.iconf.page-white-go {
+  background-position: -468px -342px; }
+
+.iconf.page-white-h {
+  background-position: -486px -342px; }
+
+.iconf.page-white-horizontal {
+  background-position: -504px -342px; }
+
+.iconf.page-white-key {
+  background-position: -522px -342px; }
+
+.iconf.page-white-lightning {
+  background-position: -540px -342px; }
+
+.iconf.page-white-link {
+  background-position: -558px -342px; }
+
+.iconf.page-white-magnify {
+  background-position: -576px -342px; }
+
+.iconf.page-white-medal {
+  background-position: -0px -360px; }
+
+.iconf.page-white-office {
+  background-position: -18px -360px; }
+
+.iconf.page-white-paint {
+  background-position: -36px -360px; }
+
+.iconf.page-white-paintbrush {
+  background-position: -54px -360px; }
+
+.iconf.page-white-paste {
+  background-position: -72px -360px; }
+
+.iconf.page-white-php {
+  background-position: -90px -360px; }
+
+.iconf.page-white-picture {
+  background-position: -108px -360px; }
+
+.iconf.page-white-powerpoint {
+  background-position: -126px -360px; }
+
+.iconf.page-white-put {
+  background-position: -144px -360px; }
+
+.iconf.page-white-ruby {
+  background-position: -162px -360px; }
+
+.iconf.page-white-stack {
+  background-position: -180px -360px; }
+
+.iconf.page-white-star {
+  background-position: -198px -360px; }
+
+.iconf.page-white-swoosh {
+  background-position: -216px -360px; }
+
+.iconf.page-white-text {
+  background-position: -234px -360px; }
+
+.iconf.page-white-text-width {
+  background-position: -252px -360px; }
+
+.iconf.page-white-tux {
+  background-position: -270px -360px; }
+
+.iconf.page-white-vector {
+  background-position: -288px -360px; }
+
+.iconf.page-white-visualstudio {
+  background-position: -306px -360px; }
+
+.iconf.page-white-width {
+  background-position: -324px -360px; }
+
+.iconf.page-white-word {
+  background-position: -342px -360px; }
+
+.iconf.page-white-world {
+  background-position: -360px -360px; }
+
+.iconf.page-white-wrench {
+  background-position: -378px -360px; }
+
+.iconf.page-white-zip {
+  background-position: -396px -360px; }
+
+.iconf.page-word {
+  background-position: -414px -360px; }
+
+.iconf.page-world {
+  background-position: -432px -360px; }
+
+.iconf.paintbrush {
+  background-position: -450px -360px; }
+
+.iconf.paintcan {
+  background-position: -468px -360px; }
+
+.iconf.palette {
+  background-position: -486px -360px; }
+
+.iconf.paste-plain {
+  background-position: -504px -360px; }
+
+.iconf.paste-word {
+  background-position: -522px -360px; }
+
+.iconf.pencil {
+  background-position: -540px -360px; }
+
+.iconf.pencil-add {
+  background-position: -558px -360px; }
+
+.iconf.pencil-delete {
+  background-position: -576px -360px; }
+
+.iconf.pencil-go {
+  background-position: -0px -378px; }
+
+.iconf.phone {
+  background-position: -18px -378px; }
+
+.iconf.phone-add {
+  background-position: -36px -378px; }
+
+.iconf.phone-delete {
+  background-position: -54px -378px; }
+
+.iconf.phone-sound {
+  background-position: -72px -378px; }
+
+.iconf.photo {
+  background-position: -90px -378px; }
+
+.iconf.photo-add {
+  background-position: -108px -378px; }
+
+.iconf.photo-delete {
+  background-position: -126px -378px; }
+
+.iconf.photo-link {
+  background-position: -144px -378px; }
+
+.iconf.photos {
+  background-position: -162px -378px; }
+
+.iconf.picture {
+  background-position: -180px -378px; }
+
+.iconf.picture-add {
+  background-position: -198px -378px; }
+
+.iconf.picture-delete {
+  background-position: -216px -378px; }
+
+.iconf.picture-edit {
+  background-position: -234px -378px; }
+
+.iconf.picture-empty {
+  background-position: -252px -378px; }
+
+.iconf.picture-error {
+  background-position: -270px -378px; }
+
+.iconf.picture-go {
+  background-position: -288px -378px; }
+
+.iconf.picture-key {
+  background-position: -306px -378px; }
+
+.iconf.picture-link {
+  background-position: -324px -378px; }
+
+.iconf.picture-save {
+  background-position: -342px -378px; }
+
+.iconf.pictures {
+  background-position: -360px -378px; }
+
+.iconf.pilcrow {
+  background-position: -378px -378px; }
+
+.iconf.pill {
+  background-position: -396px -378px; }
+
+.iconf.pill-add {
+  background-position: -414px -378px; }
+
+.iconf.pill-delete {
+  background-position: -432px -378px; }
+
+.iconf.pill-go {
+  background-position: -450px -378px; }
+
+.iconf.plugin {
+  background-position: -468px -378px; }
+
+.iconf.plugin-add {
+  background-position: -486px -378px; }
+
+.iconf.plugin-delete {
+  background-position: -504px -378px; }
+
+.iconf.plugin-disabled {
+  background-position: -522px -378px; }
+
+.iconf.plugin-edit {
+  background-position: -540px -378px; }
+
+.iconf.plugin-error {
+  background-position: -558px -378px; }
+
+.iconf.plugin-go {
+  background-position: -576px -378px; }
+
+.iconf.plugin-link {
+  background-position: -0px -396px; }
+
+.iconf.printer {
+  background-position: -18px -396px; }
+
+.iconf.printer-add {
+  background-position: -36px -396px; }
+
+.iconf.printer-delete {
+  background-position: -54px -396px; }
+
+.iconf.printer-empty {
+  background-position: -72px -396px; }
+
+.iconf.printer-error {
+  background-position: -90px -396px; }
+
+.iconf.rainbow {
+  background-position: -108px -396px; }
+
+.iconf.report {
+  background-position: -126px -396px; }
+
+.iconf.report-add {
+  background-position: -144px -396px; }
+
+.iconf.report-delete {
+  background-position: -162px -396px; }
+
+.iconf.report-disk {
+  background-position: -180px -396px; }
+
+.iconf.report-edit {
+  background-position: -198px -396px; }
+
+.iconf.report-go {
+  background-position: -216px -396px; }
+
+.iconf.report-key {
+  background-position: -234px -396px; }
+
+.iconf.report-link {
+  background-position: -252px -396px; }
+
+.iconf.report-magnify {
+  background-position: -270px -396px; }
+
+.iconf.report-picture {
+  background-position: -288px -396px; }
+
+.iconf.report-user {
+  background-position: -306px -396px; }
+
+.iconf.report-word {
+  background-position: -324px -396px; }
+
+.iconf.resultset-first {
+  background-position: -342px -396px; }
+
+.iconf.resultset-last {
+  background-position: -360px -396px; }
+
+.iconf.resultset-next {
+  background-position: -378px -396px; }
+
+.iconf.resultset-previous {
+  background-position: -396px -396px; }
+
+.iconf.rosette {
+  background-position: -414px -396px; }
+
+.iconf.rss {
+  background-position: -432px -396px; }
+
+.iconf.rss-add {
+  background-position: -450px -396px; }
+
+.iconf.rss-delete {
+  background-position: -468px -396px; }
+
+.iconf.rss-go {
+  background-position: -486px -396px; }
+
+.iconf.rss-valid {
+  background-position: -504px -396px; }
+
+.iconf.ruby {
+  background-position: -522px -396px; }
+
+.iconf.ruby-add {
+  background-position: -540px -396px; }
+
+.iconf.ruby-delete {
+  background-position: -558px -396px; }
+
+.iconf.ruby-gear {
+  background-position: -576px -396px; }
+
+.iconf.ruby-get {
+  background-position: -0px -414px; }
+
+.iconf.ruby-go {
+  background-position: -18px -414px; }
+
+.iconf.ruby-key {
+  background-position: -36px -414px; }
+
+.iconf.ruby-link {
+  background-position: -54px -414px; }
+
+.iconf.ruby-put {
+  background-position: -72px -414px; }
+
+.iconf.script {
+  background-position: -90px -414px; }
+
+.iconf.script-add {
+  background-position: -108px -414px; }
+
+.iconf.script-code {
+  background-position: -126px -414px; }
+
+.iconf.script-code-red {
+  background-position: -144px -414px; }
+
+.iconf.script-delete {
+  background-position: -162px -414px; }
+
+.iconf.script-edit {
+  background-position: -180px -414px; }
+
+.iconf.script-error {
+  background-position: -198px -414px; }
+
+.iconf.script-gear {
+  background-position: -216px -414px; }
+
+.iconf.script-go {
+  background-position: -234px -414px; }
+
+.iconf.script-key {
+  background-position: -252px -414px; }
+
+.iconf.script-lightning {
+  background-position: -270px -414px; }
+
+.iconf.script-link {
+  background-position: -288px -414px; }
+
+.iconf.script-palette {
+  background-position: -306px -414px; }
+
+.iconf.script-save {
+  background-position: -324px -414px; }
+
+.iconf.server {
+  background-position: -342px -414px; }
+
+.iconf.server-add {
+  background-position: -360px -414px; }
+
+.iconf.server-chart {
+  background-position: -378px -414px; }
+
+.iconf.server-compressed {
+  background-position: -396px -414px; }
+
+.iconf.server-connect {
+  background-position: -414px -414px; }
+
+.iconf.server-database {
+  background-position: -432px -414px; }
+
+.iconf.server-delete {
+  background-position: -450px -414px; }
+
+.iconf.server-edit {
+  background-position: -468px -414px; }
+
+.iconf.server-error {
+  background-position: -486px -414px; }
+
+.iconf.server-go {
+  background-position: -504px -414px; }
+
+.iconf.server-key {
+  background-position: -522px -414px; }
+
+.iconf.server-lightning {
+  background-position: -540px -414px; }
+
+.iconf.server-link {
+  background-position: -558px -414px; }
+
+.iconf.server-uncompressed {
+  background-position: -576px -414px; }
+
+.iconf.shading {
+  background-position: -0px -432px; }
+
+.iconf.shape-align-bottom {
+  background-position: -18px -432px; }
+
+.iconf.shape-align-center {
+  background-position: -36px -432px; }
+
+.iconf.shape-align-left {
+  background-position: -54px -432px; }
+
+.iconf.shape-align-middle {
+  background-position: -72px -432px; }
+
+.iconf.shape-align-right {
+  background-position: -90px -432px; }
+
+.iconf.shape-align-top {
+  background-position: -108px -432px; }
+
+.iconf.shape-flip-horizontal {
+  background-position: -126px -432px; }
+
+.iconf.shape-flip-vertical {
+  background-position: -144px -432px; }
+
+.iconf.shape-group {
+  background-position: -162px -432px; }
+
+.iconf.shape-handles {
+  background-position: -180px -432px; }
+
+.iconf.shape-move-back {
+  background-position: -198px -432px; }
+
+.iconf.shape-move-backwards {
+  background-position: -216px -432px; }
+
+.iconf.shape-move-forwards {
+  background-position: -234px -432px; }
+
+.iconf.shape-move-front {
+  background-position: -252px -432px; }
+
+.iconf.shape-rotate-anticlockwise {
+  background-position: -270px -432px; }
+
+.iconf.shape-rotate-clockwise {
+  background-position: -288px -432px; }
+
+.iconf.shape-square {
+  background-position: -306px -432px; }
+
+.iconf.shape-square-add {
+  background-position: -324px -432px; }
+
+.iconf.shape-square-delete {
+  background-position: -342px -432px; }
+
+.iconf.shape-square-edit {
+  background-position: -360px -432px; }
+
+.iconf.shape-square-error {
+  background-position: -378px -432px; }
+
+.iconf.shape-square-go {
+  background-position: -396px -432px; }
+
+.iconf.shape-square-key {
+  background-position: -414px -432px; }
+
+.iconf.shape-square-link {
+  background-position: -432px -432px; }
+
+.iconf.shape-ungroup {
+  background-position: -450px -432px; }
+
+.iconf.shield {
+  background-position: -468px -432px; }
+
+.iconf.shield-add {
+  background-position: -486px -432px; }
+
+.iconf.shield-delete {
+  background-position: -504px -432px; }
+
+.iconf.shield-go {
+  background-position: -522px -432px; }
+
+.iconf.sitemap {
+  background-position: -540px -432px; }
+
+.iconf.sitemap-color {
+  background-position: -558px -432px; }
+
+.iconf.sound {
+  background-position: -576px -432px; }
+
+.iconf.sound-add {
+  background-position: -0px -450px; }
+
+.iconf.sound-delete {
+  background-position: -18px -450px; }
+
+.iconf.sound-low {
+  background-position: -36px -450px; }
+
+.iconf.sound-mute {
+  background-position: -54px -450px; }
+
+.iconf.sound-none {
+  background-position: -72px -450px; }
+
+.iconf.spellcheck {
+  background-position: -90px -450px; }
+
+.iconf.sport-8ball {
+  background-position: -108px -450px; }
+
+.iconf.sport-basketball {
+  background-position: -126px -450px; }
+
+.iconf.sport-football {
+  background-position: -144px -450px; }
+
+.iconf.sport-golf {
+  background-position: -162px -450px; }
+
+.iconf.sport-raquet {
+  background-position: -180px -450px; }
+
+.iconf.sport-shuttlecock {
+  background-position: -198px -450px; }
+
+.iconf.sport-soccer {
+  background-position: -216px -450px; }
+
+.iconf.sport-tennis {
+  background-position: -234px -450px; }
+
+.iconf.star {
+  background-position: -252px -450px; }
+
+.iconf.status-away {
+  background-position: -270px -450px; }
+
+.iconf.status-busy {
+  background-position: -288px -450px; }
+
+.iconf.status-offline {
+  background-position: -306px -450px; }
+
+.iconf.status-online {
+  background-position: -324px -450px; }
+
+.iconf.stop {
+  background-position: -342px -450px; }
+
+.iconf.style {
+  background-position: -360px -450px; }
+
+.iconf.style-add {
+  background-position: -378px -450px; }
+
+.iconf.style-delete {
+  background-position: -396px -450px; }
+
+.iconf.style-edit {
+  background-position: -414px -450px; }
+
+.iconf.style-go {
+  background-position: -432px -450px; }
+
+.iconf.sum {
+  background-position: -450px -450px; }
+
+.iconf.tab {
+  background-position: -468px -450px; }
+
+.iconf.tab-add {
+  background-position: -486px -450px; }
+
+.iconf.tab-delete {
+  background-position: -504px -450px; }
+
+.iconf.tab-edit {
+  background-position: -522px -450px; }
+
+.iconf.tab-go {
+  background-position: -540px -450px; }
+
+.iconf.table {
+  background-position: -558px -450px; }
+
+.iconf.table-add {
+  background-position: -576px -450px; }
+
+.iconf.table-delete {
+  background-position: -0px -468px; }
+
+.iconf.table-edit {
+  background-position: -18px -468px; }
+
+.iconf.table-error {
+  background-position: -36px -468px; }
+
+.iconf.table-gear {
+  background-position: -54px -468px; }
+
+.iconf.table-go {
+  background-position: -72px -468px; }
+
+.iconf.table-key {
+  background-position: -90px -468px; }
+
+.iconf.table-lightning {
+  background-position: -108px -468px; }
+
+.iconf.table-link {
+  background-position: -126px -468px; }
+
+.iconf.table-multiple {
+  background-position: -144px -468px; }
+
+.iconf.table-refresh {
+  background-position: -162px -468px; }
+
+.iconf.table-relationship {
+  background-position: -180px -468px; }
+
+.iconf.table-row-delete {
+  background-position: -198px -468px; }
+
+.iconf.table-row-insert {
+  background-position: -216px -468px; }
+
+.iconf.table-save {
+  background-position: -234px -468px; }
+
+.iconf.table-sort {
+  background-position: -252px -468px; }
+
+.iconf.tag {
+  background-position: -270px -468px; }
+
+.iconf.tag-blue {
+  background-position: -288px -468px; }
+
+.iconf.tag-blue-add {
+  background-position: -306px -468px; }
+
+.iconf.tag-blue-delete {
+  background-position: -324px -468px; }
+
+.iconf.tag-blue-edit {
+  background-position: -342px -468px; }
+
+.iconf.tag-green {
+  background-position: -360px -468px; }
+
+.iconf.tag-orange {
+  background-position: -378px -468px; }
+
+.iconf.tag-pink {
+  background-position: -396px -468px; }
+
+.iconf.tag-purple {
+  background-position: -414px -468px; }
+
+.iconf.tag-red {
+  background-position: -432px -468px; }
+
+.iconf.tag-yellow {
+  background-position: -450px -468px; }
+
+.iconf.telephone {
+  background-position: -468px -468px; }
+
+.iconf.telephone-add {
+  background-position: -486px -468px; }
+
+.iconf.telephone-delete {
+  background-position: -504px -468px; }
+
+.iconf.telephone-edit {
+  background-position: -522px -468px; }
+
+.iconf.telephone-error {
+  background-position: -540px -468px; }
+
+.iconf.telephone-go {
+  background-position: -558px -468px; }
+
+.iconf.telephone-key {
+  background-position: -576px -468px; }
+
+.iconf.telephone-link {
+  background-position: -0px -486px; }
+
+.iconf.television {
+  background-position: -18px -486px; }
+
+.iconf.television-add {
+  background-position: -36px -486px; }
+
+.iconf.television-delete {
+  background-position: -54px -486px; }
+
+.iconf.text-align-center {
+  background-position: -72px -486px; }
+
+.iconf.text-align-justify {
+  background-position: -90px -486px; }
+
+.iconf.text-align-left {
+  background-position: -108px -486px; }
+
+.iconf.text-align-right {
+  background-position: -126px -486px; }
+
+.iconf.text-allcaps {
+  background-position: -144px -486px; }
+
+.iconf.text-bold {
+  background-position: -162px -486px; }
+
+.iconf.text-columns {
+  background-position: -180px -486px; }
+
+.iconf.text-dropcaps {
+  background-position: -198px -486px; }
+
+.iconf.text-heading-1 {
+  background-position: -216px -486px; }
+
+.iconf.text-heading-2 {
+  background-position: -234px -486px; }
+
+.iconf.text-heading-3 {
+  background-position: -252px -486px; }
+
+.iconf.text-heading-4 {
+  background-position: -270px -486px; }
+
+.iconf.text-heading-5 {
+  background-position: -288px -486px; }
+
+.iconf.text-heading-6 {
+  background-position: -306px -486px; }
+
+.iconf.text-horizontalrule {
+  background-position: -324px -486px; }
+
+.iconf.text-indent {
+  background-position: -342px -486px; }
+
+.iconf.text-indent-remove {
+  background-position: -360px -486px; }
+
+.iconf.text-italic {
+  background-position: -378px -486px; }
+
+.iconf.text-kerning {
+  background-position: -396px -486px; }
+
+.iconf.text-letter-omega {
+  background-position: -414px -486px; }
+
+.iconf.text-letterspacing {
+  background-position: -432px -486px; }
+
+.iconf.text-linespacing {
+  background-position: -450px -486px; }
+
+.iconf.text-list-bullets {
+  background-position: -468px -486px; }
+
+.iconf.text-list-numbers {
+  background-position: -486px -486px; }
+
+.iconf.text-lowercase {
+  background-position: -504px -486px; }
+
+.iconf.text-padding-bottom {
+  background-position: -522px -486px; }
+
+.iconf.text-padding-left {
+  background-position: -540px -486px; }
+
+.iconf.text-padding-right {
+  background-position: -558px -486px; }
+
+.iconf.text-padding-top {
+  background-position: -576px -486px; }
+
+.iconf.text-replace {
+  background-position: -0px -504px; }
+
+.iconf.text-signature {
+  background-position: -18px -504px; }
+
+.iconf.text-smallcaps {
+  background-position: -36px -504px; }
+
+.iconf.text-strikethrough {
+  background-position: -54px -504px; }
+
+.iconf.text-subscript {
+  background-position: -72px -504px; }
+
+.iconf.text-superscript {
+  background-position: -90px -504px; }
+
+.iconf.text-underline {
+  background-position: -108px -504px; }
+
+.iconf.text-uppercase {
+  background-position: -126px -504px; }
+
+.iconf.textfield {
+  background-position: -144px -504px; }
+
+.iconf.textfield-add {
+  background-position: -162px -504px; }
+
+.iconf.textfield-delete {
+  background-position: -180px -504px; }
+
+.iconf.textfield-key {
+  background-position: -198px -504px; }
+
+.iconf.textfield-rename {
+  background-position: -216px -504px; }
+
+.iconf.thumb-down {
+  background-position: -234px -504px; }
+
+.iconf.thumb-up {
+  background-position: -252px -504px; }
+
+.iconf.tick {
+  background-position: -270px -504px; }
+
+.iconf.time {
+  background-position: -288px -504px; }
+
+.iconf.time-add {
+  background-position: -306px -504px; }
+
+.iconf.time-delete {
+  background-position: -324px -504px; }
+
+.iconf.time-go {
+  background-position: -342px -504px; }
+
+.iconf.timeline-marker {
+  background-position: -360px -504px; }
+
+.iconf.transmit {
+  background-position: -378px -504px; }
+
+.iconf.transmit-add {
+  background-position: -396px -504px; }
+
+.iconf.transmit-blue {
+  background-position: -414px -504px; }
+
+.iconf.transmit-delete {
+  background-position: -432px -504px; }
+
+.iconf.transmit-edit {
+  background-position: -450px -504px; }
+
+.iconf.transmit-error {
+  background-position: -468px -504px; }
+
+.iconf.transmit-go {
+  background-position: -486px -504px; }
+
+.iconf.tux {
+  background-position: -504px -504px; }
+
+.iconf.user {
+  background-position: -522px -504px; }
+
+.iconf.user-add {
+  background-position: -540px -504px; }
+
+.iconf.user-comment {
+  background-position: -558px -504px; }
+
+.iconf.user-delete {
+  background-position: -576px -504px; }
+
+.iconf.user-edit {
+  background-position: -0px -522px; }
+
+.iconf.user-female {
+  background-position: -18px -522px; }
+
+.iconf.user-go {
+  background-position: -36px -522px; }
+
+.iconf.user-gray {
+  background-position: -54px -522px; }
+
+.iconf.user-green {
+  background-position: -72px -522px; }
+
+.iconf.user-orange {
+  background-position: -90px -522px; }
+
+.iconf.user-red {
+  background-position: -108px -522px; }
+
+.iconf.user-suit {
+  background-position: -126px -522px; }
+
+.iconf.vcard {
+  background-position: -144px -522px; }
+
+.iconf.vcard-add {
+  background-position: -162px -522px; }
+
+.iconf.vcard-delete {
+  background-position: -180px -522px; }
+
+.iconf.vcard-edit {
+  background-position: -198px -522px; }
+
+.iconf.vector {
+  background-position: -216px -522px; }
+
+.iconf.vector-add {
+  background-position: -234px -522px; }
+
+.iconf.vector-delete {
+  background-position: -252px -522px; }
+
+.iconf.wand {
+  background-position: -270px -522px; }
+
+.iconf.weather-clouds {
+  background-position: -288px -522px; }
+
+.iconf.weather-cloudy {
+  background-position: -306px -522px; }
+
+.iconf.weather-lightning {
+  background-position: -324px -522px; }
+
+.iconf.weather-rain {
+  background-position: -342px -522px; }
+
+.iconf.weather-snow {
+  background-position: -360px -522px; }
+
+.iconf.weather-sun {
+  background-position: -378px -522px; }
+
+.iconf.webcam {
+  background-position: -396px -522px; }
+
+.iconf.webcam-add {
+  background-position: -414px -522px; }
+
+.iconf.webcam-delete {
+  background-position: -432px -522px; }
+
+.iconf.webcam-error {
+  background-position: -450px -522px; }
+
+.iconf.world {
+  background-position: -468px -522px; }
+
+.iconf.world-add {
+  background-position: -486px -522px; }
+
+.iconf.world-delete {
+  background-position: -504px -522px; }
+
+.iconf.world-edit {
+  background-position: -522px -522px; }
+
+.iconf.world-go {
+  background-position: -540px -522px; }
+
+.iconf.world-link {
+  background-position: -558px -522px; }
+
+.iconf.wrench {
+  background-position: -576px -522px; }
+
+.iconf.wrench-orange {
+  background-position: -0px -540px; }
+
+.iconf.xhtml {
+  background-position: -18px -540px; }
+
+.iconf.xhtml-add {
+  background-position: -36px -540px; }
+
+.iconf.xhtml-delete {
+  background-position: -54px -540px; }
+
+.iconf.xhtml-go {
+  background-position: -72px -540px; }
+
+.iconf.xhtml-valid {
+  background-position: -90px -540px; }
+
+.iconf.zoom {
+  background-position: -108px -540px; }
+
+.iconf.zoom-in {
+  background-position: -126px -540px; }
+
+.iconf.zoom-out {
+  background-position: -144px -540px; }
+
+#sidebar-right {
+  background: url(/images/r4/bg-cols-right.png) top left repeat-y;
+  margin-left: 0px;
+  padding-left: 0px; }
+
+.noleftmargin {
+  margin-left: 0px;
+  padding-left: 0px; }
+
+aside li {
+  font-size: 13px;
+  line-height: 17px;
+  color: #000;
+  margin-top: 15px; }
+
+a, .bookmark-link, .bookmark-label, .page-link {
+  color: #7a1501; }
+
+a.button, a.btn {
+  color: inherit; }
+
+.red {
+  color: #7a1501; }
+
+.serif {
+  font-family: "ff-tisa-web-pro", serif !important; }
+
+.black {
+  color: #000; }
+
+.white {
+  color: white;
+  fill: white; }
+
+.beige {
+  background-color: #E3E0D8; }
+
+.lightbeige {
+  background-color: rgba(227, 224, 216, 0.2); }
+
+.white-border-bottom {
+  border-bottom: 4px solid white; }
+
+.btn-primary {
+  background: #7a1501;
+  border: none; }
+
+.tdar-btn-link {
+  margin: 0px;
+  padding: 0px;
+  color: #7a1501; }
+
+a.tdarButton, .tdar-button, input.tdar-button[type=submit] {
+  font-family: helvetica, arial, sans-serif;
+  height: 35px;
+  display: inline-block;
+  background: #7a1501;
+  margin: 0 4px 0 0;
+  border-radius: 2px;
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src=/images/hIEfix.png, sizingMethod=crop )";
+  zoom: 1;
+  padding-left: 8px;
+  padding-right: 8px;
+  cursor: pointer;
+  border: none;
+  padding-top: .6em;
+  vertical-align: middle;
+  padding-bottom: 0;
+  background-color: #7a1501;
+  color: #fff;
+  border-radius: 0; }
+  a.tdarButton :focus, .tdar-button :focus, input.tdar-button[type=submit] :focus {
+    background-color: #a72e1d; }
+
+.tdar-slider h4 a {
+  cursor: auto;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 15px;
+  font-weight: bold;
+  height: auto;
+  line-height: 19px; }
+
+p.lead {
+  min-height: 4em;
+  color: #7d7a77;
+  display: block;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 13px; }
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+  color: black; }
+
+h1 {
+  font-size: 30px;
+  line-height: 34px; }
+
+h1, h2, h3, header {
+  font-family: "soleil", sans-serif !important;
+  font-weight: 700; }
+
+header .navbar button {
+  font-size: 14px; }
+
+header + section {
+  margin-top: 3.5em; }
+
+.welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+  font-family: "soleil", sans-serif !important; }
+
+h2 {
+  font-size: 20px;
+  line-height: 24px;
+  margin-bottom: 10px;
+  margin-top: 7px; }
+
+h3 {
+  font-size: 17px;
+  line-height: 20px;
+  margin-bottom: 10px;
+  margin-top: 7px; }
+
+h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  margin-top: 20px !important;
+  padding-top: 15px; }
+
+aside h4 {
+  border-top: 1px solid #e5e5e5; }
+
+#home .news li, p,
+.tableFormat td, header form input.searchbox,
+header .welcome-drop a,
+.hero input.searchbox,
+#slider p,
+#slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+  font-family: "ff-tisa-web-pro", serif !important; }
+
+@media (max-width: 768px) {
+  #sidebar-right {
+    background-image: none; }
+
+  #mdScreenNav {
+    background-color: #E3E0D8; }
+
+  .tdarNav {
+    background: none; }
+    .tdarNav .tdarNavItem {
+      padding-left: 0; }
+
+  #tdarNavMenu li, #myAccountNav li {
+    border-top: 2px solid #D2BF9E; }
+  #tdarNavMenu .nav-link, #tdarNavMenu .btn-link, #myAccountNav .nav-link, #myAccountNav .btn-link {
+    color: #352319;
+    font-size: 24px;
+    font-weight: bold; }
+
+  .nav-chevron {
+    stroke: #352319; } }
+.nav-pills .nav-item {
+  width: 100%; }
+.nav-pills .nav-link.active {
+  background-color: #7a1501;
+  color: #fff; }
+
+/*** ALPHA **/
+.ribbon-green {
+  z-index: 1000;
+  font: bold 15px Sans-Serif;
+  color: #333;
+  text-align: center;
+  text-shadow: rgba(255, 255, 255, 0.5) 0px 1px 0px;
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  position: fixed;
+  padding: 7px 0;
+  left: -34px;
+  top: 11px;
+  width: 120px;
+  background-color: #BFDC7A;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#BFDC7A), to(#8EBF45));
+  background-image: -webkit-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image: -moz-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image: -ms-linear-gradient(top, #BFDC7A, #8EBF45);
+  background-image: -o-linear-gradient(top, #BFDC7A, #8EBF45);
+  color: #6a6340;
+  -webkit-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.3); }
+
+.ribbon-green:before, .ribbon-green:after {
+  content: "";
+  border-top: 3px solid #6e8900;
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  position: absolute;
+  bottom: -3px; }
+
+.ribbon-green:before {
+  left: 0; }
+
+.ribbon-green:after {
+  right: 0; }
+
+.hidden {
+  display: none;
+  visibility: hidden; }
+
+body {
+  position: relative;
+  font-family: helvetica, arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5rem; }
+
+.tableFormat {
+  margin: 0;
+  padding: 8px 10px;
+  border-collapse: collapse;
+  border-spacing: 0;
+  text-align: left; }
+
+p {
+  font-size: 16px;
+  line-height: 1.5em; }
+
+.static {
+  position: fixed; }
+
+.dashboard-nav .nav-item {
+  text-align: left !important; }
+
+.icon-push-down {
+  margin-top: 0.3em; }
+
+.icon-height {
+  margin-top: .4em;
+  height: .8em;
+  width: .8em; }
+
+.nav-chevron {
+  color: white;
+  fill: white;
+  width: 10px;
+  height: 10px;
+  stroke-width: 5px;
+  stroke-color: white;
+  stroke: white;
+  position: relative;
+  bottom: 2px; }
+
+.noborder {
+  border: none; }
+
+.rounded-right {
+  border-top-right-radius: .25em;
+  border-top-left-radius: .25em; }
+
+#notice {
+  background-color: white; }
+
+#fileSummaryContainer {
+  overflow: hidden; }
+
+@media screen {
+  /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
+  h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
+    font-family: "soleil", sans-serif !important; }
+
+  #home .news li, p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
+    font-family: "ff-tisa-web-pro", serif !important; } }
+/* for typekit to prevent flash of unstyled content */
+.wf-loading {
+  font-family: "helvetica";
+  visibility: hidden; }
+
+.wf-active {
+  visibility: visible; }
+
+#foothumb .ht {
+  max-height: 75px;
+  min-height: 75px;
+  padding-left: 20px;
+  padding-right: 20px; }
+
+footer {
+  margin-top: 60px; }
+  footer #footer {
+    padding: 50px 0;
+    background: url(/images/r4/bg-footer.png) repeat; }
+  footer h6, footer h4 {
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    margin: 0 0 15px 0; }
+  footer ul, footer li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    clear: left;
+    font-size: 13px;
+    line-height: 22px; }
+  footer p {
+    padding-top: 1em;
+    font-size: 14px;
+    line-height: 22px; }
+  footer a {
+    color: #fff; }
+  footer a:hover {
+    color: #f1d9bf; }
+
+#ajaxIndicator {
+  position: fixed;
+  width: 25%;
+  z-index: 10001;
+  right: 5px;
+  bottom: 5px;
+  opacity: .9; }
+
+.fileinput-button input {
+  cursor: pointer;
+  direction: ltr;
+  filter: alpha(opacity=0);
+  font-size: 23px;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  right: 0;
+  /*     top: 0; */
+  transform: translate(-300px, 0) scale(4); }
+
+.mb-10 {
+  margin-bottom: 1.5rem; }
+
+#titlebar {
+  margin-bottom: 1.5rem; }
+
+.btn-group-xs > .btn, .btn-xs {
+  padding: .4rem;
+  font-size: 80%;
+  line-height: .5;
+  border-radius: .2rem; }
+
+.divInheritSection button.clear-section {
+  display: none; }
+
+.divInheritSection:hover button.clear-section {
+  display: inline-block; }
+
+.addAnother {
+  margin-left: 1em !important;
+  font-weight: bold; }
+
+.mb-p5 {
+  margin-bottom: .3rem; }
+
+.col-form-label {
+  font-weight: bold; }
+
+.repeat-row + .repeat-row {
+  margin-top: .8rem; }
+
+.repeatLastRow {
+  margin-bottom: 1rem; }
+
+.repeatLastRow.form-group .form-group:last-child {
+  margin-bottom: 0rem; }
+
+.repeatLastRow + .add-another-control {
+  top: -.6rem !important;
+  position: relative; }
+
+h3.displayName {
+  margin-top: 1em;
+  border-bottom: 1px solid #EEE; }
+
+#ontology-nodes .hidden-nodes {
+  display: none;
+  visibility: hidden; }
+
+.hiddenChildren:after {
+  content: "(show more)";
+  font-size: 10px !important;
+  font-family: helvetica !important; }
+
+div#ontologyTarget {
+  background-color: #efefef; }
+
+.image-carousel .carousel-indicators li {
+  background-color: #ddd; }
+.image-carousel .carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ddd' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E"); }
+.image-carousel .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ddd' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E"); }
+
+#confidentialLabel {
+  position: absolute;
+  bottom: 0px;
+  background-color: white;
+  right: 0px;
+  padding: 1px 10px 1px 10px; }
+
+#imageContainer {
+  position: relative;
+  border: 1px solid #aaa;
+  display: inline-block; }
+
+.primary-thumbnail {
+  height: 125px;
+  display: inline-block;
+  width: 125px;
+  /* TODO: use the lines below if thumbnails need to be something other than span2 */
+  /*min-width: 125px;*/
+  /*width: 100%;*/
+  vertical-align: middle;
+  text-align: center; }
+
+.thumbnail-center-spacing {
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle; }
+
+.thumbnail-border {
+  border: 1px solid #eee; }
+
+.thumbnail-border:hover, .thumbnail-border-selected {
+  border: 1px solid #aeaeae; }
+
+span.uneditable-input {
+  overflow: hidden; }
+
+.help-inline {
+  margin-bottom: .5em;
+  margin-top: .25em; }
+
+.label-right {
+  margin-top: .6em;
+  float: right; }
+
+.cartouche {
+  min-width: 10em;
+  text-align: left; }
+  .cartouche svg {
+    float: left; }
+
+.recordcite .card-body {
+  padding-top: .5rem;
+  padding-bottom: .3rem; }
+
+b.srt {
+  font-size: 16px; }
+
+.nav-link.align-middle.tdarNavItem {
+  margin-top: -2px; }
+
+.all-caps, .uppercase {
+  text-transform: uppercase; }
+
+.resource-nav, #subnavbar.bg-light {
+  border-radius: .25rem; }
+
+h3.downloads {
+  border-top-left-radius: .25rem;
+  border-top-right-radius: .25rem; }
+
+#fileSummaryContainer {
+  border-bottom-left-radius: .25rem;
+  border-bottom-right-radius: .25rem; }
+
+#sidebar-right .beige {
+  border-radius: .25rem; }
+
+.rounded-border {
+  border: 1px solid #CCC;
+  padding: .5em;
+  border-radius: .25rem; }
+
+table {
+  border-radius: .25rem; }
+
+.statusbadge {
+  font-size: 50%;
+  position: relative;
+  text-transform: uppercase !important;
+  top: -.3rem; }
+  .statusbadge a {
+    color: white; }
+
+.moreinfo {
+  font-size: .8em;
+  margin-left: .5em;
+  color: #555; }
+
+.popover {
+  max-width: 676px !important; }
+  .popover h3 {
+    margin-top: 0px !important; }
+
+form h2 {
+  margin-top: 1.8rem !important; }
+
+#divSearchContext {
+  /*position the context search box just the 'search tdar' input*/
+  position: absolute;
+  left: 0px;
+  top: 2.5em;
+  background-color: #ddd;
+  width: 235px;
+  margin: 0;
+  padding: 10px;
+  font-size: 10pt;
+  line-height: 1em;
+  border-radius: 5px;
+  display: none;
+  z-index: 1000; }
+
+#divSearchContext.active {
+  display: block !important; }
+
+#divSearchContext input {
+  padding: 0;
+  margin: 0; }
+
+#divSearchContext label {
+  display: inline-block;
+  padding: 0 0 0 0;
+  vertical-align: top;
+  font-family: ff-tisa-web-pro, serif;
+  font-size: 13px;
+  font-style: italic;
+  font-weight: normal; }
+
+.rounded {
+  border-radius: .25em; }
+
+.login-image {
+  background: url(/images/homepage/IMG_4478.jpg) no-repeat center;
+  background-size: cover;
+  border-radius: .25em; }
+  .login-image .card {
+    background-color: rgba(255, 255, 255, 0.85); }
+
+.login-image.image1 {
+  background-image: url(/images/homepage/IMG_4478.jpg) !important; }
+
+.login-image.image2 {
+  background-image: url(/images/homepage/aa-NM-019.jpg) !important; }
+
+.login-image.image3 {
+  background-image: url(/images/homepage/SqDavisSerpentMoundplate_XXXV.jpg) !important; }
+
+.login-image.image4 {
+  background-image: url(/images/homepage/chaco-19-1929.jpg) !important; }
+
+.login-image.image5 {
+  background-image: url(/images/homepage/Hopwell-Mound-City_Squier-Davis.jpg) !important; }
+
+.login-image.image6 {
+  background-image: url(/images/homepage/NPSMarchingBearMoundGroup.jpg) !important; }
+
+.login-image.image7 {
+  background-image: url(/images/homepage/Tyuony-1934.jpg) !important; }
+
+.login-image.image8 {
+  background-image: url(/images/homepage/ELMO-Rock.jpg) !important; }
+
+.login-image.image9 {
+  background-image: url(/images/homepage/SqDavisPipesfigureS.jpg) !important; }
+
+.login-image.image10 {
+  background-image: url(/images/homepage/SqDavisPolishedStone2.jpg) !important; }
+
+.login-image.image11 {
+  background-image: url(/images/homepage/SqDavisPlateXLVI.jpg) !important; }
+
+.login-image.image12 {
+  background-image: url(/images/homepage/chaco-early-restoration.jpg) !important; }
+
+.scroll-x {
+  overflow-x: scroll; }
+
+#view-data-table_wrapper > .row + .row {
+  overflow-x: scroll; }
+
+.rounded-left {
+  border-top-right-radius: .25em;
+  border-bottom-right-radius: .25em; }
+
+p.san-serif {
+  font-family: "soleil", sans-serif !important; }
+
+.file-row {
+  padding-top: 1rem;
+  padding-bottom: 1rem; }
+
+.file-row + .file-row {
+  border-top: 1px solid #EEE; }
+
+/*# sourceMappingURL=style.css.map */

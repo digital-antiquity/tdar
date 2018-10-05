@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-        <version>18.0.5-RADIOCARBON-SNAPSHOT</version>
+         <version>18.1.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
 
@@ -54,12 +54,6 @@
                 <groupId>org.seleniumhq.selenium</groupId>
                 <artifactId>selenium-api</artifactId>
                 <version>${selenium.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.squareup.okio</groupId>
-                <artifactId>okio</artifactId>
-                <version>1.14.1</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -146,6 +140,12 @@
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jgeppert.struts2.bootstrap</groupId>
+                    <artifactId>struts2-bootstrap-plugin</artifactId>
+                </exclusion>    
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
@@ -153,12 +153,24 @@
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jgeppert.struts2.bootstrap</groupId>
+                    <artifactId>struts2-bootstrap-plugin</artifactId>
+                </exclusion>    
+            </exclusions>
         </dependency>
         
         <dependency>
             <groupId>org.tdar</groupId>
             <artifactId>struts-base</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jgeppert.struts2.bootstrap</groupId>
+                    <artifactId>struts2-bootstrap-plugin</artifactId>
+                </exclusion>    
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
@@ -166,6 +178,12 @@
             <version>${project.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.jgeppert.struts2.bootstrap</groupId>
+                    <artifactId>struts2-bootstrap-plugin</artifactId>
+                </exclusion>    
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.tanesha.recaptcha4j</groupId>
@@ -186,6 +204,30 @@
             <artifactId>cors-filter</artifactId>
             <version>1.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.jgeppert.struts2.bootstrap</groupId>
+            <artifactId>struts2-bootstrap-plugin</artifactId>
+            <version>2.5.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.struts</groupId>
+                    <artifactId>struts2-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.freemarker</groupId>
+                    <artifactId>freemarker</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.velocity</groupId>
+                    <artifactId>velocity-tools</artifactId>
+                </exclusion>
+                <!-- <exclusion>
+                    <groupId>commons-validator</groupId>
+                    <artifactId>commons-validator</artifactId>
+                </exclusion> -->
+            </exclusions>           
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
 
 
         <!-- Selenium tests -->
@@ -199,14 +241,21 @@
                     <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>selenium-java</artifactId>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <!-- <dependency>
+<!--
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java-legacy</artifactId>
-            <version>2.5.3</version>
-        </dependency> -->
+			<version>2.5.3</version>
+		</dependency>
+  -->
+		
 		<dependency>
 		    <groupId>ru.yandex.qatools.ashot</groupId>
 		    <artifactId>ashot</artifactId>

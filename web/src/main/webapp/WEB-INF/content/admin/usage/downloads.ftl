@@ -10,8 +10,9 @@
 <h1>Download Stats for (${dateStart!"last week"} - ${dateEnd!.now} ); Minimum Downloads: ${minCount} </h1>
 
 <h2>Download Stats</h2>
-<table class="tableFormat table" id="tblDownloadStats">
-    <thead>
+<table class="table table-sm table-striped"" id="tblDownloadStats">
+      <thead class="thead-dark">
+
     <tr>
         <th>Resource</th>
         <th>File</th>

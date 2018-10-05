@@ -121,8 +121,8 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                     }
                 },
                 undoReplace : function(e) {
-                    var valid = this.$parent.reValidateAllFilesWithChangedFile(this.file);
-                    if (valid) {
+                  //  var valid = this.$parent.reValidateAllFilesWithChangedFile(this.file);
+                  //  if (valid) {
                         Vue.set(this.file, "action", this.previousReplaceState);
                         console.log($("#fileupload" + this.index));
                         console.log(this.originalFileName);
@@ -135,7 +135,11 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                         Vue.set(this.file, "size", this.originalFileSize);
                         TDAR.vuejs.upload.setProgress(0);
                         Vue.set(this.file, "progress", undefined);
-                    }
+                        Vue.set(this, "originalFileName", '');
+                        Vue.set(this.file, "originalFileSize", '');
+                        Vue.set(this, "originalFileSize", '');
+                        Vue.set(this.file, "originalFileName", '');
+                  //  }
                 },
                 replaceFileChange : function(e) {
                     var files = e.target.files || e.dataTransfer.files;

@@ -29,7 +29,7 @@
       </div>
 
         <br/>
-        <@s.textarea name="comment" id="messageBody" rows="4" label="Message" cssClass="span5" cols="80" />
+        <@s.textarea name="comment" id="messageBody" rows="4" label="Message" cssClass="col-5" cols="80" />
         
     <@s.submit name="submit" cssClass="button btn btn-primary"/>
 </@s.form>

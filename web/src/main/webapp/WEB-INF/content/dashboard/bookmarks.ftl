@@ -20,10 +20,10 @@
 
 </div>
 <div class="row">
-<div class="span2">
+<div class="col-2">
     <@dash.sidebar current="bookmarks" />
 </div>
-<div class="span10">
+<div class="col-10">
     <@bookmarksSection />
         </div>
 </div>
@@ -36,8 +36,8 @@
     <#macro moremenu>
     <div class="moremenu pull-right">
         <div class="btn-group">
-            <button class="btn btn-mini">View</button>
-            <button class="btn btn-mini">Edit</button>
+            <button class="btn btn-sm">View</button>
+            <button class="btn btn-sm">Edit</button>
             </div>
     </div>
 

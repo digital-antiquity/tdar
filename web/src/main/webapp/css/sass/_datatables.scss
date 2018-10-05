@@ -1,0 +1,105 @@
+
+.columnSquare {
+    display: inline-block;
+    border: 1px solid #999;
+    position:relative;
+    margin-right: 5px;
+//    bottom: -.5em !important;
+    width: 10px;
+    height: 10px;
+    padding: 0px;
+}
+.columnSquare.uncoded {
+    background: #ffffff;
+}
+
+.countColumn, .buttontable div[data-count], .columnSquare.count {
+    background: #e5e696; /* Old browsers */
+    border: 1px solid #999999;
+}
+
+.measurementColumn, .buttontable div[data-measurement], .columnSquare.measurement {
+    background: #deefff; /* Old browsers */
+    border: 1px solid #999999;
+}
+
+.integrationColumn, .buttontable div[data-ontology], .columnSquare.integration {
+    background: #e4efc0; /* Old browsers */
+    border: 1px solid #999999;
+}
+
+
+
+.columnSquare span:before {
+    font-size: 14px;
+    font-weight: bold;
+    position: relative;
+    font-family: helvetica;
+    display: inline-block;
+    text-align: center;
+    width: 1em;
+    top: -3px;
+}
+
+.columnSquare.complete span:before {
+    content: "\2713"; /* check mark */
+    color: #000;
+}
+
+.columnSquare.invalid span:before {
+    content: "X";
+    color: #7a1501;
+}
+
+.defaultColumn, .buttontable div, .columnSquare.coded {
+    background: #eeeeee;
+    border: 1px solid #999999;
+}
+
+.columnSquare.mapped {
+    background: #8b755e;
+}
+
+.mappingInfo label {
+    position: static;
+}
+
+.mappingInfo input {
+    margin-left: 1em;
+}
+
+.columnSquare.filename {
+    background: #8b755e; /* Old browsers */
+    border: 1px solid #999999;
+}
+
+
+#cbCheckAllToggle, .sorting_1 input[type='checkbox'] {
+    margin-right: 10px !Important;
+    margin-left: 10px !Important;
+}
+
+.legend {
+    line-height: 1.2em;
+}
+
+
+.displayColumn {
+    background: #e9e4cd;
+    border: 1px solid #999999;
+}
+
+.buttontable td, .integrationColumn, .displayColumn {
+    vertical-align: top;
+}
+
+
+
+.short button {
+    visibility: hidden;
+}
+
+.short .ontology {
+    display: none;
+}
+

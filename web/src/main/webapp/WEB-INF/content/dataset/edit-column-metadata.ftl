@@ -2,34 +2,25 @@
     <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
     <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
+    <#import "/WEB-INF/macros/helptext.ftl" as  helptext>
 <head>
     <title>Edit Table Metadata for ${dataset.title}</title>
 </head>
 <body>
-    <@edit.sidebar/>
-
-<h1>Edit Table Metadata for ${dataset.title}</h1>
-
-<h3>Table ${dataTable.displayName}, ${dataTable.dataTableColumns?size } columns</h3>
-
-
-    <#if dataTable.dataTableColumns?has_content>
+    <@edit.sidebar>
+    
 
     <!--TODO: .container sets content width, it should be outside of grid layout  (or a grid-layout parent) -->
     <!-- we break this rule so that navbar will be correct with when it is .affix'd, for all responsive profiles -->
-    <div id='subnavbar2' class="subnavbar" data-offset-top="250" data-spy="affix">
-        <div class="navbar">
         <#-- <select name="chooseColumn" onChange="goToColumn(this)"> -->
-            <div class="navbar-inner">
                 <ul class="nav">
-                    <li>
+                    <li class="page-item">
                         <a href="#top"><b>top</b></a>
                     </li>
-                    <li>
+                    <li class="page-item">
+        <#if dataTable.dataTableColumns?has_content>
 <span style="display:inline-block">
                         <b style="margin-top: 10px !important;display: inline-block;margin-left: 10px;">Jump to a column</b>
-<!--                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <b class="caret"></b> -->
                     <form class="inline" style="display:inline">
                         <select name="chooseColumn" id="chooseColumn" style="display: inline-block;margin-bottom: -1px;">
                             <#list dataTableColumns?sort_by("sequenceNumber") as column>
@@ -38,20 +29,40 @@
                         </select>
                     </form>
                     </span>
+    </#if>
+                    </li>
+                    <li class="page-item">
+                                                    <label>Records Per Page
+                                    <@s.select  theme="simple" id="recordsPerPage1" cssClass="input-small" name="recordsPerPage1"
+                                    list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
+                                </label>
+                                <script type='text/javascript'>
+                                $(function () {
+                                    TDAR.datasetMetadata.initPagination("1");
+                                });
+                                </script>
+
                     </li>
                 </ul>
-                <div id="fakeSubmitDiv" class="pull-right">
-                    <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                    <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    </#if>
+        
+    
+        <div id="fakeSubmitDiv">
+            <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
+            <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+        </div>
+    </@edit.sidebar>
+
+<h1>Edit Table Metadata for ${dataset.title}</h1>
+
+<h3>Table ${dataTable.displayName}, ${dataTable.dataTableColumns?size } columns</h3>
+
+                    <@pagination "1"/>
+
 
     <#if (dataset.dataTables?size > 1) >
-        <div class="well">
+        <div class="card">
+            <div class="card-body">
             <p>
                 There are multiple tables in this dataset. To switch between, click
                 on one of the links below. Please remember to save any changes before switching tables.
@@ -65,6 +76,7 @@
                     <option value="${table.id?c}" <#if table?? && table.id == dataTable.id>selected</#if>>${count}. ${table.displayName}</option>
                 </@s.iterator>
             </select>
+        </div>
         </div>
     </#if>
 
@@ -84,64 +96,41 @@
         <h2>Column Description &amp; Mapping</h2>
 
         </#if>
-        <@pagination "1"/>
 
         <#macro pagination prefix>
             <#if (paginationHelper.pageCount > 1)>
-            <div class="pagination">
+            <div class="">
                 <b>Showing ${recordsPerPage} columns, jump to another page? (save first)</b>
+                <br/>
                 <#assign path="/">
                 <#if (paginationHelper.totalNumberOfItems >0)>
-                    <table class="pagin">
-                        <tr>
+                                <ul class="pagination">
                             <#if paginationHelper.hasPrevious()>
-                                <td class="prev">
                                     <@paginationLink startRecord=paginationHelper.previousPageStartRecord path=path linkText="Previous" />
-                                </td>
                             </#if>
-                            <td class="page">
-                                <ul>
                                     <#if (0 < paginationHelper.minimumPageNumber) >
-                                        <li>
                                             <@paginationLink startRecord=0 path=path linkText="First" />
-                                        </li>
-                                        <li>...</li>
+                                        <li "page-item">...</li>
                                     </#if>
                                     <#list paginationHelper.minimumPageNumber..paginationHelper.maximumPageNumber as i>
-                                        <li>
+                                        <li "page-item">
                                             <#if i == paginationHelper.currentPage>
-                                                <span class="currentResultPage">${i + 1}</span>
+                                                <li class="page-item active">
+												      <a class="page-link currentResultPage" href="#">${i + 1} <span class="sr-only"></span></a>
+    											</li>
                                             <#else>
                                                 <@paginationLink startRecord=(i * paginationHelper.itemsPerPage) path=path linkText=(i + 1) />
                                             </#if>
                                         </li>
                                     </#list>
                                     <#if (paginationHelper.maximumPageNumber < (paginationHelper.pageCount - 1))>
-                                        <li>...</li>
-                                        <li>
-                                            <@paginationLink startRecord=paginationHelper.lastPage path=path linkText="Last" />
-                                        </li>
+                                        <li "page-item">...</li>
+                                        <@paginationLink startRecord=paginationHelper.lastPage path=path linkText="Last" />
                                     </#if>
-                                </ul>
-                            </td>
                             <#if (paginationHelper.hasNext()) >
-                                <td class="next">
                                     <@paginationLink startRecord=paginationHelper.nextPageStartRecord path=path linkText="Next" />
-                                </td>
                             </#if>
-                            <td>
-                                <label>Records Per Page
-                                    <@s.select  theme="simple" id="recordsPerPage${prefix}" cssClass="input-small" name="recordsPerPage${prefix}"
-                                    list={"10":"10", "25":"25", "50":"50"} listKey="key" listValue="value" />
-                                </label>
-                                <script type='text/javascript'>
-                                $(function () {
-                                    TDAR.datasetMetadata.initPagination("${prefix}");
-                                });
-                                </script>
-                            </td>
-                        </tr>
-                    </table>
+                                </ul>
                 </#if>
             </div>
 
@@ -149,43 +138,41 @@
         </#macro>
 
         <#macro paginationLink startRecord path linkText>
-        <span class="paginationLink">
-    	<a href="<@s.url includeParams="none" value="${actionName}?startRecord=${startRecord?c}&recordsPerPage=${recordsPerPage}&id=${id?c}"/><#if dataTableId?has_content>&dataTableId=${dataTableId?c}</#if>">${linkText}</a>
-    </span>
+        <li class="page-item">
+    		<a  class="page-link" href="<@s.url includeParams="none" value="${actionName}?startRecord=${startRecord?c}&recordsPerPage=${recordsPerPage}&id=${id?c}"/><#if dataTableId?has_content>&dataTableId=${dataTableId?c}</#if>">${linkText}</a>
+   		 </li>
         </#macro>
 
         <#if dataTable.dataTableColumns??>
-        <div id="datatablecolumns">
+        <div id="datatablecolumns" class="row">
             <#list dataTableColumns?sort_by("sequenceNumber") as column>
                 <#if column_index != 0>
                     <hr/></#if>
 
-                <div class="datatablecolumn" id="columnDiv_${column_index}">
-                    <h3>
-                        <span id="columnDiv_${column_index}lgnd" data-tooltipcontent="#generalToolTip" data-tiplabel="Column Mapping Instructions"
-                              class="columnSquare"><span>&nbsp;</span></span>
-                        <!-- Column: -->
-                        <span class="displayName">${column.displayName}</span>
-                        <!-- <small style="float:right">jump to: <a href="#top">top</a> | <a href="#submitButton">save</a></small> --></h3>
+                <div class="datatablecolumn col-12" id="columnDiv_${column_index}">
+                        
+                    <h3 class="displayName">
+<span class="columnSquare">&nbsp;</span>                    
+                    ${column.displayName} <@helptext.info title="Column Mapping Instructions" contentDiv="#generalToolTip" /></h3>
 
     <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
-        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:"
-        cssClass="columnEncoding" target="#columnDiv_${column_index}"
+        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:" inline=true
+        cssClass="columnEncoding" target="#columnDiv_${column_index}" labelposition="left"
         listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
     </span>
                     <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" />
                     <@s.hidden name="dataTableColumns[${column_index}].columnDataType" value="${column.columnDataType}" cssClass="dataType" />
                     <@s.hidden name="dataTableColumns[${column_index}].name" value="${column.name}" />
                     <span data-tooltipcontent="#displayNameToolTip" data-tiplabel="Display Name">
-                        <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" cssClass="input-xxlarge" />
+                        <@s.textfield name="dataTableColumns[${column_index}].displayName" value="${column.displayName}" label="Display Name:" cssClass="input-xxlarge" labelposition="left"/>
                     </span>
 
                     <div class="measurementInfo" style='display:none;'>
-                        <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit"
+                        <@s.select name='dataTableColumns[${column_index}].measurementUnit' cssClass="measurementUnit" labelposition="left"
                         label="Meas. Unit:" listValue='fullName' emptyOption='true' list='%{allMeasurementUnits}'/>
                     </div>
-                    <div data-tooltipcontent="#categoryVariableToolTip" data-tiplabel="Category Variable" class="control-group">
-                        <label class="control-label">Category:</label>
+                    <div data-tooltipcontent="#categoryVariableToolTip" data-tiplabel="Category Variable" class="form-group row">
+                        <label class="col-form-label col-2">Category:</label>
                         <#assign subCategoryId="" />
                         <#assign categoryId="" />
                         <#if column.categoryVariable??>
@@ -196,30 +183,27 @@
                                 <#assign categoryId="${column.categoryVariable.id?c}" />
                             </#if>
                         </#if>
-                        <div class="controls">
+                        <div class="controls col-10">
+                        <div class="row">
                             <@s.select id='categoryVariableId_${column_index}'
                             name='dataTableColumns[${column_index}].categoryVariable.id'
                             onchange='TDAR.common.changeSubcategory("#categoryVariableId_${column_index}","#subcategoryId_${column_index}")'
                             headerKey="-1"
                             headerValue=""
-                            cssClass="categorySelect span3"
+                            cssClass="categorySelect col-4 mr-4"
                             listKey='id'
                             listValue='name'
                             list='%{allDomainCategories}'
-                            label="Category:"
-                            theme="simple"
                             autocompleteName="sortCategoryId"
                             value="${categoryId}"
                             />
 
-                            <span id="subcategoryDivId_${column_index}">
                                 <#if subCategoryId != "">
                                     <@s.select  target="#columnDiv_${column_index}"
                                     id='subcategoryId_${column_index}'
-                                    cssClass="subcategorySelect span3"
+                                    cssClass="subcategorySelect col-4 ml-5"
                                     name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
                                     list='%{subcategories[${column_index}]}'
-                                    theme="simple"
                                     headerKey="-1"
                                     headerValue=""
                                     listKey='id'
@@ -231,12 +215,12 @@
                                     />
                                 <#else>
                                     <select id='subcategoryId_${column_index}' name='dataTableColumns[${column_index}].tempSubCategoryVariable.id'
-                                            class="span3" autocompleteName="subCategoryId">
+                                            class="col-6 form-control" autocompleteName="subCategoryId">
                                         <option value='-1'>N/A</option>
                                     </select>
                                 </#if>
-                            </span>
                             <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="visibility:hidden"/>
+                        </div>
                         </div>
                     </div>
     <span data-tooltipcontent="#descriptionToolTip" data-tiplabel="Column Description">
@@ -270,42 +254,17 @@
                     autocompleteParentElement="#divOntology-${column_index}"
                     autocompleteIdElement="#${column_index}_oid"
                     addNewLink="/ontology/add?returnToResourceMappingId=${resource.id?c}"
-                    cssClass="input-xxlarge-combo ontologyfield" />
+                    cssClass="col-10 ontologyfield" />
                     </div>
                 </div>
             </#list>
 
-            <div class="hidden" style="visibility:hidden;display:none">
-    <span class="hidden" id="generalToolTip">
-         Each "column" subform shown on the table metadata page represents a column in the dataset, and provides fields to describe the data in that column. This is important documentation for researchers that wish to use the dataset, and where relevant the form links to coding sheets and ${siteAcronym}
-        ontologies to faciliate research.
-    </span>
-    <span class="hidden" id="columnTypeToolTip">
-        Select the option that best describes the data in this column. The form will display fields relevant to your selection. <br/>
-        <b>Note:</b> measurement and count cannot be selected for fields that have any non-numerical data.
-    </span>
-    <span class="hidden" id="displayNameToolTip">
-        If needed, edit the name displayed for the column to help users understand the column's contents.
-    </span>
-    <span class="hidden" id="categoryVariableToolTip"> 
-        Select the category and subcategory that best describes the data in this column.
-    </span>
-    <span class="hidden" id="descriptionToolTip">
-        Add any notes that would help a researcher understand the data in the column. 
-    </span>
-    <span class="hidden" id="codingSheetToolTip">
-        If the data in this column is coded and the right coding sheet has been added to ${siteAcronym}, please select a coding sheet that translates and explains the codes. 
-    </span>
-    <span class="hidden" id="ontologyToolTip">
-        If you would like to link this column to a ${siteAcronym} ontology, make that selection here. This is important if you (or other researchers) intend to integrate this dataset with other datasets using the ${siteAcronym}
-        data integration tool.
-    </span>
-            </div>
+	<@helptext.columninfo />
 
         </div>
         </#if>
     <h2>Summary</h2>
-    <table id="summaryTable" class="table tableFormat">
+    <table id="summaryTable" class="table table-sm table-striped">
         <tr>
             <th></th>
             <th></th>

@@ -81,7 +81,7 @@
 <body>
 <@admin.header/>
 <h1>Rebuild Search Indexes</h1>
-<@s.checkboxlist id="sources" name='indexesToRebuild' list='allSources'  spanClass="span4" numColumns="3"  />
+<@s.checkboxlist id="sources" name='indexesToRebuild' list='allSources'  spanClass="col" numColumns="3"  />
 <div>
 
     <div class="progress progress-success"  id="progressbar">

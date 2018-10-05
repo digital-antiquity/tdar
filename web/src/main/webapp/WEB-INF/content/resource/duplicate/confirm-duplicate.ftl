@@ -2,7 +2,7 @@
 
     <h2>Duplicate ${resource.title}</h2>
 <div class="row">
-<div class="span6">
+<div class="col-6">
 <p>Duplicating resources in ${siteAcronym} is a great way to simplify data entry by allowing a user to copy an existing resource instead of starting from scratch.  
 This is especially valuable when with data sets and GIS resources where there are mapped data tables.  Duplicating a resource will copy almost everything to the
 new resource. </p>
@@ -15,7 +15,7 @@ new resource. </p>
     <li>Project Association (if you don't have the right to edit the record)</li>
 </ul>  
 </div>
-<div class="span6">
+<div class="col-6">
 <img src="<@s.url value="/images/duplicate.png"/>" title="Duplicate image" alt="duplicate"/>
 </div>
 </div>

@@ -4,10 +4,10 @@
 
     <#macro uploadForm>
         <#if editor>
-            <div class="control-group">
-                <label class="control-label">Add an Photo / Logo</label>
-                <div class="controls">
-                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' dynamicAttributes={
+            <div class="control-group row">
+                <label class="col-form-label col-2">Add an Photo / Logo</label>
+                <div class="controls col-10">
+                    <@s.file  name='file' cssClass="input-xxlarge profileImage " id="fileUploadField" labelposition='left' size='40' dynamicAttributes={
                         "data-rule-extension":"jpg,tiff,jpeg,png"
                     }/>
                 </div>
@@ -19,13 +19,11 @@
             <h2 id="profile">Personal Details</h2>
         
             <#if editor>
-                <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
-                    <label class="control-label">Status</label>
+                <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group ">
+                    <label class="control-label col-form-label">Status</label>
 
-                    <div class="controls">
-                        <@s.select theme="tdar" cssClass="input-xlarge" value="person.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
+                        <@s.select cssClass="input-xlarge  col-5" value="person.status" name='status'  emptyOption='false' listValue='label' list='%{statuses}'/>
                         <span class="label label-important">admin option</span>
-                    </div>
                 </div>
             </#if>
 
@@ -33,10 +31,10 @@
 
             <@s.hidden name="id" />
             <div class="row">
-                <div class="span5">
+                <div class="col-6">
                         <@s.textfield cssClass="required input-xlarge"         label="First Name"  name="person.firstName" maxlength="255"  title="A first name is required" />
                 </div>
-                <div class="span5">
+                <div class="col-6">
                         <@s.textfield cssClass="required input-xlarge"        label="Last Name"   name="person.lastName"  maxlength="255"  title="A last name is required" />
                 </div>
             </div>
@@ -45,7 +43,7 @@
 
 
         <div class="row">
-            <div class="span5">
+            <div class="col-6">
                 <@s.textfield cssClass="input-xlarge ${(person.registered??)?string('registered', '')}"  label="Email"   name="email"  maxlength="255"  title="An email is required" />
     
                 <#if config.privacyControlsEnabled>
@@ -54,7 +52,7 @@
                         engines, spammers, and visitors who are not logged in.</em></p>
                 </#if>
             </div>
-            <div class="span5">
+            <div class="col-6">
                 <@s.textfield name="person.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
             </div>
         </div>
@@ -63,11 +61,11 @@
 
 
             <div class="row">
-                <div class="span5">
+                <div class="col-6">
                     <@s.textfield name="person.orcidId" label="ORCID Id" id="orcidId" cssClass="input-xlarge"  maxlength=50 placeholder="XXXX-XXXX-XXXX-XXXX" />
                     <a href="http://orcid.org/about/what-is-orcid">About ORCID</a>                
                 </div>
-                <div class="span5">
+                <div class="col-6">
                     <#if config.RPAEnabled>
                     <@s.textfield  cssClass="input-xlarge" label="RPA Number" name="person.rpaNumber"  maxlength=255 />
                     <a href="http://rpanet.org/">About RPA</a>                
@@ -77,7 +75,9 @@
     </#macro>
 
     <#macro hidden>
+            <br/>
             <@s.checkbox label='Hide page from logged-out users' name="persistable.hidden" id="hidden-page"  />
+            <br/>
     </#macro>
 
     <#macro contactInfo>
@@ -102,34 +102,19 @@
             <@common.chromeAutofillWorkaround />
             <@s.token name='struts.csrf.token' />
             <@common.jsErrorLog />
+	<div class="row">
+	<div class="col-10">
 
-        <div id='subnavbar' class="subnavbar-scrollspy affix-top subnavbar resource-nav navbar-static  screen" data-offset-top="250" data-spy="affix">
-            <div class="">
-                <div class="container">
-                    <ul class="nav">
-                        <li class="alwaysHidden"><a href="#top">top</a></li>
-                        <li class="active"><a href="#profile">Basic</a></li>
-                        <#if contributor><li><a href="#archive">Archival</a></li></#if>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#billingSection">Billing</a></li>
-                        <li><a href="#password">Change Password</a></li>
-                    </ul>
-                    <div id="fakeSubmitDiv" class="pull-right">
-                        <button type=button class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</button>
-                        <img alt="progress indicator" title="progress indicator" src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="">
             <@basicInformation>
                 <#if person.username?has_content>
                     <div class="control-group">
-                        <label class="control-label">Username</label>
+                        <label class="col-form-label">Username</label>
 
                         <div class="controls">
-                            <span class="uneditable-input input-xlarge"> ${person.username}</span>
+                        <input type="text" class="disabled form-control col-5" readonly value="${person.username}" />
+
                         </div>
                     </div>
                 </#if>
@@ -139,6 +124,7 @@
 
             <@uploadForm />
             <h3>Contributor</h3>
+            
             <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />
             <p><i>Note: after selecting this, you will be prompted to review and agree to our contributor's policy</i></p>
 
@@ -220,7 +206,27 @@
             $("#clearButton").click(function() {$('#fileUploadField').val('');return false;});
         });
     </script>
+	</div>
+	<div class='col-2'>
 
+    <nav id='subnavbar'  class="bg-light" >
+    <div class=" col-12">
+        <p>Jump to Section:</p>
+    <ul class="list-unstyled">
+                        <li class="active"><a class="nav-link" href="#profile">Basic</a></li>
+                        <#if contributor><li><a class="nav-link" href="#archive">Archival</a></li></#if>
+                        <li><a class="nav-link" href="#contact">Contact</a></li>
+                        <li><a class="nav-link" href="#billingSection">Billing</a></li>
+                        <li><a class="nav-link" href="#password">Change Password</a></li>
+                    </ul>
+                    <div class="button btn btn-primary submitButton" id="fakeSubmitButton">Save</div>
+                    <img alt="progress indicator" title="progress indicator"  src="<@s.url value="/images/indicator.gif"/>" class="waitingSpinner" style="display:none"/>
+		</div>
+		</div>
+    </nav>
+	
+	</div>
+	</div>
     </#macro>
 
 

@@ -37,7 +37,7 @@
             </#if>
             <@edit.hiddenStartTime />
             <div class="row">
-            <div class="span4">
+            <div class="col-4">
                 <div class="control-group">
                     <label class="control-label">Enable Custom Header?</label>
     
@@ -75,7 +75,7 @@
                 </div>
 
             </div>
-            <div class="span4">
+            <div class="col-4">
     
                 <div class="control-group">
                     <label class="control-label">Show Search on Collection Page?</label>

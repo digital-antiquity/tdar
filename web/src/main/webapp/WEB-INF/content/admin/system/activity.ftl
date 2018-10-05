@@ -43,8 +43,9 @@
     <@list.hashtable data=counters keyLabel="Browser" valueLabel="Count" />
 
 <h3 id="activity">Recent Activity</h3>
-<table class="tableFormat table" id="tblRecentActivity">
-    <thead>
+<table class="table table-sm table-striped"" id="tblRecentActivity">
+      <thead class="thead-dark">
+
     <tr>
         <th>date</th>
         <th>user</th>
@@ -100,7 +101,7 @@
     </#if>
 
 <h3 id="stats">System Statistics</h3>
-<table class="tableFormat table" id="tblQueryStats">
+<table class="table table-sm table-striped"" id="tblQueryStats">
     <#list moreInfo?keys as key>
         <tr>
             <th>${key}</th>
@@ -110,7 +111,7 @@
 </table>
 
 <h3>Hibernate Statistics</h3>
-<table class="tableFormat table" id="tblQueryStats">
+<table class="table table-sm table-striped"" id="tblQueryStats">
     <#assign txt = sessionStatistics?string>
     <#assign txt = txt?substring(1+txt?index_of("["), txt?last_index_of("]")) >
     <#list txt?split(",") as row_>
@@ -124,8 +125,9 @@
 
     <#assign threshold = 200 />
 <p>Threshold for slow queries is: <strong>${threshold} ms</strong></p>
-<table class="tableFormat table" id="tblQueryStats">
-    <thead>
+<table class="table table-sm table-striped"" id="tblQueryStats">
+      <thead class="thead-dark">
+
     <tr>
         <th><b>query</b></th>
         <th>executionCount</th>

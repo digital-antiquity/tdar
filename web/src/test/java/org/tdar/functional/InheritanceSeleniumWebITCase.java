@@ -135,7 +135,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         driver.findElement(By.id("otherKeywordsRepeatableAddAnotherButton")).click();
         driver.findElement(By.id("metadataForm_otherKeywords_2_")).clear();
         driver.findElement(By.id("metadataForm_otherKeywords_2_")).sendKeys("otherkeyword3");
-        driver.findElement(By.cssSelector("#resourceNoteSectionGlide > h2")).click();
+        driver.findElement(By.cssSelector("#resourceNoteSectionGlide")).click();
         new Select(driver.findElement(By.id("metadataForm_resourceNotes_0__type"))).selectByVisibleText("Redaction Note");
         new Select(driver.findElement(By.id("metadataForm_resourceNotes_0__type"))).selectByVisibleText("General Note");
         driver.findElement(By.id("metadataForm_resourceNotes_0__note")).clear();

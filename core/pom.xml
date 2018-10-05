@@ -16,7 +16,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>18.0.5-RADIOCARBON-SNAPSHOT</version>
+         <version>18.1.0-RADIOCARBON-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencyManagement>
@@ -82,11 +82,11 @@
             </exclusions>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>3.3.1.Final</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-ehcache</artifactId>

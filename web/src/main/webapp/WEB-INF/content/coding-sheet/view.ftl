@@ -7,17 +7,18 @@
         <#if editable>
         <!-- disabled if coding sheet has errors, ontology is not mapped -->
             <#assign disabled = !okToMapOntology />
-            <@nav.makeLink "coding-sheet" "mapping" "map ontology" "mapping"   current true disabled "mappingLink"/>
+            <@nav.makeLink2 namespace="coding-sheet" link="${persistable.id?c}/mapping" label="map ontology" icon="ontology" />
         </#if>
     </#macro>
 
     <#macro afterBasicInfo>
-        <@common.codingRules>
-            <#if resource.defaultOntology?has_content>
-            <p><b>Ontology:</b> <a href='<@s.url value="/${resource.defaultOntology.absoluteUrl}"/>'>${resource.defaultOntology.title}</a></p>
-            </#if>
-            <@view.categoryVariables />
-        </@common.codingRules>
+    <div class="section">
+        <#if resource.defaultOntology?has_content>
+        <p><b>Ontology:</b> <a href='<@s.url value="/${resource.defaultOntology.absoluteUrl}"/>'>${resource.defaultOntology.title}</a></p>
+        </#if>
+        <@view.categoryVariables />
+        </div>
+        <@common.codingRules />
     </#macro>
 
 </#escape>

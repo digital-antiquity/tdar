@@ -19,8 +19,9 @@
 	<@s.token name='struts.csrf.token' />
 
     <input type="hidden" name="url" value="${Parameters.url!''}"/>
-    <div class="well">
-    <div class="pull-right">
+    <div class="card">
+    <div class="card-body pl-4 pr-4">
+    <div class="float-right">
         <b>Already Registered?</b><br/><a href="<@s.url value="/login" />">Login</a>
     </div>
     <p><b>There is no charge to become a registered user of ${siteAcronym}. As a registered user, you can:</b>
@@ -32,8 +33,9 @@
 
     <h3>About You</h3>
 
-     <@auth.registrationFormFields beanPrefix="registration" />
+     <@auth.registrationFormFields beanPrefix="registration" detail="verbose" />
 
+</div>
 </div>
 
 </@s.form>
