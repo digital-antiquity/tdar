@@ -176,7 +176,7 @@ ${head}
         catch(e){window.attachEvent("onload", $buo_f)}
     </script>
     <!--<![endif]-->
-    <@header.outdatedBrowserWarning />
+<#--    <@header.outdatedBrowserWarning /> -->
         <header>
             <@dec.layout_header />
         </header>
