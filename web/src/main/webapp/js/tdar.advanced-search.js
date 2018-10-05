@@ -229,10 +229,10 @@ TDAR.advancedSearch = (function () {
         var $visibleRows = $('.grouptable .repeat-row:visible', $groupDiv);
         var $groupingControl = $groupDiv.find(".groupingSelectDiv");
         if ($visibleRows.length > 1) {
+            $groupingControl.removeClass("hidden");
             $groupingControl.find('select').show();
-            $groupingControl.addClass("in");
         } else {
-            $groupingControl.removeClass("in");
+            $groupingControl.addClass("hidden");
             $groupingControl.find('select').hide();
 
         }
@@ -266,7 +266,8 @@ TDAR.advancedSearch = (function () {
             //console.log("clearing map information")
             $('#large-google-map').removeData();
             $('#large-google-map').empty("div");
-
+            console.log($frm.html());
+            //copy($frm.html());
             $("#autosave").val($frm.html());
 
             //if doing resource search, clear collection search field so we aren't confused about which tab to display
