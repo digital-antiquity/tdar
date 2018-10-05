@@ -58,53 +58,55 @@
             	<div class="col-10">
             		<div class="row">
                         <label class="col-form-label col-2">Datasets &amp; Ontologies</label>
-                        <div class="col-10 controls form-row">
+                        <div class="col-10">
+                            <div class="row">
                             <div class="col-6">
-                                <table class="table table-condensed table-hover selected-datasets">
-                                      <thead class="">
-
-                                        <tr>
-                                            <th colspan="3">Selected Datasets
+                                <div class="row">
+                                <div class="col-12">
+                                            <b>Selected Datasets</b>
                                                 <div class="alert alert-warn" ng-show="ctrl.integration.dataTables.length > maxDataTables" >
                                                     Please use less than {{maxDataTables}} datasets.
                                                 </div>
 
                                                 <button type="button" class="btn btn-sm"  id="btnAddDataset" ng-disabled="isReadOnly() || isBusy()"
                                                         ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
-
-                                        </th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="dt in ctrl.integration.dataTables">
-                                            <td><span class="badge bg-red ">{{$index + 1}}</span></td>
-                                            <td>
+                                                        <hr/>
+                                    <ul class="list-unstyled">
+                                        <li ng-repeat="dt in ctrl.integration.dataTables" class="list-unstyled available-datasets">
+                                        <div class="row">  
+                                            <div class="col-1">
+                                            <span class="badge bg-red ">{{$index + 1}}</span>
+                                            </div>
+                                            <div class="col-9">
                                                 {{dt|dtDisplayName|titleCase}}
                                                 <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
-                                            </td>
-                                            <td style="width:10%">
-                                                <a class="btn btn-sm delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)" ng-disabled="isReadOnly()">X</a>
-                                            </td>
-
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                            </div>
+                                            <div class="col-1">
+                                                <a class="btn btn-sm delete-button " href="#" ng-click="ctrl.removeDatatableClicked(dt)" ng-disabled="isReadOnly()">X</a>
+                                            </div>
+                                        </div>
+                                        </li>
+                                </ul>
+                                </div>
+                                </div>
+                                
                         </div>
                             <div class="col-6">
-                                <table class="table table-condensed table-hover">
-                                      <thead class="">
-
-                                        <tr><th colspan="2">Available Ontologies</th></tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="ontology in ctrl.integration.ontologies">
-                                            <td class="sharedOntologies">
+                                <div class="row">
+                                <div class="col-12">
+                                        <b>Available Ontologies</b>
+                                        <hr/>
+                                        <ul class="list-unstyled">
+                                        
+                                        <li class="list-unstyled available-ontologies sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">
                                                 {{ontology | ontDisplayName}}
                                                 <a href="/ontology/{{ontology.id}}" target="_blank">({{ontology.id}})</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        </li>
+                                </ul>
 
+                            </div>
+                            </div>
+                            </div>
                             </div>
                         </div>
                     </div>

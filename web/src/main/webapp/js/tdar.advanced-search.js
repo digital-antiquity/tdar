@@ -242,9 +242,9 @@ function _showGroupingSelectorIfNecessary($groupDiv) {
     var $groupingControl = $groupDiv.find(".groupingSelectDiv");
     if ($visibleRows.length > 1) {
         $groupingControl.find('select').show();
-        $groupingControl.addClass("in");
+        $groupingControl.removeClass("hidden");
     } else {
-        $groupingControl.removeClass("in");
+        $groupingControl.addClass("hidden");
         $groupingControl.find('select').hide();
 
     }
