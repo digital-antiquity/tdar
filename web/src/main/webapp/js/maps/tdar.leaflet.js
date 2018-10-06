@@ -1,11 +1,14 @@
 TDAR.leaflet = (function(console, $, ctx, L) {
     "use strict";
 
+    if (L.drawLocal) {
+        
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
     L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
+    }
     L.Icon.Default.imagePath = TDAR.assetsUri('/components/leaflet/dist/images/');
 
     var $body = $('body');

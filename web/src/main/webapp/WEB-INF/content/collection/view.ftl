@@ -14,6 +14,11 @@
     
 <#if (whiteLabelCollection)>
         <style>
+        
+        #hero-wide + .container {
+        	margin-top:3rem;
+
+		}
     <#noescape>${whitelabelCollection.properties.css!''}</#noescape>
 
     <#-- todo: move these to .css and use collection-specific css classes -->

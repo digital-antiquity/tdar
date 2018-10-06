@@ -63,7 +63,7 @@
 
     <#-- <link href="${staticHost}/css/tdar-base.css" rel="stylesheet"> -->
     <#-- <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print"> -->
-    <@header.css (webFilePreprocessingEnabled ) />
+    <@header.css (production ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${config.changesetId}"></script>
@@ -417,7 +417,7 @@ ${head}
     </#if>
 
 
-    <@header.scripts ( webFilePreprocessingEnabled) />
+    <@header.scripts ( production) />
 
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>
