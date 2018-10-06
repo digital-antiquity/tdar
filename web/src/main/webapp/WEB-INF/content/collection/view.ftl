@@ -19,7 +19,10 @@
     <#-- todo: move these to .css and use collection-specific css classes -->
         .whitelabelImageClass {
     <#if searchHeaderLogoAvailable>
-            background-image: url("${hostedContentBaseUrl}/search-header.jpg") no-repeat center;
+            background-image: url("${hostedContentBaseUrl}/search-header.jpg");
+			background-position: center;
+			background-repeat: no-repeat;
+	}
     <#elseif searchHeaderEnabled>
             background:url(/images/r4/bg-home.jpg) no-repeat center;
     </#if>

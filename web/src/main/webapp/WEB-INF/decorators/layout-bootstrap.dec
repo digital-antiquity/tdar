@@ -90,10 +90,6 @@
 <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
 
-
-    <#if whiteLabelCollection??>  
-        <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
-    </#if>
     
 ${head}
 

@@ -25,7 +25,7 @@
     	<div class="col-12">
         <#if !minimal>
             <#if (logoAvailable && ((resourceCollection.properties.whitelabel)!false || ((resourceCollection.properties.customHeaderEnabled)!false) == false)) >
-                <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
+                <img class="collection-logo img-fluid mb-2" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
             </#if>
             <#if results?has_content>
             <@commonr.renderWorldMap mode="mini" />
