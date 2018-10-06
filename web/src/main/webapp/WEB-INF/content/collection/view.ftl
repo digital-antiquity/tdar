@@ -1,7 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/decorators/decorator-macros.ftl" as decorator>
-    <#import "/WEB-INF/macros/resource/common-resource.ftl" as common>
+    <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "common-collection.ftl" as commonCollection>
 
 <#if (whiteLabelCollection)>
@@ -14,12 +14,20 @@
     
 <#if (whiteLabelCollection)>
         <style>
+        
+        #hero-wide + .container {
+        	margin-top:3rem;
+
+		}
     <#noescape>${whitelabelCollection.properties.css!''}</#noescape>
 
     <#-- todo: move these to .css and use collection-specific css classes -->
         .whitelabelImageClass {
     <#if searchHeaderLogoAvailable>
-            background-image: url("${hostedContentBaseUrl}/search-header.jpg") no-repeat center;
+            background-image: url("${hostedContentBaseUrl}/search-header.jpg");
+			background-position: center;
+			background-repeat: no-repeat;
+	}
     <#elseif searchHeaderEnabled>
             background:url(/images/r4/bg-home.jpg) no-repeat center;
     </#if>
@@ -48,7 +56,7 @@
         <@commonCollection.descriptionSection/>
 
 
-        <#if whitelabelCollection.properties.featuredResourcesEnabled>
+        <#if whitelabelCollection?has_content && whitelabelCollection.properties.featuredResourcesEnabled>
             <@view.featured colspan="12" resourceList=whitelabelCollection.properties.featuredResources />
             <div class="col-12">
                 <div class="row">
@@ -64,7 +72,7 @@
         </div>
 
 
-        <#if whitelabelCollection.properties.subCollectionsEnabled>
+        <#if whitelabelCollection?has_content && whitelabelCollection.properties.subCollectionsEnabled>
             <div class="col-12">
                 <#list collections>
                 <h2>Collections</h2>

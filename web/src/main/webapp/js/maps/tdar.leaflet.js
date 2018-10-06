@@ -16,12 +16,13 @@ require("leaflet-control-geocoder/dist/Control.Geocoder.css");
 const LatLon = require("JS/latLongUtil-1.0").LatLon;
 const Geo = require("JS/latLongUtil-1.0").Geo;
 
-L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
-L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
-L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
-L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
-L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
-L.Icon.Default.imagePath = core.assetsUri('/components/dist/images/');
+if (L.drawLocal) {
+    L.drawLocal.draw.toolbar.buttons.rectangle = 'Create bounding box';
+    L.drawLocal.edit.toolbar.buttons.edit = 'Edit';
+    L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
+    L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
+    L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
+}
 
 var $body = $('body');
 

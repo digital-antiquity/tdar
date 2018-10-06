@@ -93,10 +93,6 @@
 <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
 
-
-    <#if whiteLabelCollection??>  
-        <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
-    </#if>
     
     
     <#-- @header.scripts ( webFilePreprocessingEnabled) / -->
@@ -218,7 +214,7 @@ ${head}
         <#assign subtitle = (resourceCollection.properties.subtitle!(resourceCollection.institution.name)!'')>
         <@dec.homepageHero>
             <@dec.searchHero imageClass="whitelabelImageClass" 
-                title="${resourceCollection.title}" subtitle="${subtitle}" 
+                title="${resourceCollection.title}" subtitle="${subtitle}" searchPrompt="Search within this collection..." 
                     idField="collectionId" idValue="${resourceCollection.id?c}" />
         </@dec.homepageHero>
             <div class="container">
