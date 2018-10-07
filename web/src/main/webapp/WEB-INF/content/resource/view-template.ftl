@@ -510,7 +510,8 @@
         <ul class="inline">
     <#items as collection>
     
-        <li>
+    
+        <li class="list-inline-item">
             <a class="sml moreInfo" data-type="collection" data-size="${((collection.managedResources![])?size!0 + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 
             data-submitter="${collection.submitter.properName}"
             data-description="<@common.truncate collection.description!'no description' />"

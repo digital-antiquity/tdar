@@ -25,7 +25,7 @@
     	<div class="col-12">
         <#if !minimal>
             <#if (logoAvailable && ((resourceCollection.properties.whitelabel)!false || ((resourceCollection.properties.customHeaderEnabled)!false) == false)) >
-                <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
+                <img class="collection-logo img-fluid mb-2" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
             </#if>
             <#if results?has_content>
             <@commonr.renderWorldMap mode="mini" />
@@ -197,11 +197,7 @@
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
 		        </div>
         
-        <div class="collection-facets col-12">
-            <#assign mapSize="450" />
-			<@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" 'horizontal' />
-        </div>
-
+        <#assign mapSize="450" />
         <div class="tdarresults">
             <#assign itemsPerRow = 5 />
             <#if ((rightSidebar!false) || (leftSidebar!false)) >
@@ -209,10 +205,14 @@
             </#if>
 
 
-
             <#nested />
             <@list.listResources resourcelist=results sortfield=sortField titleTag="b"  headerTag="b" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
-                    orientation=orientation    mapPosition="top" mapHeight=mapSize />
+                    orientation=orientation    mapPosition="top" mapHeight=mapSize>
+                            <div class="collection-facets col-12">
+            <@search.partFacet selectedResourceTypes paginationHelper "Collection" "h4" 'horizontal' />
+            <hr/>
+        </div>
+                    </@list.listResources>
             </div>
             <@search.basicPagination "Records" />
         <#else>
@@ -236,8 +236,7 @@
                 <#if resourceCollection.properties.whitelabel>
                    <#local _type="Whitelabel"/>
                 </#if>
-
-                <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)', _type)}" />
+                <@view.kvp key="Collection Type" val="${type} ${resourceCollection.systemManaged!false?string(' (System)', _type)} ${resourceCollection.properties.whitelabel?string(' (white label)', '')} " />
             </div>
             <div class="col">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />

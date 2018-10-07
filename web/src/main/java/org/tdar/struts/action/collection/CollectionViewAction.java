@@ -228,12 +228,12 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     })
     public String view() throws TdarActionException {
         String result = super.view();
-        if (SUCCESS.equals(result) && isWhiteLabelCollection()) {
-            if (isSearchHeaderEnabled()) {
-                showNavSearchBox = false;
-            }
-            result = CollectionViewAction.SUCCESS_WHITELABEL;
-        }
+//        if (SUCCESS.equals(result) && isWhiteLabelCollection()) {
+//            if (isSearchHeaderEnabled()) {
+//                showNavSearchBox = false;
+//            }
+//            result = CollectionViewAction.SUCCESS_WHITELABEL;
+//        }
 
         // if (SUCCESS.equals(result) && getPersistable().getType() == CollectionType.SHARED) {
         // result = SUCCESS_SHARE;

@@ -65,13 +65,14 @@
     $(document).ready(function () {
 
         TDAR.advancedSearch.serializeFormState();
-
-        if ($("#autosave").val() !== '') {
+        var $autosave = $("#autosave").val();
+        if ($autosave !== '') {
             console.log("restoring from autosave");
-            $("#searchGroups").html($("#autosave").val());
+//            console.log($autosave);
+            $("#searchGroups").html($autosave);
             $("#searchGroups").find(".mapdiv").empty();
             $('.add-another-control').remove();
-        }
+        } 
         TDAR.advancedSearch.initAdvancedSearch();
 
     });
@@ -247,19 +248,21 @@
 
 
     <#macro searchGroup groupid group_ >
-    <div class="groupingSelectDiv form-row fade">
+    <div class="groupingSelectDiv row hidden pb-2">
         <#assign defaultOperator = "AND"/>
         <#if (group_?is_hash && group_.or ) >
             <#assign defaultOperator="OR" />
         </#if>
 
-        <label class="control-label">Include in results</label>
+        <label class="form-col-label col-3"><b>Include in results</b></label>
 
-        <div class="controls controls-row">
-            <select name="groups[${groupid}].operator" class="col-5">
+        <div class="col-9">
+            <div class="row">
+            <select name="groups[${groupid}].operator" class="form-control col-6">
                 <option value="AND" <#if defaultOperator=="AND">selected</#if>>When resource matches ALL terms below</option>
                 <option value="OR" <#if defaultOperator=="OR">selected</#if>>When resource matches ANY terms below</option>
             </select>
+        </div>
         </div>
     </div>
     <div id="groupTable0" class="grouptable repeatLastRow  form-group form-row" callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0"
@@ -270,14 +273,12 @@
                 <#if fieldType??>
                     <div id="grouptablerow_0_" class="form-row termrow repeat-row">
                         <@searchTypeSelect id="${fieldType_index}" init="${fieldType}" groupid="${groupid}" />
-                        <div class="controls ">
-                            <div class="col-10 term-container">
+                            <div class="col-9 term-container">
+                            <div class=" controls controls-row simple multiIndex ">
                                 <@fieldTemplate fieldType=fieldType fieldIndex=fieldType_index groupid=groupid />
                             </div>
-                            <div class="col-1">
-                                <@removeRowButton />
-                            </div>
                         </div>
+                                <@removeRowButton />
                     </div>
                 </#if>
             </#list>

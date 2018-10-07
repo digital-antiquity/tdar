@@ -58,7 +58,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
             submitForm();
             // implicitly test FTL
             if (name.contains("search")) {
-                assertTrue("search form text in page", getPageCode().contains("Search within this collection..."));
+                assertTrue("search form text in page", getPageCode().toLowerCase().contains("Search within this collection...".toLowerCase()));
             }
 
             if (name.contains("Document")) {
