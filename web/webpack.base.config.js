@@ -17,6 +17,7 @@ module.exports = {
     entry : {
         // jquery : ['jquery'],
         'main' : './src/main/webapp/js/webpack/tdar-entry-point.js',
+        'website' : './src/main/webapp/js/webpack/website-entry-point.js',
         'ng-integration' : './src/main/webapp/js/webpack/tdar-angular-integration-entry-point.js'
     },
     output : {
