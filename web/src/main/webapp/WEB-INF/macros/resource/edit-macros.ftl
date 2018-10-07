@@ -468,9 +468,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro submit label="Save" fileReminder=true buttonid="submitButton" span="col-9" class="btn-primary submitButton">
     <div class="errorsection ${span}">
             <#if fileReminder>
-                <div id="reminder" class="">
+<!--                <div id="reminder" class="">
                     <p><span class="label label-info">Reminder</span> No files are attached to this record. </p>
-                </div>
+                </div> -->
             </#if>
         <#-- if you put an error class on this, then you get a pink box at the bottom of every page visible on submit, ugly -->
             <div id="error" class="" style="display:none">
@@ -708,7 +708,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             title="${surnameTitle}"
             />
             </div>
-            <div class="col-5">
+            <div class="col-4">
             <@s.textfield cssClass=" mr-2 ${lookupType} ${requiredClass} trim" placeholder="First Name"  readonly=isDisabled autocomplete="off" formGroupClass="mb-p5"
             name="${strutsPrefix}${personPrefix}.firstName" maxlength="255" autocompleteName="firstName"
             autocompleteIdElement="#${idIdElement}"
@@ -719,9 +719,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             <#if includeRole || includeRights>
                 <#if includeRole>
                     <@s.select  name="${strutsPrefix}.role" id="metadataForm_authorshipProxies_${_indexNumber?c}__userrole"  autocomplete="off" listValue='label' list=relevantPersonRoles
-                    cssClass="creator-role-select col-2" />
+                    cssClass="creator-role-select col-3" />
                 <#else>
-                    <@s.select  cssClass="creator-rights-select col-2" name="${strutsPrefix}.generalPermission" emptyOption='false'
+                    <@s.select  cssClass="creator-rights-select col-3" name="${strutsPrefix}.generalPermission" emptyOption='false'
                     listValue='label' list='%{availablePermissions}' disabled=isDisabled />
                 <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
                     <@s.hidden name="${strutsPrefix}.generalPermission" id="hdn${strutsPrefix}_generalPermission" cssClass="repeat-row-remove" />
