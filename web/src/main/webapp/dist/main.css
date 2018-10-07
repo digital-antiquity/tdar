@@ -8880,15 +8880,15 @@ header + #hero-wide {
     background-image: none; } }
 
 @media (min-width: 1px) {
-  #home #hero-wide h2 {
+  #hero-wide h2 {
     font-size: 2rem !important; } }
 
 @media (min-width: 768px) {
-  #home #hero-wide h2 {
+  #hero-wide h2 {
     font-size: 2.5rem !important; } }
 
 @media (min-width: 992px) {
-  #home #hero-wide h2 {
+  #hero-wide h2 {
     font-size: 3.0rem !important; } }
 
 #homepageCarousel .carousel-indicators {
@@ -8896,8 +8896,10 @@ header + #hero-wide {
   bottom: 0; }
 
 .whatcanyoudig-image {
-  background: url(/images/r4/bg-home.jpg) no-repeat center;
-  background-size: cover;
+  background: url(/images/r4/bg-home.jpg) no-repeat center; }
+
+.homepage-header-image {
+  background-size: cover !important;
   height: 25em;
   padding-top: 1.5em;
   padding-left: 10em;
@@ -8931,6 +8933,23 @@ header + #hero-wide {
   font-family: ff-tisa-web-pro, serif;
   font-size: 13px; }
 
+#home #hero .carousel-inner, #hero-wide .carousel-inner {
+  padding-left: 0px;
+  padding-right: 0px; }
+
+#home #hero h2, #hero-wide h2 {
+  font-weight: 700;
+  font-size: 60px;
+  line-height: 50px;
+  letter-spacing: -2px;
+  margin: 50px 0 0 0; }
+
+#home #hero p, #hero-wide p {
+  margin: 18px 0;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 24px; }
+
 #home .card p {
   line-height: 18px;
   margin-bottom: 13px;
@@ -8944,23 +8963,6 @@ header + #hero-wide {
   min-height: 2.4em;
   font-weight: bold;
   font-size: 24px; }
-
-#home #hero .carousel-inner, #home #hero-wide .carousel-inner {
-  padding-left: 0px;
-  padding-right: 0px; }
-
-#home #hero h2, #home #hero-wide h2 {
-  font-weight: 700;
-  font-size: 60px;
-  line-height: 50px;
-  letter-spacing: -2px;
-  margin: 50px 0 0 0; }
-
-#home #hero p, #home #hero-wide p {
-  margin: 18px 0;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 24px; }
 
 #home .title {
   display: block;
@@ -9063,6 +9065,9 @@ header + #hero-wide {
 .right-bottom-dropshadow {
   box-shadow: 4px 4px rgba(0, 0, 0, 0.09);
   padding-right: 0px; }
+
+.hero-note a:hover {
+  color: black; }
 
 nav {
   font-weight: bold; }
