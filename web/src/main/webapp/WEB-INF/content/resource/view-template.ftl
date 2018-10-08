@@ -175,13 +175,14 @@
 
         <h2>Data Set Structure</h2>
         <div class="row">
-            <div class="col-3"><span class="columnSquare measurement"></span>Measurement Column</div>
-            <div class="col-3"><span class="columnSquare count"></span>Count Column</div>
-            <div class="col-3"><span class="columnSquare coded"></span>Coded Column</div>
+            <div class="col-4"><span class="columnSquare measurement"></span>Measurement Column</div>
+            <div class="col-4"><span class="columnSquare count"></span>Count Column</div>
+            <div class="col-4"><span class="columnSquare coded"></span>Coded Column</div>
         </div>
         <div class="row">
-            <div class="col-3"><span class="columnSquare mapped"></span>Filename Column</div>
-            <div class="col-3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
+            <div class="col-4"><span class="columnSquare mapped"></span>Filename Column</div>
+            <div class="col-4"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
+            <div class="col-4"></div>
         </div>
     <br/>
             <#list resource.sortedDataTables as dataTable>
@@ -510,7 +511,8 @@
         <ul class="inline">
     <#items as collection>
     
-        <li>
+    
+        <li class="list-inline-item">
             <a class="sml moreInfo" data-type="collection" data-size="${((collection.managedResources![])?size!0 + (collection.unmanagedResources![])?size!0)?c}" data-hidden="${collection.hidden?c}" 
             data-submitter="${collection.submitter.properName}"
             data-description="<@common.truncate collection.description!'no description' />"

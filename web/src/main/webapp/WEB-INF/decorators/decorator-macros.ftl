@@ -21,26 +21,27 @@
                     <div class="d-flex flex-column ml-auto">
                         <div class="mr-0 d-flex align-items-top justify-content-end">
                             <#if (authenticatedUser??) >
-                            <p id="welcome-menu" class="welcome  screen san-serif ">
-                                <@s.text name="menu.welcome_back"/>
-                                ${authenticatedUser.properName}
-                            </p>
-                            <#else>
-                            <p class ="logIn san-serif"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
-                        </#if>
+                                <p id="welcome-menu" class="welcome  screen  ">
+                                    <@s.text name="menu.welcome_back"/>
+                                    ${authenticatedUser.properName}
+                                </p>
+                                <#else>
+                                <p class ="logIn"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
+                            </#if>
+                        </div>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <@searchform true />
+                            </li>
+                        </ul>
                     </div>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <@searchform true />
-                        </li>
-                    </ul>
                 </div>
             </div>
         </nav>
 
         <nav class="navbar navbar-expand-md navbar-light tdarNav py-0">
             <div class = "container">
-                <div class="collapse navbar-collapse" id="tdarNavMenu">
+                <div class="collapse navbar-collapse" id="tdarNavMenu2">
                     <ul class="navbar-nav">
 <!--                        <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
@@ -103,6 +104,12 @@
                             <a href="https://www.tdar.org/about/" class="nav-link align-middle tdarNavItem">About</a>
                         </li>
                         <li class="nav-item mr-sm-3">
+                            <a href="/search/" class="nav-link align-middle tdarNavItem">Search</a>
+                        </li>
+<!--                        <li class="nav-item mr-sm-3">
+                            <a href="/search/" class="nav-link align-middle tdarNavItem">Explore</a>
+                        </li> -->
+                        <li class="nav-item mr-sm-3">
                             <a href="https://www.tdar.org/using-tdar/" class="nav-link align-middle tdarNavItem">Using tDAR</a>
                         </li>
                         <li class="nav-item mr-sm-3">
@@ -127,6 +134,7 @@
                             </div>
                         </div>
                     </div>
+                </div>
             </div>
         </nav>
     </div>
@@ -169,7 +177,7 @@
                     <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
                         <div class="input-group">
                             <input type="hidden" name="_tdar.searchType" value="simple">
-                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..."name="query">
+                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..." name="query">
                             <span class="input-group-append">
                                         <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
                             </span>
@@ -180,18 +188,24 @@
                     </form>
 </#macro>
 
-<#macro searchHero>
-        <div class="whatcanyoudig-image"><!-- had container -->
-            <h2 >What can you dig up?</h2>
-            <p class=""><strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information.</p>
+<#macro searchHero imageClass="whatcanyoudig-image" title="What can you dig up?" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."
+ idField="" idValue="" searchPrompt="Find archaeological data...">
+        <div class="${imageClass} homepage-header-image"><!-- had container -->
+            <h2 class="color-title">${title}</h2>
+            <#if subtitle?has_content>
+            <p class="color-subtitle">${subtitle}</p>
+            </#if>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
-                <div class="input-group col-md-6 noleftmargin right-bottom-dropshadow">
-                    <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="Search Archaeological Data">
+                <div class="input-group col-6 noleftmargin right-bottom-dropshadow">
+                    <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="${searchPrompt}" placeholder="${searchPrompt}">
                     <span class="input-group-append" name="_tdar.searchType" value="simple">
                         <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
                     </span>
                 </div>
                     <a class="ml-3 align-self-center" href="<@s.url value="/search"/>">advanced</a>
+                    <#if idField?has_content && idValue?has_content>
+                    <input type="hidden" name="${idField}" value="${idValue}">
+                    </#if>
                     <input type="hidden" name="_tdar.searchType" value="simple">
             </form>
         </div>
@@ -215,44 +229,20 @@
 
 </#macro>
 
+<#macro homepageHero>
+<section id="hero-wide">
+          <div class = "">  
+            <div class="px-0 pb-0 pt-0">
+    <#nested />
+            </div>
+          </div>
+</section>
+
+</#macro>
+
+
 <#macro homepageHeader>
 
-<section id="hero-wide">
-  <div class = "">  
-    <div class="px-0 pb-0 pt-0">
-    <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
-  <ol class="carousel-indicators">
-    <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
-    <li data-target="#homepageCarousel" data-slide-to="1"></li>
-    <!-- <li data-target="#homepageCarousel" data-slide-to="2"></li> -->
-  </ol>
-  <div class="carousel-inner">
-    <div class="carousel-item active">
-		<@searchHero /> 
-    </div>
-    <div class="carousel-item">
-		<@imageheader />
-    </div>
-<!--    <div class="carousel-item">
-		<@imageheader2 />
-    </div> -->
-  </div>
-<!-- 
-  <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Previous</span>
-  </a>
-  <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="sr-only">Next</span>
-  </a>
--->
-</div>
-    
-    
-    </div>
-  </div>
-</section>
 
 
 <section id="learnMore">

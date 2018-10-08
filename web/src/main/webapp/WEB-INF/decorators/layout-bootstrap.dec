@@ -6,7 +6,6 @@
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 <#import "decorator-macros.ftl" as dec>
-<#import "whitelabel-decorator-macros.ftl" as wdec>
 <#import "/WEB-INF/macros/bootstrap-macros.ftl" as bs>
 
 <!-- README - UPDATE BOWER.JSON in lockstep -->
@@ -40,8 +39,8 @@
 
 <#-- avoid js in the header. if you must include it,  declare inline scripts, then external css, then external js -->
 <head>
+	<link rel="stylesheet" href="//use.typekit.net/yrw4dsr.css">
     <title>${title!siteName}</title>
-	<!-- <link rel="stylesheet" href="https://use.typekit.net/yrw4dsr.css"> -->
     <#if authenticatedUser??>
         <!-- logged-in-as: ${authenticatedUser.email} -->
     </#if>
@@ -64,7 +63,7 @@
 
     <#-- <link href="${staticHost}/css/tdar-base.css" rel="stylesheet"> -->
     <#-- <link href="${staticHost}/css/tdar-print.css" rel="stylesheet" media="print"> -->
-    <@header.css (webFilePreprocessingEnabled ) />
+    <@header.css (production ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${config.changesetId}"></script>
@@ -91,10 +90,6 @@
 <link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
 
-
-    <#if whiteLabelCollection??>  
-        <link href="${staticHost}/css/whitelabel-default.css" rel="stylesheet" media="all">
-    </#if>
     
 ${head}
 
@@ -158,11 +153,46 @@ ${head}
         </header>
 
         <#if (homepage!false)>
-            <@dec.homepageHeader />
+        <@dec.homepageHero>
+                <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+                  <ol class="carousel-indicators">
+                    <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#homepageCarousel" data-slide-to="1"></li>
+                    <!-- <li data-target="#homepageCarousel" data-slide-to="2"></li> -->
+                  </ol>
+                  <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <@dec.searchHero /> 
+                    </div>
+                    <div class="carousel-item">
+                        <@dec.imageheader />
+                    </div>
+                <!--    <div class="carousel-item">
+                        <@dec.imageheader2 />
+                    </div> -->
+                  </div>
+                <!-- 
+                  <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                -->
+                </div>
+        </@dec.homepageHero>
+            <@dec.homepageHeader/>
+                
         </#if>
-
-        <#if searchHeaderEnabled!false>
-            <@wdec.searchHeader />
+        <#if searchHeaderEnabled!false && whitelabelCollection>
+        <#assign subtitle = (resourceCollection.properties.subtitle!(resourceCollection.institution.name)!'')>
+        <@dec.homepageHero>
+            <@dec.searchHero imageClass="whitelabelImageClass" 
+                title="${resourceCollection.title}" subtitle="${subtitle}" searchPrompt="Search within this collection..." 
+                    idField="collectionId" idValue="${resourceCollection.id?c}" />
+        </@dec.homepageHero>
             <div class="container">
         </#if>
 
@@ -363,12 +393,12 @@ ${head}
         <section id="references">
             <div class="container">
                 <div class="row align-items-center" id="foothumb">
-                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.asu.edu"><img class="image-fluid ht" src="/images/logos/asu_veritcal.png" class="image ht"  title="Arizona State University" alt="Arizona State University" /></a></div>
-                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.mellon.org"><img class="image-fluid ht" src="/images/logos/Mellon.png" class="image ht" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a></div>
-                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.nsf.gov"><img class="image-fluid ht" src="/images/logos/nsf.jpg" class="image ht" title="National Science Foundation" alt="National Science Foundation" /></a></div>
-                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.neh.gov"><img class="image-fluid ht" src="/images/logos/neh_logo_stckd.jpg" class="image ht" title="National Endowment for the Humanities" alt="National Endowment for the Humanities" /></a></div>
-                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.saa.org"><img class="image-fluid ht" src="/images/logos/saa-small.png" class="image ht" title="Society for American Archaeology" alt="Society for American Archaeology" /></a></div>
-                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.archaeological.org"><img class="image-fluid ht" src="/images/logos/aia.png" class="image ht" title="Archaeological Institute of America" alt="Archaeological Institute of America" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.asu.edu"><img class="image-fluid image ht" src="/images/logos/asu_veritcal.png"  title="Arizona State University" alt="Arizona State University" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.mellon.org"><img class="image-fluid image ht" src="/images/logos/Mellon.png" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.nsf.gov"><img class="image-fluid image ht" src="/images/logos/nsf.jpg" title="National Science Foundation" alt="National Science Foundation" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.neh.gov"><img class="image-fluid image ht" src="/images/logos/neh_logo_stckd.jpg" title="National Endowment for the Humanities" alt="National Endowment for the Humanities" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.saa.org"><img class="image-fluid image ht" src="/images/logos/saa-small.png" title="Society for American Archaeology" alt="Society for American Archaeology" /></a></div>
+                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.archaeological.org"><img class="image-fluid image ht" src="/images/logos/aia.png" title="Archaeological Institute of America" alt="Archaeological Institute of America" /></a></div>
                 </div>
             </div>
         </section>
@@ -387,7 +417,7 @@ ${head}
     </#if>
 
 
-    <@header.scripts ( webFilePreprocessingEnabled) />
+    <@header.scripts ( production) />
 
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>

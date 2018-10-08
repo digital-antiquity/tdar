@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,11 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
 
     public void saveCustomMetadata() {
+        getLogger().debug("SensoryDataImages:{}", getSensoryDataImages());
+        getLogger().debug("SensoryDataScans:{}", getSensoryDataScans());
+        if (CollectionUtils.isEmpty(getSensoryDataImages()) && CollectionUtils.isEmpty(getSensoryDataScans())) {
+            return;
+        }
         AbstractSequenced.applySequence(getSensoryDataImages());
         resourceService.saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataImages(),
                 getPersistable().getSensoryDataImages(), SensoryDataImage.class);

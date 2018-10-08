@@ -18,11 +18,10 @@
 
 <script type="text/x-template" id="upload-template">
   <div>
-        <div v-if="files.length > 0" v-for="(file,index) in files">
-            <div class="template-download  existing-file" :inputdisabled="inputDisabled"
-                is="fpart" :index="index" :file="file" :abletoupload="ableToUpload" :deletedisabled="deleteDisabled"></div>
-    </div>
-
+        <div v-if="files.length > 0" v-for="(file,index) in files" class="template-download existing-file file-row">
+            <fpart class="row "
+                 :index="index" :file="file" :abletoupload="ableToUpload" :deletedisabled="deleteDisabled"></fpart>
+        </div>
     <br />
     <div class="row">
     <div class="col-3">
@@ -67,7 +66,7 @@
   </div>
 </script>
 <script type="text/x-template"   id="fpart-template">
-<div v-bind:id="rowId" class="row">
+<div v-bind:id="rowId">
     <div class="col-10">
         <div class="row">
             <label class="col-form-label col-2">Filename</label>
@@ -76,7 +75,7 @@
                     <em class="replacement-text "></em>
                 <span class="name uneditable-input subtle inpux-xlarge form-control"
                     :title="file.name">{{file.name}}</span> <span
-                    class="help-inline"><i>{{file.size}}</i> (bytes)</span>
+                    class="help-inline"><i><span v-if="originalFileName != ''">Replacing: {{originalFileName}} </span>{{file.size}}</i> (bytes)</span>
             </div>
         </div>
         </div>

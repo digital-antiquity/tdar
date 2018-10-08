@@ -82,9 +82,9 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // wait for modal to disappear and dataset list to populate
         waitFor(locatedElementCountEquals(className("sharedOntologies"), 0));
-        waitFor(locatedElementCountGreaterThan(cssSelector("table.selected-datasets tbody tr"), 1));
+        waitFor(locatedElementCountGreaterThan(cssSelector(".available-datasets"), 1));
         removeDatasetByPartialName("Knowth");
-        assertThat(find(".sharedOntologies").toList(), hasSize(2));
+        waitFor(locatedElementCountEquals(className("sharedOntologies"),2));
         assertThat(getText(), not(containsString("Knowth")));
         waitFor(elementToBeClickable(linkText("Add Integration Column")));
     }
@@ -284,11 +284,14 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     private void removeDatasetByPartialName(String name) {
-        waitFor(stabilityOfElement(By.cssSelector("table.selected-datasets tbody tr"), 500));
-        find("table.selected-datasets tbody tr ").stream()
+        waitFor(stabilityOfElement(By.cssSelector(".available-datasets"), 500));
+        find(By.cssSelector(".available-datasets")).stream()
                 .filter(elem -> elem.getText().contains(name))
                 .findFirst()
-                .ifPresent(row -> row.findElement(By.cssSelector("a.delete-button")).click());
+                .ifPresent(row -> {
+                    logger.debug("removing row: {} / {}", row.getText(), row);
+                    row.findElement(By.cssSelector("a.delete-button")).click();
+                });
     }
 
     private void chooseSelectByName(String name, By selector) {

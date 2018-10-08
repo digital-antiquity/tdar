@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.tdar.core.configuration.TdarConfiguration;
 
 import ro.isdc.wro.config.Context;
 import ro.isdc.wro.manager.WroManager;
@@ -72,9 +74,9 @@ public class WebFileSystemResourceService {
             return wroTempDirName;
         }
         try {
-            String file = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("version.txt"), Charsets.UTF_8);
-            file = StringUtils.replace(file, "+", "");
-            wroTempDirName = "/wro/" + file.trim();
+            Properties props = TdarConfiguration.getInstance().loadChangesetProps();
+            String changeset = props.getProperty("git.commit.id");
+            wroTempDirName = "/wro/" + changeset;
             return wroTempDirName;
         } catch (Exception e) {
             logger.error("{}", e);

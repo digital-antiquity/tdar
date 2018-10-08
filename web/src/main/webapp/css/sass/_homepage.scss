@@ -20,21 +20,21 @@ header + #hero-wide {
 
 // Small devices (landscape phones, 576px and up)
 @media (min-width: 1px) { 
-    #home #hero-wide h2 {
+    #hero-wide h2 {
         font-size:2rem !important;
     }
 }
 
 // Medium devices (tablets, 768px and up)
 @media (min-width: 768px) { 
-    #home #hero-wide h2 {
+    #hero-wide h2 {
         font-size:2.5rem !important;
     }
  }
 
 // Large devices (desktops, 992px and up)
 @media (min-width: 992px) {
-    #home #hero-wide h2 {
+    #hero-wide h2 {
         font-size:3.0rem !important;
     }
 }
@@ -51,7 +51,10 @@ header + #hero-wide {
 
 .whatcanyoudig-image {
     background:url(/images/r4/bg-home.jpg) no-repeat center;
-    background-size:cover;
+}
+
+.homepage-header-image {
+    background-size:cover !important;
     height:25em;
     padding-top:1.5em;
     padding-left:10em;
@@ -73,9 +76,11 @@ header + #hero-wide {
      float:right;
      h2 {
           margin: 0px !important;
-          font-weight: 400 !Important;
+          font-weight: 600 !Important;
           line-height: 4rem !Important;
           margin-top:0px !important;
+          font-family: "soleil", sans-serif !important;
+
           .red {
               font-weight:700;
           }
@@ -92,25 +97,7 @@ header + #hero-wide {
 
 }
 
-#home
-{
-    .card {
-         p {
-             line-height: 18px;
-             margin-bottom: 13px;
-             margin-left: 0px;
-             margin-right: 0px;
-             margin-top: 0px;
-             min-height: 5.8em;
-             text-align: center;
-        }
-        h5 {
-            min-height: 2.4em;
-            font-weight:bold;
-            font-size:24px;
-        }
-    }
-  #hero, #hero-wide
+#home  #hero, #hero-wide
   {
       .carousel-inner {
           padding-left:0px;
@@ -132,6 +119,25 @@ header + #hero-wide {
         line-height: 24px;
         }
   }
+
+#home
+{
+    .card {
+         p {
+             line-height: 18px;
+             margin-bottom: 13px;
+             margin-left: 0px;
+             margin-right: 0px;
+             margin-top: 0px;
+             min-height: 5.8em;
+             text-align: center;
+        }
+        h5 {
+            min-height: 2.4em;
+            font-weight:bold;
+            font-size:24px;
+        }
+    }
 
 
   .title {
@@ -283,4 +289,8 @@ header + #hero-wide {
 .right-bottom-dropshadow {
     box-shadow: 4px 4px rgba(0,0,0,.09);
     padding-right: 0px;
+}
+
+.hero-note a:hover {
+color: black;
 }

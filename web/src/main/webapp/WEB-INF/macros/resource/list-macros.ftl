@@ -54,7 +54,6 @@
         <#local itemClass = ""/>
         <#global isGridLayout = (orientation=="GRID") />
         <#global isMapLayout = (orientation=="MAP") />
-
         <@search.reindexingNote />
 
     <#-- set default ; add map wrapper -->
@@ -66,15 +65,16 @@
             <#local listTag_="ol"/>
             <#local itemTag_="li"/>
         <div class="resource-list row">
-            <#if mapPosition=="top" || mapPosition == "right">
+            <#if mapPosition =="top" || mapPosition == "right">
                 <@_mapDiv mapPosition mapHeight />
             </#if>
         <div class="<#if mapPosition=='left' || mapPosition=="right">col-3<#else>col-12</#if>">
         </#if>
 
         <#local rowCount = -1 />
-
         <#if resourcelist??>
+        
+        <#nested />
             <#list resourcelist as resource>
                 <#assign key = "" />
                 <#assign defaultKeyLabel="Individual Resources"/>
@@ -131,7 +131,7 @@
     </#macro>
 
     <#macro _mapDiv mapPosition mapHeight>
-        <div class="col-12 leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
+        <div class="col-12 leaflet-map-results mb-4" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
         <#if id?has_content && namespace=="/collection">
         data-infinite-url="/api/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
         </#if>

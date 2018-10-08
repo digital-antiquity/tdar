@@ -1,6 +1,9 @@
 package org.tdar.core.cache;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
  * This caches the resource-count-per-decade on the homepage.
@@ -8,7 +11,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
  * @author abrin
  * 
  */
-@JsonAutoDetect
+@JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
+@JsonInclude(Include.NON_NULL)
 public class BrowseDecadeCountCache extends AbstractCountCache<BrowseDecadeCountCache, Integer> {
 
     private static final long serialVersionUID = -5905078214966414970L;

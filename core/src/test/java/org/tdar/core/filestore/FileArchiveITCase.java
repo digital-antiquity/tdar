@@ -7,11 +7,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,13 +63,14 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testFileAnalyzer() throws Exception {
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-        testArchiveFormat(store, "ark_hm_headpot_scans.tar");
-        testArchiveFormat(store, "ark_hm_headpot_scans.zip");
-        testArchiveFormat(store, "ark_hm_headpot_scans.tgz");
-        testArchiveFormat(store, "ark_hm_headpot_scans.tar.bz2");
+        testArchiveFormat(store, "ark_hm_headpot_scans.tar",true);
+        testArchiveFormat(store, "ark_hm_headpot_scans.zip",true);
+        testArchiveFormat(store, "ark_hm_headpot_scans.tgz",true);
+        testArchiveFormat(store, "ark_hm_headpot_scans.tar.bz2",true);
+        testArchiveFormat(store, "ark_hm_headpot_scans-invalid.zip",false);
     }
 
-    public void testArchiveFormat(PairtreeFilestore store, String filename) throws InstantiationException, IllegalAccessException, IOException, Exception {
+    public void testArchiveFormat(PairtreeFilestore store, String filename, boolean expectOk) throws InstantiationException, IllegalAccessException, IOException, Exception {
         File f = TestConstants.getFile(TestConstants.TEST_SENSORY_DIR, filename);
         SensoryData doc = generateAndStoreVersion(SensoryData.class, filename, f, store);
         InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
@@ -76,7 +79,21 @@ public class FileArchiveITCase extends AbstractIntegrationTestCase {
         assertEquals(FileType.FILE_ARCHIVE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(FileArchiveWorkflow.class, workflow.getClass());
-        messageService.sendFileProcessingRequest(workflow, originalVersion);
+        boolean error  = false;
+        try {
+        error = messageService.sendFileProcessingRequest(workflow, originalVersion);
+        } catch (Throwable t) {
+            if (expectOk == true) {
+                fail("got unexpected exception");
+            }
+        }
+        
+        if (expectOk == false && StringUtils.isNotBlank(originalVersion.getInformationResourceFile().getWorkflowContext().getExceptionAsString())) {
+            logger.error("saw error and expected it");
+            return;
+        }
+        
+        
         InformationResourceFile informationResourceFile = originalVersion.getInformationResourceFile();
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
 

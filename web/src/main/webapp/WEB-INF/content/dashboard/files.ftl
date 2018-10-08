@@ -44,7 +44,7 @@
 <div class="col-2">
     <@dash.sidebar current="files" />
 </div>
-<#include "/WEB-INF/macros/autocomplete.html" />
+<#include '/components/tdar-autocomplete/template/autocomplete.html' />
 <#include "balk.html" />
 </div>
 
