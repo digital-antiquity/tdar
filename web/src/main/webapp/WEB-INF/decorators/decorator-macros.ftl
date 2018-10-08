@@ -21,12 +21,12 @@
                     <div class="d-flex flex-column ml-auto">
                         <div class="mr-0 d-flex align-items-top justify-content-end">
                             <#if (authenticatedUser??) >
-                                <p id="welcome-menu" class="welcome  screen san-serif ">
+                                <p id="welcome-menu" class="welcome  screen  ">
                                     <@s.text name="menu.welcome_back"/>
                                     ${authenticatedUser.properName}
                                 </p>
                                 <#else>
-                                <p class ="logIn san-serif"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
+                                <p class ="logIn"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
                             </#if>
                         </div>
                         <ul class="navbar-nav">
