@@ -19,10 +19,10 @@
     <h3>Transfer the balance of extra files (${account.availableNumberOfFiles}) into another account:</h3>
     
     <@s.form action="${id?c}/transfer" method="POST">
-        <@s.select name="toAccountId" list="%{accounts}" label="Select destination account" title="Select an account to transfer to" listValue="name" listKey="id"
-             emptyOption="false" required=true cssClass="required"/>
+        <@s.select name="toAccountId" list="%{accounts}" label="Select destination account" title="Select an account to transfer to" listValue="name" listKey="id" labelposition="left"
+             emptyOption="false" required=true cssClass="required col-8"/>
     
-        <@s.submit />
+        <@s.submit cssClass="btn btn-primary"/>
 </@s.form>
 </body>
 </#escape>

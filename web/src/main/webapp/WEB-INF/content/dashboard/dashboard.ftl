@@ -20,64 +20,64 @@
 </div>
 
 <div class="row">
-    <div class="span2">
+    <div class="col-2">
         <@dash.sidebar current="dashboard" />
     </div>
 
-    <div class="span10">
+    <div class="col-10">
         <h2>Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!</h2>
         <#if contributor>
             <div class="row">
-                <div class="span8">
+                <div class="col-sm-8">
                     <h4>Upload Resources</h4>
                     <div class="row">
-                <div class="span2">
-                    <div class=" iwell">
-                    <div>
-                    <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
-                    Use <b>Documents</b> to archive reports, books, PDFs, and other textual materials.
-                      <p class="center"><a href="/document/add" class="button">Upload</a></p>
-                      </div>
-                      </div>
-                </div>
-                <div class="span2">
-                    <div class=" iwell">
-                <div>
-                    <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
-                    Use <b>Datasets</b> for data tables, Excel, Access and other tabular data files.<br class="responsive-desktop"/><br class="responsive-desktop"/>
-                      <p class="center"><a href="/dataset/add" class="button">Upload</a></p>
-                </div>
-                </div>
-                </div>
-                <div class="span2">
-                    <div class=" iwell">
-                <div>
-                    <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
-                    Use <b>Images</b> for drawings, photographs, JPEG, TIFF, and other image files.<br/><br/>
-                     <p class="center"><a href="/image/add" class="button">Upload</a></p>
-                </div>
-                </div>
-                </div>
-                <div class="span2">
-                    <div class=" iwell">
-                <div>
-                    <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
-                    Have a <b>3D Scan</b>, <b>GIS File</b>, or want to create a <b>Coding Sheet</b>, <b>Ontology</b>, or <b>Project</b>?
-                     <p class="center"><a href="/contribute" class="button">Upload</a></p>
-                </div>
-                </div>
+                        <div class="col-sm-6 pl-1 pr-1">
+                            <div class="card bg-light">
+                              <div class="card-body">
+                            <svg class="svgicon svg-small black pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_document"></use></svg>
+                            Use <b>Documents</b> to archive reports, books, PDFs, and other textual materials.
+                              <p class="center"><a href="/document/add" class="button tdarButton">Upload</a></p>
+                              </div>
+                              </div>
+                        </div>
+                        <div class="col-sm-6 pl-1 pr-1">
+                            <div class="card bg-light">
+                              <div class="card-body">
+                            <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_dataset"></use></svg>
+                            Use <b>Datasets</b> for data tables, Excel, Access and other tabular data files.
+                              <p class="center"><a href="/dataset/add" class="button tdarButton">Upload</a></p>
+                        </div>
+                        </div>
+                        </div>
+                        <div class="col-sm-6 pl-1 pr-1">
+                            <div class="card bg-light">
+                              <div class="card-body">
+                            <svg class="svgicon svg-small black  pull-left"  style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_image"></use></svg>
+                            Use <b>Images</b> for drawings, photographs, JPEG, TIFF, and other image files.
+                             <p class="center"><a href="/image/add" class="button tdarButton">Upload</a></p>
+                        </div>
+                        </div>
+                        </div>
+                        <div class="col-sm-6 pl-1 pr-1">
+                            <div class="card bg-light">
+                              <div class="card-body">
+                            <svg class="svgicon svg-small black  pull-left" style="margin-left:-5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
+                            Have a <b>3D Scan</b>, <b>GIS File</b>, or want to create a <b>Coding Sheet</b>, <b>Ontology</b>, or <b>Project</b>?
+                             <p class="center"><a href="/contribute" class="button tdarButton">Upload</a></p>
+                        </div>
+                        </div>
                     </div>
                 </div>
                 </div>
-                <div class="span2">
+                <div class="col-sm-4  pl-1 pr-1">
                     <h4>Organize</h4>
                 <div class="row">
-                <div class="span2">
-                    <div class="iwell">
-                        <div>
+                <div class="col">
+                    <div class="card bg-light">
+                              <div class="card-body">
                             <svg class="svgicon svg-small black  pull-left" style="margin-right: 5px;"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-                            Use <b>Collections</b> organize your resources and manage permissions.<br class="responsive-large-desktop"/><br class="responsive-large-desktop"/>
-                             <p class="center"><a href="/collection/add" class="button">Create</a></p>
+                            Use <b>Collections</b> to organize your resources and manage permissions.
+                             <p class="center"><a href="/collection/add" class="button tdarButton">Create</a></p>
                         </div>
                     </div>
                 </div>
@@ -88,12 +88,12 @@
             </#if>
         <#if (false )>
             <div class="row">
-                <div class="span8">
+                <div class="col-8">
                     <div class="row">
                     <h4 style="text-align:center">At a glance</h4>
                     </div>
                     <div class="row">
-                        <div class="span4">
+                        <div class="col-4">
                 
                             <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick"  data-legend-position="right">
                             </div>
@@ -105,7 +105,7 @@
                             </#noescape>
                 
                         </div>
-                        <div class="span4">
+                        <div class="col-4">
                             <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick" data-legend-position="right">
                             </div>
                             
@@ -121,7 +121,7 @@
     
     
         <div class="row">
-            <div class="span10">
+            <div class="col-10">
                 <hr/>
             </div>
         </div>
@@ -159,14 +159,8 @@
 <div id="sidebar-right" parse="true">
     <div>
         <div id="myProfile">
-            <hr/>
         </div>
-        <#if contributor>
-            <#if (activeResourceCount != 0)>
-                <@resourcePieChart />
-                <hr/>
-            </#if>
-        <#else>
+        <#if !contributor>
             <div id="myCarousel" class="carousel slide" data-interval="5000" data-pause="hover">
                 <#assign showBuy = (!accounts?has_content) />
               <!-- Carousel items -->
@@ -213,7 +207,7 @@
 
 <hr/>
 <div>
-<ul class="inline center">
+<ul class="list-inline center small">
             <li><a href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.properName}</a></li>
             <#if authenticatedUser.institution??>
                 <li><a href="<@s.url value="/browse/creators/${authenticatedUser.institution.id?c}"/>">${authenticatedUser.institution.properName}</a></li>
@@ -223,16 +217,14 @@
             </#if>
 </ul>
 </div>
-    <#-- <@accountSection /> -->
-<hr/>
 
 
 <#macro searchSection>
     <div class="row">
-        <div class="span10">
+        <div class="col-10">
             <form name="searchheader" action="<@s.url value="/search/results"/>">
-                <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
-                <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='resourceTypes'  listValue='label' label="Resource Type"/>
+                <input type="text" name="query" class="searchbox form-control" placeholder="Search ${siteAcronym} &hellip; ">
+                <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="col" name='resourceTypes' list='resourceTypes'  listValue='label' label="Resource Type"/>
                 <@s.submit value="Search" cssClass="btn btn-primary" />
             </form>
         </div>    
@@ -242,7 +234,7 @@
 
 <#macro gettingStarted>
     <div class="row">
-        <div class="span10">
+        <div class="col-10">
             <h3>Getting Started</h3>
             <ol style='list-style-position:inside'>
                 <li><a href="<@s.url value="/project/add"/>">Start a new Project</a></li>
@@ -252,29 +244,16 @@
     </div>
 </#macro>
 
-<#macro resourcePieChart>
-    <div>
-        <h3>At a glance</h3>
-    </div>
-</#macro>
-
 <#macro recentlyUpdatedSection>
     <div class="row">
-        <div class="span10">
+        <div class="col-12">
             <h3><@s.text name="dashboard.recently_updated"/></h3>
             <ol id='recentlyEditedResources'>
                 <#list recentlyEditedResources as res>
                     <li id="li-recent-resource-${res.id?c}">
-                        <span class="fixed">
                             <@commonr.cartouche res true>
-                                <div class="btn-group pull-right recent-nav">
-                                    <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
-                                    <a class="btn btn-mini" href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
-                                </div>
-                                <small>[ID: ${res.id?c}]</small> 
-                                <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
+                                <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 120 /></a>
                             </@commonr.cartouche>
-                        </span>
                     </li>
                 </#list>
             </ol>
@@ -285,7 +264,7 @@
 <#macro emptyProjectsSection>
     <#if (emptyProjects?? && !emptyProjects.empty )>
         <div class="row">
-            <div class="span10" id="divEmptyProjects">
+            <div class="col-10" id="divEmptyProjects">
                 <h3>Empty Projects</h3>
                 <ol id="emptyProjects">
                     <#list emptyProjects as res>
@@ -298,10 +277,10 @@
                             <small>(ID: ${res.id?c})</small>
                    
                                 <div class="btn-group inline recent-nav pull-right">
-                                    <a class="btn btn-mini" href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>"
+                                    <a class="btn btn-sm" href="<@s.url value='/resource/add?projectId=${res.id?c}'><@s.param name="id" value="${res.id?c}"/></@s.url>"
                                        title="add a resource">add resource</a>
-                                    <a class="btn btn-mini" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a>
-                                    <a class="btn btn-mini"  href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+                                    <a class="btn btn-sm" href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a>
+                                    <a class="btn btn-sm"  href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
                                 </div>
                         </li>
                     </#list>
@@ -316,10 +295,10 @@
 <#macro browseResourceSection>
     <@search.reindexingNote />
     <div class="row" id="project-list">
-        <div class="span10">
+        <div class="col-12">
             <h3>Browse Resources</h3>
             <div>   
-                <@edit.resourceDataTable span="span10" />
+                <@edit.resourceDataTable span="col-12" />
             </div>
         </div>
     </div>

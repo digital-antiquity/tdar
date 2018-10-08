@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.ImportFileStatus;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
@@ -91,7 +92,7 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
         List<FileProxy> filesToProcess =new ArrayList<>();
         while (iter.hasNext()) {
             FileProxy proxy = iter.next();
-            if (proxy.getTdarFile() != null) {
+            if (proxy.getTdarFile() != null && proxy.getTdarFile().getStatus() != ImportFileStatus.UPLOADED) {
                 filesToProcess.add(proxy);
                 iter.remove();
             }

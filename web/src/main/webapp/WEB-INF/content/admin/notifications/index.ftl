@@ -8,7 +8,8 @@
 <h2>User Notifications</h2>
 <div id='notifications'>
     <table class="table table-striped table-bordered">
-        <thead>
+          <thead class="thead-dark">
+
             <tr>
                 <th>User</th>
                 <th>Date Created</th>

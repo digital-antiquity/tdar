@@ -116,7 +116,7 @@ TDAR.validate = (function($, ctx) {
     };
 
     var _postValidateBasic =  function($form, validator) {
-        $('.coverageTypeSelect', "#coverageDateRepeatable",$form).each(function (i, elem) {
+        $(".coverageTypeSelect",$form).each(function (i, elem) {
             _prepareDateFields(elem);
         });
         $("#coverageDateRepeatable", $form).delegate(".coverageTypeSelect", "change", function () {
@@ -313,6 +313,7 @@ TDAR.validate = (function($, ctx) {
     var _prepareDateFields = function (selectElem) {
         var startElem = $(selectElem).siblings('.coverageStartYear');
         var endElem = $(selectElem).siblings('.coverageEndYear');
+        console.log($(startElem).rules());
         $(startElem).rules("remove");
         $(endElem).rules("remove");
         switch ($(selectElem).val()) {
@@ -394,4 +395,3 @@ TDAR.validate = (function($, ctx) {
         }
     }
 })(jQuery, window);
-

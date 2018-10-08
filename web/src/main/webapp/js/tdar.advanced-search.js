@@ -56,7 +56,7 @@ TDAR.advancedSearch = (function () {
             name = name.replace(/groups\[(\d+)\](.+)/,"groups["+groupnum+"]$2");
 //            console.log($(".searchType",$controlGroup).attr("name"),name);
             $searchType.attr("name",name);
-            var rownum = $(this).closest(".grouptable").children(".termrow:visible").index($(this).closest(".termrow"));
+            var rownum = $(this).closest(".grouptable").children(0).children(".termrow:visible").index($(this).closest(".termrow"));
             _updateAttributesForRow($(row), groupnum, rownum);
 
             // remove whatever is currently inside of the term-container and replace with the new term
@@ -229,10 +229,10 @@ TDAR.advancedSearch = (function () {
         var $visibleRows = $('.grouptable .repeat-row:visible', $groupDiv);
         var $groupingControl = $groupDiv.find(".groupingSelectDiv");
         if ($visibleRows.length > 1) {
+            $groupingControl.removeClass("hidden");
             $groupingControl.find('select').show();
-            $groupingControl.addClass("in");
         } else {
-            $groupingControl.removeClass("in");
+            $groupingControl.addClass("hidden");
             $groupingControl.find('select').hide();
 
         }
@@ -266,7 +266,8 @@ TDAR.advancedSearch = (function () {
             //console.log("clearing map information")
             $('#large-google-map').removeData();
             $('#large-google-map').empty("div");
-
+            console.log($frm.html());
+            //copy($frm.html());
             $("#autosave").val($frm.html());
 
             //if doing resource search, clear collection search field so we aren't confused about which tab to display

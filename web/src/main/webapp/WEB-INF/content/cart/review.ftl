@@ -20,7 +20,7 @@
 <@edit.hiddenStartTime />
 <div class="row">
     <#if accounts?has_content>
-    <div class="span7" >
+    <div class="col-7" >
         <h3>Invoice Information</h3>
         <div class="cartpane" style="min-height:370px">
             <h3>Invoice Details</h3>
@@ -29,7 +29,7 @@
             <@invoicecommon.printSubtotal invoice/>
         </div>
     </div>
-    <div class="span5">
+    <div class="col-5">
         <h3>Choose A Billing Account</h3>
         <div class="cartpane" style="min-height: 370px">
             <div class="" >
@@ -56,7 +56,7 @@
     </div>
     
         <#else>
-            <div class="span12" >
+            <div class="col-12" >
                 <h3>Invoice Information</h3>
                 <div class="cartpane" style="min-height: 350px">
                     <div class="" >
@@ -71,7 +71,7 @@
     </#if>
 </div>
 <div class="row">
-    <div class="span12">
+    <div class="col-12">
         <h3>About Invoices and Accounts</h3>
         <p>
             In tDAR, billing accounts are used to manage resources. Each resource must be associated with an account. tDAR is run by Digital Antiquity, a
@@ -103,7 +103,7 @@
 
         <div class="form-actions">
             <#if invoice.modifiable>
-                <@s.a href="/cart/modify" cssClass="button muted">Modify This Invoice</@s.a>
+                <@s.a href="/cart/modify" cssClass="button tdar-button muted">Modify This Invoice</@s.a>
             </#if>
             <@s.submit name="submit" value="Next Step: Payment" cssClass="tdar-button"/>
 

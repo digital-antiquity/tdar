@@ -164,6 +164,12 @@
             console.log('executing main in package:' + key);
             pkg.main();
         }
+        $(".input-group-append .fa-search").click(function(){
+            $(this).parents('form:first').submit();
+        });
+        
+        
+//        $("#divSearchContext").show();
     };
 
 

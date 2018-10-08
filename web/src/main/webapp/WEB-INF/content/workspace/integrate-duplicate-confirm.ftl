@@ -2,11 +2,11 @@
 
     <h2>Duplicate ${workflow.title}</h2>
 <div class="row">
-<div class="span6">
+<div class="col-6">
 <p>Duplicating integrations in ${siteAcronym} allows a user to copy an existing integration instead of starting from scratch.  . </p>
 
 </div>
-<div class="span6">
+<div class="col-6">
 <img src="<@s.url value="/images/duplicate.png"/>" title="Duplicate image" alt="duplicate"/>
 </div>
 </div>

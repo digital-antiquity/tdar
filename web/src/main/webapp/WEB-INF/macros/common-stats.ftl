@@ -24,7 +24,7 @@ ${json!'[]'}
     </div>
     <h3>Results: <@s.text name="${granularity.localeKey}"/></h3>
     <#if statsForAccount?has_content>
-	<table class="table tableFormat" >
+	<table class="table table-sm table-striped" >
 		<tr>
 			<th>Id</th>
 			<th width="80%">Title</th>

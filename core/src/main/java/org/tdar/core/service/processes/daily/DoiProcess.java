@@ -100,6 +100,11 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
                 Map<String, String> createdIds = provider.create(resource, UrlService.absoluteUrl(resource));
                 String externalId = createdIds.get(DOI_KEY);
                 if (StringUtils.isNotBlank(externalId)) {
+                    
+                    if (!externalId.startsWith("doi:")) {
+                        externalId = "doi:" + externalId;
+                    }
+                    
                     resource.setExternalId(externalId);
                     datasetDao.saveOrUpdate(resource);
                     batchResults.get(CREATED).add(new Pair<>(resource.getId(), resource.getExternalId()));

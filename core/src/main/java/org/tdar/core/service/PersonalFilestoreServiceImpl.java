@@ -278,10 +278,20 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         List<TdarFile> sweepFiles = fileProcessingDao.sweepFiles();
         logger.debug("files to process: {}", sweepFiles.size());
         for (TdarFile file : sweepFiles) {
+            if (file.getParent() != null) {
+                String parentName = file.getParent().getName();
+                logger.debug("file/parent: {} / {}", file, parentName);
+                if (TdarDir.UNFILED.equals(parentName) || (TdarDir.UNFILED + "/").equals(parentName)) {
+                    continue;
+                }
+            }
+
             Long parentId = file.getParentId();
             if (parentId == null) {
                 parentId = -1L;
             }
+
+            // don't sweep manually updated files,
             List<TdarFile> list = fileByDir.getOrDefault(parentId, new ArrayList<>());
             list.add(file);
             fileByDir.put(parentId, list);
@@ -305,7 +315,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
                         logger.debug("processing by owner: {} --> {}", ownerId, fileByOwner.get(ownerId));
                         groupTdarFiles(fileByOwner.get(ownerId));
                     }
-                    
+
                 }
             }
         }

@@ -11,8 +11,9 @@
 
 
 <h2>Usage Stats</h2>
-<table class="tableFormat table" id="tblUsageStats">
-    <thead>
+<table class="table table-sm table-striped"" id="tblUsageStats">
+      <thead class="thead-dark">
+
     <tr>
         <th>resource</th>
         <th>views</th>

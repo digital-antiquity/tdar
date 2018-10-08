@@ -4,8 +4,8 @@
 <div class="advanced container" style="z-index: 10000; display: none" id="advancedsearch">
     <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
         <div class="row">
-            <div class="span6 offset6 advancedSearchbox" >
-    <a href="#" onClick="$('#advancedsearch').hide();return false;" class='pull-right'>close <b>X</b></a>
+            <div class=" advancedSearchbox col-12" >
+    <a href="#" onClick="$('#advancedsearch').hide();return false;" class='float-right'>close <b>X</b></a>
                 <h5>More search options</h5>
                 <div class="control-group condensed">
                     <label class="control-label">What:</label>
@@ -40,7 +40,7 @@
                     <div class=" control-group " v-if="rows.length > 1">
                         <label class="control-label">Include in results</label>
                         <div class="controls controls-row condensed">
-                            <select name="groups[0].operator" class="span3">
+                            <select name="groups[0].operator" class="col-3">
                                 <option value="AND" selected="">When resource matches ALL terms below</option>
                                 <option value="OR">When resource matches ANY terms below</option>
                             </select>
@@ -60,28 +60,29 @@
 
 <script type="text/x-template" id="search-row-template">
 <div class="controls-row">
-    <select v-model="option" :name="searchFieldName" class="span2 control-label" style="font-size:smaller" ref='fieldselect'>
+    <select v-model="option" :name="searchFieldName" class="col-2 col-form-label" style="font-size:smaller" ref='fieldselect'>
         <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
         	<option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option"> {{ option.name }}  </option>
         </optgroup>
     </select>
-    <div class="span3" ref='valuearea'>
+    <div class="col-10" ref='valuearea'>
+        <div class="row">
         <div v-if="option.type == 'basic' || option.type == undefined">
             <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.searchFieldName" v-if="option.autocompleteUrl != undefined" 
-		:resultsuffix="option.resultSuffix" ref="autocomplete" :span="'span3'" :fieldname="fieldName" :allowCreate="false" :idname="idName"/>
-            <input type="text" :name="valueFieldName" class="span3" v-if="option.autocompleteUrl == undefined">
+		:resultsuffix="option.resultSuffix" ref="autocomplete" :span="'col-3'" :fieldname="fieldName" :allowCreate="false" :idname="idName"/>
+            <input type="text" :name="valueFieldName" class="col-3" v-if="option.autocompleteUrl == undefined">
         </div>
         <div v-if="option.type == 'select'">
-             <select :name="valueFieldName" class="span3" multiple>
+             <select :name="valueFieldName" class="col-3" multiple>
                   <option  v-for="(opt, i) in option.values">{{opt}}</option>
               </select>
  		 </div>
          <div v-if="option.type == 'integer'">
-              <input type="number" :name="valueFieldName" class=" span3">
+              <input type="number" :name="valueFieldName" class=" col-3">
  		 </div>
          <div v-if="option.type == 'date'">
-              <input type="date" :name="fieldName + '.start'" class=" span3">
-              <input type="date" :name="fieldName + '.end'" class=" span3">
+              <input type="date" :name="fieldName + '.start'" class=" col-3">
+              <input type="date" :name="fieldName + '.end'" class=" col-3">
  		 </div>
         <span v-if="option.columnType != undefined">
             <span v-if="option.type != 'basic'">
@@ -101,10 +102,11 @@
                <div class="mapdiv"></div>
              </div>
          </div>
-         </div>
-         <div class="span1">
+         <div class="col-1">
                     <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="icon-trash"></i></button>
           </div>
+         </div>
+         </div>
     </div>
 </div>
 </script>

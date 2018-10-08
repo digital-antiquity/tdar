@@ -11,9 +11,9 @@
 
 </head>
 <body>
-    <@nav.billingToolbar "${account.urlNamespace}" "view"/>
 
 	<h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
+    <@nav.billingToolbar "${account.urlNamespace}" "view"/>
 
     <@view.pageStatusCallout />
 
@@ -21,8 +21,8 @@
     <p>${account.description!""}</p>
     </#if>
 
-<h3>Overall Usage</h3>
-<table class="tableFormat table">
+<h2>Overall Usage</h2>
+<table class="table table-sm table-striped"">
     <tr>
         <th></th>
         <th>Used</th>
@@ -63,8 +63,8 @@
     </tr>
 </table>
 
-<h3>Invoices</h3>
-<table class="tableFormat table">
+<h2>Invoices</h2>
+<table class="table table-sm table-striped"">
     <tr>
         <th>name</th>
         <th>owner</th>
@@ -100,8 +100,8 @@
 
 
 <#if (account.coupons?has_content && account.coupons?size > 0)>
-<h3>Voucher Codes</h3>
-<table class="tableFormat table">
+<h2>Voucher Codes</h2>
+<table class="table table-sm table-striped"">
     <tr>
         <th>files</th>
         <th>space</th>
@@ -130,12 +130,13 @@
     </#list>
 </table>
 </#if>
-<h3> Create Voucher</h3>
-<div class="well">
+<div class="card">
+<div class="card-body">
+<h2 class="card-title"> Create Voucher</h2>
 	<p>Voucher codes can be used to allow another tDAR user to use files or space without providing them full access to this account.  Simply create a voucher below by specifying either the number of MB or files <b> To redeem a voucher, please go <a href="<@s.url value="/cart/add" />">here</a></b></p>
     <@s.form name="couponForm" action="create-code" cssClass="form-horizontal">
         <div class="row">
-            <div class="span4">
+            <div class="col-4">
 	            <@s.hidden name="id" value="${account.id?c!-1}" />
 	            <#if editor>
     	            <@s.select name="quantity" list="{1,5,10,25,50,100}" value="1" label="Quantity" cssClass="input-small"/>
@@ -143,24 +144,23 @@
 		            <@s.hidden name="quantity" value="1" />
                 </#if>
                 
-                <div class="control-group ">
-                
-                <label class="control-label">Date Expires</label>
-                 <div class="controls">
-	                <div class="input-append">
-	   		          <input name="expires" class="input-small span2 datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
-	                  <span class="add-on"><i class="icon-th"></i></span>
-	                </div>
-				</div>
-				</div>
-
             </div>
-            <div class="span4">
+                <div class="col-4">
+                    <div class="form-group">
+                <label class="col-form-label">Date Expires</label>
+                    <div class="input-group">
+                      <input name="expires" class="input-small form-control datepicker" data-date-format="mm/dd/yy" value="${expires?string["MM/dd/yyyy"]}" />
+                      <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+                </div>
+
+            <div class="col-4">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
             </div>
         </div>
         <div class="row">
-            <div class="span8">
+            <div class="col-8">
                 <div class="control-group">
                     <div class="controls">
                         <@s.submit name="_tdar.submit" value="Create Voucher" cssClass="button submit-btn btn" />
@@ -170,9 +170,10 @@
         </div>
     </@s.form>
 </div>
+</div>
 
-<h3>Who can use this account</h3>
-<table class="tableFormat table table-bordered">
+<h2>Who can use this account</h2>
+<table class="table table-sm table-striped" table-bordered">
     <#list account.authorizedUsers as member>
         <tr>
             <td><a href="<@s.url value="/browse/creators/${member.user.id?c}"/>">${member.user.properName}</a></td>
@@ -183,7 +184,7 @@
 </table>
 
 <#if editor>
-<h3>Account File Settings</h3>
+<h2>Account File Settings</h2>
 <p>
     <b>Files Expire After:</b> ${account.daysFilesExpireAfter}<br/>
     <b>Full Service Enabled:</b> ${account.fullService?c}<br/>
@@ -192,9 +193,10 @@
     
 </#if>
 
-<h3>Resources associated with this account</h3>
-<table class="tableFormat table">
-    <thead>
+<h2>Resources associated with this account</h2>
+<table class="table table-sm table-striped"">
+      <thead class="thead-dark">
+
     <tr>
         <th>Id</th>
         <th>Date Created</th>
@@ -206,7 +208,8 @@
         <th>Files</th>
         <th>Space (MB)</th>
     </tr>
-    <thead>
+      <thead class="thead-dark">
+
     <tbody>
         <#list resources as resource>
             <#assign stat = ""/>
@@ -232,8 +235,9 @@
     </tbody>
 </table>
 
-<table class="table tableFormat">
-<thead>
+<table class="table table-sm table-striped">
+  <thead class="thead-dark">
+
     <tr> <th>Date</th><th>Files Used</th><th>Space Used (in bytes)</th><th>Resources Used</th></tr>
     <#list account.usageHistory as history>
     <tr>

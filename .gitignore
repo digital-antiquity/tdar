@@ -24,3 +24,5 @@ ldap.properties
 struts-local-settings.xml
 .tern-project
 datacite.properties
+target
+logs

@@ -25,7 +25,7 @@
 
         <div id="divResultsSortControl">
             <div class="row">
-                <div class="span12">
+                <div class="col-12">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper header="Inside this Project" />
                 </div>
             </div>
@@ -35,13 +35,13 @@
         
         <div class="collection-facets">
             <#assign mapSize="450" />
-			<@search.partFacet selectedResourceTypes paginationHelper "Project" "h4" />
+			<@search.partFacet selectedResourceTypes paginationHelper "Project" "h4" 'horizontal'/>
         </div>
 
 			
 
             <#if ( results?has_content )>
-                <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" itemsPerRow=4
+                <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="b" itemsPerRow=4
                 sortfield=sortField  orientation=resource.orientation mapPosition="top" mapHeight="400" />
             </#if>
 

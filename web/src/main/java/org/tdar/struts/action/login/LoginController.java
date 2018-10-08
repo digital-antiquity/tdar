@@ -217,4 +217,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
         this.internalReturnUrl = internalReturnUrl;
     }
 
+    public boolean isOwnContainer() {
+        return true;
+    }
 }

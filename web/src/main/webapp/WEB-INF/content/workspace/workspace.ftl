@@ -8,12 +8,13 @@
 
 
     <div class="row">
-        <div class="span9">
-                <a href="<@s.url value="/workspace/integrate"/>" class="button tdar-button">Start a New Integration</a>
+        <div class="col-9">
+                <a href="<@s.url value="/workspace/integrate"/>" class="button tdar-button float-right">Start a New Integration</a>
             <#list workflows?sort_by('dateUpdated')?reverse>
                 <h3>Saved Integrations</h3>
             <table id="tblWorkflows" class="table table-bordered table-hover">
-                <thead>
+                  <thead class="thead-dark">
+
                     <tr>
                         <th>Name / Description</th>
                         <th>Last Update</th>
@@ -32,9 +33,9 @@
                             <td>${workflow.submitter.properName}</td>
                             <td>
                             <#if workflow.editable>
-                                <a class="btn btn-mini" href="<@s.url value="/workspace/settings/edit?id=${workflow.id?c}"/>">settings</a>
-                                <a class="btn btn-mini" href="<@s.url value="/workspace/duplicate-confirm?id=${workflow.id?c}"/>">duplicate</a>
-                                <a class="btn btn-mini" href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>
+                                <a class="btn btn-sm" href="<@s.url value="/workspace/settings/edit?id=${workflow.id?c}"/>">settings</a>
+                                <a class="btn btn-sm" href="<@s.url value="/workspace/duplicate-confirm?id=${workflow.id?c}"/>">duplicate</a>
+                                <a class="btn btn-sm" href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>
                             </#if>
                             </td>   
                         </tr>
@@ -46,7 +47,7 @@
                 <@learn />
             </#list>
         </div>
-        <div class="span3">
+        <div class="col-3">
         <#if workflows?size != 0>
             <@learn />
         </#if>

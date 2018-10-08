@@ -53,10 +53,4 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
         assertTrue(getText().contains("Log In"));
     }
 
-    @Test
-    public void testClickSomething() {
-        find(By.linkText("edit")).first().click(); // one way of getting to a page
-        gotoPage("/dashboard"); // another way
-    }
-
 }

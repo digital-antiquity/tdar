@@ -18,8 +18,8 @@
 <div class="usual">
 	<@search.toolbar />
         <div id="person" class="tab-pane active">
-            <div class="glide">
-                <h3>Search For Person</h3>
+            <div class="mt-5">
+                <h5>Search For Person</h5>
 
                 <@s.form action="people" method="GET" id='searchForm4'>
                     <@search.queryField freeTextLabel="Person Name" showLimits=false showPersonField=true showAdvancedLink=false />

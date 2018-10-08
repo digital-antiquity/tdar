@@ -1,0 +1,149 @@
+/**** VIEW ****/
+
+.view-deleted-file {
+    background-color: #edd87b;
+    text-decoration: line-through;
+    display: none;
+}
+
+.view-hidden-extra-files {
+    display: none;
+}
+
+/* contextual help styling - based off of 'downloads' box on view page */
+#notice {
+    font-family: 'ff-tisa-web-pro', serif;
+    background-color: #f0eeeb;
+}
+
+#notice h2 {
+    font-size: 15px;
+}
+
+
+/*use in column-sized div to scale image if width exceeds parent width */
+img.responsive-image {
+    max-width: 100%;
+    height: auto;
+}
+
+#downloadsMoreArea {
+    background-color: #ddd;
+    padding-left: 35px;
+}
+
+.view aside {
+ li strong {
+    font-weight: 700;
+    font-size: 12px;
+    color: #1b1a18;
+    letter-spacing: 1px;
+    line-height: 14px;
+    text-transform: uppercase;
+}
+
+ h3.downloads {
+    font-family: helvetica, arial, sans-serif;
+    font-size: 16px;
+    color: #fff;
+    height: 45px;
+    line-height: 45px;
+    margin: 0 !important;
+    padding: 0 10px;
+    background: #7a1501;
+    -webkit-border-radius: 2px 2px 0 0;
+    border-radius: 2px 2px 0 0;
+    border-bottom: none;
+}
+
+ h3.downloads span.downloadNumber {
+    display: inline-block;
+    float: right;
+    font-size: 13px;
+    line-height: 22px !important;
+    background: #641b11;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    width: 22px;
+    text-align: center;
+    margin-top: 11px;
+    -webkit-border-radius: 2px 2px 0 0;
+    border-radius: 2px 2px 0 0;
+}
+
+
+ ul.downloads,  ul.downloads li {
+    background: #f0eeeb;
+    margin: 0 !important;
+}
+
+ul.downloads li {
+    color: #7d7a77;
+    padding: 14px 10px 14px 32px;
+    border-bottom: 1px solid #fff;
+}
+
+li strong {
+font-weight: 700;
+font-size: 12px;
+color: #1b1a18;
+letter-spacing: 1px;
+line-height: 14px;
+text-transform: uppercase;
+}
+
+li {
+font-size: 13px;
+line-height: 17px;
+color: #7d7a77;
+margin-top: 15px;
+}
+
+h3 {
+font-size: 16px;
+line-height: 22px;
+border-bottom: 1px solid #e5e5e5;
+padding-bottom: 5px;
+margin: 20px 0;
+}
+
+}
+
+
+.section + .section,  .section + abbr {
+    padding-top: 1.5em;
+    border-top:1px solid #EEE;
+}
+
+.section , .section + .card {
+    margin-bottom:1.5em;
+}
+
+#subnavbar {
+    .nav-link {
+        font-weight:normal;
+        padding-top:4px;
+        padding-bottom:4px;
+    }
+    .nav-link.active {
+        font-weight:bold;
+    }
+}
+
+#subnavbar.affix {
+        position: fixed;
+        top:10px;
+    }
+
+
+#myCarousel {
+    .carousel-control-prev {
+        width:5%;
+    }
+    
+    .carousel-indicators {
+        .active {
+            background-color:black;
+        }
+    }
+}
