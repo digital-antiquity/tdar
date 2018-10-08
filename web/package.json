@@ -89,6 +89,7 @@
     "leaflet-draw": "0.4.9",
     "leaflet-sleep": "^0.5.1",
     "leaflet.markercluster": "1.0.0",
+    "popper.js":"1.14.4",
     "qs": "6.5.1",
     "rollbar": "^2.4.7",
     "select2": "4.0.6-rc.0",
