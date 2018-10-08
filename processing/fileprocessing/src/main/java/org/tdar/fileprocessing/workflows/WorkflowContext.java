@@ -7,7 +7,10 @@ import java.io.File;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -71,6 +74,7 @@ public final class WorkflowContext implements Serializable {
     private boolean isErrorFatal;
 
     private Class<? extends DatasetConverter> datasetConverter;
+    private Set<String> archivePartExtensions = new HashSet<>(Arrays.asList("asc","db","e57","jpg","mtl","obj","pc","pdf","pod","pts","py","txt","xlsx","xls","ds_store"));
 
     public WorkflowContext() {
     }
@@ -374,6 +378,14 @@ public final class WorkflowContext implements Serializable {
 
     public void setTdarFile(boolean tdarFile) {
         this.tdarFile = tdarFile;
+    }
+    
+    public Set<String> getArchivePartExtensions() {
+        return this.archivePartExtensions;
+    }
+
+    public void setArchivePartExtensions(Set<String> archivePartExtensions) {
+        this.archivePartExtensions = archivePartExtensions;
     }
 
 }

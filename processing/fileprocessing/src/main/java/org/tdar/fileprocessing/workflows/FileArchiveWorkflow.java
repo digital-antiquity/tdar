@@ -21,7 +21,6 @@ public class FileArchiveWorkflow extends BaseWorkflow {
 
     public FileArchiveWorkflow() {
         addRequired(FileArchiveWorkflow.class, Arrays.asList("zip", "tar", "bz2", "tgz"));
-
         addTask(ListArchiveTask.class, WorkflowPhase.PRE_PROCESS);
         addTask(IndexableTextExtractionTask.class, WorkflowPhase.CREATE_DERIVATIVE);
     }

@@ -660,7 +660,7 @@
                        <version>1.0.0</version>
                        <executions>
                          <execution>
-                           <phase>validate</phase>
+                           <phase>initialize</phase>
                            <goals>
                              <goal>read-project-properties</goal>
                            </goals>
@@ -689,7 +689,7 @@
                         <configuration>
                             <targetGroups>default,ng-integrate</targetGroups>
                             <minimize>true</minimize>
-<destinationFolder>${project.build.directory}/generated/webapp/wro/${git.version}</destinationFolder>
+                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${git.commit.id.abbrev}</destinationFolder>
                             <contextFolder>${basedir}/src/main/webapp/</contextFolder>
                             <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
                             <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
@@ -714,7 +714,7 @@
                                         <copy
                                             todir="${project.build.directory}/generated/webapp/wro/">
                                             <fileset
-                                                dir="${project.build.directory}/generated/webapp/wro/${git.version}" />
+                                                dir="${project.build.directory}/generated/webapp/wro/${git.commit.id.abbrev}" />
                                         </copy>
                                     </target>
                                 </configuration>
