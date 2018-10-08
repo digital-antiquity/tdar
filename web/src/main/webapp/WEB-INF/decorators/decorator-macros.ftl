@@ -21,26 +21,27 @@
                     <div class="d-flex flex-column ml-auto">
                         <div class="mr-0 d-flex align-items-top justify-content-end">
                             <#if (authenticatedUser??) >
-                            <p id="welcome-menu" class="welcome  screen san-serif ">
-                                <@s.text name="menu.welcome_back"/>
-                                ${authenticatedUser.properName}
-                            </p>
-                            <#else>
-                            <p class ="logIn san-serif"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
-                        </#if>
+                                <p id="welcome-menu" class="welcome  screen san-serif ">
+                                    <@s.text name="menu.welcome_back"/>
+                                    ${authenticatedUser.properName}
+                                </p>
+                                <#else>
+                                <p class ="logIn san-serif"><a class = "tdarLink" href="${auth.loginLink()}">Log In</a> or <a class = "tdarLink" href="/account/new">Sign Up</a></p>
+                            </#if>
+                        </div>
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <@searchform true />
+                            </li>
+                        </ul>
                     </div>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <@searchform true />
-                        </li>
-                    </ul>
                 </div>
             </div>
         </nav>
 
         <nav class="navbar navbar-expand-md navbar-light tdarNav py-0">
             <div class = "container">
-                <div class="collapse navbar-collapse" id="tdarNavMenu">
+                <div class="collapse navbar-collapse" id="tdarNavMenu2">
                     <ul class="navbar-nav">
 <!--                        <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
@@ -133,6 +134,7 @@
                             </div>
                         </div>
                     </div>
+                </div>
             </div>
         </nav>
     </div>
@@ -175,7 +177,7 @@
                     <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
                         <div class="input-group">
                             <input type="hidden" name="_tdar.searchType" value="simple">
-                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..."name="query">
+                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..." name="query">
                             <span class="input-group-append">
                                         <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
                             </span>
@@ -194,7 +196,7 @@
             <p class="color-subtitle">${subtitle}</p>
             </#if>
             <form class="d-flex" name="searchheader"  action="<@s.url value="/search/results"/>">
-                <div class="input-group col-md-6 noleftmargin right-bottom-dropshadow">
+                <div class="input-group col-6 noleftmargin right-bottom-dropshadow">
                     <input class="form-control border-right-0 border"  type="text" name="query" accesskey="s" aria-label="${searchPrompt}" placeholder="${searchPrompt}">
                     <span class="input-group-append" name="_tdar.searchType" value="simple">
                         <div class="input-group-text bg-white border rounded-right"><i class="fa fa-search noborder"></i></div>
