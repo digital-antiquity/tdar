@@ -8920,9 +8920,10 @@ header + #hero-wide {
     float: right; }
     .image .hero-note h2 {
       margin: 0px !important;
-      font-weight: 400 !important;
+      font-weight: 600 !important;
       line-height: 4rem !important;
-      margin-top: 0px !important; }
+      margin-top: 0px !important;
+      font-family: "soleil", sans-serif !important; }
       .image .hero-note h2 .red {
         font-weight: 700; }
 

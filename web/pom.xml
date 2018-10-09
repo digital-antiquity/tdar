@@ -645,7 +645,7 @@
                        <version>1.0.0</version>
                        <executions>
                          <execution>
-                           <phase>validate</phase>
+                           <phase>initialize</phase>
                            <goals>
                              <goal>read-project-properties</goal>
                            </goals>
@@ -700,7 +700,7 @@
                                         <copy
                                             todir="${project.build.directory}/src/main/webapp/webapp/dist/">
                                             <fileset
-                                                dir="${project.build.directory}/src/main/webapp/dist/${hg.version}" />
+                                                dir="${project.build.directory}/generated/webapp/wro/${git.commit.id.abbrev}" />
                                         </copy>
      -->
                                     </target>

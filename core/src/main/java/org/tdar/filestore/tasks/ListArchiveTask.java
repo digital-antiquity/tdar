@@ -12,7 +12,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -20,10 +22,13 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.NonFatalWorkflowException;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * @author Adam Brin
@@ -73,6 +78,12 @@ public class ListArchiveTask extends AbstractTask {
                 while (entry != null) {
                     if ((entry.getSize() > 0) && (entry.getLastModifiedDate().getTime() > 1)) {
                         validEntries = true;
+                    }
+                    String ext = FilenameUtils.getExtension(entry.getName());
+                    Set<String> exts = getWorkflowContext().getArchivePartExtensions();
+                    if (StringUtils.isNotBlank(ext) && CollectionUtils.isNotEmpty(exts) && !exts.contains(ext.toLowerCase())) {
+                        getLogger().error("bad file extension: {}/{} ({})", entry.getName(), ext, exts);
+                        throw new TdarRecoverableRuntimeException("listArchiveTask.invalid_file", Arrays.asList(entry.getName()));
                     }
                     writeToFile(archiveContents, entry.getName());
                     seenFiles++;
