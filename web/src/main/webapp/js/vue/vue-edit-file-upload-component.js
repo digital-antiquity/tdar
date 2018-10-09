@@ -3,13 +3,13 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
     var ERROR_TIMEOUT = 5000;
 
 
-    var _init = function(widgetId) {
+    //var _init = function(widgetId) {
 
         // //https://github.com/blueimp/jQuery-File-Upload/wiki/API
 
         var DELETE = 'DELETE';
         
-        var config = {
+        var BASE_CONFIG = {
             files : [],
             url : TDAR.uri('upload/upload'),
             ticketId : -1,
@@ -24,11 +24,11 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
                 optional : []
             } ]
         };
-        if ($(widgetId).data('config') != undefined) {
-            console.log($($(widgetId).data('config')).text());
-            $.extend(config, JSON.parse($($(widgetId).data('config')).text()));
-        }
-        console.log("config:", config);
+//        if ($(widgetId).data('config') != undefined) {
+//            console.log($($(widgetId).data('config')).text());
+//            $.extend(config, JSON.parse($($(widgetId).data('config')).text()));
+//        }
+//        console.log("config:", config);
         var _fpart = Vue.component('fpart', {
             template : "#fpart-template",
             props : [ "file", "index", "abletoupload", "deletedisabled" , "inputdisabled"],
@@ -188,19 +188,19 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             props : [ "config" ],
             data : function() {
                 return {
-                    files : config.files,
-                    url : config.url,
-                    ticketId : config.ticketId,
-                    resourceId : config.resourceId,
-                    userId : config.userId,
-                    validFormats : config.validFormats,
-                    sideCarOnly : config.sideCarOnly,
-                    maxNumberOfFiles : config.maxNumberOfFiles,
+                    files : BASE_CONFIG.files,
+                    url : BASE_CONFIG.url,
+                    ticketId : BASE_CONFIG.ticketId,
+                    resourceId : BASE_CONFIG.resourceId,
+                    userId : BASE_CONFIG.userId,
+                    validFormats : BASE_CONFIG.validFormats,
+                    sideCarOnly : BASE_CONFIG.sideCarOnly,
+                    maxNumberOfFiles : BASE_CONFIG.maxNumberOfFiles,
                     errors : [],
                     warnings : [],
                     packageMessages : [],
-                    requiredOptionalPairs : config.requiredOptionalPairs,
-                    ableToUpload : config.ableToUpload
+                    requiredOptionalPairs : BASE_CONFIG.requiredOptionalPairs,
+                    ableToUpload : BASE_CONFIG.ableToUpload
                 }
             },
             computed : {
@@ -417,11 +417,22 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             }
         });
 //        return {"app" : app,"fpart" : _fpart};
-        var app = new Vue({
-            el : widgetId,
-            data: {
-            config: config}
-        });
+
+        var _init = function(widgetId) {
+            var config = {};
+            if ($(widgetId).data('config') != undefined) {
+                console.log($($(widgetId).data('config')).text());
+                $.extend(config, BASE_CONFIG, JSON.parse($($(widgetId).data('config')).text()));
+            }
+
+            if (widgetId != undefined) {
+                var app = new Vue({
+                    el : widgetId,
+                    data : {
+                        'config' : config
+                    }
+                });
+            }
         
        return {
            "app" : app,

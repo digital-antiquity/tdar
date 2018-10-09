@@ -6,12 +6,12 @@
                                 ref="input" fieldname="properName" :allowCreate="false" idname="personid" /> 
             <div class="" v-show="showEditPerson">
                 <div class="row">
-                    <input type="text" id="ln" :name="getPrefix('lastName')" maxlength="255" v-model="creator.lastName"  title="A last name" placeholder="Last Name" class="col-6">
-                    <input type="text" :name="getPrefix('firstName')" maxlength="255" v-model="creator.firstName" title="A first name" placeholder="First Name" class="col-6">
+                    <input type="text" id="ln" :name="getPrefix('lastName')" maxlength="255" v-model="creator.lastName"  title="A last name" placeholder="Last Name" class="col-6 form-control">
+                    <input type="text" :name="getPrefix('firstName')" maxlength="255" v-model="creator.firstName" title="A first name" placeholder="First Name" class="col-6 form-control">
                 </div>
                 <div class="row">
-                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" placeholder="Email (optional)" class="col-6">
-                    <input type="text" :name="getPrefix('institution.name')" maxlength="255" v-model="creator.institution.name" placeholder="Institution Name (Optional)" class="col-6" v-if="creator.institution != undefined">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" placeholder="Email (optional)" class="col-6 form-control">
+                    <input type="text" :name="getPrefix('institution.name')" maxlength="255" v-model="creator.institution.name" placeholder="Institution Name (Optional)" class="col-6 form-control" v-if="creator.institution != undefined">
                 </div>
             </div>
 
@@ -25,8 +25,8 @@
                 ref="input" fieldname="properName" :allowCreate="false" idname="institutionid" />
             <div v-show="showEditInstitution">
                 <div class="controls-row">
-                    <input type="text" :name="getPrefix('name')" maxlength="255" v-model="creator.name" class="col-6 trim" placeholder="Institution Name (Optional)">
-                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="col-6  trim" placeholder="Email (optional)">
+                    <input type="text" :name="getPrefix('name')" maxlength="255" v-model="creator.name" class="col-6 trim form-control" placeholder="Institution Name (Optional)">
+                    <input type="text" :name="getPrefix('email')" maxlength="255" v-model="creator.email" class="col-6  trim form-control" placeholder="Email (optional)">
                 </div>
             </div>
 </div>
@@ -56,7 +56,7 @@
     </div>
     <div class="col-3">
     
-    <select :name="getRootPrefix('role')" class="creator-role-select " v-model="resourcecreator.role">
+    <select :name="getRootPrefix('role')" class="creator-role-select form-control " v-model="resourcecreator.role">
         <option v-for="(value, index) in actualRoles">{{value}}</option>
     </select>
     </div>
