@@ -1,12 +1,11 @@
 <#include "/components/tdar-autocomplete/template/autocomplete.html" />
 <#include "/components/tdar-values/template/values.html" />
 
-<div class="advanced container" style="z-index: 10000; display: none" id="advancedsearch">
+<div class="advanced container" style="z-index: 10000; display: none; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch">
     <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
         <div class="row">
             <div class=" advancedSearchbox col-12" >
     <a href="#" onClick="$('#advancedsearch').hide();return false;" class='float-right'>close <b>X</b></a>
-                <h5>More search options</h5>
                 <div class="control-group condensed">
                     <label class="control-label">What:</label>
 
@@ -107,19 +106,4 @@
          </div>
     </div>
 </div>
-</script>
-
- <script>
-$(document).ready(function() {
-//    $("#advancedsearch").show();
-/*     $("#searchheader, #advancedsearch").mouseover(function() {
-        $("#advancedsearch").show();
-    }); */
-/*     $("#searchheader, #advancedsearch").mouseout(function() {
-        $("#advancedsearch").hide();
-    });
- *//*
- */
-});
-            
 </script>

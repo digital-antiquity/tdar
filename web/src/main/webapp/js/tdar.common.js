@@ -479,7 +479,7 @@ TDAR.common = function (TDAR, fileupload) {
         //console.debug('initialize view');
         var $divSearchContext = $("#divSearchContext");
 
-        if ($divSearchContext.length === 1) {
+        if ($divSearchContext.length === 1 && $divSearchContext.text().trim() != '') {
             $(".searchbox:visible").focus(function () {
                 console.log("adding active");
                 $divSearchContext.addClass("active");

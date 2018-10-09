@@ -39,6 +39,7 @@
                 </div>
             </div>
         </nav>
+<#include "/WEB-INF/content/search/search.html" >
 
         <nav class="navbar navbar-expand-md navbar-light tdarNav py-0">
             <div class = "container">
@@ -138,7 +139,6 @@
                 </div>
             </div>
         </nav>
-<#include "/WEB-INF/content/search/search.html" >
     </div>
 
 
@@ -175,12 +175,11 @@
 </#macro>
 
 <#macro searchform topRight=false>
-
-
                     <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
                         <div class="input-group">
                             <input type="hidden" name="_tdar.searchType" value="simple">
-                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..." name="query" id="searchbox${topRight?string("top","")}">
+                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>"
+                                onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();" type="search" placeholder="Search..." name="query" id="searchbox${topRight?string("top","")}">
                             <span class="input-group-append">
                                         <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
                             </span>
@@ -194,7 +193,6 @@
                             <input id="cbctxid" type="checkbox" name="projectId" value="${id?c}">
                             <label for="cbctxid">Search within this project</label>
                         </#if>
-                        <a href="#" onClick="$('#advancedsearch').show(); return false;">More Options</a>
                     </div>
                     </#if>
                         </div>
