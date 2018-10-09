@@ -860,7 +860,7 @@ TDAR.datatable = function() {
             }
             var button = '<button type="button" id="' + uAttrId + '"' + sDisabled + 'value="addUnmanaged" class="btn">Add Unmanaged</button>';
             if (ul) {
-                output += '<li>"+button +"</li></ul>';
+                output += '<li>' +button +'</li></ul>';
             } else {
                 output += button;
             }
