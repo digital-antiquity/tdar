@@ -357,10 +357,14 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             if (this.files.length == undefined || this.files.length == 0) {
                 var val = $("#vueFilesFallback").val();
                 if (val != undefined && val.trim().length > 0) {
-                    var _files = JSON.parse(val);
-                    console.log("loading files fallback from:", _files);
-                    if (_files.length > 0) {
-                        Vue.set(this, "files", files);
+                    try {
+                        var _files = JSON.parse(val);
+                        console.log("loading files fallback from:", _files);
+                        if (_files.length > 0) {
+                            Vue.set(this, "files", files);
+                        }
+                    } catch (err) {
+                        console.error("error loading JSON");
                     }
 
                 }
@@ -432,8 +436,9 @@ TDAR.vuejs.uploadWidget = (function(console, $, ctx, Vue) {
             $.extend(config, BASE_CONFIG, JSON.parse($($(widgetId).data('config')).text()));
         }
 
+        var app = undefined;
         if (widgetId != undefined) {
-            var app = new Vue({
+            app = new Vue({
                 el : widgetId,
                 data : {
                     'config' : config
