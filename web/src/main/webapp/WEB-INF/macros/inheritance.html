@@ -13,7 +13,7 @@
       <div class="ml-2 nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
           <a class="nav-link" id="where-tab" data-toggle="pill" href="#where" role="tab" aria-selected="false">Where</a>
           <a class="nav-link" id="when-tab" data-toggle="pill" href="#when" role="tab" aria-selected="false">When</a>
-          <a class="nav-link" id="material-tab" data-toggle="pill" href="#material" role="tab" aria-selected="false">Material</a>
+          <a v-if="materialTypeEnabled" class="nav-link" id="material-tab" data-toggle="pill" href="#material" role="tab" aria-selected="false">Material</a>
           <a class="nav-link" id="culture-tab" data-toggle="pill" href="#culture" role="tab" aria-selected="false">Culture</a>
           <a class="nav-link" id="investigationtype-tab" data-toggle="pill" href="#investigationtype" role="tab" aria-selected="false">Investigation Type</a>
           <a class="nav-link" id="site-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-selected="false">Site Info</a>
@@ -180,7 +180,7 @@
                 <h3>Questionnaire</h3>
                 <div class="row">
                     <div class="col-12">
-                    aaa
+                    <div><input type="checkbox" v-model="showMaterialTypeSection" /> I have material types!</div>
                     </div>
                 </div>
       </div>
@@ -327,7 +327,7 @@
 
 
             <div>
-                <h5>Temporal</h5>
+                <h5>Dates</h5>
                 <b :class="inheritanceDisabledClass">inherit
                     from: {{project.title}} <input type="checkbox"
                     v-model="resource.inheritingTemporalInformation"
@@ -335,10 +335,7 @@
                 </b>
                 <div v-for="(date, idx) in resource.coverageDates"
                     class="row">
-                    <div class="repeat-row">
-                        <div class="col-10 col-10-row">
-                            <div class="col-6">
-                                <div class="col-10-row">
+                                <div class="col-3">
                                     <select
                                         :name="'coverageDates' + idx + '].type'" class=" form-control"
                                         v-model="date.type">
@@ -347,15 +344,20 @@
                                             :value="opt.value">{{opt.name}}</option>
                                     </select>
                                 </div>
-                                <div class="col-10-row">
-                                    Start: <input type="text" class=" form-control"
-                                        :name="'coverageDates' + idx + '].startDate'"
-                                        v-bind="date.startDate">
-                                    End: <input type="text" class=" form-control"
-                                        :name="'coverageDates' + idx + '].endDate'"
-                                        v-bind="date.endDate">
+                                <div class="col-8">
+                                    <div class="row">
+                                        <div class="col">
+                                        Start: <input type="text" class=" form-control"
+                                            :name="'coverageDates' + idx + '].startDate'"
+                                            v-bind="date.startDate">
+                                            </div>
+                                            <div class="col">
+                                        End: <input type="text" class=" form-control"
+                                            :name="'coverageDates' + idx + '].endDate'"
+                                            v-bind="date.endDate">
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
                             <div class="col-1">
                                 <button class="btn btn-mini "
                                     @click="removeDate(idx)"
@@ -364,7 +366,6 @@
                                     <i class="fas fa-trash-alt float-right"></i>
                                 </button>
                             </div>
-                        </div>
                     </div>
 
                     <div class="row add-another-control">
@@ -378,7 +379,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
       <div class="tab-pane fade show" id="notes" role="tabpanel"
             aria-labelledby="notes-tab">
@@ -448,7 +448,6 @@
             
 
                 <div>
-                    <h5>Site Information</h5>
                     <b :class="inheritanceDisabledClass">inherit
                         from: {{project.title}} <input
                         type="checkbox"
@@ -456,6 +455,7 @@
                         :disabled="inheritanceDisabled" />
                     </b>
                     <div>
+                    <h5>Site Names / Site Codes</h5>
                         <tagbox
                             autocomplete_url="/api/lookup/keyword"
                             ref="siteName"
@@ -469,6 +469,7 @@
                     </div>
                     <br />
                     <div>
+                    <h5>Site Types</h5>
                         <tagbox
                             autocomplete_url="/api/lookup/keyword"
                             ref="siteType"

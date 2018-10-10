@@ -36,6 +36,7 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     files: [],
                     requiredOptionalPairs:[]
                 },
+                showMaterialTypeSection: false,
                 primaryRoles: [],
                 creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
                 coverageDateTypes: [
@@ -219,6 +220,12 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                             return "disabled";
                             }
                         return "";
+                    },
+                    materialTypeEnabled: function() {
+                        if (this.showMaterialTypeSection == true || this.resource.controlledMaterialKeywords.length + this.resource.uncontrolledMaterialKeywords.length > 0) {
+                            return true;
+                        }
+                        return false;
                     }
                 },
                 methods: {
