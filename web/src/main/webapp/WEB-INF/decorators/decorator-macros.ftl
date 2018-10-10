@@ -18,7 +18,7 @@
                 </div>
 
 
-                <div class="collapse navbar-collapse d-none d-md-flex align-items-end" id="tdarNavMenu">
+                <div class="collapse navbar-collapse d-none d-md-flex align-items-end" id="welcome_menu">
                     <div class="d-flex flex-column ml-auto">
                         <div class="mr-0 d-flex align-items-top justify-content-end">
                             <#if (authenticatedUser??) >
@@ -43,7 +43,7 @@
 
         <nav class="navbar navbar-expand-md navbar-light tdarNav py-0">
             <div class = "container">
-                <div class="collapse navbar-collapse" id="tdarNavMenu2">
+                <div class="collapse navbar-collapse" id="tdarNavMenu">
                     <ul class="navbar-nav">
 <!--                        <li class="nav-item mr-sm-3">
                             <div class="dropdown tdarDropdown">
