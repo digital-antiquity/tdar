@@ -75,7 +75,7 @@ public class WebFileSystemResourceService {
         }
         try {
             Properties props = TdarConfiguration.getInstance().loadChangesetProps();
-            String changeset = props.getProperty("git.commit.id");
+            String changeset = props.getProperty("git.commit.id.abbrev");
             wroTempDirName = "/wro/" + changeset;
             return wroTempDirName;
         } catch (Exception e) {
