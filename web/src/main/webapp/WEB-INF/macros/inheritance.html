@@ -5,32 +5,34 @@
 
 <div class="row">
   <div class="col-2">
+  <div class="">
+  <b>Quality:</b>{{quality}} out of 30
+  </div>
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
       <a class="nav-link active" id="basictab" data-toggle="pill" href="#basic" role="tab"  aria-selected="true">Basic Information</a>
-      <div class="ml-2 nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-      </div>
-      <a class="nav-link"  data-toggle="pill" href="#questionaire" role="tab" aria-selected="false">Resource Information</a>
-      <div class="ml-2 nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-          <a v-if="whereEnabled"  class="nav-link" id="where-tab" data-toggle="pill" href="#where" role="tab" aria-selected="false">Where</a>
-          <a v-if="whenEnabled"  class="nav-link" id="when-tab" data-toggle="pill" href="#when" role="tab" aria-selected="false">When</a>
-          <a v-if="materialTypeEnabled" class="nav-link" id="material-tab" data-toggle="pill" href="#material" role="tab" aria-selected="false">Material</a>
-          <a v-if="cultureEnabled"  class="nav-link" id="culture-tab" data-toggle="pill" href="#culture" role="tab" aria-selected="false">Culture</a>
-          <a v-if="investigationTypeEnabled"  class="nav-link" id="investigationtype-tab" data-toggle="pill" href="#investigationtype" role="tab" aria-selected="false">Investigation Type</a>
-          <a v-if="siteEnabled"  class="nav-link" id="site-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-selected="false">Site Info</a>
-      </div>
-      <a class="nav-link"  data-toggle="pill" href="#" role="tab" aria-selected="false">Other Information</a>
-      <div class="ml-2 nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-          <a  v-if="notesEnabled" class="nav-link" id="notes-tab" data-toggle="pill" href="#notes" role="tab" aria-selected="false">Notes</a>
-          <a v-if="identifierEnabled" class="nav-link" id="identifiers-tab" data-toggle="pill" href="#identifiers" role="tab" aria-selected="false">Identifiers</a>
-      </div>
+          <!-- ------------------------------- -->
+          <a class="nav-link"  data-toggle="pill" href="#questionaire" role="tab" aria-selected="false">Resource Information</a>
+          <!-- ------------------------------- -->
+          <a v-if="whereEnabled"  class="nav-link ml-2" id="where-tab" data-toggle="pill" href="#where" role="tab" aria-selected="false">Where</a>
+          <a v-if="whenEnabled"  class="nav-link ml-2" id="when-tab" data-toggle="pill" href="#when" role="tab" aria-selected="false">When</a>
+          <a v-if="materialTypeEnabled" class="nav-link ml-2" id="material-tab" data-toggle="pill" href="#material" role="tab" aria-selected="false">Material</a>
+          <a v-if="cultureEnabled"  class="nav-link ml-2" id="culture-tab" data-toggle="pill" href="#culture" role="tab" aria-selected="false">Culture</a>
+          <a v-if="investigationTypeEnabled"  class="nav-link ml-2" id="investigationtype-tab" data-toggle="pill" href="#investigationtype" role="tab" aria-selected="false">Investigation Type</a>
+          <a v-if="siteEnabled"  class="nav-link ml-2" id="site-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-selected="false">Site Info</a>
+          <!-- ------------------------------- -->
+          <a class="nav-link"  data-toggle="pill" href="#" role="tab" aria-selected="false">Other Information</a>
+          <!-- ------------------------------- -->
+          <a  v-if="notesEnabled" class="nav-link ml-2" id="notes-tab" data-toggle="pill" href="#notes" role="tab" aria-selected="false">Notes</a>
+          <a v-if="identifierEnabled" class="nav-link ml-2" id="identifiers-tab" data-toggle="pill" href="#identifiers" role="tab" aria-selected="false">Identifiers</a>
 
-      <a class="nav-link"  data-toggle="pill" href="#" role="tab" aria-selected="false">File Management</a>
-      <div class="ml-2 nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-          <a class="nav-link" id="files-tab" data-toggle="pill" href="#files" role="tab" aria-selected="false">Files</a>
-          <a class="nav-link" id="permissions-tab" data-toggle="pill" href="#permissions" role="tab" aria-selected="false">Permissions</a>
-          <a class="nav-link" id="tech-tab" data-toggle="pill" href="#tech" role="tab" aria-selected="false">Tech</a>
-      </div>
-      <a class="nav-link" id="sink-tab" data-toggle="pill" href="#sink" role="tab" aria-selected="false">Kitchen Sink</a>
+          <!-- ------------------------------- -->
+          <a class="nav-link"  data-toggle="pill" href="#" role="tab" aria-selected="false">File Management</a>
+          <!-- ------------------------------- -->
+          <a class="nav-link ml-2" id="files-tab" data-toggle="pill" href="#files" role="tab" aria-selected="false">Files</a>
+          <a class="nav-link ml-2" id="permissions-tab" data-toggle="pill" href="#permissions" role="tab" aria-selected="false">Permissions</a>
+          <a class="nav-link ml-2" id="tech-tab" data-toggle="pill" href="#tech" role="tab" aria-selected="false">Tech</a>
+          <!-- ------------------------------- -->
+          <a class="nav-link" id="sink-tab" data-toggle="pill" href="#sink" role="tab" aria-selected="false">Kitchen Sink</a>
               <button type="button" name="submitbutton" @click="submitForm">Submit</button>
       
     </div>
@@ -629,9 +631,11 @@
    </div>
 
 
- </div>
- </div>
 
-
+ </div>
+        <a class="btn btn-secondary btnPrevious" >Previous</a>
+        <a class="btn btn-secondary btnNext" >Next</a>
+ </div>
+    
     </form>
 </div>

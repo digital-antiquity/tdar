@@ -4,6 +4,22 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
     function dereference(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
+
+    function countUsed(arr) {
+        var used = 0;
+        arr.forEach(function(itm) {
+            if (itm != undefined && itm.length > 0) {
+                var i = itm[0];
+                if (itm['note'] != undefined && itm['note'] != '') {
+                    used++;
+                } 
+                else if (itm['note'] == undefined) {
+                    used++;
+                }
+            }
+        });
+        return used;
+    }
     
     var __init = {
         el : "#sel",
@@ -78,12 +94,16 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                          } 
                          if (this.resource.resourceNotes.length == 0) {
                              this.resource.resourceNotes.push(this.getBlankNote());
+                         } else {
+                             this.showNotesSection = true;
                          }
                          if (this.resource.coverageDates == undefined) {
                              this.resource.coverageDates = [];
-                         } 
+                         }  
                          if (this.resource.coverageDates.length == 0) {
                              this.resource.coverageDates.push(this.getBlankDate());
+                         } else {
+                             showWhereSection = true;
                          }
                          var uploadConfig = document.getElementById('fileUploadSettings').innerText;
                          if (uploadConfig != undefined && uploadConfig.trim() != '') {
@@ -224,6 +244,19 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     }
                 },
                 computed: {
+                    
+                    quality: function() {
+                        var ret = 0;
+                        var r = this.resource;
+                        if (r.title != undefined) { ret += 5; }
+                        if (r.description != undefined) { ret += 5; }
+                        if (r.date > 0) { ret += 5};
+                        
+                        countUsed([r.materialTypes,r.investigationTypes, r.siteTypeKeywords, r.siteNameKeywords, r.resourceNotes, r.geographicKeywords]);
+                        
+                        return ret;
+                        
+                    },
                     inheritanceDisabledClass: function() {
                         if (this.inheritanceDisabled == true) {
                             return "disabled";
@@ -243,7 +276,8 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                         return false;
                     },
                     notesEnabled: function() {
-                        if (this.showNotesSection == true || this.resource.resourceNotes.length > 0 && this.resource.resourceNotes[0].note != '') {
+                        if (this.showNotesSection == true || this.resource.resourceNotes.length > 0 && this.resource.resourceNotes[0].note != undefined && this.resource.resourceNotes[0].note != '') {
+                            console.log(this.resource.resourceNotes,this.showNotesSection);
                             return true;
                         }
                         return false;

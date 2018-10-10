@@ -67,7 +67,16 @@ ${fileUploadSettings!''}
 <script>
 $(document).ready(function(){
 
-TDAR.vuejs.resourceEdit.init();
+    TDAR.vuejs.resourceEdit.init();
+     $('.btnNext').click(function(){
+  $('.nav-pills > .active').next('a').trigger('click');
+});
+
+  $('.btnPrevious').click(function(){
+  $('.nav-pills > .active').prev('a').trigger('click');
+});
+
+
 });
 </script>
 </form>
