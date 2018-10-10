@@ -11,17 +11,17 @@
       </div>
       <a class="nav-link"  data-toggle="pill" href="#questionaire" role="tab" aria-selected="false">Resource Information</a>
       <div class="ml-2 nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-          <a class="nav-link" id="where-tab" data-toggle="pill" href="#where" role="tab" aria-selected="false">Where</a>
-          <a class="nav-link" id="when-tab" data-toggle="pill" href="#when" role="tab" aria-selected="false">When</a>
+          <a v-if="whereEnabled"  class="nav-link" id="where-tab" data-toggle="pill" href="#where" role="tab" aria-selected="false">Where</a>
+          <a v-if="whenEnabled"  class="nav-link" id="when-tab" data-toggle="pill" href="#when" role="tab" aria-selected="false">When</a>
           <a v-if="materialTypeEnabled" class="nav-link" id="material-tab" data-toggle="pill" href="#material" role="tab" aria-selected="false">Material</a>
-          <a class="nav-link" id="culture-tab" data-toggle="pill" href="#culture" role="tab" aria-selected="false">Culture</a>
-          <a class="nav-link" id="investigationtype-tab" data-toggle="pill" href="#investigationtype" role="tab" aria-selected="false">Investigation Type</a>
-          <a class="nav-link" id="site-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-selected="false">Site Info</a>
+          <a v-if="cultureEnabled"  class="nav-link" id="culture-tab" data-toggle="pill" href="#culture" role="tab" aria-selected="false">Culture</a>
+          <a v-if="investigationTypeEnabled"  class="nav-link" id="investigationtype-tab" data-toggle="pill" href="#investigationtype" role="tab" aria-selected="false">Investigation Type</a>
+          <a v-if="siteEnabled"  class="nav-link" id="site-tab" data-toggle="pill" href="#siteinfo" role="tab" aria-selected="false">Site Info</a>
       </div>
       <a class="nav-link"  data-toggle="pill" href="#" role="tab" aria-selected="false">Other Information</a>
       <div class="ml-2 nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-          <a class="nav-link" id="notes-tab" data-toggle="pill" href="#notes" role="tab" aria-selected="false">Notes</a>
-          <a class="nav-link" id="identifiers-tab" data-toggle="pill" href="#identifiers" role="tab" aria-selected="false">Identifiers</a>
+          <a  v-if="notesEnabled" class="nav-link" id="notes-tab" data-toggle="pill" href="#notes" role="tab" aria-selected="false">Notes</a>
+          <a v-if="identifierEnabled" class="nav-link" id="identifiers-tab" data-toggle="pill" href="#identifiers" role="tab" aria-selected="false">Identifiers</a>
       </div>
 
       <a class="nav-link"  data-toggle="pill" href="#" role="tab" aria-selected="false">File Management</a>
@@ -181,6 +181,13 @@
                 <div class="row">
                     <div class="col-12">
                     <div><input type="checkbox" v-model="showMaterialTypeSection" /> I have material types!</div>
+                    <div><input type="checkbox" v-model="showNotesSection" /> I have notes</div>
+                    <div><input type="checkbox" v-model="showCultureSection" /> I have cultures</div>
+                    <div><input type="checkbox" v-model="showInvestigationTypeSection" /> I have investigation types!</div>
+                    <div><input type="checkbox" v-model="showIdentifierSection" /> I have identifiers!</div>
+                    <div><input type="checkbox" v-model="showWhereSection" /> I have spatial information!</div>
+                    <div><input type="checkbox" v-model="showWhenSection" /> I have temporal information!</div>
+                    <div><input type="checkbox" v-model="showSiteSection" /> I have site information!</div>
                     </div>
                 </div>
       </div>
@@ -193,7 +200,7 @@
                 </div>
       </div>
       <div class="tab-pane fade show" id="where" role="tabpanel"
-            aria-labelledby="profile-tab">
+            aria-labelledby="where-tab">
 
             <h3>Where</h3>
             <div>
@@ -214,11 +221,6 @@
 
             </div>
 
-
-
-
-
-
             <div id='vueeditablemap' style="height: 300px"
                 class=" col-12" data-search="true">
                 <div id="divManualCoordinateEntry2"
@@ -227,10 +229,8 @@
                     <input type="checkbox"
                         id="viewCoordinatesCheckbox2"
                         name="_tdar.viewCoordinatesCheckbox"
-                        onclick="TDAR.common.coordinatesCheckboxClicked(this);"
-                        label='Enter / View Coordinates'
-                        labelposition='right' />
-                    <div id='explicitCoordinatesDiv'
+                        v-model="showCoords"  />
+                    <div id='explicitCoordinatesDiv' v-if="showCoords"
                         style='text-align: center;'>
 
                         <table cellpadding="0" cellspacing="0"

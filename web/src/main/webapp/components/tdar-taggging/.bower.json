@@ -20,14 +20,14 @@
     "test",
     "tests"
   ],
-  "version": "0.2.1",
-  "_release": "0.2.1",
+  "version": "0.2.3",
+  "_release": "0.2.3",
   "_resolution": {
     "type": "version",
-    "tag": "0.2.1",
-    "commit": "08713705fdeea52ba39f7ebb36de5055b5943a2c"
+    "tag": "0.2.3",
+    "commit": "e19564c9905a1f77af90bdb02171bf6e9a0f4d19"
   },
   "_source": "https://bitbucket.org/tdar/tagging.git",
-  "_target": "0.2.1",
+  "_target": "0.2.3",
   "_originalSource": "https://bitbucket.org/tdar/tagging.git"
 }

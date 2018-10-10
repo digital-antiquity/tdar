@@ -189,13 +189,11 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 var sepPos = $input.getValue().indexOf(this.separator);
                 while (sepPos > -1) {
                     var val = $input.getValue();
-// console.log(val, sepPos);
                     var part = val.substring(0, sepPos);
                     var quotes = part.split("\"");
                     if ((quotes.length -1 ) % 2 == 0) {
                         this._addEntry(part);
                         $input.setValue( val.substring(sepPos + 1).trim());
-// console.log("setting to:", $input.getValue());
                         sepPos = $input.getValue().indexOf(this.separator );
                     } else {
                         sepPos = $input.getValue().indexOf(this.separator, sepPos + 1 );
@@ -206,7 +204,6 @@ TDAR.vuejs.tagging= (function(console, ctx, Vue, axios, TDAR) {
                 }
             },
             deleteLast: function(input) {
-//                console.log(input.selectionStart ,input.selectionEnd);
                 if (input.selectionStart == 0 && input.selectionEnd == 0) {
                     this.remove(this.values.length -1);
                 }

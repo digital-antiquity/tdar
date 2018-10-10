@@ -23,6 +23,7 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                 submitterName: undefined,
                 projectId: undefined,
                 inheritanceDisabled: true,
+                showCoords:false,
                 investigationTypes: [],
                 materialTypes: [],
                 project: {},
@@ -37,6 +38,13 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     requiredOptionalPairs:[]
                 },
                 showMaterialTypeSection: false,
+                showInvestigationTypeSection: false,
+                showCultureSection: false,
+                showSiteSection: false,
+                showWhereSection: false,
+                showWhenSection: false,
+                showIdentifierSection: false,
+                showNotesSection: false,
                 primaryRoles: [],
                 creditRoles: ["ANALYST","COLLABORATOR","CONTACT","CONTRIBUTOR","FIELD_DIRECTOR","LAB_DIRECTOR","LANDOWNER","PERMITTER","PREPARER","PRINCIPAL_INVESTIGATOR","PROJECT_DIRECTOR","PUBLISHER","REPOSITORY","SPONSOR","SUBMITTED_TO","TRANSLATOR"],
                 coverageDateTypes: [
@@ -121,6 +129,7 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                 mounted: function() {
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
+                            console.log(e);
                             Vue.set(self, "west", e.minx);
                             Vue.set(self, "east", e.maxx);
                             Vue.set(self, "north", e.maxy);
@@ -223,6 +232,54 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     },
                     materialTypeEnabled: function() {
                         if (this.showMaterialTypeSection == true || this.resource.controlledMaterialKeywords.length + this.resource.uncontrolledMaterialKeywords.length > 0) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    investigationTypeEnabled: function() {
+                        if (this.showInvestigationTypeSection == true || this.resource.investigationTypes.length > 0) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    notesEnabled: function() {
+                        if (this.showNotesSection == true || this.resource.resourceNotes.length > 0 && this.resource.resourceNotes[0].note != '') {
+                            return true;
+                        }
+                        return false;
+                    },
+                    identifiersEnabled: function() {
+                        if (this.showIdentifierSection == true ) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    siteEnabled: function() {
+                        if (this.showSiteSection == true || this.resource.siteNameKeywords.length + this.resource.siteTypeKeywords.length > 0) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    whereEnabled: function() {
+                        if (this.showWhereSection == true || this.resource.geographicKeywords.length > 0 || this.resource.latitudeLongitudeBoxes.length > 0 && this.resource.latitudeLongitudeBoxes[0].west != undefined) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    whenEnabled: function() {
+                        if (this.showWhenSection == true || this.resource.temporalKeywords.length > 0 || this.resource.coverageDates.length > 0  && this.resource.coverageDates[0].startDate != undefined) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    identifierEnabled: function() {
+                        if (this.showNotesSection == true || this.resource.resourceNotes.length > 0) {
+                            return true;
+                        }
+                        return false;
+                    },
+                    cultureEnabled: function() {
+                        if (this.showCultureSection == true || this.resource.cultureKeywords.length > 0) {
                             return true;
                         }
                         return false;
