@@ -82,7 +82,7 @@ var _initBarChart = function() {
                 }
             }
         }
-
+console.log("initBarChart", $parent, $table, cdata);
         _initJson($parent, cdata);
         // console.log(JSON.stringify(cdata));
         var chart = c3.generate(cdata);
@@ -420,7 +420,7 @@ module.exports = {
     main : function() {
         _initPieChart();
         _initLineGraph();
-        _initBarChart;
+        _initBarChart();
         _initAreaGraph();
         _initGaugeChart();
     }

@@ -26,9 +26,16 @@ var allNodes = [];
 
 // FIXME: instead of referencing DOM elements by ID (e.g. "#d3", "#ontId"), consider passing them in as arguments to the init() function.
 function _init() {
-    diagonal = d3.svg.diagonal().projection(function(d) {
-        return [ d.y, d.x ];
+    diagonal = d3.linkHorizontal()
+    .x(function(d) {
+      return d.x;
+    })
+    .y(function(d) {
+      return d.y;
     });
+//    diagonal = d3.svg.diagonal().projection(function(d) {
+//        return [ d.y, d.x ];
+//    });
 
     $("#searchclear").click(function() {
         $("#search").val("");
@@ -312,7 +319,7 @@ function _zoom() {
 }
 
 // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
-var zoomListener = d3.behavior.zoom().scaleExtent([ 1.3, 1.3 ]).on("zoom", _zoom);
+var zoomListener = d3.zoom().scaleExtent([ 1.3, 1.3 ]).on("zoom", _zoom);
 
 module.exports = {
     "init" : _init,
