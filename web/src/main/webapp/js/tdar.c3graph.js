@@ -420,7 +420,7 @@ module.exports = {
     main : function() {
         _initPieChart();
         _initLineGraph();
-        _initBarChart;
+        _initBarChart();
         _initAreaGraph();
         _initGaugeChart();
     }
