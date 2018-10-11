@@ -14,7 +14,6 @@
     "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v1.0.0",
     "leaflet-control-geocoder": "~1.5.3",
     "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.4.9",
-    "selectize": "~0.12.4",
     "svgxuse": "~1.1.17",
     "vue": "^2.4.2",
     "axios": "0.17.0",
