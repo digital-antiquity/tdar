@@ -863,3 +863,9 @@ p.san-serif {
 .file-row + .file-row {
     border-top:1px solid #EEE;
 }
+
+.fileinput-button {
+    overflow: hidden;
+    position: relative;
+    display: inline-block;
+}

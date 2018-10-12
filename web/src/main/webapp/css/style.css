@@ -4430,3 +4430,9 @@ p.san-serif {
   border-top: 1px solid #EEE; }
 
 /*# sourceMappingURL=style.css.map */
+
+.fileinput-button {
+    overflow: hidden;
+    position: relative;
+    display: inline-block;
+}
