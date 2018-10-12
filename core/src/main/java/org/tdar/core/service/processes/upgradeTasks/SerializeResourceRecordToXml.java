@@ -54,4 +54,8 @@ public class SerializeResourceRecordToXml extends AbstractScheduledBatchProcess<
         return true;
     }
 
+    @Override
+    public boolean shouldRunAtStartup() {
+        return true;
+    }
 }
