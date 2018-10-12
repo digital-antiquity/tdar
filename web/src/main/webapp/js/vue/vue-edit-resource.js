@@ -1,6 +1,98 @@
 TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
 
+    
+    Vue.component('gauge', {
+        template: '<div id="chart"/>',
+        props: [ 'value' ],
+        mounted: function() {
+            var chart = c3.generate({
+                data: {
+                    columns: [
+                        ['data', this.value]
+                    ],
+                    type: 'gauge',
+                    onclick: function (d, i) { console.log("onclick", d, i); },
+                    onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+                    onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+                },
+                gauge: {
+//                    label: {
+//                        format: function(value, ratio) {
+//                            return value;
+//                        },
+//                        show: false // to turn off the min/max labels.
+//                    },
+//                min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+                max: 30, // 100 is default
+//                units: ' %',
+//                width: 39 // for adjusting arc thickness
+                },
+                color: {
+                    pattern: ['#FF0000', '#F97600', '#F6C600', '#60B044'], // the three color levels for the percentage values.
+                    threshold: {
+//                        unit: 'value', // percentage is default
+//                        max: 200, // 100 is default
+                        values: [30, 60, 90, 100]
+                    }
+                },
+                size: {
+                    height: 180
+                }
+            });
+            $(this.$el).data('chart', chart);
+        },
+        methods: {
+            setValue: function( n ) {
+                console.log('val', n);
+                var chart = $(this.$el).data('chart');
+                console.log(chart);
+              if (chart != undefined) {
+                    chart.load({columns: [['data',n]]});
+                }
+            },
+        },
+        beforeDestroy: function() {  }
+      });
+    
+
+    
+    
+    Vue.component('editablemap', {
+        template: '#map-template',
+        props: [ 'north', 'south', 'east', 'west', 'showCoords' ],
+        mounted: function() {
+            var self = this;
+            console.log(self.$el);
+//            console.log($(".vue-editable-map",$(self.$el)));
+            Vue.nextTick(function(){
+                
+            TDAR.leaflet.initEditableMap($(self.$el), function(e){
+                console.log(e);
+//                Vue.set(self, "west", e.minx);
+//                Vue.set(self, "east", e.maxx);
+//                Vue.set(self, "north", e.maxy);
+//                Vue.set(self, "south", e.miny);
+                $(".locateCoordsButton").click();
+                    self.$emit("map-value-set", e);
+                });
+            });
+
+        },
+        methods: {
+            setValue: function( n ) {
+                console.log('val', n);
+                var chart = $(this.$el).data('chart');
+                console.log(chart);
+              if (chart != undefined) {
+                    chart.load({columns: [['data',n]]});
+                }
+            },
+        },
+        beforeDestroy: function() {  }
+      });
+    
+    
     function dereference(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
@@ -142,21 +234,10 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                            Vue.set(self,"accountName",act.name);
                        } 
                     });
-                    // Vue.set("resource","submitter",{});
-                    // this.resource.submitter = {id:8344, properName:'adam brin'};
                     var self = this.resource.activeLatitudeLongitudeBoxes[0];
                 },
                 mounted: function() {
-                    Vue.nextTick(function() {
-                        TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
-                            console.log(e);
-                            Vue.set(self, "west", e.minx);
-                            Vue.set(self, "east", e.maxx);
-                            Vue.set(self, "north", e.maxy);
-                            Vue.set(self, "south", e.miny);
-                            });
-                    });
-
+                    
                 },
                 watch: {
                     "resource.inheritingInvestigationInformation": function(o, b) {
@@ -254,6 +335,9 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                         
                         countUsed([r.materialTypes,r.investigationTypes, r.siteTypeKeywords, r.siteNameKeywords, r.resourceNotes, r.geographicKeywords]);
                         
+                        if (this.$refs['gauge'] != undefined) {
+                            this.$refs['gauge'].setValue(ret);
+                        }
                         return ret;
                         
                     },
