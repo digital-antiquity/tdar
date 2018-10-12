@@ -92,7 +92,6 @@
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
 
-
         <js>/components/vue/dist/vue.js</js>
         <js>/components/vue-router/dist/vue-router.js</js> 
         <js>/js/vue/view-collection-widget.js</js>
