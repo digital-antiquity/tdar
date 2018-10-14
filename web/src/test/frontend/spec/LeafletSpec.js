@@ -68,10 +68,8 @@ describe("LeafletSpec.js", function() {
                 expect(TDAR.leaflet.initialized()).toBeGreaterThan(-1); //fixme: implement this test
                 expect($(".leaflet-container")).toHaveLength(1);
                 // 1 rectangle and 4 place-holders
-                console.log("!---------");
-                console.log($(".leaflet-container").html());
-                expect($(".leaflet-interactive")).toHaveLength(3);
-                expect($("div.marker-cluster")).toHaveLength(1);
+                expect($(".leaflet-interactive")).toHaveLength(4);
+                expect($("div.marker-cluster")).toHaveLength(2);
                 expect($("img.leaflet-marker-icon")).toHaveLength(1);
                 // $("img.leaflet-marker-icon").click();
                 // var popup = $(".leaflet-popup-content");
