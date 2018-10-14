@@ -82,8 +82,10 @@
         <@edit.hiddenStartTime />
 
         <div id="spanStatus" class="form-group row">
-            <#if editor && !administrator>
+            <#if editor>
+        <div class="col-12">
                 <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to draft</p>
+            </div>
             </#if>
             <label class="col-2 col-form-label">Status</label>
 

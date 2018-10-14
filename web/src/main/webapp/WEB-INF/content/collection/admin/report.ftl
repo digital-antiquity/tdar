@@ -10,6 +10,7 @@ facetWrapper<#escape _untrusted as _untrusted?html>
 <body>
 
 <h1>Metadata Report: ${resourceCollection.name!"untitled collection"}</h1>
+<#if facetWrapper?has_content && facetWrapper.facetResults?has_content >
 <div class="row">
 <div class="col-6">
 <h3>Status Breakdown</h3>
@@ -62,6 +63,7 @@ facetWrapper<#escape _untrusted as _untrusted?html>
 </#list>
 </tbody>
 </table>
+</#if>
 <script>
 $(function() {
 	$("#ocur").dataTable({"bPaginate": false});
