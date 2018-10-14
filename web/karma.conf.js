@@ -63,8 +63,8 @@ module.exports = function(config) {
                 {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
                 {pattern: "src/main/webapp/components/jquery-validation/dist/jquery.validate.js", watched: false},
                 {pattern: "src/main/webapp/components/jquery-validation/dist/additional-methods.js", watched: false},
-                {pattern: "src/main/webapp/components/bootstrap-2.32/js/bootstrap.js", watched: false},
-                {pattern: "src/main/webapp/components/bootstrap-2.32/css/bootstrap.css", watched: false}
+                {pattern: "src/main/webapp/components/bootstrap/dist/js/bootstrap.js", watched: false},
+                {pattern: "src/main/webapp/components/bootstrap/dist/js/css/bootstrap.css", watched: false}
 
 
             ],
