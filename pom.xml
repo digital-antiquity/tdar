@@ -103,7 +103,7 @@
         <commons-cli.version>1.3</commons-cli.version>
         <hamcrest.version>1.3</hamcrest.version>
         <jetty.version>9.4.9.v20180320</jetty.version>
-        <struts2.version>2.5.17</struts2.version>
+        <struts2.version>2.5.18</struts2.version>
         <jersey.version>2.27</jersey.version>
         <icu4j.version>58.2</icu4j.version>
         <htmlunit.version>2.33</htmlunit.version>
