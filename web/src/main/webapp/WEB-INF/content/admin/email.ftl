@@ -37,18 +37,16 @@ Manually poll the BouncedEmailQueue for bounced message notifications and mark m
 </@s.form>
 <hr />
 
-<@s.form name="emailReviewForm" action="changeEmailStatus" cssClass="form-inline">
-
+<@s.form name="emailReviewForm" action="changeEmailStatus" cssClass="form-row">
+<div class="col-12">
 <h3>Emails to be Reviewed</h3>
-
-<div class="row">
-    <div class="col-2">
+</div>
+<div class="col-12 mb-4">
         <@s.select name="emailAction" list=emailActions listValue=name label="Change Status To"/>
         <@s.submit name="submit" />
-    </div>
 </div>
 
-<table class="table table-sm table-striped"">
+<table class="table table-sm table-striped col-12">
   <thead class="thead-dark">
 
 <tr>

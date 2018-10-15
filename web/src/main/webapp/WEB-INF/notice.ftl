@@ -1,7 +1,9 @@
+<div class="container">
+<div class="row">
 <div class='info'>
+    <div class="alert alert-<#if production>secondary<#else>warning</#if> pt-4 mt-4">
 <#if !production>
 
-    <div class="alert alert-warning pt-4 mt-4">
         <p>
             <strong>Note:</strong>
             You are using tDAR's <strong>staging development server</strong>. This server is only
@@ -13,7 +15,6 @@
             For more information you can contact us at <a
                 href="${commentUrlEscaped}?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>.
         </p>
-    </div>
 
 
 <#else>
@@ -26,4 +27,7 @@
     <a
             href="${commentUrlEscaped}?subject=tDAR%20comments">&#99;&#111;&#109;&#109;&#101;&#110;&#116;&#115;&#64;&#116;&#100;&#97;&#114;&#46;&#111;&#114;&#103;</a>
 </#if>
+    </div>
+</div>
+</div>
 </div>
