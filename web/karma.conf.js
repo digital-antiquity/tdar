@@ -56,6 +56,7 @@ module.exports = function(config) {
                 'node_modules/es6-promise/dist/es6-promise.auto.js',
                 'node_modules/vue/dist/vue.js',
                 'node_modules/axios/dist/axios.js',
+                'node_modules/vue-observe-visibility/dist/vue-observe-visibility.min.js',
                 'node_modules/moxios/dist/moxios.js',
                 {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
                 {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
