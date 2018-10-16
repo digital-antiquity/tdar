@@ -31,7 +31,7 @@
     "vue-router": "^3.0.1",
     "tdar-taggging": "https://bitbucket.org/tdar/tagging.git#0.2.3",
     "tdar-values": "https://bitbucket.org/tdar/vue-values.git#0.3.0",
-    "tdar-autocomplete": "https://bitbucket.org/tdar/autocomplete.git#0.2.7"
+    "tdar-autocomplete": "https://bitbucket.org/tdar/autocomplete.git#0.2.8"
   },
   "dependencies-cdn": {
     "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",

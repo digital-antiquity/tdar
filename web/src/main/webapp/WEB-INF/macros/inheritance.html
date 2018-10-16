@@ -1,4 +1,5 @@
-
+<script src="https://cdn.jsdelivr.net/npm/intersection-observer@0.5.0/intersection-observer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-observe-visibility@0.4.3/dist/vue-observe-visibility.min.js"></script>
 <div id="sel">
     <form method="POST" action="/document/save" ref='form'>
 
@@ -201,7 +202,10 @@
                     </div>
                 </div>
       </div>
-      <div class="tab-pane fade show" id="where" role="tabpanel"
+      <div class="tab-pane fade show" id="where" role="tabpanel" v-observe-visibility="{
+  callback: visibilityChanged,
+  once: true,
+}" 
             aria-labelledby="where-tab">
 
             <h3>Where</h3>
@@ -223,7 +227,7 @@
 
             </div>
 
-            <div id='vueeditablemap' style="height: 300px"
+            <div id='vueeditablemap' style="height: 300px;"
                 class=" col-12" data-search="true">
                 <div id="divManualCoordinateEntry2"
                     data-tooltipcontent="#divManualCoordinateEntryTip"
@@ -232,7 +236,7 @@
                         id="viewCoordinatesCheckbox2"
                         name="_tdar.viewCoordinatesCheckbox"
                         v-model="showCoords"  />
-                    <div id='explicitCoordinatesDiv' v-if="showCoords"
+                    <div id='explicitCoordinatesDiv' v-show="showCoords"
                         style='text-align: center;'>
 
                         <table cellpadding="0" cellspacing="0"
@@ -247,7 +251,7 @@
                                         title="Please enter a valid Maximum Latitude"
                                         v-model="resource.activeLatitudeLongitudeBoxes[0].north">
                                         <input type="text"
-                                        placeholder="Latitude (max)"
+                                        placeholder="Latitude (max)" 
                                         class="ne-lat-display  d_maxy form-control">
                                     </td>
                                     <td></td>
@@ -305,7 +309,7 @@
 
                     </div>
                 </div>
-                <div class="mapdiv"></div>
+                <div class="mapdiv" ></div>
             </div>
         </div>
       <div class="tab-pane fade show" id="when" role="tabpanel"

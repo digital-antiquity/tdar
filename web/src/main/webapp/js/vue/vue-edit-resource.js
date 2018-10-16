@@ -4,6 +4,8 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
     function dereference(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
+    Vue.use(VueObserveVisibility);
+    Vue.directive('observe-visibility', VueObserveVisibility.ObserveVisibility);
 
     function countUsed(arr) {
         var used = 0;
@@ -148,13 +150,6 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                 },
                 mounted: function() {
                     Vue.nextTick(function() {
-                        TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
-                            console.log(e);
-                            Vue.set(self, "west", e.minx);
-                            Vue.set(self, "east", e.maxx);
-                            Vue.set(self, "north", e.maxy);
-                            Vue.set(self, "south", e.miny);
-                            });
                     });
 
                 },
@@ -320,6 +315,20 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     }
                 },
                 methods: {
+                    visibilityChanged (isVisible, entry) {
+                        this.isVisible = isVisible;
+                        console.log(entry, isVisible);
+                        if (isVisible) {
+                            TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
+                            console.log(e);
+                            Vue.set(self, "west", e.minx);
+                            Vue.set(self, "east", e.maxx);
+                            Vue.set(self, "north", e.maxy);
+                            Vue.set(self, "south", e.miny);
+                            });
+                        }
+                        
+                    },
                     removeNote: function(idx) {
                         if (this.resource.resourceNotes.length > 1) {
                             this.resource.resourceNotes.splice(idx,1);
