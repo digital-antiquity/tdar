@@ -17,6 +17,7 @@
     // prettify dataTables
     app.filter('dtDisplayName', function() {
         return function(dataTable) {
+            console.log(dataTable);
             return dataTable.datasetTitle + ' \u25B8 ' + dataTable.displayName;
         }
     });
