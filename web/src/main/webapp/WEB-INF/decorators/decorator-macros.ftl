@@ -5,8 +5,11 @@
             <div class = "container">
                 <a href="/" class="navbar-brand">
                     <img src="${staticHost}/images/r4/bg-logo-transparent.png" title="tDAR - the Digital Archaeological Record" alt="tDAR - the Digital Archaeological Record"  usemap="#tdarmap">
+<map name="tdarmap">
+  <area shape="rect" coords="0,0,187,65" href="/" alt="tDAR" tabindex="-1">  
+  <area shape="rect" coords="0,65,187,77" href="http://www.digitalantiquity.org/" alt="digital antiquity" tabindex="-1">
+</map>
                 </a>
-
                 <div class="d-flex flex-column d-md-none">
                     <div class = "ml-auto">
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#tdarNavMenu">

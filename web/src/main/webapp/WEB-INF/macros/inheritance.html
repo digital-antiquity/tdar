@@ -1,4 +1,5 @@
-
+<script src="https://cdn.jsdelivr.net/npm/intersection-observer@0.5.0/intersection-observer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-observe-visibility@0.4.3/dist/vue-observe-visibility.min.js"></script>
 <div id="sel">
     <form method="POST" action="/document/save" ref='form'>
 
@@ -212,7 +213,10 @@
                     </div>
                 </div>
       </div>
-      <div class="tab-pane fade show" id="where" role="tabpanel"
+      <div class="tab-pane fade show" id="where" role="tabpanel" v-observe-visibility="{
+  callback: visibilityChanged,
+  once: true,
+}" 
             aria-labelledby="where-tab">
 
             <h3>Where</h3>
@@ -233,8 +237,90 @@
 
 
             </div>
+        <div id='vueeditablemap' style="height: 300px;"
+                class=" col-12" data-search="true">
+                <div id="divManualCoordinateEntry2"
+                    data-tooltipcontent="#divManualCoordinateEntryTip"
+                    class="latlong-fields">
+                    <input type="checkbox"
+                        id="viewCoordinatesCheckbox2"
+                        name="_tdar.viewCoordinatesCheckbox"
+                        v-model="showCoords"  />
+                    <div id='explicitCoordinatesDiv' v-show="showCoords"
+                        style='text-align: center;'>
 
-        <editablemap north="1" south="50" east="-10" west="10" />
+                        <table cellpadding="0" cellspacing="0"
+                            style="margin-left: auto; margin-right: auto; text-align: left;">
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="text"
+                                        name="latitudeLongitudeBoxes[0].north"
+                                        size="14" value=""
+                                        class="maxy float latLong ne-lat hidden"
+                                        title="Please enter a valid Maximum Latitude"
+                                        v-model="resource.activeLatitudeLongitudeBoxes[0].north">
+                                        <input type="text"
+                                        placeholder="Latitude (max)" 
+                                        class="ne-lat-display  d_maxy form-control">
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td
+                                        style="width: 33%; text-align: center">
+                                        <input type="text"
+                                        name="latitudeLongitudeBoxes[0].west"
+                                        size="14" value=""
+                                        class="minx float latLong sw-lng hidden"
+                                        title="Please enter a valid Minimum Longitude"
+                                        v-model="resource.activeLatitudeLongitudeBoxes[0].west">
+                                        <input type="text"
+                                        placeholder="Longitude (min)"
+                                        class="sw-lng-display  d_minx form-control">
+                                    </td>
+                                    <td
+                                        style="width: 33%; text-align: center">
+                                        <input type="button"
+                                        id="locate" ref="updateMap"
+                                        value="Locate"
+                                        class="btn locateCoordsButton">
+                                    </td>
+                                    <td
+                                        style="width: 33%; text-align: center">
+                                        <input type="text"
+                                        name="latitudeLongitudeBoxes[0].east"
+                                        v-model="resource.activeLatitudeLongitudeBoxes[0].east"
+                                        size="14"
+                                        class="maxx float latLong ne-lng hidden"
+                                        title="Please enter a valid Maximum Longitude">
+                                        <input type="text"
+                                        placeholder="Longitude (max)"
+                                        class="d_maxx ne-lng-display  form-control">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><input type="text"
+                                        name="latitudeLongitudeBoxes[0].south"
+                                        v-model="resource.activeLatitudeLongitudeBoxes[0].south"
+                                        size="14"
+                                        class="miny float latLong sw-lat hidden"
+                                        title="Please enter a valid Minimum Latitude">
+                                        <input type="text"
+                                        placeholder="Latitude (min)"
+                                        class="d_miny sw-lat-display  form-control">
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </div>
+                <div class="mapdiv" ></div>
+            </div>
         </div>
       <div class="tab-pane fade show" id="when" role="tabpanel"
             aria-labelledby="when-tab">

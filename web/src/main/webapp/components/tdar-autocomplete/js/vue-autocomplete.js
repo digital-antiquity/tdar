@@ -44,6 +44,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           span:{ type:String},
           idname: {type:String},
+          valuename: {type:String},
           name: {type:String},
           disabled: {type:Boolean},
           deletekey: {type: Function},
@@ -129,6 +130,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
                 }
             },
             reset: function() {
+                console.log("reset...");
                 this.clear();
                 this.isOpen = false;
                 this.results = [];
@@ -157,8 +159,12 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           getDisplay: function(obj) {
           if (obj == undefined) { return ''; }
-            if (this.valueprop != undefined) {
-              return obj['valueprop'];
+          
+          if (typeof obj !== "object") {
+              return obj;
+          }
+            if (this.valuename != undefined) {
+              return obj[this.valuename];
             }
             var ret =  "";
               if (obj.name != undefined) {
@@ -223,19 +229,23 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           filterResults: function() {
             // first uncapitalize all the things
-            this.results = new Array();
+            var toReturn = new Array();
             var self = this;
-            this.items.foreach(function(item){
-              if (item.toLowerCase().indexOf(self.search.toLowerCase()) > -1) {
-                  self.results.add(item);
+
+            this.items.forEach(function(item){
+              if (typeof item === 'string' && item.toLowerCase().indexOf(self.search.toLowerCase()) > -1 ||
+                  self.getDisplay(item).toString().toLowerCase().indexOf(self.search.toLowerCase()) > -1) {
+                      toReturn.push(item);
               }
             });
+             Vue.set(this,"results",toReturn);
           },
           focus: function() {
               this.$refs.searchfield.focus();
           },
           _setResult: function(result) {
             this.searchObj = result;
+            console.log(result);
             this.$emit("autocompletevalueset", result);
             if (result != undefined && result.id != undefined) {
                 this.$emit("setvalueid", result.id);
@@ -250,9 +260,10 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               this._setResult();
           },
           setResult: function(result) {
+              console.log("setResult", result);
             this.search = this.getDisplay(result);
             this._setResult(result);
-            console.log(this.search, result);
+//            console.log(this.search, result);
             this.isOpen = false;
           },
           onArrowDown: function(evt) {
@@ -267,8 +278,12 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           onEnter: function(e) {
             // make sure you can clear the value with setting
-            if (this.arrowCounter > -1 || (this.search == '' || this.search == undefined)) {
+//              console.log(this.search, this.search == '', this.search == undefined, this.arrowCounter);
+            if (this.arrowCounter > -1) {
               this.setResult( this.results[this.arrowCounter]);
+            }
+            if (this.search != undefined && this.search != '') {
+                this.setResult(this.search);
             }
             this.isOpen = false;
             this.arrowCounter = -1;
@@ -286,6 +301,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
         watch: {
           items: function(val, oldValue) {
             // actually compare them
+              console.log("resetting items");
             if (val.length !== oldValue.length) {
               this.results = val;
               this.isLoading = false;
@@ -294,6 +310,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
         },
         mounted: function() {
           Vue.set(this,"search", this.initial_value);
+          console.log("initial_value",this.search);
           Vue.set(this,"id", this.initial_id);
           document.addEventListener("click", this.handleClickOutside);
         },
@@ -301,9 +318,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           document.removeEventListener("click", this.handleClickOutside);
         }
     });
-    }
+}
 
-        if ($("#autocomplete").length == 1) {
+    if (document.getElementById("autocomplete") != undefined) {
             _init();
         }
 

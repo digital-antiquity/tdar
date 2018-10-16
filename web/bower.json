@@ -21,7 +21,6 @@
     "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v1.0.0",
     "leaflet-control-geocoder": "~1.5.3",
     "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.4.9",
-    "selectize": "~0.12.4",
     "svgxuse": "~1.1.17",
     "vue": "^2.4.2",
     "axios": "0.17.0",
@@ -32,7 +31,7 @@
     "vue-router": "^3.0.1",
     "tdar-taggging": "https://bitbucket.org/tdar/tagging.git#0.2.3",
     "tdar-values": "https://bitbucket.org/tdar/vue-values.git#0.3.0",
-    "tdar-autocomplete": "https://bitbucket.org/tdar/autocomplete.git#0.2.7"
+    "tdar-autocomplete": "https://bitbucket.org/tdar/autocomplete.git#0.2.8"
   },
   "dependencies-cdn": {
     "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",
