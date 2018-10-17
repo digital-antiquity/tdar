@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @JsonAutoDetect
+
 public class DataTableProxy implements Serializable {
 
     private static final long serialVersionUID = -5052540683421478297L;

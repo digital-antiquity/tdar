@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
@@ -24,6 +25,9 @@ import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 @Component
 public class DataTableDao extends HibernateBase<DataTable> {
 
+    @Autowired
+    private DataTableDao dataTableDao;
+    
     public DataTableDao() {
         super(DataTable.class);
     }
@@ -61,7 +65,12 @@ public class DataTableDao extends HibernateBase<DataTable> {
         List<DataTableProxy> proxies = new ArrayList<>();
         for (Object[] obj_ : (List<Object[]>) query.getResultList()) {
             DataTable dataTable = (DataTable) obj_[0];
+            Dataset ds = dataTableDao.findDatasetForTable(dataTable);
+            dataTable.setDatasetId(ds.getId());
+            dataTable.setDatasetName(ds.getName());
+
             Dataset dataset = (Dataset) obj_[1];
+            getLogger().debug("{} / {}", dataTable, dataset);
             proxies.add(new DataTableProxy(dataTable, dataset));
         }
         IntegrationDataTableSearchResult result = new IntegrationDataTableSearchResult();
