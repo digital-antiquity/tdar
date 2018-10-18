@@ -38,7 +38,6 @@
 
     <properties>
         <lucene.version>7.3.1</lucene.version>
-        <hibernate.version>5.3.6.Final</hibernate.version>
         <hibernate.version>5.2.17.Final</hibernate.version>
         <spring.framework.version>5.1.0.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>42.2.1</postgresql.jdbc.version>
@@ -83,7 +82,7 @@
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
         <geotools.version>19.1</geotools.version>
-        <tika.version>1.19</tika.version>
+        <tika.version>1.19.1</tika.version>
         <rome.version>1.10.0</rome.version>
         <jackson.version>2.9.7</jackson.version>
         <pdfbox.version>2.0.11</pdfbox.version>
