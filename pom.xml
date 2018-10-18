@@ -80,7 +80,7 @@
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
         <geotools.version>19.1</geotools.version>
-        <tika.version>1.19</tika.version>
+        <tika.version>1.19.1</tika.version>
         <rome.version>1.10.0</rome.version>
         <jackson.version>2.9.7</jackson.version>
         <pdfbox.version>2.0.11</pdfbox.version>
