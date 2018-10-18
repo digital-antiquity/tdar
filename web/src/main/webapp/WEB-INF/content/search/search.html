@@ -61,7 +61,7 @@
 <div class="row pb-2">
     <select v-model="option" :name="searchFieldName" class="col-2 col-form-label form-control" style="font-size:smaller" ref='fieldselect'>
         <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
-        	<option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option"> {{ option.name }}  </option>
+        	<option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option" :selected="idx == 0"> {{ option.name }}  </option>
         </optgroup>
     </select>
     <div class="col-10" ref='valuearea'>

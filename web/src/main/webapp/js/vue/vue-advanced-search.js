@@ -89,6 +89,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         el : "#advancedsearch",
         data : {
             selectOptions : [ {
+                name : 'All Fields',
+                group : 'general',
+                type : 'basic',
+                fieldName: "allFields[]",
+                index: ['resource','collection',"integration"]
+            },{
                 name : 'Title',
                 group : 'general',
                 type : 'basic',
