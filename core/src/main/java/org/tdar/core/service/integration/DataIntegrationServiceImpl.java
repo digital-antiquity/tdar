@@ -567,6 +567,12 @@ public class DataIntegrationServiceImpl implements DataIntegrationService {
     public TableDetailsProxy getTableDetails(List<Long> dataTableIds) {
         TableDetailsProxy proxy = new TableDetailsProxy();
         proxy.getDataTables().addAll(genericDao.findAll(DataTable.class, dataTableIds));
+        for (DataTable dt : proxy.getDataTables()) {
+            Dataset ds = dataTableDao.findDatasetForTable(dt);
+            dt.setDatasetId(ds.getId());
+            dt.setDatasetName(ds.getName());
+//            logger.debug("table: {} / {}", dt, dt.getDataset());
+        }
         Map<Ontology, List<DataTable>> suggestions = getIntegrationSuggestions(proxy.getDataTables(), false);
         proxy.getMappedOntologies().addAll(suggestions.keySet());
         return proxy;

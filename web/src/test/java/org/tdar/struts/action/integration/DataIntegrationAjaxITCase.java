@@ -178,6 +178,9 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         String integration = FileUtils.readFileToString(new File(jsonFilename));
         action.setIntegration(integration);
         action.integrate();
+        if (action.getJsonInputStream() == null) {
+            logger.error("errors: {}" , action.getActionErrors());
+        }
         StringWriter writer = new StringWriter();
         IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
         return writer;

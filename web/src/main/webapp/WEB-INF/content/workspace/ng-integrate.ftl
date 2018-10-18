@@ -208,13 +208,13 @@
                                                                 <div ng-switch on="cc.compatCols.length">
                                                                 <div ng-switch-when="1">
 
-                                                                    <!-- <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span> -->
+                                                                    <!-- <span title="{{cc.dataTable.datasetName}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span> -->
                                                                     <!-- FIXME: this is "hidden", but is it even needed? -->
                                                                     <select class="intcol form-control" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
                                                                 </div>
                                                                 <div ng-switch-when="0"></div>
                                                                 <div ng-switch-default>
-                                                                    <select class="form-control" title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                                    <select class="form-control" title="{{cc.dataTable.datasetName}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
                                                                 </div>
                                                                 </div>
                                                             </div>
@@ -253,7 +253,7 @@
                                                     </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
-                                                        <td class="">{{dataTable.datasetTitle}}</td>
+                                                        <td class="">{{dataTable.datasetName}}</td>
                                                         <td class="">{{dataTable.displayName}}</td>
                                                         <td>
                                                             <select ng-model="columnSelection.dataTableColumn" id="dt_{{$parent.$index}}_{{dataTable.id}}"
@@ -280,7 +280,7 @@
                                                     </thead>
                                                     <#--<tr ng-repeat="columnSelection in outputColumn.dataTableColumnSelections">-->
                                                     <tr ng-repeat="dataTable in ctrl.integration.dataTables" ng-init="columnSelection = outputColumn.dataTableColumnSelections[$index]">
-                                                        <th class="">{{dataTable.datasetTitle}}</th>
+                                                        <th class="">{{dataTable.datasetName}}</th>
                                                         <th class="">{{dataTable.displayName}}</th>
                                                         <td>
                                                             <select ng-model="columnSelection.dataTableColumn"

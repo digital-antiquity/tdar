@@ -52,6 +52,7 @@ public class DataTable extends AbstractPersistable implements ImportTable<DataTa
     private static final long serialVersionUID = -4875482933981074863L;
 
     @ManyToOne(optional = false)
+    @Deprecated() // used only in data integration
     private Dataset dataset;
 
     @Column(nullable = false)
@@ -76,13 +77,17 @@ public class DataTable extends AbstractPersistable implements ImportTable<DataTa
     private transient Map<Long, DataTableColumn> idToColumnMap;
     private transient Map<String, DataTableColumn> displayNameToColumnMap;
     private transient int dataTableColumnHashCode = -1;
-
+    private transient Long datasetId;
+    private transient String datasetName;
+    
 //    @XmlElement(name = "resourceRef")
 //    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+//    @Deprecated
 //    public Dataset getDataset() {
 //        return dataset;
 //    }
 //
+//    @Deprecated
 //    public void setDataset(Dataset dataset) {
 //        this.dataset = dataset;
 //    }
@@ -251,6 +256,24 @@ public class DataTable extends AbstractPersistable implements ImportTable<DataTa
 
     public void setImportOrder(Integer importOrder) {
         this.importOrder = importOrder;
+    }
+
+    @JsonView(value = { JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class })
+    public Long getDatasetId() {
+        return datasetId;
+    }
+
+    public void setDatasetId(Long datasetId) {
+        this.datasetId = datasetId;
+    }
+
+    @JsonView(value = { JsonIntegrationFilter.class, JsonIntegrationDetailsFilter.class })
+    public String getDatasetName() {
+        return datasetName;
+    }
+
+    public void setDatasetName(String datasetName) {
+        this.datasetName = datasetName;
     }
 
 }
