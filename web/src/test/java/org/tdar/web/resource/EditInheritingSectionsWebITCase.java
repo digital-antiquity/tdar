@@ -24,8 +24,8 @@ import net.sf.json.JSONObject;
 
 public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    private static final String INHERITING_CULTURAL_INFORMATION_FIELDNAME = "resource.inheritingCulturalInformation";
-    private static final String INHERITING_INVESTIGATION_INFORMATION_FIELDNAME = "resource.inheritingInvestigationInformation";
+    private static final String INHERITING_CULTURAL_INFORMATION_FIELDNAME = "inheritingCulturalInformation";
+    private static final String INHERITING_INVESTIGATION_INFORMATION_FIELDNAME = "inheritingInvestigationInformation";
     private static long PARENT_PROJECT_ID = 3805;
     private static String[] PARENT_PROJECT_CULTURE_KEYWORDS = { "Archaic", "Historic" };
     private static String DOCUMENT_EDIT_URL = "/document/4230/edit";
@@ -40,7 +40,7 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
                     // not on project page
                     continue;
                 }
-                docValMap.put("resource." + inherit, "true");
+                docValMap.put( inherit, "true");
             }
         }
     }

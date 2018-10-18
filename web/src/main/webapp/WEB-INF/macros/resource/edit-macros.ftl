@@ -125,7 +125,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro spatialContext showInherited=true>
     <div class="col-12" id="spatialSection">
         <h2 id="spatialInfoSectionLabel">Spatial Terms</h2>
-        <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='resource.inheritingSpatialInformation' showInherited=showInherited sectionId='#divSpatialInformation' />
+        <@_inheritsection checkboxId="cbInheritingSpatialInformation" name='inheritingSpatialInformation' showInherited=showInherited sectionId='#divSpatialInformation' />
         <div id="divSpatialInformation">
 
             <div>
@@ -199,7 +199,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro temporalContext showInherited=true>
     <div class="col-12" id="temporalSection">
         <h2 id="temporalInfoSectionLabel">Temporal Coverage</h2>
-        <@_inheritsection checkboxId="cbInheritingTemporalInformation" name='resource.inheritingTemporalInformation' showInherited=showInherited sectionId='#divTemporalInformation' />
+        <@_inheritsection checkboxId="cbInheritingTemporalInformation" name='inheritingTemporalInformation' showInherited=showInherited sectionId='#divTemporalInformation' />
         <div id="divTemporalInformation">
             <div data-tooltip="Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
                 <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' "TemporalKeyword" true "add another temporal keyword" />
@@ -249,7 +249,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div
              class="col-12" data-tooltip="Add additional keywords for this resource">
         <h2 id="generalInfoSectionLabel">General Keywords</h2>
-        <@_inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited sectionId='#divOtherInformation'/>
+        <@_inheritsection checkboxId="cbInheritingOtherInformation" name='inheritingOtherInformation'  showInherited=showInherited sectionId='#divOtherInformation'/>
         <div id="divOtherInformation">
             <@keywordRows "Keyword" otherKeywords 'otherKeywords' "OtherKeyword" />
         </div>
@@ -263,7 +263,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <@helptext.siteName />
     <div id="siteSection" class="col-12">
         <h2 id="siteInfoSectionLabel">${divTitle} <@helptext.info title="Site Information" contentDiv="#siteinfohelp"/></h2>
-        <@_inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited sectionId='#divSiteInformation'/>
+        <@_inheritsection checkboxId='cbInheritingSiteInformation' name='inheritingSiteInformation'  showInherited=showInherited sectionId='#divSiteInformation'/>
         <div id="divSiteInformation">
             <@keywordRows "Site Name / Number" siteNameKeywords 'siteNameKeywords' "SiteNameKeyword" />
 
@@ -290,7 +290,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="col-12">
         <@helptext.materialType />
         <h2 id="materialInfoSectionLabel">Material Types</h2>
-        <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='resource.inheritingMaterialInformation'  showInherited=showInherited sectionId='#allMaterialInformation' />
+        <@_inheritsection checkboxId='cbInheritingMaterialInformation' name='inheritingMaterialInformation'  showInherited=showInherited sectionId='#allMaterialInformation' />
 		<div id="allMaterialInformation">
 	        <div id="divMaterialInformation">
 	            <@s.checkboxlist name='approvedMaterialKeywordIds' list='allMaterialKeywords' listKey='id' listValue='label' listTitle="definition"  label="Select Type(s)" labelposition="left"
@@ -312,7 +312,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div class="col-12">
         <@helptext.cultureTerms />
         <h2 id="culturalInfoSectionLabel">${culturalTermsLabel!"Cultural Terms"}</h2>
-        <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='resource.inheritingCulturalInformation'  showInherited=showInherited sectionId='#divCulturalInformation'/>
+        <@_inheritsection checkboxId="cbInheritingCulturalInformation" name='inheritingCulturalInformation'  showInherited=showInherited sectionId='#divCulturalInformation'/>
         <div id="divCulturalInformation">
             <div class="form-group row">
                 <label class="col-form-label col-2">${culturalTermsLabel!"Culture"}</label>
@@ -335,7 +335,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro investigationTypes showInherited=true >
     <div id="investigationSection" class="col-12">
         <h2 id="investigationInfoSectionLabel">Investigation Types</h2>
-        <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='resource.inheritingInvestigationInformation'  showInherited=showInherited sectionId='#divInvestigationInformation' />
+        <@_inheritsection checkboxId='cbInheritingInvestigationInformation' name='inheritingInvestigationInformation'  showInherited=showInherited sectionId='#divInvestigationInformation' />
         <div id="divInvestigationInformation">
 
             <@s.checkboxlist name='investigationTypeIds' list='allInvestigationTypes' listKey='id' listValue='label' numColumns="2" spanClass="col" labelposition="left"
@@ -506,7 +506,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro relatedCollections showInherited=true>
     <div class="col-12" id="relatedCollectionsSectionGlide">
         <h2 id="relatedCollectionInfoSectionLabel">Museum or Archive Collections</h2>
-        <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='resource.inheritingCollectionInformation' showInherited=showInherited sectionId='#relatedCollectionsSection'/>
+        <@_inheritsection checkboxId="cbInheritingCollectionInformation" name='inheritingCollectionInformation' showInherited=showInherited sectionId='#relatedCollectionsSection'/>
         <div id="relatedCollectionsSection">
             <div id="divSourceCollectionControl" class="form-group repeatLastRow row">
                 <label class="col-form-label col-2">Source Collections</label>
@@ -577,7 +577,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="resourceNoteSectionGlide"  class="col-12">
         <@helptext.notes />
         <h2 id="notesInfoSectionLabel">Notes <@helptext.info title="Notes" contentDiv="#notesHelpDiv" /></h2>
-        <@_inheritsection checkboxId="cbInheritingNoteInformation" name='resource.inheritingNoteInformation' showInherited=showInherited sectionId='#resourceNoteSection'/>
+        <@_inheritsection checkboxId="cbInheritingNoteInformation" name='inheritingNoteInformation' showInherited=showInherited sectionId='#resourceNoteSection'/>
         <div id="resourceNoteSection" class="repeatLastRow row">
             <label class="col-form-label col-2">Type / Contents</label>
             <div class='col-10'>
@@ -753,7 +753,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="divIdentifiersGlide" class="col-12">
         <@helptext.identifiers />
         <h2 id="identifierInfoSectionLabel"><@resourceTypeLabel /> Specific or Agency Identifiers<@helptext.info title="Resource Specific or Agency Identifiers" contentDiv="#divIdentifiersTip" /></h2>
-        <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='resource.inheritingIdentifierInformation' showInherited=showInherited sectionId='#divIdentifiers' />
+        <@_inheritsection checkboxId="cbInheritingIdentifierInformation" name='inheritingIdentifierInformation' showInherited=showInherited sectionId='#divIdentifiers' />
         <div id="divIdentifiers" class="repeatLastRow">
             <div class="form-group row">
                 <label class="col-form-label col-2">Name / Value</label>
