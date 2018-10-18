@@ -7,16 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.file.TdarFile;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -36,6 +39,10 @@ import org.tdar.web.service.ResourceEditControllerService;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
+@Component
+@Scope("prototype")
+@ParentPackage("secured")
+@Namespace("/wizard")
 public class ResourceEditAction<P extends Persistable & Addressable> extends AbstractAuthenticatableAction implements Preparable , Validateable{
 
     @Autowired
@@ -81,7 +88,7 @@ public class ResourceEditAction<P extends Persistable & Addressable> extends Abs
     }
 
     @Override
-    @Action(value = "edit", results = { @Result(name = SUCCESS, location = "edit.ftl") })
+    @Action(value = "edit", results = { @Result(name = SUCCESS, location = "../resource/edit.ftl") })
     public String execute() throws Exception {
         json = serializationService.convertToJson(resource);
         

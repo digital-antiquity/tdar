@@ -56,15 +56,21 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
 
     function countUsed(arr) {
         var used = 0;
+        console.log("count used", arr);
         arr.forEach(function(itm) {
+            console.log(itm);
             if (itm != undefined && itm.length > 0) {
                 var i = itm[0];
-                if (itm['note'] != undefined && itm['note'] != '') {
+                if (i['note'] != undefined && i['note'] != '') {
                     used++;
                 } 
-                else if (itm['note'] == undefined) {
+                if (i['label'] != undefined && i['label'] != '') {
                     used++;
-                }
+                } 
+                if (i['value'] != undefined && i['value'] != '') {
+                    used++;
+                } 
+                console.log(i, used);
             }
         });
         return used;
@@ -138,6 +144,9 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                          Vue.set(this,"primaryRoles",JSON.parse(document.getElementById('primaryRoles').innerText));
                          Vue.set(this,"creditRoles",JSON.parse(document.getElementById('otherRoles').innerText));
 
+                         
+                         // FIXME: deal with active vs. normal values 
+                         
                          if (this.resource.resourceNotes == undefined) {
                              this.resource.resourceNotes = [];
                          } 
@@ -149,6 +158,11 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                          if (this.resource.coverageDates == undefined) {
                              this.resource.coverageDates = [];
                          }  
+
+                         if (this.resource.resourceAnnotations == undefined) {
+                             this.resource.resourceAnnotations = [];
+                         }
+                         
                          if (this.resource.coverageDates.length == 0) {
                              this.resource.coverageDates.push(this.getBlankDate());
                          } else {
@@ -168,8 +182,8 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                         if (json.contentOwners == undefined || json.contentOwners.length == 0) {
                             json.contentOwners = [{creator:{person:{institution:{}}}}];
                         }
-                        if (json.activeLatitudeLongitudeBoxes == undefined || json.activeLatitudeLongitudeBoxes.length == 0) {
-                            json.activeLatitudeLongitudeBoxes = [{north: undefined, south: undefined, east: undefined,west: undefined } ];
+                        if (json.latitudeLongitudeBoxes == undefined || json.latitudeLongitudeBoxes.length == 0) {
+                            json.latitudeLongitudeBoxes = [{north: undefined, south: undefined, east: undefined,west: undefined } ];
                         }
 
                         if (json.controlledMaterialKeywords == undefined) {
@@ -261,7 +275,17 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                         this.inherit(o,b,'other', 'activeOtherKeywords');
                     },
                     "resource.inheritingIdentifierInformation": function(o, b) {
-                        // this.inherit(o,b,'culture', 'activeCultureKeywords');
+                        if (this.project != undefined && this.project.activeResourceAnnotations != undefined) {
+                            this.resource.resourceAnnotations.length = 0;
+                            var _app = this;
+                            this.project.activeResourceAnnotations.forEach(function(n) {
+                                console.log(n);
+                                _app.resource.resourceAnnotations.push(derefrence(n) );
+                            });
+                            if (this.resource.resourceAnnotations.length == 0) {
+                                this.resource.resourceAnnotations.push({});
+                            }
+                        }
                     },
                     "resource.inheritingCollectionInformation": function(o, b) {
                       // this.inherit(o,b,'culture', 'activeCultureKeywords');
@@ -289,7 +313,12 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                         if (r.description != undefined) { ret += 5; }
                         if (r.date > 0) { ret += 5};
                         
-                        countUsed([r.materialTypes,r.investigationTypes, r.siteTypeKeywords, r.siteNameKeywords, r.resourceNotes, r.geographicKeywords]);
+                        ret += countUsed([r.materialTypes,r.investigationTypes, r.siteTypeKeywords, r.siteNameKeywords, r.resourceNotes, r.geographicKeywords, r.resourceAnnotations]);
+
+                        if (r.latitudeLongitudeBoxes != undefined && r.latitudeLongitudeBoxes.length > 0 && r.latitudeLongitudeBoxes[0] != undefined && r.latitudeLongitudeBoxes[0].north != undefined) {
+                            console.log(r.latitudeLongitudeBoxes[0]);
+                            ret += 5;
+                        }
                         
                         if (this.$refs['gauge'] != undefined) {
                             this.$refs['gauge'].setValue(ret);
@@ -322,8 +351,8 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                         }
                         return false;
                     },
-                    identifiersEnabled: function() {
-                        if (this.showIdentifierSection == true ) {
+                    identifierEnabled: function() {
+                        if (this.showIdentifierSection == true || this.resource.resourceAnnotations.length > 0 && this.resource.resourceAnnotations[0].value != undefined) {
                             return true;
                         }
                         return false;
@@ -342,12 +371,6 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     },
                     whenEnabled: function() {
                         if (this.showWhenSection == true || this.resource.temporalKeywords.length > 0 || this.resource.coverageDates.length > 0  && this.resource.coverageDates[0].startDate != undefined) {
-                            return true;
-                        }
-                        return false;
-                    },
-                    identifierEnabled: function() {
-                        if (this.showNotesSection == true || this.resource.resourceNotes.length > 0) {
                             return true;
                         }
                         return false;
@@ -428,6 +451,10 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                         });
                     },
                     inherit: function(o, b, ref, vals) {
+                        if (this.$refs[ref] == undefined) {
+                            return;
+                        }
+                        
                         if (this.project[vals] != undefined && o == true) {
                             this.$refs[ref].setValues(this.project[dereference(vals) ]); 
                             this.$refs[ref].disable();

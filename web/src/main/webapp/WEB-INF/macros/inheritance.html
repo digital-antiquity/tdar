@@ -1,5 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/intersection-observer@0.5.0/intersection-observer.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue-observe-visibility@0.4.3/dist/vue-observe-visibility.min.js"></script>
 <div id="sel">
     <form method="POST" action="/document/save" ref='form'>
 
@@ -156,6 +154,7 @@
 <br/>
                 <div>
                     <h5>Creators</h5>
+                    {{resource.contentOwners}}
                     <div
                         v-for="(creator, idx) in resource.contentOwners"
                         class="">
@@ -221,7 +220,6 @@
 
             <h3>Where</h3>
             <div>
-                <h5>Geographic</h5>
                 <b :class="inheritanceDisabledClass">inherit
                     from: {{project.title}} <input type="checkbox"
                     v-model="resource.inheritingSpatialInformation"
@@ -259,7 +257,7 @@
                                         size="14" value=""
                                         class="maxy float latLong ne-lat hidden"
                                         title="Please enter a valid Maximum Latitude"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].north">
+                                        v-model="resource.latitudeLongitudeBoxes[0].north">
                                         <input type="text"
                                         placeholder="Latitude (max)" 
                                         class="ne-lat-display  d_maxy form-control">
@@ -274,7 +272,7 @@
                                         size="14" value=""
                                         class="minx float latLong sw-lng hidden"
                                         title="Please enter a valid Minimum Longitude"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].west">
+                                        v-model="resource.latitudeLongitudeBoxes[0].west">
                                         <input type="text"
                                         placeholder="Longitude (min)"
                                         class="sw-lng-display  d_minx form-control">
@@ -290,7 +288,7 @@
                                         style="width: 33%; text-align: center">
                                         <input type="text"
                                         name="latitudeLongitudeBoxes[0].east"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].east"
+                                        v-model="resource.latitudeLongitudeBoxes[0].east"
                                         size="14"
                                         class="maxx float latLong ne-lng hidden"
                                         title="Please enter a valid Maximum Longitude">
@@ -303,7 +301,7 @@
                                     <td></td>
                                     <td><input type="text"
                                         name="latitudeLongitudeBoxes[0].south"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].south"
+                                        v-model="resource.latitudeLongitudeBoxes[0].south"
                                         size="14"
                                         class="miny float latLong sw-lat hidden"
                                         title="Please enter a valid Minimum Latitude">
@@ -566,6 +564,56 @@
       <div class="tab-pane fade show" id="identifiers" role="tabpanel"
             aria-labelledby="identifiers-tab">
             <h3>Identifiers</h3>
+            
+            
+            <div>
+                    <b :class="inheritanceDisabledClass">inherit
+                        from: {{project.title}} <input
+                        type="checkbox"
+                        v-model="resource.inheritingIdentifierInformation"
+                        :disabled="inheritanceDisabled" />
+                    </b>
+                    <div
+                        v-for="(ann, idx) in resource.resourceAnnotations"
+                        class="row">
+                        <div class="row">
+                            <div class="col-11">
+                                <div class="row">
+                                    <div class="col-5">
+                                        <input :name="'resourceAnnotations['+idx+'].resourceAnnotationKey.key'" v-model="ann.resourceAnnotationKey.key" class="form-control" type='text'/>
+                                    </div>
+                                    <div class="col-7">
+                                        <input :name="'resourceAnnotations['+idx+'].value'" v-model="ann.value" class="form-control" type='text' />
+                                        <input :name="'resourceAnnotations['+idx+'].id'" v-model="ann.id" class="form-control" type='hidden' />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-1">
+                                <button class="btn btn-mini "
+                                    @click="removeAnnotation(idx)"
+                                    type="button" tabindex="-1"
+                                    title="delete this item from the list">
+                                    <i class="fas fa-trash-alt float-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        </div>
+                        <div
+                            class="row add-another-control">
+                            <div class="col-10">
+                                <button class="btn addanother"
+                                    @click="resource.resourceAnnotations.push({resourceAnnotationKey:{}})"
+                                    type="button">
+                                    <i class="icon-plus-sign"></i>add
+                                    another
+                                </button>
+                            </div>
+                    </div>
+                </div>
+            
+            
+            
         </div>
       <div class="tab-pane fade show" id="permissions" role="tabpanel"
             aria-labelledby="permissions-tab">
@@ -590,7 +638,7 @@
                         :disabled="inheritanceDisabled" />
                     </b>
                     <div
-                        v-for="(creator, idx) in resource.activeIndividualAndInstitutionalCredit">
+                        v-for="(creator, idx) in resource.individualAndInstitutionalCredit">
                         <creatorrolelookup
                             :resourcecreator="creator" :row="idx"
                             :roles="creditRoles"
@@ -599,7 +647,7 @@
                             ref='contentCredit' />
                     </div>
                     <button class="btn addanother"
-                        @click="addCreatorRow(resource.activeIndividualAndInstitutionalCredit)"
+                        @click="addCreatorRow(resource.individualAndInstitutionalCredit)"
                         type="button">
                         <i class="icon-plus-sign"></i>add another
                     </button>
@@ -677,7 +725,7 @@
                                         size="14" value=""
                                         class="maxy float latLong ne-lat hidden"
                                         title="Please enter a valid Maximum Latitude"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].north">
+                                        v-model="resource.latitudeLongitudeBoxes[0].north">
                                         <input type="text"
                                         placeholder="Latitude (max)"
                                         class="ne-lat-display  d_maxy form-control">
@@ -692,7 +740,7 @@
                                         size="14" value=""
                                         class="minx float latLong sw-lng hidden"
                                         title="Please enter a valid Minimum Longitude"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].west">
+                                        v-model="resource.latitudeLongitudeBoxes[0].west">
                                         <input type="text"
                                         placeholder="Longitude (min)"
                                         class="sw-lng-display  d_minx form-control">
@@ -708,7 +756,7 @@
                                         style="width: 33%; text-align: center">
                                         <input type="text"
                                         name="latitudeLongitudeBoxes[0].east"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].east"
+                                        v-model="resource.latitudeLongitudeBoxes[0].east"
                                         size="14"
                                         class="maxx float latLong ne-lng hidden"
                                         title="Please enter a valid Maximum Longitude">
@@ -721,7 +769,7 @@
                                     <td></td>
                                     <td><input type="text"
                                         name="latitudeLongitudeBoxes[0].south"
-                                        v-model="resource.activeLatitudeLongitudeBoxes[0].south"
+                                        v-model="resource.latitudeLongitudeBoxes[0].south"
                                         size="14"
                                         class="miny float latLong sw-lat hidden"
                                         title="Please enter a valid Minimum Latitude">

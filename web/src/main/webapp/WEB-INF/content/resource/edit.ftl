@@ -1,3 +1,6 @@
+<script src="https://cdn.jsdelivr.net/npm/intersection-observer@0.5.0/intersection-observer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue-observe-visibility@0.4.3/dist/vue-observe-visibility.min.js"></script>
+
 <#escape _untrusted as _untrusted?html>
 
                 <style>
@@ -18,7 +21,7 @@ left: 1000px !important;
 
 <script id="json" type="text/json">
 <#noescape>
-${json}
+${json!''}
 </#noescape>
 </script>
 <script id="materialTypes" type="text/json">
