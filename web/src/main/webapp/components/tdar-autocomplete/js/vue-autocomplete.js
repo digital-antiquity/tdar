@@ -103,6 +103,10 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
                     this.deletekey(this.$refs.searchfield);
                 }
             },
+            escapeKey: function() {
+                this.isOpen = false;
+                this.arrowCounter = -1;
+            },
             enterKey: function() {
                 if (this.enterkey != undefined && this.arrowCounter < 0) {
                     this.enterkey(this.search);
@@ -275,6 +279,10 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             if (this.arrowCounter > 0) {
               this.arrowCounter = this.arrowCounter - 1;
             }
+          },
+          onEscape: function(e) {
+              this.isOpen = false;
+              this.arrowCounter = -1;
           },
           onEnter: function(e) {
             // make sure you can clear the value with setting

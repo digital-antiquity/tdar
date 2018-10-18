@@ -2,6 +2,7 @@
   <div :class="getRootClass()" ref="autocompleteroot" @mouseover="addFocus('mouse')" @mouseout="removeFocus('mouse')">
     <input type="hidden" v-model="id"  :name="idname" v-if="idname != undefined" />
     <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter"
+v-on:keyup.escape.self.stop="onEscape"
 		@keydown.delete="deleteKey" @keyup.enter="enterKey" @keyup="anyKey" autocomplete="off" :disabled="disabled" 
 		 ref="searchfield" :class="span" :name="fieldname" @focus="addFocus('cursor')" @blur="removeFocus('cursor')"/>
     <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results"  :style="getStyleTop()" ref="autoresults">

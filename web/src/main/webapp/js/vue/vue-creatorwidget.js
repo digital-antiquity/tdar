@@ -33,12 +33,15 @@ TDAR.vuejs.creatorwidget = (function(console, ctx, Vue, axios) {
                 }
             },
             created: function() {
-                if (this.resourcecreator.creator.firstName == undefined) {
+                if (this.resourcecreator.creator.firstName != undefined || this.resourcecreator.creator.id == undefined || this.resourcecreator.creator.name == undefined) {
                     this.toggle = 'PERSON';
                     Vue.set(this, "toggle", 'PERSON');
-                    Vue.set(this,"actualRoles", this.roles[this.toggle]);
-                    Vue.set(this,"creatorId", -1);
+                } else {
+                    this.toggle = 'INSTITUTION';
+                    Vue.set(this, "toggle", 'INSTITUTION');
+                    
                 }
+                Vue.set(this,"actualRoles", this.roles[this.toggle]);
             },
             beforeUpdate: function(e) {
                 var creator = this.resourcecreator.creator;

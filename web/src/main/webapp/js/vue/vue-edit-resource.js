@@ -1,6 +1,9 @@
 TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
 
+    if(document.getElementById("sel") == undefined) {
+        return;
+    }
     
     Vue.component('gauge', {
         template: '<div id="chart"/>',
@@ -261,10 +264,10 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     "resource.inheritingSpatialInformation": function(o, b) {
                         this.inherit(o,b,'geographic', 'activeGeographicKeywords');
                         if (this.project != undefined && this.project.activeLatitudeLongitudeBoxes != undefined) {
-                            this.resource.activeLatitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
-                            this.resource.activeLatitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
-                            this.resource.activeLatitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
-                            this.resource.activeLatitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
+                            this.resource.latitudeLongitudeBoxes[0].west = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedWest;
+                            this.resource.latitudeLongitudeBoxes[0].east = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedEast;
+                            this.resource.latitudeLongitudeBoxes[0].south = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedSouth;
+                            this.resource.latitudeLongitudeBoxes[0].north = this.project.activeLatitudeLongitudeBoxes[0].obfuscatedNorth;
                         console.log(this.resource.activeLatitudeLongitudeBoxes[0]);
                         Vue.nextTick(function() {
                             $(".locateCoordsButton").click();
@@ -385,14 +388,18 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                 methods: {
                     visibilityChanged: function(isVisible, entry) {
                         this.isVisible = isVisible;
-                        console.log(entry, isVisible);
+                        var self = this;
+                        this.$refs['d_minx'].value =  self.resource.latitudeLongitudeBoxes[0].west;
+                        this.$refs['d_maxx'].value =  self.resource.latitudeLongitudeBoxes[0].east;
+                        this.$refs['d_maxy'].value =  self.resource.latitudeLongitudeBoxes[0].north;
+                        this.$refs['d_miny'].value =  self.resource.latitudeLongitudeBoxes[0].south;
+
                         if (isVisible) {
                             TDAR.leaflet.initEditableMap($('#vueeditablemap'), function(e){
-                            console.log(e);
-                            Vue.set(self, "west", e.minx);
-                            Vue.set(self, "east", e.maxx);
-                            Vue.set(self, "north", e.maxy);
-                            Vue.set(self, "south", e.miny);
+                            self.resource.latitudeLongitudeBoxes[0].west = e.minx;
+                            self.resource.latitudeLongitudeBoxes[0].east = e.maxx;
+                            self.resource.latitudeLongitudeBoxes[0].north = e.maxy;
+                            self.resource.latitudeLongitudeBoxes[0].south = e.miny;
                             });
                         }
                         

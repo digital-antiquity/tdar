@@ -1050,13 +1050,13 @@ public class Resource implements Persistable,
         return resourceAnnotations;
     }
 
-    @Transient
+//    @Transient
 //    @XmlTransient
     public Collection<ResourceCreator> getContentOwners() {
         List<ResourceCreator> authors = new ArrayList<ResourceCreator>();
 
         // get the applicable resource roles for this resource type
-        List<ResourceCreatorRole> primaryRoles = ResourceCreatorRole.getAuthorshipRoles();
+        List<ResourceCreatorRole> primaryRoles = ResourceCreatorRole.getAuthorshipRoles(null, getResourceType());
         if (resourceCreators != null) {
             for (ResourceCreator creator : resourceCreators) {
                 if (primaryRoles.contains(creator.getRole()) && !creator.getCreator().isDeleted()) {

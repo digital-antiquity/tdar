@@ -47,7 +47,7 @@
             <div class="">
                 <h3>Basic Information</h3>
 
-                    <div class="row">
+                    <div class="row hidden">
                         <label class="col-form-label col-2">Id</label>
                         <div class="col-10">
                  <input type="text" v-model="resource.id" class="form-control" 
@@ -128,8 +128,7 @@
                         <div class="col-10">
                 <select name="accountId" v-model="accountId" class=" form-control">
                     <option v-for="account in accounts" 
-                        v-bind:value="account.id">{{
-                        account.name }}</option>
+                        v-bind:value="account.id">{{account.name }}</option>
                 </select> 
                 
                 </div>
@@ -154,7 +153,6 @@
 <br/>
                 <div>
                     <h5>Creators</h5>
-                    {{resource.contentOwners}}
                     <div
                         v-for="(creator, idx) in resource.contentOwners"
                         class="">
@@ -259,7 +257,7 @@
                                         title="Please enter a valid Maximum Latitude"
                                         v-model="resource.latitudeLongitudeBoxes[0].north">
                                         <input type="text"
-                                        placeholder="Latitude (max)" 
+                                        placeholder="Latitude (max)" ref="d_maxy"
                                         class="ne-lat-display  d_maxy form-control">
                                     </td>
                                     <td></td>
@@ -274,7 +272,7 @@
                                         title="Please enter a valid Minimum Longitude"
                                         v-model="resource.latitudeLongitudeBoxes[0].west">
                                         <input type="text"
-                                        placeholder="Longitude (min)"
+                                        placeholder="Longitude (min)" ref="d_minx"
                                         class="sw-lng-display  d_minx form-control">
                                     </td>
                                     <td
@@ -293,7 +291,7 @@
                                         class="maxx float latLong ne-lng hidden"
                                         title="Please enter a valid Maximum Longitude">
                                         <input type="text"
-                                        placeholder="Longitude (max)"
+                                        placeholder="Longitude (max)" ref="d_maxx"
                                         class="d_maxx ne-lng-display  form-control">
                                     </td>
                                 </tr>
@@ -306,7 +304,7 @@
                                         class="miny float latLong sw-lat hidden"
                                         title="Please enter a valid Minimum Latitude">
                                         <input type="text"
-                                        placeholder="Latitude (min)"
+                                        placeholder="Latitude (min)" ref="d_miny"
                                         class="d_miny sw-lat-display  form-control">
                                     </td>
                                     <td></td>
