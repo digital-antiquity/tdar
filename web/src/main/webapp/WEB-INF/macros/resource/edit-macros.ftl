@@ -62,8 +62,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             </div>
         
         <#local _hidden = true>
-        <#if (effectiveShares?size > 0)>
-            <#list effectiveShares as share>
+        <#if (retainedSharedCollections?size > 0)>
+            <#list retainedSharedCollections as share>
                 <#if share.viewable == false>
                     <#local _hidden = false>
                 </#if>
@@ -73,7 +73,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#if !_hidden >
             <p id="effectiveCollectionsVisible"><i><b>The following collections cannot be modified because you do not have sufficient permissions:</b>
             <#assign comma =false>
-            <#list effectiveShares as share>
+            <#list retainedSharedCollections as share>
                 <#if share.viewable == false>
                     <#if comma>,</#if>${share.name} <#assign comma=true />
                 </#if>
@@ -391,7 +391,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
         <#if persistable.resourceType??>
             <#--Note: this does not reflect changes to resource collection you have made until you save.-->
-            <@rights.resourceCollectionsRights collections=effectiveResourceCollections owner=submitter  />
+            <@rights.resourceCollectionsRights collections=retainedResourceCollections owner=submitter  />
         </#if>
 
     </div>
