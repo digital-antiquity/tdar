@@ -51,7 +51,7 @@ public class ReprocessResourceController extends AbstractAuthenticatableAction i
             ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(getResource());
             processErrorObject(errors);
             if (getResource() instanceof Dataset) {
-                datasetService.remapAllColumnsAsync(getResource().getId(), getResource().getProject().getId());
+                datasetService.remapAllColumnsAsync(getResource().getId());
             }
         } catch (Exception e) {
             // consider removing the "sorry we were unable to ... just showing error message"
@@ -80,7 +80,7 @@ public class ReprocessResourceController extends AbstractAuthenticatableAction i
                 setResource(dataset);
                 getGenericService().saveOrUpdate(dataset);
                 if (hasMappings) {
-                    datasetService.remapAllColumnsAsync(id, projectId);
+                    datasetService.remapAllColumnsAsync(id);
                 }
             } catch (Exception e) {
                 getLogger().error("ex: {}", e);

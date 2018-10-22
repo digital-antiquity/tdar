@@ -27,6 +27,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.configuration.TdarConfiguration;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
@@ -427,8 +428,8 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      */
     @Override
     @Transactional
-    public void remapColumns(List<DataTableColumn> columns, Project project) {
-        remapColumnsWithoutIndexing(columns, project);
+    public void remapColumns(List<DataTableColumn> columns, ResourceCollection collection) {
+        remapColumnsWithoutIndexing(columns, collection);
     }
 
     /*
@@ -438,12 +439,12 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      */
     @Override
     @Transactional
-    public void remapColumnsWithoutIndexing(List<DataTableColumn> columns, Project project) {
-        getLogger().info("remapping columns: {} in {} ", columns, project);
-        if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
-            getDao().resetColumnMappings(project);
+    public void remapColumnsWithoutIndexing(List<DataTableColumn> columns, ResourceCollection collection) {
+        getLogger().info("remapping columns: {} in {} ", columns, collection);
+        if (CollectionUtils.isNotEmpty(columns) && (collection != null)) {
+            getDao().resetColumnMappings(collection);
             // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
-            getDao().refresh(project);
+            getDao().refresh(collection);
             // have to reindex...
             /*
              * Take the distinct column values mapped and associate them with files in tDAR based on:
@@ -453,7 +454,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
              */
             for (DataTableColumn column : columns) {
                 Dataset dataset = dataTableDao.findDatasetForTable(column.getDataTable());
-                getDao().mapColumnToResource(dataset, column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
+                getDao().mapColumnToResource(dataset, column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false), collection);
             }
         }
     }
@@ -677,8 +678,8 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     @Override
     @Transactional(readOnly = false)
     @Async
-    public void remapAllColumnsAsync(final Long datasetId, final Long projectId) {
-        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
+    public void remapAllColumnsAsync(final Long datasetId) {
+        remapAllColumns(find(datasetId));
     }
 
     /*
@@ -688,13 +689,14 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      */
     @Override
     @Transactional(readOnly = false)
-    public void remapAllColumns(final Long datasetId, final Long projectId) {
-        remapAllColumns(find(datasetId), getDao().find(Project.class, projectId));
+    public void remapAllColumns(final Long datasetId) {
+        remapAllColumns(find(datasetId));
     }
 
-    private void remapAllColumns(Dataset dataset, Project project) {
+    private void remapAllColumns(Dataset dataset) {
+        ResourceCollection collection = getDao().findMappedCollectionForDataset(dataset);
         List<DataTableColumn> columns = new ArrayList<>();
-        if (dataset != null && project != null && CollectionUtils.isNotEmpty(dataset.getDataTables())) {
+        if (dataset != null && collection != null && CollectionUtils.isNotEmpty(dataset.getDataTables())) {
             for (DataTable datatable : dataset.getDataTables()) {
                 if (CollectionUtils.isNotEmpty(datatable.getDataTableColumns())) {
                     for (DataTableColumn col : datatable.getDataTableColumns()) {
@@ -705,7 +707,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
                 }
             }
         }
-        remapColumns(columns, project);
+        remapColumns(columns, collection);
     }
 
     /*

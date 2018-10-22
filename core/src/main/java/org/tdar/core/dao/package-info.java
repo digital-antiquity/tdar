@@ -591,7 +591,10 @@
                 query = "select f from TdarFile f where (f.parentId in (select f_.parentId from TdarFile f_ where f_.dateCreated >= :date) or f.parentId is null) and (f.status='UPLOADED' or f.status='') "),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.MAPPED_DATASETS,
-                query = "select rc.dataset from ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' ")
+                query = "select rc.dataset from ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' "),
+        @NamedQuery(
+                name = org.tdar.core.dao.TdarNamedQueries.MAPPED_COLLECTIONS,
+                query = "select ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' and rc.dataset.id=:datasetId "),
 })
 package org.tdar.core.dao;
 

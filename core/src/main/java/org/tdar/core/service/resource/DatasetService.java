@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -90,9 +91,9 @@ public interface DatasetService {
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
      * to be mapped, and is associated with the filename associated with @InformationResourceFileVersion of any @link Resource in that @link Project.
      */
-    void remapColumns(List<DataTableColumn> columns, Project project);
+    void remapColumns(List<DataTableColumn> columns, ResourceCollection collection);
 
-    void remapColumnsWithoutIndexing(List<DataTableColumn> columns, Project project);
+    void remapColumnsWithoutIndexing(List<DataTableColumn> columns, ResourceCollection collection);
 
     /*
      * Takes an existing @link Dataset and @link DataTable, and an incoming list of @link DataTableColumn entries, from the edit-column-metadata function in
@@ -121,9 +122,9 @@ public interface DatasetService {
      */
     void setTdarDataImportDatabase(PostgresDatabase tdarDataImportDatabase);
 
-    void remapAllColumnsAsync(Long datasetId, Long projectId);
+    void remapAllColumnsAsync(Long datasetId);
 
-    void remapAllColumns(Long datasetId, Long projectId);
+    void remapAllColumns(Long datasetId);
 
     /**
      * We autowire the setter to help with autowiring issues

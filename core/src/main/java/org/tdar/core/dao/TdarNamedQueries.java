@@ -355,9 +355,8 @@ public interface TdarNamedQueries {
             + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
             + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:ownerId where au.user_id=:userId and au.resource_id is not null)";
     String MAPPED_DATASETS = "query.mapped_datasets";
-
-
-
+    String MAPPED_COLLECTIONS = "query.collecton_mapped_datasets";
+    String UPDATE_CLEAR_MAPPINGS = "update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where id in (select collection_id from collection_resource where collection_id =:collectionId or collection_id in (select collection_id from collection_parents where parent_id=:collection_id))";
 
 
 }

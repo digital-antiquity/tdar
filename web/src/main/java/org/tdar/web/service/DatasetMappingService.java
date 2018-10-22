@@ -11,8 +11,8 @@ public interface DatasetMappingService {
     /*
      * convenience method, used for Asynchronous as opposed to the Synchronous version by the Controller
      */
-    void remapColumnsAsync(Dataset dataset, List<DataTableColumn> columns, Project project);
+    void remapColumnsAsync(Dataset dataset, List<DataTableColumn> columns);
 
-    void remapColumns(Dataset dataset, List<DataTableColumn> columns, Project project);
+    void remapColumns(Dataset dataset, List<DataTableColumn> columns);
 
 }

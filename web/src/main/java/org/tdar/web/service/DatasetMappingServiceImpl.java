@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.search.exception.SearchIndexException;
@@ -41,8 +41,8 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
     @Override
     @Async
     @Transactional
-    public void remapColumnsAsync(final Dataset dataset, final List<DataTableColumn> columns, final Project project) {
-        remapColumns(dataset, columns, project);
+    public void remapColumnsAsync(final Dataset dataset, final List<DataTableColumn> columns) {
+        remapColumns(dataset, columns);
     }
 
     /*
@@ -52,15 +52,11 @@ public class DatasetMappingServiceImpl implements DatasetMappingService {
      */
     @Override
     @Transactional
-    public void remapColumns(Dataset dataset, List<DataTableColumn> columns, Project project) {
-        datasetDao.remapColumns(columns, dataset, project);
-        try {
-            searchIndexService.indexDataMappings(dataset);
-            searchIndexService.indexProject(project);
-        } catch (SearchIndexException | IOException e) {
-            logger.error("error in reindexing", e);
-        }
-
+    public void remapColumns(Dataset dataset, List<DataTableColumn> columns) {
+        ResourceCollection collection = datasetDao.findMappedCollectionForDataset(dataset);
+        datasetDao.remapColumns(columns, dataset, collection);
+        searchIndexService.indexDataMappings(dataset);
+        searchIndexService.indexAllResourcesInCollectionSubTree(collection);
     }
 
 }

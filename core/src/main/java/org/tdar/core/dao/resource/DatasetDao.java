@@ -47,6 +47,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -189,9 +190,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.getResultList();
     }
 
-    public void resetColumnMappings(Project project) {
-        String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s", project.getId());
-        getCurrentSession().createNativeQuery(sql).executeUpdate();
+    public void resetColumnMappings(ResourceCollection project) {
+        Query query = getCurrentSession().createNativeQuery(TdarNamedQueries.UPDATE_CLEAR_MAPPINGS);
+        query.setParameter("collectionId", project.getId() );
+        query.executeUpdate();
     }
 
     /*
@@ -201,10 +203,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
      * 
      * Using a raw SQL update statement to try and simplify the execution here to use as few loops as possible...
      */
-    public void mapColumnToResource(Dataset dataset, DataTableColumn column, List<String> distinctValues) {
+    public void mapColumnToResource(Dataset dataset, DataTableColumn column, List<String> distinctValues, ResourceCollection collection) {
         Project project = dataset.getProject();
         // for each distinct column value
-
         long timestamp = System.currentTimeMillis();
         String sql = String.format("CREATE TEMPORARY TABLE MATCH%s (id bigserial, primary key(id), key varchar(255),actual varchar(255))", timestamp);
         NativeQuery create = getCurrentSession().createNativeQuery(sql);
@@ -251,8 +252,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 "update information_resource ir_ set mappeddatakeycolumn_id=%s, mappedDataKeyValue=actual from MATCH%s, information_resource ir inner join "
                         + "information_resource_file irf on ir.id=irf.information_resource_id " +
                         "inner join information_resource_file_version irfv on irf.id=irfv.information_resource_file_id " +
-                        "WHERE ir.project_id=%s and lower(key)=%s and irfv.internal_type in ('%s') and ir.id=ir_.id and ir.mappedDataKeyValue is null",
-                column.getId(), timestamp, project.getId(), filenameCheck, StringUtils.join(types, "','"));
+                        "WHERE ir.id in (select collection_id from collection_resource where collection_id =%s or collection_id in (select collection_id from collection_parents where parent_id=%s)) "
+                        + " and lower(key)=%s and irfv.internal_type in ('%s') and ir.id=ir_.id and ir.mappedDataKeyValue is null",
+                column.getId(), timestamp, collection.getId(), collection.getId(), filenameCheck, StringUtils.join(types, "','"));
         NativeQuery matching = getCurrentSession().createNativeQuery(format);
         logger.debug(format);
         int executeUpdate = matching.executeUpdate();
@@ -475,12 +477,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.getSingleResult();
     }
 
-    public void remapColumns(List<DataTableColumn> columns, Dataset dataset, Project project) {
-        getLogger().info("remapping columns: {} in {} ", columns, project);
-        if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
-            resetColumnMappings(project);
+    public void remapColumns(List<DataTableColumn> columns, Dataset dataset, ResourceCollection collection) {
+        getLogger().info("remapping columns: {} in {} ", columns, collection);
+        if (CollectionUtils.isNotEmpty(columns) && (collection != null)) {
+            resetColumnMappings(collection);
             // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
-            refresh(project);
+            refresh(collection);
             // have to reindex...
             /*
              * Take the distinct column values mapped and associate them with files in tDAR based on:
@@ -489,7 +491,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                mapColumnToResource(dataset, column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false));
+                mapColumnToResource(dataset, column, tdarDataImportDatabase.selectNonNullDistinctValues(column.getDataTable(), column, false), collection);
             }
         }
 
@@ -695,6 +697,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
         });
         return cols;
         
+    }
+
+    public ResourceCollection findMappedCollectionForDataset(Dataset dataset) {
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.MAPPED_COLLECTIONS, ResourceCollection.class);
+        query.setParameter("datasetId", dataset.getId());
+        return query.uniqueResult();
     }
 
 }
