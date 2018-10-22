@@ -1,8 +1,6 @@
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
 
-
-
     var _part = Vue.component('part', {
         template : "#search-row-template",
         props : [ "row", "index", "options", "totalrows" ],
@@ -20,37 +18,42 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableLeafletMaps();
                     });
-                } 
+                }
+            },
+            value: function(n, o) {
+                if (this.option.name == 'Collection') {
+                    this.$emit("collection change,", n);
+                }
             }
         },
         mounted : function() {
         },
         computed : {
-            valueFieldName: function() {
+            valueFieldName : function() {
                 if (this.option == undefined || this.option.fieldName == undefined) {
                     return undefined;
                 }
-                var ret = "groups[0]." + this.option.fieldName.replace("[]","["+this.index+"]");
+                var ret = "groups[0]." + this.option.fieldName.replace("[]", "[" + this.index + "]");
                 if (this.option.columnType != undefined) {
                     return ret + ".value";
                 }
                 return ret;
-                
+
             },
-            fieldName: function() {
+            fieldName : function() {
                 if (this.option == undefined || this.option.fieldName == undefined) {
                     return undefined;
                 }
-                return "groups[0]." + this.option.fieldName.replace("[]","["+this.index+"]");
+                return "groups[0]." + this.option.fieldName.replace("[]", "[" + this.index + "]");
             },
-            searchFieldName: function() {
+            searchFieldName : function() {
                 return "searchFieldName";
             },
-            idName: function() {
+            idName : function() {
                 if (this.option == undefined || this.option.idName == undefined) {
                     return undefined;
                 }
-                return "groups[0]." + this.option.idName.replace("[]","["+this.index+"]");
+                return "groups[0]." + this.option.idName.replace("[]", "[" + this.index + "]");
             },
         },
         methods : {
@@ -88,60 +91,61 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     var app = new Vue({
         el : "#advancedsearch",
         data : {
+            columnMap : {},
             selectOptions : [ {
                 name : 'All Fields',
                 group : 'general',
                 type : 'basic',
-                fieldName: "allFields[]",
-                index: ['resource','collection',"integration"]
-            },{
+                fieldName : "allFields[]",
+                index : [ 'resource', 'collection', "integration" ]
+            }, {
                 name : 'Title',
                 group : 'general',
                 type : 'basic',
-                fieldName: "titles[]",
-                index: ['resource','collection',"integration"]
+                fieldName : "titles[]",
+                index : [ 'resource', 'collection', "integration" ]
             }, {
                 name : 'Description',
                 group : 'general',
                 type : 'basic',
-                fieldName: "descriptions[]",
-                index: ['resource','collection','integration']
+                fieldName : "descriptions[]",
+                index : [ 'resource', 'collection', 'integration' ]
             }, {
                 name : 'Full-Text',
                 group : 'general',
                 type : 'basic',
-                fieldName: "contents[]",
-                index: ['resource']
+                fieldName : "contents[]",
+                index : [ 'resource' ]
             }, {
                 name : 'Date',
                 group : 'general',
                 type : 'integer',
-                fieldName: "createdDates[]",
-                index: ['resource','collection']
+                fieldName : "createdDates[]",
+                index : [ 'resource', 'collection' ]
             }, {
                 name : 'Id',
                 group : 'general',
                 type : 'integer',
-                fieldName: "ids",
-                index: ['resource','collection',"integration","person","institution"]
+                fieldName : "ids",
+                index : [ 'resource', 'collection', "integration", "person", "institution" ]
             }, {
                 name : 'Date Added',
                 group : 'general',
                 type : 'date',
-                fieldName: "registeredDates[]",
-                index: ['resource','collection',"integration","person","institution"]
+                fieldName : "registeredDates[]",
+                index : [ 'resource', 'collection', "integration", "person", "institution" ]
             }, {
                 name : 'Date Updated',
                 group : 'general',
                 type : 'date',
-                fieldName: "updatedDates[]",
-                index: ['resource','collection',"integration","person","institution"]
+                fieldName : "updatedDates[]",
+                index : [ 'resource', 'collection', "integration", "person", "institution" ]
             }, {
                 name : 'Map',
                 group : 'general',
                 type : 'map',
-                fieldName: "latitudeLongitudeBoxes[]",
-                index: ['resource']
+                fieldName : "latitudeLongitudeBoxes[]",
+                index : [ 'resource' ]
             }, {
                 name : 'Project',
                 group : 'general',
@@ -150,9 +154,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 autocompleteSuffix : 'resourceTypes[0]=PROJECT',
                 searchFieldName : 'term',
                 resultSuffix : 'resources',
-                fieldName: "projects[].title",
-                idName: "projects[].id",
-                index: ['resource']
+                fieldName : "projects[].title",
+                idName : "projects[].id",
+                index : [ 'resource' ]
             }, {
                 name : 'Collection',
                 group : 'general',
@@ -160,9 +164,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 autocompleteUrl : '/api/lookup/collection',
                 searchFieldName : 'term',
                 resultSuffix : 'collections',
-                fieldName: "collections[].name",
-                idName: "collections[].id",
-                index: ['resource']
+                fieldName : "collections[].name",
+                idName : "collections[].id",
+                index : [ 'resource' ]
             }, {
                 name : 'Person',
                 group : 'general',
@@ -170,10 +174,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 autocompleteUrl : '/api/lookup/person',
                 searchFieldName : 'term',
                 resultSuffix : 'people',
-                fieldName: "resourceCreatorProxies[].person.name",
-                idName: "resourceCreatorProxies[].person.id",
-                index: ['resource']
-                
+                fieldName : "resourceCreatorProxies[].person.name",
+                idName : "resourceCreatorProxies[].person.id",
+                index : [ 'resource' ]
+
             }, {
                 name : 'Institution',
                 group : 'general',
@@ -181,9 +185,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 autocompleteUrl : '/api/lookup/institution',
                 searchFieldName : 'institution',
                 resultSuffix : 'institutions',
-                fieldName: "resourceCreatorProxies[].institution.id",
-                idName: "resourceCreatorProxies[].institution.id",
-                index: ['resource']
+                fieldName : "resourceCreatorProxies[].institution.id",
+                idName : "resourceCreatorProxies[].institution.id",
+                index : [ 'resource' ]
             }, {
                 name : 'Site Name',
                 group : 'keywords',
@@ -241,58 +245,36 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 searchFieldName : 'term',
                 resultSuffix : 'items'
             }, {
-                name : 'Investigation Type',
+                name : 'Investigation Types',
                 group : 'keywords',
                 type : 'basic',
-                autocompleteUrl : '/api/lookup/keyword',
-                autocompleteSuffix : 'keywordType=InvestigationType',
-                searchFieldName : 'term',
-                resultSuffix : 'items'
+                choices : []
             }, ],
             rows : [ {
                 option : '',
                 value : ''
             } ]
         },
-        mounted: function(){
-            if (document.getElementById("datasetinfo") != undefined) {
-                var dsid = document.getElementById("datasetinfo").getAttribute("data-dataset-id");
-                var self = this;
-                axios({
-                    method:'get',
-                    url:'/api/dataset/listSearchFields?id=' + dsid,
-                  })
-                    .then(function(response) {
-                        console.log(response.data);
-                        response.data.forEach(function(field){
-                            var values = [];
-                            var type = "basic";
-                            if (field.intValues.length > 0) {
-                                values = field.intValues;
-                            }
-                            if (field.floatValues.length > 0) {
-                                values = field.floatValues;
-                            }
-                            if (field.values.length > 0) {
-                                values = field.values;
-                                if (values.length < 20) {
-                                    type = "checkbox";
-                                }
-                            }
-                            self.selectOptions.push({
-                                name: field.displayName,
-                                fieldName: "dataValues[]",
-                                type: type,
-                                group: 'custom',
-                                id: field.id,
-                                fieldValues: values,
-                                columnType: field.columnDataType
-                            })
-                            
-                        });
-                    });
-            }
-            
+        mounted : function() {
+            var self = this;
+            axios({
+                method : 'get',
+                url : '/api/search/info',
+            }).then(function(response) {
+                console.log(response.data);
+                Vue.set(self, "columnMap", response.data.columnMap);
+                self.selectOptions.forEach(function(opt) {
+                    if (opt.name == 'Investigation Types') {
+                        Vue.set(opt, "choices", response.data.investigationTypes);
+                    }
+                });
+
+                var dsid = document.body.getAttribute("data-mapped-dataset-id");
+                if (dsid != undefined) {
+                    console.log("add mapped...", dsid);
+                    self.addColumnInfo(dsid);
+                }
+            });
         },
         computed : {},
         methods : {
@@ -302,14 +284,48 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     value : ''
                 });
             },
-            submit: function() {
+            submit : function() {
                 console.log(this.$refs.form);
                 this.$refs.form.submit();
             },
             removeRow : function(idx) {
                 this.rows.splice(idx, 1);
-
             },
+            addColumnInfo : function(datasetId) {
+                if (this.columnMap[datasetId] == undefined) {
+                    return;
+                }
+
+                var self = this;
+                console.log("adding column info for:", datasetId, this.columnMap[datasetId]);
+                this.columnMap[datasetId].forEach(function(field) {
+                    var values = [];
+                    var type = "basic";
+                    if (field.intValues.length > 0) {
+                        values = field.intValues;
+                    }
+                    if (field.floatValues.length > 0) {
+                        values = field.floatValues;
+                    }
+                    if (field.values.length > 0) {
+                        values = field.values;
+                        if (values.length < 20) {
+                            type = "checkbox";
+                        }
+                    }
+                    self.selectOptions.push({
+                        name : field.displayName,
+                        fieldName : "dataValues[]",
+                        type : type,
+                        group : 'custom',
+                        id : field.id,
+                        fieldValues : values,
+                        columnType : field.columnDataType
+                    })
+
+                });
+
+            }
         },
     });
 })(console, window, Vue, axios, TDAR);

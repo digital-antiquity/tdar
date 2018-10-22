@@ -747,20 +747,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
     @Override
     @Transactional(readOnly=true)
     public Set<DataTableColumn> findSearchableColumns(Dataset ds, TdarUser user) {
-        Set<DataTableColumn> cols = new HashSet<>();
-        boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(user, ds);
-        ds.getDataTables().forEach(dt -> {
-            dt.getDataTableColumns().forEach(dtc -> {
-                if (dtc.isSearchField() && 
-                        (dtc.getVisible() == null 
-                        || dtc.getVisible() == ColumnVisibiltiy.VISIBLE 
-                        || dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL && canViewConfidentialInformation)) {
-                    cols.add(dtc);
-                }
-
-            });
-        });
-        return cols;
+        return getDao().findAllSearchableColumns(ds, user);
     }
     
     

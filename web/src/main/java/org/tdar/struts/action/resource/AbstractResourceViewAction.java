@@ -353,4 +353,26 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     public void setVisibleUnmanagedCollections(List<ResourceCollection> visibleUnmanagedCollections) {
         this.visibleUnmanagedCollections = visibleUnmanagedCollections;
     }
+    
+    public Long getMappedDatasetId() {
+        Long datasetId = null;
+        Set<ResourceCollection> parents = new HashSet<>();
+        for (ResourceCollection rc : getEffectiveShares()) {
+            if (rc.getDataset() != null) {
+                datasetId = rc.getDataset().getId();
+                return datasetId;
+            } 
+            parents.addAll(rc.getHierarchicalResourceCollections());
+        }
+        
+        
+        for (ResourceCollection rc : parents) {
+            if (rc.getDataset() != null) {
+                datasetId = rc.getDataset().getId();
+                return datasetId;
+            }
+        }
+        return datasetId;
+    }
+
 }

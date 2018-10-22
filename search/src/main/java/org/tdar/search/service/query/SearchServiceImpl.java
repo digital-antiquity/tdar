@@ -30,14 +30,21 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.SearchInfoObject;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.bean.SolrSearchObject;
@@ -70,16 +77,21 @@ import com.opensymphony.xwork2.TextProvider;
 public class SearchServiceImpl<I extends Indexable> extends AbstractSearchService implements SearchService<I> {
 
     private final GenericService genericService;
+    private final DatasetDao datasetDao;
+
+    private final GenericKeywordService genericKeywordService;
 
     private final SearchDao<I> searchDao;
 
     @Autowired
     public SearchServiceImpl(SessionFactory sessionFactory, GenericService genericDao,
-            AuthenticationService authenticationService, AuthorizationService authorizationService, SearchDao<I> searchDao) {
+            AuthenticationService authenticationService, AuthorizationService authorizationService, SearchDao<I> searchDao, GenericKeywordService genericKeywordService, DatasetDao datasetDao) {
         this.genericService = genericDao;
         this.searchDao = searchDao;
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
+        this.genericKeywordService = genericKeywordService;
+        this.datasetDao = datasetDao;
     }
 
     /**
@@ -392,6 +404,18 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
     public <C> void facetBy(Class<C> c, Collection<C> vals, SearchResultHandler<Indexable> handler) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public SearchInfoObject getSearchInfoObject(TdarUser authenticatedUser) {
+        SearchInfoObject sio = new SearchInfoObject();
+        sio.getAvailableStatuses().addAll(authorizationService.getAllowedSearchStatuses(authenticatedUser));
+        sio.setInvestigationTypes(genericService.findAll(InvestigationType.class));
+        sio.setSiteTypes(genericKeywordService.findAllApproved(SiteTypeKeyword.class));
+        sio.setMaterialTypes(genericKeywordService.findAllApproved(MaterialKeyword.class));
+        sio.setCultureKeywords(genericKeywordService.findAllApproved(CultureKeyword.class));
+        sio.setColumnMap(datasetDao.findAllMappedSearchableDatasets(authenticatedUser));
+        return sio;
     }
 
 }

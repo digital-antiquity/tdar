@@ -49,6 +49,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -59,6 +60,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceProxy;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
@@ -67,6 +69,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.conversion.converters.ExcelWorkbookWriter;
@@ -99,6 +102,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     Pattern originalColumnPattern = Pattern.compile("^(.+)_original_(\\d+)$");
 
+    @Autowired
+    private AuthorizationService authorizationService;
+    
     public DatasetDao() {
         super(Dataset.class);
     }
@@ -122,7 +128,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             @Override
             public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
                 while (rs.next()) {
-                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, true,  rs, false);
+                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, true, rs, false);
                     return results;
                 }
                 return null;
@@ -429,7 +435,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             }
             // first unmap all columns from the removed tables
             if (dataset instanceof Dataset) {
-                unmapAllColumnsInProject(((Dataset)dataset).getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+                unmapAllColumnsInProject(((Dataset) dataset).getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
             }
             for (DataTableColumn column : columnsToRemove) {
                 column.getDataTable().getDataTableColumns().remove(column);
@@ -662,6 +668,33 @@ public class DatasetDao extends ResourceDao<Dataset> {
         Query query = getCurrentSession().createNamedQuery(AUTHORIZED_USERS_FOR_RESOURCE);
         query.setParameter("id", id);
         return query.list();
+    }
+
+    public Map<Long, Set<DataTableColumn>> findAllMappedSearchableDatasets(TdarUser user) {
+        Query<Dataset> query = getCurrentSession().createNamedQuery(TdarNamedQueries.MAPPED_DATASETS, Dataset.class);
+        Map<Long, Set<DataTableColumn>> map = new HashMap<>();
+        for (Dataset dataset : query.list()) {
+            map.put(dataset.getId(), findAllSearchableColumns(dataset, user));
+        }
+        return map;
+    }
+
+    public Set<DataTableColumn> findAllSearchableColumns(Dataset ds, TdarUser user) {
+        Set<DataTableColumn> cols = new HashSet<>();
+        boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(user, ds);
+        ds.getDataTables().forEach(dt -> {
+            dt.getDataTableColumns().forEach(dtc -> {
+                if (dtc.isSearchField() && 
+                        (dtc.getVisible() == null 
+                        || dtc.getVisible() == ColumnVisibiltiy.VISIBLE 
+                        || dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL && canViewConfidentialInformation)) {
+                    cols.add(dtc);
+                }
+
+            });
+        });
+        return cols;
+        
     }
 
 }

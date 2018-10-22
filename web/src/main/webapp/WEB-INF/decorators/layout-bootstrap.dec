@@ -142,6 +142,7 @@ ${head}
 	 data-leaflet-api-key="${config.leafletApiKey}" data-leaflet-tile-provider="${config.leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${config.mapDefaultLat}" data-centerLong="${config.mapDefaultLng}"  data-useGeoLoc="${config.geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
      <#if authenticatedUser?has_content>data-userid="${authenticatedUser.id?c}" data-currentTime="1" </#if>
+     <#if mappedDatasetId?has_content>data-mapped-dataset-id="${mappedDatasetId?c}" </#if>
      <#if ngApplicationName?has_content>ng-cloak</#if>
     >
     <#if hostName?contains("alpha") >

@@ -178,6 +178,9 @@
 </#macro>
 
 <#macro searchform topRight=false>
+    <#if topRight>
+            <div onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();"  class="float-right searchbutton">Search <i class="fa fa-search fa-sm-1x"></i></div>
+    <#else>
                     <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
                         <div class="input-group">
                             <input type="hidden" name="_tdar.searchType" value="simple">
@@ -200,6 +203,7 @@
                     </#if>
                         </div>
                     </form>
+        </#if>
 </#macro>
 
 <#macro searchHero imageClass="whatcanyoudig-image" title="What can you dig up?" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."

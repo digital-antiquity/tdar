@@ -645,4 +645,18 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
         this.permissionsCache = permissionsCache;
     }
 
+    public Long getMappedDatasetId() {
+        Long datasetId = null;
+        if (getResourceCollection().getDataset() != null) {
+            return getResourceCollection().getDataset().getId();
+        }
+        for (ResourceCollection rc : getResourceCollection().getHierarchicalResourceCollections()) {
+            if (rc.getDataset() != null) {
+                datasetId = rc.getDataset().getId();
+                return datasetId;
+            }
+        }
+        return datasetId;
+    }
+
 }

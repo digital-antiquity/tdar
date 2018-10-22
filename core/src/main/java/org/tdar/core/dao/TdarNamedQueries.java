@@ -354,6 +354,7 @@ public interface TdarNamedQueries {
             + "left join collection_parents cp on c.id=cp.collection_id "
             + "left join collection c2 on cp.parent_id=c2.id and c2.status='ACTIVE' "
             + "left join authorized_user au4 on c2.id=au4.resource_collection_id and au4.user_id=:ownerId where au.user_id=:userId and au.resource_id is not null)";
+    String MAPPED_DATASETS = "query.mapped_datasets";
 
 
 

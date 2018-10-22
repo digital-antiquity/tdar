@@ -1026,4 +1026,5 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void setSubmit(String submit) {
         this.submit = submit;
     }
+    
 }

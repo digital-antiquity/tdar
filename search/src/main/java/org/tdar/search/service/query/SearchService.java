@@ -12,6 +12,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.SearchInfoObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.exception.SearchException;
 import org.tdar.search.query.LuceneSearchResultHandler;
@@ -70,5 +71,7 @@ public interface SearchService<I extends Indexable> {
     <C> void facetBy(Class<C> c, Collection<C> vals, SearchResultHandler<Indexable> handler);
 
     void handleSearch(QueryBuilder q, LuceneSearchResultHandler resultHandler, TextProvider textProvider) throws SearchException, IOException;
+
+    SearchInfoObject getSearchInfoObject(TdarUser authenticatedUser);
 
 }
