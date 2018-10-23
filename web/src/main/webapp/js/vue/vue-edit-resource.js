@@ -386,6 +386,16 @@ TDAR.vuejs.resourceEdit= (function(console, ctx, Vue, axios, TDAR) {
                     }
                 },
                 methods: {
+                    showForms: function() {
+                        var list = document.getElementsByClassName("tab-pane");
+                        for (var i = 0; i < list.length; i++) {
+                            var el = list[i];
+                            if (el.id != 'questionaire' && el.id !='tech') {
+                                el.classList.add("show");
+                                el.classList.add("active");
+                            }
+                        }
+                    },
                     visibilityChanged: function(isVisible, entry) {
                         this.isVisible = isVisible;
                         var self = this;

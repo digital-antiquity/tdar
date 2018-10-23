@@ -37,6 +37,10 @@
           <a class="nav-link ml-2" id="tech-tab" data-toggle="pill" href="#tech" role="tab" aria-selected="false">Tech</a>
           <!-- ------------------------------- -->
           <a class="nav-link" id="sink-tab" data-toggle="pill" href="#sink" role="tab" aria-selected="false">Kitchen Sink</a>
+    <br/>
+    <br/>
+    <a @click="showForms()" href="#"><b>Show Forms</b></a>
+
               <button type="button" name="submitbutton" @click="submitForm">Submit</button>
       
     </div>
@@ -505,11 +509,6 @@
                         v-model="resource.inheritingMaterialInformation"
                         :disabled="inheritanceDisabled" />
                     </b>
-                    <div>
-                        controlled:
-                        {{resource.controlledMaterialKeywords.length}}</br>
-                        uncontrolled:{{resource.uncontrolledMaterialKeywords.length}}</br>
-                    </div>
                     <div>
                         <value :choices="materialTypes"
                             ref="materialControlled"
