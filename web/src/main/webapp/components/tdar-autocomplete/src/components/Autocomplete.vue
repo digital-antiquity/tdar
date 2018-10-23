@@ -1,8 +1,25 @@
-TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
-    "use strict";
+<template id="autocomplete">
+  <div class="autocomplete" ref="autocompleteroot" @mouseover="addFocus('mouse')" @mouseout="removeFocus('mouse')">
+    <input type="hidden" v-model="id"  :name="idname" v-if="idname != undefined" />
+    <input type="text" @input="onChange" v-model="search" @keyup.down="onArrowDown" @keyup.up="onArrowUp" v-on:keyup.enter.self.stop="onEnter"
+		@keydown.delete="deleteKey" @keyup.enter="enterKey" @keyup="anyKey" autocomplete="off" :disabled="disabled" 
+		 ref="searchfield" :class="span" :name="fieldname" @focus="addFocus('cursor')" @blur="removeFocus('cursor')"/>
+    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results"  :style="getStyleTop()" ref="autoresults">
+      <li v-if="!isLoading" v-for="(result, i) in results" :key="i" @click="setResult(result)" class="autocomplete-result" :class="{ 'is-active': i === arrowCounter }" :style="getStyleWidth()">
+          <span v-html="render(result)" v-if="isCustomRender()"></span>
+          <span v-if="!isCustomRender()">{{ getDisplay(result) }}  ({{ result.id}})</span>
+      </li>
+      <li class="status text-center center" :style="getStyleWidth()">
+        <span v-if="isLoading">Loading results...</span>
+        <span style='display:block' v-if="!isLoading" @click="createNew" class="createnew">{{createnewtext}}</span> 
+        <span v-if="!isLoading"> Showing 1-{{recordsPerPage}} of {{totalRecords}} </span>
+      </li>
+    </ul>
 
-    var _init = function() {
-    // https://alligator.io/vuejs/vue-autocomplete-component/
+  </div>
+</template>
+
+<script>
     var autocomplete = Vue.component('autocomplete', {
         name: "autocomplete",
         template: "#autocomplete",
@@ -19,10 +36,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           url: {
               type: String
-          },
-          bootstrap4: {
-              type:Boolean,
-              default: false
           },
           suffix: {type: String},
           field: {
@@ -44,7 +57,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           span:{ type:String},
           idname: {type:String},
-          valuename: {type:String},
           name: {type:String},
           disabled: {type:Boolean},
           deletekey: {type: Function},
@@ -130,7 +142,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
                 }
             },
             reset: function() {
-                console.log("reset...");
                 this.clear();
                 this.isOpen = false;
                 this.results = [];
@@ -139,15 +150,8 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             return "width: " + (this.width - 8)+ "px;";
           }, 
           getStyleTop: function() {
-              return "top:" + (this.top) + "px; left:0px;";
+              return "top:" + (this.top) + "px; ";
           }, 
-          getRootClass: function() {
-              if (this.bootstrap4 == true) {
-                  return "row";
-              }
-              return "autocomplete";
-          },
-
           fieldName: function() {
               return this.name;
           },
@@ -159,12 +163,8 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           getDisplay: function(obj) {
           if (obj == undefined) { return ''; }
-          
-          if (typeof obj !== "object") {
-              return obj;
-          }
-            if (this.valuename != undefined) {
-              return obj[this.valuename];
+            if (this.valueprop != undefined) {
+              return obj['valueprop'];
             }
             var ret =  "";
               if (obj.name != undefined) {
@@ -229,23 +229,19 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           filterResults: function() {
             // first uncapitalize all the things
-            var toReturn = new Array();
+            this.results = new Array();
             var self = this;
-
-            this.items.forEach(function(item){
-              if (typeof item === 'string' && item.toLowerCase().indexOf(self.search.toLowerCase()) > -1 ||
-                  self.getDisplay(item).toString().toLowerCase().indexOf(self.search.toLowerCase()) > -1) {
-                      toReturn.push(item);
+            this.items.foreach(function(item){
+              if (item.toLowerCase().indexOf(self.search.toLowerCase()) > -1) {
+                  self.results.add(item);
               }
             });
-             Vue.set(this,"results",toReturn);
           },
           focus: function() {
               this.$refs.searchfield.focus();
           },
           _setResult: function(result) {
             this.searchObj = result;
-            console.log(result);
             this.$emit("autocompletevalueset", result);
             if (result != undefined && result.id != undefined) {
                 this.$emit("setvalueid", result.id);
@@ -260,10 +256,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               this._setResult();
           },
           setResult: function(result) {
-              console.log("setResult", result);
             this.search = this.getDisplay(result);
             this._setResult(result);
-//            console.log(this.search, result);
+            console.log(this.search, result);
             this.isOpen = false;
           },
           onArrowDown: function(evt) {
@@ -278,12 +273,8 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           },
           onEnter: function(e) {
             // make sure you can clear the value with setting
-//              console.log(this.search, this.search == '', this.search == undefined, this.arrowCounter);
-            if (this.arrowCounter > -1) {
+            if (this.arrowCounter > -1 || (this.search == '' || this.search == undefined)) {
               this.setResult( this.results[this.arrowCounter]);
-            }
-            if (this.search != undefined && this.search != '') {
-                this.setResult(this.search);
             }
             this.isOpen = false;
             this.arrowCounter = -1;
@@ -301,7 +292,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
         watch: {
           items: function(val, oldValue) {
             // actually compare them
-              console.log("resetting items");
             if (val.length !== oldValue.length) {
               this.results = val;
               this.isLoading = false;
@@ -310,7 +300,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
         },
         mounted: function() {
           Vue.set(this,"search", this.initial_value);
-          console.log("initial_value",this.search);
           Vue.set(this,"id", this.initial_id);
           document.addEventListener("click", this.handleClickOutside);
         },
@@ -318,15 +307,56 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           document.removeEventListener("click", this.handleClickOutside);
         }
     });
+export { autocomplete}
+</script>
+<style>
+.autocomplete {
+    position: relative;
+    width: 130px;
 }
 
-    if (document.getElementById("autocomplete") != undefined) {
-            _init();
-        }
+.autocomplete-results {
+    padding: 0;
+    margin: 0;
+    z-index:100000;
+    border: 1px solid #eeeeee;
+    line-height: initial;
+    weight: normal;
+    font-weight: normal;
+    overflow: auto;
+    position: absolute;
+    background: white; 
+}
 
-    return {
-        init : _init,
-    }
+.autocomplete-result {
+    list-style: none;
+    text-align: left;
+    padding: 4px 2px;
+    cursor: pointer;
+    line-height: initial;
+    display: inline-block;
+    width: intrinsic;
+}
 
+.autocomplete-result.is-active, .autocomplete-result:hover , .createnew:hover {
+    background-color: #4aae9b;
+    color: white;
+}
 
-})(console, window, Vue, axios);
+.autocomplete .status {
+    font-variant: small-caps;
+    font-weight:700;
+    font-size:90%;
+}
+
+input[autocomplete="off"]::-webkit-autofill,
+input[autocomplete="off"]::-webkit-contacts-auto-fill-button,
+input[autocomplete="off"]::-webkit-credentials-auto-fill-button {
+visibility: hidden;
+display: none !important;
+pointer-events: none;
+height: 0;
+width: 0;
+margin: 0;
+}
+</style>

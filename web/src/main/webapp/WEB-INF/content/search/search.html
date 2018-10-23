@@ -67,24 +67,29 @@
     <div class="col-10" ref='valuearea'>
         <div class="row">
 	        <div v-if="option.type == 'basic' || option.type == undefined" class="col-11">
-    	        <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.searchFieldName" v-if="option.autocompleteUrl != undefined" 
-					:resultsuffix="option.resultSuffix" ref="autocomplete" :span="''" :fieldname="fieldName" :allowCreate="false" :idname="idName"/>
+    	        <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.searchFieldName" v-if="option.autocompleteUrl != undefined"
+                    :bootstrap4="true" 
+					:resultsuffix="option.resultSuffix" ref="autocomplete" :span="'form-control'" :fieldname="fieldName" :allowCreate="false" :idname="idName"/>
 	            <input type="text" :name="valueFieldName" class="form-control" v-if="option.autocompleteUrl == undefined">
      	   </div>
         	<div v-if="option.type == 'select'"  class="col-11">
-             <select :name="valueFieldName" class="form-input" multiple>
+             <select :name="valueFieldName" class="form-control" multiple>
                   <option  v-for="(opt, i) in option.values">{{opt}}</option>
               </select>
  		   </div>
            <div v-if="option.type == 'integer'"  class="col-11">
-              <input type="number" :name="valueFieldName" class=" col-3">
+              <input type="number" :name="valueFieldName" class="form-control col-3">
  		   </div>
            <div v-if="option.type == 'date'"  class="col-11">
-  			   <div class="row">
-                  <input type="date" :name="fieldName + '.start'" class=" col-4">
-                  <input type="date" :name="fieldName + '.end'" class=" col-4">
+  			   <div class="form-row">
+                  <input type="date" :name="fieldName + '.start'" class="form-control col-4">
+                  <input type="date" :name="fieldName + '.end'" class="form-control col-4 ml-2">
 			   </div>
  		    </div>
+            <div v-if="option.type == 'checkbox'" class="col-11">
+                  <value :choices="option.choices" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/> 
+
+            </div>
             <div v-if="option.columnType != undefined"  class="col-11">
                 <span v-if="option.type != 'basic'">
          	        <value :choices="option.fieldValues" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/> 

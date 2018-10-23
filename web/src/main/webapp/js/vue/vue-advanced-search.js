@@ -247,7 +247,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             }, {
                 name : 'Investigation Types',
                 group : 'keywords',
-                type : 'basic',
+                type : 'checkbox',
                 choices : []
             }, ],
             rows : [ {
