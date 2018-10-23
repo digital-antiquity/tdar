@@ -104,7 +104,7 @@ public class ResourceRightsController extends AbstractRightsController implement
             @Result(name = SUCCESS, location = RIGHTS_FTL)
     })
     public String edit() throws TdarActionException {
-        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, new ArrayList<>(), new ArrayList<>(),
+        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, new ArrayList<>(),
                 shares, new ArrayList<>());
 
         setupEdit();

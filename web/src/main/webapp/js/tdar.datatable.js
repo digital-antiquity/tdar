@@ -1792,7 +1792,7 @@ TDAR.datatable = function() {
             if (viewRowSupported) {
                 if (f.displayName == 'Row Id') {
                     col.render = function(data, type, row, meta) {
-                        var url = TDAR.uri(namespace + '/row/' + resourceId + '/' + dataTableId + '/' + row[1]);
+                        var url = TDAR.uri(namespace + '/row/' + resourceId + '/' + dataTableId + '/' + data);
                         return '<a href="' + url + '" title="View row as page..."><i class="fas fa-table"></i></a> ' + data +' </li>';
                     };
                 }
