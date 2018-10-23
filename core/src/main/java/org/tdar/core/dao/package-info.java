@@ -594,7 +594,7 @@
                 query = "select rc.dataset from ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' "),
         @NamedQuery(
                 name = org.tdar.core.dao.TdarNamedQueries.MAPPED_COLLECTIONS,
-                query = "select ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' and rc.dataset.id=:datasetId "),
+                query = "select rc from ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' and rc.dataset.id=:datasetId "),
 })
 package org.tdar.core.dao;
 
