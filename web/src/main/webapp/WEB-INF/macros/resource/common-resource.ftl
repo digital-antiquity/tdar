@@ -234,7 +234,7 @@ Common macros used in multiple contexts
             <#if (depth < 1)><#local clsHidden = "hidden"></#if>
             <#if ((depth < 1) && (collection.transientChildren?size > 0))><#local clsClosed = "closed"></#if>
         <li class="${clsClosed}">
-            <@s.a href="${collection.detailUrl}">${(collection.name)!"No Title"}<#if collection.new><span style="margin-left:.8em" class="label">new</span></#if></@s.a>
+            <@s.a href="${collection.detailUrl}">${(collection.name)!"No Title"}<#if collection.new><span style="margin-left:.8em" class="badge badge-pill badge-secondary">new</span></#if></@s.a>
             <#if collection.transientChildren?has_content>
                 <ul class="${clsHidden}">
                     <#list collection.transientChildren as child>
