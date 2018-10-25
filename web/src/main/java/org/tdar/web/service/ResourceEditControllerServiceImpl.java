@@ -188,12 +188,9 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
      */
     @Override
     @Transactional(readOnly = true)
-    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<ResourceCollection> effectiveShares,
-            List<ResourceCollection> retainedSharedCollections,
-            List<ResourceCollection> effectiveResourceCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
+    public void updateSharesForEdit(Resource resource, TdarUser authenticatedUser,
+            List<ResourceCollection> retainedSharedCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
             List<ResourceCollection> resourceCollections) {
-        effectiveShares.addAll(resourceCollectionService.getEffectiveSharesForResource(resource));
-        effectiveResourceCollections.addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(resource));
 
         logger.debug("loadEffective...");
         for (ResourceCollection rc : resource.getManagedResourceCollections()) {
@@ -215,8 +212,6 @@ public class ResourceEditControllerServiceImpl implements ResourceEditController
         }
         logger.debug(" shares          : {}", shares);
         logger.debug(" shares retained : {}", retainedSharedCollections);
-        logger.debug(" shares effective: {}", effectiveShares);
-
     }
 
     /*

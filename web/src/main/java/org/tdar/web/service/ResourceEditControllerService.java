@@ -29,9 +29,8 @@ public interface ResourceEditControllerService {
     // and maintain original billing account).
     List<BillingAccount> determineActiveAccounts(TdarUser authenticatedUser, Resource resource);
 
-    void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, List<ResourceCollection> effectiveShares,
-            List<ResourceCollection> retainedSharedCollections,
-            List<ResourceCollection> effectiveResourceCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
+    void updateSharesForEdit(Resource resource, TdarUser authenticatedUser, 
+            List<ResourceCollection> retainedSharedCollections, List<ResourceCollection> retainedListCollections, List<ResourceCollection> shares,
             List<ResourceCollection> resourceCollections);
 
     String loadFilesJson(InformationResource persistable);
