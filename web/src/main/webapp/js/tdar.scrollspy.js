@@ -26,6 +26,8 @@ TDAR.scrollspy = (function(TDAR, $) {
                 } else if (scrollTop < 189) {
                     $nav.removeClass('hidden');
                     $nav.removeClass('affix');
+                } else {
+                    $nav.removeClass('hidden');
                 }
             });
         });

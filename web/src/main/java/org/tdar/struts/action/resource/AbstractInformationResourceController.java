@@ -113,6 +113,19 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     private String uploadSettings;
     private String vueFilesFallback;
 
+    
+    private boolean inheritingCollectionInformation;
+    private boolean inheritingCulturalInformation;
+    private boolean inheritingIdentifierInformation;
+    private boolean inheritingInvestigationInformation;
+    private boolean inheritingMaterialInformation;
+    private boolean inheritingNoteInformation;
+    private boolean inheritingOtherInformation;
+    private boolean inheritingSiteInformation;
+    private boolean inheritingSpatialInformation;
+    private boolean inheritingTemporalInformation;
+    private boolean inheritingIndividualAndInstitutionalCredit;
+    
     // previously uploaded files list in json format, needed by blueimp jquery file upload
     private String filesJson = null;
 
@@ -162,6 +175,31 @@ public abstract class AbstractInformationResourceController<R extends Informatio
         getResource().setMetadataLanguage(metadataLanguage);
         // handle dataset availability + date made public
 
+        getLogger().debug("isInheritingInvestigationInformation: {} -> {}",getResource().isInheritingInvestigationInformation(), inheritingInvestigationInformation);
+        getLogger().debug("isInheritingSiteInformation: {} -> {}",getResource().isInheritingSiteInformation(), inheritingSiteInformation);
+        getLogger().debug("isInheritingMaterialInformation: {} -> {}",getResource().isInheritingMaterialInformation(), inheritingMaterialInformation);
+        getLogger().debug("isInheritingCulturalInformation: {} -> {}",getResource().isInheritingCulturalInformation(), inheritingCulturalInformation);
+        getLogger().debug("isInheritingSpatialInformation: {} -> {}",getResource().isInheritingSpatialInformation(), inheritingSpatialInformation);
+        getLogger().debug("isInheritingTemporalInformation: {} -> {}",getResource().isInheritingTemporalInformation(), inheritingTemporalInformation);
+        getLogger().debug("isInheritingOtherInformation: {} -> {}",getResource().isInheritingOtherInformation(), inheritingOtherInformation);
+        getLogger().debug("isInheritingIndividualAndInstitutionalCredit: {} -> {}",getResource().isInheritingIndividualAndInstitutionalCredit(), inheritingIndividualAndInstitutionalCredit);
+        getLogger().debug("isInheritingCollectionInformation: {} -> {}",getResource().isInheritingCollectionInformation(), inheritingCollectionInformation);
+        getLogger().debug("isInheritingNoteInformation: {} -> {}",getResource().isInheritingNoteInformation(), inheritingNoteInformation);
+        getLogger().debug("isInheritingIdentifierInformation: {} -> {}",getResource().isInheritingIdentifierInformation(), inheritingIdentifierInformation);
+
+        getResource().setInheritingCollectionInformation(isInheritingCollectionInformation());
+        getResource().setInheritingCulturalInformation(isInheritingCulturalInformation());
+        getResource().setInheritingIdentifierInformation(isInheritingIdentifierInformation());
+        getResource().setInheritingInvestigationInformation(isInheritingInvestigationInformation());
+        getResource().setInheritingMaterialInformation(isInheritingMaterialInformation());
+        getResource().setInheritingNoteInformation(isInheritingNoteInformation());
+        getResource().setInheritingOtherInformation(isInheritingOtherInformation());
+        getResource().setInheritingSiteInformation(isInheritingSiteInformation());
+        getResource().setInheritingSpatialInformation(isInheritingSpatialInformation());
+        getResource().setInheritingTemporalInformation(isInheritingTemporalInformation());
+        getResource().setInheritingIndividualAndInstitutionalCredit(isInheritingIndividualAndInstitutionalCredit());
+
+        
         proxy.setResourceProviderInstitutionName(resourceProviderInstitutionName);
         proxy.setPublisherName(publisherName);
         proxy.setCopyrightHolder(copyrightHolderProxies);
@@ -309,6 +347,18 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     public String loadEditMetadata() throws TdarActionException {
         setProjectId(getResource().getProjectId());
+        setInheritingCollectionInformation(getResource().isInheritingCollectionInformation());
+        setInheritingCulturalInformation(getResource().isInheritingCulturalInformation());
+        setInheritingIdentifierInformation(getResource().isInheritingIdentifierInformation());
+        setInheritingInvestigationInformation(getResource().isInheritingInvestigationInformation());
+        setInheritingMaterialInformation(getResource().isInheritingMaterialInformation());
+        setInheritingNoteInformation(getResource().isInheritingNoteInformation());
+        setInheritingOtherInformation(getResource().isInheritingOtherInformation());
+        setInheritingSiteInformation(getResource().isInheritingSiteInformation());
+        setInheritingSpatialInformation(getResource().isInheritingSpatialInformation());
+        setInheritingTemporalInformation(getResource().isInheritingTemporalInformation());
+        setInheritingIndividualAndInstitutionalCredit(getResource().isInheritingIndividualAndInstitutionalCredit());
+
         return super.loadEditMetadata();
     }
 
@@ -690,5 +740,93 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     public void setTdarFiles(List<TdarFile> tdarFiles) {
         this.tdarFiles = tdarFiles;
     }
-    
+
+    public boolean isInheritingCollectionInformation() {
+        return inheritingCollectionInformation;
+    }
+
+    public void setInheritingCollectionInformation(boolean inheritingCollectionInformation) {
+        this.inheritingCollectionInformation = inheritingCollectionInformation;
+    }
+
+    public boolean isInheritingCulturalInformation() {
+        return inheritingCulturalInformation;
+    }
+
+    public void setInheritingCulturalInformation(boolean inheritingCulturalInformation) {
+        this.inheritingCulturalInformation = inheritingCulturalInformation;
+    }
+
+    public boolean isInheritingIdentifierInformation() {
+        return inheritingIdentifierInformation;
+    }
+
+    public void setInheritingIdentifierInformation(boolean inheritingIdentifierInformation) {
+        this.inheritingIdentifierInformation = inheritingIdentifierInformation;
+    }
+
+    public boolean isInheritingInvestigationInformation() {
+        return inheritingInvestigationInformation;
+    }
+
+    public void setInheritingInvestigationInformation(boolean inheritingInvestigationInformation) {
+        this.inheritingInvestigationInformation = inheritingInvestigationInformation;
+    }
+
+    public boolean isInheritingMaterialInformation() {
+        return inheritingMaterialInformation;
+    }
+
+    public void setInheritingMaterialInformation(boolean inheritingMaterialInformation) {
+        this.inheritingMaterialInformation = inheritingMaterialInformation;
+    }
+
+    public boolean isInheritingNoteInformation() {
+        return inheritingNoteInformation;
+    }
+
+    public void setInheritingNoteInformation(boolean inheritingNoteInformation) {
+        this.inheritingNoteInformation = inheritingNoteInformation;
+    }
+
+    public boolean isInheritingOtherInformation() {
+        return inheritingOtherInformation;
+    }
+
+    public void setInheritingOtherInformation(boolean inheritingOtherInformation) {
+        this.inheritingOtherInformation = inheritingOtherInformation;
+    }
+
+    public boolean isInheritingSiteInformation() {
+        return inheritingSiteInformation;
+    }
+
+    public void setInheritingSiteInformation(boolean inheritingSiteInformation) {
+        this.inheritingSiteInformation = inheritingSiteInformation;
+    }
+
+    public boolean isInheritingSpatialInformation() {
+        return inheritingSpatialInformation;
+    }
+
+    public void setInheritingSpatialInformation(boolean inheritingSpatialInformation) {
+        this.inheritingSpatialInformation = inheritingSpatialInformation;
+    }
+
+    public boolean isInheritingTemporalInformation() {
+        return inheritingTemporalInformation;
+    }
+
+    public void setInheritingTemporalInformation(boolean inheritingTemporalInformation) {
+        this.inheritingTemporalInformation = inheritingTemporalInformation;
+    }
+
+    public boolean isInheritingIndividualAndInstitutionalCredit() {
+        return inheritingIndividualAndInstitutionalCredit;
+    }
+
+    public void setInheritingIndividualAndInstitutionalCredit(boolean inheritingIndividualAndInstitutionalCredit) {
+        this.inheritingIndividualAndInstitutionalCredit = inheritingIndividualAndInstitutionalCredit;
+    }
+
 }

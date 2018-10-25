@@ -93,8 +93,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.setApprovedMaterialKeywordIds(materialKeywordIds);
         List<Long> siteTypeKeywordIds = genericService.findRandomIds(SiteTypeKeyword.class, 3);
         Collections.sort(siteTypeKeywordIds);
-        bulkUploadController.getPersistable().setInheritingCulturalInformation(true);
-        bulkUploadController.getPersistable().setInheritingIndividualAndInstitutionalCredit(true);
+        bulkUploadController.setInheritingCulturalInformation(true);
+        bulkUploadController.setInheritingIndividualAndInstitutionalCredit(true);
         bulkUploadController.setApprovedSiteTypeKeywordIds(siteTypeKeywordIds);
         ResourceNote note = new ResourceNote(ResourceNoteType.GENERAL, "A harrowing tale of note");
         bulkUploadController.getResourceNotes().addAll(Arrays.asList(note));
