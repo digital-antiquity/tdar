@@ -414,7 +414,7 @@ public class SearchServiceImpl<I extends Indexable> extends AbstractSearchServic
         sio.setSiteTypes(genericKeywordService.findAllApproved(SiteTypeKeyword.class));
         sio.setMaterialTypes(genericKeywordService.findAllApproved(MaterialKeyword.class));
         sio.setCultureKeywords(genericKeywordService.findAllApproved(CultureKeyword.class));
-        sio.setColumnMap(datasetDao.findAllMappedSearchableDatasets(authenticatedUser));
+        sio.setDatasetReferences(datasetDao.findAllMappedSearchableDatasets(authenticatedUser));
         return sio;
     }
 

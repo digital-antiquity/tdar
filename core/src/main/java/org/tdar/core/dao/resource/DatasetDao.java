@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,6 +81,7 @@ import org.tdar.db.model.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.VersionType;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.utils.DatasetRef;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.XmlEscapeHelper;
 
@@ -672,13 +674,30 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return query.list();
     }
 
-    public Map<Long, Set<DataTableColumn>> findAllMappedSearchableDatasets(TdarUser user) {
+    public List<DatasetRef> findAllMappedSearchableDatasets(TdarUser user) {
         Query<Dataset> query = getCurrentSession().createNamedQuery(TdarNamedQueries.MAPPED_DATASETS, Dataset.class);
-        Map<Long, Set<DataTableColumn>> map = new HashMap<>();
+        List<DatasetRef> refs = new ArrayList<>();
         for (Dataset dataset : query.list()) {
-            map.put(dataset.getId(), findAllSearchableColumns(dataset, user));
+            DatasetRef ref = new DatasetRef();
+            ref.setId(dataset.getId());
+            ref.setTitle(dataset.getTitle());
+            ref.setColumns(findAllSearchableColumns(dataset, user));
+            List<Long> ids = new ArrayList<>();
+            // build the tree of collections that we should show this for
+            for (ResourceCollection p : dataset.getManagedResourceCollections()) {
+                List<Long> treeIds = new ArrayList<>();
+                for (ResourceCollection c : p.getHierarchicalResourceCollections()) {
+                    treeIds.add(c.getId());
+                    if (Objects.equals(c.getDataset(), dataset)) {
+                        ids.addAll(treeIds);
+                        treeIds.clear();
+                    }
+                }
+            }
+            
+            refs.add(ref);
         }
-        return map;
+        return refs;
     }
 
     public Set<DataTableColumn> findAllSearchableColumns(Dataset ds, TdarUser user) {

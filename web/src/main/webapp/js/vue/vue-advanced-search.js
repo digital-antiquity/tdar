@@ -262,7 +262,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 url : '/api/search/info',
             }).then(function(response) {
                 console.log(response.data);
-                Vue.set(self, "columnMap", response.data.columnMap);
+                Vue.set(self, "columnMap", response.data.datasetReferences);
                 self.selectOptions.forEach(function(opt) {
                     if (opt.name == 'Investigation Types') {
                         Vue.set(opt, "choices", response.data.investigationTypes);
@@ -292,13 +292,22 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 this.rows.splice(idx, 1);
             },
             addColumnInfo : function(datasetId) {
-                if (this.columnMap[datasetId] == undefined) {
+                var dataset = undefined;
+                this.columnMap.forEach(function(ds) {
+                    console.log(ds, datasetId);
+                    if (ds.id == datasetId) {
+                        dataset = ds;
+                    }
+                    
+                });
+
+                if (dataset == undefined) {
                     return;
                 }
 
                 var self = this;
-                console.log("adding column info for:", datasetId, this.columnMap[datasetId]);
-                this.columnMap[datasetId].forEach(function(field) {
+                console.log("adding column info for:", datasetId, dataset);
+                dataset.columns.forEach(function(field) {
                     var values = [];
                     var type = "basic";
                     if (field.intValues.length > 0) {
@@ -320,6 +329,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         group : 'custom',
                         id : field.id,
                         fieldValues : values,
+                        choices : values,
                         columnType : field.columnDataType
                     })
 

@@ -2,21 +2,18 @@ package org.tdar.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.utils.DatasetRef;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonAutoDetect(getterVisibility = Visibility.PUBLIC_ONLY)
@@ -30,7 +27,7 @@ public class SearchInfoObject implements Serializable {
     private List<InvestigationType> investigationTypes = new ArrayList<>();
     private List<CultureKeyword> cultureKeywords = new ArrayList<>();
     private List<MaterialKeyword> materialTypes = new ArrayList<>();
-    private Map<Long, Set<DataTableColumn>> columnMap = new HashMap<>();
+    private List<DatasetRef> datasetReferences = new ArrayList<>();
 
     public List<Status> getAvailableStatuses() {
         return availableStatuses;
@@ -56,14 +53,6 @@ public class SearchInfoObject implements Serializable {
         this.investigationTypes = investigationTypes;
     }
 
-    public Map<Long, Set<DataTableColumn>> getColumnMap() {
-        return columnMap;
-    }
-
-    public void setColumnMap(Map<Long, Set<DataTableColumn>> map) {
-        this.columnMap = map;
-    }
-
     public List<MaterialKeyword> getMaterialTypes() {
         return materialTypes;
     }
@@ -78,6 +67,14 @@ public class SearchInfoObject implements Serializable {
 
     public void setCultureKeywords(List<CultureKeyword> cultureKeywords) {
         this.cultureKeywords = cultureKeywords;
+    }
+
+    public List<DatasetRef> getDatasetReferences() {
+        return datasetReferences;
+    }
+
+    public void setDatasetReferences(List<DatasetRef> datasetReferences) {
+        this.datasetReferences = datasetReferences;
     }
 
 }
