@@ -87,6 +87,7 @@
     <field name="rcroleIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="CONTACT" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="AUTHOR" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
+    <field name="ANALYST" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="CONTRIBUTOR" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="EDITOR" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="TRANSLATOR" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>

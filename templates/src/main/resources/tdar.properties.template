@@ -102,20 +102,20 @@ pay.per.contribution.enabled=false
 tmp.dir=/tmp
 
 # where the filestore lives that all archived materials are stored
-# default: ${user.home}/data/tdar_${hg.branch}/filestore
-file.store.location=${user.home}/data/tdar_${hg.branch}/filestore
+# default: ${user.home}/data/tdar/filestore
+file.store.location=${user.home}/data/tdar/filestore
 
 # what type of filestore should be used (deprecated)
 # default: org.tdar.filestore.PairtreeFilestore
 file.store.class=org.tdar.filestore.PairtreeFilestore
 
 # where should the personal filestore live (used for information about people, for things they create, and temporary storage)
-# default: ${user.home}/data/tdar_${hg.branch}/personal-filestore
-personal.file.store.location=${user.home}/data/tdar_${hg.branch}/personal-filestore
+# default: ${user.home}/data/tdar/personal-filestore
+personal.file.store.location=${user.home}/data/tdar/personal-filestore
 
 # path to the '/hosted/' virtual directory.  This only applies in a non-production setting
 # default: ${personal.file.store.location}/hosted
-hosted.file.store.location=${user.home}/data/tdar_${hg.branch}/hosted-filestore
+hosted.file.store.location=${user.home}/data/tdar/hosted-filestore
 
 
 # Freemarker template directory (where custom freemarker templates are stored for emails and other tasks (Not web pages))
