@@ -74,7 +74,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].south", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].west", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        extra.put("resource.inheritingInvestigationInformation", "true");
+        extra.put("inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
@@ -156,7 +156,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].west", "-71.41018867492676");
         setupTestUserProxy(extra);
         extra.put(PROJECT_ID_FIELDNAME, "3805");
-        extra.put("resource.inheritingInvestigationInformation", "true");
+        extra.put("inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
         File testImagesDirectory = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);

@@ -124,10 +124,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
     private List<ResourceCollection> resourceCollections = new ArrayList<>();
-    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCollection> shares = new ArrayList<>();
-    private List<ResourceCollection> effectiveShares = new ArrayList<>();
     private List<ResourceCollection> retainedSharedCollections = new ArrayList<>();
     private List<ResourceCollection> retainedListCollections = new ArrayList<>();
 
@@ -520,8 +518,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         getRelatedComparativeCollections().addAll(getResource().getRelatedComparativeCollections());
         editService.initializeResourceCreatorProxyLists(authWrapper, getAuthorshipProxies(), getCreditProxies());
         getResourceAnnotations().addAll(getResource().getResourceAnnotations());
-        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), effectiveShares, retainedSharedCollections, effectiveResourceCollections,
-                retainedListCollections, shares, effectiveResourceCollections);
+        editService.updateSharesForEdit(getResource(), getAuthenticatedUser(), retainedSharedCollections, 
+                retainedListCollections, shares, resourceCollections);
     }
 
     public List<String> getSiteNameKeywords() {
@@ -868,21 +866,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return shares;
     }
 
-    /**
-     * @return the effectiveResourceCollections
-     */
-    public List<ResourceCollection> getEffectiveShares() {
-        return effectiveShares;
-    }
-
-    /**
-     * @param effectiveResourceCollections
-     *            the effectiveResourceCollections to set
-     */
-    public void setEffectiveShares(List<ResourceCollection> effectiveResourceCollections) {
-        this.effectiveShares = effectiveResourceCollections;
-    }
-
     public Long getAccountId() {
         return accountId;
     }
@@ -1003,13 +986,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.select2SingleEnabled = select2SingleEnabled;
     }
 
-    public List<ResourceCollection> getEffectiveResourceCollections() {
-        return effectiveResourceCollections;
-    }
-
-    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
-        this.effectiveResourceCollections = effectiveResourceCollections;
-    }
+//    public List<ResourceCollection> getEffectiveResourceCollections() {
+//        return effectiveResourceCollections;
+//    }
+//
+//    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
+//        this.effectiveResourceCollections = effectiveResourceCollections;
+//    }
 
     public List<ResourceCollection> getResourceCollections() {
         return resourceCollections;
@@ -1026,5 +1009,20 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public void setSubmit(String submit) {
         this.submit = submit;
     }
-    
+
+    public List<ResourceCollection> getRetainedSharedCollections() {
+        return retainedSharedCollections;
+    }
+
+    public void setRetainedSharedCollections(List<ResourceCollection> retainedSharedCollections) {
+        this.retainedSharedCollections = retainedSharedCollections;
+    }
+
+    public List<ResourceCollection> getRetainedListCollections() {
+        return retainedListCollections;
+    }
+
+    public void setRetainedListCollections(List<ResourceCollection> retainedListCollections) {
+        this.retainedListCollections = retainedListCollections;
+    }
 }
