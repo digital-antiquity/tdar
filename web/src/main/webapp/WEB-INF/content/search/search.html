@@ -106,6 +106,7 @@
                <div class="mapdiv"></div>
             </div>
          <div class="col-1">
+             <span v-if="infoLink != undefined"><a :href="infoLink" class="btn  btn-mini " tabindex="-1" target="_blank"><i class="fas fa-info-circle "></i></a></span>
              <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="fas fa-trash-alt "></i></button>
           </div>
          </div>

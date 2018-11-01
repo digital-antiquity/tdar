@@ -55,6 +55,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 }
                 return "groups[0]." + this.option.idName.replace("[]", "[" + this.index + "]");
             },
+            infoLink: function() {
+                if (this.option == undefined || this.option.infoLink == undefined) {
+                    return undefined;
+                }
+                return this.option.infoLink;
+            }
         },
         methods : {
             reset : function() {
@@ -329,6 +335,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         group : 'custom',
                         id : field.id,
                         fieldValues : values,
+                        infoLink : '/dataset/column/' + datasetId + "/" + field.id,
                         choices : values,
                         columnType : field.columnDataType
                     })
