@@ -180,7 +180,7 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
                 dataTable = dataTables.iterator().next();
             }
         }
-        if (PersistableUtils.isNullOrTransient(getResource().getProject()) || Project.NULL.equals(getResource().getProject())) {
+        if (datasetService.hasMappedCollection(getPersistable()) == false) {
             addActionError(getText("resourceMappingMetadataController.requires_project"));
         }
     }

@@ -79,7 +79,7 @@ public interface DatasetService {
      * Based on a set of @link DataTableColumn entries, and a @link Project we can will clear out the existing mappings; and then identify mappings that need to
      * be made.
      */
-    List<DataTableColumn> prepareAndFindMappings(Project project, Collection<DataTableColumn> columns);
+    List<DataTableColumn> prepareAndFindMappings(Dataset dataset, Collection<DataTableColumn> columns);
 
     /*
      * Finds all Dataset Ids
@@ -147,5 +147,7 @@ public interface DatasetService {
     Set<DataTableColumn> findSearchableColumns(Dataset ds, TdarUser user);
 
     Set<String> findAutocompleteValues(Dataset dataset, DataTableColumn column, String value, TdarUser authenticatedUser);
+
+    boolean hasMappedCollection(Dataset dataset);
 
 }

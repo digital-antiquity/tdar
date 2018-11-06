@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.core.service.resource.DatasetService;
 import org.tdar.db.datatable.ImportColumn;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.struts_base.action.TdarActionException;
@@ -30,6 +31,8 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
 
     @Autowired
     private transient DataTableService dataTableService;
+    @Autowired
+    private transient DatasetService datasetService;
 
     @Autowired
     private transient SerializationService serializationService;
@@ -109,7 +112,7 @@ public abstract class AbstractDatasetViewAction<D extends Dataset> extends Abstr
             return false;
         }
 
-        if (getPersistable().getProject() == Project.NULL) {
+        if (datasetService.hasMappedCollection(getPersistable()) == false) {
             return false;
         }
 

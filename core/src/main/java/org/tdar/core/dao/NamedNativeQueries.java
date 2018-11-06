@@ -46,9 +46,9 @@ public final class NamedNativeQueries {
         String sql = "update information_resource ir_ set mappeddatakeycolumn_id=%s, mappedDataKeyValue='%s' from information_resource ir inner join " +
                 "information_resource_file irf on ir.id=irf.information_resource_id " +
                 "inner join information_resource_file_version irfv on irf.id=irfv.information_resource_file_id " +
-                "WHERE ir.project_id=%s and %s in ('%s') and irfv.internal_type in ('%s') and ir.id=ir_.id";
+                "WHERE ir_.id in (select resource_id from collection_resource where collection_id=%s) or ir_.id in (select resource_id from collection_resource cr, collection_parents cp where cr.collection_id=cp.collection_id and parent_id=%s) and %s in ('%s') and irfv.internal_type in ('%s') and ir.id=ir_.id";
 
-        return String.format(sql, column.getId(), StringEscapeUtils.escapeSql(value), project.getId(),
+        return String.format(sql, column.getId(), StringEscapeUtils.escapeSql(value), project.getId(),project.getId(),
                 filenameCheck, filenameList, versionList);
     }
 
@@ -62,9 +62,9 @@ public final class NamedNativeQueries {
         }
 
         String sql = "update information_resource ir_ set mappeddatakeycolumn_id=NULL, mappedDataKeyValue=NULL " +
-                "WHERE ir_.project_id=%s and mappeddatakeycolumn_id in (%s)";
+                "WHERE  (ir_.id in (select resource_id from collection_resource where collection_id=%s) or ir_.id in (select resource_id from collection_resource cr, collection_parents cp where cr.collection_id=cp.collection_id and parent_id=%s)) and mappeddatakeycolumn_id in (%s)";
 
-        return String.format(sql, projectId, sb.toString());
+        return String.format(sql, projectId,projectId, sb.toString());
     }
 
     public static String generateDashboardGraphQuery(Person user, Permissions permission) {

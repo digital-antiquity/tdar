@@ -30,7 +30,7 @@
                     <form class="inline" style="display:inline">
                         <select name="chooseColumn" id="chooseColumn" style="display: inline-block;margin-bottom: -1px;">
                             <#list dataTableColumns?sort_by("sequenceNumber") as column>
-                                <option value="columnDiv_${column_index}">${column.displayName}</option>
+                                <option value="columnDiv_${column_index}">${column.displayName!''}</option>
                             </#list>
                         </select>
                     </form>

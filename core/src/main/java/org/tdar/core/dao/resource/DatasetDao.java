@@ -194,7 +194,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     public void resetColumnMappings(ResourceCollection project) {
         Query query = getCurrentSession().createNativeQuery(TdarNamedQueries.UPDATE_CLEAR_MAPPINGS);
-        query.setParameter("collectionId", project.getId() );
+        query.setParameter("collection_id", project.getId() );
         query.executeUpdate();
     }
 
@@ -263,11 +263,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
         logger.debug("{} rows updated", executeUpdate);
     }
 
-    public void unmapAllColumnsInProject(Long projectId, List<Long> columns) {
+    public void unmapAllColumnsInProject(Long collectionId, List<Long> columns) {
         if (CollectionUtils.isEmpty(columns)) {
             return;
         }
-        String rawsql = NamedNativeQueries.removeDatasetMappings(projectId, columns);
+        String rawsql = NamedNativeQueries.removeDatasetMappings(collectionId, columns);
         logger.trace(rawsql);
         Query query = getCurrentSession().createNativeQuery(rawsql);
         int executeUpdate = query.executeUpdate();

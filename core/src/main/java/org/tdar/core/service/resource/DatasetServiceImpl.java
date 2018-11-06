@@ -377,24 +377,26 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
      */
     @Override
     @Transactional
-    public List<DataTableColumn> prepareAndFindMappings(Project project, Collection<DataTableColumn> columns) {
+    public List<DataTableColumn> prepareAndFindMappings(Dataset dataset, Collection<DataTableColumn> columns) {
         List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
+        
+        if (dataset == null) {
+            throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column", Arrays.asList(dataset));
+        }
+
         if (CollectionUtils.isEmpty(columns)) {
             return columnsToMap;
         }
-        if (project == Project.NULL) {
-            throw new TdarRecoverableRuntimeException("datasetService.no_project_specified");
+
+        ResourceCollection collection = getDao().findMappedCollectionForDataset(dataset);
+        if (collection == null) {
+            return null;
         }
-        getDao().unmapAllColumnsInProject(project.getId(), PersistableUtils.extractIds(columns));
+
+        getDao().unmapAllColumnsInProject(collection.getId(), PersistableUtils.extractIds(columns));
         for (DataTableColumn column : columns) {
             getLogger().info("mapping dataset to resources using column: {} ", column);
-            Dataset dataset = dataTableDao.findDatasetForTable(column.getDataTable());
 
-            if (dataset == null) {
-                throw new TdarRecoverableRuntimeException("datasetService.dataset_null_column", Arrays.asList(column));
-            } else if (ObjectUtils.notEqual(project, dataset.getProject())) {
-                throw new TdarRecoverableRuntimeException("datasetService.dataset_different_project", Arrays.asList(project, dataset.getProject()));
-            }
             if (column.isMappingColumn()) {
                 columnsToMap.add(column);
                 // FIXME: could add custom logic to add a backpointer (new column) to DB that has "mapped" set to true based on updatedValues
@@ -599,7 +601,7 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
             getDao().update(existingColumn);
         }
         dataset.markUpdated(authenticatedUser);
-        List<DataTableColumn> toReturn = prepareAndFindMappings(dataset.getProject(), columnsToMap);
+        List<DataTableColumn> toReturn = prepareAndFindMappings(dataset, columnsToMap);
         save(dataset);
         logDataTableColumns(dataTable, "column metadata mapping", authenticatedUser, start);
         getLogger().info("mappingColumns: {} ", toReturn);
@@ -693,6 +695,12 @@ public class DatasetServiceImpl extends ServiceInterface.TypedDaoBase<Dataset, D
         remapAllColumns(find(datasetId));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public boolean hasMappedCollection(Dataset dataset) {
+        return getDao().findMappedCollectionForDataset(dataset) != null;
+    }
+    
     private void remapAllColumns(Dataset dataset) {
         ResourceCollection collection = getDao().findMappedCollectionForDataset(dataset);
         List<DataTableColumn> columns = new ArrayList<>();
