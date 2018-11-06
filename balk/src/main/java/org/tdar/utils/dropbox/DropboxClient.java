@@ -38,7 +38,7 @@ public class DropboxClient {
 
     private static final String DbxRequestConfig = null;
     final String DEBUG2 = "debug";
-    final String DROPBOX_CURSOR = "dropbox.cursor";
+//    final String DROPBOX_CURSOR = "dropbox.cursor";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private File propertiesFile;
     private DbxClientV2 client;
