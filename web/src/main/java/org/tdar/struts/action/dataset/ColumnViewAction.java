@@ -66,6 +66,11 @@ public class ColumnViewAction extends AbstractAuthenticatableAction implements P
         if (getColumnId() != null) {
             this.setDataTableColumn(getGenericService().find(DataTableColumn.class,getColumnId()));
         }
+        
+        if (!authorizationService.canViewConfidentialInformation(getAuthenticatedUser(), getResource())) {
+            addActionError("error.permission_denied");
+        }
+
     }
 
     public Long getId() {
