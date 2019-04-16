@@ -1,7 +1,10 @@
 .project
 .settings
 .classpath
+<<<<<<< Updated upstream
 .vscode
+=======
+>>>>>>> Stashed changes
 .factorypath
 jetty-ssl.keystore
 */target
