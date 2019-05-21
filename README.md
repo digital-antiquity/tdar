@@ -17,6 +17,7 @@ For more information, please visit http://www.tdar.org
 * npm 5.6+
 * Chrome (for Selenium)
 * chromedriver (for selenium; in unix assumed to be in /usr/local/bin/chromedriver; if mac /Applications/chromedriver )
+* phantomjs (for karma tests)
 
 ## getting the basic environment setup
 1. check out the source from http://bitbucket.org/tdar/tdar.src
