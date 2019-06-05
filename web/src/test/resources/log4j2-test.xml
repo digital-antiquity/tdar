@@ -4,7 +4,7 @@
                 <Console name="Console" target="SYSTEM_OUT">
                         <PatternLayout pattern="%-5p %d %-4r [%t %x] (%F:%L) %c - %m%n" />
                 </Console>
-                <PatternSMTP name="Mail" to="adam.brin@asu.edu" from="tdar-dev-error@dev.tdar.org" smtpHost="localhost" bufferSize="100">
+                <PatternSMTP name="Mail" to="jim.devos@asu.edu" from="tdar-dev-error@dev.tdar.org" smtpHost="localhost" bufferSize="100">
                         <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
                         <PatternLayout>
                                 <pattern>%d{MMM-dd HH:mm:ss} %-5p %t %x %c - %m%n</pattern>
@@ -27,6 +27,7 @@
                 <Logger name="org.liquibase" level="error" />
                 <Logger name="org.tdar" level="DEBUG" />
                 <Logger name="uk.org" level="debug" />
+                <Logger name="org.tdar.core.dao.resource.DatasetDao" level="trace" />
 
                 <!--// log parameterized SQL statements -->
 

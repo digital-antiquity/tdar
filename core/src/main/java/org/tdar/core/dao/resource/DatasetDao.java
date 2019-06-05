@@ -239,9 +239,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                         org.apache.commons.lang.StringEscapeUtils.escapeSql(columnValue.toLowerCase()));
                 NativeQuery insert = getCurrentSession().createNativeQuery(format);
                 insert.executeUpdate();
-                if (count % 250 == 0) {
-                    logger.trace(format);
-                }
+                logger.trace(format);
                 count++;
             }
         }
@@ -250,11 +248,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (column.isIgnoreFileExtension()) {
             filenameCheck = "substring(lower(irfv.filename), 0, length(irfv.filename) - length(irfv.extension) + 1)";
         }
+        // FIXME: SQL Injection vulnerability. Use parameterizd query instead.
         String format = String.format(
                 "update information_resource ir_ set mappeddatakeycolumn_id=%s, mappedDataKeyValue=actual from MATCH%s, information_resource ir inner join "
                         + "information_resource_file irf on ir.id=irf.information_resource_id " +
                         "inner join information_resource_file_version irfv on irf.id=irfv.information_resource_file_id " +
-                        "WHERE ir.id in (select collection_id from collection_resource where collection_id =%s or collection_id in (select collection_id from collection_parents where parent_id=%s)) "
+                        "WHERE ir.id in (select resource_id from collection_resource where collection_id =%s or collection_id in (select collection_id from collection_parents where parent_id=%s)) "
                         + " and lower(key)=%s and irfv.internal_type in ('%s') and ir.id=ir_.id and ir.mappedDataKeyValue is null",
                 column.getId(), timestamp, collection.getId(), collection.getId(), filenameCheck, StringUtils.join(types, "','"));
         NativeQuery matching = getCurrentSession().createNativeQuery(format);

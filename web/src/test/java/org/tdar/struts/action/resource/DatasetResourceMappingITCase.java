@@ -1,16 +1,13 @@
 package org.tdar.struts.action.resource;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +15,21 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.dataset.ResourceMappingMetadataController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts_base.action.TdarActionException;
+
+import static org.junit.Assert.*;
 
 public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase implements TestFileUploadHelper {
 
@@ -40,15 +41,37 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
     Dataset sharedDataset = null;
     List<Long> sharedImageIds;
 
+
+    private ResourceCollection newResourceCollection(String name, String desc) {
+        ResourceCollection rc = new ResourceCollection();
+        rc.setName("test project");
+        rc.setDescription("mapping test");
+        rc.markUpdated(getSessionUser());
+        genericService.save(rc);
+        return rc;
+    }
+
+    private <T extends AbstractPersistableController & Preparable> T generateNewPreparedController(Class<T> controllerClass, Long id) throws TdarActionException{
+        T controller = generateNewInitializedController(controllerClass, null);
+        controller.prepare();
+        if(id != null) {
+            controller.setId(id);
+            controller.prepare();
+        }
+        return controller;
+    }
+
+
     @Test
     @Rollback(false)
     public void testDatasetMapping() throws Exception {
 
-        Project project = new Project();
-        project.setTitle("test project");
-        project.setDescription("mapping test");
-        project.markUpdated(getSessionUser());
-        genericService.save(project);
+        ResourceCollection resourceCollection = new ResourceCollection();
+        resourceCollection.setName("test project");
+        resourceCollection.setDescription("mapping test");
+        resourceCollection.markUpdated(getSessionUser());
+        genericService.save(resourceCollection);
+        Long rcid = resourceCollection.getId();
 
         Dataset dataset = setupAndLoadResource(TAB_MAPPING_DATASET_TAB, Dataset.class);
         Long datasetId = dataset.getId();
@@ -60,23 +83,32 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
         dataset = controller.getDataset();
         dataset.setTitle("test title");
         dataset.setDescription("test title");
-        controller.setProjectId(project.getId());
+        controller.getShares().add(resourceCollection);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
-        Long image1_id = uploadImage("5127663428_42ef7f4463_b.jpg", project).getId();
-        Long image2_id = uploadImage("handbook_of_archaeology.jpg", project).getId();
+        resourceCollection.setDataset(dataset);
+        genericService.save(resourceCollection);
+
+        Long image1_id = uploadImage("5127663428_42ef7f4463_b.jpg", resourceCollection).getId();
+        Long image2_id = uploadImage("handbook_of_archaeology.jpg", resourceCollection).getId();
         sharedDataset = dataset;
         genericService.detachFromSession(dataset);
         // do search for something in another column
         sharedImageIds = Arrays.asList(image1_id, image2_id);
         genericService.synchronize();
-        assertEquals(3, projectService.findAllResourcesInProject(project).size());
+
+        resourceCollection = resourceCollectionService.find(rcid);
+
+        assertNotNull("expecting collection with mapped dataset", resourceCollection.getDataset());
+        //assertEquals(3, projectService.findAllResourcesInProject(project).size());
+        assertEquals(3, resourceCollection.getManagedResources().size());
 
         ResourceMappingMetadataController columnController = generateNewInitializedController(ResourceMappingMetadataController.class);
         columnController.setId(dataset.getId());
         dataset = null;
         columnController.prepare();
         columnController.editColumnMetadata();
+        assertEmpty("expecting zero action errors for editColumnMetadata", columnController.getActionErrors());
         boolean seenMappingColumn = false;
 
         List<DataTableColumn> dataTableColumns = columnController.getPersistable().getDataTables().iterator().next().getDataTableColumns();
@@ -102,8 +134,9 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
                 for (Long imageId : sharedImageIds) {
                     Image image = genericService.find(Image.class, imageId);
                     logger.info(String.format("image mapping: %s - %s", image.getMappedDataKeyColumn(), image.getMappedDataKeyValue()));
-                    assertFalse(image.getMappedDataKeyColumn() == null);
-                    assertFalse(image.getMappedDataKeyValue() == null);
+                    String assertmsg = String.format("image should have mapped data key/value: %s", image);
+                    assertNotNull(assertmsg, image.getMappedDataKeyColumn());
+                    assertNotNull(assertmsg, image.getMappedDataKeyValue());
                 }
                 return null;
             }
@@ -144,6 +177,22 @@ public class DatasetResourceMappingITCase extends AbstractAdminControllerITCase 
         // controller.setUploadedFiles(Arrays.asList(file));
         // controller.setUploadedFilesFileName(Arrays.asList(filename));
 
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        return image;
+    }
+
+    public Image uploadImage(String filename, ResourceCollection rc) throws TdarActionException, FileNotFoundException{
+        ImageController controller = generateNewPreparedController(ImageController.class, null);
+        Image image = controller.getImage();
+        image.setTitle(filename);
+        image.setDescription(filename);
+        controller.getShares().add(rc);
+        image.setTitle(filename);
+        image.setDescription(filename);
+        image.markUpdated(getSessionUser());
+        File file = TestConstants.getFile(TestConstants.TEST_IMAGE_DIR, filename);
+        addFileToResource(image, file);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         return image;
