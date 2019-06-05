@@ -191,4 +191,9 @@ public class Dataset extends InformationResource implements HasTables {
         }
         return false;
     }
+
+    @Override
+    public boolean isDataMappingSupported() {
+        return true;
+    }
 }

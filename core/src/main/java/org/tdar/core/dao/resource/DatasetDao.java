@@ -206,7 +206,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
      * Using a raw SQL update statement to try and simplify the execution here to use as few loops as possible...
      */
     public void mapColumnToResource(Dataset dataset, DataTableColumn column, List<String> distinctValues, ResourceCollection collection) {
-        Project project = dataset.getProject();
         // for each distinct column value
         long timestamp = System.currentTimeMillis();
         String sql = String.format("CREATE TEMPORARY TABLE MATCH%s (id bigserial, primary key(id), key varchar(255),actual varchar(255))", timestamp);
@@ -437,8 +436,14 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 columnsToUnmap.add(column);
             }
             // first unmap all columns from the removed tables
-            if (dataset instanceof Dataset) {
-                unmapAllColumnsInProject(((Dataset) dataset).getProject().getId(), PersistableUtils.extractIds(columnsToUnmap));
+            if (dataset.isDataMappingSupported()) {
+                ResourceCollection rc = findMappedCollectionForDataset((Dataset)dataset);
+                if(PersistableUtils.isNotTransient(rc)) {
+                    logger.info("Removing data mappings from resources in ResourceCollection: {}", rc);
+                    unmapAllColumnsInProject(rc.getId(), PersistableUtils.extractIds(columnsToUnmap));
+                } else {
+                    logger.warn("expected a resource collection mapped to dataset {}, but none found", dataset );
+                }
             }
             for (DataTableColumn column : columnsToRemove) {
                 column.getDataTable().getDataTableColumns().remove(column);

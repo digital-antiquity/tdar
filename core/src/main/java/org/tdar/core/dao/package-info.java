@@ -593,6 +593,7 @@
                 name = org.tdar.core.dao.TdarNamedQueries.MAPPED_DATASETS,
                 query = "select rc.dataset from ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' "),
         @NamedQuery(
+                //FIXME: I don't think the null check is necessary
                 name = org.tdar.core.dao.TdarNamedQueries.MAPPED_COLLECTIONS,
                 query = "select rc from ResourceCollection rc where rc.dataset is not null and rc.dataset.status='ACTIVE' and rc.dataset.id=:datasetId "),
 })
