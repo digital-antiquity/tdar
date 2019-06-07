@@ -32,13 +32,12 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.resource.DataTableService;
-import org.tdar.core.service.resource.DatasetService;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.DataValue;
@@ -303,7 +302,7 @@ public class ResourceSearchServiceImpl extends AbstractSearchService implements 
                 DataTableColumn col = genericService.find(DataTableColumn.class, dv.getColumnId());
                 dv.setName(col.getDisplayName());
                 Dataset dataset = dataTableService.findDatasetForTable(col.getDataTable());
-                if (!authorizationService.canViewConfidentialInformation(user, dataset) && col.getVisible() == ColumnVisibiltiy.CONFIDENTIAL) {
+                if (!authorizationService.canViewConfidentialInformation(user, dataset) && col.getVisible() == ColumnVisibility.CONFIDENTIAL) {
                     throw new TdarAuthorizationException("cannot.search");
                 }
                 

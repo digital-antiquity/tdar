@@ -62,7 +62,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceProxy;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
@@ -711,8 +711,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
             dt.getDataTableColumns().forEach(dtc -> {
                 if (dtc.isSearchField() && 
                         (dtc.getVisible() == null 
-                        || dtc.getVisible() == ColumnVisibiltiy.VISIBLE 
-                        || dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL && canViewConfidentialInformation)) {
+                        || dtc.getVisible() == ColumnVisibility.VISIBLE
+                        || dtc.getVisible() == ColumnVisibility.CONFIDENTIAL && canViewConfidentialInformation)) {
                     cols.add(dtc);
                 }
 

@@ -20,7 +20,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -73,7 +73,7 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         Dataset dataset = createAndSaveNewDataset();
         Project project = createAndSaveNewProject("test project");
         DataTableColumn dtc = setup(dataset, project);
-        dtc.setVisible(ColumnVisibiltiy.VISIBLE);
+        dtc.setVisible(ColumnVisibility.VISIBLE);
         SolrInputDocument doc = DataValueDocumentConverter.createDocument(dtc, dataset, "Concorde");
         logger.debug("doc: {}", doc);
         logger.debug("DTC: {} / {}" , dtc, dtc.getVisible());
@@ -95,7 +95,7 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         Dataset dataset = createAndSaveNewDataset();
         Project project = createAndSaveNewProject("test project");
         DataTableColumn dtc = setup(dataset, project);
-        dtc.setVisible(ColumnVisibiltiy.HIDDEN);
+        dtc.setVisible(ColumnVisibility.HIDDEN);
         SolrInputDocument doc = DataValueDocumentConverter.createDocument(dtc, dataset, "Concorde");
         logger.debug("doc: {}", doc);
         logger.debug("DTC: {} / {}" , dtc, dtc.getVisible());
@@ -112,7 +112,7 @@ public class ResourceDataValueSearchITCase extends AbstractWithIndexIntegrationT
         genericService.save(dt);
         DataTableColumn dtc = new DataTableColumn();
         dtc.setDataTable(dt);
-        dtc.setVisible(ColumnVisibiltiy.VISIBLE);
+        dtc.setVisible(ColumnVisibility.VISIBLE);
         dtc.setSearchField(true);
         dtc.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         dtc.setName("test");

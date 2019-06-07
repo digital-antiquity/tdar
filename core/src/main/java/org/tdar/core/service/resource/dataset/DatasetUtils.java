@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 
@@ -39,7 +39,7 @@ public class DatasetUtils {
                 continue;
             }
             if (col.getVisible() == null) {
-                col.setVisible(ColumnVisibiltiy.VISIBLE);
+                col.setVisible(ColumnVisibility.VISIBLE);
             }
             switch (col.getVisible()) {
                 case HIDDEN:

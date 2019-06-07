@@ -49,7 +49,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.statistics.ResourceAccessStatistic;
@@ -67,7 +67,6 @@ import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
-import org.tdar.core.service.AuthenticationService;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCreatorProxy;
@@ -316,7 +315,7 @@ public class ResourceServiceImpl implements ResourceService {
             boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
             map.keySet().forEach(key -> {
                 if (key.getVisible() == null) {
-                    key.setVisible(ColumnVisibiltiy.VISIBLE);
+                    key.setVisible(ColumnVisibility.VISIBLE);
                 }
                 switch (key.getVisible()) {
                     case CONFIDENTIAL:

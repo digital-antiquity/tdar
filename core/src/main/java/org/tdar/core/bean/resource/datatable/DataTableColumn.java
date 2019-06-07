@@ -110,8 +110,8 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         }
         
         @Override
-        public ColumnVisibiltiy getVisible() {
-            return ColumnVisibiltiy.HIDDEN;
+        public ColumnVisibility getVisible() {
+            return ColumnVisibility.HIDDEN;
         }
     };
 
@@ -189,7 +189,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
 
     @Column(name="visibility")
     @Enumerated(EnumType.STRING)
-    private ColumnVisibiltiy visible = ColumnVisibiltiy.VISIBLE;
+    private ColumnVisibility visible = ColumnVisibility.VISIBLE;
 
     @Column(name="search_field",columnDefinition = "boolean default TRUE")
     private boolean searchField = true;
@@ -590,11 +590,11 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         this.floatValues = floatValues;
     }
 
-    public ColumnVisibiltiy getVisible() {
+    public ColumnVisibility getVisible() {
         return visible;
     }
 
-    public void setVisible(ColumnVisibiltiy visible) {
+    public void setVisible(ColumnVisibility visible) {
         this.visible = visible;
     }
 }

@@ -44,7 +44,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
@@ -437,7 +437,7 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
         Dataset dataset = (Dataset) resource;
         for (DataTable dt : dataset.getDataTables()) {
             for (DataTableColumn dtc : dt.getDataTableColumns()) {
-                if (dtc.getVisible() != null && dtc.getVisible() == ColumnVisibiltiy.CONFIDENTIAL) {
+                if (dtc.getVisible() != null && dtc.getVisible() == ColumnVisibility.CONFIDENTIAL) {
                     return true;
                 }
             }

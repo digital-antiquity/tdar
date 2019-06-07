@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             <#list dataTableRowAsMap?keys as key>
-                <#if key.visible>
+                <#if key.visible == "VISIBLE"> <#-- FIXME:// visibility accessor should just be getVisibility() -->
                 <tr>
                     <td>${key.displayName}</td>
                     <#-- dataTableRowAsMap(key) also works, for some reason -->

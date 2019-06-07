@@ -6,12 +6,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
-import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.datatable.ColumnVisibiltiy;
+import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.SearchUtils;
 
@@ -45,7 +43,7 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     public static SolrInputDocument createDocument(DataTableColumn key, InformationResource ir, String mapValue) {
-        if (key.getVisible() == ColumnVisibiltiy.HIDDEN) {
+        if (key.getVisible() == ColumnVisibility.HIDDEN) {
             return null;
         }
         SolrInputDocument doc = new SolrInputDocument();
