@@ -22,11 +22,13 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.WebElementSelection;
+import org.tdar.search.bean.SearchFieldType;
 import org.tdar.utils.TestConfiguration;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
@@ -195,6 +197,21 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
     }
 
+
+    protected WebElementSelection clickContextSearch() {
+        find("#divContextSearchButton").click();
+        WebElementSelection groupTable = waitFor("#groupTable0");
+        return groupTable;
+    }
+
+    protected void performContextSearch(String fieldName, String searchTerm) {
+        clickContextSearch();
+        find("#groupTable0 select").val(fieldName);
+        find("#groupTable0 input[type=text]").val(searchTerm);
+        find(".text-center button").click();
+        waitForPageload();
+    }
+
     @Test
     public void testCollectionInGeneralSearch() {
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
@@ -203,12 +220,15 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage(url);
         assertThat(getText(), containsString(TITLE));
         gotoPage("/");
-        find(".contextsearchbox").val("Selenium").sendKeys(Keys.RETURN);
-        waitForPageload();
+        performContextSearch("ALL_FIELDS", "Selenium");
+        // find(".contextsearchbox").val("Selenium").sendKeys(Keys.RETURN);
+        // waitForPageload();
+
         clearPageCache();
         logger.debug(getCurrentUrl());
         assertThat(getText(), containsString(TITLE));
     }
+
 
     @Test
     public void testCollectionOrientiationOptions() {

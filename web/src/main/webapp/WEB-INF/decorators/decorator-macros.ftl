@@ -179,7 +179,10 @@
 
 <#macro searchform topRight=false>
     <#if topRight>
-            <div onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();"  class="float-right searchbutton">Search <i class="fa fa-search fa-sm-1x"></i></div>
+            <div onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();"
+                 class="float-right searchbutton"
+                 id="divContextSearchButton"
+            >Search <i class="fa fa-search fa-sm-1x"></i></div>
     <#else>
                     <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
                         <div class="input-group">
