@@ -40,7 +40,7 @@ public class FieldValueAutocomplete extends AbstractJsonApiAction {
         super.prepare();
     }
 
-    @Action(value = "listSearchFields")
+    @Action(value = "fieldValues")
     public String execute() throws IOException {
         setValues(datasetService.findAutocompleteValues(dataset, column, value, getAuthenticatedUser()));
         setResultObject(getValues());
