@@ -9,11 +9,13 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TestFileUploadHelper;
 import org.tdar.struts.action.dataset.DatasetController;
+import org.tdar.struts.action.dataset.ResourceMappingMetadataController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts_base.action.TdarActionException;
 
@@ -24,12 +26,14 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.TEST_ROOT_DIR;
 
 
@@ -102,16 +106,21 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         return controller;
     }
 
-    public Image uploadImage(File file, ResourceCollection rc) throws TdarActionException, FileNotFoundException {
-        ImageController controller = generateNewPreparedController(ImageController.class, null);
-        Image image = controller.getImage();
-        image.setTitle(file.getName());
-        image.setDescription(file.getName());
-        image.markUpdated(getSessionUser());
-        controller.getShares().add(rc);
-        addFileToResource(image, file);
-        controller.setServletRequest(getServletPostRequest());
-        controller.save();
+    public Image uploadImage(File file, ResourceCollection rc)  {
+        Image image = null;
+        try {
+            ImageController controller = generateNewPreparedController(ImageController.class, null);
+            image = controller.getImage();
+            image.setTitle(file.getName());
+            image.setDescription(file.getName());
+            image.markUpdated(getSessionUser());
+            controller.getShares().add(rc);
+            addFileToResource(image, file);
+            controller.setServletRequest(getServletPostRequest());
+            controller.save();
+        } catch (TdarActionException e) {
+            fail(e.getMessage());
+        }
         return image;
     }
 
@@ -126,13 +135,6 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         Dataset dataset = setupAndLoadDataset(datasetPath.toString());
         assertNotNull(dataset);
 
-        // set columns
-        DataTableColumn dtc = lookupColumn(dataset, "color_image_filename");
-        assertNotNull(dtc);
-        dtc.setMappingColumn(true);
-        long id = save(dtc);
-        assertThat(id, greaterThan(0L));
-
         // create resource collection and enable mapping
         ResourceCollection rc = newResourceCollection("fielded search test", "Test");
         rc.setDataset(dataset);
@@ -140,9 +142,47 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
 
         // upload images and assign to collection
         Collection<File> files = FileUtils.listFiles(testDir, new String[]{"jpg"}, false);
-        for(File file : files ) {
-            uploadImage(file, rc );
-        }
+
+        List<Long> imageIds = files.stream().map((file) -> uploadImage(file, rc))
+                .map(Resource::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        assertThat(imageIds.size(), equalTo(files.size()));
+
+
+        // set columns
+        DataTableColumn dtc = lookupColumn(dataset, "color_image_filename");
+        assertNotNull(dtc);
+        dtc.setMappingColumn(true);
+        dtc.setIgnoreFileExtension(false);
+        long id = save(dtc);
+        assertThat(id, greaterThan(0L));
+
+
+        // load and save the columns via metadatacontroller so that it triggers data mapping
+        // and (I assume?) indexing
+        ResourceMappingMetadataController columnController = generateNewInitializedController(ResourceMappingMetadataController.class);
+        columnController.setId(dataset.getId());
+        dataset = null;
+        columnController.prepare();
+        columnController.editColumnMetadata();
+        assertThat(columnController.getActionErrors(), is(empty()));
+
+        // Technically we should be saving a collection of detached columns.
+        columnController.setAsync(false);
+        columnController.saveColumnMetadata();
+
+        // The save should have implicitly caused system to update mapped data key/value on our images
+        setVerifyTransactionCallback( (status) -> {
+            for(Long imageId : imageIds) {
+                Image image = genericService.find(Image.class, imageId);
+                assertThat(image.getMappedDataKeyColumn(), not( nullValue()));
+                assertThat(image.getMappedDataKeyValue(), not( nullValue()));
+            }
+            return null;
+        });
+
 
     }
 
