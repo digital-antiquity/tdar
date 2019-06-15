@@ -18,6 +18,8 @@ import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.dataset.ResourceMappingMetadataController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts_base.action.TdarActionException;
+import org.springframework.test.annotation.Rollback;
+import org.apache.commons.beanutils.BeanUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -124,15 +126,29 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         return image;
     }
 
+    <T> T cloneBean(T bean) {
+        T newBean = null;
+        try {
+            newBean = (T)BeanUtils.cloneBean(bean);
 
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+        return newBean;
+    }
 
     @Test
+    @Rollback(false)
     public void testDatasetSearch() throws Exception {
         File testDir = Paths.get(getTestFilePath()).toFile();
 
         // upload dataset
         Path datasetPath  = Paths.get(getTestFilePath(), "public_images_descriptions.xlsx");
         Dataset dataset = setupAndLoadDataset(datasetPath.toString());
+        dataset.setTitle("test dataset");
+        dataset.setDescription("test dataset");
+        save(dataset);
+
         assertNotNull(dataset);
 
         // create resource collection and enable mapping
@@ -149,13 +165,14 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
                 .collect(Collectors.toList());
 
         assertThat(imageIds.size(), equalTo(files.size()));
+        genericService.synchronize();
 
 
         // set columns
         DataTableColumn dtc = lookupColumn(dataset, "color_image_filename");
         assertNotNull(dtc);
         dtc.setMappingColumn(true);
-        dtc.setIgnoreFileExtension(false);
+        dtc.setIgnoreFileExtension(true);
         long id = save(dtc);
         assertThat(id, greaterThan(0L));
 
@@ -167,16 +184,25 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         dataset = null;
         columnController.prepare();
         columnController.editColumnMetadata();
+        List<DataTableColumn> dataTableColumns = columnController.getPersistable().getDataTables().iterator().next().getDataTableColumns();
         assertThat(columnController.getActionErrors(), is(empty()));
+        assertThat("controller should have loaded multiple datatable columns", dataTableColumns, not( empty()));
+        List<DataTableColumn> detachedCols = dataTableColumns.stream().map(this::cloneBean).collect(Collectors.toList());
+        columnController.setDataTableColumns(detachedCols);
+
 
         // Technically we should be saving a collection of detached columns.
         columnController.setAsync(false);
         columnController.saveColumnMetadata();
 
+        getLogger().info("Image ID's: {}", imageIds);
+
+
         // The save should have implicitly caused system to update mapped data key/value on our images
         setVerifyTransactionCallback( (status) -> {
             for(Long imageId : imageIds) {
                 Image image = genericService.find(Image.class, imageId);
+                assertThat(image, notNullValue());
                 assertThat(image.getMappedDataKeyColumn(), not( nullValue()));
                 assertThat(image.getMappedDataKeyValue(), not( nullValue()));
             }
@@ -188,6 +214,5 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
 
 
 
+    }
 
-
-}
