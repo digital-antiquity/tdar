@@ -84,7 +84,8 @@ public class SearchDao<I extends Indexable> {
         query.markStartSearch();
         SolrParams solrParams = query.getSolrParams();
         if (logger.isTraceEnabled()) {
-            logger.trace(solrParams.toQueryString());
+
+            logger.trace("Actual solr query is:\n===\n{}\n===\n", solrParams.toQueryString());
         }
         try {
             QueryResponse rsp = template.query(query.getCoreName(), solrParams);
