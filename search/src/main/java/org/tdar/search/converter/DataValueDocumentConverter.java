@@ -51,6 +51,9 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
         String solrId = SearchUtils.createKey(ir) + "-" + key.getId();
         String keyName = key.getName();
         SolrInputDocument doc = new SolrInputDocument();
+        if(logger.isTraceEnabled()){
+            logger.trace("Indexing dataset value:  tdarId:{}\t solrId:{}\t title:{}", ir.getId(), solrId, ir.getTitle());
+        }
         logSetField(doc,QueryFieldNames.ID, ir.getId());
         logSetField(doc,QueryFieldNames.CLASS, ir.getClass().getName());
         logSetField(doc,QueryFieldNames._ID, solrId);
@@ -59,16 +62,13 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
         logSetField(doc,QueryFieldNames.COLUMN_ID, key.getId());
         logSetField(doc,QueryFieldNames.VALUE, mapValue);
 
-//        if(logger.isTraceEnabled()){
-            logger.error("Indexing dataset doc:  tdarId:{}\t solrId:{}\t title:{}", ir.getId(), solrId, ir.getTitle());
-//        }
         return doc;
     }
 
     private static void logSetField(SolrInputDocument doc, String key, Object value) {
-//        if(logger.isTraceEnabled()){
-            logger.error("Indexing dataset doc:      field:{}\t value:{}", key, value);
-//        }
+        if(logger.isTraceEnabled()){
+            logger.trace("Indexing dataset doc:      field:{}\t value:{}", key, value);
+        }
         doc.setField(key, value);
     }
 }
