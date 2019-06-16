@@ -487,10 +487,11 @@
                 query = "select p from Person p where lower(lastName) like lower(:lastName) and (lower(firstName) like lower(:firstName) or lower(firstName) like lower(:initial) or lower(firstName) like lower(:initial2) ) and status='ACTIVE' and p.id not in (select id from TdarUser)"),
         @NamedQuery(
                 name = TdarNamedQueries.MAPPED_RESOURCES,
-                query = "from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col where :projectId = -1 or project.id=:projectId"),
+                query = "from InformationResource ir inner join ir.mappedDataKeyColumn as col"),
         @NamedQuery(
+                //FIXME:  Shouldn't this only include IR's that are referred by resourceCollections that have a dataset?
                 name = TdarNamedQueries.COUNT_MAPPED_RESOURCES,
-                query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
+                query = "select count(ir.id) from InformationResource ir inner join ir.mappedDataKeyColumn as col"),
         @NamedQuery(
                 name = TdarNamedQueries.CHECK_INVITES,
                 query = "select ui from UserInvite ui inner join ui.user as user where lower(user.email) like lower(:email)"),

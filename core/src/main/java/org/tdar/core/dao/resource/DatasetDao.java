@@ -458,15 +458,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     }
 
-    public ScrollableResults findMappedResources(Project p) {
+    //FIXME: This should be converted to find resources underneath a collection, not project
+    public ScrollableResults findMappedResources(Project ignored) {
         Query query = getCurrentSession().createNamedQuery(MAPPED_RESOURCES);
-        Long id = null;
-        if (PersistableUtils.isNotNullOrTransient(p)) {
-            id = p.getId();
-            query.setParameter("projectId", id);
-        } else {
-            query.setParameter("projectId", -1);
-        }
         ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
         return scroll;
     }
