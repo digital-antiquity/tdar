@@ -89,6 +89,11 @@
                 </div>
             </div>
 
+            <div id="divMappedDataset" class="control-group row">
+                <label class="control-label col-form-label col-2">Dataset ID</label>
+                <@s.textfield name="resourceCollection.dataset.id" id=txtDatasetId />
+            </div>
+
 
             <#if administrator>
                 <@s.textarea rows="4" labelposition='top' label='Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
