@@ -92,7 +92,7 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
         List<FileProxy> filesToProcess =new ArrayList<>();
         while (iter.hasNext()) {
             FileProxy proxy = iter.next();
-            if (proxy.getTdarFile() != null && proxy.getTdarFile().getStatus() != ImportFileStatus.UPLOADED) {
+            if (proxy.getTdarFile() != null && proxy.getTdarFile().getStatus() == ImportFileStatus.UPLOADED) {
                 filesToProcess.add(proxy);
                 iter.remove();
             }
