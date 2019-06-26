@@ -280,7 +280,7 @@ public class PersonalFilestoreServiceImpl implements PersonalFilestoreService {
         for (TdarFile file : sweepFiles) {
             if (file.getParent() != null) {
                 String parentName = file.getParent().getName();
-                logger.debug("file/parent: {} / {}", file, parentName);
+                logger.trace("file/parent: {} / {}", file, parentName);
                 if (TdarDir.UNFILED.equals(parentName) || (TdarDir.UNFILED + "/").equals(parentName)) {
                     continue;
                 }

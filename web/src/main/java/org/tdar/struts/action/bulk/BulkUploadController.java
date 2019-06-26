@@ -82,6 +82,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
         // fsw.setUploadedFiles(getUploadedFiles());
         getGenericService().detachFromSession(getPersistable());
         Collection<FileProxy> fileProxiesToProcess = resourceSaveControllerService.getFileProxiesToProcess(auth, this, fsw, null);
+        getLogger().trace("Received fileproxies: {}", fileProxiesToProcess);
 
         setupAccountForSaving();
         getCreditProxies().clear();

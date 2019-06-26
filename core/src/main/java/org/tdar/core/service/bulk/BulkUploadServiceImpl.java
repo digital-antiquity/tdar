@@ -201,8 +201,13 @@ public class BulkUploadServiceImpl implements BulkUploadService {
                 informationResource.setDescription("add description");
                 informationResource.setDate(DateTime.now().getYear());
                 informationResource.markUpdated(authenticatedUser);
+
                 rMap.put(fileName, informationResource);
                 map.put(fileName, fileProxy);
+                // assume we are operating in a different thread as the request that triggered this method - we need to reload the tdar files tied to the proxy
+                TdarFile persistedFile = genericDao.find(TdarFile.class, fileProxy.getTdarFileId());
+                logger.trace("Bringing FileProxy.tdarFile#{} onto session: {}", fileProxy.getTdarFileId(), persistedFile);
+                fileProxy.setTdarFile(persistedFile);
                 informationResource = importService.bringObjectOntoSession(informationResource, authenticatedUser, Arrays.asList(fileProxy), null, false);
                 genericDao.saveOrUpdate(informationResource);
                 informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
