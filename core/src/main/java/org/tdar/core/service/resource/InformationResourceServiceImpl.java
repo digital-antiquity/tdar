@@ -92,7 +92,7 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
         List<FileProxy> filesToProcess =new ArrayList<>();
         while (iter.hasNext()) {
             FileProxy proxy = iter.next();
-            if (proxy.getTdarFile() != null && proxy.getTdarFile().getStatus() == ImportFileStatus.UPLOADED) {
+            if (proxy.getTdarFile() != null && proxy.getTdarFile().getStatus() != ImportFileStatus.UPLOADED) {
                 filesToProcess.add(proxy);
                 iter.remove();
             }
@@ -101,8 +101,8 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
         // FIXME: need to link TdarFile and InformationResourceFile / FileVersion
         
         // prepare the metadata
-//        FileProxyWrapper wrapper = new FileProxyWrapper(resource, analyzer, datasetDao, fileProxiesToProcess);
-        FileProxyWrapper wrapper = new FileProxyWrapper(resource, analyzer, datasetDao, filesToProcess);
+        FileProxyWrapper wrapper = new FileProxyWrapper(resource, analyzer, datasetDao, fileProxiesToProcess);
+//        FileProxyWrapper wrapper = new FileProxyWrapper(resource, analyzer, datasetDao, filesToProcess);
 
         wrapper.processMetadataForFileProxies();
 
@@ -111,8 +111,8 @@ public class InformationResourceServiceImpl extends ServiceInterface.TypedDaoBas
         /*
          * FIXME: When we move to an asynchronous model, this section and below will need to be moved into their own dedicated method
          */
-//        WorkflowResult workflowResult = new WorkflowResult(fileProxiesToProcess);
-        WorkflowResult workflowResult = new WorkflowResult(filesToProcess);
+        WorkflowResult workflowResult = new WorkflowResult(fileProxiesToProcess);
+//        WorkflowResult workflowResult = new WorkflowResult(filesToProcess);
         ErrorTransferObject errorsAndMessages = workflowResult.getActionErrorsAndMessages();
 
         // If successful and no errors:
