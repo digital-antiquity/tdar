@@ -332,6 +332,11 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         return tdarFileId;
     }
 
+    // fixme: I'm not a fan of having setters for derived fields
+    public void setTdarFileId(Long tdarFileId) {
+        this.tdarFileId = tdarFileId;
+    }
+
 
     public TdarFile getTdarFile() {
         return tdarFile;
@@ -339,8 +344,5 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
 
     public void setTdarFile(TdarFile tdarFile) {
         this.tdarFile = tdarFile;
-        // fixme: should update derived fields, but I don't to mess w/ potential fallout from callers expecting pojo behavior
-        //this.name = tdarFile.getName();
-        //this.tdarFileId = tdarFile.getId();
     }
 }
