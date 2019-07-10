@@ -91,9 +91,6 @@
 
             </div>
             <div v-if="option.columnType != undefined"  class="col-11">
-                <span v-if="option.type != 'basic'">
-         	        <value :choices="option.fieldValues" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/> 
-                </span>
                <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
             </div>
             <div id="latlongoptions" v-if="option.type == 'map'"  class="col-11 leaflet-map-editable"  data-search="true" style="height:300px">

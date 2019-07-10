@@ -298,20 +298,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 this.rows.splice(idx, 1);
             },
             addColumnInfo : function(datasetId) {
-                var dataset = undefined;
-                this.columnMap.forEach(function(ds) {
-                    console.log(ds, datasetId);
-                    if (ds.id == datasetId) {
-                        dataset = ds;
-                    }
-                    
-                });
+                var self = this;
+                var dataset = this.columnMap.filter(function(ds,i){return ds.id === datasetId})[0];
 
-                if (dataset == undefined) {
+                if (!dataset) {
+                    console.warn("addColumnInfo:: datasetId not found:" + datasetId);
                     return;
                 }
 
-                var self = this;
                 console.log("adding column info for:", datasetId, dataset);
                 dataset.columns.forEach(function(field) {
                     var values = [];
@@ -334,6 +328,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         type : type,
                         group : 'custom',
                         id : field.id,
+                        // FIXME: I have no idea why fieldValues exists apart from "choices".
                         fieldValues : values,
                         infoLink : '/dataset/column/' + datasetId + "/" + field.id,
                         choices : values,
