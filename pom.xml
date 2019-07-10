@@ -1,5 +1,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<!-- 
+Inheritance Hierarchy of this POM:
+- parent
+    - database
+    - locales
+    - parent-base
+        - base
+        - core
+        - processing/databaseprocessing
+        - processing/fileprocessing
+        - search
+        - utils (kill me)
+        - web-base
+            - struts-base
+                - balk
+                - web
+            - webservice/dataone
+            - webservice/oai-pmh
+            - web-test
+    - templates
+    - test-resources
+-->
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
@@ -16,9 +40,14 @@
         <!-- contains shared config and setup for all other modules, depends 
             on "database" and "test" -->
         <module>locales</module>
+        <!--parent-base defines maven plugins, build steps, and dependencies
+        that are common to child modules -->
         <module>parent-base</module>
+        <!--base module implements common classes to multiple modules. Base is not
+        a parent of any module, rather, other modules declare Base as a dependency -->
         <module>base</module>
         <!-- tdar "core" files -->
+        <!-- TODO: why were these modules split from core in the first place? -->
         <module>processing/fileprocessing</module>
         <module>processing/databaseprocessing</module>
         <module>core</module>
