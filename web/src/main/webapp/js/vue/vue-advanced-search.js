@@ -1,7 +1,8 @@
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
+    var UNDEFINED = "undefined";
 
-    var _part = Vue.component('part', {
+    Vue.component('part', {
         template : "#search-row-template",
         props : [ "row", "index", "options", "totalrows" ],
         data : function() {
@@ -14,14 +15,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             option : function(n, o) {
                 this.reset();
                 this.option = n;
-                if (this.option.type == 'map') {
+                if (this.option.type === 'map') {
                     Vue.nextTick(function() {
                         TDAR.leaflet.initEditableLeafletMaps();
                     });
                 }
             },
             value: function(n, o) {
-                if (this.option.name == 'Collection') {
+                if (this.option.name === 'Collection') {
                     this.$emit("collection change,", n);
                 }
             }
@@ -30,18 +31,18 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         },
         computed : {
             valueFieldName : function() {
-                if (this.option == undefined || this.option.fieldName == undefined) {
+                if (typeof this.option === UNDEFINED || typeof this.option.fieldName === UNDEFINED) {
                     return undefined;
                 }
                 var ret = "groups[0]." + this.option.fieldName.replace("[]", "[" + this.index + "]");
-                if (this.option.columnType != undefined) {
+                if (typeof this.option.columnType !== UNDEFINED) {
                     return ret + ".value";
                 }
                 return ret;
 
             },
             fieldName : function() {
-                if (this.option == undefined || this.option.fieldName == undefined) {
+                if (typeof this.option === UNDEFINED || typeof this.option.fieldName === UNDEFINED) {
                     return undefined;
                 }
                 return "groups[0]." + this.option.fieldName.replace("[]", "[" + this.index + "]");
@@ -50,13 +51,13 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 return "searchFieldName";
             },
             idName : function() {
-                if (this.option == undefined || this.option.idName == undefined) {
+                if (typeof this.option === UNDEFINED || typeof this.option.idName === UNDEFINED) {
                     return undefined;
                 }
                 return "groups[0]." + this.option.idName.replace("[]", "[" + this.index + "]");
             },
             infoLink: function() {
-                if (this.option == undefined || this.option.infoLink == undefined) {
+                if (typeof this.option === UNDEFINED || typeof this.option.infoLink === UNDEFINED) {
                     return undefined;
                 }
                 return this.option.infoLink;
@@ -64,12 +65,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         },
         methods : {
             reset : function() {
-                if (this.$refs.autocomplete != undefined) {
+                if (typeof this.$refs.autocomplete !== UNDEFINED) {
                     this.$refs.autocomplete.clear();
                 }
             },
             getOptionsFor : function(group) {
-                var ret = new Array();
+                var ret = [];
                 this.options.forEach(function(e) {
                     if (group == e.group) {
                         ret.push(e);
@@ -96,6 +97,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
     var app = new Vue({
         el : "#advancedsearch",
+        props: {
+            "mapped-dataset-id": Number
+        },
         data : {
             columnMap : {},
             selectOptions : [ {
@@ -268,15 +272,16 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 url : '/api/search/info',
             }).then(function(response) {
                 console.log(response.data);
-                Vue.set(self, "columnMap", response.data.datasetReferences);
+                Vue.set(self, "columnMap", response.data['datasetReferences']);
                 self.selectOptions.forEach(function(opt) {
-                    if (opt.name == 'Investigation Types') {
+                    if (opt.name === 'Investigation Types') {
                         Vue.set(opt, "choices", response.data.investigationTypes);
                     }
                 });
-
+                // FIXME: datasetId should come from component property instead of <body> element
                 var dsid = document.body.getAttribute("data-mapped-dataset-id");
-                if (dsid != undefined) {
+                if (typeof dsid !== UNDEFINED) {
+                    dsid = parseInt(dsid);
                     console.log("add mapped...", dsid);
                     self.addColumnInfo(dsid);
                 }
@@ -299,7 +304,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             },
             addColumnInfo : function(datasetId) {
                 var self = this;
-                var dataset = this.columnMap.filter(function(ds,i){return ds.id === datasetId})[0];
+                var dataset = this.columnMap.filter(function(ds){return ds.id === datasetId;})[0];
 
                 if (!dataset) {
                     console.warn("addColumnInfo:: datasetId not found:" + datasetId);
@@ -338,6 +343,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 });
 
             }
-        },
+        }
     });
 })(console, window, Vue, axios, TDAR);
