@@ -23,6 +23,14 @@ public interface ScheduledProcess extends Serializable {
     String getDisplayName();
 
     /**
+     * Return a human-readable description of the scheduled process.
+     * @return
+     */
+    default String getDescription() {
+        String fmt = "%s:: {enabled:%s,\t run at startup:%s,\t completed:%s}";
+        return String.format(fmt, isEnabled(), shouldRunAtStartup(), isCompleted());
+    }
+    /**
      * Returns true if this process has run to completion.
      * 
      * @return
