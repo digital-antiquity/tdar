@@ -299,7 +299,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             },
             addColumnInfo : function(datasetId) {
                 var self = this;
-                var dataset = this.columnMap.filter(function(ds,i){return ds.id === datasetId})[0];
+                var dataset = this.columnMap.filter(function(ds,i){return ds.id === parseInt(datasetId)})[0];
 
                 if (!dataset) {
                     console.warn("addColumnInfo:: datasetId not found:" + datasetId);
@@ -317,7 +317,18 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         values = field.floatValues;
                     }
                     if (field.values.length > 0) {
-                        values = field.values;
+                        values = [];
+                        var lcvalues = [];
+                        field.values.forEach(function(val, idx){
+                            console.log('foo');
+                            var lcval = val.toLowerCase();
+                            if(lcvalues.indexOf(lcval) === -1) {
+                                lcvalues.push(lcval);
+                                values.push(val);
+                            }
+
+                        });
+
                         if (values.length < 20) {
                             type = "checkbox";
                         }
