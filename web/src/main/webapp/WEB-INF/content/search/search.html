@@ -68,9 +68,21 @@
     <div class="col-10" ref='valuearea'>
         <div class="row">
 	        <div v-if="option.type == 'basic' || option.type == undefined" class="col-11">
-    	        <autocomplete :url="option.autocompleteUrl" :suffix="option.autocompleteSuffix"  :field="option.fieldName" v-if="option.autocompleteUrl != undefined || option.choices != undefined"
-                    :bootstrap4="true"  :items="option.values"
-					:resultsuffix="option.resultSuffix" ref="autocomplete" :span="'form-control'" :fieldname="fieldName" :allowCreate="false" :idname="idName"/>
+                <b>{{fieldName}}</b>
+    	        <autocomplete
+                        :url="option.autocompleteUrl"
+                        :suffix="option.autocompleteSuffix"
+                        :field="option.fieldName"
+                        v-if="option.autocompleteUrl != undefined || option.choices != undefined"
+                        :bootstrap4="true"
+                        :items="option.values"
+					    :resultsuffix="option.resultSuffix"
+                        ref="autocomplete"
+                        :span="'form-control'"
+                        :fieldname="fieldName"
+                        :allowCreate="false"
+                        :idname="idName"
+                />
 	            <input type="text" :name="valueFieldName" class="form-control" v-if="option.autocompleteUrl == undefined && option.choices == undefined">
      	   </div>
         	<div v-if="option.type == 'select'"  class="col-11">
