@@ -193,9 +193,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 group : 'general',
                 type : 'basic',
                 autocompleteUrl : '/api/lookup/institution',
-                searchFieldName : 'institution',
+                searchFieldName : 'name',
                 resultSuffix : 'institutions',
-                fieldName : "resourceCreatorProxies[].institution.id",
+                fieldName : "resourceCreatorProxies[].institution.name",
                 idName : "resourceCreatorProxies[].institution.id",
                 index : [ 'resource' ]
             }, {

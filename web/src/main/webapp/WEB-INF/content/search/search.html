@@ -68,7 +68,6 @@
     <div class="col-10" ref='valuearea'>
         <div class="row">
 	        <div v-if="option.type == 'basic' || option.type == undefined" class="col-11">
-                <b>{{fieldName}}</b>
     	        <autocomplete
                         :url="option.autocompleteUrl"
                         :suffix="option.autocompleteSuffix"
@@ -80,6 +79,7 @@
                         ref="autocomplete"
                         :span="'form-control'"
                         :fieldname="fieldName"
+                        :queryParameterName="option.searchFieldName"
                         :allowCreate="false"
                         :idname="idName"
                 />

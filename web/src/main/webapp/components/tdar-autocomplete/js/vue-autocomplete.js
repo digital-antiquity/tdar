@@ -10,7 +10,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           items: {
             type: Array,
             required: false,
-            default: function() {return new Array();}
+            default: function() {return [];}
           },
           isAsync: {
             type: Boolean,
@@ -18,13 +18,16 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             default: true
           },
           url: {
-              type: String
+              type: String,
+              required: true
           },
           bootstrap4: {
               type:Boolean,
               default: false
           },
           suffix: {type: String},
+
+          // name of the hidden input that will store the selected autocomplete value
           field: {
               type: String,
               required: true
@@ -32,9 +35,13 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           render: {
               type: Object
           },
-          fieldname: {
-              type: String
+
+          // parameter name to use when constructing an autocomplete URL
+          queryParameterName: {
+              type: String,
+              default: 'term'
           },
+
           allowCreate: {
               type:Boolean,
               default: true
@@ -148,9 +155,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               return "autocomplete";
           },
 
-          fieldName: function() {
-              return this.name;
-          },
+          // fieldName: function() {
+          //     return this.name;
+          // },
           isCustomRender: function() {
             if (this.render != undefined && typeof this.render  === 'function') {
               return true;
@@ -179,6 +186,16 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               return ret;
                   
           },
+
+          searchUrl: function(){
+                //fixme: this needs to be urlescaped
+              var searchUrl = this.url + "?" + this.queryParameterName + "=" + this.search ;
+              if (typeof this.suffix !== 'undefined') {
+                  searchUrl += + "&" + this.suffix;
+              }
+              return searchUrl
+          },
+
           onChange: function() { // Let's warn the parent that a change was made
             this.$emit("input", this.search);
             Vue.set(this, 'width',this.$refs['searchfield'].offsetWidth);
@@ -186,20 +203,18 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
 
             // Is the data given by an outside ajax request?
             if (this.isAsync) {
-              this._setResult();
+              // this._setResult();
               var self = this;
              if (this.search != undefined && this.search.length > 0) {
               this.isLoading = true;
-              if (this.cancelToken != undefined) {
+              if (typeof this.cancelToken !== 'undefined') {
                   this.cancelToken.cancel();
               }
               
               Vue.set(this, "cancelToken" ,axios.CancelToken.source());
-    
-              var searchUrl = this.url + "?" + this.field + "=" + this.search + "&" + this.suffix;
               Vue.set(self, "totalRecords", 0);
               Vue.set(self, "recordsPerPage", 25);
-              axios.get(searchUrl, { cancelToken: self.cancelToken.token }).then(function(res) {
+              axios.get(this.searchUrl(), { cancelToken: self.cancelToken.token }).then(function(res) {
                   Vue.set(self, "isLoading",false);
                   Vue.set(self, 'results',res.data[self.resultsuffix]);
                   console.log(res);
@@ -238,7 +253,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
                       toReturn.push(item);
               }
             });
-             Vue.set(this,"results",toReturn);
+            Vue.set(this,"results",toReturn);
           },
           focus: function() {
               this.$refs.searchfield.focus();
