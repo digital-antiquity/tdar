@@ -317,23 +317,29 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     var type = "basic";
                     if (field.intValues.length > 0) {
                         values = field.intValues;
-                    }
-                    if (field.floatValues.length > 0) {
+                    } else if (field.floatValues.length > 0) {
                         values = field.floatValues;
-                    }
-                    if (field.values.length > 0) {
-                        values = [];
-                        var lcvalues = [];
-                        field.values.forEach(function(val, idx){
-                            console.log('foo');
-                            var lcval = val.toLowerCase();
-                            if(lcvalues.indexOf(lcval) === -1) {
-                                lcvalues.push(lcval);
-                                values.push(val);
-                            }
+                    } else if (field.values.length > 0) {
 
-                        });
+                        // FIXME: magic numbers
+                        // Perform case-insensitive dedupe if list isn't too big (
+                        console.log("field:%s\t values:%s", field.name, field.values.length);
+                        if(field.values.length > 100) {
+                            values = field.values;
+                        } else {
+                            values = [];
+                            var lcvalues = [];
+                            field.values.forEach(function(val, idx){
+                                var lcval = val.toLowerCase();
+                                if(lcvalues.indexOf(lcval) === -1) {
+                                    lcvalues.push(lcval);
+                                    values.push(val);
+                                }
+                            });
+                        }
 
+                        //FIXME: magic numbers
+                        // For smaller range of values, render as checkbox.
                         if (values.length < 20) {
                             type = "checkbox";
                         }
