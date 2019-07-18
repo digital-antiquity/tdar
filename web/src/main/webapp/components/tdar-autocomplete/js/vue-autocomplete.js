@@ -231,10 +231,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               });
               this.isOpen = true;
               } else {
-              this.isOpen = false;
-              Vue.set(self, "isLoading",false);
-              Vue.set(self, 'results',[]);
-              
+                  this.isOpen = false;
+                  Vue.set(self, "isLoading",false);
+                  Vue.set(self, 'results',[]);
               }
             } else {
               // Let's search our flat array
@@ -297,9 +296,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             if (this.arrowCounter > -1) {
               this.setResult( this.results[this.arrowCounter]);
             }
-            if (this.search != undefined && this.search != '') {
-                this.setResult(this.search);
-            }
+            // if (this.search != undefined && this.search != '') {
+            //     this.setResult(this.search);
+            // }
             this.isOpen = false;
             this.arrowCounter = -1;
           },

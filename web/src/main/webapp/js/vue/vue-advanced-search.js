@@ -196,7 +196,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 searchFieldName : 'name',
                 resultSuffix : 'institutions',
                 fieldName : "resourceCreatorProxies[].institution.name",
-                idName : "resourceCreatorProxies[].institution.id",
+                idName :    "resourceCreatorProxies[].institution.id",
                 index : [ 'resource' ]
             }, {
                 name : 'Site Name',

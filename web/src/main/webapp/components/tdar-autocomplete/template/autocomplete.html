@@ -1,6 +1,6 @@
 <script type="text/x-template" id="autocomplete">
     <div :class="getRootClass()" ref="autocompleteroot" @mouseover="addFocus('mouse')" @mouseout="removeFocus('mouse')">
-        <input type="hidden" v-model="id" :name="idname" v-if="idname != undefined"/>
+        <input type="hidden"  :name="idname" v-if="idname != undefined"  :value="id" >
         <input type="text"
                @input="onChange"
                v-model="search"
@@ -14,7 +14,7 @@
                :disabled="disabled"
                ref="searchfield"
                :class="span"
-               :name="valuename"
+               :name="field"
                @focus="addFocus('cursor')"
                @blur="removeFocus('cursor')"/>
         <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results" :style="getStyleTop()"
