@@ -2,6 +2,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
     var UNDEFINED = "undefined";
 
+    /**
+     * "Part" Vue Control.
+     */
     Vue.component('part', {
         template : "#search-row-template",
         props : [ "row", "index", "options", "totalrows" ],
@@ -95,6 +98,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         }
     });
 
+    /**
+     * Toplevel app for the search.
+     */
     var app = new Vue({
         el : "#advancedsearch",
         props: {

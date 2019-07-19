@@ -26,7 +26,13 @@
                 <div class="searchgroup">
                     <div id="groupTable0" class="condensed">
                         <div class="condensed" v-for="(row,index) in rows">
-                            <part :index="index" :row="row" :options="selectOptions" @removerow="removeRow($event)" :totalrows="rows.length" />
+                            <part
+                                    :index="index"
+                                    :row="row"
+                                    :options="selectOptions"
+                                    @removerow="removeRow($event)"
+                                    :totalrows="rows.length"
+                            />
                         </div>
                     </div>
 
@@ -74,7 +80,7 @@
                         :field="fieldName"
                         v-if="option.autocompleteUrl != undefined || option.choices != undefined"
                         :bootstrap4="true"
-                        :items="option.values"
+                        :items="option.choices"
 					    :resultsuffix="option.resultSuffix"
                         ref="autocomplete"
                         :span="'form-control'"
@@ -99,8 +105,7 @@
 			   </div>
  		    </div>
             <div v-if="option.type == 'checkbox'" class="col-11">
-                  <value :choices="option.choices" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/> 
-
+                  <value :choices="option.choices" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
             </div>
             <div v-if="option.columnType != undefined"  class="col-11">
                <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />

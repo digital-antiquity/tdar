@@ -12,14 +12,9 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             required: false,
             default: function() {return [];}
           },
-          isAsync: {
-            type: Boolean,
-            required: false,
-            default: true
-          },
           url: {
               type: String,
-              required: true
+              required: false
           },
           bootstrap4: {
               type:Boolean,
@@ -84,7 +79,13 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             cancelToken: undefined
           }
         },
-        
+
+        computed: {
+            isAsync: function(){
+                return !!this.url
+            }
+        },
+
         methods: {
             createNew: function() {
                 this.customcreatenew();
@@ -212,7 +213,6 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               }
               
               Vue.set(this, "cancelToken" ,axios.CancelToken.source());
-              Vue.set(self, "totalRecords", 0);
               Vue.set(self, "recordsPerPage", 25);
               axios.get(this.searchUrl(), { cancelToken: self.cancelToken.token }).then(function(res) {
                   Vue.set(self, "isLoading",false);
@@ -237,7 +237,8 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               }
             } else {
               // Let's search our flat array
-              this.filterResults();
+              var _results = this.filterResults();
+              this.totalRecords = _results.length;
               this.isOpen = true;
             }
           },
@@ -253,6 +254,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
               }
             });
             Vue.set(this,"results",toReturn);
+            return toReturn;
           },
           focus: function() {
               this.$refs.searchfield.focus();

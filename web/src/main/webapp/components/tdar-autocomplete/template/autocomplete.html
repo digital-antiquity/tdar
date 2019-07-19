@@ -26,9 +26,8 @@
             </li>
             <li class="status text-center center" :style="getStyleWidth()">
                 <span v-if="isLoading">Loading results...</span>
-                <span style='display:block' v-if="!isLoading" @click="createNew"
-                      class="createnew">{{createnewtext}}</span>
-                <span v-if="!isLoading"> Showing 1-{{recordsPerPage}} of {{totalRecords}} </span>
+                <span v-if="!isLoading && recordsPerPage < totalRecords "> Showing 1-{{recordsPerPage}} of {{totalRecords}} </span>
+                <span v-if="!isLoading && recordsPerPage >= totalRecords "> Showing {{totalRecords}} Records</span>
             </li>
         </ul>
 
