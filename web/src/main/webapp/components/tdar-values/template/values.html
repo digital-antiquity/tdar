@@ -9,7 +9,13 @@
 <div class="row">
     <div v-for="start in collist()" class="col span2">
 <div  v-for="(choice, idx) in subarray(start)">
-        <label>{{getLabel(choice,idx)}} <input :type="type" :name="fieldName" :value="getValue(choice,idx)" :class="disabledClass" :disabled="disabled" v-model="internalvalues"/></label><br/>
+        <label>{{getLabel(choice,idx)}} <input
+                :type="type"
+                :name="fieldName"
+                :value="getValue(choice,idx)"
+                :class="disabledClass"
+                :disabled="disabled"
+                v-model="internalvalues"/></label><br/>
         </div>
     </div>
 </div>

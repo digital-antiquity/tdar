@@ -77,7 +77,7 @@
     	        <autocomplete
                         :url="option.autocompleteUrl"
                         :suffix="option.autocompleteSuffix"
-                        :field="fieldName"
+                        :field="(!!option.columnType) ?  valueFieldName : fieldName"
                         v-if="option.autocompleteUrl != undefined || option.choices != undefined"
                         :bootstrap4="true"
                         :items="option.choices"
@@ -107,7 +107,7 @@
             <div v-if="option.type == 'checkbox'" class="col-11">
                   <value :choices="option.choices" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
             </div>
-            <div v-if="option.columnType != undefined"  class="col-11">
+            <div v-if="!!option.columnType"  class="col-11">
                <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
             </div>
             <div id="latlongoptions" v-if="option.type == 'map'"  class="col-11 leaflet-map-editable"  data-search="true" style="height:300px">
