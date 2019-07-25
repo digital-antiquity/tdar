@@ -26,3 +26,6 @@ struts-local-settings.xml
 datacite.properties
 target
 logs
+
+# excludes for ansible and vagrant derivatives
+.vagrant

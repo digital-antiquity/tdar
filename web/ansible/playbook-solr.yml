@@ -1,0 +1,25 @@
+---
+# Install solr on the host specified in ansible.cfg
+# https://github.com/geerlingguy/ansible-role-java
+# https://github.com/geerlingguy/ansible-role-solr
+- hosts: all
+  become: yes
+  vars:
+    java_packages:
+      - openjdk-12-jdk-headless
+  roles:
+    - geerlingguy.java
+    - geerlingguy.solr
+
+# Note: you may net to apt-get install python3-pip and use pip to install lxml
+#       for the following tasks to work.
+- hosts: all
+  become: yes
+  tasks:
+    - name: install solr spatial plugin
+      maven_artifact:
+        group_id: org.locationtech.jts
+        artifact_id: jts-core
+        version: 1.15.0
+        dest: /opt/solr/server/lib/
+        mode: 0644

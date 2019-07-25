@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+  vars:
+    some_var: hello world
+    some_int: 42
+  tasks:
+    - name: ensure apache is at the latest version
+      shell: echo 'hello world'
