@@ -23,3 +23,23 @@
         version: 1.15.0
         dest: /opt/solr/server/lib/
         mode: 0644
+
+    # FIXME: pull from original location instead of relying on build artifacts
+    - name: Add configsets and core config files
+      copy:
+        src: "../target/classes/solr/"
+        dest: /var/solr/data/
+        owner: solr
+        mode: 0644
+
+#rsync -a /target/classes/solr/annotationKeys .
+#rsync -a /vagrant/target/classes/solr/collections .
+#rsync -a /vagrant/target/classes/solr/dataMappings^C
+#rsync -a /vagrant/target/classes/solr/dataMappings .
+#rsync -a /vagrant/target/classes/solr/institutions .
+#rsync -a /vagrant/target/classes/solr/keywords .
+#rsync -a /vagrant/target/classes/solr/people .
+#rsync -a /vagrant/target/classes/solr/resources .
+
+
+
