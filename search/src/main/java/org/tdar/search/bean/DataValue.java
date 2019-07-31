@@ -4,12 +4,13 @@ import java.io.Serializable;
 
 public class DataValue implements Serializable {
 
-    private static final long serialVersionUID = -3727963215880847225L;
+    private static final long serialVersionUID = -3727963215882847225L;
 
     private Long columnId;
     private Long projectId;
     private String value;
     private String name;
+    private boolean singleToken = false;
     
     public DataValue() {}
     
@@ -50,5 +51,13 @@ public class DataValue implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isSingleToken() {
+        return singleToken;
+    }
+
+    public void setSingleToken(boolean singleToken) {
+        this.singleToken = singleToken;
     }
 }

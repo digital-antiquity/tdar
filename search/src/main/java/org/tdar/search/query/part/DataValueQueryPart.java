@@ -14,8 +14,16 @@ import org.tdar.utils.PersistableUtils;
  */
 public class DataValueQueryPart extends FieldQueryPart<String> {
 
+    // if true, querypart will escape the value string
     private boolean escaped = false;
+
+    // if true, query should utilize query tokenizer (i.e. tried entire value stringas single token).
+    private boolean singleToken = false;
+
+    // FIXME: I don't think this is ever used?
     private Long projectId;
+
+    //
     private Long fieldId;
 
     public DataValueQueryPart() {
@@ -39,6 +47,7 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         this.fieldId = val.getColumnId();
         setFieldName(val.getName());
         getFieldValues().add(val.getValue());
+        this.singleToken = val.isSingleToken();
     }
 
     @Override
@@ -54,12 +63,18 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
             content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         }
         subq.append(content);
-        FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_PHRASE, getFieldValues());
-        if (escaped) {
-            content2.setPhraseFormatters(PhraseFormatter.EMBEDDED);
-        } else {
-            content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+
+        if(!this.singleToken) {
+            FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_PHRASE, getFieldValues());
+            if (escaped) {
+                content2.setPhraseFormatters(PhraseFormatter.EMBEDDED);
+            } else {
+                content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+            }
+            subq.append(content2);
         }
+
+
         if (PersistableUtils.isNotNullOrTransient(getFieldId())) {
             FieldQueryPart<Long> field = new FieldQueryPart<Long>(QueryFieldNames.COLUMN_ID, getFieldId());
             kvp.append(field);
@@ -68,7 +83,7 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
             FieldQueryPart<Long> projectId = new FieldQueryPart<Long>(QueryFieldNames.PROJECT_ID, getProjectId());
             kvp.append(projectId);
         }
-        subq.append(content2);
+
 
         kvp.append(subq);
         @SuppressWarnings({ "rawtypes", "unchecked" })
