@@ -37,8 +37,10 @@ public class CrossCoreFieldJoinQueryPart<T extends QueryPart<?>> implements Quer
         if (part.isEmpty()) {
             return null;
         }
-
-        String str = String.format("{!join fromIndex=%s from=%s to=%s v='%s'}", coreName, outerFieldName, innerFieldName, part.generateQueryString());
+        // Localparams syntax can't be composed in the same way that we treat other queryparts, so we
+        // use this _query_ parameter as a work around.
+        // More info here: https://github.com/SolrNet/SolrNet/issues/143
+        String str = String.format("_query_:\"{!join fromIndex=%s from=%s to=%s}%s\"", coreName, outerFieldName, innerFieldName, part.generateQueryString());
         return str;
     }
 
