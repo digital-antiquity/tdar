@@ -1,6 +1,9 @@
 package org.tdar.search.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class DataValue implements Serializable {
 
@@ -8,7 +11,7 @@ public class DataValue implements Serializable {
 
     private Long columnId;
     private Long projectId;
-    private String value;
+    private List<String> value = new ArrayList<>();
     private String name;
     private boolean singleToken = false;
     
@@ -18,14 +21,14 @@ public class DataValue implements Serializable {
         this.projectId = projectId;
         this.columnId = columnId;
         this.name = name;
-        this.value = value;
+        this.value.add(value);
     }
 
-    public String getValue() {
+    public List<String> getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(List<String> value) {
         this.value = value;
     }
 

@@ -46,7 +46,7 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         this.projectId = val.getProjectId();
         this.fieldId = val.getColumnId();
         setFieldName(val.getName());
-        getFieldValues().add(val.getValue());
+        getFieldValues().addAll(val.getValue());
         this.singleToken = val.isSingleToken();
     }
 
@@ -56,6 +56,7 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         QueryPartGroup kvp = new QueryPartGroup(Operator.AND);
         QueryPartGroup subq = new QueryPartGroup(Operator.OR);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.VALUE, getFieldValues());
+        content.setOperator(Operator.OR);
         content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         if (escaped) {
             content.setPhraseFormatters(PhraseFormatter.EMBEDDED);

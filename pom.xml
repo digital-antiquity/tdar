@@ -57,7 +57,7 @@ Inheritance Hierarchy of this POM:
         <module>web-base</module>
         <module>web-test</module>
         <module>struts-base</module>
-        <module>balk</module>
+<!--        <module>balk</module>-->
         <module>web</module>
         <module>webservice/dataone</module>
         <module>webservice/oai-pmh</module>
