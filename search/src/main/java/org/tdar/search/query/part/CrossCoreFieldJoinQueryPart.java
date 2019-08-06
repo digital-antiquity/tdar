@@ -42,8 +42,9 @@ public class CrossCoreFieldJoinQueryPart<T extends QueryPart<?>> implements Quer
         // More info here: https://github.com/SolrNet/SolrNet/issues/143
         String qs = part.generateQueryString();
         // escape char must be escaped when query appears inside solr query parameter or attribute value
-        //fixme: if this code had a face I would punch it.z
-        qs = qs.replace("\\", "\\\\");
+        //fixme: we need to double-escape terms that contain spaces because the query string will be inside an attribute value
+        //       it would be easier to simply emit a term in double quotes, i think.
+        qs = qs.replace("\\ ", "\\\\ ");
         String str = String.format("_query_:\"{!join fromIndex=%s from=%s to=%s}%s\"", coreName, outerFieldName, innerFieldName, qs);
         return str;
     }
