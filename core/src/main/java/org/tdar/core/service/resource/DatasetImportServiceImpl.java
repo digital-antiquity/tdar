@@ -298,6 +298,11 @@ public class DatasetImportServiceImpl implements DatasetImportService {
             existingColumn.setDefaultCodingSheet(null);
             existingColumn.setColumnDataType(incomingColumn.getColumnDataType());
         }
+
+        // overwrite the old set of distinct column values w/ incoming values
+        existingColumn.getValues().clear();
+        existingColumn.getIntValues().clear();
+        existingColumn.getFloatValues().clear();
         DatasetImportUtils.copyValues(incomingColumn, existingColumn);
         existingNameToColumnMap.remove(normalizedColumnName);
     }
