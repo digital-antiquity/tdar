@@ -2,7 +2,7 @@
 <schema name="dataMappings" version="1.5">
     <field name="columnId" type="long" indexed="true" stored="false" />
     <field name="project.id" type="long" indexed="true" stored="false" />
-    <field name="value" type="string" indexed="true" stored="false"/>
+    <field name="value" type="strings" indexed="true" stored="false"/>
     <field name="value_phrase" type="text_en" indexed="true" stored="false"/>
     <copyField source="value" dest="value_phrase" />
     <field name="name" type="string" indexed="true" stored="false" />

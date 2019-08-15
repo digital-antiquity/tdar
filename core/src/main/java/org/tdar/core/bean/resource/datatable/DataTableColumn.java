@@ -70,7 +70,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonInclude(Include.NON_NULL)
 public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable, HasStatic, ImportColumn {
 
-    private static final long serialVersionUID = 430090539610139732L;
+    private static final long serialVersionUID = 430090539610139733L;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

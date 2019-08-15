@@ -1,11 +1,11 @@
 package org.tdar.search.converter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.datatable.ColumnVisibility;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -13,35 +13,23 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.SearchUtils;
 
+import javax.annotation.Nonnull;
+
 public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
 
     /*
      * See solr/configsets/default/conf/dataMappings-schema.xml
      */
     public static List<SolrInputDocument> convert(InformationResource ir, DatasetDao datasetDao) {
-        List<SolrInputDocument> docs = new ArrayList<>();
         Map<DataTableColumn, String> data = datasetDao.getMappedDataForInformationResource(ir);
-        if (data != null) {
-            for (DataTableColumn key : data.keySet()) {
-                if (key == null) {
-                    continue;
-                }
-                String mapValue = data.get(key);
-                if (key.getName() == null || StringUtils.isBlank(mapValue)) {
-                    continue;
-                }
-
-                SolrInputDocument doc = createDocument(key, ir, mapValue);
-                if (doc != null) {
-                    docs.add(doc);
-                }
-            }
-
-        }
-        return docs;
-
+        return data.entrySet().stream()
+                .filter(e -> e.getKey() != null
+                        && e.getKey().getVisible() != ColumnVisibility.HIDDEN
+                        && StringUtils.isNotBlank(e.getKey().getName())
+                        && StringUtils.isNotBlank(e.getValue()) )
+                .map( e -> createDocument(e.getKey(), ir, e.getValue()))
+                .collect(Collectors.toList());
     }
-
 
     public static SolrInputDocument createDocument(DataTableColumn key, InformationResource ir, String mapValue) {
         if (key.getVisible() == ColumnVisibility.HIDDEN) {
@@ -54,18 +42,22 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
         if(logger.isTraceEnabled()){
             logger.trace("Indexing dataset value:  tdarId:{}\t solrId:{}\t title:{}", ir.getId(), solrId, ir.getTitle());
         }
-        logSetField(doc,QueryFieldNames.ID, ir.getId());
-        logSetField(doc,QueryFieldNames.CLASS, ir.getClass().getName());
-        logSetField(doc,QueryFieldNames._ID, solrId);
-        logSetField(doc,QueryFieldNames.NAME, keyName);
-        logSetField(doc,QueryFieldNames.PROJECT_ID, ir.getProject().getId());
-        logSetField(doc,QueryFieldNames.COLUMN_ID, key.getId());
-        logSetField(doc,QueryFieldNames.VALUE, mapValue);
+        setField(doc,QueryFieldNames.ID, ir.getId());
+        setField(doc,QueryFieldNames.CLASS, ir.getClass().getName());
+        setField(doc,QueryFieldNames._ID, solrId);
+        setField(doc,QueryFieldNames.NAME, keyName);
+        setField(doc,QueryFieldNames.PROJECT_ID, ir.getProject().getId());
+        setField(doc,QueryFieldNames.COLUMN_ID, key.getId());
+        // FIXME: We should arguably use DataTableColumn.delimiterValue instead, but it is not exposed by the UI.
+        for (String val : StringUtils.split(mapValue, TdarConfiguration.getInstance().getDatasetCellDelimiter())) {
+            setField(doc,QueryFieldNames.VALUE, val);
+        }
+
 
         return doc;
     }
 
-    private static void logSetField(SolrInputDocument doc, String key, Object value) {
+    private static void setField(SolrInputDocument doc, String key, Object value) {
         if(logger.isTraceEnabled()){
             logger.trace("Indexing dataset doc:      field:{}\t value:{}", key, value);
         }

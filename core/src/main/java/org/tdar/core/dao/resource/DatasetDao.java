@@ -127,15 +127,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
             return null;
         }
         final DataTable table = column.getDataTable();
-        ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = new ResultSetExtractor<Map<DataTableColumn, String>>() {
-            @Override
-            public Map<DataTableColumn, String> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                while (rs.next()) {
-                    Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, true, rs, false);
-                    return results;
-                }
-                return null;
+        ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor = rs -> {
+            while (rs.next()) {
+                Map<DataTableColumn, String> results = DatasetUtils.convertResultSetRowToDataTableColumnMap(table, true, rs, false);
+                return results;
             }
+            return null;
         };
 
         return tdarDataImportDatabase.selectAllFromTableCaseInsensitive(column, key, resultSetExtractor);
