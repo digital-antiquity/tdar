@@ -318,6 +318,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 }
 
                 console.log("adding column info for:", datasetId, dataset);
+
+                // sort column names in place
+                dataset.columns.sort(function(a, b) {
+                   if(a.name > b.name) {return 1;}
+                   if(a.name < b.name) {return -1;}
+                   return 0;
+                });
+
                 dataset.columns.forEach(function(field) {
                     var values = [];
                     var type = "basic";
