@@ -16,7 +16,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
  */
 public class DatasetUtils {
 
-    private static final String NULL = "NULL";
+//    private static final String NULL = "NULL";
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(DatasetUtils.class);
 
@@ -55,12 +55,12 @@ public class DatasetUtils {
             }
         }
         for (DataTableColumn key : results.keySet()) {
-            String val = NULL;
+            String val;
             Object obj = rs.getObject(key.getName());
             if (obj != null) {
                 val = obj.toString();
+                results.put(key, val);
             }
-            results.put(key, val);
         }
         return results;
     }

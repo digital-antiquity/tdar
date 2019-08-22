@@ -48,11 +48,14 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
         setField(doc,QueryFieldNames.NAME, keyName);
         setField(doc,QueryFieldNames.PROJECT_ID, ir.getProject().getId());
         setField(doc,QueryFieldNames.COLUMN_ID, key.getId());
-        // FIXME: We should arguably use DataTableColumn.delimiterValue instead, but it is not exposed by the UI.
-        for (String val : StringUtils.split(mapValue, TdarConfiguration.getInstance().getDatasetCellDelimiter())) {
-            setField(doc,QueryFieldNames.VALUE, val);
-        }
 
+        // FIXME: We should arguably use DataTableColumn.delimiterValue instead, but it is not exposed by the UI.
+        String delim = TdarConfiguration.getInstance().getDatasetCellDelimiter();
+        String[] vals = StringUtils.split(mapValue, delim);
+        for (int i = 0; i < vals.length; i++) {
+            vals[i] = StringUtils.trim(vals[i]);
+        }
+        setField(doc, QueryFieldNames.VALUE, vals);
 
         return doc;
     }
