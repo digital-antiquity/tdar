@@ -321,9 +321,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
                 // sort column names in place
                 dataset.columns.sort(function(a, b) {
-                   if(a.name > b.name) {return 1;}
-                   if(a.name < b.name) {return -1;}
-                   return 0;
+                    var sortprop = "displayName";
+                    if(a[sortprop] > b[sortprop]) {return 1;}
+                    if(a[sortprop] < b[sortprop]) {return -1;}
+                    return 0;
                 });
 
                 dataset.columns.forEach(function(field) {

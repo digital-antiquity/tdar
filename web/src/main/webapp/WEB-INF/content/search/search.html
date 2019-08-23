@@ -106,11 +106,11 @@
  		    </div>
             <div v-if="option.type == 'checkbox'" class="col-11">
                 <value :choices="option.choices" ref="valuepart" :values="[]" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
-                <input type="hidden" :name="fieldName + '.singleToken'" :value="true" />
+                <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
             </div>
             <div v-if="!!option.columnType"  class="col-11">
                <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
-               <input type="hidden" :name="fieldName + '.singleToken'" :value="true" />
+               <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
             </div>
             <div id="latlongoptions" v-if="option.type == 'map'"  class="col-11 leaflet-map-editable"  data-search="true" style="height:300px">
                <span class="latlong-fields">
