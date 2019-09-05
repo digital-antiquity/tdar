@@ -103,23 +103,29 @@
                             </div>
                         </li>
 -->
-                        <li class="nav-item mr-sm-3">
+                        <li class="nav-item mr-sm-2">
                             <a href="https://www.tdar.org/about/" class="nav-link align-middle tdarNavItem">About</a>
                         </li>
-                        <li class="nav-item mr-sm-3">
+                        <li class="nav-item mr-sm-2">
                             <a href="/search/" class="nav-link align-middle tdarNavItem">Search</a>
                         </li>
 <!--                        <li class="nav-item mr-sm-3">
                             <a href="/search/" class="nav-link align-middle tdarNavItem">Explore</a>
                         </li> -->
-                        <li class="nav-item mr-sm-3">
+                        <li class="nav-item mr-sm-2">
                             <a href="https://www.tdar.org/using-tdar/" class="nav-link align-middle tdarNavItem">Using tDAR</a>
                         </li>
-                        <li class="nav-item mr-sm-3">
+                        <li class="nav-item mr-sm-2">
                             <a href="/contribute" class="nav-link align-middle tdarNavItem">Upload</a>
                         </li>
-                        <li class="nav-item mr-sm-3">
+                        <li class="nav-item mr-sm-2">
                             <a href="https://www.tdar.org/news/" class="nav-link align-middle tdarNavItem">News</a>
+                        </li>
+                        <li class="nav-item mr-sm-2">
+                            <a href="https://www.tdar.org/sha/" class="nav-link align-middle tdarNavItem">SHA</a>
+                        </li>
+                        <li class="nav-item mr-sm-2">
+                            <a href="https://www.tdar.org/saa/" class="nav-link align-middle tdarNavItem">SAA</a>
                         </li>
 
                     </ul>
