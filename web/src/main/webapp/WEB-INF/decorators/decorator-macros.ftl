@@ -122,10 +122,10 @@
                             <a href="https://www.tdar.org/news/" class="nav-link align-middle tdarNavItem">News</a>
                         </li>
                         <li class="nav-item mr-sm-2">
-                            <a href="https://www.tdar.org/sha/" class="nav-link align-middle tdarNavItem">SHA</a>
+                            <a href="/collection/65354/society-for-historical-archaeology" title="Society for Historical Archaeology" class="nav-link align-middle tdarNavItem">SHA</a>
                         </li>
                         <li class="nav-item mr-sm-2">
-                            <a href="https://www.tdar.org/saa/" class="nav-link align-middle tdarNavItem">SAA</a>
+                            <a href="/collection/65171/society-for-american-archaeology" title="Society for American Archaeology" class="nav-link align-middle tdarNavItem">SAA</a>
                         </li>
 
                     </ul>
