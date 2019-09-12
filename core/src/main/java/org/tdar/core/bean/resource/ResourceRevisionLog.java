@@ -62,8 +62,8 @@ public class ResourceRevisionLog extends AbstractPersistable {
     private RevisionLogType type;
 
     // the action taken
-    @Column(name = "log_message", length = FieldLength.FIELD_LENGTH_512)
-    @Length(max = FieldLength.FIELD_LENGTH_512)
+    @Column(name = "log_message", length = FieldLength.FIELD_LENGTH_8196)
+    @Length(max = FieldLength.FIELD_LENGTH_8196)
     private String logMessage;
 
     @ManyToOne(optional = false)
