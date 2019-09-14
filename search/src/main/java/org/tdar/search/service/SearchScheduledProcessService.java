@@ -16,7 +16,7 @@ public class SearchScheduledProcessService {
     @Autowired
     private SearchIndexService searchIndexService;
 
-    @Scheduled(cron = "12 0 0 * * THU")
+    // @Scheduled(cron = "12 0 0 * * THU")
     public void cronWeeklyAdded() {
         scheduledProcessService.queue(WeeklyResourcesAdded.class);
     }
