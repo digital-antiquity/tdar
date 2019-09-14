@@ -67,10 +67,11 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
 
         if(!this.singleToken) {
             FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_PHRASE, getFieldValues());
+            content2.setOperator(Operator.OR);
             if (escaped) {
-                content2.setPhraseFormatters(PhraseFormatter.EMBEDDED);
+                content2.setPhraseFormatters(PhraseFormatter.QUOTED, PhraseFormatter.EMBEDDED);
             } else {
-                content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
+                content2.setPhraseFormatters(PhraseFormatter.QUOTED, PhraseFormatter.ESCAPED_EMBEDDED);
             }
             subq.append(content2);
         }

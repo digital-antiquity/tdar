@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd" context="production,test" >
+
+    <changeSet id="mimdar-jtdevos-1" author="jtdevos" >
+        <comment>
+            This changeset adds two views:
+            vw_collection_ancestors:
+                Recursive view that resembles the collection table but adds helper columns, 'family_id' and 'parent_ids'.
+                The 'family_id' column contains id value of the root node for any given node id.  The 'parents' array
+                is an array containing the ID's of the parents of any given node The purpose of this view is to
+                conveniently reconstruct the dewey-style index of a given node.
+
+                Additionally, one can retrieve the entire graph of nodes by filtering on family_id of a node.
+
+            vw_collection_lineage:
+                This view joins vw_ancestors upon itself to facilitate the ability to query for the entire graph using
+                the ID value of *any* collection_id in the lineage.
+
+        </comment>
+        <createView
+                viewName="vw_collection_ancestors"
+                replaceIfExists="true">
+
+            with recursive cte_ancestors(id, parent_id, family_id) as
+                (
+                    select
+                        id
+                        , parent_id
+                        , id "family_id"
+                        , ARRAY[]::BIGINT[] ancestor_ids
+                    from
+                        collection cc
+                    where
+                        parent_id is null
+
+                    UNION
+
+                    select
+                        cc.id
+                        , cc.parent_id
+                        , ll.family_id
+                        , ancestor_ids || cc.parent_id
+                    from
+                        collection cc
+                            join cte_ancestors ll on cc.parent_id = ll.id
+                )
+
+                select * from cte_ancestors;
+
+        </createView>
+        <createView
+                viewName="vw_collection_lineage"
+                replaceIfExists="true">
+
+            select
+                v.id reference_id,
+                v2.id,
+                v2.parent_id,
+                v2.family_id,
+                v2.ancestor_ids
+            from
+            vw_collection_ancestors v
+                join vw_collection_ancestors v2 on v2.family_id = v.family_id
+                    join collection c on c.id = v2.id
+
+        </createView>
+
+
+    </changeSet>
+</databaseChangeLog>

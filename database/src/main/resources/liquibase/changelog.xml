@@ -12,4 +12,5 @@
   <include file="prehistoric.xml"  relativeToChangelogFile="true"/> 
   <include file="quartz.xml"  relativeToChangelogFile="true"/> 
   <include file="radiocarbon.xml"  relativeToChangelogFile="true"/> 
+  <include file="radiocarbon-mimbres.xml"  relativeToChangelogFile="true"/>
 </databaseChangeLog>

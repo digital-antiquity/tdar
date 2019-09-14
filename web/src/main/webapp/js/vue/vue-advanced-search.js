@@ -1,6 +1,7 @@
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     "use strict";
     var UNDEFINED = "undefined";
+    var MAXLEN_CHECKBOXLIST = 50;
 
     /**
      * "Part" Vue Control.
@@ -321,9 +322,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
                 // sort column names in place
                 dataset.columns.sort(function(a, b) {
-                   if(a.name > b.name) {return 1;}
-                   if(a.name < b.name) {return -1;}
-                   return 0;
+                    var sortprop = "displayName";
+                    if(a[sortprop] > b[sortprop]) {return 1;}
+                    if(a[sortprop] < b[sortprop]) {return -1;}
+                    return 0;
                 });
 
                 dataset.columns.forEach(function(field) {
@@ -351,10 +353,19 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                                 }
                             });
                         }
+                        values.sort(function(a,b){
+                            var ret = 0;
+                            if(a.toLowerCase() < b.toLowerCase()) {
+                                ret = -1;
+                            } else if(a.toLowerCase() > b.toLowerCase()) {
+                                ret = 1;
+                            }
+                            return ret;
+                        });
 
                         //FIXME: magic numbers
                         // For smaller range of values, render as checkbox.
-                        if (values.length < 20) {
+                        if (values.length < MAXLEN_CHECKBOXLIST) {
                             type = "checkbox";
                         }
                     }
