@@ -16,7 +16,8 @@ public class SearchScheduledProcessService {
     @Autowired
     private SearchIndexService searchIndexService;
 
-    @Scheduled(cron = "12 0 0 * * THU")
+    // @Scheduled(cron = "12 0 0 * * THU")
+    // FIXME: disabling cron weekly added collection for now.  Remove it entirely down the road.
     public void cronWeeklyAdded() {
         scheduledProcessService.queue(WeeklyResourcesAdded.class);
     }
@@ -26,5 +27,4 @@ public class SearchScheduledProcessService {
         searchIndexService.optimizeAll();
         ;
     }
-
 }
