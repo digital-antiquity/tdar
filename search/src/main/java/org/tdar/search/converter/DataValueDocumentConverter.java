@@ -56,6 +56,7 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
             vals[i] = StringUtils.trim(vals[i]);
         }
         setField(doc, QueryFieldNames.VALUE, vals);
+        setField(doc, QueryFieldNames.VALUE_EXACT, vals);
 
         return doc;
     }

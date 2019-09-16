@@ -66,7 +66,7 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         subq.append(content);
 
         if(!this.singleToken) {
-            FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_PHRASE, getFieldValues());
+            FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_EXACT, getFieldValues());
             content2.setOperator(Operator.OR);
             if (escaped) {
                 content2.setPhraseFormatters(PhraseFormatter.QUOTED, PhraseFormatter.EMBEDDED);

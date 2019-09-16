@@ -144,6 +144,7 @@ public interface QueryFieldNames {
     String VALUE = "value";
     String COLUMN_ID = "columnId";
     String VALUE_PHRASE = "value_phrase";
+    String VALUE_EXACT = "value_exact";
     String RESOURCE_COLLECTION_IDS = "allCollectionIds";
     String FILE_IDS = "file.id";
     String ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS = "activeLatitudeLongitudeBoxes.id";
