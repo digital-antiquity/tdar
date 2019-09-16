@@ -5,6 +5,7 @@
     <field name="value" type="strings" indexed="true" stored="false"/>
     <field name="value_phrase" type="text_en" indexed="true" stored="false" multiValued="true"/>
     <copyField source="value" dest="value_phrase" />
+    <field name="value_exact" type="exact_match_field_type" indexed="true" stored="true" multiValued="true"/>
     <field name="name" type="string" indexed="true" stored="false" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 

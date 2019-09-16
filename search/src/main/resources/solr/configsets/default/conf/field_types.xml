@@ -391,4 +391,16 @@
         <filter class="solr.LowerCaseFilterFactory" />
       </analyzer>
     </fieldType>
+
+  <!-- "exact" field type example taken from Apache Solr Essentials, ch2 -->
+  <!-- It's not really an exact match, but a case-insensitive, space-insensitive, accent-insensitive match) -->
+  <fieldType name="exact_match_field_type" class="solr.TextField" omitNorms="true" positionIncrementGap="100" stored="false" multiValued="true">
+    <analyzer>
+      <charFilter class="solr.MappingCharFilterFactory" mapping="mapping-FoldToASCII.txt"/>
+      <tokenizer class="solr.KeywordTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory" />
+      <filter class="solr.WordDelimiterFilterFactory" generateWordParts="0" generateNumberParts="0" catenateWords="0" catenateNumbers="0" catenateAll="1" splitOnCaseChange="0" />
+    </analyzer>
+  </fieldType>
+
 </types>
