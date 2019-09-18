@@ -108,6 +108,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             "mapped-dataset-id": Number
         },
         data : {
+            termOperator: 'AND',
             columnMap : {},
             selectOptions : [ {
                 name : 'All Fields',

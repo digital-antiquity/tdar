@@ -4,8 +4,12 @@
 <div class="advanced container" style="z-index: 10000; display: none; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch">
     <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
         <div class="row">
+            <div class="col-12">
+                <a href="#" onClick="$('#advancedsearch').hide();return false;" class='float-sm-right'>close <b>X</b></a>
+            </div>
+        </div>
+        <div class="row">
             <div class=" advancedSearchbox col-12" >
-                <a href="#" onClick="$('#advancedsearch').hide();return false;" class='float-right'>close <b>X</b></a>
                 <!--
                 <div class="control-group condensed">
                     <label class="control-label">What:</label>
@@ -122,8 +126,8 @@
                <div class="mapdiv"></div>
             </div>
          <div class="col-1">
-             <span v-if="infoLink != undefined"><a :href="infoLink" class="btn  btn-mini " tabindex="-1" target="_blank"><i class="fas fa-info-circle "></i></a></span>
-             <button class="btn  btn-mini " @click="clearRow()" type="button" tabindex="-1"><i class="fas fa-trash-alt "></i></button>
+             <span v-if="infoLink != undefined"><a :href="infoLink" class="btn  btn-sm " tabindex="-1" target="_blank"><i class="fas fa-info-circle "></i></a></span>
+             <button class="btn  btn-sm " @click="clearRow()" type="button" tabindex="-1"><i class="fas fa-trash-alt "></i></button>
           </div>
          </div>
     </div>

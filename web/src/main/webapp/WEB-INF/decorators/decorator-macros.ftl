@@ -180,6 +180,7 @@
 <#macro searchform topRight=false>
     <#if topRight>
             <div onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();"
+<#--            <div onClick="$('#advancedsearch').modal()"-->
                  class="float-right searchbutton"
                  id="divContextSearchButton"
             >Search <i class="fa fa-search fa-sm-1x"></i></div>
