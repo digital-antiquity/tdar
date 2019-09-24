@@ -1,6 +1,5 @@
 <#macro layout_header>
 
-
     <div id="mdScreenNav">
         <nav class="navbar navbar-expand-md navbar-light">
             <div class = "container">
@@ -17,7 +16,7 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
                     </div>
-                    <@searchform false />
+                    <@searchform_old false />
                 </div>
 
 
@@ -35,14 +34,15 @@
                         </div>
                         <ul class="navbar-nav">
                             <li class="nav-item">
-                                <@searchform true />
+                                <@searchform_old true />
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
         </nav>
-<#include "/WEB-INF/content/search/search.html" >
+
+
 
         <nav class="navbar navbar-expand-md navbar-light tdarNav py-0">
             <div class = "container">
@@ -177,38 +177,30 @@
     </#if>
 </#macro>
 
-<#macro searchform topRight=false>
-    <#if topRight>
+<#macro dataset_search>
             <div onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();"
 <#--            <div onClick="$('#advancedsearch').modal()"-->
                  class="float-right searchbutton"
                  id="divContextSearchButton"
             >Search <i class="fa fa-search fa-sm-1x"></i></div>
-    <#else>
-                    <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
-                        <div class="input-group">
-                            <input type="hidden" name="_tdar.searchType" value="simple">
-                            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>"
-                                onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();" type="search" placeholder="Search..." name="query" id="searchbox${topRight?string("top","")}">
-                            <span class="input-group-append">
+</#macro>
+
+<#macro searchform_old topRight=false>
+    <form   name="searchheader" class="form-inline mt-2 seleniumIgnoreForm" action="/search/results" method="GET" >
+        <div class="input-group">
+            <input type="hidden" name="_tdar.searchType" value="simple">
+            <input class="form-control form-control-sm border-right-0 border searchbox <#if topRight?has_content && topRight>contextsearchbox</#if>" type="search" placeholder="Search..." name="query">
+            <span class="input-group-append">
                                         <div class="input-group-text bg-transparent"><i class="fa fa-search fa-sm-1x"></i></div>
                             </span>
-                    <#if topRight>
-                    <div id="divSearchContext">
-                        <#if namespace?contains("collection") && id?has_content >
-                            <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
-                            <label for="cbctxid">Search within this collection</label>
-                        </#if>
-                        <#if namespace?contains("project")  && id?has_content >
-                            <input id="cbctxid" type="checkbox" name="projectId" value="${id?c}">
-                            <label for="cbctxid">Search within this project</label>
-                        </#if>
-                    </div>
-                    </#if>
-                        </div>
-                    </form>
-        </#if>
+            <#if topRight?has_content && topRight >
+                ${(page.properties["div.divSearchContext"])!""}
+            </#if>
+        </div>
+    </form>
 </#macro>
+
+
 
 <#macro searchHero imageClass="whatcanyoudig-image" title="What can you dig up?" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."
  idField="" idValue="" searchPrompt="Find archaeological data...">

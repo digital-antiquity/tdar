@@ -7,6 +7,7 @@
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
     <#import "/WEB-INF/macros/resource/common-resource.ftl" as commonr>
     <#import "/WEB-INF/macros/common.ftl" as common>
+    <#import "/WEB-INF/decorators/decorator-macros.ftl" as decorator>
 
 <#assign hasProject = (resource.project?? && resource.project.id?? && resource.project.id != -1)/>
 <head>
@@ -173,7 +174,20 @@
 
             </#if>
 
-        <h2>Data Set Structure</h2>
+
+            <div style="border:10px solid black">
+
+                <h1>Dataset Search</h1>
+
+                <#include "/WEB-INF/content/search/search.html" >
+                <@decorator.dataset_search  />
+
+            </div>
+
+
+
+
+            <h2>Data Set Structure</h2>
         <div class="row">
             <div class="col-4"><span class="columnSquare measurement"></span>Measurement Column</div>
             <div class="col-4"><span class="columnSquare count"></span>Count Column</div>
