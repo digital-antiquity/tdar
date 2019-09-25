@@ -137,8 +137,24 @@
         <@view.imageGallery />
     </#if>
 
+
+    <#if  mappedDatasetId?has_content>
+
+    <h1>Dataset Search</h1>
+    <div class="row">
+
+        <#include "/WEB-INF/content/search/search.html" >
+        <@decorator.dataset_search  />
+
+    </div>
+    </#if>
+
+
+
     <#if resource.resourceType.dataTableSupported>
         <#if (resource.dataTables?has_content)>
+
+
             <#if resource.viewable && authenticated && (resource.publicallyAccessible || ableToViewConfidentialFiles)>
             <h2 id="browseTable" data-namespace="${namespace}">Browse ${resource.title}</h2>
 
@@ -173,17 +189,6 @@
                 <p><@view.embargoCheck /></p>
 
             </#if>
-
-
-            <div style="border:10px solid black">
-
-                <h1>Dataset Search</h1>
-
-                <#include "/WEB-INF/content/search/search.html" >
-                <@decorator.dataset_search  />
-
-            </div>
-
 
 
 

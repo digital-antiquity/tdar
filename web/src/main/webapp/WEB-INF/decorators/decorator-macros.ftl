@@ -178,11 +178,6 @@
 </#macro>
 
 <#macro dataset_search>
-            <div onClick="$('#advancedsearch').show();$('#advancedsearch input[type=text]:visible').first().focus();"
-<#--            <div onClick="$('#advancedsearch').modal()"-->
-                 class="float-right searchbutton"
-                 id="divContextSearchButton"
-            >Search <i class="fa fa-search fa-sm-1x"></i></div>
 </#macro>
 
 <#macro searchform_old topRight=false>
