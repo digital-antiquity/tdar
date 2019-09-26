@@ -91,7 +91,7 @@
 
             <div id="divMappedDataset" class="control-group row">
                 <label class="control-label col-form-label col-2">Dataset ID</label>
-                <@s.textfield name="resourceCollection.dataset.id" id=txtDatasetId />
+                <@s.textfield name="mappedDatasetId" id=txtDatasetId />
             </div>
 
 

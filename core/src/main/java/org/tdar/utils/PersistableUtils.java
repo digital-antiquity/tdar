@@ -241,4 +241,22 @@ public class PersistableUtils {
     public static <T extends Persistable> int compareIds(T o1, T o2) {
         return ObjectUtils.compare(o1.getId(), o2.getId());
     }
+
+    /**
+     *  Return the ID of a persistable object, if object is both not null and not transient, otherwise return null.
+     *  This is a convenience method designed to simplify the common scenario of referencing the ID of a nullable
+     *  DAO in an assignment statement. e.g.
+     *  <code>if(isNotNullOrTransient){ datasetId = dataset.getId();} else { datasetId = null;}</code> , vs.
+     *  <code>datasetId = persistableId(dataset)</code>
+     * @param p the persistable object
+     * @return Long object containing the value of the ID, or null
+     */
+    public static Long pid(Persistable p) {
+        Long id = null;
+        if(isNotNullOrTransient(p)) {
+            id = p.getId();
+        }
+        return id;
+    }
+
 }

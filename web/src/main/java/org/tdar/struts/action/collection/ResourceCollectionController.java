@@ -23,10 +23,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.*;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.CollectionSaveObject;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -42,6 +39,8 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
+
+import static org.tdar.utils.PersistableUtils.pid;
 
 @Component
 @Scope("prototype")
@@ -92,6 +91,9 @@ public class ResourceCollectionController extends AbstractPersistableController<
     private String alternateParentCollectionName;
     private Long parentId;
     private Long alternateParentId;
+
+
+    private Long mappedDatasetId;
     private ResourceCollection parentCollection;
     private ResourceCollection alternateParentCollection;
 
@@ -155,6 +157,8 @@ public class ResourceCollectionController extends AbstractPersistableController<
         cso.setPublicToAdd(getToAddUnmanaged());
         cso.setPublicToRemove(getToRemoveUnmanaged());
 
+        Dataset dataset = getGenericService().find(Dataset.class, getMappedDatasetId());
+        persistable.setDataset(dataset);
         resourceCollectionService.saveCollectionForController(cso);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
 
@@ -212,6 +216,8 @@ public class ResourceCollectionController extends AbstractPersistableController<
             addActionError(getText("collectionController.type_mismatch"));
         }
 
+        setMappedDatasetId(pid(getPersistable().getDataset()));
+
     }
 
     private ResourceCollection prepareParent(Long pid, String parentName) {
@@ -246,6 +252,22 @@ public class ResourceCollectionController extends AbstractPersistableController<
             addActionError(getText("collectionController.cannot_set_self_parent"));
         }
         return _parentId;
+    }
+
+    /**
+     * Assert that
+     *  - the specified dataset id exists,
+     *  - is (or will be) a direct member of the collection
+     *  - dataset is a valid candidate (i.e. has at least one mapped filename column)
+     */
+    private void validateDatasetId() {
+
+        Dataset dataset = getGenericService().find(Dataset.class, mappedDatasetId);
+        boolean isValid = getResourceCollection().getResourceIds().contains(mappedDatasetId);
+        if(!isValid) {
+            addActionError("Invalid mapped dataset");
+        }
+
     }
 
     @Override
@@ -535,6 +557,14 @@ public class ResourceCollectionController extends AbstractPersistableController<
 
     public void setToAddUnmanaged(List<Long> toAddUnmanaged) {
         this.toAddUnmanaged = toAddUnmanaged;
+    }
+
+    public Long getMappedDatasetId() {
+        return mappedDatasetId;
+    }
+
+    public void setMappedDatasetId(Long mappedDatasetId) {
+        this.mappedDatasetId = mappedDatasetId;
     }
 
 }

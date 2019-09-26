@@ -12,6 +12,11 @@ import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.interceptor.annotation.HttpNotFoundErrorOnly;
 
+
+// FIXME: Context filtering currently happens on the client, but should be handled on the server.
+/**
+ * Return JSON Object containing list of relevant search fields available to the current user, filtered by context
+ */
 @Namespaces(value = {
         @Namespace("/search"),
         @Namespace("/api/search") })

@@ -106,6 +106,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         el : "#advancedsearch",
         props: {
             "mapped-dataset-id": Number
+
         },
         data : {
             termOperator: 'AND',
@@ -294,6 +295,17 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     self.addColumnInfo(dsid);
                 }
             });
+
+            // filter the available fields if groups property specified
+            // FIXME: temp hack: forcing groups to "custom"
+            this.groups = "custom"
+            this.allSelectOptions = this.selectOptions.slice();
+            var groups = this.groups.split(this.groups, ",");
+            if(this.groups !== "all") {
+                this.selectOptions = this.selectOptions.filter(function(opt){
+                    return groups.indexOf(opt.group) > -1;
+                });
+            }
         },
         computed : {},
         methods : {
@@ -364,7 +376,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                             return ret;
                         });
 
-                        //FIXME: magic numbers
                         // For smaller range of values, render as checkbox.
                         if (values.length < MAXLEN_CHECKBOXLIST) {
                             type = "checkbox";
@@ -382,10 +393,21 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         choices : values,
                         columnType : field.columnDataType
                     })
-
                 });
 
+
+            },
+
+            /**
+             * Serialize the current state of the form as an array of name-value pairs.
+             */
+            serializeState: function() {
+                var formdata = this.$refs.parts.map(function(part, i){
+                    // get the field name and current value(s) of each part
+                    return {fieldName: 'tba', value:[]}
+                });
             }
+
         }
     });
 })(console, window, Vue, axios, TDAR);
