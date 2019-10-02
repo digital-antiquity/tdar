@@ -29,6 +29,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 if (this.option.name === 'Collection') {
                     this.$emit("collection change,", n);
                 }
+            },
+            input: function(n, o) {
+                console.log("vue-advanced-search: hello from input listener ")
             }
         },
         mounted : function() {
@@ -68,6 +71,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             }
         },
         methods : {
+            changed: function() {
+                this.row.option = this.option;
+            },
             reset : function() {
                 if (typeof this.$refs.autocomplete !== UNDEFINED) {
                     this.$refs.autocomplete.clear();
@@ -97,6 +103,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 }
             }
         }
+
     });
 
     /**
@@ -108,6 +115,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             "mapped-dataset-id": Number
 
         },
+        watch: {
+            autocompletevalueset: function(n, o) {
+                console.log("vue-advanced-search: hello from input listener ");
+            }
+        },
+
         data : {
             termOperator: 'AND',
             columnMap : {},
@@ -402,10 +415,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
              * Serialize the current state of the form as an array of name-value pairs.
              */
             serializeState: function() {
+                console.log('serialize state called');
                 var formdata = this.$refs.parts.map(function(part, i){
                     // get the field name and current value(s) of each part
                     return {fieldName: 'tba', value:[]}
                 });
+                console.dir(formdata)
             }
 
         }

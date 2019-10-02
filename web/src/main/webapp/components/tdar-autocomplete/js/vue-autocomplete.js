@@ -57,7 +57,12 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           }},
           createnewtext: {type:String, default:'Create New'},
           initial_id: {type:Number},
-          initial_value:{type:String}
+          initial_value:{type:String},
+
+
+          // jim temp props
+            row: Object
+
         },
     
         data: function() {
@@ -97,6 +102,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             },
             setValue: function(val) {
                 Vue.set(this,"search", val);
+                this.row.value = val;
             },
             addFocus: function (type) {
                 if (type == 'mouse') {
@@ -270,6 +276,10 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
                 this.$emit("setvalueid", '');
                 this.id = '';
             }
+
+            // fixme: ignore non-string results when propagating
+
+
           },
           clear: function() {
               this.search= '';

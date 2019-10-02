@@ -2,7 +2,7 @@ var _value = Vue.component('value', {
     template : "#value-template",
     props: {
         values: {
-            type: Array,
+            // type: Array,
             required: false,
             default: function() {return [];}
         },
@@ -97,9 +97,12 @@ var _value = Vue.component('value', {
         _toIdList: function(list) {
             var ret = [];
             var self = this;
-            list.forEach(function(v){
+            if(typeof list === 'object') {
+                list.forEach(function(v){
                 ret.push(self._toId(v));
-            });
+              });
+
+            }
             console.log(ret);
             return ret;
         },
@@ -124,7 +127,8 @@ var _value = Vue.component('value', {
             this.values.length = 0;
             var self = this;
             if (self.idOnly) {
-                self.values.concat(n);
+                // fixme: can't change properties direct - need to use events
+                // self.values = self.values.concat(n);
             } else {
                 self.choices.forEach(function(c) {
                     n.forEach(function(v){

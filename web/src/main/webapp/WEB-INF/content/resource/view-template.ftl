@@ -693,10 +693,12 @@ $(function(){
         _localJavaScript();
     }
 
+
     //TDAR.internalEmailForm.init();
-    <#if authenticated>
-        TDAR.vuejs.collectionwidget.init("#add-resource-form");
-    </#if>
+<#--    FIXME: TDAR-6284 -->
+<#--    <#if authenticated>-->
+<#--        TDAR.vuejs.collectionwidget.init("#add-resource-form");-->
+<#--    </#if>-->
 });
 </script>
 
@@ -712,21 +714,21 @@ $(function(){
         </#list>
     </#macro>
 
-   
-<div class="modal hide fade" id="modal">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-    <h2>Add to a Collection</h2>
-  </div>
-  
-  <div class="modal-body">
-      <ul class="collection-list unstyled">
-      </ul>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <a href="#" class="btn btn-primary">Save changes</a>
-  </div>
-</div>
+<#-- FIXME: investigate unused "add to collection" modals  -->
+<#--<div class="modal hide fade" id="modal">-->
+<#--  <div class="modal-header">-->
+<#--    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>-->
+<#--    <h2>Add to a Collection</h2>-->
+<#--  </div>-->
+<#--  -->
+<#--  <div class="modal-body">-->
+<#--      <ul class="collection-list unstyled">-->
+<#--      </ul>-->
+<#--  </div>-->
+<#--  <div class="modal-footer">-->
+<#--    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>-->
+<#--    <a href="#" class="btn btn-primary">Save changes</a>-->
+<#--  </div>-->
+<#--</div>-->
 
 </#escape>
