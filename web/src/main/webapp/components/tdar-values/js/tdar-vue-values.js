@@ -34,6 +34,11 @@ var _value = Vue.component('value', {
         idOnly : {
             type:Boolean,
             default:false
+        },
+
+        // for v-model support
+        value: {
+            required: false
         }
     },
     data: function() {
@@ -139,6 +144,7 @@ var _value = Vue.component('value', {
                     
                 });
             }
+            this.$emit('input', this.internalvalues);
         },
         enable: function() {
             this.disabled = false;

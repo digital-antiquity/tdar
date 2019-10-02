@@ -29,9 +29,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 if (this.option.name === 'Collection') {
                     this.$emit("collection change,", n);
                 }
-            },
-            input: function(n, o) {
-                console.log("vue-advanced-search: hello from input listener ")
             }
         },
         mounted : function() {
@@ -71,9 +68,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             }
         },
         methods : {
-            changed: function() {
-                this.row.option = this.option;
-            },
             reset : function() {
                 if (typeof this.$refs.autocomplete !== UNDEFINED) {
                     this.$refs.autocomplete.clear();
@@ -101,6 +95,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 } else {
                     this.$emit("removerow", this.index);
                 }
+            },
+            optionChanged: function (event) {
+                console.log("searchFieldChanged:", event);
+                this.option = this.row.option;
             }
         }
 
@@ -124,7 +122,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         data : {
             termOperator: 'AND',
             columnMap : {},
-            selectOptions : [ {
+            selectOptions : [
+                {
                 name : 'All Fields',
                 group : 'general',
                 type : 'basic',
@@ -418,9 +417,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 console.log('serialize state called');
                 var formdata = this.$refs.parts.map(function(part, i){
                     // get the field name and current value(s) of each part
-                    return {fieldName: 'tba', value:[]}
+                    return {fieldName: part.row.option.name, value:[part.row.value]}
                 });
-                console.dir(formdata)
+                console.log("formdata::");
+                console.dir(formdata);
             }
 
         }

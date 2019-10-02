@@ -74,7 +74,8 @@
 
 <script type="text/x-template" id="search-row-template">
 <div class="row pb-2">
-    <select v-model="option" :name="searchFieldName" class="col-2 col-form-label form-control" style="font-size:smaller" ref='fieldselect' @change="changed">
+    <!-- fixme: consider binding to row.option instead of option? -->
+    <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' @change="optionChanged" >
         <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
         	<option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option" :selected="idx == 0"> {{ option.name }}  </option>
         </optgroup>
