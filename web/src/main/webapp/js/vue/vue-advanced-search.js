@@ -284,7 +284,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             rows : [ {
                 option : '',
                 value : ''
-            } ]
+            } ],
+            jsondata: ''
         },
         mounted : function() {
             var self = this;
@@ -355,7 +356,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
                 dataset.columns.forEach(function(field) {
                     var values = [];
-                    var type = "basic";
+                    //var type = "basic";
+                    var type = "select";
                     if (field.intValues.length > 0) {
                         values = field.intValues;
                     } else if (field.floatValues.length > 0) {
@@ -411,16 +413,59 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             },
 
             /**
-             * Serialize the current state of the form as an array of name-value pairs.
+             * Serialize the current state of the form as an array of name-value pairs (excluding blank and/or invalid
+             * rows.
+             *
+             * FIXME:  Currently we only serialize dataValues fields (aka custom data fields)
              */
             serializeState: function() {
                 console.log('serialize state called');
-                var formdata = this.$refs.parts.map(function(part, i){
-                    // get the field name and current value(s) of each part
-                    return {fieldName: part.row.option.name, value:[part.row.value]}
-                });
-                console.log("formdata::");
-                console.dir(formdata);
+                var formdata = (this.$refs.parts
+                    // only include valid, non-blank form rows
+                    .filter(function(part, i){
+                        var row = part.row;
+                        return (
+                            !!row.option.fieldName && (
+                                (typeof row.value === 'object' && row.value.length > 0) ||
+                                (typeof row.value === 'string' && row.value.trim().length > 0)))
+                    })
+                    // transform into array of name/value pairs.
+                    .map(function(part, i){
+                        return {f: part.row.option.name, v:part.row.value}
+                }));
+                this.jsondata = JSON.stringify(formdata);
+            },
+
+
+            /**
+             * Remove form rows and bring the app to an initial state similar to if had just been mounted
+             */
+            clearState: function() {
+                this.rows.splice(0, this.rows.length);
+            },
+
+
+
+            /**
+             * Parse the serialized search  and then rebuild the form rows + values
+             */
+            deserializeState: function() {
+                var self = this;
+                console.log("native splice: %s", Array.prototype.splice);
+                console.log("   Vue splice: %s", this.rows.splice.toString() );
+                this.clearState();
+                // Clear current form state
+                var data =[];
+                if(!!this.jsondata) {
+                  data = JSON.parse(this.jsondata);
+                }
+
+                data.map(function(v, i){
+                    return {option: '', value: ''}
+                }).forEach(function(v, i) {
+                    self.rows.push(v);
+                })
+
             }
 
         }

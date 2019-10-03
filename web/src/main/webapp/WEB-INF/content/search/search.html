@@ -6,9 +6,16 @@
         <div class="row">
             <div class="col-12">
                 <h2>form debug</h2>
-                <button type="button" id="btnSerialize" class="btn" @click="serializeState()" >Serialize Form</button>
+                <button type="button" id="btnSerialize" class="btn" @click="serializeState" >Serialize Form</button>
+                <button type="button" id="btnDeserialize" class="btn" @click="deserializeState" >Load Form</button>
                 <hr>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <textarea v-bind:value="jsondata">{{jsondata}}</textarea>
+            </div>
+
         </div>
 
         <div class="row">
@@ -96,13 +103,13 @@
                         :queryParameterName="option.searchFieldName"
                         :allowCreate="false"
                         :idname="idName"
-                        :row="row"
+                        v-model="row.value"
                 />
 	            <input type="text" :name="valueFieldName" class="form-control" v-if="option.autocompleteUrl == undefined && option.choices == undefined">
      	   </div>
         	<div v-if="option.type == 'select'"  class="col-11">
              <select :name="valueFieldName" class="form-control" multiple>
-                  <option  v-for="(opt, i) in option.values">{{opt}}</option>
+                  <option  v-for="(opt, i) in option.choices">{{opt}}</option>
               </select>
  		   </div>
            <div v-if="option.type == 'integer'"  class="col-11">

@@ -58,6 +58,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
           createnewtext: {type:String, default:'Create New'},
           initial_id: {type:Number},
           initial_value:{type:String},
+          value:   {required: false}
         },
     
         data: function() {
@@ -272,6 +273,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
             }
 
             // fixme: ignore non-string results when propagating
+            this.$emit("input", result)
 
 
           },
