@@ -3,6 +3,7 @@
     <#import "/WEB-INF/decorators/decorator-macros.ftl" as decorator>
     <#import "/WEB-INF/macros/common.ftl" as common>
     <#import "common-collection.ftl" as commonCollection>
+    <#import "/WEB-INF/macros/vue-search-macros.ftl" as vue>
 
 <#if (whiteLabelCollection)>
 <#--This is just an alias to help illustrate when we are using fields exclusive to whitelabel collections -->
@@ -54,6 +55,11 @@
         <@commonCollection.toolbar />
 
         <@commonCollection.descriptionSection/>
+
+    <#if  mappedDatasetId?has_content>
+
+        <@vue.datamappedSearchForm mappedDatasetId />
+    </#if>
 
 
         <#if whitelabelCollection?has_content && whitelabelCollection.properties.featuredResourcesEnabled>

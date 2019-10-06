@@ -1,3 +1,6 @@
+
+<!-- FIXME: jtd: disabling this for now - it may break certain tests. -->
+<!--
 <#include "/components/tdar-autocomplete/template/autocomplete.html" />
 <#include "/components/tdar-values/template/values.html" />
 
@@ -20,23 +23,6 @@
 
         <div class="row">
             <div class=" advancedSearchbox col-12" >
-                <!--
-                <div class="control-group condensed">
-                    <label class="control-label">What:</label>
-
-                    <div class="controls controls-row">
-                        <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE">
-                            Resources
-                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION">
-                            Collections
-                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE">
-                            People
-                        </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS">
-                            Institutions
-                        </label>
-                    </div>
-                </div>
-                -->
                 <div class="searchgroup">
                     <div id="groupTable0" class="condensed">
                         <div class="condensed" v-for="(row,index) in rows">
@@ -81,7 +67,6 @@
 
 <script type="text/x-template" id="search-row-template">
 <div class="row pb-2">
-    <!-- fixme: consider binding to row.option instead of option? -->
     <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' @change="optionChanged" >
         <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
         	<option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option" :selected="idx == 0"> {{ option.name }}  </option>
@@ -146,3 +131,4 @@
     </div>
 </div>
 </script>
+-->
