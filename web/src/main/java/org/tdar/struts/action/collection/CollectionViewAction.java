@@ -1,5 +1,6 @@
 package org.tdar.struts.action.collection;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,6 +38,7 @@ import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.cache.ThreadPermissionsCache;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UserRightsProxyService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.collection.WhiteLabelFiles;
@@ -44,6 +46,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.VersionType;
+import org.tdar.search.SearchInfoObject;
+import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
@@ -51,6 +55,7 @@ import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
+import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.ResourceFacetedAction;
 import org.tdar.struts.action.SlugViewAction;
@@ -97,6 +102,8 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     @Autowired
     private transient ResourceSearchService resourceSearchService;
     @Autowired
+    private transient SearchService searchService;
+    @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -104,6 +111,9 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
     private transient UserRightsProxyService userRightsProxyService;
+
+    @Autowired
+    private transient SerializationService serializationService;
 
     private Long parentId;
     private List<ResourceCollection> collections = new LinkedList<>();
@@ -130,6 +140,13 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     private HomepageDetails homepageGraphs;
 
     private String schemaOrgJsonLD;
+    private String jsonSearchInfo;
+    private String jsonRefineSearchInfo;
+
+
+    /* Data mapped search parameters - used for "refine search" context */
+    private List<SearchParameters> groups = new ArrayList<>();
+
 
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -186,9 +203,37 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
             // setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
 
+        loadMappedDatasetSearchInfo();
+
         reSortFacets(this, (Sortable) getPersistable());
+
+
+
+
         return SUCCESS;
     }
+
+
+    /**
+     * Load any relevant "searchinfo" metadata as well as "refine search" search terms.
+     *
+     */
+    public void loadMappedDatasetSearchInfo() {
+        try {
+            if(isDatasetMapped()){
+                SearchInfoObject searchInfoObject = searchService.getSearchInfoObject(getAuthenticatedUser());
+                setJsonSearchInfo(serializationService.convertToJson(searchInfoObject));
+                setJsonRefineSearchInfo(serializationService.convertToJson(getGroups()));
+            }
+
+        } catch (IOException e) {
+            addActionError("collectionController.general_view_failure");
+        }
+
+    }
+
+
+
 
     @Override
     public void loadExtraViewMetadata() {
@@ -659,4 +704,41 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
         return datasetId;
     }
 
+    /**
+     * Indicates whether the collection for this view has a mapped dataset.
+     * @return true, if collection has a mapped dataset; otherwise false.
+     */
+    public boolean isDatasetMapped() {
+        return getMappedDatasetId()!=null;
+    }
+
+    /**
+     * Don't verify url slug when we are rendering the view page in a "refine search" context
+     */
+    @Override
+    protected void handleSlug() {
+        boolean shouldRedirect = !handleSlugRedirect(getResourceCollection(), this) && getGroups().isEmpty();
+        setRedirectBadSlug(shouldRedirect);
+    }
+
+
+    public List<SearchParameters> getGroups() {
+        return groups;
+    }
+
+    public String getJsonSearchInfo() {
+        return jsonSearchInfo;
+    }
+
+    public String getJsonRefineSearchInfo() {
+        return jsonRefineSearchInfo;
+    }
+
+    public void setJsonRefineSearchInfo(String jsonRefineSearchInfo) {
+        this.jsonRefineSearchInfo = jsonRefineSearchInfo;
+    }
+
+    public void setJsonSearchInfo(String jsonSearchInfo) {
+        this.jsonSearchInfo = jsonSearchInfo;
+    }
 }

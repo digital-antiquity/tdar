@@ -56,9 +56,8 @@
 
         <@commonCollection.descriptionSection/>
 
-    <#if  mappedDatasetId?has_content>
-
-        <@vue.datamappedSearchForm mappedDatasetId />
+    <#if  datasetMapped>
+        <@vue.datamappedSearchForm resourceCollection.id />
     </#if>
 
 
@@ -104,6 +103,13 @@
 
     <@commonCollection.javascript />
 <script id="datasetinfo" data-dataset-id="<#if resourceCollection.dataset?has_content>${resourceCollection.dataset.id?c}</#if>"></script>
+<#noescape>
+    <#if datasetMapped>
+    <script id="searchinfo" type="application/json">${jsonSearchInfo}</script>
+    <script id="refinesearchinfo" type="application/json">${jsonRefineSearchInfo}</script>
+    </#if>
+
+</#noescape>
 </div>
 </body>
 </#escape>

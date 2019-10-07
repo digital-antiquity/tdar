@@ -8,6 +8,7 @@
 
     <div class="advanced container" style="z-index: 10000; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch" group="custom">
         <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
+            <input type="hidden" name="dataMappedCollectionId" value="${collectionId?c}">
             <div class="row">
                 <div class="col-12">
                     <h2>form debug</h2>
@@ -151,6 +152,14 @@
             </div>
         </div>
     </script>
+</#macro>
+
+
+<#macro datamappedSearchLink path msg='Refine Search'>
+    <a
+            href="<@s.url escapeAmp="false" includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url>"
+            >${msg}</a>
+
 </#macro>
 
 </#escape>

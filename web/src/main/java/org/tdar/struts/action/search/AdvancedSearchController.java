@@ -97,6 +97,8 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
     private List<PersonSearchOption> personSearchOptions = Arrays.asList(PersonSearchOption.values());
 
+    private Long dataMappedCollectionId = null;
+
     @Override
     public boolean isLeftSidebar() {
         return showLeftSidebar;
@@ -454,5 +456,13 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
     public void setPersonSearchOptions(List<PersonSearchOption> options) {
         this.personSearchOptions = options;
+    }
+
+    public Long getDataMappedCollectionId() {
+        return dataMappedCollectionId;
+    }
+
+    public void setDataMappedCollectionId(Long dataMappedCollectionId) {
+        this.dataMappedCollectionId = dataMappedCollectionId;
     }
 }

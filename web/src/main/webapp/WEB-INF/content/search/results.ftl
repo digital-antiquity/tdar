@@ -1,6 +1,7 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist />
     <#import "/WEB-INF/macros/search-macros.ftl" as search />
+    <#import "/WEB-INF/macros/vue-search-macros.ftl" as vue />
 <head>
     <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}</#if></title>
     <@search.headerLinks includeRss=(actionName=="results") />
@@ -48,7 +49,13 @@
                     <i class="mr-3 fas fa-search red"></i> 
                     <div class="media-body">
 
-                <a href="<@search.refineUrl/>" rel="noindex">Refine your search &raquo;</a>
+                        <#--If searching a data-mapped collection, render a refine link that points back to
+                         the collection we came from-->
+                        <#if dataMappedCollectionId??>
+                            <@vue.datamappedSearchLink '/collection/${dataMappedCollectionId?c}' 'Refine data search &raquo;'/>
+                            <#else>
+                            <a href="<@search.refineUrl/>" rel="noindex">  Refine your search &raquo;</a>
+                        </#if>
                 </div>
                 </li>
 
