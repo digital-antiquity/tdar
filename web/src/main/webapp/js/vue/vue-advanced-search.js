@@ -11,60 +11,46 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         props : [ "row", "index", "options", "totalrows" ],
         data : function() {
             return {
-                option : '',
+                // option : '',
                 value : ''
             }
         },
         watch : {
-            option : function(n, o) {
-                this.reset();
-                this.option = n;
-                if (this.option.type === 'map') {
-                    Vue.nextTick(function() {
-                        TDAR.leaflet.initEditableLeafletMaps();
-                    });
-                }
-            },
-            value: function(n, o) {
-                if (this.option.name === 'Collection') {
-                    this.$emit("collection change,", n);
-                }
-            }
         },
         mounted : function() {
         },
         computed : {
             valueFieldName : function() {
-                if (typeof this.option === UNDEFINED || typeof this.option.fieldName === UNDEFINED) {
+                if (typeof this.row.option === UNDEFINED || typeof this.row.option.fieldName === UNDEFINED) {
                     return undefined;
                 }
-                var ret = "groups[0]." + this.option.fieldName.replace("[]", "[" + this.index + "]");
-                if (typeof this.option.columnType !== UNDEFINED) {
+                var ret = "groups[0]." + this.row.option.fieldName.replace("[]", "[" + this.index + "]");
+                if (typeof this.row.option.columnType !== UNDEFINED) {
                     return ret + ".value";
                 }
                 return ret;
 
             },
             fieldName : function() {
-                if (typeof this.option === UNDEFINED || typeof this.option.fieldName === UNDEFINED) {
+                if (typeof this.row.option === UNDEFINED || typeof this.row.option.fieldName === UNDEFINED) {
                     return undefined;
                 }
-                return "groups[0]." + this.option.fieldName.replace("[]", "[" + this.index + "]");
+                return "groups[0]." + this.row.option.fieldName.replace("[]", "[" + this.index + "]");
             },
             searchFieldName : function() {
                 return "searchFieldName";
             },
             idName : function() {
-                if (typeof this.option === UNDEFINED || typeof this.option.idName === UNDEFINED) {
+                if (typeof this.row.option === UNDEFINED || typeof this.row.option.idName === UNDEFINED) {
                     return undefined;
                 }
-                return "groups[0]." + this.option.idName.replace("[]", "[" + this.index + "]");
+                return "groups[0]." + this.row.option.idName.replace("[]", "[" + this.index + "]");
             },
             infoLink: function() {
-                if (typeof this.option === UNDEFINED || typeof this.option.infoLink === UNDEFINED) {
+                if (typeof this.row.option === UNDEFINED || typeof this.row.option.infoLink === UNDEFINED) {
                     return undefined;
                 }
-                return this.option.infoLink;
+                return this.row.option.infoLink;
             }
         },
         methods : {
@@ -98,8 +84,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             },
             optionChanged: function (event) {
                 console.log("searchFieldChanged:", event);
-                this.option = this.row.option;
             }
+
+
         }
 
     });
@@ -114,9 +101,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
         },
         watch: {
-            autocompletevalueset: function(n, o) {
-                console.log("vue-advanced-search: hello from input listener ");
-            }
         },
 
         data : function() { return {
@@ -294,14 +278,16 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             var documentData  = TDAR.loadDocumentData();
             if(!!documentData['searchInfo']){
                 self.processSearchInfo(documentData['searchinfo']);
+            } else {
+                axios({
+                    method : 'get',
+                    url : '/api/search/info',
+                }).then(function(response) {
+                    console.log("received search info via ajax");
+                    self.processSearchInfo(response.data)
+                });
+
             }
-            axios({
-                method : 'get',
-                url : '/api/search/info',
-            }).then(function(response) {
-                console.log("received search info via ajax");
-                self.processSearchInfo(response.data)
-            });
 
             // filter the available fields if groups property specified
             // FIXME: temp hack: forcing groups to "custom"
@@ -425,8 +411,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         columnType : field.columnDataType
                     })
                 });
-
-
             },
 
             /**
@@ -462,7 +446,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             },
 
 
-
             /**
              * Parse the serialized search  and then rebuild the form rows + values
              */
@@ -482,8 +465,16 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 }).forEach(function(v, i) {
                     self.rows.push(v);
                 })
+            },
 
+            setCheckboxRow: function(){
+                console.log('method called: setCheckboxRow')
+            },
+
+            setSelectRow: function(){
+                console.log('method called: setSelectRow')
             }
+
 
         }
     });

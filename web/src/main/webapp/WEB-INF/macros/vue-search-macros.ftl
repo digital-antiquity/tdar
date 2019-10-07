@@ -12,8 +12,10 @@
             <div class="row">
                 <div class="col-12">
                     <h2>form debug</h2>
-                    <button type="button" id="btnSerialize" class="btn btn-secondary" @click="serializeState" >Serialize Form</button>
-                    <button type="button" id="btnDeserialize" class="btn btn-secondary" @click="deserializeState" >Load Form</button>
+                    <button type="button" id="btnSerialize"   class="btn btn-sm btn-secondary" @click="serializeState" >Serialize Form</button>
+                    <button type="button" id="btnDeserialize" class="btn btn-sm btn-secondary" @click="deserializeState" >Load Form</button>
+                    <button type="button" id="btnSetCheckboxRow" class="btn btn-sm btn-secondary" @click="setCheckboxRow" >setCheckboxRow</button>
+                    <button type="button" id="btnSetSelectRow" class="btn btn-sm btn-secondary" @click="setSelectRow" >setSelectRow</button>
                     <hr>
                 </div>
             </div>
@@ -89,53 +91,51 @@
         <div class="row pb-2">
             <!-- fixme: consider binding to row.option instead of option? -->
             <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' @change="optionChanged" >
-                <optgroup v-for="(group, idx) in getOptionGroups()" :label="group">
-                    <option v-for="(option, index) in getOptionsFor(group)" v-bind:value="option" :selected="idx == 0"> {{ option.name }}  </option>
-                </optgroup>
+                <option v-for="(opt, index) in getOptionsFor('custom')" v-bind:value="opt" :selected="row.option.id == opt.id"> {{ opt.name }}  </option>
             </select>
             <div class="col-10" ref='valuearea'>
                 <div class="row">
-                    <div v-if="option.type == 'basic' || option.type == undefined" class="col-11">
+                    <div v-if="row.option.type == 'basic' || row.option.type == undefined" class="col-11">
                         <autocomplete
-                                :url="option.autocompleteUrl"
-                                :suffix="option.autocompleteSuffix"
-                                :field="(!!option.columnType) ?  valueFieldName : fieldName"
-                                v-if="option.autocompleteUrl != undefined || option.choices != undefined"
+                                :url="row.option.autocompleteUrl"
+                                :suffix="row.option.autocompleteSuffix"
+                                :field="(!!row.option.columnType) ?  valueFieldName : fieldName"
+                                v-if="row.option.autocompleteUrl != undefined || row.option.choices != undefined"
                                 :bootstrap4="true"
-                                :items="option.choices"
-                                :resultsuffix="option.resultSuffix"
+                                :items="row.option.choices"
+                                :resultsuffix="row.option.resultSuffix"
                                 ref="autocomplete"
                                 :span="'form-control'"
-                                :queryParameterName="option.searchFieldName"
+                                :queryParameterName="row.option.searchFieldName"
                                 :allowCreate="false"
                                 :idname="idName"
                                 v-model="row.value"
                         />
-                        <input type="text" :name="valueFieldName" class="form-control" v-if="option.autocompleteUrl == undefined && option.choices == undefined">
+                        <input type="text" :name="valueFieldName" class="form-control" v-if="row.option.autocompleteUrl == undefined && row.option.choices == undefined">
                     </div>
-                    <div v-if="option.type == 'select'"  class="col-11">
+                    <div v-if="row.option.type == 'select'"  class="col-11">
                         <select :name="valueFieldName" class="form-control" multiple>
-                            <option  v-for="(opt, i) in option.choices">{{opt}}</option>
+                            <option  v-for="(opt, i) in row.option.choices">{{opt}}</option>
                         </select>
                     </div>
-                    <div v-if="option.type == 'integer'"  class="col-11">
+                    <div v-if="row.option.type == 'integer'"  class="col-11">
                         <input type="number" :name="valueFieldName" class="form-control col-3">
                     </div>
-                    <div v-if="option.type == 'date'"  class="col-11">
+                    <div v-if="row.option.type == 'date'"  class="col-11">
                         <div class="form-row">
                             <input type="date" :name="fieldName + '.start'" class="form-control col-4">
                             <input type="date" :name="fieldName + '.end'" class="form-control col-4 ml-2">
                         </div>
                     </div>
-                    <div v-if="option.type == 'checkbox'" class="col-11">
-                        <value :choices="option.choices" ref="valuepart"  v-model="row.value" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
+                    <div v-if="row.option.type == 'checkbox'" class="col-11">
+                        <value :choices="row.option.choices" ref="valuepart"  v-model="row.value" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
                         <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
                     </div>
-                    <div v-if="!!option.columnType"  class="col-11">
-                        <input type="hidden" :name="fieldName + '.columnId'" :value="option.id" />
+                    <div v-if="!!row.option.columnType"  class="col-11">
+                        <input type="hidden" :name="fieldName + '.columnId'" :value="row.option.id" />
                         <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
                     </div>
-                    <div id="latlongoptions" v-if="option.type == 'map'"  class="col-11 leaflet-map-editable"  data-search="true" style="height:300px">
+                    <div id="latlongoptions" v-if="row.option.type == 'map'"  class="col-11 leaflet-map-editable"  data-search="true" style="height:300px">
                <span class="latlong-fields">
                     <input type="hidden" :name="fieldName + '.east'" id="maxx" class="ne-lng latLongInput maxx" />
                     <input type="hidden" :name="fieldName + '.south'"  id="miny" class="sw-lat latLongInput miny" />
