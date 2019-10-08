@@ -102,7 +102,6 @@
         <js>/components/tdar-values/js/tdar-vue-values.js</js>
         <css>/components/tdar-autocomplete/css/tdar-autocomplete.css</css>
         <js>/js/vue/edit-collection.js</js>
-        <js>/js/vue/vue-advanced-search.js</js>
 
 <!-- FIXME: temporary workaround for getting my "choicelist" vue controls into our labyrinth/baroque/hurty build system -->
         <js>/components/vue-checkbox-list/js/vue-choicelist.js</js>
@@ -111,6 +110,7 @@
         <css>/components/vue-checkbox-list/css/choicelist.css</css>
         <css>/components/vue-checkbox-list/css/selectlist.css</css>
         <css>/components/vue-checkbox-list/css/checkboxlist.css</css>
+        <js>/js/vue/vue-advanced-search.js</js>
 
 
     </group>

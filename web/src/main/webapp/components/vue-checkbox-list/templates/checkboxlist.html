@@ -1,0 +1,15 @@
+<script  type="text/x-template" id="checkboxlist-template">
+<div class="checkboxlist">
+    <div v-for="item in choices" :key="item.value">
+        <label>
+            <input
+                    type="checkbox"
+                    :name="name"
+                    v-bind:checked="isChecked(item.value)"
+                    v-on:change="cbchanged(item.value, $event.target.checked)"
+            />
+            {{item.label}}
+        </label>
+    </div>
+</div>
+</script>

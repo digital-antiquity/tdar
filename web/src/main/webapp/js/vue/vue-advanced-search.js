@@ -493,6 +493,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             }
 
 
+        },
+        components: {
+            checkboxlist: TDAR.vuejs.checkboxlist,
+            selectlist: TDAR.vuejs.selectlist
         }
     });
 })(console, window, Vue, axios, TDAR);

@@ -3,9 +3,13 @@
 
 <#macro datamappedSearchForm  collectionId>
 
+
     <#include "/components/tdar-autocomplete/template/autocomplete.html" />
     <#include "/components/tdar-values/template/values.html" />
 
+    <#include "/components/vue-checkbox-list/templates/checkboxlist.html" />
+
+    <!-- Template for top-level app -->
     <div class="advanced container" style="z-index: 10000; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch" group="custom">
         <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
             <input type="hidden" name="dataMappedCollectionId" value="${collectionId?c}">
@@ -22,6 +26,13 @@
             <div class="row">
                 <div class="col-12">
                     <textarea v-bind:value="jsondata">{{jsondata}}</textarea>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <checkboxlist name="jimmylist" :choices="[{label:'hello', value:'hello'}]" />
                 </div>
 
             </div>
@@ -86,7 +97,7 @@
     </div>
 
 
-
+    <!-- Template for 'Part' component -->
     <script type="text/x-template" id="search-row-template">
         <div class="row pb-2">
             <!-- fixme: consider binding to row.option instead of option? -->

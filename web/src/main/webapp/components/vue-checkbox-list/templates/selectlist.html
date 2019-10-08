@@ -1,0 +1,19 @@
+<script  type="text/x-template" id="selectlist-template">
+    <div class="selectlist">
+        <select
+                :name="name"
+                :multiple="size > 1"
+                :size="size"
+                @input="selectedOptionsChanged($event.target)"
+
+        >
+            <option
+                    v-for="(opt, index) in options"
+                    :key="name + 'option_' + index"
+                    :value="valueFor(opt)"
+                    :selected="isSelected(valueFor(opt))"
+            >{{labelFor(opt)}}</option>
+        </select>
+    </div>
+
+</script>

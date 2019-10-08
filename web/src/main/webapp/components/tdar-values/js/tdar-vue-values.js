@@ -37,9 +37,9 @@ var _value = Vue.component('value', {
         },
 
         // for v-model support
-        value: {
-            required: false
-        }
+        // value: {
+        //     required: false
+        // }
     },
     data: function() {
         return {
@@ -114,7 +114,7 @@ var _value = Vue.component('value', {
         _toId: function(v) {
             if (typeof v == "object") {
                 return v[this.valueField];
-            }  
+            }
             return v;
         },
         setValues: function(n) {

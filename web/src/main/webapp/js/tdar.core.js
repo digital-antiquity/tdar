@@ -4,7 +4,7 @@
 //define global TDAR object if not defined already
     var TDAR = window['TDAR'] || {};
     window.TDAR = TDAR;
-    if (TDAR['vuejs'] == undefined) {
+    if (typeof TDAR['vuejs'] === 'undefined') {
         TDAR['vuejs'] = {};
     }
     
