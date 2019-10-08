@@ -104,6 +104,15 @@
         <js>/js/vue/edit-collection.js</js>
         <js>/js/vue/vue-advanced-search.js</js>
 
+<!-- FIXME: temporary workaround for getting my "choicelist" vue controls into our labyrinth/baroque/hurty build system -->
+        <js>/components/vue-checkbox-list/js/vue-choicelist.js</js>
+        <js>/components/vue-checkbox-list/js/vue-selectlist.js</js>
+        <js>/components/vue-checkbox-list/js/vue-checkboxlist.js</js>
+        <css>/components/vue-checkbox-list/css/choicelist.css</css>
+        <css>/components/vue-checkbox-list/css/selectlist.css</css>
+        <css>/components/vue-checkbox-list/css/checkboxlist.css</css>
+
+
     </group>
     <group name="ng-integrate">
 
@@ -122,5 +131,10 @@
         <js>/js/data-integration/ng-IntegrationValidationService.js</js>
         <js>/js/data-integration/ng-DatatableDirective.js</js>
         <group-ref>default</group-ref>
+
+
+
+
+
     </group>
 </groups>
