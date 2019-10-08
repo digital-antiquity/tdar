@@ -12,7 +12,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         data : function() {
             return {
                 // option : '',
-                value : ''
+                // value : []
             }
         },
         watch : {
@@ -267,7 +267,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 }, ],
             rows : [ {
                 option : '',
-                value : ''
+                value : []
             } ],
             jsondata: ''
         }},
@@ -467,8 +467,25 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 })
             },
 
+            getSelectOptionByName(name) {
+                var ret;
+                for(var i= 0; i < this.selectOptions.length; i++) {
+                    var opt = this.selectOptions[i];
+                    if(opt.name === name) {
+                        ret = opt;
+                        break;
+                    }
+                }
+
+                return ret;
+            },
+
             setCheckboxRow: function(){
-                console.log('method called: setCheckboxRow')
+                console.log('method called: setCheckboxRow');
+                var row = this.rows[0];
+                row.value.push('Indeterminate');
+                row.option = this.getSelectOptionByName("condition");
+
             },
 
             setSelectRow: function(){
