@@ -7,6 +7,10 @@
                 @input="selectedOptionsChanged($event.target)"
 
         >
+            <option v-if="blankrow"
+                    :value="undefined">-choose somthing-</option>
+
+
             <option
                     v-for="(opt, index) in options"
                     :key="name + 'option_' + index"

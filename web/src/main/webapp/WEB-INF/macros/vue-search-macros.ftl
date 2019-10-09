@@ -8,6 +8,7 @@
     <#include "/components/tdar-values/template/values.html" />
 
     <#include "/components/vue-checkbox-list/templates/checkboxlist.html" />
+    <#include "/components/vue-checkbox-list/templates/selectlist.html" />
 
     <!-- Template for top-level app -->
     <div class="advanced container" style="z-index: 10000; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch" group="custom">
@@ -30,12 +31,6 @@
 
             </div>
 
-            <div class="row">
-                <div class="col-12">
-                    <checkboxlist name="jimmylist" :choices="[{label:'hello', value:'hello'}]" />
-                </div>
-
-            </div>
 
             <div class="row">
                 <div class=" advancedSearchbox col-12" >
@@ -101,6 +96,8 @@
     <script type="text/x-template" id="search-row-template">
         <div class="row pb-2">
             <!-- fixme: consider binding to row.option instead of option? -->
+            <selectlist name="columnId" :options="getOptionsFor('custom')" labelKey="name" valueKey="id" v-model="row.option" blankrow  />
+
             <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' @change="optionChanged" >
                 <option v-for="(opt, index) in getOptionsFor('custom')" v-bind:value="opt" :selected="row.option.id == opt.id"> {{ opt.name }}  </option>
             </select>

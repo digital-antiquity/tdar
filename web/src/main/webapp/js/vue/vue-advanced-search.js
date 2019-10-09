@@ -266,7 +266,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     choices : []
                 }, ],
             rows : [ {
-                option : '',
+                option : [],
                 value : []
             } ],
             jsondata: ''
@@ -467,7 +467,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 })
             },
 
-            getSelectOptionByName(name) {
+            getSelectOptionByName:  function(name) {
                 var ret;
                 for(var i= 0; i < this.selectOptions.length; i++) {
                     var opt = this.selectOptions[i];
