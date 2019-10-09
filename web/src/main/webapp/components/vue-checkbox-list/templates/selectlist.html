@@ -4,7 +4,7 @@
                 :name="name"
                 :multiple="size > 1"
                 :size="size"
-                @input="selectedOptionsChanged($event.target)"
+                @input="selectedOptionsChanged($event, $event.target)"
 
         >
             <option v-if="blankrow"

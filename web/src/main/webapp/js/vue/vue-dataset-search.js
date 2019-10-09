@@ -7,12 +7,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
      * "Part" Vue Control.
      */
     Vue.component('part', {
-        template : "#search-row-template",
-        props : [ "row", "index", "options", "totalrows" ],
+        template : "#dataset-search-row-template",
+        props : [ "row", "index", "options" ],
         data : function() {
             return {
-                // option : '',
-                // value : []
             }
         },
         watch : {
@@ -46,18 +44,10 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 }
                 return "groups[0]." + this.row.option.idName.replace("[]", "[" + this.index + "]");
             },
-            infoLink: function() {
-                if (typeof this.row.option === UNDEFINED || typeof this.row.option.infoLink === UNDEFINED) {
-                    return undefined;
-                }
-                return this.row.option.infoLink;
-            }
         },
         methods : {
             reset : function() {
-                if (typeof this.$refs.autocomplete !== UNDEFINED) {
-                    this.$refs.autocomplete.clear();
-                }
+                // Todo: do whatever is appropriate to represent "clearing" the underlying control's value
             },
             getOptionsFor : function(group) {
                 var ret = [];
@@ -76,15 +66,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 return Object.keys(ret);
             },
             clearRow : function() {
-                if (this.index == 0 && this.totalrows == 1) {
-                    this.reset();
-                } else {
-                    this.$emit("removerow", this.index);
-                }
+                this.reset();
+                this.$emit("removerow", this.index);
             },
-            optionChanged: function (event) {
-                console.log("searchFieldChanged:", event);
-            }
 
 
         }
@@ -106,165 +90,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         data : function() { return {
             termOperator: 'AND',
             columnMap : {},
-            selectOptions : [
-                {
-                    name : 'All Fields',
-                    group : 'general',
-                    type : 'basic',
-                    fieldName : "allFields[]",
-                    index : [ 'resource', 'collection', "integration" ]
-                }, {
-                    name : 'Title',
-                    group : 'general',
-                    type : 'basic',
-                    fieldName : "titles[]",
-                    index : [ 'resource', 'collection', "integration" ]
-                }, {
-                    name : 'Description',
-                    group : 'general',
-                    type : 'basic',
-                    fieldName : "descriptions[]",
-                    index : [ 'resource', 'collection', 'integration' ]
-                }, {
-                    name : 'Full-Text',
-                    group : 'general',
-                    type : 'basic',
-                    fieldName : "contents[]",
-                    index : [ 'resource' ]
-                }, {
-                    name : 'Date',
-                    group : 'general',
-                    type : 'integer',
-                    fieldName : "createdDates[]",
-                    index : [ 'resource', 'collection' ]
-                }, {
-                    name : 'Id',
-                    group : 'general',
-                    type : 'integer',
-                    fieldName : "ids",
-                    index : [ 'resource', 'collection', "integration", "person", "institution" ]
-                }, {
-                    name : 'Date Added',
-                    group : 'general',
-                    type : 'date',
-                    fieldName : "registeredDates[]",
-                    index : [ 'resource', 'collection', "integration", "person", "institution" ]
-                }, {
-                    name : 'Date Updated',
-                    group : 'general',
-                    type : 'date',
-                    fieldName : "updatedDates[]",
-                    index : [ 'resource', 'collection', "integration", "person", "institution" ]
-                }, {
-                    name : 'Map',
-                    group : 'general',
-                    type : 'map',
-                    fieldName : "latitudeLongitudeBoxes[]",
-                    index : [ 'resource' ]
-                }, {
-                    name : 'Project',
-                    group : 'general',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/resource',
-                    autocompleteSuffix : 'resourceTypes[0]=PROJECT',
-                    searchFieldName : 'term',
-                    resultSuffix : 'resources',
-                    fieldName : "projects[].title",
-                    idName : "projects[].id",
-                    index : [ 'resource' ]
-                }, {
-                    name : 'Collection',
-                    group : 'general',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/collection',
-                    searchFieldName : 'term',
-                    resultSuffix : 'collections',
-                    fieldName : "collections[].name",
-                    idName : "collections[].id",
-                    index : [ 'resource' ]
-                }, {
-                    name : 'Person',
-                    group : 'general',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/person',
-                    searchFieldName : 'term',
-                    resultSuffix : 'people',
-                    fieldName : "resourceCreatorProxies[].person.name",
-                    idName : "resourceCreatorProxies[].person.id",
-                    index : [ 'resource' ]
-
-                }, {
-                    name : 'Institution',
-                    group : 'general',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/institution',
-                    searchFieldName : 'name',
-                    resultSuffix : 'institutions',
-                    fieldName : "resourceCreatorProxies[].institution.name",
-                    idName :    "resourceCreatorProxies[].institution.id",
-                    index : [ 'resource' ]
-                }, {
-                    name : 'Site Name',
-                    group : 'keywords',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/keyword',
-                    autocompleteSuffix : 'keywordType=SiteNameKeyword',
-                    searchFieldName : 'term',
-                    resultSuffix : 'items'
-                }, {
-                    name : 'Site Type',
-                    group : 'keywords',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/keyword',
-                    autocompleteSuffix : 'keywordType=SiteTypeKeyword',
-                    searchFieldName : 'term',
-                    resultSuffix : 'items'
-                }, {
-                    name : 'Geographic Keywords',
-                    group : 'keywords',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/keyword',
-                    autocompleteSuffix : 'keywordType=GeographicKeyword',
-                    searchFieldName : 'term',
-                    resultSuffix : 'items'
-                }, {
-                    name : 'Culture Keywords',
-                    group : 'keywords',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/keyword',
-                    autocompleteSuffix : 'keywordType=CultureKeyword',
-                    searchFieldName : 'term',
-                    resultSuffix : 'items'
-                }, {
-                    name : 'Material Keywords',
-                    group : 'keywords',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/keyword',
-                    autocompleteSuffix : 'keywordType=MaterialKeyword',
-                    searchFieldName : 'term',
-                    resultSuffix : 'items'
-                }, {
-                    name : 'Temporal Keywords',
-                    group : 'keywords',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/keyword',
-                    autocompleteSuffix : 'keywordType=TemporalKeyword',
-                    searchFieldName : 'term',
-                    resultSuffix : 'items'
-                }, {
-                    name : 'Other Keywords',
-                    group : 'keywords',
-                    type : 'basic',
-                    autocompleteUrl : '/api/lookup/keyword',
-                    autocompleteSuffix : 'keywordType=OtherKeyword',
-                    searchFieldName : 'term',
-                    resultSuffix : 'items'
-                }, {
-                    name : 'Investigation Types',
-                    group : 'keywords',
-                    type : 'checkbox',
-                    choices : []
-                }, ],
+            selectOptions : [],
             rows : [ {
                 option : [],
                 value : []
@@ -319,11 +145,11 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     console.log("add mapped...", dsid);
                     self.addColumnInfo(dsid);
                 }
+
             },
 
             processRefineSearch: function(data) {
             },
-
 
             addRow : function() {
                 this.rows.push({
@@ -331,13 +157,23 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     value : ''
                 });
             },
+
             submit : function() {
                 console.log(this.$refs.form);
                 this.$refs.form.submit();
             },
+
+            /**
+             * Remove a row (if there are two or more rows)
+             * @param idx
+             */
             removeRow : function(idx) {
-                this.rows.splice(idx, 1);
+                if(this.rows.length > 1){
+                    this.rows.splice(idx, 1);
+                }
             },
+
+
             addColumnInfo : function(datasetId) {
                 var self = this;
                 var dataset = this.columnMap.filter(function(ds){return ds.id === datasetId;})[0];
@@ -369,7 +205,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
                         // FIXME: magic numbers
                         // Perform case-insensitive dedupe if list isn't too big (
-                        console.log("field:%s\t values:%s", field.name, field.values.length);
+                        //console.log("field:%s\t values:%s", field.name, field.values.length);
                         if(field.values.length > 100) {
                             values = field.values;
                         } else {
@@ -404,9 +240,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         type : type,
                         group : 'custom',
                         id : field.id,
-                        // FIXME: I have no idea why fieldValues exists apart from "choices".
-                        fieldValues : values,
-                        infoLink : '/dataset/column/' + datasetId + "/" + field.id,
                         choices : values,
                         columnType : field.columnDataType
                     })

@@ -25,7 +25,7 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
             },
             selectedOptions: {
                 required: false,
-                type: Array,
+                type:  [Array, Object, String],
                 default: function() {
                     return [];
                 }
@@ -38,8 +38,7 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
 
             valueKey: {
                 type: String,
-                required: false,
-                default: "value"
+                required: false
             },
 
             size: {
@@ -52,12 +51,24 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
         mounted: function() {},
         computed: {},
         methods: {
+
             labelFor: function(opt) {
                 return opt[this.labelKey];
             },
 
+            /**
+             * Given an object, return the property of that object specified
+             * by the valueKey.  If this control has no valueKey, return the
+             * object itself.
+             * @param opt
+             * @returns {opt|*}
+             */
             valueFor: function(opt) {
-                return opt[this.valueKey];
+                var ret = opt;
+                if(!!this.valueKey) {
+                    ret = opt[this.valueKey]
+                }
+                return ret;
             },
 
             isSelected: function(val) {
@@ -66,7 +77,7 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
                 return idx > -1;
             },
 
-            selectedOptionsChanged: function(sel) {
+            selectedOptionsChanged: function(evt, sel) {
                 console.log("options changed");
 
                 this.selectedOptions.splice(0, this.selectedOptions.length);

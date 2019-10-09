@@ -110,7 +110,7 @@
         <css>/components/vue-checkbox-list/css/choicelist.css</css>
         <css>/components/vue-checkbox-list/css/selectlist.css</css>
         <css>/components/vue-checkbox-list/css/checkboxlist.css</css>
-        <js>/js/vue/vue-advanced-search.js</js>
+        <js>/js/vue/vue-dataset-search.js</js>
 
 
     </group>

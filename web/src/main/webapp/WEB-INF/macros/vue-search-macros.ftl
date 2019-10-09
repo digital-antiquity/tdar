@@ -3,10 +3,9 @@
 
 <#macro datamappedSearchForm  collectionId>
 
-
+    <!-- FIXME: feels weird to #include other templates and then define two more templates inline -->
     <#include "/components/tdar-autocomplete/template/autocomplete.html" />
     <#include "/components/tdar-values/template/values.html" />
-
     <#include "/components/vue-checkbox-list/templates/checkboxlist.html" />
     <#include "/components/vue-checkbox-list/templates/selectlist.html" />
 
@@ -34,23 +33,6 @@
 
             <div class="row">
                 <div class=" advancedSearchbox col-12" >
-                    <!--
-                    <div class="control-group condensed">
-                        <label class="control-label">What:</label>
-
-                        <div class="controls controls-row">
-                            <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="RESOURCE">
-                                Resources
-                            </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="COLLECTION">
-                                Collections
-                            </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="PEOPLE">
-                                People
-                            </label> <label class="radio inline"> <input type="radio" name="optionsRadios" id="optionsRadios1" value="INSTITUTIONS">
-                                Institutions
-                            </label>
-                        </div>
-                    </div>
-                    -->
                     <div class="searchgroup">
                         <div id="groupTable0" class="condensed">
                             <div class="condensed" v-for="(row,index) in rows">
@@ -93,69 +75,32 @@
 
 
     <!-- Template for 'Part' component -->
-    <script type="text/x-template" id="search-row-template">
+    <script type="text/x-template" id="dataset-search-row-template">
         <div class="row pb-2">
             <!-- fixme: consider binding to row.option instead of option? -->
-            <selectlist name="columnId" :options="getOptionsFor('custom')" labelKey="name" valueKey="id" v-model="row.option" blankrow  />
 
-            <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' @change="optionChanged" >
-                <option v-for="(opt, index) in getOptionsFor('custom')" v-bind:value="opt" :selected="row.option.id == opt.id"> {{ opt.name }}  </option>
+            <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' >
+                <option v-for="(opt, index) in getOptionsFor('custom')" v-bind:value="opt" :selected="row.option.id == opt.id">{{opt.type.substr(0,3)}}  |  {{ opt.name }} </option>
             </select>
-            <div class="col-10" ref='valuearea'>
+            <div class="col-10" ref='valuearea' v-if="!!row.option.type">
                 <div class="row">
-                    <div v-if="row.option.type == 'basic' || row.option.type == undefined" class="col-11">
-                        <autocomplete
-                                :url="row.option.autocompleteUrl"
-                                :suffix="row.option.autocompleteSuffix"
-                                :field="(!!row.option.columnType) ?  valueFieldName : fieldName"
-                                v-if="row.option.autocompleteUrl != undefined || row.option.choices != undefined"
-                                :bootstrap4="true"
-                                :items="row.option.choices"
-                                :resultsuffix="row.option.resultSuffix"
-                                ref="autocomplete"
-                                :span="'form-control'"
-                                :queryParameterName="row.option.searchFieldName"
-                                :allowCreate="false"
-                                :idname="idName"
-                                v-model="row.value"
-                        />
-                        <input type="text" :name="valueFieldName" class="form-control" v-if="row.option.autocompleteUrl == undefined && row.option.choices == undefined">
-                    </div>
                     <div v-if="row.option.type == 'select'"  class="col-11">
                         <select :name="valueFieldName" class="form-control" multiple>
                             <option  v-for="(opt, i) in row.option.choices">{{opt}}</option>
                         </select>
                     </div>
-                    <div v-if="row.option.type == 'integer'"  class="col-11">
-                        <input type="number" :name="valueFieldName" class="form-control col-3">
-                    </div>
-                    <div v-if="row.option.type == 'date'"  class="col-11">
-                        <div class="form-row">
-                            <input type="date" :name="fieldName + '.start'" class="form-control col-4">
-                            <input type="date" :name="fieldName + '.end'" class="form-control col-4 ml-2">
-                        </div>
-                    </div>
                     <div v-if="row.option.type == 'checkbox'" class="col-11">
                         <value :choices="row.option.choices" ref="valuepart"  v-model="row.value" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
                         <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
                     </div>
-                    <div v-if="!!row.option.columnType"  class="col-11">
+                    <span v-if="!!row.option.columnType" >
                         <input type="hidden" :name="fieldName + '.columnId'" :value="row.option.id" />
                         <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
-                    </div>
-                    <div id="latlongoptions" v-if="row.option.type == 'map'"  class="col-11 leaflet-map-editable"  data-search="true" style="height:300px">
-               <span class="latlong-fields">
-                    <input type="hidden" :name="fieldName + '.east'" id="maxx" class="ne-lng latLongInput maxx" />
-                    <input type="hidden" :name="fieldName + '.south'"  id="miny" class="sw-lat latLongInput miny" />
-                    <input type="hidden" :name="fieldName + '.west'" id="minx" class="sw-lng latLongInput minx" />
-                    <input type="hidden" :name="fieldName + '.north'"  id="maxy" class="ne-lat latLongInput maxy" />
-               </span>
-                        <div class="mapdiv"></div>
-                    </div>
+                    </span>
                     <div class="col-1">
-                        <span v-if="infoLink != undefined"><a :href="infoLink" class="btn  btn-sm " tabindex="-1" target="_blank"><i class="fas fa-info-circle "></i></a></span>
                         <button class="btn  btn-sm " @click="clearRow()" type="button" tabindex="-1"><i class="fas fa-trash-alt "></i></button>
                     </div>
+
                 </div>
             </div>
         </div>

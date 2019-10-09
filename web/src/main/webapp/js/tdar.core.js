@@ -157,13 +157,15 @@
      * Execute any main() functions found in the API
      */
     TDAR.main = function () {
+        var pkglist = [];
         for(var key in TDAR) {
             if(typeof TDAR[key] !== 'object') {continue}
             if(typeof (TDAR[key]['main']) !== 'function' ) {continue}
             var pkg = TDAR[key];
-            console.log('executing main in package:' + key);
+            pkglist.push(key)
             pkg.main();
         }
+            console.log('Called main() on the following TDAR packages: ' + pkglist.join(", "));
         $(".input-group-append .fa-search").click(function(){
             $(this).parents('form:first').submit();
         });
