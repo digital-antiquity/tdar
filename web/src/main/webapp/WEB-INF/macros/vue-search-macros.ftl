@@ -4,16 +4,15 @@
 <#macro datamappedSearchForm  collectionId>
 
     <!-- FIXME: feels weird to #include other templates and then define two more templates inline -->
-    <#include "/components/tdar-autocomplete/template/autocomplete.html" />
     <#include "/components/tdar-values/template/values.html" />
     <#include "/components/vue-checkbox-list/templates/checkboxlist.html" />
     <#include "/components/vue-checkbox-list/templates/selectlist.html" />
 
     <!-- Template for top-level app -->
-    <div class="advanced container" style="z-index: 10000; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch" group="custom">
+    <div class="advanced container" style="z-index: 10000; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch">
         <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
             <input type="hidden" name="dataMappedCollectionId" value="${collectionId?c}">
-            <div class="row">
+            <div class="row" v-if="debugMode">
                 <div class="col-12">
                     <h2>form debug</h2>
                     <button type="button" id="btnSerialize"   class="btn btn-sm btn-secondary" @click="serializeState" >Serialize Form</button>
@@ -80,7 +79,7 @@
             <!-- fixme: consider binding to row.option instead of option? -->
 
             <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' >
-                <option v-for="(opt, index) in getOptionsFor('custom')" v-bind:value="opt" :selected="row.option.id == opt.id">{{opt.type.substr(0,3)}}  |  {{ opt.name }} </option>
+                <option v-for="(opt, index) in getOptionsFor('custom')" v-bind:value="opt" :selected="row.option.id == opt.id"> {{debugMode ? (opt.type.substr(0,3) +   ' ' + opt.name) : opt.name }} </option>
             </select>
             <div class="col-10" ref='valuearea' v-if="!!row.option.type">
                 <div class="row">

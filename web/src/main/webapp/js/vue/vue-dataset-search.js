@@ -11,6 +11,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         props : [ "row", "index", "options" ],
         data : function() {
             return {
+                //todo: move this to property (or maybe just remove debugmode code outright, due to FOUC
+                debugMode: true
             }
         },
         watch : {
@@ -49,6 +51,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             reset : function() {
                 // Todo: do whatever is appropriate to represent "clearing" the underlying control's value
             },
+
             getOptionsFor : function(group) {
                 var ret = [];
                 this.options.forEach(function(e) {
@@ -58,18 +61,11 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 });
                 return ret;
             },
-            getOptionGroups : function() {
-                var ret = {};
-                this.options.forEach(function(e) {
-                    ret[e.group] = 1;
-                });
-                return Object.keys(ret);
-            },
+
             clearRow : function() {
                 this.reset();
                 this.$emit("removerow", this.index);
             },
-
 
         }
 
@@ -88,6 +84,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         },
 
         data : function() { return {
+            //todo: move this to property (or maybe just remove debugmode code outright, due to FOUC
+            debugMode: true,
             termOperator: 'AND',
             columnMap : {},
             selectOptions : [],
@@ -102,7 +100,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
             // Look for search info in document data first,
             var documentData  = TDAR.loadDocumentData();
-            if(!!documentData['searchInfo']){
+            if(!!documentData['searchinfo']){
                 self.processSearchInfo(documentData['searchinfo']);
             } else {
                 axios({
@@ -114,17 +112,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 });
 
             }
-
-            // filter the available fields if groups property specified
-            // FIXME: temp hack: forcing groups to "custom"
-            this.groups = "custom"
-            this.allSelectOptions = this.selectOptions.slice();
-            var groups = this.groups.split(this.groups, ",");
-            if(this.groups !== "all") {
-                this.selectOptions = this.selectOptions.filter(function(opt){
-                    return groups.indexOf(opt.group) > -1;
-                });
-            }
         },
         computed : {},
         methods : {
@@ -132,12 +119,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             processSearchInfo: function(data) {
                 var self = this;
                 console.log(data);
-                Vue.set(self, "columnMap", data['datasetReferences']);
-                self.selectOptions.forEach(function(opt) {
-                    if (opt.name === 'Investigation Types') {
-                        Vue.set(opt, "choices", data.investigationTypes);
-                    }
-                });
+                // Vue.set(self, "columnMap", data['datasetReferences']);
+                self.columnMap = data['datasetReferences'];
+
                 // FIXME: datasetId should come from component property instead of <body> element
                 var dsid = document.body.getAttribute("data-mapped-dataset-id");
                 if (typeof dsid !== UNDEFINED) {
