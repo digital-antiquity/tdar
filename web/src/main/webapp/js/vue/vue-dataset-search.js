@@ -8,7 +8,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
      */
     Vue.component('part', {
         template : "#dataset-search-row-template",
-        props : [ "row", "index", "options" ],
+        props : [ "row", "index", "optionsmap", "columns" ],
         data : function() {
             return {
                 //todo: move this to property (or maybe just remove debugmode code outright, due to FOUC
@@ -18,6 +18,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
         watch : {
         },
         mounted : function() {
+            console.log("<part> mounted (stop snickering, allen)");
         },
         computed : {
             valueFieldName : function() {
@@ -52,15 +53,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 // Todo: do whatever is appropriate to represent "clearing" the underlying control's value
             },
 
-            getOptionsFor : function(group) {
-                var ret = [];
-                this.options.forEach(function(e) {
-                    if (group == e.group) {
-                        ret.push(e);
-                    }
-                });
-                return ret;
-            },
 
             clearRow : function() {
                 this.reset();
@@ -93,7 +85,9 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 option : [],
                 value : []
             } ],
-            jsondata: ''
+            jsondata: '',
+            columnsByName: {},
+            optionsByName: {},
         }},
         mounted : function() {
             var self = this;
@@ -110,8 +104,15 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     console.log("received search info via ajax");
                     self.processSearchInfo(response.data)
                 });
-
             }
+
+            // build map of columns, keyed by column display name (todo: maybe ID instead)
+            this.columnsByName =  this.selectOptions.reduce((obj, opt) => {
+                obj[opt.name] = opt;
+                self.optionsByName[opt.name] = opt.choices;
+                return obj;
+            }, {});
+
         },
         computed : {},
         methods : {
@@ -284,24 +285,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                 })
             },
 
-            getSelectOptionByName:  function(name) {
-                var ret;
-                for(var i= 0; i < this.selectOptions.length; i++) {
-                    var opt = this.selectOptions[i];
-                    if(opt.name === name) {
-                        ret = opt;
-                        break;
-                    }
-                }
-
-                return ret;
-            },
 
             setCheckboxRow: function(){
                 console.log('method called: setCheckboxRow');
                 var row = this.rows[0];
                 row.value.push('Indeterminate');
-                row.option = this.getSelectOptionByName("condition");
+                row.option = this.columnsByName["condition"];
 
             },
 

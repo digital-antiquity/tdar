@@ -41,9 +41,9 @@
                                 <part
                                         :index="index"
                                         :row="row"
-                                        :options="selectOptions"
+                                        :optionsmap="optionsByName"
+                                        :columns="selectOptions"
                                         @removerow="removeRow($event)"
-                                        :totalrows="rows.length"
                                         ref="parts"
                                 />
                             </div>
@@ -82,17 +82,31 @@
             <!-- fixme: consider binding to row.option instead of option? -->
 
             <select v-model="row.option"  class="col-2 col-form-label form-control" ref='fieldselect' >
-                <option v-for="(opt, index) in getOptionsFor('custom')" v-bind:value="opt" :selected="row.option.id == opt.id"> {{debugMode ? (opt.type.substr(0,3) +   ' ' + opt.name) : opt.name }} </option>
+                <option v-for="(opt, index) in columns" v-bind:value="opt" :selected="row.option.id == opt.id"> {{debugMode ? (opt.type.substr(0,3) +   ' ' + opt.name) : opt.name }} </option>
             </select>
+
             <div class="col-10" ref='valuearea' v-if="!!row.option.type">
                 <div class="row">
                     <div v-if="row.option.type == 'select'"  class="col-11">
                         <select :name="valueFieldName" class="form-control" multiple>
-                            <option  v-for="(opt, i) in row.option.choices">{{opt}}</option>
+                            <option  v-for="(opt, i) in optionsmap[row.option.name]">{{opt}}</option>
                         </select>
                     </div>
-                    <div v-if="row.option.type == 'checkbox'" class="col-11">
-                        <value :choices="row.option.choices" ref="valuepart"  v-model="row.value" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
+                    <div v-if="row.option.type == 'checkbox'">
+                        <checkboxlist
+                                name="valueFieldName"
+                                :choices="optionsmap[row.option.name]"
+                                v-model="row.value"
+                        />
+                    </div>
+                    <div v-if="row.option.type == '_checkbox'">
+                        Checkboxes go here!!
+                        <ul>
+                            <li v-for="(opt, idx) in optionsmap[row.option.name]">{{row.value.indexOf(opt)}}</li>
+                        </ul>
+                    </div>
+                    <div v-if="row.option.type == '_checkbox'" class="col-11">
+                        <value :choices="optionsmap[row.option.name]" ref="valuepart"  v-model="row.value" :idOnly="true" :numcols="2" :fieldName="valueFieldName"/>
                         <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
                     </div>
                     <span v-if="!!row.option.columnType" >

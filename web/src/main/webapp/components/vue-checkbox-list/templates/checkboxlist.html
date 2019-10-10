@@ -5,10 +5,10 @@
             <input
                     type="checkbox"
                     :name="name"
-                    v-bind:checked="isChecked(item.value)"
-                    v-on:change="cbchanged(item.value, $event.target.checked)"
+                    v-bind:checked="isChecked(valueFor(item))"
+                    v-on:change="cbchanged(valueFor(item), $event.target.checked)"
             />
-            {{item.label}}
+            {{labelFor(item)}}
         </label>
     </div>
 </div>
