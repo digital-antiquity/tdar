@@ -1,4 +1,4 @@
-TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
+TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate) {
     "use strict";
     var UNDEFINED = "undefined";
     var MAXLEN_CHECKBOXLIST = 50;
@@ -8,17 +8,24 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
      */
     Vue.component('part', {
         template : "#dataset-search-row-template",
-        props : [ "row", "index", "optionsmap", "columns" ],
+        props : { "row":{required: false},
+            "index":{required: false},
+            "optionsmap":{required: false},
+            "columns":{required: false},
+            debugMode: {
+                type: Boolean,
+                required: false,
+                default: false
+            }
+        },
+
         data : function() {
             return {
-                //todo: move this to property (or maybe just remove debugmode code outright, due to FOUC
-                debugMode: true
             }
         },
         watch : {
         },
         mounted : function() {
-            console.log("<part> mounted (stop snickering, allen)");
         },
         computed : {
             valueFieldName : function() {
@@ -60,7 +67,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             },
 
         }
-
     });
 
     /**
@@ -69,7 +75,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
     var app = new Vue({
         el : "#advancedsearch",
         props: {
-            "mapped-dataset-id": Number
+            "mapped-dataset-id": Number,
+            debugMode: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
 
         },
         watch: {
@@ -77,7 +88,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
 
         data : function() { return {
             //todo: move this to property (or maybe just remove debugmode code outright, due to FOUC
-            debugMode: true,
             termOperator: 'AND',
             columnMap : {},
             selectOptions : [],
@@ -88,12 +98,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             jsondata: '',
             columnsByName: {},
             optionsByName: {},
+            documentData: {},
         }},
         mounted : function() {
             var self = this;
 
             // Look for search info in document data first,
             var documentData  = TDAR.loadDocumentData();
+            this.documentData  = documentData;
             if(!!documentData['searchinfo']){
                 self.processSearchInfo(documentData['searchinfo']);
             } else {
@@ -109,9 +121,13 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             // build map of columns, keyed by column display name (todo: maybe ID instead)
             this.columnsByName =  this.selectOptions.reduce((obj, opt) => {
                 obj[opt.name] = opt;
-                self.optionsByName[opt.name] = opt.choices;
+                // self.optionsByName[opt.name] = opt.choices;
                 return obj;
             }, {});
+
+
+            // reconstitute form state saved from either "refine search" parameters, or if we came from a back button
+            this.rebuildState();
 
         },
         computed : {},
@@ -136,15 +152,18 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             processRefineSearch: function(data) {
             },
 
-            addRow : function() {
-                this.rows.push({
-                    option : '',
-                    value : ''
-                });
+            addRow : function(row) {
+                var _row = row;
+                if(!_row) {
+                    _row = {option: '', value: []}
+                }
+                this.rows.push(_row);
             },
 
             submit : function() {
                 console.log(this.$refs.form);
+                this.serializeState();
+                formstate(this.jsondata);
                 this.$refs.form.submit();
             },
 
@@ -157,6 +176,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                     this.rows.splice(idx, 1);
                 }
             },
+
 
 
             addColumnInfo : function(datasetId) {
@@ -225,10 +245,42 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
                         type : type,
                         group : 'custom',
                         id : field.id,
-                        choices : values,
                         columnType : field.columnDataType
-                    })
+                    });
+
+                    self.optionsByName[field.displayName] = values;
+
                 });
+            },
+
+
+            /**
+             *
+             * TODO: docment me
+             */
+            rebuildState: function() {
+                var self = this;
+
+
+                // back button state trumps refine data
+                var stateJson = formstate();
+
+                if(stateJson) {
+                    this.rows.splice(0, this.rows.length);
+                    var staterows = JSON.parse(stateJson);
+                    staterows.filter(function(_row){
+                        return !!_row.name;
+                    }).forEach(function(_row){
+                        self.addRow({
+                            option: self.columnsByName[_row.name],
+                            value: _row.values
+                        });
+
+
+                    });
+                } else if(this.documentData['refinestate']){
+                    //normalize refine state
+                }
             },
 
             /**
@@ -237,22 +289,13 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
              *
              * FIXME:  Currently we only serialize dataValues fields (aka custom data fields)
              */
+
             serializeState: function() {
-                console.log('serialize state called');
-                var formdata = (this.$refs.parts
-                // only include valid, non-blank form rows
-                    .filter(function(part, i){
-                        var row = part.row;
-                        return (
-                            !!row.option.fieldName && (
-                            (typeof row.value === 'object' && row.value.length > 0) ||
-                            (typeof row.value === 'string' && row.value.trim().length > 0)))
-                    })
-                    // transform into array of name/value pairs.
-                    .map(function(part, i){
-                        return {f: part.row.option.name, v:part.row.value}
-                    }));
-                this.jsondata = JSON.stringify(formdata);
+                // we only care about the column name and chosen values for each row
+                var state = this.rows.map(function(row, idx){
+                    return {name: row.option.name, values: row.value}
+                });
+                this.jsondata = JSON.stringify(state)
             },
 
 
@@ -305,4 +348,4 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR) {
             selectlist: TDAR.vuejs.selectlist
         }
     });
-})(console, window, Vue, axios, TDAR);
+})(console, window, Vue, axios, TDAR, TDAR.formstate);

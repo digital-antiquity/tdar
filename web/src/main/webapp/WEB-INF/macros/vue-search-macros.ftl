@@ -10,27 +10,8 @@
 
     <!-- Template for top-level app -->
     <div class="advanced container" style="z-index: 10000; border-top:1px solid #DDD; border-bottom:1px solid #DDD;" id="advancedsearch">
-        <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm">
+        <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm" id="frmDatasetSearch">
             <input type="hidden" name="dataMappedCollectionId" value="${collectionId?c}">
-                <div class="row">
-                    <div class="col-12">
-                    <h2>debug stuff</h2>
-                    </div>
-                </div>
-            <div class="row" v-if="debugMode">
-                <div class="col-6">
-                    <div class="btn-group">
-                        <button type="button" id="btnSerialize"   class="btn btn-sm btn-secondary" @click="serializeState" >Serialize Form</button>
-                        <button type="button" id="btnDeserialize" class="btn btn-sm btn-secondary" @click="deserializeState" >Load Form</button>
-                        <button type="button" id="btnSetCheckboxRow" class="btn btn-sm btn-secondary" @click="setCheckboxRow" >setCheckboxRow</button>
-                        <button type="button" id="btnSetSelectRow" class="btn btn-sm btn-secondary" @click="setSelectRow" >setSelectRow</button>
-
-                    </div>
-                </div>
-                <div class="col-5">
-                    <textarea v-bind:value="jsondata" cols="80" row="24" style="width:100%">{{jsondata}}</textarea>
-                </div>
-            </div>
 
 
             <div class="row">
@@ -72,6 +53,27 @@
                     </div>
                 </div>
             </div>
+
+            <!-- DEBUG STUFF -->
+            <div class="row" v-if="debugMode">
+                <div class="col-12">
+                    <h2>debug stuff</h2>
+                </div>
+            </div>
+            <div class="row" v-if="debugMode">
+                <div class="col-6">
+                    <div class="btn-group">
+                        <button type="button" id="btnSerialize"   class="btn btn-sm btn-secondary" @click="serializeState" >Serialize Form</button>
+                        <button type="button" id="btnDeserialize" class="btn btn-sm btn-secondary" @click="deserializeState" >Load Form</button>
+                        <button type="button" id="btnSetCheckboxRow" class="btn btn-sm btn-secondary" @click="setCheckboxRow" >setCheckboxRow</button>
+                        <button type="button" id="btnSetSelectRow" class="btn btn-sm btn-secondary" @click="setSelectRow" >setSelectRow</button>
+
+                    </div>
+                </div>
+            </div>
+            <!-- END: DEBUG STUFF -->
+
+
         </form>
     </div>
 
@@ -121,6 +123,9 @@
             </div>
         </div>
     </script>
+
+<textarea id="formstate" cols="1" rows="1" style="visibility:hidden"></textarea>
+
 </#macro>
 
 

@@ -1,4 +1,4 @@
-(function (console, window) {
+(function (console, window, $) {
     'use strict';
 
 //define global TDAR object if not defined already
@@ -153,6 +153,20 @@
         window.location = url;
     };
 
+
+    TDAR.formstate = function(json) {
+        var $elem = $('#formstate');
+        var ret = null;
+        if($elem.length) {
+            if(!!json) {
+                $elem.val(json);
+            } else {
+               ret = $elem.val();
+            }
+        }
+        return ret;
+    };
+
     /**
      * Execute any main() functions found in the API
      */
@@ -192,4 +206,4 @@
     console.table = console.table || console.log;
 
 
-})(console, window);
+})(console, window, jQuery);
