@@ -97,6 +97,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
             } ],
             jsondata: '',
             columnsByName: {},
+            columnsById: {},
             optionsByName: {},
             documentData: {},
         }},
@@ -121,7 +122,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
             // build map of columns, keyed by column display name (todo: maybe ID instead)
             this.columnsByName =  this.selectOptions.reduce((obj, opt) => {
                 obj[opt.name] = opt;
-                // self.optionsByName[opt.name] = opt.choices;
+                self.columnsById[opt.id] = opt;
                 return obj;
             }, {});
 
@@ -278,8 +279,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
 
 
                     });
-                } else if(this.documentData['refinestate']){
-                    //normalize refine state
+                } else if(this.documentData['refinesearchinfo']){
+                    self.deserializeState(this.documentData['refinesearchinfo'][0]);
                 }
             },
 
@@ -310,22 +311,17 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
             /**
              * Parse the serialized search  and then rebuild the form rows + values
              */
-            deserializeState: function() {
-                var self = this;
-                console.log("native splice: %s", Array.prototype.splice);
-                console.log("   Vue splice: %s", this.rows.splice.toString() );
-                this.clearState();
-                // Clear current form state
-                var data =[];
-                if(!!this.jsondata) {
-                    data = JSON.parse(this.jsondata);
-                }
-
-                data.map(function(v, i){
-                    return {option: '', value: ''}
-                }).forEach(function(v, i) {
-                    self.rows.push(v);
-                })
+            deserializeState: function(strutsdata) {
+                if(!strutsdata) {return;}
+                if(strutsdata.length == 0) {return;}
+                var self  = this;
+                self.clearState();
+                var datavalues = strutsdata.dataValues;
+                var _rows = datavalues.map(function(dv){
+                    return {option: self.columnsById[dv.columnId], value:  dv.value}
+                }).forEach(function(_row){
+                   self.addRow(_row);
+                });
             },
 
 

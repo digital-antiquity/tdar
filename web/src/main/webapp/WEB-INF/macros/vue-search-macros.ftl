@@ -96,7 +96,7 @@
                     </div>
                     <div v-if="row.option.type == 'checkbox'">
                         <checkboxlist
-                                name="valueFieldName"
+                                :name="valueFieldName"
                                 :choices="optionsmap[row.option.name]"
                                 v-model="row.value"
                         />
