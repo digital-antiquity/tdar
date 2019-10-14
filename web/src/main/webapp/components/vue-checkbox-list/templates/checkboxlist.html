@@ -1,6 +1,6 @@
 <script  type="text/x-template" id="checkboxlist-template">
-<div class="checkboxlist">
-    <div v-for="item in choices" :key="item.value">
+<div class="checkboxlist d-flex flex-column" >
+    <div v-for="item in choices" :key="item.value" class="col-2">
         <label>
             <input
                     type="checkbox"

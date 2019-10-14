@@ -30,15 +30,17 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
                     return [];
                 }
             },
+
             labelKey: {
                 type: String,
                 required: false,
-                default: "label"
+                default: function() {return ""}
             },
 
             valueKey: {
                 type: String,
-                required: false
+                required: false,
+                default: function() {return ""}
             },
 
             size: {
@@ -53,7 +55,11 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
         methods: {
 
             labelFor: function(opt) {
-                return opt[this.labelKey];
+                var ret = opt;
+                if(!!this.labelKey) {
+                    ret = opt[this.labelKey]
+                }
+                return ret;
             },
 
             /**
