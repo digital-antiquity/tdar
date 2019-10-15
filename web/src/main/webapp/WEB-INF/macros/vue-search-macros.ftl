@@ -9,15 +9,15 @@
     <#include "/components/vue-checkbox-list/templates/selectlist.html" />
 
     <!-- Template for top-level app -->
-    <div class=""  id="advancedsearch">
-        <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm" id="frmDatasetSearch">
+    <div class="row"  id="advancedsearch">
+        <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm col-12" id="frmDatasetSearch">
             <input type="hidden" name="dataMappedCollectionId" value="${collectionId?c}">
 
-            <div class=" advancedSearchbox" >
 
-                <div class="searchgroup">
-                    <div id="groupTable0" class="condensed">
-                        <fieldset class="condensed" v-for="(row,index) in rows">
+            <div class="form-row" >
+                <div class="searchgroup col-12">
+                    <div id="groupTable0" class="form-row">
+                        <fieldset class="search-term col-12" v-for="(row,index) in rows">
                             <part
                                     :index="index"
                                     :row="row"
@@ -31,26 +31,32 @@
 
                     <div class="form-row">
                         <div class="col-auto">
-                            <button class="btn btn-primary" id="groupTable0AddAnotherButton" type="button" @click="addRow()">
+                            <button class="btn btn-secondary btn-sm" id="groupTable0AddAnotherButton" type="button" @click="addRow()">
                                 + add another search term
                             </button>
                         </div>
                     </div>
-                    <div class="form-row" v-if="rows.length > 1">
-                        <label class="control-label">Include in results</label>
-                        <div class="controls controls-row condensed">
-                            <select name="groups[0].operator" class="">
-                                <option value="AND" selected="">When resource matches ALL terms below</option>
-                                <option value="OR">When resource matches ANY terms below</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <p class="text-center">
-                        <button type="button" class="button btn tdar-button center" @click="submit()">Search</button>
-                    </p>
                 </div>
             </div>
+            <div class="form-row " v-if="rows.length > 1">
+                    <div class="col-auto">
+                    <label class="">Match Behavior</label>
+                        <select name="groups[0].operator" class="col-auto form-control">
+                            <option value="AND" selected="">AND - Match all the conditions below</option>
+                            <option value="OR">OR - Match any condition</option>
+                        </select>
+                    </div>
+            </div>
+            <div class="form-row ">
+                    <div class="col-12">
+                        <p class="text-center">
+                            <button type="button" class="button btn btn-primary" @click="submit()">Search</button>
+                        </p>
+                    </div>
+            </div>
+
+
 
             <!-- DEBUG STUFF -->
             <div class="row" v-if="debugMode">
@@ -58,6 +64,7 @@
                     <h2>debug stuff</h2>
                 </div>
             </div>
+
             <div class="row" v-if="debugMode">
                 <div class="">
                     <div class="btn-group">
@@ -78,53 +85,61 @@
 
     <!-- Template for 'Part' component -->
     <script type="text/x-template" id="dataset-search-row-template">
-        <div class="">
+        <div class="form-row ">
             <!-- fixme: consider binding to row.option instead of option? -->
-            <div class="form-group">
-                <label>Search Field</label>
-                <select v-model="row.option"  class="form-control" ref='fieldselect' :id="'selField' + index" >
-                    <option v-for="(opt, index) in columns" v-bind:value="opt" :selected="row.option.id == opt.id"> {{debugMode ? (opt.type.substr(0,3) +   ' ' + opt.name) : opt.name }} </option>
-                </select>
-            </div>
+            <div class="col-11">
+                <div class="form-row">
+                    <div class="col-auto form-group">
+                        <label>Search Field</label>
+                        <select v-model="row.option"  class="form-control" ref='fieldselect' :id="'selField' + index" >
+                            <option v-for="(opt, index) in columns" v-bind:value="opt" :selected="row.option.id == opt.id"> {{debugMode ? (opt.type.substr(0,3) +   ' ' + opt.name) : opt.name }} </option>
+                        </select>
+                    </div>
 
-            <div class="form-group" v-if="!!row.option.type">
-
-                <div class="" ref='valuearea' v-if="!!row.option.type">
-                    <div class="">
-
-                        <div v-if="row.option.type == '_select'"  class="">
-                            <select :name="valueFieldName" class="form-control" multiple>
-                                <option  v-for="(opt, i) in optionsmap[row.option.name]">{{opt}}</option>
-                            </select>
-                        </div>
-
-                        <div v-if="row.option.type == 'select'"  class="">
-                            <selectlist
-                                    :name="valueFieldName"
-                                    :options="optionsmap[row.option.name]"
-                                    v-model="row.value"
-                                    :size="10"
-                            />
-                        </div>
-
-                        <div v-if="row.option.type == 'checkbox'">
-                            <checkboxlist
-                                    :name="valueFieldName"
-                                    :choices="optionsmap[row.option.name]"
-                                    v-model="row.value"
-                            />
-                        </div>
-                        <span v-if="!!row.option.columnType" >
-                            <input type="hidden" :name="fieldName + '.columnId'" :value="row.option.id" />
-                            <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
-                        </span>
+                    <div class="col-auto form-group" ref='valuearea' v-if="!!row.option.type">
+                        <label>Selected Values</label>
                         <div class="">
-                            <button class="btn  btn-sm " @click="clearRow()" type="button" tabindex="-1"><i class="fas fa-trash-alt "></i></button>
+
+                            <div v-if="row.option.type == 'select'"  class="">
+                                <selectlist
+                                        :name="valueFieldName"
+                                        :options="optionsmap[row.option.name]"
+                                        v-model="row.value"
+                                        :size="10"
+                                />
+                            </div>
+
+                            <div v-if="row.option.type == 'checkbox'">
+                                <checkboxlist
+                                        :name="valueFieldName"
+                                        :choices="optionsmap[row.option.name]"
+                                        v-model="row.value"
+                                />
+                            </div>
+                            <span v-if="!!row.option.columnType" >
+                                <input type="hidden" :name="fieldName + '.columnId'" :value="row.option.id" />
+                                <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />
+                            </span>
+                        </div>
+                    </div>
+                    <div v-else class="col-auto form-group">
+                        <label>Selected Values</label>
+                        <div class="">
+                            <em>Choose a form field on the left</em>
                         </div>
 
                     </div>
+
+
                 </div>
 
+
+
+            </div>
+
+
+            <div class="col-1">
+                <button class="btn  btn-sm btn-secondary" @click="clearRow()" type="button" tabindex="-1"><i class="fas fa-trash-alt "></i></button>
             </div>
         </div>
     </script>

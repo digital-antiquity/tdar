@@ -1,6 +1,6 @@
 <script  type="text/x-template" id="selectlist-template">
-    <div class="selectlist">
-        <select
+    <div class="selectlist form-group">
+        <select class="form-control"
                 :name="name"
                 :multiple="size > 1"
                 :size="size"
@@ -8,7 +8,7 @@
 
         >
             <option v-if="blankrow"
-                    :value="undefined">-choose somthing-</option>
+                    :value="undefined">-Make a selection-</option>
 
 
             <option

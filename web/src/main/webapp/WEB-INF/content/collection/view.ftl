@@ -57,7 +57,11 @@
         <@commonCollection.descriptionSection/>
 
     <#if  datasetMapped>
+
+        </div></div>
         <@vue.datamappedSearchForm resourceCollection.id />
+        <div class="row"><div class="col-12">
+
     </#if>
 
 
