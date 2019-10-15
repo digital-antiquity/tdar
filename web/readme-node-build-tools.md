@@ -6,15 +6,25 @@ and describes the common tasks that involve them.
 
 ## What node build tools do we use?
 
-- Bower - javascript framework dependency management.  We use Bower to track and install a subset of 
+- `Bower` - javascript framework dependency management.  We use Bower to track and install a subset of 
  the third-party javascript libraries that we use for the client.
-- Karma - we use Karma.js to run unit tests for our own javascript libraries, and also provides code coverage reports.
+- `Karma` - we use Karma.js to run unit tests for our own javascript libraries, and also provides code coverage reports.
 By default, Maven fires up  and runs these unit tests as part of the tDAR application build process.
-- NPM (Node Package Manager) - NPM is responsible for installing necessary dependencies used by the aforementioned
-Karma tests. 
+- `NPM` (Node Package Manager) - NPM is responsible for installing necessary dependencies used by the aforementioned
+Karma tests.
+- `node-sass`: Use Node-sass to compile .sass and .scss files.
 
 
 ## Common Task HOWTO's
+
+### Build style.css
+
+Note that this process is temporary and _really should_ be incorporated into the build process.
+
+```
+node-sass web/src/main/webapp/css/scss/style.scss web/src/main/webapp/css/style.css
+
+```
 
 ### Prerequisite:  Install Karma and NodeJS
 - Install NodeJS first.   http://www.nodejs.org

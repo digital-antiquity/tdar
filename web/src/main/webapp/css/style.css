@@ -9,15 +9,19 @@ header + #hero-wide {
 @media (max-width: 768px) {
   #sidebar-right {
     background-image: none; } }
+
 @media (min-width: 1px) {
   #hero-wide h2 {
     font-size: 2rem !important; } }
+
 @media (min-width: 768px) {
   #hero-wide h2 {
     font-size: 2.5rem !important; } }
+
 @media (min-width: 992px) {
   #hero-wide h2 {
     font-size: 3.0rem !important; } }
+
 #homepageCarousel .carousel-indicators {
   left: initial;
   bottom: 0; }
@@ -47,11 +51,10 @@ header + #hero-wide {
     float: right; }
     .image .hero-note h2 {
       margin: 0px !important;
-      font-weight: 600 !Important;
-      line-height: 4rem !Important;
-      margin-top: 0px !important; 
-      font-family: "soleil", sans-serif !important;
-      }
+      font-weight: 600 !important;
+      line-height: 4rem !important;
+      margin-top: 0px !important;
+      font-family: "soleil", sans-serif !important; }
       .image .hero-note h2 .red {
         font-weight: 700; }
 
@@ -65,12 +68,14 @@ header + #hero-wide {
 #home #hero .carousel-inner, #hero-wide .carousel-inner {
   padding-left: 0px;
   padding-right: 0px; }
+
 #home #hero h2, #hero-wide h2 {
   font-weight: 700;
   font-size: 60px;
   line-height: 50px;
   letter-spacing: -2px;
   margin: 50px 0 0 0; }
+
 #home #hero p, #hero-wide p {
   margin: 18px 0;
   font-weight: 500;
@@ -85,16 +90,19 @@ header + #hero-wide {
   margin-top: 0px;
   min-height: 5.8em;
   text-align: center; }
+
 #home .card h5 {
   min-height: 2.4em;
   font-weight: bold;
   font-size: 24px; }
+
 #home .title {
   display: block;
   font-family: helvetica,arial,sans-serif;
   font-size: 15px;
   font-style: normal;
   font-weight: 700; }
+
 #home .news li {
   font-size: 12px;
   line-height: 20px;
@@ -105,8 +113,10 @@ header + #hero-wide {
   padding: 12px 0 26px 60px;
   border-bottom: 1px solid #e8e3d7;
   min-height: 4em; }
+
 #home .news li:first-child {
   padding: 0 0 0px 60px; }
+
 #home .news span {
   font-weight: 700;
   color: #e3dfd8;
@@ -118,16 +128,19 @@ header + #hero-wide {
   font-size: 16px;
   line-height: 24px;
   font-style: normal; }
+
 #home .news em {
   font-size: 30px;
   font-style: normal;
   display: block; }
+
 #home .news a .title {
   font-family: helvetica, arial, sans-serif;
   font-weight: 700;
   font-size: 15px;
   font-style: normal;
   display: block; }
+
 #home .topRight {
   font-weight: bold;
   text-transform: uppercase; }
@@ -284,7 +297,6 @@ nav {
 @media (min-width: 768px) {
   .tdarDropdown .flex-column:first-child {
     border-right: 2px solid #7a1501; }
-
   .dropdown-menu:after {
     bottom: 100%;
     left: 10%;
@@ -294,21 +306,19 @@ nav {
     width: 0;
     position: absolute;
     pointer-events: none; }
-
   .dropdown-menu-right:after {
     left: 80% !important; }
-
   .dropdown-menu:after {
     border-color: rgba(0, 0, 0, 0);
     border-bottom-color: white;
     border-width: 10px;
     margin-left: -10px; }
-
   .dropdown-menu:before {
     border-color: rgba(0, 0, 0, 0);
     border-bottom-color: white;
     border-width: 16.5px;
     margin-left: -16.5px; } }
+
 /********** LEAFLET **************/
 /** leaflet maps - **/
 .disable-map .leaflet-draw {
@@ -403,8 +413,8 @@ form.leaflet-control-geocoder-form {
   border: 1px solid #999999; }
 
 #cbCheckAllToggle, .sorting_1 input[type='checkbox'] {
-  margin-right: 10px !Important;
-  margin-left: 10px !Important; }
+  margin-right: 10px !important;
+  margin-left: 10px !important; }
 
 .legend {
   line-height: 1.2em; }
@@ -548,7 +558,7 @@ are governed by several media queries and thus easy to screw up the formatting o
   padding-bottom: 3%;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 0% !Important;
+  margin-top: 0% !important;
   margin-bottom: 0% !important;
   height: 125px;
   width: 125px;
@@ -652,7 +662,7 @@ div.mapcontainer {
   position: relative; }
 
 div.mapcontainer img {
-  height: 304px !Important;
+  height: 304px !important;
   right: 0px;
   display: block;
   position: relative; }
@@ -676,8 +686,10 @@ div.mapcontainer img {
 
 ul.treeview li {
   margin-top: 0px !important; }
+
 ul.treeview ul {
   margin-top: 0px !important; }
+
 ul.treeview label {
   margin-bottom: 0px !important; }
 
@@ -721,6 +733,7 @@ img.responsive-image {
   letter-spacing: 1px;
   line-height: 14px;
   text-transform: uppercase; }
+
 .view aside h3.downloads {
   font-family: helvetica, arial, sans-serif;
   font-size: 16px;
@@ -733,6 +746,7 @@ img.responsive-image {
   -webkit-border-radius: 2px 2px 0 0;
   border-radius: 2px 2px 0 0;
   border-bottom: none; }
+
 .view aside h3.downloads span.downloadNumber {
   display: inline-block;
   float: right;
@@ -746,13 +760,16 @@ img.responsive-image {
   margin-top: 11px;
   -webkit-border-radius: 2px 2px 0 0;
   border-radius: 2px 2px 0 0; }
+
 .view aside ul.downloads, .view aside ul.downloads li {
   background: #f0eeeb;
   margin: 0 !important; }
+
 .view aside ul.downloads li {
   color: #7d7a77;
   padding: 14px 10px 14px 32px;
   border-bottom: 1px solid #fff; }
+
 .view aside li strong {
   font-weight: 700;
   font-size: 12px;
@@ -760,11 +777,13 @@ img.responsive-image {
   letter-spacing: 1px;
   line-height: 14px;
   text-transform: uppercase; }
+
 .view aside li {
   font-size: 13px;
   line-height: 17px;
   color: #7d7a77;
   margin-top: 15px; }
+
 .view aside h3 {
   font-size: 16px;
   line-height: 22px;
@@ -783,6 +802,7 @@ img.responsive-image {
   font-weight: normal;
   padding-top: 4px;
   padding-bottom: 4px; }
+
 #subnavbar .nav-link.active {
   font-weight: bold; }
 
@@ -792,6 +812,7 @@ img.responsive-image {
 
 #myCarousel .carousel-control-prev {
   width: 5%; }
+
 #myCarousel .carousel-indicators .active {
   background-color: black; }
 
@@ -3969,26 +3990,24 @@ header .welcome-drop a,
 @media (max-width: 768px) {
   #sidebar-right {
     background-image: none; }
-
   #mdScreenNav {
     background-color: #E3E0D8; }
-
   .tdarNav {
     background: none; }
     .tdarNav .tdarNavItem {
       padding-left: 0; }
-
   #tdarNavMenu li, #myAccountNav li {
     border-top: 2px solid #D2BF9E; }
   #tdarNavMenu .nav-link, #tdarNavMenu .btn-link, #myAccountNav .nav-link, #myAccountNav .btn-link {
     color: #352319;
     font-size: 24px;
     font-weight: bold; }
-
   .nav-chevron {
     stroke: #352319; } }
+
 .nav-pills .nav-item {
   width: 100%; }
+
 .nav-pills .nav-link.active {
   background-color: #7a1501;
   color: #fff; }
@@ -4062,7 +4081,7 @@ p {
   text-align: left !important; }
 
 .icon-push-down {
-  margin-top: 0.3em; }
+  margin-top: .3em; }
 
 .icon-height {
   margin-top: .4em;
@@ -4097,9 +4116,9 @@ p {
   /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */
   h1, h2, h3, header .welcome-drop p, #home .news span, .why article p, .why article ul, .contrib p, .contrib ul, .contrib .span3 li, .searchresults p, .searchresults aside li, .searchresults .sort p, .searchresults .sort form, .searchresults .pagin td.prev, .searchresults .pagin td.next, .searchresults .pagin li, header .welcome-drop p {
     font-family: "soleil", sans-serif !important; }
-
   #home .news li, p, .tableFormat td, header form input.searchbox, header .welcome-drop a, .hero input.searchbox, #slider p, #slider span, .bucket p, #alt aside li, .why article li, .contrib li, .contrib .span3 p, .searchresults aside li, .searchresults aside label, .searchresults article p, footer ul, footer li {
     font-family: "ff-tisa-web-pro", serif !important; } }
+
 /* for typekit to prevent flash of unstyled content */
 .wf-loading {
   font-family: "helvetica";
@@ -4221,8 +4240,10 @@ div#ontologyTarget {
 
 .image-carousel .carousel-indicators li {
   background-color: #ddd; }
+
 .image-carousel .carousel-control-prev-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ddd' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E"); }
+
 .image-carousel .carousel-control-next-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ddd' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E"); }
 
@@ -4429,27 +4450,29 @@ p.san-serif {
 .file-row + .file-row {
   border-top: 1px solid #EEE; }
 
-/*# sourceMappingURL=style.css.map */
-
 .fileinput-button {
-    overflow: hidden;
-    position: relative;
-    display: inline-block;
-}
-
+  overflow: hidden;
+  position: relative;
+  display: inline-block; }
 
 .email-container {
   position: relative;
   height: 0;
   overflow: hidden;
-    padding-bottom: 75%;
-}
+  padding-bottom: 75%; }
 
- 
 .email-container iframe {
   position: absolute;
-  top:0;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-}
+  height: 100%; }
+
+/**
+Styles for datamap search widget
+ */
+.search-term {
+  background-color: #eee;
+  border-bottom: 1px solid #ddd; }
+
+/*# sourceMappingURL=style.css.map */
