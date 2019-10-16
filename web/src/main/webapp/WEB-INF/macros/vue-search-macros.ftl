@@ -10,6 +10,7 @@
 
     <!-- Template for top-level app -->
     <div class="row"  id="advancedsearch">
+        <h3>Search Within This Collection</h3>
         <form onSubmit="return false" action="/search/results" ref="form" class="seleniumIgnoreForm col-12" id="frmDatasetSearch">
             <input type="hidden" name="dataMappedCollectionId" value="${collectionId?c}">
 
@@ -91,9 +92,9 @@
             <!-- fixme: consider binding to row.option instead of option? -->
             <div class="col-11">
                 <div class="form-row">
-                    <div class="col-auto form-group">
+                    <div class="col-3 form-group">
                         <label>Search Field</label>
-                        <select v-model="row.option"  class="form-control" ref='fieldselect' :id="'selField' + index" >
+                        <select v-model="row.option"  class="form-control form-control-sm" ref='fieldselect' :id="'selField' + index" >
                             <option v-for="(opt, index) in columns" v-bind:value="opt" :selected="row.option.id == opt.id"> {{debugMode ? (opt.type.substr(0,3) +   ' ' + opt.name) : opt.name }} </option>
                         </select>
                     </div>

@@ -4478,7 +4478,8 @@ Styles for datamap search widget
   margin: 0 0 5pt;
   padding-top: 4pt; }
 
+/** prevent long labels from hogging all the flexbox width */
 .checkboxlist label {
-  max-width: 25em; }
+  max-width: 15em; }
 
 /*# sourceMappingURL=style.css.map */
