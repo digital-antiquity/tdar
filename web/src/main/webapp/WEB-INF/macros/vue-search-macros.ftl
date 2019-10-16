@@ -98,7 +98,7 @@
                         </select>
                     </div>
 
-                    <div class="col-auto form-group" ref='valuearea' v-if="!!row.option.type">
+                    <div class="col-9 form-group" ref='valuearea' v-if="!!row.option.type">
                         <label>Selected Values</label>
                         <div class="">
 
@@ -154,7 +154,7 @@
 <#macro datamappedSearchLink path msg='Refine Search'>
     <a
             href="<@s.url escapeAmp="false" includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url>"
-            >${msg}</a>
+            ><#noescape>${msg}</#noescape></a>
 
 </#macro>
 
