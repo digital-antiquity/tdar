@@ -30,30 +30,32 @@
                     </div>
 
                     <div class="form-row">
-                        <div class="col-auto">
+                        <div class="col-auto offset-1">
                             <button class="btn btn-secondary btn-sm" id="groupTable0AddAnotherButton" type="button" @click="addRow()">
-                                + add another search term
+                                <i class="fas fa-plus-circle"> </i> add another search term
                             </button>
+
+
+                        </div>
+                        <div class="col-auto form-inline" v-if="rows.length > 1">
+                            <label class="m-2">Match Behavior</label>
+                            <select name="groups[0].operator" class="col-auto form-control form-control-sm">
+                                <option value="AND" selected="">AND - Match all search terms</option>
+                                <option value="OR">OR - Match any search term</option>
+                            </select>
                         </div>
                     </div>
 
                 </div>
             </div>
-            <div class="form-row " v-if="rows.length > 1">
-                    <div class="col-auto">
-                    <label class="">Match Behavior</label>
-                        <select name="groups[0].operator" class="col-auto form-control">
-                            <option value="AND" selected="">AND - Match all the conditions below</option>
-                            <option value="OR">OR - Match any condition</option>
-                        </select>
-                    </div>
-            </div>
-            <div class="form-row ">
+
+            <div class="row mt-2">
                     <div class="col-12">
                         <p class="text-center">
-                            <button type="button" class="button btn btn-primary" @click="submit()">Search</button>
+                        <button type="button" class="button btn btn-primary btn-lg" @click="submit()">Search</button>
                         </p>
                     </div>
+
             </div>
 
 

@@ -8,6 +8,7 @@
                     :name="name"
                     v-bind:checked="isChecked(valueFor(item))"
                     v-on:change="cbchanged(valueFor(item), $event.target.checked)"
+                    :value="valueFor(item)"
             />
             {{labelFor(item)}}
         </label>
