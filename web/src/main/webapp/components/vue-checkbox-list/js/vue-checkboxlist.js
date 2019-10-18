@@ -7,8 +7,6 @@ TDAR.vuejs.checkboxlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
         // name: "CheckboxList",
         template : "#checkboxlist-template",
 
-        // FIXME: Is it really necessary to customize the component v-model directive here?
-        // FIXME: Even if it is,  'items' and 'listupdate' are lame names.
         model: {
             prop: "items",
             event: "listupdate"
@@ -36,11 +34,10 @@ TDAR.vuejs.checkboxlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
                 type: String,
                 required: false,
                 default: function() {return ""}
-            },
-
-
-
+            }
         },
+
+        computed: {},
 
         data: function() {
             return {};
@@ -48,12 +45,13 @@ TDAR.vuejs.checkboxlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
 
         methods: {
             cbchanged: function(val, itemChecked) {
+                var newitems = this.items.slice();
                 if (itemChecked) {
-                    if (this.items.indexOf(val) === -1) {
-                        this.items.push(val);
+                    if (newitems.indexOf(val) === -1) {
+                        newitems.push(val);
                     }
                 } else {
-                    _removeByValue(this.items, val);
+                    _removeByValue(newitems, val);
                 }
                 console.log("cbchanged");
             },

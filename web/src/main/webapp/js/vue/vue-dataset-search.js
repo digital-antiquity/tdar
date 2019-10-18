@@ -100,6 +100,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
             columnsById: {},
             optionsByName: {},
             documentData: {},
+            operator: "AND"
         }},
         mounted : function() {
             var self = this;
@@ -150,9 +151,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
 
             },
 
-            processRefineSearch: function(data) {
-            },
-
             addRow : function(row) {
                 var _row = row;
                 if(!_row) {
@@ -163,7 +161,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
 
             submit : function() {
                 console.log(this.$refs.form);
-                this.serializeState();
+                this.jsondata = this.serializeState();
                 formstate(this.jsondata);
                 this.$refs.form.submit();
             },
@@ -268,7 +266,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
 
                 if(stateJson) {
                     this.rows.splice(0, this.rows.length);
-                    var staterows = JSON.parse(stateJson);
+                    var state = JSON.parse(stateJson);
+                    var staterows = state.rows;
                     staterows.filter(function(_row){
                         return !!_row.name;
                     }).forEach(function(_row){
@@ -276,9 +275,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
                             option: self.columnsByName[_row.name],
                             value: _row.values
                         });
-
-
                     });
+                    self.operator = state.operator || "AND";
                 } else if(this.documentData['refinesearchinfo']){
                     self.deserializeState(this.documentData['refinesearchinfo'][0]);
                 }
@@ -293,10 +291,17 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
 
             serializeState: function() {
                 // we only care about the column name and chosen values for each row
-                var state = this.rows.map(function(row, idx){
+                var state = {
+                    rows: [],
+                    operator: this.operator
+                };
+                state.rows = this.rows.map(function(row, idx){
                     return {name: row.option.name, values: row.value}
                 });
-                this.jsondata = JSON.stringify(state)
+                //don't forget the group operator
+                state.operator = this.operator;
+                var jsonstate = JSON.stringify(state);
+                return jsonstate;
             },
 
 
@@ -322,6 +327,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
                 }).forEach(function(_row){
                    self.addRow(_row);
                 });
+                self.operator = strutsdata.operator || "AND"
             },
 
 

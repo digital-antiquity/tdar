@@ -4,7 +4,7 @@
                 :name="name"
                 :multiple="size > 1"
                 :size="size"
-                @input="selectedOptionsChanged($event, $event.target)"
+                @input="selectedOptionsChanged($event.target)"
 
         >
             <option v-if="blankrow"
@@ -18,6 +18,7 @@
                     :selected="isSelected(valueFor(opt))"
             >{{labelFor(opt)}}</option>
         </select>
+        <div class="form-text text-muted" v-show="statusbar">{{statusMessage}} &nbsp;</div>
     </div>
 
 </script>

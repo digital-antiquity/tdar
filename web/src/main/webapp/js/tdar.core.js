@@ -154,6 +154,16 @@
     };
 
 
+    /**
+     * Load or store a json string from/to a  hidden textarea on the page.   This is a hack we use to rebuild
+     * form state after a user (re)visits a form by way of using the back button.
+     *
+     * This function uses the jquery getter/setter convention - passing no-argument returns the current formstate,
+     * supplying an argument sets the formstate.
+     *
+     * @param json
+     * @returns {*}
+     */
     TDAR.formstate = function(json) {
         var $elem = $('#formstate');
         var ret = null;

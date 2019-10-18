@@ -40,7 +40,7 @@
                         </div>
                         <div class="col-auto form-inline" v-if="rows.length > 1">
                             <label class="m-2">Match Behavior</label>
-                            <select name="groups[0].operator" class="col-auto form-control form-control-sm">
+                            <select name="groups[0].operator" class="col-auto form-control form-control-sm" v-model="operator">
                                 <option value="AND" selected="">AND - Match all search terms</option>
                                 <option value="OR">OR - Match any search term</option>
                             </select>
@@ -109,6 +109,7 @@
                                         :options="optionsmap[row.option.name]"
                                         v-model="row.value"
                                         :size="10"
+                                        :statusbar="true"
                                 />
                             </div>
 

@@ -47,11 +47,27 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
                 type: Number,
                 required: false,
                 default: 1
+            },
+            statusbar: {
+                type: Boolean,
+                default: function() {return false}
             }
+
         },
 
         mounted: function() {},
-        computed: {},
+        computed: {
+            statusMessage: function() {
+                var msg = " ";
+                var len = this.selectedOptions.length;
+                if(len === 1) {
+                    msg = "1 item selected";
+                } else if (len > 1) {
+                    msg = len + " items selected";
+                }
+                return msg;
+            }
+        },
         methods: {
 
             labelFor: function(opt) {
@@ -83,17 +99,17 @@ TDAR.vuejs.selectlist = (function(console, ctx, Vue, axios, TDAR, _jq) {
                 return idx > -1;
             },
 
-            selectedOptionsChanged: function(evt, sel) {
+            selectedOptionsChanged: function(sel) {
                 console.log("options changed");
 
-                this.selectedOptions.splice(0, this.selectedOptions.length);
-                for(var i = 0; i < sel.options.length; i++) {
-                    if(sel.options[i].selected) {
-                        this.selectedOptions.push(this.valueFor(this.options[i]));
+                //instead of changing prop directly, emit new value
+                var selopts = []
+                for (var i = 0; i < sel.options.length; i++) {
+                    if (sel.options[i].selected) {
+                        selopts.push(this.valueFor(this.options[i]));
                     }
                 }
-
-
+                this.$emit("listupdate", selopts);
             }
         }
     });
