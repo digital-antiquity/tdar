@@ -130,6 +130,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);
             getFacetWrapper().facetBy(QueryFieldNames.DOCUMENT_TYPE, DocumentType.class);
 
+            processDatamappedCollectionFilter();
             result = performResourceSearch();
             getLogger().trace(result);
 
@@ -150,6 +151,30 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         showLeftSidebar = true;
         return result;
     }
+
+    /**
+     * If performing a "data-mapped search" action,  we want to implicitly filter resources by the Data-mapped
+     * colleciton ID. This implicit filter happens when a query contains at least one datavalue term (since we join
+     * the datavalue solr index to to the resource index).   However, if the query has no datavalue terms, we
+     * add a collection ID filter to the resource query, so that the search results only contain resources
+     * that exist in the resource collection.
+     */
+    protected void processDatamappedCollectionFilter() {
+        if(getDataMappedCollectionId() != null) {
+            getLogger().trace("search action has non-null datamapped collection id - adding collection filter for " +
+                    "collection #{}", getDataMappedCollectionId());
+            ResourceCollection rc = new ResourceCollection();
+
+            rc.setId(getDataMappedCollectionId());
+            if(getFirstGroup() == null) {
+                getGroups().add(new SearchParameters());
+            }
+            getFirstGroup().getCollections().add(rc);
+        }
+    }
+
+
+
 
     @DoNotObfuscate(reason = "user submitted map")
     public LatitudeLongitudeBox getMap() {
