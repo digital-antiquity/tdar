@@ -2,6 +2,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
     "use strict";
     var UNDEFINED = "undefined";
     var MAXLEN_CHECKBOXLIST = 50;
+    var MAXLEN_DEDUPE_VALUES = 500;
 
     /**
      * "Part" Vue Control.
@@ -206,15 +207,27 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
                     } else if (field.floatValues.length > 0) {
                         values = field.floatValues;
                     } else if (field.values.length > 0) {
-
+                        // console.log(" dedupe section:: field:%s value.length:%s", field.name, field.values.length);
                         // FIXME: magic numbers
                         // Perform case-insensitive dedupe if list isn't too big (
                         //console.log("field:%s\t values:%s", field.name, field.values.length);
-                        if(field.values.length > 100) {
+                        if(field.values.length > MAXLEN_DEDUPE_VALUES) {
                             values = field.values;
                         } else {
-                            values = [];
+                            field.values.sort(function(a,b){
+                                //sort by lowercase w/ secondary sort on case so that we favor title-case dupes
+                                var ret = 0;
+                                if(a.toLowerCase() < b.toLowerCase()) {
+                                    ret = -1;
+                                } else if(a.toLowerCase() > b.toLowerCase()) {
+                                    ret = 1;
+                                } else {
+                                    ret = a.localeCompare(b)
+                                }
+                                return ret;
+                            });
                             var lcvalues = [];
+                            values = [];
                             field.values.forEach(function(val, idx){
                                 var lcval = val.toLowerCase();
                                 if(lcvalues.indexOf(lcval) === -1) {
@@ -223,15 +236,6 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
                                 }
                             });
                         }
-                        values.sort(function(a,b){
-                            var ret = 0;
-                            if(a.toLowerCase() < b.toLowerCase()) {
-                                ret = -1;
-                            } else if(a.toLowerCase() > b.toLowerCase()) {
-                                ret = 1;
-                            }
-                            return ret;
-                        });
 
                         // For smaller range of values, render as checkbox.
                         if (values.length < MAXLEN_CHECKBOXLIST) {
