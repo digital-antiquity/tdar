@@ -56,13 +56,6 @@
 
         <@commonCollection.descriptionSection/>
 
-    <#if  datasetMapped>
-
-        <@vue.datamappedSearchForm resourceCollection.id />
-
-    </#if>
-
-
         <#if whitelabelCollection?has_content && whitelabelCollection.properties.featuredResourcesEnabled>
             <@view.featured colspan="12" resourceList=whitelabelCollection.properties.featuredResources />
             <div class="col-12">
