@@ -2,7 +2,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
     "use strict";
     var UNDEFINED = "undefined";
     var MAXLEN_CHECKBOXLIST = 50;
-    var MAXLEN_DEDUPE_VALUES = 500;
+    var COLUMN_DEDUPE_LIMIT = 500;
 
     /**
      * "Part" Vue Control.
@@ -207,13 +207,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
                     } else if (field.floatValues.length > 0) {
                         values = field.floatValues;
                     } else if (field.values.length > 0) {
-                        // console.log(" dedupe section:: field:%s value.length:%s", field.name, field.values.length);
+                        console.log(" dedupe section:: field:%s value.length:%s", field.name, field.values.length);
                         // FIXME: magic numbers
                         // Perform case-insensitive dedupe if list isn't too big (
                         //console.log("field:%s\t values:%s", field.name, field.values.length);
-                        if(field.values.length > MAXLEN_DEDUPE_VALUES) {
+                        if(field.values.length > COLUMN_DEDUPE_LIMIT) {
                             values = field.values;
                         } else {
+                            var oldlen = field.values.length;
                             field.values.sort(function(a,b){
                                 //sort by lowercase w/ secondary sort on case so that we favor title-case dupes
                                 var ret = 0;
@@ -235,6 +236,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
                                     values.push(val);
                                 }
                             });
+                            var newlen = field.values.length;
+                            console.log("field deduped: %s  oldlen:%s newlen:%s (%s removed)", field.name, oldlen, newlen, oldlen-newlen);
                         }
 
                         // For smaller range of values, render as checkbox.

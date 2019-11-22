@@ -1,12 +1,7 @@
 package org.tdar.struts.action.collection;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -86,6 +81,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     private static final long serialVersionUID = 5126290300997389535L;
 
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
+    private static final int COLUMN_DEDUPE_LIMIT = 500;
 
     private ThreadPermissionsCache permissionsCache;
     private List<UserInvite> invites;
@@ -222,6 +218,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
         try {
             if(isDatasetMapped()){
                 SearchInfoObject searchInfoObject = searchService.getSearchInfoObject(getAuthenticatedUser());
+                cleanupSearchInfo(searchInfoObject);
                 setJsonSearchInfo(serializationService.convertToJson(searchInfoObject));
                 setJsonRefineSearchInfo(serializationService.convertToJson(getGroups()));
             }
@@ -232,6 +229,28 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
 
     }
 
+    /**
+     * Remove case-insensitive dupes from column values.
+     * @param sio
+     */
+    private void cleanupSearchInfo(SearchInfoObject sio) {
+        sio.getDatasetReferences().stream().flatMap(ref -> ref.getColumns().stream())
+                // don't waste time deduping massive value sets
+                .filter( col -> col.getValues().size() < COLUMN_DEDUPE_LIMIT)
+                .forEach(col -> {
+                    Comparator<String> cmp  = (Comparator.comparing(String::toLowerCase));
+                    TreeSet<String> seen = new TreeSet<>(cmp);
+                    col.getValues().removeIf(val -> !seen.add(val));
+                });
+    }
+
+    private void logDatasetReferences(SearchInfoObject sio) {
+        if (!getLogger().isTraceEnabled()) {return;}
+            sio.getDatasetReferences().stream()
+                .flatMap( datasetRef -> datasetRef.getColumns().stream())
+                .sorted(Comparator.comparing(o -> o.getDisplayName().toLowerCase()))
+                .forEach(col  -> getLogger().trace("field:{}\t unique values:{}", col.getDisplayName(), col.getValues()));
+    }
 
 
 
