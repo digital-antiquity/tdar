@@ -122,7 +122,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
             }
 
             // build map of columns, keyed by column display name (todo: maybe ID instead)
-            this.columnsByName =  this.selectOptions.reduce((obj, opt) => {
+            this.columnsByName =  this.selectOptions.reduce(function(obj, opt){
                 obj[opt.name] = opt;
                 self.columnsById[opt.id] = opt;
                 return obj;
