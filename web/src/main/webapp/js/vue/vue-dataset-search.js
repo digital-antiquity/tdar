@@ -215,6 +215,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate)
                             values = field.values;
                         } else {
                             var oldlen = field.values.length;
+                            field.values = field.values.map(function(val){return val.trim()});
                             field.values.sort(function(a,b){
                                 //sort by lowercase w/ secondary sort on case so that we favor title-case dupes
                                 var ret = 0;
