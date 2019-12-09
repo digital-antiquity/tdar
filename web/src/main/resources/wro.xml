@@ -93,8 +93,8 @@
 
         <js>/components/vue/dist/vue.js</js>
         <js>/components/vue-router/dist/vue-router.js</js>
-<!--FIXME: TDAR-6284        -->
-<!--        <js>/js/vue/view-collection-widget.js</js>-->
+<!--FIXME: TDAR-6284: figure out whether view-collection-widget is used  -->
+        <js>/js/vue/view-collection-widget.js</js>
         <js>/js/vue/vue-base-upload.js</js>
         <js>/js/vue/vue-edit-file-upload-component.js</js>
         <js>/js/vue/vue-balk-upload-component.js</js>

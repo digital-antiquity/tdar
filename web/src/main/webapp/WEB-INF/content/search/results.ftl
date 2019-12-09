@@ -35,8 +35,10 @@
 
 
 <div class="modal hide fade" id="modal">
+
     <#include '/components/tdar-autocomplete/template/autocomplete.html' />
-    <#include 'vue-collection-selection.html' />
+<#-- fixme: why was collection-selection in search results (TDAR-6284)
+<#--    <#include 'vue-collection-selection.html' />-->
 </div>
 
     <#if (totalRecords > 0)>
@@ -176,9 +178,9 @@
     $(function () {
         TDAR.common.initializeView();
         TDAR.advancedSearch.initializeResultsPage();
-        <#if authenticated>
-        TDAR.vuejs.collectionwidget.init("#collection-selection-form");
-        </#if> 
+<#--        <#if authenticated>-->
+<#--        TDAR.vuejs.collectionwidget.init("#collection-selection-form");-->
+<#--        </#if> -->
     });
 </script>
 
