@@ -187,11 +187,8 @@ public class TestConfiguration {
 
     public String getChromeDriverPath() {
         String deflt = "chromedriver";
-        if (isUnix()) {
+        if (isUnix() || isMac()) {
             deflt = "/usr/local/bin/chromedriver";
-        }
-        if (isMac()) {
-            deflt = "/Applications/chromedriver";
         }
         return assistant.getStringProperty("tdar.chromedriver.path", deflt);
     }

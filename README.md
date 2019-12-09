@@ -43,4 +43,22 @@ For more information, please visit http://www.tdar.org
 1. try running tdar in the web package: mvn clean compile jetty:run
 
 ## testing tdar:
-mvn clean verify -Ptest
+
+To run the entire tDAR test suite, which includes all unit tests, karma tests, and E2E/Selenium tests.
+    
+    mvn clean verify -Ptest
+
+### Running the Karma tests exclusively
+
+    cd ./web
+    karma start
+    
+### Running a Single E2E test
+
+Execute a single intetration test by using the maven `-Dit.test` flag.  The following example runs the 
+DatasetSeleniumWebITCase suite (and skips all front-end/karma tests):
+    
+    cd ./web
+    mvn verify -Ptest -Dit.test=DatasetSeleniumWebITCase -DskipKarma
+    
+    
