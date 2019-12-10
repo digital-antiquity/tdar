@@ -34,12 +34,6 @@
 </div>
 
 
-<div class="modal hide fade" id="modal">
-
-    <#include '/components/tdar-autocomplete/template/autocomplete.html' />
-<#-- fixme: why was collection-selection in search results (TDAR-6284)
-<#--    <#include 'vue-collection-selection.html' />-->
-</div>
 
     <#if (totalRecords > 0)>
         <#if !hideFacetsAndSort>
@@ -96,24 +90,6 @@
                     </div>
                     </li>
             
-                <#if editor>        
-                    <li class="media">
-                    <svg class="mr-3 svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
-                    <div class="media-body">
-                    <span>Save these results &raquo;
-                        <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
-                            
-                            <a id="saveSearchLink" href="#modal" data-toggle="modal">to Collection</a>
-                            
-                            <#if (totalRecords > maxDownloadRecords)>
-                                Limited to the first ${maxDownloadRecords} results.
-                            </#if>
-                        <#else>
-                            Login
-                        </#if></span>
-                        </div>
-                    </li>
-                </#if>
                 <li class="media">
                     <i class="mr-3 fas fa-sort-alpha-down"></i>
                     <div class="media-body">

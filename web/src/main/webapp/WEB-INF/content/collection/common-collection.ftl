@@ -77,9 +77,14 @@
 </#macro>
 
 <#macro header>
-
-
-
+<#--Need a better way to deal with contextual search. For now, show contextual search *unless* the collection
+supports mapped datasets -->
+    <#if !(datasetMapped!false)>
+    <div id="divSearchContext" parse="true">
+        <input id="cbctxid" type="checkbox" name="collectionId" value="${id?c}">
+        <label for="cbctxid">Search within this collection</label>
+    </div>
+    </#if>
 
 </#macro>
 

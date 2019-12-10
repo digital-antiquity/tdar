@@ -524,6 +524,7 @@ public abstract class AbstractSeleniumWebITCase {
         helper.takeScreenshot(driver, testName, filename);
     }
 
+
     /**
      * return absolute url based upon context (i.e. base url) and path.
      * 

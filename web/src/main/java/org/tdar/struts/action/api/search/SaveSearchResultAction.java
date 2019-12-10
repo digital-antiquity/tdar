@@ -30,6 +30,7 @@ import com.opensymphony.xwork2.Validateable;
 @Scope("prototype")
 @ParentPackage("default")
 @RequiresTdarUserGroup(TdarGroup.TDAR_USERS)
+@Deprecated
 public class SaveSearchResultAction extends AbstractAdvancedSearchController implements Preparable, Validateable {
 
     private static final long serialVersionUID = -7606256523280755196L;
