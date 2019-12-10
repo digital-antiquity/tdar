@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
@@ -198,19 +199,37 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
 
-    protected WebElementSelection clickContextSearch() {
-        find("#divContextSearchButton").click();
-        WebElementSelection groupTable = waitFor("#groupTable0");
-        return groupTable;
+    /**
+     * Perform a "quick search" - that is, enter the specified search text into the quicksearch box and
+     * submit the form by hitting the RETURN key.
+     * @param searchTerm
+     */
+    protected void performQuickSearch(String searchTerm) {
+        waitFor(".contextsearchbox")
+                .click() // get focus on text box
+                .val(searchTerm) // enter search term
+                .sendKeys(Keys.RETURN); // press return key to submit form
+
     }
 
-    protected void performContextSearch(String fieldName, String searchTerm) {
-        clickContextSearch();
-        find("#groupTable0 select").val(fieldName);
-        find("#groupTable0 input[type=text]").val(searchTerm);
-        find(".text-center button").click();
-        waitForPageload();
+
+    /**
+     * Perform a "contextual quick search", which is a quicksearch with the added stipulation that
+     * this method asserts the presence of the 'search within this collection/project?' checkbox' and,
+     * if present, checks the box.
+     * @param searchTerm the string you want to search for
+     */
+    protected void performContextSearch(String searchTerm) {
+        WebElementSelection searchBox = waitFor(".contextsearchbox").click();
+        takeScreenshot("really-expecting-a-checkbox");
+        try {
+            waitFor("#cbctxid").val(true);
+        } catch (TimeoutException tex) {
+            fail("Expected to see a 'search within this project/collection' checkbox in the quicksearch form");
+        }
+        searchBox.val(searchTerm).sendKeys(Keys.RETURN);
     }
+
 
     @Test
     public void testCollectionInGeneralSearch() {
@@ -220,9 +239,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage(url);
         assertThat(getText(), containsString(TITLE));
         gotoPage("/");
-        performContextSearch("ALL_FIELDS", "Selenium");
-        // find(".contextsearchbox").val("Selenium").sendKeys(Keys.RETURN);
-        // waitForPageload();
+        performQuickSearch( "Selenium");
 
         clearPageCache();
         logger.debug(getCurrentUrl());

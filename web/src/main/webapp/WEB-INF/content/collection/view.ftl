@@ -106,5 +106,11 @@
 
 </#noescape>
 </div>
+<script>
+    //FIXME: this hack is necessary because the vuejs package names don't follow the TDAR.pkg.main convention
+    $(function() {
+        TDAR.vuejs.advancedSearch.main();
+    });
+</script>
 </body>
 </#escape>
