@@ -11,6 +11,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TestFileUploadHelper;
@@ -80,7 +81,7 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
     public void testSanity() {
         getLogger().debug("Test Path is {}", getTestFilePath());
         File testDir = Paths.get(getTestFilePath()).toFile();
-        Collection<File> files = FileUtils.listFiles(testDir, new String[]{"png"}, false);
+        Collection<File> files = FileUtils.listFiles(testDir, new String[]{"jpg"}, false);
         assertNotEmpty("dataset-search directory should have image files", files);
         assertThat(files, hasSize(15));
     }
@@ -172,7 +173,9 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         DataTableColumn dtc = lookupColumn(dataset, "color_image_filename");
         assertNotNull(dtc);
         dtc.setMappingColumn(true);
-        dtc.setIgnoreFileExtension(true);
+        dtc.setIgnoreFileExtension(false);
+        dtc.setColumnEncodingType(DataTableColumnEncodingType.FILENAME);
+        dtc.setDelimiterValue(";");
         long id = save(dtc);
         assertThat(id, greaterThan(0L));
 
@@ -181,6 +184,7 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         // and (I assume?) indexing
         ResourceMappingMetadataController columnController = generateNewInitializedController(ResourceMappingMetadataController.class);
         columnController.setId(dataset.getId());
+        Long datasetId = dataset.getId();
         dataset = null;
         columnController.prepare();
         columnController.editColumnMetadata();
@@ -195,10 +199,18 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         columnController.setAsync(false);
         columnController.saveColumnMetadata();
 
+        //HACK: calling remapAllColumns is cheating. I just want to see if *something* will actually populate the mapped col/value  columns
+        datasetService.remapAllColumns(datasetId);
+
         getLogger().info("Image ID's: {}", imageIds);
 
 
         // The save should have implicitly caused system to update mapped data key/value on our images
+        for(Long imageId : imageIds) {
+            Image image = genericService.find(Image.class, imageId);
+            logger.debug("MAPPED IMAGE: {} \t KEYCOLUMN:{}\t KEYVAL:{}", image.getTitle(), image.getMappedDataKeyColumn(), image.getMappedDataKeyValue());
+        }
+
         setVerifyTransactionCallback( (status) -> {
             for(Long imageId : imageIds) {
                 Image image = genericService.find(Image.class, imageId);
