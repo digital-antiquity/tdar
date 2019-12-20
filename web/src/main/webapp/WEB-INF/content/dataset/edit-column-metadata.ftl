@@ -150,16 +150,22 @@
                     <hr/></#if>
 
                 <div class="datatablecolumn col-12" id="columnDiv_${column_index}">
-                        
-                    <h3 class="displayName">
-<span class="columnSquare">&nbsp;</span>                    
-                    ${column.displayName} <@helptext.info title="Column Mapping Instructions" contentDiv="#generalToolTip" /></h3>
 
-    <span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">
-        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType' label="Column Type:" inline=true
-        cssClass="columnEncoding" target="#columnDiv_${column_index}" labelposition="left"
-        listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}'/>
-    </span>
+                    <div class="card mb-3">
+                        <div class="card-body">
+
+                    <h3 class="displayName card-title">
+                        <span class="columnSquare">&nbsp;</span>
+                        ${column.displayName} <@helptext.info title="Column Mapping Instructions" contentDiv="#generalToolTip" /></h3>
+
+                    <div class="form-group row">
+                        <label class="col-form-label col-2"><span data-tooltipcontent="#columnTypeToolTip" data-tiplabel="Column Type">Column Type:</span></label>
+                        <@s.radio name='dataTableColumns[${column_index}].columnEncodingType'  inline=true
+                        cssClass="columnEncoding" target="#columnDiv_${column_index}"
+                        listValue='label' emptyOption='false' list='%{allColumnEncodingTypes}' theme=""/>
+                    </div>
+
+
                     <@s.hidden name="dataTableColumns[${column_index}].id" value="${column.id?c}" />
                     <@s.hidden name="dataTableColumns[${column_index}].columnDataType" value="${column.columnDataType}" cssClass="dataType" />
                     <@s.hidden name="dataTableColumns[${column_index}].name" value="${column.name}" />
@@ -223,6 +229,25 @@
                         </div>
                         </div>
                     </div>
+
+
+
+                    <div class="form-group row" id="divColumnVisibility[${column_index?c}]">
+                                <label for="columnVisibility_${column_index}" class="col-form-label col-2">Search Visibility:</label>
+                                <@s.select
+                                    name='dataTableColumns[${column_index}].visible'
+                                    target="#columnDiv_${column_index}"
+                                    id='columnVisibility_${column_index}'
+                                    cssClass="form-control col-9"
+                                    list={"HIDDEN":"Hidden", "CONFIDENTIAL":"Confidential - only seen by authorized users", "VISIBLE":"Visible"}
+                                    listKey='key'
+                                    listValue='value'
+                                    emptyOption='false'
+                                    label="Visibility"
+                                    value="dataTableColumns[${column_index}].visible"
+                                    theme="simple"
+                                    />
+                    </div>
     <span data-tooltipcontent="#descriptionToolTip" data-tiplabel="Column Description">
         <@s.textarea label="Column Description" name='dataTableColumns[${column_index}].description' rows='2' cols='12' cssClass="resizable input-xxlarge" />
 
@@ -257,6 +282,10 @@
                     cssClass="col-10 ontologyfield" />
                     </div>
                 </div>
+
+                    </div>
+                </div>
+
             </#list>
 
 	<@helptext.columninfo />

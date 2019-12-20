@@ -10,7 +10,8 @@
                     v-on:change="cbchanged(valueFor(item), $event.target.checked)"
                     :value="valueFor(item)"
             />
-            {{labelFor(item)}}
+            <span v-if="labelFor(item).length > 60">{{labelFor(item).substr(0, 60)}} <abbr :title="labelFor(item)">...</abbr></span>
+            <span v-else>{{labelFor(item)}}</span>
         </label>
     </div>
 </div>

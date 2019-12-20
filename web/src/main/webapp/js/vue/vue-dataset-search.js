@@ -1,7 +1,7 @@
 TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate, $) {
     "use strict";
     var UNDEFINED = "undefined";
-    var MAXLEN_CHECKBOXLIST = 50;
+    var MAXLEN_CHECKBOXLIST = 40;
     var COLUMN_DEDUPE_LIMIT = 500;
 
 

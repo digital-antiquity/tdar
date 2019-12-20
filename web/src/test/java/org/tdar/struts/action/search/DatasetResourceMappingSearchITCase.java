@@ -173,7 +173,7 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
         DataTableColumn dtc = lookupColumn(dataset, "color_image_filename");
         assertNotNull(dtc);
         dtc.setMappingColumn(true);
-        dtc.setIgnoreFileExtension(false);
+        dtc.setIgnoreFileExtension(true);
         dtc.setColumnEncodingType(DataTableColumnEncodingType.FILENAME);
         dtc.setDelimiterValue(";");
         long id = save(dtc);
