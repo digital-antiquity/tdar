@@ -425,10 +425,9 @@ ${head}
         <span class="statusMessage"></span>
     </div>
 
+    <#--Jira issue collector embed.  -->
     <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
-        <script type="text/javascript">
-            TDAR.loadScript('https://${config.jiraScriptLink}');
-        </script>
+    <script type="text/javascript" src="https://${config.jiraScriptLink}"></script>
     </#if>
 
 <!-- colors for bar charts -->

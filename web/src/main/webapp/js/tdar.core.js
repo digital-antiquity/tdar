@@ -52,10 +52,11 @@
         var _url = url;
         var head = document.getElementsByTagName("head")[0];
         var script = document.createElement("script");
+        script.setAttribute("type", "text/javascript");
         var deferred, promise;
         //console.debug("loading url: %s", _url);
         if (typeof jQuery === "function") {
-            deferred = $.Deferred()
+            deferred = $.Deferred();
             promise = deferred.promise();
 
             script.onload = function () {

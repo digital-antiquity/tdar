@@ -1,10 +1,12 @@
 package org.tdar.struts.action.search;
 
 import com.opensymphony.xwork2.Preparable;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.tdar.TestConstants;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
@@ -19,22 +21,17 @@ import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.dataset.ResourceMappingMetadataController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts_base.action.TdarActionException;
-import org.springframework.test.annotation.Rollback;
-import org.apache.commons.beanutils.BeanUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.tdar.TestConstants.TEST_ROOT_DIR;
@@ -140,6 +137,7 @@ public class DatasetResourceMappingSearchITCase extends AbstractAdminControllerI
 
     @Test
     @Rollback(false)
+    @Ignore("work-in-progress")
     public void testDatasetSearch() throws Exception {
         File testDir = Paths.get(getTestFilePath()).toFile();
 
