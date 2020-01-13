@@ -26,6 +26,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.ss.util.WorkbookUtil;
+import org.hibernate.jdbc.Work;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.configuration.TdarConfiguration;
@@ -111,11 +113,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
             seenOntologies.add(ontology);
             String name = provider.getText("dataIntegrationWorkbook.ontology_worksheet", Arrays.asList(ontology.getTitle()));
             logger.debug("creating sheet with name: {}", name);
-            if (workbook.getSheet(name) != null) {
+            if (workbook.getSheet(WorkbookUtil.createSafeSheetName(name)) != null) {
                 logger.error("sheet already exists: {}", name);
                 continue;
             }
-            Sheet ontologySheet = workbook.createSheet(name);
+            Sheet ontologySheet = workbook.createSheet(WorkbookUtil.createSafeSheetName(name));
             workbookWriter.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
             addMergedRegion(0, 0, 0, 8, ontologySheet);
             rowIndex++;
@@ -189,7 +191,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      */
     private void createDescriptionSheet() {
         CellStyle summaryStyle = workbookWriter.createSummaryStyle(getWorkbook());
-        Sheet summarySheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.description_worksheet"));
+        Sheet summarySheet = workbook.createSheet(WorkbookUtil.createSafeSheetName(provider.getText("dataIntegrationWorkbook.description_worksheet")));
 
         // initial header ... Integration run on ... by ...
         String title = provider.getText("dataIntegrationWorkbook.title",
@@ -289,7 +291,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      */
     private void createPivotSheet() {
         int rowIndex;
-        Sheet pivotSheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.summary_worksheet"));
+        Sheet pivotSheet = workbook.createSheet(WorkbookUtil.createSafeSheetName(provider.getText("dataIntegrationWorkbook.summary_worksheet")));
         logger.debug("{} - {}", provider, person);
         String title = provider.getText("dataIntegrationWorkbook.title",
                 Arrays.asList(person.getProperName(), context.getTitle(), new SimpleDateFormat().format(new Date())));

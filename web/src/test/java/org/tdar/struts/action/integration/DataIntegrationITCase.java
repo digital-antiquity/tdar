@@ -431,6 +431,9 @@ public class DataIntegrationITCase extends AbstractAdminControllerITCase impleme
 
         // load ontologies
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
+//        bElementOntology.setTitle("fauna element: updated");
+//        getGenericService().save(bElementOntology);
+
         DataTable alexandriaTable = alexandriaDb.getDataTables().iterator().next();
         DataTable spitalTable = spitalDb.getDataTableByGenericName("spital_abone_database_mdb_main_table");
         assertNotNull(spitalTable);
