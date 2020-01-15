@@ -426,7 +426,18 @@ ${head}
     </div>
 
     <#--Jira issue collector embed.  -->
-    <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
+    <!--
+    ::jira config::
+        ${config.showJiraLink?c}: config.showJiraLink
+        ${config.jiraScriptLink?has_content?c}: config.jiraScriptLink?has_content
+        ${config.jiraScriptLink?size}: config.jiraScriptLink strlen
+        ${production?c}: production
+        ${editor?has_content?c}: editor?has_content
+        ${editor?c}: editor
+
+        ${(config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor))?c }: config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor
+    -->
+        <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
     <script type="text/javascript" src="https://${config.jiraScriptLink}"></script>
     </#if>
 

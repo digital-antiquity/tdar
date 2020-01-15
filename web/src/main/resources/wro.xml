@@ -3,6 +3,7 @@
 <groups xmlns="http://www.isdc.ro/wro">
     <group name='default'>
         <!--  used by jquery.treeview -->
+        <css>/components/jquery.treeview/jquery.treeview.css</css>
         <js>/includes/jquery.cookie.js</js>
         <js>/components/svgxuse/svgxuse.min.js</js>
         

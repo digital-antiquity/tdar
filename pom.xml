@@ -237,6 +237,9 @@ Inheritance Hierarchy of this POM:
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
             </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
         <repository>
             <id>atlassian-m2-repository</id>
