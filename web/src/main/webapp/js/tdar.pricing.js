@@ -3,6 +3,9 @@
 
     var POLLING_INTERVAL = 1500; //poll every 1.5s
 
+    
+    var BYTES_PER_MEGABYTE = 1000 * 1000;
+
     //parse string to integer.  replace blank and NaN with 0.
     var _parse = function (num) {
         var _num = num.replace(",", "");
@@ -59,7 +62,7 @@
             /* give the user an understanding of size in GB if size is > 1/2 GB */
             var mb = "";
             if (numMb > 512) {
-                $("#convert").html(TDAR.common.humanFileSize(numMb * 1024*1024));
+                $("#convert").html(TDAR.common.humanFileSize(numMb * BYTES_PER_MEGABYTE));
             }
 
             var $est = $("#estimated");
@@ -107,7 +110,7 @@
                                 var line = TDAR.common.sprintf("{0}  ( {1} Files / {2} )",
                                                 TDAR.common.formatNumber(item.subtotal),
                                                 TDAR.common.formatNumber(part.activity.numberOfFiles * part.quantity),
-                                                TDAR.common.humanFileSize(part.activity.numberOfMb * part.quantity * 1024*1024, ''));
+                                                TDAR.common.humanFileSize(part.activity.numberOfMb * part.quantity * BYTES_PER_MEGABYTE, ''));
                                 total_files += part.activity.numberOfFiles * part.quantity;
                                 total_mb += part.activity.numberOfMb * part.quantity;
                                 $price.html(line);

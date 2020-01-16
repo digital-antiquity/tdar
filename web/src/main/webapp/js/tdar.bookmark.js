@@ -70,19 +70,19 @@
         }
         $icon.hide();
         //console.log(resourceId + ": " + state);
-        var oldclass = "icon-star-empty";
+        var oldclass = "far";
         var newtext = "un-bookmark";
         var newstate = "bookmarked";
         var action = "bookmarkAjax";
         var newUrl = "/resource/removeBookmark?resourceId=" + resourceId;
-        var newclass = "icon-star";
+        var newclass = "fas";
         
         if (state == 'bookmarked') {
             newtext = "bookmark";
             newstate = "bookmark";
             action = "removeBookmarkAjax";
-            oldclass = "icon-star";
-            newclass = "icon-star-empty";
+            oldclass = "fas";
+            newclass = "far";
             newUrl = "/resource/bookmark?resourceId=" + resourceId;
         }
 //        var newclass = "tdar-icon-" + newstate;
