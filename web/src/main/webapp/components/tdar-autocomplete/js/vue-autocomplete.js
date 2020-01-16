@@ -193,7 +193,7 @@ TDAR.vuejs.autocomplete = (function(console, ctx, Vue, axios) {
                 //fixme: this needs to be urlescaped
               var searchUrl = this.url + "?" + this.queryParameterName + "=" + this.search ;
               if (typeof this.suffix !== 'undefined') {
-                  searchUrl += + "&" + this.suffix;
+                  searchUrl += "&" + this.suffix;
               }
               return searchUrl
           },

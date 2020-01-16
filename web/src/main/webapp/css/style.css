@@ -3860,8 +3860,8 @@ aside li {
 a, .bookmark-link, .bookmark-label, .page-link {
   color: #7a1501; }
 
-a.button, a.btn {
-  color: inherit; }
+/*a.button, a.btn {*/
+/*  color: inherit; }*/
 
 .red {
   color: #7a1501; }

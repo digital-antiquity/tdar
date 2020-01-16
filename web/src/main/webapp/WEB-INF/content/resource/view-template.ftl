@@ -695,10 +695,10 @@ $(function(){
 
 
     //TDAR.internalEmailForm.init();
-<#--    FIXME: TDAR-6284 -->
-<#--    <#if authenticated>-->
-<#--        TDAR.vuejs.collectionwidget.init("#add-resource-form");-->
-<#--    </#if>-->
+//    FIXME: TDAR-6284
+    <#if authenticated>
+        TDAR.vuejs.collectionwidget.init("#add-resource-form");
+    </#if>
 });
 </script>
 

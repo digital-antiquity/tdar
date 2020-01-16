@@ -33,7 +33,7 @@
                     <h3>Included as part of : </h3>
                     <ul id='existing-collections-list'>
 	                    <li v-for="collection in collections.managed">
-	                        {{ellipse(collection.name)}} <span v-show="unmanagedEnabled">(managed)</span> <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' style="cursor:pointer">Remove</a>
+	                        {{ellipse(collection.name)}} <span v-show="unmanagedEnabled">(managed)</span> <a v-on:click='removeResourceFromCollection(collection,"MANAGED")' class="btn btn-sm btn-secondary" style="color:white">Remove</a>
 	                    </li>
                     
                     <li v-show="unmanagedEnabled" v-for="collection in collections.unmanaged">

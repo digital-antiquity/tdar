@@ -51,7 +51,7 @@
                     </span>
 
 
-                <a class="btn btn-sm" target="_blank"
+                <a class="btn btn-sm btn-secondary" target="_blank"
                    onclick="TDAR.common.setAdhocTarget(this, '#divOntology');"
                    href='<@s.url value="/ontology/add?returnToResourceMappingId=${resource.id?c}"/>'>Create An Ontology</a>
             </div>
