@@ -5,8 +5,8 @@
     <#macro uploadForm>
         <#if editor>
             <div class="control-group row">
-                <label class="col-form-label col-2">Add an Photo / Logo</label>
-                <div class="controls col-10">
+                <label class="col-form-label col-3">Profile Image</label>
+                <div class="controls col-9">
                     <@s.file  name='file' cssClass="input-xxlarge profileImage " id="fileUploadField" labelposition='left' size='40' dynamicAttributes={
                         "data-rule-extension":"jpg,tiff,jpeg,png"
                     }/>
@@ -123,10 +123,13 @@
 
 
             <@uploadForm />
-            <h3>Contributor</h3>
-            
+
+            <#--As of Radiocarbon release, all new users are given contributor status, and the "visitor" concept has been deprecated -->
+            <#--provide a contributor opt-in for older non-contributor accounts only. Once they opt-in, we no longer show this option. -->
+            <#if !contributor>
             <@s.checkbox label="${siteAcronym} Contributor?" name="contributor" id="contributor-id" />
             <p><i>Note: after selecting this, you will be prompted to review and agree to our contributor's policy</i></p>
+            </#if>
 
             <@s.textarea label="Please briefly describe the geographical areas, time periods, or other subjects for which you would like to contribute information"
             rows=6 cols='50' cssClass="input-xxlarge" name='contributorReason' id='contributorReasonId'  maxlength=512 />
