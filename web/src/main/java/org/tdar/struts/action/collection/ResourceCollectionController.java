@@ -340,7 +340,7 @@ public class ResourceCollectionController extends AbstractPersistableController<
                     @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = "edit.ftl"),
-                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT, location = "rights?id=${id}")
+                    @Result(name = RIGHTS, type = TdarActionSupport.REDIRECT, location = "rights?id=${persistable.id}")
             })
     @WriteableSession
     @PostOnly
