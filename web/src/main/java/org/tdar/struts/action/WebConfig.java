@@ -229,4 +229,6 @@ public class WebConfig {
         return config.isXmlExportEnabled();
     }
 
+    public String getHostName() {return config.getHostName();}
+
 }

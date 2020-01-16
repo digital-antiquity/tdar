@@ -427,15 +427,15 @@ ${head}
 
     <#--Jira issue collector embed.  -->
     <!--
-    ::jira config::
+    env config:
         ${config.showJiraLink?c}: config.showJiraLink
         ${config.jiraScriptLink?has_content?c}: config.jiraScriptLink?has_content
         ${config.jiraScriptLink?size}: config.jiraScriptLink strlen
         ${production?c}: production
         ${editor?has_content?c}: editor?has_content
         ${editor?c}: editor
-
-        ${(config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor))?c }: config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor
+        ${config.hostName}: hostname
+        ${(config.showJiraLink && config.jiraScriptLink?has_content && (config.hostName?contains('alpha.tdar.org') ||  !production || editor?has_content && editor))?c }: showing jira button
     -->
         <#if config.showJiraLink && config.jiraScriptLink?has_content && (!production || editor?has_content && editor) >
     <script type="text/javascript" src="https://${config.jiraScriptLink}"></script>
