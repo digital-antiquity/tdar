@@ -261,11 +261,17 @@ header + #hero-wide {
         /*margin-right: -19px;*/
         position: inherit !important;
         margin: 1em 0 0 0;
+
+      li {
+        background-color: #eee;
+      }
+
+      li.active {
+        background: #999;
+      }
     }
 
-.carousel-indicators .active {
-        background: #333333;
-    }
+
 
     .carousel-indicators span {
         border-radius: 10px;

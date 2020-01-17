@@ -26,6 +26,8 @@
     "karma-junit-reporter": "^1.1.0",
     "karma-phantomjs-launcher": "^1.0.1",
     "moxios": "0.4.0",
+    "node-sass": "^4.13.1",
+    "npm-run-all": "^4.1.5",
     "phantomjs": "^2.1.7",
     "vue": "^2.4.2",
     "xml2js": "^0.4.9",
@@ -34,7 +36,10 @@
   "scripts": {
     "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",
     "pretest": "echo node src/test/frontend/pretest.js",
-    "test": "karma start --no-single-run"
+    "test": "karma start --no-single-run",
+    "sass:build": "node-sass src/main/webapp/css/sass/style.scss -o src/main/webapp/css --source-map src/main/webapp/css",
+    "sass:watch": "node-sass src/main/webapp/css/sass/style.scss -o src/main/webapp/css --source-map src/main/webapp/css --watch",
+    "dev": "npm-run-all -p sass:*"
   },
   "repository": {
     "type": "hg",

@@ -827,40 +827,14 @@ View freemarker macros
         </#if>
     </#macro>
 
-<#macro featured header="Featured Content" colspan="12" resourceList=featuredResources>
+
+<#macro featured header="Featured Content" colspan="12" resourceList=featuredResources indicatorPosition="top">
 <#local span = "col-${colspan}">
-<#-- <div class="tdar-slider slider ${span}">
-    <h3>${header}</h3>
-
-    <div id="slider" class="carousel slide">
-        <!-- Carousel items --><#--
-        <div class="carousel-inner">
-            <#list resourceList as featuredResource>
-                <#if featuredResource?has_content>
-                    <@tdarCitation resource=featuredResource showLabel=false count=featuredResource_index forceAddSchemeHostAndPort=true />
-                </#if>
-            </#list>
-        </div>
-        <!-- Carousel nav --><#--
-    <#if (resourceList?size > 1) >
-        <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>
-        <a class="carousel-control right" href="#slider" data-slide="next">&rsaquo;</a>
-    </#if>
-    </div>
-</div>-->
-
-
 <div class="tdar-slider slider ${span} w-100 h-100">
     <h3>${header}</h3>
 
     <div id="slider" class="carousel slide" data-ride="carousel">
-      <ol class="carousel-indicators">
-        <li data-target="#slider" data-slide-to="0" class="active"></li>
-        <li data-target="#slider" data-slide-to="1"></li>
-        <li data-target="#slider" data-slide-to="2"></li>
-        <li data-target="#slider" data-slide-to="3"></li>
-        <li data-target="#slider" data-slide-to="4"></li>
-      </ol>
+        <#if indicatorPosition=="top"><@_featured_indicators /></#if>
       <div class="carousel-inner">
         <#list resourceList as featuredResource>
             <#if featuredResource?has_content>
@@ -876,9 +850,19 @@ View freemarker macros
         <span class="carousel-control right" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
       </a>
+        <#if indicatorPosition=="bottom"><@_featured_indicators /></#if>
     </div>
 </div>
 
+</#macro>
+<#macro _featured_indicators>
+    <ol class="carousel-indicators">
+        <li data-target="#slider" data-slide-to="0" class="active"></li>
+        <li data-target="#slider" data-slide-to="1"></li>
+        <li data-target="#slider" data-slide-to="2"></li>
+        <li data-target="#slider" data-slide-to="3"></li>
+        <li data-target="#slider" data-slide-to="4"></li>
+    </ol>
 </#macro>
 
 </#escape>

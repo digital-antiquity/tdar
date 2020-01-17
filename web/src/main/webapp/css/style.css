@@ -180,8 +180,10 @@ header + #hero-wide {
     /*margin-right: -19px;*/
     position: inherit !important;
     margin: 1em 0 0 0; }
-  #slider .carousel-indicators .active {
-    background: #333333; }
+    #slider .carousel-indicators li {
+      background-color: #eee; }
+    #slider .carousel-indicators li.active {
+      background: #999; }
   #slider .carousel-indicators span {
     border-radius: 10px;
     padding: 4px;
@@ -3860,9 +3862,11 @@ aside li {
 a, .bookmark-link, .bookmark-label, .page-link {
   color: #7a1501; }
 
-/*a.button, a.btn {*/
-/*  color: inherit; }*/
-
+/*
+a.button, a.btn {
+    color:inherit;
+}
+*/
 .red {
   color: #7a1501; }
 
