@@ -345,6 +345,7 @@ public abstract class AbstractSeleniumWebITCase {
                 // turn off autocomplete: https://code.google.com/p/chromedriver/issues/detail?id=333
                 // File dir = new File("src/test/resources/c1");
                 logger.debug("chrome profile path set to: {}", browserProfileDir.getAbsolutePath());
+                
 
                 // http://peter.sh/experiments/chromium-command-line-switches/
                 // ignore-certificate-errors ?
@@ -354,9 +355,14 @@ public abstract class AbstractSeleniumWebITCase {
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "--dns-prefetch-disable",
-                        // "--headless",
-                        // "--disable-gpu",
                         "noerrdialogs");
+
+                // Accept headless argument from cli (e.g. `mvn verify -Ptest -Dheadless`)
+                if(!"f".equals(System.getProperty("headless", "f"))) {
+                    logger.info("Chrome will launch in headless mode.");
+                    copts.addArguments("--headless", "--disable-extensions", "--disable-gpu");                    
+                }
+                
                 rawDriver = new ChromeDriver(service, copts);
 
                 service.start();

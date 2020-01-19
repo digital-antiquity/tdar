@@ -1,6 +1,8 @@
 .project
 .settings
 .classpath
+.vscode
+.factorypath
 jetty-ssl.keystore
 */target
 webservice/*/target

@@ -24,7 +24,11 @@ public class CursorDao {
         query2.setParameter("type", type);
         query2.setFirstResult(0);
         query2.setMaxResults(1);
-        return (String) query2.getSingleResult();
+        try {
+            return (String) query2.getSingleResult();
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     protected Session getCurrentSession() {

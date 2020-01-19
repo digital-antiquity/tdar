@@ -155,7 +155,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
     private String getName(HasAuthorizedUsers persistable) {
         String name = "No name";
         if (persistable instanceof HasName) {
-            name = String.format("<a href=\"%s%s\">%s/a> (%s)", config.getBaseSecureUrl(), ((Addressable)persistable).getDetailUrl(), ((HasName) persistable).getName(), persistable.getId());
+            name = String.format("<a href=\"%s%s\">%s</a> (%s)", config.getBaseSecureUrl(), ((Addressable)persistable).getDetailUrl(), ((HasName) persistable).getName(), persistable.getId());
         }
         return name;
     }

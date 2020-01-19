@@ -962,6 +962,9 @@
                                             file="target/templates/tdar.properties.template"
                                             tofile="src/main/resources/tdar.properties" />
                                         <copy failOnError="false"
+                                            file="target/templates/datacite.properties.template"
+                                            tofile="src/main/resources/datacite.properties" />
+                                        <copy failOnError="false"
                                             file="target/templates/struts-local-settings.xml.template"
                                             tofile="src/main/resources/struts-local-settings.xml" />
                                         <copy
