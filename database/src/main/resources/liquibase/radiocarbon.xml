@@ -260,5 +260,16 @@
             baseTableName="files" referencedColumnNames="id" />
 
     </changeSet>
+    
+    <changeSet id="radiocarbon-jtd-2019-09-11" author="jtdevos">
+        <comment>resource_revision_log: increase log_message size from 512 to 8192</comment>
+        <modifyDataType tableName="resource_revision_log" columnName="log_message" newDataType="varchar(8192)" />
+    </changeSet>
+
+    <changeSet id="radiocarbon-jtd-2019-09-12" author="jtdevos">
+        <comment>collection_revision_log: increase log_message size from 512 to 8192</comment>
+        <modifyDataType tableName="collection_revision_log" columnName="log_message" newDataType="varchar(8192)" />
+    </changeSet>
+
 
 </databaseChangeLog>

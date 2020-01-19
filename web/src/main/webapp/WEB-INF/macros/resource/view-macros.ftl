@@ -783,7 +783,7 @@ View freemarker macros
             </div>
             <div class="col-4">
                 <#if resource.firstActiveLatitudeLongitudeBox?has_content>
-                    <img title="map" alt="map" class="img-fluid h-100" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
+                    <img title="map" alt="map" class="img-fluid" src="${_staticGoogleMapUrl(resource.firstActiveLatitudeLongitudeBox, config.googleMapsApiKey)}"/>
                 <#else>
                     <a href="${url}" target="_top"><@firstThumbnail resource true /></a>
                 </#if>
