@@ -313,24 +313,12 @@ public class ResourceServiceImpl implements ResourceService {
                 return new HashMap<>();
             }
             boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
-            map.keySet().forEach(key -> {
-                if (key.getVisible() == null) {
-                    key.setVisible(ColumnVisibility.VISIBLE);
-                }
-                switch (key.getVisible()) {
-                    case CONFIDENTIAL:
-                        if (canViewConfidentialInformation == false) {
-                            map.remove(key);
-                        }
-                        break;
-                    case HIDDEN:
-                        map.remove(key);
-                        break;
-                    case VISIBLE:
-                    default:
-                        break;
-                }
-            });
+
+            map.keySet().removeIf(key -> key.getVisible() != null && (
+                (key.getVisible() == ColumnVisibility.CONFIDENTIAL && !canViewConfidentialInformation) ||
+                (key.getVisible() == ColumnVisibility.HIDDEN)
+            ));
+
             return map;
         } catch (Throwable t) {
             logger.error("could not attach additional dataset data to resource", t);
