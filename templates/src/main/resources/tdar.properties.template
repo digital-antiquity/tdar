@@ -409,6 +409,13 @@ xml.export.enabled=false
 #
 use.verbose.json=false
 
+#Amazon Web Services (For SES (email) and SNS (bounce notifications))
+aws.accesskey.id=KEY_GOES_HERE
+aws.accesskey.secret=SECRET_GOES_HERE
+aws.characterset=UTF-8
+aws.region=us-east-1
+aws.queuename=BouncedEmailQueue
+
 ################################
 ##   Experimental/Advanced
 ################################
