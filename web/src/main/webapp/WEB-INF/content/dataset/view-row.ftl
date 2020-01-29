@@ -17,8 +17,7 @@
                 <#if key.visible == "VISIBLE"> <#-- FIXME:// visibility accessor should just be getVisibility() -->
                 <tr>
                     <td>${key.displayName}</td>
-                    <#-- dataTableRowAsMap(key) also works, for some reason -->
-                    <td>${dataTableRowAsMap.get(key)} <#if (key.defaultOntology.id)?has_content>(<a
+                    <td>${dataTableRowAsMap(key)!} <#if (key.defaultOntology.id)?has_content>(<a
                             href="<@s.url value="/ontology/${key.defaultOntology.id?c}"/>">${key.defaultOntology.title}</a>)</#if></td>
                 </tr>
                 </#if>
