@@ -120,6 +120,14 @@
                                         v-model="row.value"
                                 />
                             </div>
+
+                            <div v-if="row.option.type == 'basic'">
+                                <div class="form-group">
+                                    <input type="search" :name="valueFieldName" v-model="row.value" />
+                                </div>
+                            </div>
+
+
                             <span v-if="!!row.option.columnType" >
                                 <input type="hidden" :name="fieldName + '.columnId'" :value="row.option.id" />
                                 <input type="hidden" :name="fieldName + '.singleToken'" :value="false" />

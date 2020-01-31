@@ -81,7 +81,8 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
     private static final long serialVersionUID = 5126290300997389535L;
 
     public static final String SUCCESS_WHITELABEL = "success_whitelabel";
-    private static final int COLUMN_DEDUPE_LIMIT = 500;
+    private static final int COLUMN_DEDUPE_LIMIT = 1000;
+    private static final int COLUMN_SORT_LIMIT = 15_000;
 
     private ThreadPermissionsCache permissionsCache;
     private List<UserInvite> invites;
@@ -235,12 +236,19 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
      */
     private void cleanupSearchInfo(SearchInfoObject sio) {
         sio.getDatasetReferences().stream().flatMap(ref -> ref.getColumns().stream())
-                // don't waste time deduping massive value sets
-                .filter( col -> col.getValues().size() < COLUMN_DEDUPE_LIMIT)
                 .forEach(col -> {
                     Comparator<String> cmp  = (Comparator.comparing(String::toLowerCase));
-                    TreeSet<String> seen = new TreeSet<>(cmp);
-                    col.getValues().removeIf(val -> !seen.add(val));
+                    // don't waste time deduping/sorting  massive value sets
+                    if(col.getValues().size() < COLUMN_DEDUPE_LIMIT) {
+                        TreeSet<String> seen = new TreeSet<>(cmp);
+                        col.getValues().removeIf(val -> !seen.add(val));
+                    }
+
+                    if(col.getValues().size() < COLUMN_SORT_LIMIT) {
+                        SortedSet<String> sortedValues = new TreeSet<>(cmp);
+                        sortedValues.addAll(col.getValues());
+                        col.setValues(sortedValues);
+                    }
                 });
     }
 

@@ -3,6 +3,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate,
     var UNDEFINED = "undefined";
     var MAXLEN_CHECKBOXLIST = 40;
     var COLUMN_DEDUPE_LIMIT = 500;
+    var MAXLEN_SELECTBOX = COLUMN_DEDUPE_LIMIT * 2;
 
 
     /**
@@ -250,6 +251,12 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate,
                             if (values.length < MAXLEN_CHECKBOXLIST) {
                                 type = "checkbox";
                             }
+
+                            // Don't bother with list if number of choices is truly massive
+                            if(values.length > MAXLEN_SELECTBOX) {
+                                type = "basic"
+                            }
+
                         }
                         self.selectOptions.push({
                             name : field.displayName,
