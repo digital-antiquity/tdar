@@ -218,7 +218,7 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate,
                             // Perform case-insensitive dedupe if list isn't too big (
                             //console.log("field:%s\t values:%s", field.name, field.values.length);
                             if(field.values.length > COLUMN_DEDUPE_LIMIT) {
-                                values = field.values;
+                                values = field.values.sort();
                             } else {
                                 var oldlen = field.values.length;
                                 field.values = field.values.map(function(val){return val.trim()});
@@ -254,7 +254,8 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate,
 
                             // Don't bother with list if number of choices is truly massive
                             if(values.length > MAXLEN_SELECTBOX) {
-                                type = "basic"
+                                // type = "basic"
+                                type = "select";
                             }
 
                         }

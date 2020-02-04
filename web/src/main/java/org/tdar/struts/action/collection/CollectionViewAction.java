@@ -219,7 +219,7 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
         try {
             if(isDatasetMapped()){
                 SearchInfoObject searchInfoObject = searchService.getSearchInfoObject(getAuthenticatedUser());
-                cleanupSearchInfo(searchInfoObject);
+//                cleanupSearchInfo(searchInfoObject);
                 setJsonSearchInfo(serializationService.convertToJson(searchInfoObject));
                 setJsonRefineSearchInfo(serializationService.convertToJson(getGroups()));
             }
@@ -230,25 +230,21 @@ public class CollectionViewAction<C extends ResourceCollection> extends Abstract
 
     }
 
+    // FIXME: this doesn't actually duedupe or sort anything.
     /**
      * Remove case-insensitive dupes from column values.
      * @param sio
      */
     private void cleanupSearchInfo(SearchInfoObject sio) {
-        sio.getDatasetReferences().stream().flatMap(ref -> ref.getColumns().stream())
+        Comparator<String> cmp  = (Comparator.comparing(String::toLowerCase));
+        sio.getDatasetReferences().stream().flatMap(ref -> ref.getColumns().stream().filter(col -> col.getValues().size()  < COLUMN_DEDUPE_LIMIT))
                 .forEach(col -> {
-                    Comparator<String> cmp  = (Comparator.comparing(String::toLowerCase));
+                    int oldsz = col.getValues().size();
                     // don't waste time deduping/sorting  massive value sets
-                    if(col.getValues().size() < COLUMN_DEDUPE_LIMIT) {
-                        TreeSet<String> seen = new TreeSet<>(cmp);
-                        col.getValues().removeIf(val -> !seen.add(val));
-                    }
-
-                    if(col.getValues().size() < COLUMN_SORT_LIMIT) {
-                        SortedSet<String> sortedValues = new TreeSet<>(cmp);
-                        sortedValues.addAll(col.getValues());
-                        col.setValues(sortedValues);
-                    }
+                    TreeSet<String> seen = new TreeSet<>(cmp);
+                    col.getValues().removeIf(val -> !seen.add(val));
+                    int newsz = col.getValues().size();
+                    getLogger().debug("column {}: oldsz:{}  newsz:{}  diff:{}  ", col.getName(), oldsz, newsz, oldsz-newsz);
                 });
     }
 
