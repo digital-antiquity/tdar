@@ -39,6 +39,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -59,6 +60,7 @@ import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.base.GenericDao;
+import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -72,6 +74,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.AuthorizationServiceImpl;
 import org.tdar.exception.TdarRecoverableRuntimeException;
 import org.tdar.exception.TdarRuntimeException;
 import org.tdar.search.geosearch.GeoSearchService;
@@ -117,6 +120,10 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
     private GeoSearchService geoSearchService;
+
+    @Autowired
+    private AuthorizedUserDao authorizedUserDao;
+
 
     /*
      * (non-Javadoc)
@@ -312,7 +319,10 @@ public class ResourceServiceImpl implements ResourceService {
             if (MapUtils.isEmpty(map)) {
                 return new HashMap<>();
             }
-            boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
+            // FIXME: canViewConfidentialInformation conflates "has permission to see X"  with "does resource have X",
+            //boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
+
+            boolean canViewConfidentialInformation = authorizedUserDao.isAllowedTo(tdarUser, resource, Permissions.VIEW_ALL);
 
             map.keySet().removeIf(key -> key.getVisible() != null && (
                 (key.getVisible() == ColumnVisibility.CONFIDENTIAL && !canViewConfidentialInformation) ||
