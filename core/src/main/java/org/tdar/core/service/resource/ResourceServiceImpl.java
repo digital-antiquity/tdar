@@ -61,6 +61,7 @@ import org.tdar.core.dao.AggregateStatisticsDao;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.base.GenericDao;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -120,10 +121,6 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
     private GeoSearchService geoSearchService;
-
-    @Autowired
-    private AuthorizedUserDao authorizedUserDao;
-
 
     /*
      * (non-Javadoc)
@@ -319,10 +316,11 @@ public class ResourceServiceImpl implements ResourceService {
             if (MapUtils.isEmpty(map)) {
                 return new HashMap<>();
             }
-            // FIXME: canViewConfidentialInformation conflates "has permission to see X"  with "does resource have X",
-            //boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
 
-            boolean canViewConfidentialInformation = authorizedUserDao.isAllowedTo(tdarUser, resource, Permissions.VIEW_ALL);
+            // FIXME: canViewConfidentialInformation conflates "has permission to see X"  with "does resource have X"
+            // FIXME: canViewConfidentialInformation is conceptually a better fit, but currently does not account for confidential mapped metadata
+            //boolean canViewConfidentialInformation = authorizationService.canViewConfidentialInformation(tdarUser, resource);
+            boolean canViewConfidentialInformation =authorizationService.canDo(tdarUser, resource, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO, Permissions.VIEW_ALL);
 
             map.keySet().removeIf(key -> key.getVisible() != null && (
                 (key.getVisible() == ColumnVisibility.CONFIDENTIAL && !canViewConfidentialInformation) ||

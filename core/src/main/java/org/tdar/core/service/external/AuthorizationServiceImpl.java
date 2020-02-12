@@ -420,7 +420,9 @@ public class AuthorizationServiceImpl implements Accessible, AuthorizationServic
     @Override
     @Transactional(readOnly = true)
     public boolean canViewConfidentialInformation(TdarUser person, Resource resource) {
-        //FIXME: this method does not reliably account for resources that have data-mapped metadata with confidential fields (TDAR-6342)
+        // FIXME: this method does not reliably account for resources that have data-mapped metadata with confidential fields (TDAR-6342)
+        // FIXME: canViewConfidentialInformation violates the rule of separate concerns by conflating the notion of "resource has confidential information" with "user may access confidential information for this resource"
+
         // furthermore,  this method conflates "can view confidential information" with "has no confidential information" - these notions should arguably be distinct.
         if (resource instanceof Project || resource instanceof SupportsResource) {
             return true;
