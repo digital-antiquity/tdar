@@ -408,13 +408,15 @@ View freemarker macros
         <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
             <#if !_keyword.deleted>
             <#if (_keyword_index == 25)>
-                <span class="hidden showMore">
+                <span class="collapse" id="spanShowMore${fieldName}">
             </#if>
                 <@searchm.searchFor keyword=_keyword asList=false showOccurrence=false />
                 <#sep>&bull;</#sep> 
                 <#if (_keyword?index > 25) && _keyword?is_last >
                 </span>
-                <i><a href="#" onClick="$(this).siblings('.showMore').removeClass('hidden');$(this).hide();return false">Show More</a></i>
+                <i><a href="#" id="aShowMore${fieldName}" 
+                        class="collapse show" data-toggle="collapse"  
+                        data-target="#aShowMore${fieldName}, #spanShowMore${fieldName}">Show More</a></i>
                 </#if>
             </#if>
         </#list>
