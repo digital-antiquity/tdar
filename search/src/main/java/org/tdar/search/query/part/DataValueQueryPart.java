@@ -14,7 +14,7 @@ import org.tdar.utils.PersistableUtils;
  */
 public class DataValueQueryPart extends FieldQueryPart<String> {
 
-    // if true, querypart will escape the value string
+    // if true, querypart will treat string as already escaped
     private boolean escaped = false;
 
     // if true, query should utilize query tokenizer (i.e. tried entire value stringas single token).
