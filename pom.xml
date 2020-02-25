@@ -114,7 +114,7 @@ Inheritance Hierarchy of this POM:
         <tika.version>1.23</tika.version>
         <rome.version>1.10.0</rome.version>
         <jackson.version>2.10.1</jackson.version>
-        <pdfbox.version>2.0.12</pdfbox.version>
+        <pdfbox.version>2.0.15</pdfbox.version>
         <bouncycastle.version>1.58</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
         <http-client.version>4.5.5</http-client.version>

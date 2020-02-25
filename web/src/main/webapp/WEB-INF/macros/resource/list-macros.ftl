@@ -219,9 +219,10 @@
         <#if resource?has_content>
             <#local _desc = "Description not available"/>
             <#if (resource.description)?has_content >
-                <#if !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module")>
+<#-- Commenting out NADB description override until we come to consensus (TDAR-6348) -->
+<#--                <#if !resource.description?starts_with("The information in this record has been migrated into tDAR from the National Archaeological Database Reports Module")>-->
                     <#local _desc = resource.description />
-                </#if>
+<#--                </#if>-->
             </#if>
             <#local _rid = resource.id?c >
             <#if resource.class.simpleName == 'ResourceCollection'>
