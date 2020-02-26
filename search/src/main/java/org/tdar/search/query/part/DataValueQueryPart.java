@@ -46,7 +46,12 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         this.projectId = val.getProjectId();
         this.fieldId = val.getColumnId();
         setFieldName(val.getName());
-        getFieldValues().addAll(val.getValue());
+
+        //FIXME: cleaning(escaping) these values shouldn't happen here. It only "works" because they will be escaped again in CrossCoreFieldJoinQueryPart
+        for(String strval: val.getValue()) {
+            String cleanVal = getCleanedQueryString(strval);
+            getFieldValues().add(cleanVal);
+        }
         this.singleToken = val.isSingleToken();
     }
 
