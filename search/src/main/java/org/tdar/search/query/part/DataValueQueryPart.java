@@ -49,7 +49,7 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
 
         //FIXME: cleaning(escaping) these values shouldn't happen here. It only "works" because they will be escaped again in CrossCoreFieldJoinQueryPart
         for(String strval: val.getValue()) {
-            String cleanVal = getCleanedQueryString(strval);
+            String cleanVal = PhraseFormatter.ESCAPED.format(strval);
             getFieldValues().add(cleanVal);
         }
         this.singleToken = val.isSingleToken();
