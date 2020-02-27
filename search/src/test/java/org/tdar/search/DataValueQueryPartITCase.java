@@ -2,13 +2,12 @@ package org.tdar.search;
 
 import org.junit.Test;
 import org.tdar.search.bean.DataValue;
-import org.tdar.search.query.part.CrossCoreFieldJoinQueryPart;
 import org.tdar.search.query.part.DataValueQueryPart;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
@@ -17,6 +16,10 @@ public class DataValueQueryPartITCase {
 
     public static final long FIELD_ID_SITENAME = 32659L;
 
+    /**
+     * We currently emit datavalue queries as an embedded _query_ argument inside a larger solr query.  As such,
+     * value strings must be double-encoded.
+     */
     @Test
     public void testDataValueQueryInJoinExpression() {
         List<DataValue> dataValues = new ArrayList<>();
@@ -25,17 +28,15 @@ public class DataValueQueryPartITCase {
         vals.add(val_bob);
         DataValue dv = new DataValue();
         dv.setColumnId(FIELD_ID_SITENAME);
-//        dv.setName("fooname");
         dv.setValue(vals);
 
 
         DataValueQueryPart dvq = new DataValueQueryPart(dv);
 
-
-        String queryExpected = "_query_:\"{!join fromIndex=dataMappings from=id to=id}( columnId:(32659) AND ( value:(Bob\\\\ Onassis\\\\ \\\\(a\\\\:\\\\ foo\\\\)) OR value_exact:(\\\"Bob\\\\ Onassis\\\\ \\\\(a\\\\:\\\\ foo\\\\)\\\") )  ) \"";
+        String expectedSubstring = "Bob\\\\\\ Onassis\\\\\\ \\\\\\(a\\\\\\:\\\\\\ foo\\\\\\)";
         String queryActual = dvq.generateQueryString();
 
-        assertThat(queryActual, is(queryExpected));
+        assertThat(queryActual, containsString(expectedSubstring));
     }
 
 }

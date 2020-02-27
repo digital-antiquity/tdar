@@ -38,16 +38,12 @@ public class CrossCoreFieldJoinQueryPart<T extends QueryPart<?>> implements Quer
             return null;
         }
         // Localparams syntax can't be composed in the same way that we treat other queryparts, so we
-        // use this _query_ parameter as a work around.
+        // utilize nested queries (i.e. the _query_ parameter) as a work around.
         // More info here: https://github.com/SolrNet/SolrNet/issues/143
+        // Example of nested queries: https://lucidworks.com/post/nested-queries-in-solr/
         String qs = part.generateQueryString();
-        // escape char must be escaped when query appears inside solr query parameter or attribute value
-        //fixme: we need to double-escape terms that contain sspecial characters because the query string will be inside
-        // an attribute value it would be easier to simply emit a term in double quotes, i think.
-//        qs = qs.replace("\\ ", "\\\\ ");
-//        qs = qs.replace("\\:", "\\\\:");
-//        qs = qs.replace("\\(", "\\\\(");
-//        qs = qs.replace("\\)", "\\\\)");
+        // because our query is now a parameter value, we need to encode it
+        qs = PhraseFormatter.ESCAPED.format(qs);
         String str = String.format("_query_:\"{!join fromIndex=%s from=%s to=%s}%s\"", coreName, outerFieldName, innerFieldName, qs);
         return str;
     }
