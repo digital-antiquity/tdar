@@ -1,96 +1,50 @@
 package org.tdar.functional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.*;
 import org.junit.rules.TestName;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.HasCapabilities;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 import org.tdar.configuration.TdarConfiguration;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.*;
 import org.tdar.core.bean.entity.permissions.Permissions;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.exception.TdarRecoverableRuntimeException;
-import org.tdar.functional.util.ScreenshotHelper;
-import org.tdar.functional.util.TdarExpectedConditions;
-import org.tdar.functional.util.WebElementSelection;
+import org.tdar.functional.util.*;
 import org.tdar.utils.ProcessList;
 import org.tdar.utils.TestConfiguration;
+
+import javax.annotation.Nullable;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.*;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -354,9 +308,11 @@ public abstract class AbstractSeleniumWebITCase {
                         "user-data-dir=" + browserProfileDir.getAbsolutePath(), // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
-                        "--dns-prefetch-disable",
+                        "--ignore-certificate-errors",
+
                         "noerrdialogs");
 
+                copts.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
                 // Accept headless argument from cli (e.g. `mvn verify -Ptest -Dheadless`)
                 if(!"f".equals(System.getProperty("headless", "f"))) {
                     logger.info("Chrome will launch in headless mode.");
