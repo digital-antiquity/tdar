@@ -64,7 +64,8 @@ public abstract class AbstractSeleniumWebITCase {
 
     // {@link #getText} is a slow operation. cache the results until next pageload.
     private String cachedPageText = null;
-    protected Dimension testSize = new Dimension(1024, 768);
+//    protected Dimension testSize = new Dimension(1024, 768);
+    protected Dimension testSize = new Dimension(1920, 1080);
     protected Dimension originalSize;
 
     private static boolean quitBrowserBetweenTests = false;
@@ -752,7 +753,8 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public WebElement findFirst(String selector) {
-        return find(selector).iterator().next();
+
+        return waitFor(selector).iterator().next();
     }
 
     public WebDriver getDriver() {
