@@ -331,7 +331,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String url = setupCollectionForTest(TITLE + " (permissions visible)", titles, CollectionVisibility.HIDDEN);
         gotoPage("/search");
         waitFor("select.searchType").val("COLLECTION");
-        waitFor(id("groups[0].shares[0].name")).val(TITLE);
+        // waitFor(id("groups[0].shares[0].name")).val(TITLE);
         selectAutocompleteValue(waitFor(id("groups_0__shares_0__name")).first(), TITLE, TITLE, null);
         submitForm();
 
