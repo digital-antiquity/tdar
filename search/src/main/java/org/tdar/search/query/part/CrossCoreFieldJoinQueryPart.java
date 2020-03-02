@@ -43,7 +43,7 @@ public class CrossCoreFieldJoinQueryPart<T extends QueryPart<?>> implements Quer
         // Example of nested queries: https://lucidworks.com/post/nested-queries-in-solr/
         String qs = part.generateQueryString();
         // because our query is now a parameter value, we need to encode it
-        qs = PhraseFormatter.ESCAPED.format(qs);
+        qs = qs.replace("\\ ", "\\\\ ");
         String str = String.format("_query_:\"{!join fromIndex=%s from=%s to=%s}%s\"", coreName, outerFieldName, innerFieldName, qs);
         return str;
     }
