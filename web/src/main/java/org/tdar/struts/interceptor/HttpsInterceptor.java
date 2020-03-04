@@ -79,7 +79,7 @@ public class HttpsInterceptor implements Interceptor {
     private String doHttpsIntercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
         HttpServletResponse response = ServletActionContext.getResponse();
-        response.setHeader("Frame-Options:", "DENY");
+        response.setHeader("X-Frame-Options", "DENY");
 
         if (request.isSecure() || !TdarConfiguration.getInstance().isHttpsEnabled()
                 || StringUtils.startsWithIgnoreCase(request.getRequestURL().toString(), "https:") || isProxiedSecured(request)) {
