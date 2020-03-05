@@ -21,7 +21,7 @@ public class DataValueQueryPartITCase {
      * We currently emit datavalue queries as an embedded _query_ argument inside a larger solr query.  As such,
      * value strings must be double-encoded.
      */
-    @Test @Ignore
+    @Test
     public void testDataValueQueryInJoinExpression() {
         List<DataValue> dataValues = new ArrayList<>();
         List<String> vals = new ArrayList<>();
