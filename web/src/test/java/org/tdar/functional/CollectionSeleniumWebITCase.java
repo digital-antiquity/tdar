@@ -294,7 +294,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         waitFor(By.name("resourceCollection.hidden")).val(visibility.isHidden());
-        Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
+        setupResourceLookupSection();
+        takeScreenshot("show-100-entries");
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);
@@ -315,6 +316,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find.click();
         find.click();
 
+        Permissions permission = Permissions.REMOVE_FROM_COLLECTION;
         addAuthuser("proxies[2].displayName", "proxies[2].permission", "editor user", config.getEditorUsername(),
                 "person-" + config.getEditorUserId(), permission);
         addAuthuser("proxies[1].displayName", "proxies[1].permission",
@@ -356,7 +358,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         waitFor(By.name("resourceCollection.hidden")).val(visibility.isHidden());
-        Permissions permission = Permissions.MODIFY_RECORD;
+        setupResourceLookupSection();
+        takeScreenshot("show-100-entries");
         addResourceToCollection(_139);
         for (String title : resourceTitles) {
             addResourceToCollection(title);
@@ -378,6 +381,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find.click();
         find.click();
 
+        Permissions permission = Permissions.MODIFY_RECORD;
         addAuthuser("proxies[2].displayName", "proxies[2].permission", "editor user", config.getEditorUsername(),
                 "person-" + config.getEditorUserId(), permission);
         addAuthuser("proxies[1].displayName", "proxies[1].permission",
@@ -431,6 +435,16 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(text.contains(TITLE));
         Assert.assertTrue(text.contains(DESCRIPTION));
         return seen;
+    }
+
+
+    /**
+     * Set the various options for the resource lookup control on the collection edit page (e.g.
+     * the "Resources" section that includes the resource lookup data table.
+     */
+    public void setupResourceLookupSection() {
+        // ensure that we return enough results such that the result we want doesn't spill into another page
+        waitFor("[name=resource_datatable_length]").val("100");
     }
 
     // TODO -- Change this checkbox to buttons, since the new one renders those instead.
