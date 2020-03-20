@@ -153,9 +153,6 @@ Inheritance Hierarchy of this POM:
         <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
     </properties>
 
-    <prerequisites>
-        <maven>3.3.1</maven>
-    </prerequisites>
     <organization>
         <name>The Digital Archaeological Record</name>
         <url>http://www.tdar.org</url>
@@ -187,10 +184,10 @@ Inheritance Hierarchy of this POM:
         <repository>
             <id>imageJ</id>
             <name>ImageJ Repository</name>
-            <url>http://maven.imagej.net/content/repositories/releases</url>
+            <url>https://maven.scijava.org/content/repositories/releases/</url>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
+<!--                <updatePolicy>never</updatePolicy>-->
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -203,38 +200,38 @@ Inheritance Hierarchy of this POM:
             <snapshots><enabled>false</enabled></snapshots>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
+<!--                <updatePolicy>never</updatePolicy>-->
             </releases>
         </repository>
         <repository>
             <id>central</id>
             <name>libs-release</name>
-            <url>http://repo.springsource.org/libs-release</url>
+            <url>https://repo.spring.io/libs-release/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
+<!--                <updatePolicy>never</updatePolicy>-->
             </releases>
         </repository>
-        <repository>
-            <id>com.springsource.repository.libraries.external</id>
-            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
-            <url>http://repository.springsource.com/maven/libraries/external</url>
-            <snapshots><enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-        </repository>
+<!--        <repository>-->
+<!--            <id>com.springsource.repository.libraries.external</id>-->
+<!--            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>-->
+<!--            <url>http://repository.springsource.com/maven/libraries/external</url>-->
+<!--            <snapshots><enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--                <updatePolicy>never</updatePolicy>-->
+<!--            </releases>-->
+<!--        </repository>-->
         <repository>
             <id>spring-release</id>
-            <url>http://maven.springframework.org/release</url>
+            <url>https://maven.springframework.org/release</url>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
+<!--                <updatePolicy>never</updatePolicy>-->
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -248,32 +245,32 @@ Inheritance Hierarchy of this POM:
             </snapshots>
             <releases>
                 <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
+<!--                <updatePolicy>never</updatePolicy>-->
             </releases>
         </repository>
         <repository>
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
-            <url>http://download.osgeo.org/webdav/geotools/</url>
+            <url>https://download.osgeo.org/webdav/geotools/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
             <releases>
-                <updatePolicy>never</updatePolicy>
+<!--                <updatePolicy>never</updatePolicy>-->
                 <enabled>true</enabled>
             </releases>
         </repository>
     </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <name>oss.sonatype.org - github-releases</name>
-            <id>oss.sonatype.org-github-releases</id>
-            <url>http://oss.sonatype.org/content/repositories/github-releases</url>
-            <releases>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-        </pluginRepository>
-    </pluginRepositories>
+<!--    <pluginRepositories>-->
+<!--        <pluginRepository>-->
+<!--            <name>oss.sonatype.org - github-releases</name>-->
+<!--            <id>oss.sonatype.org-github-releases</id>-->
+<!--            <url>https://oss.sonatype.org/content/repositories/github-releases</url>-->
+<!--            <releases>-->
+<!--                <updatePolicy>never</updatePolicy>-->
+<!--            </releases>-->
+<!--        </pluginRepository>-->
+<!--    </pluginRepositories>-->
 
     <dependencyManagement>
         <dependencies>
