@@ -1148,8 +1148,8 @@ Inheritance Hierarchy of this POM:
 
     <scm>
         <url>https://bitbucket.org/tdar/tdar.src/</url>
-        <connection>scm:hg:https://bitbucket.org/tdar/tdar.src/</connection>
-        <developerConnection>scm:hg:https://bitbucket.org/tdar/tdar.src/</developerConnection>
+        <connection>scm:git:https://github.com/digital-antiquity/tdar.git</connection>
+        <developerConnection>scm:git:git@github.com:digital-antiquity/tdar.git</developerConnection>
     </scm>
     <issueManagement>
         <system>JIRA</system>
