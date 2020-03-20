@@ -26,7 +26,7 @@ Inheritance Hierarchy of this POM:
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>18.3.0</version>
+    <version>18.3.1-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -1146,7 +1146,7 @@ Inheritance Hierarchy of this POM:
         <url>https://bitbucket.org/tdar/tdar.src/</url>
         <connection>scm:git:https://github.com/digital-antiquity/tdar.git</connection>
         <developerConnection>scm:git:git@github.com:digital-antiquity/tdar.git</developerConnection>
-      <tag>18.3.0</tag>
+      <tag>HEAD</tag>
   </scm>
     <issueManagement>
         <system>JIRA</system>

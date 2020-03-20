@@ -14,7 +14,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>parent-base</artifactId>
-         <version>18.3.0</version>
+         <version>18.3.1-SNAPSHOT</version>
         <relativePath>../parent-base/pom.xml</relativePath>
     </parent>
 
