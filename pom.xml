@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 <!-- 
 Inheritance Hierarchy of this POM:
@@ -27,7 +26,7 @@ Inheritance Hierarchy of this POM:
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>18.2.0-DATABASE-SEARCH-SNAPSHOT</version>
+    <version>18.3.0</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -920,15 +919,12 @@ Inheritance Hierarchy of this POM:
                                 <phase>initialize</phase>
                                 <configuration>
                                     <target>
-                                        <echo message="dir:${project.build.directory}"/>
+                                        <echo message="dir:${project.build.directory}" />
                                         <mkdir dir="target" />
                                         <mkdir dir="${project.build.directory}" />
-                                        <mkdir
-                                            dir="${project.build.directory}/generated" />
-                                        <mkdir
-                                            dir="${project.build.directory}/generated/webapp" />
-                                        <mkdir
-                                            dir="target/generated/webapp-test" />
+                                        <mkdir dir="${project.build.directory}/generated" />
+                                        <mkdir dir="${project.build.directory}/generated/webapp" />
+                                        <mkdir dir="target/generated/webapp-test" />
                                     </target>
                                 </configuration>
                                 <goals>
@@ -1081,7 +1077,7 @@ Inheritance Hierarchy of this POM:
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <echo message="Branch:${git.branch}     Version:${git.commit.id.abbrev}"/>
+                                        <echo message="Branch:${git.branch} Version:${git.commit.id.abbrev}" />
                                     </target>
                                 </configuration>
                             </execution>
@@ -1150,7 +1146,8 @@ Inheritance Hierarchy of this POM:
         <url>https://bitbucket.org/tdar/tdar.src/</url>
         <connection>scm:git:https://github.com/digital-antiquity/tdar.git</connection>
         <developerConnection>scm:git:git@github.com:digital-antiquity/tdar.git</developerConnection>
-    </scm>
+      <tag>18.3.0</tag>
+  </scm>
     <issueManagement>
         <system>JIRA</system>
         <url>http://dev.tdar.org/jira/</url>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>web</artifactId>
@@ -9,7 +8,7 @@
     <name>tDAR (web)</name>
 
     <properties>
-        <display.port></display.port>
+        <display.port />
         <skipWebTests>false</skipWebTests>
         <skipSeleniumTests>false</skipSeleniumTests>
         <skipJetty>false</skipJetty>
@@ -21,7 +20,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-         <version>18.2.0-DATABASE-SEARCH-SNAPSHOT</version>
+         <version>18.3.0</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
     <organization>
@@ -637,7 +636,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore></ignore>
+                                        <ignore />
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -711,10 +710,8 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy
-                                            todir="${project.build.directory}/generated/webapp/wro/">
-                                            <fileset
-                                                dir="${project.build.directory}/generated/webapp/wro/${git.commit.id.abbrev}" />
+                                        <copy todir="${project.build.directory}/generated/webapp/wro/">
+                                            <fileset dir="${project.build.directory}/generated/webapp/wro/${git.commit.id.abbrev}" />
                                         </copy>
                                     </target>
                                 </configuration>
@@ -946,37 +943,17 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy failOnError="false"
-                                            file="target/templates/crowd.properties.template"
-                                            tofile="src/main/resources/crowd.properties" />
-                                        <copy failOnError="false"
-                                            file="target/templates/ldap.properties.template"
-                                            tofile="src/main/resources/ldap.properties" />
-                                        <copy
-                                            file="target/templates/hibernate.properties.template"
-                                            tofile="src/main/resources/hibernate.properties" />
-                                        <copy
-                                            file="target/templates/log4j2.xml.template"
-                                            tofile="src/main/resources/log4j2.xml" />
-                                        <copy failOnError="false"
-                                            file="target/templates/tdar.properties.template"
-                                            tofile="src/main/resources/tdar.properties" />
-                                        <copy failOnError="false"
-                                            file="target/templates/datacite.properties.template"
-                                            tofile="src/main/resources/datacite.properties" />
-                                        <copy failOnError="false"
-                                            file="target/templates/struts-local-settings.xml.template"
-                                            tofile="src/main/resources/struts-local-settings.xml" />
-                                        <copy
-                                            file="target/templates/spring-local-settings.xml.template"
-                                            tofile="src/main/resources/spring-local-settings.xml" />
-                                        <copy failOnError="false"
-                                            file="target/templates/hibernate-ehcache.xml.template"
-                                            tofile="src/main/resources/hibernate-ehcache.xml" />
-                                        <echo
-                                            message="the following can be used to grab all of the config files into a tar from an existing repo" />
-                                        <echo
-                                            message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
+                                        <copy failOnError="false" file="target/templates/crowd.properties.template" tofile="src/main/resources/crowd.properties" />
+                                        <copy failOnError="false" file="target/templates/ldap.properties.template" tofile="src/main/resources/ldap.properties" />
+                                        <copy file="target/templates/hibernate.properties.template" tofile="src/main/resources/hibernate.properties" />
+                                        <copy file="target/templates/log4j2.xml.template" tofile="src/main/resources/log4j2.xml" />
+                                        <copy failOnError="false" file="target/templates/tdar.properties.template" tofile="src/main/resources/tdar.properties" />
+                                        <copy failOnError="false" file="target/templates/datacite.properties.template" tofile="src/main/resources/datacite.properties" />
+                                        <copy failOnError="false" file="target/templates/struts-local-settings.xml.template" tofile="src/main/resources/struts-local-settings.xml" />
+                                        <copy file="target/templates/spring-local-settings.xml.template" tofile="src/main/resources/spring-local-settings.xml" />
+                                        <copy failOnError="false" file="target/templates/hibernate-ehcache.xml.template" tofile="src/main/resources/hibernate-ehcache.xml" />
+                                        <echo message="the following can be used to grab all of the config files into a tar from an existing repo" />
+                                        <echo message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
                                     </target>
                                 </configuration>
                             </execution>
