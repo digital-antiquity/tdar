@@ -903,3 +903,9 @@ Styles for datamap search widget
 .checkboxlist label {
   max-width: 15em;
 }
+
+
+/** prevent mapbox obscurinng autocomplete result items **/
+.ui-autocomplete {
+  z-index:1000;
+}
