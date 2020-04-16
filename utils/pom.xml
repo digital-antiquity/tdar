@@ -41,6 +41,7 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>keytool-api</artifactId>
             <version>1.5</version>
+            <scope>runtime</scope>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
     </dependencies>

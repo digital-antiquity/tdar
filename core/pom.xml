@@ -138,6 +138,7 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>keytool-api</artifactId>
             <version>1.5</version>
+            <scope>runtime</scope>
             <!-- LICENSE: APACHE 2.0 -->
             <exclusions>
                 <exclusion>
@@ -289,12 +290,12 @@
             <!-- LICENSE: APACHE 2.0 -->
             <version>fork-1.2.0</version>
         </dependency>
-        <dependency>
-            <groupId>stax</groupId>
-            <artifactId>stax-api</artifactId>
-            <version>1.0.1</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>stax</groupId>-->
+<!--            <artifactId>stax-api</artifactId>-->
+<!--            <version>1.0.1</version>-->
+<!--            &lt;!&ndash; LICENSE: APACHE 2.0 &ndash;&gt;-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
@@ -611,6 +612,19 @@
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.2.1</version>
+            <!-- LICENSE: LGPL 2 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>postgresql</artifactId>
+                    <groupId>postgresql</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 
 

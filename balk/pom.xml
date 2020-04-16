@@ -85,15 +85,6 @@
 		    <artifactId>dropbox-core-sdk</artifactId>
 		    <version>3.0.3</version>
 		</dependency>
- 
- 
-        <dependency>
-            <groupId>net.tanesha.recaptcha4j</groupId>
-            <artifactId>recaptcha4j</artifactId>
-            <version>0.0.7</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-
         <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>

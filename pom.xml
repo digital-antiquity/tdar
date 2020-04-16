@@ -684,6 +684,7 @@ Inheritance Hierarchy of this POM:
            <groupId>org.glassfish</groupId>
            <artifactId>javax.el</artifactId>
            <version>3.0.1-b08</version>
+           <scope>provided</scope>
         </dependency>
       </dependencies>		
     </dependencyManagement>
@@ -692,7 +693,8 @@ Inheritance Hierarchy of this POM:
         <dependency>
            <groupId>org.glassfish</groupId>
            <artifactId>javax.el</artifactId>
-           <version>3.0.1-b08</version>
+<!--           <version>3.0.1-b08</version>-->
+<!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -737,11 +739,14 @@ Inheritance Hierarchy of this POM:
             <version>${slf4j.version}</version>
             <!-- LICENSE: MIT -->
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
+        <!-- javax.mail reference implementation -->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
             <version>1.6.1</version>
+            <scope>runtime</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>activation</artifactId>
@@ -749,10 +754,12 @@ Inheritance Hierarchy of this POM:
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- javax.mail API definitions -->
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
             <version>1.6.1</version>
+            <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>activation</artifactId>
@@ -765,34 +772,42 @@ Inheritance Hierarchy of this POM:
             <groupId>com.mattbertolini</groupId>
             <artifactId>liquibase-slf4j</artifactId>
             <version>2.0.0</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-1.2-api</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jcl</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jul</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <!-- postgres jdbc -->
         <dependency>
@@ -800,18 +815,6 @@ Inheritance Hierarchy of this POM:
             <artifactId>postgresql</artifactId>
             <version>${postgresql.jdbc.version}</version>
             <!-- LICENSE: BSD -->
-        </dependency>
-        <dependency>
-            <groupId>net.postgis</groupId>
-            <artifactId>postgis-jdbc</artifactId>
-            <version>2.2.1</version>
-            <!-- LICENSE: LGPL 2 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>postgresql</artifactId>
-                    <groupId>postgresql</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>

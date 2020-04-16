@@ -54,31 +54,35 @@
 
 
     <dependencies>
-        <dependency>
-            <groupId>stax</groupId>
-            <artifactId>stax-api</artifactId>
-            <version>1.0.1</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>stax</groupId>-->
+<!--            <artifactId>stax-api</artifactId>-->
+<!--            <version>1.0.1</version>-->
+<!--            &lt;!&ndash; LICENSE: APACHE 2.0 &ndash;&gt;-->
+<!--        </dependency>-->
         <dependency>
             <artifactId>jetty-io</artifactId>
             <groupId>org.eclipse.jetty</groupId>
             <version>${jetty.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <artifactId>jetty-servlets</artifactId>
             <groupId>org.eclipse.jetty</groupId>
             <version>${jetty.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <artifactId>jetty-http</artifactId>
             <groupId>org.eclipse.jetty</groupId>
             <version>${jetty.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>${jetty.version}</version>
+            <scope>runtime</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>javassist</artifactId>
@@ -129,11 +133,13 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.api.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet.jsp</groupId>
             <artifactId>jsp-api</artifactId>
             <version>2.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jtidy</groupId>
@@ -146,6 +152,7 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>keytool-api</artifactId>
             <version>1.5</version>
+            <scope>runtime</scope>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -157,6 +164,7 @@
             <groupId>com.yahoo.platform.yui</groupId>
             <artifactId>yuicompressor</artifactId>
             <version>2.4.8</version>
+            <scope>runtime</scope>
         </dependency>
 		
     </dependencies>
