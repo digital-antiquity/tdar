@@ -7,20 +7,48 @@
   vars:
     java_packages:
       - openjdk-12-jdk-headless
+
+  tasks:
+    - name: install openjdk ppa
+      apt_repository: repo='ppa:openjdk-r/ppa'
+
+    - name: install python3-pip
+      apt:
+        name: python3-pip
+        update_cache: yes
+
+    - name: pip install lxml
+      pip:
+        name: lxml
+
+
+- hosts: all
+  become: yes
+  vars:
+    java_packages:
+      - default-jdk-headless
+
   roles:
     - geerlingguy.java
     - geerlingguy.solr
 
-# Note: you may net to apt-get install python3-pip and use pip to install lxml
-#       for the following tasks to work.
+
 - hosts: all
   become: yes
   tasks:
+    - name: create solr indexes directory
+      file:
+        path: /opt/solr/indexes
+        state: directory
+        mode: '0755'
+        owner: solr
+
     - name: install solr spatial plugin
       maven_artifact:
         group_id: org.locationtech.jts
         artifact_id: jts-core
         version: 1.15.0
+        repository_url: https://repo1.maven.org/maven2
         dest: /opt/solr/server/lib/
         mode: 0644
 
@@ -31,6 +59,11 @@
         dest: /var/solr/data/
         owner: solr
         mode: 0644
+
+    - name: Restart solr
+      service:
+        name: solr
+        state: restarted
 
 #rsync -a /target/classes/solr/annotationKeys .
 #rsync -a /vagrant/target/classes/solr/collections .
