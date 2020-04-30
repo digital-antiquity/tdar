@@ -732,13 +732,6 @@ Inheritance Hierarchy of this POM:
             <scope>test</scope>
             <!-- LICENSE: MIT/BSD VARIENT -->
         </dependency>
-        <!-- log4j -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <!-- LICENSE: MIT -->
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
         <!-- javax.mail reference implementation -->

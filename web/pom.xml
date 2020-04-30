@@ -274,7 +274,8 @@
 
 
         <!--start: deps derived from maven dependency:analyze plugin -->
-
+        <!--TODO:  if any dependencies override a sibling/parent dependency, you *MUST* be sure to use the same <exclusions> section-->
+        <!--    Otherwise you will effectively undo these exclusions (e.g. Log4j2's  SLF4J adapter, thus screwing up our logging) -->
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sqs</artifactId>
@@ -371,6 +372,16 @@
             <artifactId>jaxb-document-api</artifactId>
             <version>1.0.8</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
