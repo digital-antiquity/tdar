@@ -13,8 +13,8 @@ tdardata.persistence.jdbc.url=jdbc:postgresql://${tdar.database.host}/tdardata
 
 tdar.database.maxIdleTimeForConnection=600
 
-tdargis.connection.url=jdbc:postgresql_postGIS://${tdar.database.host}/tdargis
-tdargis.driver.class=org.postgis.DriverWrapper
+tdargisdata.persistence.jdbc.url=jdbc:postgresql_postGIS://${tdar.database.host}/tdargis
+tdargisdata.persistence.jdbc.driver=org.postgis.DriverWrapper
 
 tdarmetadata.minConnections=5
 tdarmetadata.maxConnections=50
@@ -22,8 +22,8 @@ tdarmetadata.maxConnections=50
 tdardata.minConnections=5
 tdardata.maxConnections=50
 
-tdargis.minConnections=5
-tdargis.maxConnections=30
+tdargisdata.minConnections=5
+tdargisdata.maxConnections=30
 
 net.sf.ehcache.configurationResourceName=hibernate-ehcache.xml
 hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.EhCacheRegionFactory
