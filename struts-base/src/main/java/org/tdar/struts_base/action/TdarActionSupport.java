@@ -1,6 +1,7 @@
 package org.tdar.struts_base.action;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -490,16 +491,16 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
 
     protected boolean checkLogoAvailable(FilestoreObjectType type, Long id, VersionType version) {
+        FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
+        boolean logoExists = false;
         try {
-            FileStoreFile proxy = new FileStoreFile(type, version, id, "logo" + version.toPath() + ".jpg");
             File file = getTdarConfiguration().getFilestore().retrieveFile(type, proxy);
-            if (file.exists()) {
-                return true;
-            }
-        } catch (Exception e) {
-
+            logoExists = file.exists();
+            getLogger().debug("Logo path:{}  exists:{}", file.toPath().toAbsolutePath(), file.exists());
+        } catch (FileNotFoundException e) {
+            getLogger().debug("Not found: {}", proxy);
         }
-        return false;
+        return logoExists;
     }
 
     public boolean isTest() {

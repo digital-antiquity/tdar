@@ -123,6 +123,21 @@ public class FileStoreFile implements Serializable, FileStoreFileProxy {
         this.id = versionId;
     }
 
+
+    public String toString() {
+        String fmt = "[FileStoreFile:{} name:{}  path:{}  v:{}  vtype:{}  otype:{} tdar-id:{}]";
+        String str = String.format(fmt,
+                System.identityHashCode(this),
+                this.filename,
+                this.path,
+                this.version,
+                this.versionType,
+                this.type,
+                this.persistableId
+                );
+        return str;
+    }
+
     /*
      * (non-Javadoc)
      * 
