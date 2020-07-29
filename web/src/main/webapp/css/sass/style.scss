@@ -600,7 +600,9 @@ div#ontologyTarget {
     display: inline-block;
 }
 
-
+tr.DELETED {
+  text-decoration: line-through;
+}
 
 .primary-thumbnail {
     height: 125px;
@@ -685,8 +687,9 @@ h3.downloads {
 #fileSummaryContainer {
     border-bottom-left-radius: .25rem;
     border-bottom-right-radius: .25rem;
-    
 }
+
+
 
 #sidebar-right .beige {
     border-radius: .25rem;

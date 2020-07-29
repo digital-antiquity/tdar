@@ -4263,6 +4263,9 @@ div#ontologyTarget {
   border: 1px solid #aaa;
   display: inline-block; }
 
+tr.DELETED {
+  text-decoration: line-through; }
+
 .primary-thumbnail {
   height: 125px;
   display: inline-block;
