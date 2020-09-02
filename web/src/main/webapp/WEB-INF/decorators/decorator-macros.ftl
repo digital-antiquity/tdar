@@ -267,9 +267,9 @@
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-data.png" alt="Access / Use" title="Access / Use" />
-                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h5>
+                      <h5 class="card-title"><a href="https://www.tdar.org/why-tdar/data-access/">Access &amp; Use</a></h5>
                       <p class="card-text">Broadening the access to archaeological data through simple search and browse functionality.</p>
-                      <a href="http://www.tdar.org/why-tdar/data-access/" class="btn tdarButton">Learn More</a>
+                      <a href="https://www.tdar.org/why-tdar/data-access/" class="btn tdarButton">Learn More</a>
                   </div>
               </div>
           </div>
@@ -277,7 +277,7 @@
               <div class="card text-center h-100 border border-0">
                   <div class="card-body">
                       <img class = "img-fluid mb-3" src="${staticHost}/images/r4/icn-stew.png" alt="Stewardship" title="Stewardship"/>
-                      <h5 class="card-title"><a href="http://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h5>
+                      <h5 class="card-title"><a href="https://www.tdar.org/why-tdar/contribute/">Upload Resources</a></h5>
                       <p class="card-text">Contribute documents, datasets, images, and other critical archaeological materials.</p>
                       <a href="/contribute" class="btn tdarButton">Learn More</a>
                   </div>

@@ -180,7 +180,7 @@ color: #7d7a77;
             <li>Embargoing access to materials for 4 years</li>
         </ul>
         Once a file ismarked as confidential or is embargoed, only users you specify can view or download files.</div>
-    <div class="col-6"><a href="http://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png"><img alt="" class="alignnone size-full wp-image-161" height="279" src="http://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png" title="bg-rights" width="477"></a></div>
+    <div class="col-6"><a href="https://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png"><img alt="" class="alignnone size-full wp-image-161" height="279" src="https://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png" title="bg-rights" width="477"></a></div>
 </div>
 
 <hr>

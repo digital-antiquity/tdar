@@ -117,7 +117,7 @@
                       <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                         <tr>
                           <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                            <div style="text-align:center"><a href="http://www.tdar.org" style="border:0"><img src="cid:logo" /></a></div>
+                            <div style="text-align:center"><a href="https://www.tdar.org" style="border:0"><img src="cid:logo" /></a></div>
                             <br />
                             <br />
                             <#nested />
