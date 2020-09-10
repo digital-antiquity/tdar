@@ -55,7 +55,7 @@ To run the entire tDAR test suite, which includes all unit tests, karma tests, a
     
 ### Running a Single E2E test
 
-Execute a single intetration test by using the maven `-Dit.test` flag.  The following example runs the 
+Execute a single integration test by using the maven `-Dit.test` flag.  The following example runs the 
 DatasetSeleniumWebITCase suite (and skips all front-end/karma tests):
     
     cd ./web
