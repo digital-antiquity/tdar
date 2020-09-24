@@ -126,7 +126,7 @@ Inheritance Hierarchy of this POM:
         <commons.math.version>3.6.1</commons.math.version>
         <joda-time.version>2.9.7</joda-time.version>
         <findbugs.version>3.0.0</findbugs.version>
-        <ant.version>1.10.1</ant.version>
+        <ant.version>1.10.8</ant.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <commons-lang.version>2.6</commons-lang.version>
         <cglib.version>3.2.5</cglib.version>
