@@ -359,8 +359,9 @@ ${head}
                         <ul class = "list-unstyled">
                             <li><a href="${commentUrlEscaped}?subject=tDAR%20comments">comments@tdar.org</a></li>
                             <li><a href="https://twitter.com/DigArcRec">Follow @DigArcRec on twitter</a></li>
-                            <li><a href="http://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
-                            <li><a href="http://instagram.com/digitalantiquity">Follow @digitalantiquity on Instagram</a></li>
+                            <li><a href="https://facebook.com/digarcrec">Follow tDAR on Facebook</a></li>
+                            <li><a href="https://instagram.com/digitalantiquity">Follow @digitalantiquity on Instagram</a></li>
+                            <li><a href="https://www.youtube.com/channel/UCwZj_uy6W_c6sWbB6wWGjvQ">Subscribe to Digital Antiquity on Youtube</a></li>
                         </ul>
                     </div>
                     <div class="col-md-3 col-sm-6">
