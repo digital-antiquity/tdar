@@ -20,13 +20,15 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         },
 
         mapbox: {
-            url: "https://{s}.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={apiKey}",
+            // url: "https://{s}.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={apiKey}",
+            url: "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={apiKey}",
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
             + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
             + 'Imagery © <a href="http://mapbox.com">Mapbox</a>'
         }
 
     };
+    // _tileProviders['osm']= _tileProviders['mapbox'];
 
     var _defaults = {
         isGeoLocationToBeUsed: false,
@@ -38,6 +40,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         leafletTileProvider: 'mapbox',
         minZoom: 2,
         maxZoom: 17,
+        zoomOffset: -1,
+        tileSize:512,
         id: 'abrin.n9j4f56m',
         // config for leaflet.sleep
         sleep: true,

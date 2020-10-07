@@ -802,8 +802,7 @@ View freemarker macros
         <#local width=410>
         <#local height=235>
         <#local uri>geojson({"type":"Feature","properties":{"stroke-width":4,"stroke":"#7a1501","stroke-opacity":0.5,"fill-opacity":0.15},"geometry":{"type":"Polygon","coordinates":[${bbvals}]}})</#local>
-
-        <#return "//api.mapbox.com/v4/${mapId}/${uri?url}/auto/${width}x${height}.png?access_token=${config.leafletApiKey}">
+        <#return "https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/${uri?url}/auto/${width?c}x${height?c}?access_token=${config.leafletApiKey}">
     </#function>
 
 
