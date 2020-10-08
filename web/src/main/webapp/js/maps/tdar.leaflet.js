@@ -42,7 +42,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         maxZoom: 17,
         zoomOffset: -1,
         tileSize:512,
-        id: 'abrin.n9j4f56m',
+        // id: 'abrin.n9j4f56m',
+        id: 'mapbox/outdoors-v11',
         // config for leaflet.sleep
         sleep: true,
         sleepOpacity: 1,
