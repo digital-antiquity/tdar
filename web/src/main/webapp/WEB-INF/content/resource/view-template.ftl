@@ -604,15 +604,16 @@
                 </a>
                 </div>
             </li>
-        <#if (authenticatedUser.id)?has_content && editable>
+        <#if (authenticatedUser.id)?has_content>
             <@list.bookmarkMediaLink resource />
-    
+            <#if editable>
                  <li class="media ">
                     <i class="fas fa-folder-open icon-push-down  mr-2 ml-1"></i>
                 <div class="media-body">
                     <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
                 </div>
             </li>
+            </#if>
         </#if>
 
             <@nav.shareSection />
