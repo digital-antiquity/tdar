@@ -162,7 +162,7 @@ Inheritance Hierarchy of this POM:
         <repository>
             <id>internal</id>
             <name>Archiva Managed Internal Repository</name>
-            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+            <url>https://rcarchiva.tdar.org/repository/internal/</url>
             <releases>
                 <updatePolicy>never</updatePolicy>
             </releases>
@@ -173,7 +173,7 @@ Inheritance Hierarchy of this POM:
         <repository>
             <id>snapshots</id>
             <name>Archiva Managed Snapshot Repository</name>
-            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+            <url>https://rcarchiva.tdar.org/repository/snapshots/</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -203,19 +203,21 @@ Inheritance Hierarchy of this POM:
 <!--                <updatePolicy>never</updatePolicy>-->
             </releases>
         </repository>
-        <repository>
-            <id>central</id>
-            <name>libs-release</name>
-            <url>https://repo.spring.io/libs-release/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-<!--                <updatePolicy>never</updatePolicy>-->
-            </releases>
-        </repository>
+
 <!--        <repository>-->
+<!--            <id>central</id>-->
+<!--            <name>libs-release</name>-->
+<!--            <url>https://repo.spring.io/libs-release/</url>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--&lt;!&ndash;                <updatePolicy>never</updatePolicy>&ndash;&gt;-->
+<!--            </releases>-->
+<!--        </repository>-->
+
+        <!--        <repository>-->
 <!--            <id>com.springsource.repository.libraries.external</id>-->
 <!--            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>-->
 <!--            <url>http://repository.springsource.com/maven/libraries/external</url>-->
@@ -1176,12 +1178,12 @@ Inheritance Hierarchy of this POM:
         <repository>
             <id>archiva.internal</id>
             <name>Internal Release Repository</name>
-            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+            <url>https://rcarchiva.tdar.org/repository/internal/</url>
         </repository>
         <snapshotRepository>
             <id>archiva.snapshots</id>
             <name>Internal Snapshot Repository</name>
-            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+            <url>https://rcarchiva.tdar.org/repository/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
