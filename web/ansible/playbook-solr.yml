@@ -2,34 +2,36 @@
 # Install solr on the host specified in ansible.cfg
 # https://github.com/geerlingguy/ansible-role-java
 # https://github.com/geerlingguy/ansible-role-solr
-- hosts: all
-  become: yes
-  vars:
-    java_packages:
-      - openjdk-12-jdk-headless
-
-  tasks:
-    - name: install openjdk ppa
-      apt_repository: repo='ppa:openjdk-r/ppa'
-
-    - name: install python3-pip
-      apt:
-        name: python3-pip
-        update_cache: yes
-
-    - name: pip install lxml
-      pip:
-        name: lxml
-
-
+#- hosts: all
+#  become: yes
+#  vars:
+#    java_packages:
+#      - openjdk-12-jdk-headless
+#
+#  tasks:
+#    - name: install openjdk ppa
+#      apt_repository: repo='ppa:openjdk-r/ppa'
+#
+#    - name: install python3-pip
+#      apt:
+#        name: python3-pip
+#        update_cache: yes
+#
+#    - name: pip install lxml
+#      pip:
+#        name: lxml
+#
+#
 - hosts: all
   become: yes
   vars:
     java_packages:
       - default-jdk-headless
+    solr_mirror: "https://apache.osuosl.org"
+    solr_version: "7.7.3"
 
   roles:
-    - geerlingguy.java
+#    - geerlingguy.java
     - geerlingguy.solr
 
 

@@ -204,30 +204,21 @@ Inheritance Hierarchy of this POM:
             </releases>
         </repository>
 
-<!--        <repository>-->
-<!--            <id>central</id>-->
-<!--            <name>libs-release</name>-->
-<!--            <url>https://repo.spring.io/libs-release/</url>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--&lt;!&ndash;                <updatePolicy>never</updatePolicy>&ndash;&gt;-->
-<!--            </releases>-->
-<!--        </repository>-->
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+        <repository>
+            <id>osgeo-snapshot</id>
+            <name>OSGeo Snapshot Repository</name>
+            <url>https://repo.osgeo.org/repository/snapshot/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
 
-        <!--        <repository>-->
-<!--            <id>com.springsource.repository.libraries.external</id>-->
-<!--            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>-->
-<!--            <url>http://repository.springsource.com/maven/libraries/external</url>-->
-<!--            <snapshots><enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--            <releases>-->
-<!--                <enabled>true</enabled>-->
-<!--                <updatePolicy>never</updatePolicy>-->
-<!--            </releases>-->
-<!--        </repository>-->
         <repository>
             <id>spring-release</id>
             <url>https://maven.springframework.org/release</url>
