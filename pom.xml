@@ -241,29 +241,7 @@ Inheritance Hierarchy of this POM:
 <!--                <updatePolicy>never</updatePolicy>-->
             </releases>
         </repository>
-        <repository>
-            <id>osgeo</id>
-            <name>Open Source Geospatial Foundation Repository</name>
-            <url>https://download.osgeo.org/webdav/geotools/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-<!--                <updatePolicy>never</updatePolicy>-->
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-    </repositories>
-<!--    <pluginRepositories>-->
-<!--        <pluginRepository>-->
-<!--            <name>oss.sonatype.org - github-releases</name>-->
-<!--            <id>oss.sonatype.org-github-releases</id>-->
-<!--            <url>https://oss.sonatype.org/content/repositories/github-releases</url>-->
-<!--            <releases>-->
-<!--                <updatePolicy>never</updatePolicy>-->
-<!--            </releases>-->
-<!--        </pluginRepository>-->
-<!--    </pluginRepositories>-->
+   </repositories>
 
     <dependencyManagement>
         <dependencies>
