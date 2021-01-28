@@ -1,0 +1,96 @@
+<snippet>
+    <!-- Note: this file exists for informational purposes only - it is not meant to be a part of the build process -->
+    <!--
+
+     This snippet of XML was taken from the root pom.xml for this project. It specifies maven repositories that are
+     necessary for a successful build. For now, they do not appear to be necessary because we have added these
+     repository locations as "external repositories" in Digital Antiquity's archiva server at
+     https://rcarchiva.tdar.org.
+    -->
+    <repositories>
+        <!-- http://snapshots.jboss.org -->
+        <repository>
+            <id>internal</id>
+            <name>Archiva Managed Internal Repository</name>
+            <url>https://rcarchiva.tdar.org/repository/internal/</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>Archiva Managed Snapshot Repository</name>
+            <url>https://rcarchiva.tdar.org/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>imageJ</id>
+            <name>ImageJ Repository</name>
+            <url>https://maven.scijava.org/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+                <!--                <updatePolicy>never</updatePolicy>-->
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <name>JBoss Maven Repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <!--                <updatePolicy>never</updatePolicy>-->
+            </releases>
+        </repository>
+
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+        <repository>
+            <id>osgeo-snapshot</id>
+            <name>OSGeo Snapshot Repository</name>
+            <url>https://repo.osgeo.org/repository/snapshot/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
+
+        <repository>
+            <id>spring-release</id>
+            <url>https://maven.springframework.org/release</url>
+            <releases>
+                <enabled>true</enabled>
+                <!--                <updatePolicy>never</updatePolicy>-->
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>atlassian-m2-repository</id>
+            <url>https://m2proxy.atlassian.com/repository/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <!--                <updatePolicy>never</updatePolicy>-->
+            </releases>
+        </repository>
+    </repositories>
+
+</snippet>

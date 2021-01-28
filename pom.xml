@@ -181,66 +181,6 @@ Inheritance Hierarchy of this POM:
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <repository>
-            <id>imageJ</id>
-            <name>ImageJ Repository</name>
-            <url>https://maven.scijava.org/content/repositories/releases/</url>
-            <releases>
-                <enabled>true</enabled>
-<!--                <updatePolicy>never</updatePolicy>-->
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jboss</id>
-            <name>JBoss Maven Repository</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases>
-                <enabled>true</enabled>
-<!--                <updatePolicy>never</updatePolicy>-->
-            </releases>
-        </repository>
-
-        <repository>
-            <id>osgeo</id>
-            <name>OSGeo Release Repository</name>
-            <url>https://repo.osgeo.org/repository/release/</url>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
-        </repository>
-        <repository>
-            <id>osgeo-snapshot</id>
-            <name>OSGeo Snapshot Repository</name>
-            <url>https://repo.osgeo.org/repository/snapshot/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-        </repository>
-
-        <repository>
-            <id>spring-release</id>
-            <url>https://maven.springframework.org/release</url>
-            <releases>
-                <enabled>true</enabled>
-<!--                <updatePolicy>never</updatePolicy>-->
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>atlassian-m2-repository</id>
-            <url>https://m2proxy.atlassian.com/repository/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-<!--                <updatePolicy>never</updatePolicy>-->
-            </releases>
-        </repository>
    </repositories>
 
     <dependencyManagement>
