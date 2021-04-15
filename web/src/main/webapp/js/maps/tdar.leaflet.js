@@ -25,7 +25,14 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, '
             + '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, '
             + 'Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        },
+
+        esri: {
+            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+            attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012"
         }
+
+
 
     };
     // _tileProviders['osm']= _tileProviders['mapbox'];
