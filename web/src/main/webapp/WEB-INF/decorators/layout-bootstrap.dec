@@ -420,6 +420,12 @@ ${head}
 
 
     <@header.scripts ( production) />
+    <#--fixme: move the css/js includes below to header.scripts once it works -->
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.3/mapbox-gl.css" rel='stylesheet' />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.3/mapbox-gl.js"></script>
+    <script src="/components/mapbox/leaflet-mapbox-gl-old.js"></script>
+    <script src="https://unpkg.com/esri-leaflet@1.0.5/dist/esri-leaflet.js"></script>
+    
 
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>
