@@ -139,7 +139,7 @@ ${head}
     </#if>
 </head>
 <body id="${bodyid}" class="${pageType} <#if !production>not-production</#if>" data-spy="scroll" data-target="#subnavbar" 
-	 data-leaflet-api-key="${config.leafletApiKey}" data-leaflet-tile-provider="${config.leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${config.mapDefaultLat}" data-centerLong="${config.mapDefaultLng}"  data-useGeoLoc="${config.geoLocationToBeUsed?then('true', 'false')}"
+	 data-leaflet-api-key="${config.leafletApiKey}" data-leaflet-tile-provider="${config.leafletProvider}" data-centerLat="${config.mapDefaultLat}" data-centerLong="${config.mapDefaultLng}"  data-useGeoLoc="${config.geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
      <#if authenticatedUser?has_content>data-userid="${authenticatedUser.id?c}" data-currentTime="1" </#if>
      <#if mappedDatasetId?has_content>data-mapped-dataset-id="${mappedDatasetId?c}" </#if>
@@ -420,12 +420,6 @@ ${head}
 
 
     <@header.scripts ( production) />
-    <#--fixme: move the css/js includes below to header.scripts once it works -->
-    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.3/mapbox-gl.css" rel='stylesheet' />
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.14.3/mapbox-gl.js"></script>
-    <script src="/components/mapbox/leaflet-mapbox-gl-old.js"></script>
-    <script src="https://unpkg.com/esri-leaflet@1.0.5/dist/esri-leaflet.js"></script>
-    
 
     <div id="ajaxIndicator" class="alert alert-info" style="display:none">
         <strong class="statusLabel"></strong>

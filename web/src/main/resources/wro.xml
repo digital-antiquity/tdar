@@ -56,6 +56,7 @@
         <css>/components/c3/c3.min.css</css>
         <js>/components/leaflet-control-geocoder/dist/Control.Geocoder.js</js>
         <css>/components/leaflet-control-geocoder/dist/Control.Geocoder.css</css>
+        <js>/components/esri-leaflet/esri-leaflet.v1.0.5.js</js>
         <js>/js/tdar.core.js</js>
         <js>/js/tdar.datepicker.js</js>
         <js>/js/tdar.moreinfo.js</js>

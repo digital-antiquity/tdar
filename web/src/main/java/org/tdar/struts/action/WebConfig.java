@@ -177,6 +177,14 @@ public class WebConfig {
         return config.getLeafletMapsApiKey();
     }
 
+    public String getLeafletStaticApiKey() {
+        return config.getLeafletStaticMapsApiKey();
+    }
+
+    public String getLeafletProvider() {
+        return config.getLeafletMapsProvider();
+    }
+
     public List<String> getBarColors() {
         return config.getBarColors();
     }

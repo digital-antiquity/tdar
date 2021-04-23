@@ -29,13 +29,13 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
         esri: {
             url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-            attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012"
+            // attribution: "Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012"
+            attribution: "Tiles &copy; Esri"
         }
 
 
 
     };
-    // _tileProviders['osm']= _tileProviders['mapbox'];
 
     var _defaults = {
         isGeoLocationToBeUsed: false,
@@ -44,7 +44,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             lng: 0
         },
         zoomLevel: 4,
-        leafletTileProvider: 'mapbox',
+        leafletTileProvider: 'osm',
         minZoom: 2,
         maxZoom: 17,
         zoomOffset: -1,

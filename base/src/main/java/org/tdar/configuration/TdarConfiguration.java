@@ -40,6 +40,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 50;
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_MAX_AFFECTED_RECORDS = 1000;
+    public static final String LEAFLET_PROVIDER_ESRI = "esri";
+    public static final String LEAFLET_PROVIDER_OSM = "osm";
+    public static final String LEAFLET_PROVIDER_MAPBOX = "mapbox";
 
     public static final int DEFAULT_SEARCH_EXCEL_EXPORT_RECORD_MAX = 1000;
 
@@ -491,6 +494,15 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public String getLeafletMapsApiKey() {
         return assistant.getStringProperty("leaflet.apikey");
     }
+
+    public String getLeafletStaticMapsApiKey() {
+        return assistant.getStringProperty("leaflet.static.apikey");
+    }
+
+    public String getLeafletMapsProvider(){
+        return assistant.getStringProperty("leaflet.provider", LEAFLET_PROVIDER_OSM);
+    }
+
 
     public String getRecaptchaPrivateKey() {
         return assistant.getStringProperty("recaptcha.privateKey");
