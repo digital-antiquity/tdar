@@ -120,7 +120,7 @@ Inheritance Hierarchy of this POM:
         <jackcess.version>2.2.0</jackcess.version>
         <guava.version>24.1.1-jre</guava.version>
         <jt-utils.version>1.4.0</jt-utils.version>
-        <commons-io.version>2.6</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
         <commons-codec.version>1.11</commons-codec.version>
         <commons.math.version>3.6.1</commons.math.version>
