@@ -7,5 +7,6 @@
 // TODO: results and stuff
 </code>
 
-<button type="button" class="btn btn-info" id="btnCloseWindow" onclick="window.close()">Close this window</button>
+<button type="button" class="btn btn-info" id="btnCloseWindow"
+        onclick="TDAR.common.closeWindow(window)">Close this window</button>
 </body>

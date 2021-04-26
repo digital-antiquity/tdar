@@ -107,6 +107,16 @@ TDAR.common = function (TDAR, fileupload) {
         TDAR.common.adhocTarget = null;
     }
 
+    /**
+     * Close a child window (aka a window spawned from the window that contains this script).
+     * @param windowHandle
+     * @private
+     */
+    var _closeWindow = function(windowHandle) {
+        console.trace("closeWindow called with target: %s", windowHandle)
+        windowHandle.close();
+    }
+
     // FIXME: refactor.  needs better name and it looks brittle
     /**
      * Return a sort function that alphabetically sorts an object w/ specified property name.
@@ -996,6 +1006,7 @@ TDAR.common = function (TDAR, fileupload) {
         "determineResponsiveClass": _determineResponsiveClass,
         "populateTarget": _populateTarget,
         "setAdhocTarget": _setAdhocTarget,
+        "closeWindow": _closeWindow,
         "changeSubcategory": _changeSubcategory,
         "registerDownload": _registerDownload,
         "registerShare": _registerShare,

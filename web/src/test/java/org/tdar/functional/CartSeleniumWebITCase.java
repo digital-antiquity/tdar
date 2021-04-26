@@ -112,8 +112,11 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         waitFor("[type=submit]");
         submitForm();
 
-        // close the popup window
-        waitFor("#btnCloseWindow").click();
+        // Close the popup window
+        // FIXME: chrome disallows windows closing themselves these days, so for now we just manually close
+        // WebElementSelection selection = waitFor("#btnCloseWindow").click();
+        WebElementSelection selection = waitFor("#btnCloseWindow");
+        getDriver().close();
         waitFor(ExpectedConditions.numberOfWindowsToBe(1), Duration.of(20, SECONDS));
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
         Set<String> windowHandles = getDriver().getWindowHandles();
