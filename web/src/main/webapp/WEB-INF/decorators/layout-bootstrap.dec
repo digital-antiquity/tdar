@@ -154,39 +154,22 @@ ${head}
         </header>
 
         <#if (homepage!false)>
-        <@dec.homepageHero>
-                <div id="homepageCarousel" class="carousel slide carousel-fade" data-ride="carousel">
-                  <ol class="carousel-indicators">
-                    <li data-target="#homepageCarousel" data-slide-to="0" class="active"></li>
-                    <li data-target="#homepageCarousel" data-slide-to="1"></li>
-                    <!-- <li data-target="#homepageCarousel" data-slide-to="2"></li> -->
-                  </ol>
+        <section id="hero-wide">
+          <div class = "">
+            <div class="px-0 pb-0 pt-0">
+                <div id="homepageCarousel" >
                   <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <@dec.searchHero /> 
+                        <@dec.searchHero />
                     </div>
-                    <div class="carousel-item">
-                        <@dec.imageheader />
-                    </div>
-                <!--    <div class="carousel-item">
-                        <@dec.imageheader2 />
-                    </div> -->
                   </div>
-                <!-- 
-                  <a class="carousel-control-prev" href="#homepageCarousel" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                  </a>
-                  <a class="carousel-control-next" href="#homepageCarousel" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                  </a>
-                -->
                 </div>
-        </@dec.homepageHero>
-            <@dec.homepageHeader/>
-                
+            </div>
+          </div>
+        </section>
+        <@dec.homepageHeader/>
         </#if>
+
         <#if searchHeaderEnabled!false && whitelabelCollection>
         <#assign subtitle = (resourceCollection.properties.subtitle!(resourceCollection.institution.name)!'')>
         <@dec.homepageHero>
