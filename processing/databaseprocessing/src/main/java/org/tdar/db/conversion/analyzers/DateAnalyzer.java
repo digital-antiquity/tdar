@@ -59,11 +59,16 @@ public class DateAnalyzer implements ColumnAnalyzer<Date> {
      */
     public static Date convertValue(final String value) {
         Logger logger = LoggerFactory.getLogger(DateAnalyzer.class);
-
         Date result = null;
-        logger.trace("---> " + value);
-        List<DateGroup> candidateDates = new Parser().parse(value);
-        if (isOnlyOneDateFound(candidateDates)) {
+        List<DateGroup> candidateDates = null;
+
+        logger.trace("---> {}", value);
+        try {
+            candidateDates = new Parser().parse(value);
+        } catch (NullPointerException nex) {
+            logger.info("Date parser failed to parse value:'{}'. Ignoring.", value);
+        }
+        if (candidateDates != null && isOnlyOneDateFound(candidateDates)) {
             logger.trace("only one found");
             DateGroup candidate = candidateDates.get(0);
             Tree syntaxTree = candidate.getSyntaxTree();
