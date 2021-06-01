@@ -91,6 +91,10 @@ public interface TestConstants {
     public static final Pattern REGEX_GOOGLE_ANALYTICS = Pattern.compile("ssl.google-analytics.com");
     public static final String STDEV_DATASET = "stdev.xlsx";
 
+    public static final Long SAMPLE_COLLECTION_ID = 1575L;
+    public static final String SAMPLE_COLLECTION_NAME = "sample collection";
+
+
     static File getFile(String testPath, String filename) throws FileNotFoundException {
         File test = new File(testPath, filename);
         if (test.exists()) {

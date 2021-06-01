@@ -1,5 +1,7 @@
 package org.tdar.oai;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.FileNotFoundException;
@@ -27,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.TestConstants;
 import org.tdar.core.JaxbSchemaValidator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
@@ -38,6 +41,9 @@ import org.tdar.test.web.AbstractGenericWebTest;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+
 
 public class OAIWebITCase extends AbstractGenericWebTest {
 
@@ -91,9 +97,10 @@ public class OAIWebITCase extends AbstractGenericWebTest {
         Assert.assertTrue("First page of ListIdentifier results includes a Resource", (firstResourceIdentifier.contains("Resource")));
     }
 
+
     /**
      * Exhaustively invoke ListIdentifiers or ListRecords verb
-     * 
+     *
      * @param verb
      *            The verb to use; either "ListIdentifiers" or "ListRecords"
      * @return number of records listed
@@ -106,10 +113,30 @@ public class OAIWebITCase extends AbstractGenericWebTest {
     private List<String> listIdentifiersOrRecords(String verb, String metadataPrefix) throws SAXException, IOException,
             ParserConfigurationException,
             NumberFormatException, XpathException {
+        return listIdentifiersOrRecords(verb, metadataPrefix, "");
+    }
+
+    /**
+     * Exhaustively invoke ListIdentifiers or ListRecords verb
+     *
+     * @param verb
+     *            The verb to use; either "ListIdentifiers" or "ListRecords"
+     * @param args
+     *            String containing extra arguments in uri-encoded format e.g. name1=val&name2=val
+     * @return number of records listed
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     * @throws XpathException
+     * @throws NumberFormatException
+     */
+    private List<String> listIdentifiersOrRecords(String verb, String metadataPrefix, String args) throws SAXException, IOException,
+            ParserConfigurationException,
+            NumberFormatException, XpathException {
         List<String> identifiers = new ArrayList<>();
         int pageCount = 0;
         String resumptionToken;
-        String requestURI = getBase() + verb + "&metadataPrefix=" + metadataPrefix;
+        String requestURI = getBase() + verb + args + "&metadataPrefix=" + metadataPrefix;
         do {
             gotoPage(requestURI);
             // commented out the schema validation - it's too slow! Need to debug the speed issue
@@ -216,6 +243,22 @@ public class OAIWebITCase extends AbstractGenericWebTest {
         gotoPage(getBase() + "ListSets");
         testValidOAIResponse();
         // assertXpathExists("oai:OAI-PMH/oai:error[@code='noSetHierarchy']");
+    }
+
+
+    @Test
+    public void testSelectiveHarvest() throws XpathException, IOException, ParserConfigurationException, SAXException {
+        // perform a selective harvest that should contain only items from the built-in sample collection
+        Long setId = TestConstants.SAMPLE_COLLECTION_ID;
+        String setName = TestConstants.SAMPLE_COLLECTION_NAME;
+        String args = String.format("set=%s", setId);
+        List<String> allRecords = listIdentifiersOrRecords("ListRecords", "tdar");
+        List<String> setRecords = listIdentifiersOrRecords("ListRecords", "tdar", args);
+
+        assertThat(allRecords, not(empty()));
+        assertThat(setRecords, not(empty()));
+        assertThat("selective harvest should contain less items", setRecords.size(), lessThan(allRecords.size()));
+
     }
 
     @Test
