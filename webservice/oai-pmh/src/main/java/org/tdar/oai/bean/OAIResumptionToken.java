@@ -157,6 +157,10 @@ public class OAIResumptionToken {
             if (metadataPrefix != null) {
                 tokenBuffer.append(metadataPrefix);
             }
+            if(getSet() != null) {
+                tokenBuffer.append(",");
+                tokenBuffer.append(getSet().toString());
+            }
             token = tokenBuffer.toString();
         }
         return token;
@@ -173,13 +177,16 @@ public class OAIResumptionToken {
         try {
             // The format of the resumptionToken is: "recordIndex,[from],[until],[metadataFormat]"
             // e.g. it might contain "200,20101201,20110101,tdar" or it might contain "100,1900,3000,oai_dc"
-            String[] tokenPart = token.split(",", 4);
+            String[] tokenPart = token.split(",", 5);
             // First parameter is the index of the next record to return
             cursor = new Token(tokenPart[0]);
             // Second and third parameters are optional from and until dates
             setFromDate(tokenPart[1]);
             setUntilDate(tokenPart[2]);
             setMetadataPrefix(tokenPart[3]);
+            if(tokenPart.length > 4) {
+                setSet(Long.valueOf(tokenPart[4]));
+            }
         } catch (Exception e) {
             throw new OAIException(MessageHelper.getMessage("oaiResumptionToken.invalid"), e, OAIPMHerrorcodeType.BAD_RESUMPTION_TOKEN);
         }

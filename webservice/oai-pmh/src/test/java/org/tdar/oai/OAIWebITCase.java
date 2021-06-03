@@ -113,7 +113,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
     private List<String> listIdentifiersOrRecords(String verb, String metadataPrefix) throws SAXException, IOException,
             ParserConfigurationException,
             NumberFormatException, XpathException {
-        return listIdentifiersOrRecords(verb, metadataPrefix, "");
+        return listIdentifiersOrRecords(verb, metadataPrefix, "", true);
     }
 
     /**
@@ -130,7 +130,7 @@ public class OAIWebITCase extends AbstractGenericWebTest {
      * @throws XpathException
      * @throws NumberFormatException
      */
-    private List<String> listIdentifiersOrRecords(String verb, String metadataPrefix, String args) throws SAXException, IOException,
+    private List<String> listIdentifiersOrRecords(String verb, String metadataPrefix, String args, boolean assertMultipage) throws SAXException, IOException,
             ParserConfigurationException,
             NumberFormatException, XpathException {
         List<String> identifiers = new ArrayList<>();
@@ -155,7 +155,10 @@ public class OAIWebITCase extends AbstractGenericWebTest {
             resumptionToken = xpathEngine.evaluate("oai:OAI-PMH/oai:" + verb + "/oai:resumptionToken", response);
             requestURI = getBase() + verb + "&resumptionToken=" + resumptionToken;
         } while (!resumptionToken.equals(""));
-        Assert.assertTrue("Harvesting " + metadataPrefix + " records with " + verb + " returned multiple pages", pageCount > 1);
+//        Assert.assertTrue("Harvesting " + metadataPrefix + " records with " + verb + " returned multiple pages", pageCount > 1);
+        if(assertMultipage) {
+            assertThat(String.format("Expected multiple pages of results for metadataPrefix:%s and verb:%s", metadataPrefix, verb), pageCount, greaterThan(1));
+        }
         return identifiers;
     }
 
@@ -251,9 +254,9 @@ public class OAIWebITCase extends AbstractGenericWebTest {
         // perform a selective harvest that should contain only items from the built-in sample collection
         Long setId = TestConstants.SAMPLE_COLLECTION_ID;
         String setName = TestConstants.SAMPLE_COLLECTION_NAME;
-        String args = String.format("set=%s", setId);
+        String args = String.format("&set=%s", setId);
         List<String> allRecords = listIdentifiersOrRecords("ListRecords", "tdar");
-        List<String> setRecords = listIdentifiersOrRecords("ListRecords", "tdar", args);
+        List<String> setRecords = listIdentifiersOrRecords("ListRecords", "tdar", args, false);
 
         assertThat(allRecords, not(empty()));
         assertThat(setRecords, not(empty()));

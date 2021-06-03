@@ -18,6 +18,14 @@ web/src/main/resources/search.properties
 web/src/main/resources/spring-local-settings.xml
 web/src/main/resources/tdar.properties
 web/src/main/resources/jetty/jetty-ssl.keystore.old
+
+webservice/oai-pmh/src/main/resources/hibernate-ehcache.xml
+webservice/oai-pmh/src/main/resources/hibernate.properties
+webservice/oai-pmh/src/main/resources/log4j2.xml
+webservice/oai-pmh/src/main/resources/oai-pmh.properties
+webservice/oai-pmh/src/main/resources/tdar.properties
+webservice/oai-pmh/src/main/resources/spring-local-settings.xml
+
 */logs/tdar*
 */*/logs/tdar*
 */*/target

@@ -65,6 +65,11 @@ public class OaiPmhServer {
     private Date from = new DateTime("1900").toDate();
     private Date until = new DateTime("3000").toDate();
 
+    // tdar uses the "set" queryparam to indicate filtering by Collection ID
+    private Long collectionId = null;
+
+
+
     /**
      * All OAI-PMH calls go through the same /oai? method...
      * 
@@ -102,7 +107,7 @@ public class OaiPmhServer {
 
         try {
             // pseudo modeling of struts workflow, just for management of all the moving parts..
-            prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
+            prepare(verb_, identifier_, metadataPrefix_, from_, until_, set, resumptionToken_);
             execute(set, from_, until_, response);
         } catch (OAIException oaie) {
             if (oaie.getCode() == OAIPMHerrorcodeType.NO_RECORDS_MATCH || oaie.getCode() == OAIPMHerrorcodeType.BAD_ARGUMENT) {
@@ -176,6 +181,7 @@ public class OaiPmhServer {
     public void execute(String set, String from_, String until_, OAIPMHtype response) throws OAIException {
         String message;
 
+
         switch (verb) {
             case GET_RECORD:
                 message = getText("oaiController.not_allowed_with_get");
@@ -205,7 +211,7 @@ public class OaiPmhServer {
                 response.setIdentify(service.getIdentifyResponse());
                 break;
             case LIST_IDENTIFIERS:
-                response.setListIdentifiers(service.listIdentifiers(from, until, requestedFormat, resumptionToken));
+                response.setListIdentifiers(service.listIdentifiers(from, until, collectionId, requestedFormat, resumptionToken));
                 break;
             case LIST_METADATA_FORMATS:
                 message = "Not allowed with ListMetadataFormats verb";
@@ -220,7 +226,7 @@ public class OaiPmhServer {
                 if (requestedFormat == null && resumptionToken == null) {
                     throw new OAIException(getText("oaiController.invalid_metadata_param"), OAIPMHerrorcodeType.BAD_ARGUMENT);
                 }
-                response.setListRecords(service.listRecords(from, until, requestedFormat, resumptionToken));
+                response.setListRecords(service.listRecords(from, until, collectionId, requestedFormat, resumptionToken));
                 break;
             case LIST_SETS:
                 response.setListSets(service.listSets(from, until, requestedFormat, resumptionToken));
@@ -239,7 +245,7 @@ public class OaiPmhServer {
      * @param resumptionToken_
      * @throws OAIException
      */
-    private void prepare(String verb_, String identifier_, String metadataPrefix_, String from_, String until_, String resumptionToken_) throws OAIException {
+    private void prepare(String verb_, String identifier_, String metadataPrefix_, String from_, String until_, String set, String resumptionToken_) throws OAIException {
         if (verb_ == null) {
             throw new OAIException(getText("oaiController.bad_verb"), OAIPMHerrorcodeType.BAD_VERB);
         }
@@ -266,6 +272,10 @@ public class OaiPmhServer {
             until = dt.toDateTime(DateTimeZone.getDefault()).toDate();
         }
 
+        if (StringUtils.isNotBlank(set)) {
+            setCollectionId(Long.valueOf(set));
+        }
+
     }
 
     private void assertParameterIsNull(Object parameter, String parameterName, String message) throws OAIException {
@@ -280,5 +290,13 @@ public class OaiPmhServer {
 
     public String getText(String key, String param, String msg) {
         return MessageHelper.getMessage(key, Arrays.asList(param, msg));
+    }
+
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
     }
 }

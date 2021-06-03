@@ -36,7 +36,7 @@ public interface OaiPmhService {
      * @return
      * @throws OAIException
      */
-    ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, OAIMetadataFormat metadataPrefix,
+    ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, Long collectionId, OAIMetadataFormat metadataPrefix,
             OAIResumptionToken resumptionToken, ListResponse response) throws OAIException;
 
     /**
@@ -72,7 +72,7 @@ public interface OaiPmhService {
      * @return
      * @throws OAIException
      */
-    ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat,
+    ListRecordsType listRecords(Date from, Date until, Long collectionId, OAIMetadataFormat requestedFormat,
             OAIResumptionToken resumptionToken) throws OAIException;
 
     /**
@@ -86,7 +86,7 @@ public interface OaiPmhService {
      * @return
      * @throws OAIException
      */
-    ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat,
+    ListIdentifiersType listIdentifiers(Date from, Date until, Long collectionId, OAIMetadataFormat requestedFormat,
             OAIResumptionToken resumptionToken) throws OAIException;
 
     /**

@@ -125,11 +125,11 @@ public class OaiPmhServiceImpl implements OaiPmhService {
      * org.tdar.oai.bean.OAIResumptionToken, org.tdar.oai.bean.generated.oai._2_0.ListResponse)
      */
     @Override
-    public ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, OAIMetadataFormat metadataPrefix,
+    public ResumptionTokenType listIdentifiersOrRecords(Date from, Date until, Long collectionId_, OAIMetadataFormat metadataPrefix,
             OAIResumptionToken resumptionToken, ListResponse response) throws OAIException {
         ResumptionTokenType token = null;
-        Long collectionId = null;
         // start record number (cursor)
+        Long collectionId = collectionId_;
         Date effectiveFrom = from;
         Token cursor = null;
         Date effectiveUntil = until;
@@ -426,10 +426,10 @@ public class OaiPmhServiceImpl implements OaiPmhService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ListRecordsType listRecords(Date from, Date until, OAIMetadataFormat requestedFormat,
+    public ListRecordsType listRecords(Date from, Date until, Long collectionId, OAIMetadataFormat requestedFormat,
             OAIResumptionToken resumptionToken) throws OAIException {
         ListRecordsType response = new ListRecordsType();
-        ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
+        ResumptionTokenType token = listIdentifiersOrRecords(from, until, collectionId, requestedFormat, resumptionToken, response);
         response.setResumptionToken(token);
         return response;
     }
@@ -442,10 +442,10 @@ public class OaiPmhServiceImpl implements OaiPmhService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ListIdentifiersType listIdentifiers(Date from, Date until, OAIMetadataFormat requestedFormat,
+    public ListIdentifiersType listIdentifiers(Date from, Date until, Long collectionId, OAIMetadataFormat requestedFormat,
             OAIResumptionToken resumptionToken) throws OAIException {
         ListIdentifiersType response = new ListIdentifiersType();
-        ResumptionTokenType token = listIdentifiersOrRecords(from, until, requestedFormat, resumptionToken, response);
+        ResumptionTokenType token = listIdentifiersOrRecords(from, until, null, requestedFormat, resumptionToken, response);
         response.setResumptionToken(token);
         return response;
     }
