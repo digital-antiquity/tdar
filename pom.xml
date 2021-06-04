@@ -116,7 +116,7 @@ Inheritance Hierarchy of this POM:
         <pdfbox.version>2.0.15</pdfbox.version>
         <bouncycastle.version>1.58</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
-        <http-client.version>4.5.5</http-client.version>
+        <http-client.version>4.5.13</http-client.version>
         <jackcess.version>2.2.0</jackcess.version>
         <guava.version>29.0-jre</guava.version>
         <jt-utils.version>1.4.0</jt-utils.version>
