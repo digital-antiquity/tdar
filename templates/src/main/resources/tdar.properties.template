@@ -127,7 +127,7 @@ hosted.file.store.location=${user.home}/data/tdar/hosted-filestore
 
 # the link for the "about this service"
 # default: http://www.tdar.org
-about.url=http://www.tdar.org
+about.url=https://www.tdar.org
 
 google.analytics
 
@@ -288,15 +288,15 @@ obfuscation.interceptor.disabled= false
 ##########################################
 
 # terms of service URL
-# default: http://www.tdar.org/about/policies/terms-of-use/
-tos.url=http://www.tdar.org/about/policies/terms-of-use/
+# default: https://www.tdar.org/about/policies/
+tos.url=tos.url=https://www.tdar.org/about/policies/
 
 # terms of service version
 #tos.version
 
 # Contributors agreement URL
-# default: http://www.tdar.org/about/policies/contributors-agreement/
-contributor.url=http://www.tdar.org/about/policies/contributors-agreement/
+# default: https://www.tdar.org/about/policies/contributors-agreement/
+contributor.url=https://www.tdar.org/about/policies/contributors-agreement/
 
 # contributor agreement version
 contributor.agreement.version
