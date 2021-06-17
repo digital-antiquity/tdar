@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasImage;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.fileprocessing.tasks.ImageThumbnailTask;
 import org.tdar.fileprocessing.workflows.WorkflowContext;
@@ -36,7 +37,7 @@ public class SimpleFileProcessingDao {
         // techincally this should use the proxy version of an IRFV, but it's easier here to hack it
         String filename = LOGO + FilenameUtils.getExtension(fileProxy.getName());
         FilestoreObjectType type = FilestoreObjectType.CREATOR;
-        if (persistable instanceof ResourceCollection) {
+        if (persistable instanceof ResourceCollection || persistable instanceof CollectionDisplayProperties) {
             type = FilestoreObjectType.COLLECTION;
         }
         FileStoreFile version = new FileStoreFile(type, VersionType.UPLOADED, null, filename);
