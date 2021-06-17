@@ -34,7 +34,9 @@ public class CollectionSaveObject implements Serializable {
 
         // FIXME: this is a workaround for TDAR-6240
         // system fails to save logo because display properties id is null
-        persistable.getProperties().setId(persistable.getId());
+        if(persistable.getProperties() != null) {
+            persistable.getProperties().setId(persistable.getId());
+        }
     }
 
     public ResourceCollection getCollection() {
