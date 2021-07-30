@@ -59,8 +59,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
     private static final int USE_DEFAULT_EXCEL_ROWS = -1;
-    private static final String[] defaultColors = new String[] { "#2C4D56", "#EBD790", "#4B514D", "#C3AA72", "#DC7612", "#BD3200", "#A09D5B", "#F6D86B",
-            "#660000", "#909D5B" };
+    private static final String[] defaultColors = new String[] {"#000a11", "#005F73",  "#94D2BD", "#E9D8A6", "#EE9B00",
+            "#CA6702", "#BB3E03", "#AE2012","#dd3326", "#9B1226"};
 
     private TdarConfiguration() {
         this("/tdar.properties");
