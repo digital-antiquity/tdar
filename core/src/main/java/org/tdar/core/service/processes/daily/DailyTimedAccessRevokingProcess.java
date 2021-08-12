@@ -177,8 +177,8 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledProcess {
             Email email = emailService.createMessage(EmailType.ACCESS_EXPIRE_USER_NOTIFICATION, owner.getEmail());
             email.setUserGenerated(false);
             email.addData("user", owner);
-            email.addData("notes", ownerNotes.getOrDefault(owner, new ArrayList<>()));
-            logger.debug("owner notes: {}", ownerNotes);
+            email.addData("notes", userNotes.getOrDefault(owner, new ArrayList<>()));
+            logger.debug("user notes: {}", userNotes);
             emailService.renderAndQueueMessage(email);
         }
 
