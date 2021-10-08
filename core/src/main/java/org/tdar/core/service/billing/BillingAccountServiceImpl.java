@@ -51,14 +51,20 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<BillingAccount, BillingAccountDao> implements BillingAccountService {
 
-    @Autowired
-    private AuthorizationService authorizationService;
+    AuthorizationService authorizationService;
 
-    @Autowired
     UserRightsProxyService proxyService;
 
-    @Autowired
     InvoiceDao invoiceDao;
+
+    @Autowired
+    public BillingAccountServiceImpl(AuthorizationService authorizationService, UserRightsProxyService proxyService,
+                                     InvoiceDao invoiceDao) {
+        this.authorizationService = authorizationService;
+        this.proxyService = proxyService;
+        this.invoiceDao = invoiceDao;
+    }
+
 
     /*
      * (non-Javadoc)

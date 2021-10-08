@@ -48,23 +48,31 @@ import org.tdar.utils.PersistableUtils;
 public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, InvoiceDao> implements InvoiceService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private transient GenericDao genericDao;
+
+    private final transient GenericDao genericDao;
+
+    private final transient BillingAccountDao accountDao;
+
+    private final transient AuthorizationService authorizationService;
+
+    private final transient EmailService emailService;
+
+    private final transient SerializationService serializationService;
+
+    private final transient UserNotificationService notificationService;
 
     @Autowired
-    private transient BillingAccountDao accountDao;
+    public InvoiceServiceImpl(GenericDao genericDao, BillingAccountDao accountDao,
+                          AuthorizationService authorizationService, EmailService emailService,
+                          SerializationService serializationService, UserNotificationService notificationService) {
 
-    @Autowired
-    private transient AuthorizationService authorizationService;
-
-    @Autowired
-    private transient EmailService emailService;
-
-    @Autowired
-    private transient SerializationService serializationService;
-
-    @Autowired
-    private transient UserNotificationService notificationService;
+        this.genericDao = genericDao;
+        this.accountDao = accountDao;
+        this.authorizationService = authorizationService;
+        this.emailService = emailService;
+        this.serializationService = serializationService;
+        this.notificationService = notificationService;
+    }
 
     /*
      * (non-Javadoc)
