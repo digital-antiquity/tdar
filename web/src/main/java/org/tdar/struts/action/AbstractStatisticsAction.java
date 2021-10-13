@@ -35,11 +35,9 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
     private Long id;
     private DateGranularity granularity = DateGranularity.YEAR;
 
-    @Autowired
-    protected SerializationService serializationService;
+    private SerializationService serializationService;
 
-    @Autowired
-    protected StatisticsService statisticsService;
+    private StatisticsService statisticsService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -52,7 +50,7 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
         }
         try {
             logger.debug("begin json serialization");
-            setJson(serializationService.convertToJson(getStatsForAccount().getObjectForJson()));
+            setJson(getSerializationService().convertToJson(getStatsForAccount().getObjectForJson()));
             logger.debug("done json serialization");
         } catch (IOException e) {
             logger.error("error setting json", e);
@@ -98,4 +96,21 @@ public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAc
         this.json = json;
     }
 
+    public SerializationService getSerializationService() {
+        return serializationService;
+    }
+
+    @Autowired
+    public void setSerializationService(SerializationService serializationService) {
+        this.serializationService = serializationService;
+    }
+
+    public StatisticsService getStatisticsService() {
+        return statisticsService;
+    }
+
+    @Autowired
+    public void setStatisticsService(StatisticsService statisticsService) {
+        this.statisticsService = statisticsService;
+    }
 }

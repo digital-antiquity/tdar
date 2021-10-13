@@ -8,6 +8,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
@@ -33,13 +34,27 @@ import org.tdar.web.WebFileSystemResourceService;
 
 import ro.isdc.wro.model.resource.ResourceType;
 
-public class TdarBaseActionSupport extends TdarActionSupport {
+public abstract class TdarBaseActionSupport extends TdarActionSupport {
 
-    @Autowired
     private transient WebFileSystemResourceService webFilesystemResourceService;
 
-    @Autowired
     private transient AuthorizationService authorizationService;
+
+    @Autowired
+    public final void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
+    }
+
+    public AuthorizationService getAuthorizationService() {
+        return authorizationService;
+    }
+
+
+    @Autowired
+    public final void setWebFilesystemResourceService(WebFileSystemResourceService webFilesystemResourceService){
+        this.webFilesystemResourceService = webFilesystemResourceService;
+    }
+
 
     private boolean hideExceptionArea = false;
 

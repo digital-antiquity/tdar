@@ -56,10 +56,15 @@ public class InvoiceController extends AbstractCartController {
     private PricingType pricingType = null;
     private Long accountId;
 
-    @Autowired
-    private transient InvoiceService invoiceService;
+    private final transient InvoiceService invoiceService;
 
     private Collection<BillingItem> extraBillingItems;
+
+    @Autowired
+    public InvoiceController(InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
+    }
+
 
     /**
      * This is the first step of the purchase process. The user specifies the number of files/mb or chooses a

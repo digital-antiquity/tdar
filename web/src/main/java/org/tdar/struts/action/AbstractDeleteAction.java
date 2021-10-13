@@ -43,9 +43,6 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
 
     private boolean async = true;
 
-    @Autowired
-    private transient AuthorizationService authorizationService;
-
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private DeleteIssue deleteIssue;
@@ -189,7 +186,7 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
         }
 
         // the admin rights check -- on second thought should be the fastest way to execute as it pulls from cached values
-        if (authorizationService.can(InternalTdarRights.DELETE_RESOURCES, getAuthenticatedUser())) {
+        if (getAuthorizationService().can(InternalTdarRights.DELETE_RESOURCES, getAuthenticatedUser())) {
             return;
         }
 

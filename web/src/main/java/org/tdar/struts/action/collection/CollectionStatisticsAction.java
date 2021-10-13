@@ -27,7 +27,7 @@ public class CollectionStatisticsAction extends AbstractStatisticsAction impleme
         if (collection == null) {
             addActionError("collectionStatisticsAction.no_collection");
         }
-        setStatsForAccount(statisticsService.getStatsForCollection(collection, this, getGranularity()));
+        setStatsForAccount(getStatisticsService().getStatsForCollection(collection, this, getGranularity()));
         setupJson();
     }
 

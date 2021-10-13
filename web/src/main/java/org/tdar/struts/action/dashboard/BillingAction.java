@@ -41,12 +41,16 @@ public class BillingAction extends AbstractAuthenticatableAction implements Prep
     private static final long serialVersionUID = -2489487996000481630L;
     private Set<BillingAccount> accounts = new HashSet<BillingAccount>();
     private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
-    @Autowired
-    private transient BillingAccountService accountService;
-    @Autowired
-    private transient UserNotificationService userNotificationService;
+    private final transient BillingAccountService accountService;
+    private final transient UserNotificationService userNotificationService;
 
     private List<UserNotification> currentNotifications;
+
+    @Autowired
+    public BillingAction(BillingAccountService accountService, UserNotificationService userNotificationService) {
+        this.accountService = accountService;
+        this.userNotificationService = userNotificationService;
+    }
 
     @Override
     public void validate() {

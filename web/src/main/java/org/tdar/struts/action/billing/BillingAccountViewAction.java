@@ -48,10 +48,14 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     private Long numberOfMb = 0L;
     private Date expires = new DateTime().plusYears(1).toDate();
 
+    private final transient BillingAccountService accountService;
+    private final transient AuthorizationService authorizationService;
+
     @Autowired
-    private transient BillingAccountService accountService;
-    @Autowired
-    private transient AuthorizationService authorizationService;
+    public BillingAccountViewAction(BillingAccountService accountService, AuthorizationService authorizationService) {
+        this.accountService = accountService;
+        this.authorizationService = authorizationService;
+    }
 
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);

@@ -33,10 +33,14 @@ public class ViewInvoiceAction extends AbstractAuthenticatableAction implements 
 
     private String inputResultName;
 
-    @Autowired
-    private BillingAccountService accountService;
+    private final BillingAccountService accountService;
 
     private BillingAccount account;
+
+    @Autowired
+    public ViewInvoiceAction(BillingAccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Override
     public void prepare() {

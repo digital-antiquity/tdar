@@ -30,8 +30,12 @@ public class ListBillingAccountAction extends AbstractAuthenticatableAction {
 
     private List<BillingAccount> accounts = new ArrayList<>();
 
+    private final BillingAccountService accountService;
+
     @Autowired
-    private BillingAccountService accountService;
+    public ListBillingAccountAction(BillingAccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Action(value = LIST)
     public String list() {

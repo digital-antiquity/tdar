@@ -5,12 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts_base.action.AuthenticationAware;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
@@ -19,9 +17,6 @@ import org.tdar.utils.PersistableUtils;
 public abstract class AbstractAuthenticatableAction extends TdarBaseActionSupport implements AuthenticationAware {
 
     private static final long serialVersionUID = -4055376095680758009L;
-
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Override
     @DoNotObfuscate(reason = "never obfuscate the session user")
@@ -46,39 +41,39 @@ public abstract class AbstractAuthenticatableAction extends TdarBaseActionSuppor
     }
 
     public boolean isAdministrator() {
-        return isAuthenticated() && authorizationService.isAdministrator(getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().isAdministrator(getAuthenticatedUser());
     }
 
     public boolean isEditor() {
-        return isAuthenticated() && authorizationService.isEditor(getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().isEditor(getAuthenticatedUser());
     }
 
     public boolean isAbleToFindDraftResources() {
-        return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().can(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, getAuthenticatedUser());
     }
 
     public boolean isAbleToFindDeletedResources() {
-        return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().can(InternalTdarRights.SEARCH_FOR_DELETED_RECORDS, getAuthenticatedUser());
     }
 
     public boolean isAbleToEditAnything() {
-        return isAuthenticated() && authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
     }
 
     public boolean isAbleToFindFlaggedResources() {
-        return isAuthenticated() && authorizationService.can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().can(InternalTdarRights.SEARCH_FOR_FLAGGED_RECORDS, getAuthenticatedUser());
     }
 
     public boolean isAbleToReprocessDerivatives() {
-        return isAuthenticated() && authorizationService.can(InternalTdarRights.REPROCESS_DERIVATIVES, getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().can(InternalTdarRights.REPROCESS_DERIVATIVES, getAuthenticatedUser());
     }
 
     public boolean userCan(InternalTdarRights right) {
-        return isAuthenticated() && authorizationService.can(right, getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().can(right, getAuthenticatedUser());
     }
 
     public boolean userCannot(InternalTdarRights right) {
-        return isAuthenticated() && authorizationService.cannot(right, getAuthenticatedUser());
+        return isAuthenticated() && getAuthorizationService().cannot(right, getAuthenticatedUser());
     }
 
     public boolean isContributor() {
@@ -125,12 +120,9 @@ public abstract class AbstractAuthenticatableAction extends TdarBaseActionSuppor
      */
     @Override
     public boolean isBillingManager() {
-        return authorizationService.isBillingManager(getAuthenticatedUser());
+        return getAuthorizationService().isBillingManager(getAuthenticatedUser());
     }
 
-    public AuthorizationService getAuthorizationService() {
-        return authorizationService;
-    }
 
     /**
      * Indicates to view layer whether it should show the login menu (e.g. "Welcome Back, Walter Kurtz").

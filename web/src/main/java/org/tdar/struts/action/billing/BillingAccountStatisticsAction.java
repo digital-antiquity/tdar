@@ -21,9 +21,12 @@ public class BillingAccountStatisticsAction extends AbstractStatisticsAction imp
 
     private static final long serialVersionUID = -668002786160683089L;
     private BillingAccount account;
+    private final BillingAccountService accountService;
 
     @Autowired
-    private BillingAccountService accountService;
+    public BillingAccountStatisticsAction(BillingAccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @Override
     public void prepare() throws Exception {
@@ -32,7 +35,7 @@ public class BillingAccountStatisticsAction extends AbstractStatisticsAction imp
             addActionError("billingAccountStatisticsACtion.no_account");
         }
 
-        setStatsForAccount(statisticsService.getStatsForAccount(account, this, getGranularity()));
+        setStatsForAccount(getStatisticsService().getStatsForAccount(account, this, getGranularity()));
         setupJson();
     }
 

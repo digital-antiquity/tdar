@@ -78,14 +78,18 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
-    @Autowired
     private transient AuthorizationService authorizationService;
-    @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
 
     private boolean redirectBadSlug;
     private String slug;
     private String slugSuffix;
+
+
+    @Autowired
+    public final void setFileSystemResourceService(FileSystemResourceService fileSystemResourceService) {
+        this.fileSystemResourceService  = fileSystemResourceService;
+    }
 
     public static String formatTime(long millis) {
         Date dt = new Date(millis);

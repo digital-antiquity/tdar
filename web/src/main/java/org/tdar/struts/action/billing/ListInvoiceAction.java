@@ -28,26 +28,17 @@ public class ListInvoiceAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 5946241615531835007L;
     private static final String LIST_INVOICES = "listInvoices";
-    private List<Invoice> invoices = new ArrayList<>();
+    private final List<Invoice> invoices = new ArrayList<>();
 
     @Action(value = LIST_INVOICES, results = { @Result(name = SUCCESS, location = "list-invoices.ftl") })
     public String listInvoices() {
         getInvoices().addAll(getGenericService().findAll(Invoice.class));
-        Collections.sort(getInvoices(), new Comparator<Invoice>() {
-            @Override
-            public int compare(Invoice o1, Invoice o2) {
-                return ObjectUtils.compare(o2.getDateCreated(), o1.getDateCreated());
-            }
-        });
+        getInvoices().sort((o1, o2) -> ObjectUtils.compare(o2.getDateCreated(), o1.getDateCreated()));
         return SUCCESS;
     }
 
     public List<Invoice> getInvoices() {
         return invoices;
-    }
-
-    public void setInvoices(List<Invoice> invoices) {
-        this.invoices = invoices;
     }
 
 }
