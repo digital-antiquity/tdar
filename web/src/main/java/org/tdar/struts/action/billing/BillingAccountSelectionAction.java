@@ -42,10 +42,7 @@ import com.opensymphony.xwork2.Validateable;
 @HttpsOnly
 public class BillingAccountSelectionAction extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
-    public static final String UPDATE_QUOTAS = "updateQuotas";
-    public static final String FIX_FOR_DELETE_ISSUE = "fix";
     public static final String CHOOSE = "choose";
-    public static final String VIEW_ID = "${id}";
     private static final long serialVersionUID = 2912533895769561917L;
     public static final String NEW_ACCOUNT = "new_account";
     private Long invoiceId;
@@ -62,12 +59,16 @@ public class BillingAccountSelectionAction extends AbstractAuthenticatableAction
     private String ownerProperName;
     private TdarUser owner;
 
-    @Autowired
     private transient BillingAccountService accountService;
-    @Autowired
     private transient AuthorizationService authorizationService;
 
     private Invoice invoice;
+
+    @Autowired
+    public BillingAccountSelectionAction (BillingAccountService accountService, AuthorizationService authorizationService) {
+        this.accountService = accountService;
+        this.authorizationService = authorizationService;
+    }
 
     @Override
     public void prepare() {

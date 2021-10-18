@@ -21,11 +21,14 @@ public class BillingAccountDeleteAction extends AbstractDeleteAction<BillingAcco
 
     private static final long serialVersionUID = -1678413641698666417L;
 
-    @Autowired
     private transient BillingAccountService billingAccountService;
+    private transient AuthorizationService authorizationService;
 
     @Autowired
-    private transient AuthorizationService authorizationService;
+    public BillingAccountDeleteAction(BillingAccountService billingAccountService, AuthorizationService authorizationService) {
+        this.billingAccountService = billingAccountService;
+        this.authorizationService = authorizationService;
+    }
 
     @Override
     protected BillingAccount loadPersistable() {
