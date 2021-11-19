@@ -8,13 +8,8 @@ package org.tdar.search.geosearch;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +26,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.base.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.service.GenericKeywordService;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -42,11 +38,9 @@ public class GeoSearchService {
 
     private static final String GEO_JSON_FOLDER = "geoJson";
 
-    @Autowired
     GeoSearchDao geoSearchDao;
-
-    @Autowired
     DatasetDao datasetDao;
+    GenericKeywordService keywordService;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,9 +56,17 @@ public class GeoSearchService {
 
     private static final String COL_ADMIN_NAME = "admin_name";
 
+    @Autowired
+    public GeoSearchService(GeoSearchDao geoSearchDao, DatasetDao datasetDao, GenericKeywordService keywordService) {
+        this.geoSearchDao = geoSearchDao;
+        this.datasetDao = datasetDao;
+        this.keywordService = keywordService;
+    }
+
     /*
-     * extracts all geographic keywords from a lat-long-box, if however, the area of the box is deemed too large, it will not add county information. This is
-     * beacuse you don't want to show county info if you're provided with an entire country
+     * extracts all geographic keywords from a lat-long-box, if however, the area of the box is deemed too large,
+     * it will not add county information. This is beacuse you don't want to show county info if you're provided
+     * with an entire country.
      */
     public Set<GeographicKeyword> extractAllGeographicInfo(LatitudeLongitudeBox latLong) {
         Set<GeographicKeyword> geoSet = new HashSet<GeographicKeyword>();
@@ -152,20 +154,42 @@ public class GeoSearchService {
         return geoSearchDao.isEnabled();
     }
 
+    /**
+     * Search for locality names within the specified latLongBoxes in the GIS database and store them as managed
+     * geokeyword objects to the specified resource.  This method attempts to find preexisting keywords for these
+     * locality names in the metadata database and, if no keywords are found for a given locality, this method
+     * will create new persisted keyword entities from these localities. If a locality matches a "de-duped" geokeyword,
+     * the system will replace the de-duped keyword with that keyword's authority record.
+     * @param resource
+     * @param allLatLongBoxes
+     */
     @Transactional(readOnly = false)
     public void processManagedGeographicKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
         // needed in cases like the APIController where the collection is not properly initialized
         if (resource.getManagedGeographicKeywords() == null) {
             resource.setManagedGeographicKeywords(new LinkedHashSet<GeographicKeyword>());
         }
+        List<String> ignoreProps = new ArrayList<>(Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS));
+        ignoreProps.add("status");
 
         Set<GeographicKeyword> kwds = new HashSet<GeographicKeyword>();
         for (LatitudeLongitudeBox latLong : allLatLongBoxes) {
             Set<GeographicKeyword> managedKeywords = extractAllGeographicInfo(latLong);
             logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
             kwds.addAll(
-                    datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
+                    datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, ignoreProps,
                             FindOptions.FIND_FIRST_OR_CREATE));
+
+            // replace de-duped records with authority records
+            kwds = kwds.stream().map(kwd -> {
+                GeographicKeyword authority = kwd;
+                if(kwd.isDuplicate()) {
+                    authority = (GeographicKeyword)keywordService.findAuthority(kwd);
+                }
+                return authority;
+
+            }).collect(Collectors.toSet());
+
         }
         PersistableUtils.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
 
