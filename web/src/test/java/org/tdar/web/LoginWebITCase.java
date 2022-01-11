@@ -54,7 +54,7 @@ public class LoginWebITCase extends AbstractAnonymousWebTestCase {
         logger.trace(getPageBodyCode());
         assertTextPresent("User Agreements");
         clickElementWithId("decline");
-        assertTextPresentInPage("What can you dig up");
+        assertTextPresentInPage("Preserving the Past for the Future");
         login("bea@tdar.net", PASSWORD);
         clickLinkOnPage("My Profile");
         setInput("contributor", "true");

@@ -206,7 +206,7 @@
 
 
 
-<#macro searchHero imageClass="whatcanyoudig-image" title="What can you dig up?" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."
+<#macro searchHero imageClass="whatcanyoudig-image" title="Preserving the Past for the Future" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."
  idField="" idValue="" searchPrompt="Find archaeological data...">
         <div class="${imageClass} homepage-header-image"><!-- had container -->
             <h2 class="color-title">${title}</h2>
