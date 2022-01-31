@@ -96,7 +96,7 @@ Inheritance Hierarchy of this POM:
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
-        <asm.version>6.1</asm.version>
+        <asm.version>9.2</asm.version>
         <maven-jar-version>2.6</maven-jar-version>
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
