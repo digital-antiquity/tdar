@@ -23,7 +23,7 @@
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-ajax": "~0.1.13",
     "karma-jasmine-jquery": "^0.1.1",
-    "karma-junit-reporter": "^1.1.0",
+    "karma-junit-reporter": "^2.0.1",
     "karma-phantomjs-launcher": "^1.0.1",
     "moxios": "0.4.0",
     "node-sass": "^4.13.1",
