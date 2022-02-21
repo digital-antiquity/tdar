@@ -17,6 +17,7 @@ import org.dataone.service.types.v1.ObjectList;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,7 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
     // SerializationService serializationService;
     @Test
     @Rollback
+    @Ignore("temporarily ignoring:TDAR-6445")
     public void testOaiORE() throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         Document doc = genericDao.find(Document.class, 4230L);
         String mapDocument = service.createResourceMap(doc);
@@ -78,6 +80,7 @@ public class DataOneServiceITCase extends AbstractTransactionalJUnit4SpringConte
 
     @Test
     @Rollback(false)
+    @Ignore("temporarily ignoring:TDAR-6445")
     public void testDCTransformer() throws Exception {
         Image doc = new Image();
         doc.setTitle("test");
