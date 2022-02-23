@@ -70,7 +70,7 @@ Inheritance Hierarchy of this POM:
         <spring.framework.version>5.1.0.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>42.2.1</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
-        <aws.java.version>1.11.419</aws.java.version>
+        <aws.java.version>1.12.164</aws.java.version>
         <wro4j.version>1.8.0</wro4j.version>
         <liquibase.version>3.5.5</liquibase.version>
         <junit.version>4.13.1</junit.version>
