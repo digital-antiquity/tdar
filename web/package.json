@@ -11,7 +11,7 @@
     "angular": "^1.8.0",
     "angular-mocks": "^1.8.2",
     "axios": "^0.21.2",
-    "deasync": "^0.1.15",
+    "deasync": "^0.1.24",
     "es6-promise": "4.1.1",
     "jasmine-core": "^2.99.1",
     "karma": "^4.1.0",
