@@ -122,7 +122,7 @@ Inheritance Hierarchy of this POM:
         <jt-utils.version>1.4.0</jt-utils.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
-        <commons-codec.version>1.11</commons-codec.version>
+        <commons-codec.version>1.15</commons-codec.version>
         <commons.math.version>3.6.1</commons.math.version>
         <joda-time.version>2.9.7</joda-time.version>
         <findbugs.version>3.0.0</findbugs.version>
