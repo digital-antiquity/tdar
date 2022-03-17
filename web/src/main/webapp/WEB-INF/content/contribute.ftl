@@ -21,7 +21,14 @@ color: #7d7a77;
 <body>
 <#escape _untrusted as _untrusted?html >
 
-<h1>Upload &amp; <span class="red">Contribute</span> to ${siteAcronym}</h1>
+<div class="row mb-2">
+    <div class="col-6">
+        <a href="/cart/add" class="btn btn-primary btn-lg">Start Your Upload</a>
+    </div>
+</div>
+
+
+<h1>What You Can Upload &amp; <span class="red">Contribute</span> to ${siteAcronym}</h1>
 
 
 <div class="row mb-2">
@@ -145,70 +152,6 @@ color: #7d7a77;
 
 
 
-<hr />
-
-
-
-         <div class="row">
-            <div class="col-12">
-
-
-                <h2>Preservation Packages
-                <span><a class="button pull-right" href="<@s.url value="/cart/add"/>">Start Now</a>&nbsp;<a class="button pull-right" style="margin-left: 5px;margin-right:5px" 
-                href="<@s.url value="/cart/add"/>">Redeem Voucher</a></span></h2>
-    <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-row disableFormNavigate" enctype='multipart/form-data' action='/cart/process-choice'>
-                               <@s.hidden name="invoice.numberOfFiles" label="Number of Files" cssClass="integer col-2" maxlength=9  />
-                               <@s.hidden name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer col-2" maxlength=9 />
-                    
-
-                    <@invoiceCommon.pricingOption label="Small" files="1 File" storage="10 MB" cost=10 />
-                    <@invoiceCommon.pricingOption label="Medium" files="10 Files" storage="100 MB" cost=100 />
-                    <@invoiceCommon.pricingOption label="Large" files="100 Files" storage="1 GB" cost=500 />
-    </@s.form>
-            </div>
-        </div>
-
-
-<h2>Confidentiality &amp; Access Rights</h2>
-
-<div class="row">
-    <div class="col-6">Should you have sensitive materials, you have a number of options for protecting it in tDAR:
-        <ul>
-            <li>Redaction of Lat/Long or coordinate information</li>
-            <li>Limiting access to designated users</li>
-            <li>Marking files as confidential</li>
-            <li>Embargoing access to materials for 4 years</li>
-        </ul>
-        Once a file ismarked as confidential or is embargoed, only users you specify can view or download files.</div>
-    <div class="col-6"><a href="https://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png"><img alt="" class="alignnone size-full wp-image-161" height="279" src="https://www.tdar.org/wp-content/uploads/2012/10/bg-rights.png" title="bg-rights" width="477"></a></div>
-</div>
-
-<hr>
-
-<h2>Things to Consider</h2>
-<div class="row">
-    <div class="col-6">As you collect your data and digital documents, keep these important things in mind:
-        <ul>
-            <li>File naming conventions: Make it easy to distinguish different stages, drafts of documents, spreadsheets, databases, etc. Provide the most complete and recent set of data for long-term preservation and access.</li>
-            <li>Back up files: Don’t lose important data and have to recreate them.</li>
-            <li>Protection: Separate potentially&nbsp;confidential information.</li>
-            <li>Once marked as confidential or embargoed, only users you specify can view or download files.</li>
-            <li>Consistency is key.</li>
-        </ul>
-    </div>
-    
-    <div class="col-6">What to put into tDAR:
-        <div class="entry page clear">
-            <ul>
-                <li>various kinds of documents, e.g., reports of archaeological field investigations, articles and presentations, field or lab notes, catalogs, dissertations or theses, collections and historical research,&nbsp;and historical documents and correspondence about archaeological resources, research projects, and organizations;</li>
-                <li>spreadsheets, databases, and coding sheets that describe archaeological data sets about artifacts, features, sites, or other archaeological phenomenon;</li>
-                <li>photographs, maps, and illustrations of archaeological resources or related to archaeological investigations; and,</li>
-                <li>data about archaeological resources collected by various sensors, e.g., GPS, GIS, Resisitivity, GPR, and various sonar instruments.</li>
-            </ul>
-        </div>
-    </div>
-    
-</div>
 <script>
     $(document).ready(function () {
         TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/api/cart/quote"/>");
