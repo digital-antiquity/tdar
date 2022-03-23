@@ -373,9 +373,9 @@
            whitelabel_collection.id to a non-identity column assuming the old liquibase behavior. I've
            updated the changeset to expect an IDENTITY column.
          -->
-<!--        <dropDefaultValue tableName="whitelabel_collection" columnName="id"/>-->
-<!--        <dropSequence sequenceName="whitelabel_collection_id_seq" />-->
-        <sql>ALTER TABLE whitelabel_collection ALTER COLUMN id DROP IDENTITY;</sql>
+        <dropDefaultValue tableName="whitelabel_collection" columnName="id"/>
+        <dropSequence sequenceName="whitelabel_collection_id_seq" />
+<!--        <sql>ALTER TABLE whitelabel_collection ALTER COLUMN id DROP IDENTITY;</sql>-->
     </changeSet>
 
 
