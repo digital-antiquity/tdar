@@ -584,7 +584,7 @@ Inheritance Hierarchy of this POM:
         <dependency>
             <groupId>com.github.jsonld-java</groupId>
             <artifactId>jsonld-java</artifactId>
-            <version>0.10.0</version>
+            <version>0.13.4</version>
         </dependency>
         <dependency>
             <groupId>org.tukaani</groupId>
