@@ -130,7 +130,7 @@
                             <a href="/collection/65171/society-for-american-archaeology" title="Society for American Archaeology" class="nav-link align-middle tdarNavItem">SAA</a>
                         </li>
                         <li class="nav-item mr-sm-2">
-                            <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html" class="nav-link align-middle tdarNavItem">Give</a>
+                            <a href="https://live-digant.ws.asu.edu/donate/" class="nav-link align-middle tdarNavItem">Give</a>
                         </li>
 
                     </ul>
