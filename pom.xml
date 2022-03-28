@@ -112,7 +112,7 @@ Inheritance Hierarchy of this POM:
         <geotools.version>19.1</geotools.version>
         <tika.version>1.23</tika.version>
         <rome.version>1.18.0</rome.version>
-        <jackson.version>2.12.1</jackson.version>
+        <jackson.version>2.13.2</jackson.version>
         <pdfbox.version>2.0.24</pdfbox.version>
         <bouncycastle.version>1.67</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
@@ -125,7 +125,7 @@ Inheritance Hierarchy of this POM:
         <commons-codec.version>1.15</commons-codec.version>
         <commons.math.version>3.6.1</commons.math.version>
         <joda-time.version>2.9.7</joda-time.version>
-        <findbugs.version>3.0.0</findbugs.version>
+        <findbugs.version>3.0.1u2</findbugs.version>
         <ant.version>1.10.11</ant.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <commons-lang.version>2.6</commons-lang.version>
