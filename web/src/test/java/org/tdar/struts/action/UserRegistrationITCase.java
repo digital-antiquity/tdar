@@ -33,7 +33,6 @@ import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
-import com.vividsolutions.jts.util.Assert;
 
 /**
  * $Id$
@@ -92,13 +91,13 @@ public class UserRegistrationITCase extends AbstractControllerITCase implements 
 
         person.setContributor(false);
         ResourceController controller = generateNewInitializedController(ResourceController.class, person);
-        Assert.equals(ResourceController.CONTRIBUTOR, controller.execute());
+        assertEquals(ResourceController.CONTRIBUTOR, controller.execute());
 
         DocumentController controller2 = generateNewInitializedController(DocumentController.class, person);
         controller2.prepare();
-        Assert.equals(ResourceController.CONTRIBUTOR, controller2.add());
+        assertEquals(ResourceController.CONTRIBUTOR, controller2.add());
         person.setContributor(true);
-        Assert.equals(ResourceController.SUCCESS, controller2.add());
+        assertEquals(ResourceController.SUCCESS, controller2.add());
     }
 
     @Test

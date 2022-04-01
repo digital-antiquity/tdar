@@ -20,7 +20,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataSourceException;
-import org.geotools.factory.Hints;
+import org.geotools.util.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.exception.TdarRecoverableRuntimeException;
