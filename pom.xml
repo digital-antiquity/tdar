@@ -110,7 +110,7 @@ Inheritance Hierarchy of this POM:
         <owlapi.version>5.1.0</owlapi.version>
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
-        <geotools.version>19.1</geotools.version>
+        <geotools.version>21.5</geotools.version>
         <tika.version>1.23</tika.version>
         <rome.version>1.18.0</rome.version>
         <jackson.version>2.12.1</jackson.version>
