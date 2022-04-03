@@ -26,8 +26,8 @@ import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.kml.KMLConfiguration;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Parser;
+import org.geotools.xsd.Configuration;
+import org.geotools.xsd.Parser;
 import org.opengis.coverage.grid.Format;
 import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.coverage.grid.GridCoverageReader;
@@ -38,7 +38,7 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.VersionType;
 import org.xml.sax.SAXException;
 
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 
 public class GisFileReaderTask extends AbstractTask {
 

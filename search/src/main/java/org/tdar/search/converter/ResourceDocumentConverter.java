@@ -46,8 +46,8 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.SiteCodeExtractor;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.io.WKTWriter;
 
 public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 

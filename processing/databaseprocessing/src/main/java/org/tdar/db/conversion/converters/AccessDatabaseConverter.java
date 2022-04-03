@@ -33,8 +33,8 @@ import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.WKBReader;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKBReader;
 
 /**
  * The class reads an access db file, and converts it into other types of db
@@ -77,7 +77,6 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
      * Dumps the access database wrapped by this converter into the target
      * database (in our current case, PostgresDatabase).
      * 
-     * @param targetDatabase
      */
     @Override
     public void dumpData() throws Exception {
@@ -175,7 +174,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
                     // this does not work, see ogrpgeogeometry.cpp in ( extended_shapefile_format.pdf)
                     // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
                     @SuppressWarnings("unused")
-                    com.vividsolutions.jts.geom.Geometry g = null;
+                    org.locationtech.jts.geom.Geometry g = null;
                     try {
                         String encoded = new String(Hex.encodeHex(data));
                         g = new WKBReader(factory).read(encoded.getBytes());
