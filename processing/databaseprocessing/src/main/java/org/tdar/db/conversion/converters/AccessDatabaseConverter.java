@@ -15,6 +15,7 @@ import java.util.Set;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.db.ImportDatabase;
@@ -76,7 +77,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
     /**
      * Dumps the access database wrapped by this converter into the target
      * database (in our current case, PostgresDatabase).
-     * 
+     *
      */
     @Override
     public void dumpData() throws Exception {
@@ -174,7 +175,7 @@ public class AccessDatabaseConverter extends AbstractDatabaseConverter {
                     // this does not work, see ogrpgeogeometry.cpp in ( extended_shapefile_format.pdf)
                     // and http://stackoverflow.com/questions/11483189/transact-sql-function-for-convert-from-esri-personal-geodatabase-shape-column-to
                     @SuppressWarnings("unused")
-                    org.locationtech.jts.geom.Geometry g = null;
+                    Geometry g = null;
                     try {
                         String encoded = new String(Hex.encodeHex(data));
                         g = new WKBReader(factory).read(encoded.getBytes());
