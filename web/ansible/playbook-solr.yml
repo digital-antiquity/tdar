@@ -49,7 +49,7 @@
       maven_artifact:
         group_id: org.locationtech.jts
         artifact_id: jts-core
-        version: 1.15.0
+        version: 1.16.0
         repository_url: https://repo1.maven.org/maven2
         dest: /opt/solr/server/lib/
         mode: 0644
