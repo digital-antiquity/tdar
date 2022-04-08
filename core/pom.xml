@@ -611,6 +611,13 @@
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <version>${apache.cxf.version}</version>
+        </dependency>
+
     </dependencies>
 
 

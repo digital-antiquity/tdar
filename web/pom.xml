@@ -274,8 +274,13 @@
                     <groupId>org.seleniumhq.selenium</groupId>
                 </exclusion>
             </exclusions>
-			
 		</dependency>
+
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${apache.cxf.version}</version>
+        </dependency>
     </dependencies>
 
 
