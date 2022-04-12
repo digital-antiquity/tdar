@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "angular": "^1.8.0",
-    "angular-mocks": "^1.8.2",
+    "angular-mocks": "^1.8.3",
     "axios": "^0.21.2",
     "deasync": "^0.1.26",
     "es6-promise": "4.1.1",
