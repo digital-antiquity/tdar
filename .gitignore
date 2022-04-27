@@ -18,6 +18,17 @@ web/src/main/resources/search.properties
 web/src/main/resources/spring-local-settings.xml
 web/src/main/resources/tdar.properties
 web/src/main/resources/jetty/jetty-ssl.keystore.old
+web/src/main/webapp/components/**/package.json
+web/src/main/webapp/components/**/package-lock.json
+web/src/main/webapp/components/**/yarn.lock
+web/src/main/webapp/components/**/Gemfile
+web/src/main/webapp/components/**/Gemfile.lock
+balk/src/main/webapp/components/**/package.json
+balk/src/main/webapp/components/**/package-lock.json
+balk/src/main/webapp/components/**/yarn.lock
+balk/src/main/webapp/components/**/Gemfile
+balk/src/main/webapp/components/**/Gemfile.lock
+
 
 webservice/oai-pmh/src/main/resources/hibernate-ehcache.xml
 webservice/oai-pmh/src/main/resources/hibernate.properties

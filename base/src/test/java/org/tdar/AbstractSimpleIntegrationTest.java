@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
-import org.junit.rules.TestName;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.slf4j.Logger;
@@ -45,9 +44,6 @@ public abstract class AbstractSimpleIntegrationTest extends AbstractTransactiona
 
     
     @Rule
-    public TestName testName = new TestName();
-
-    @Rule
     public TestWatcher failWatcher = new TestWatcher() {
 
         @Override
@@ -56,11 +52,20 @@ public abstract class AbstractSimpleIntegrationTest extends AbstractTransactiona
         }
     };
 
-    @Before
-    public void announceTestStarting() {
-        String fmt = " ***   RUNNING TEST: {}.{}() ***";
-        logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
-    }
+    @Rule
+    public TestWatcher watcher = new TestWatcher() {
+        @Override
+        protected void starting(Description description) {
+            String fmt = " ***   RUNNING TEST: {}.{}() ***";
+            logger.info(fmt, description.getTestClass().getSimpleName(), description.getMethodName());
+        }
+
+        @Override
+        protected void finished(Description description) {
+            String fmt = " ***   COMPLETED TEST: {}.{}() ***";
+            logger.info(fmt, description.getTestClass().getSimpleName(), description.getMethodName());
+        }
+    };
 
     public String getTestFilePath() {
         return PATH;
@@ -69,13 +74,6 @@ public abstract class AbstractSimpleIntegrationTest extends AbstractTransactiona
     // Called when your test fails. Did I say "when"? I meant "if".
     public void onFail(Throwable e, Description description) {
     }
-
-    @After
-    public void announceTestOver() {
-        String fmt = " *** COMPLETED TEST: {}.{}() ***";
-        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
-    }
-
 
     @Autowired
     public void setTransactionManager(PlatformTransactionManager transactionManager) {

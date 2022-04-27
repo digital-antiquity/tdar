@@ -130,7 +130,7 @@
                             <a href="/collection/65171/society-for-american-archaeology" title="Society for American Archaeology" class="nav-link align-middle tdarNavItem">SAA</a>
                         </li>
                         <li class="nav-item mr-sm-2">
-                            <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html" class="nav-link align-middle tdarNavItem">Give</a>
+                            <a href="https://live-digant.ws.asu.edu/donate/" class="nav-link align-middle tdarNavItem">Give</a>
                         </li>
 
                     </ul>
@@ -206,7 +206,7 @@
 
 
 
-<#macro searchHero imageClass="whatcanyoudig-image" title="What can you dig up?" subtitle="<strong>The Digital Archaeological Record (tDAR)</strong> is your online archive<br/> for archaeological information."
+<#macro searchHero imageClass="whatcanyoudig-image" title="Preserving the Past for the Future" subtitle="<strong>${siteAcronym}</strong> is your online archive for archaeological information."
  idField="" idValue="" searchPrompt="Find archaeological data...">
         <div class="${imageClass} homepage-header-image"><!-- had container -->
             <h2 class="color-title">${title}</h2>

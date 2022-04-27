@@ -310,6 +310,7 @@ public abstract class AbstractSeleniumWebITCase {
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "--ignore-certificate-errors",
+                        "--disable-features=ChromeWhatsNewUI",
 
                         "noerrdialogs");
 

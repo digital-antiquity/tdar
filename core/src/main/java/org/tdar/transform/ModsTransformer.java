@@ -75,6 +75,12 @@ public abstract class ModsTransformer<R extends Resource> implements
         TitleInfo title = mods.createTitleInfo();
         title.addTitle(getX().stripNonValidXMLCharacters(source.getTitle()));
 
+        String abst = source.getDescription();
+        if (abst != null) {
+            mods.addAbstract(getX().stripNonValidXMLCharacters(abst), null);
+        }
+
+
         // add resource creators
         ArrayList<ResourceCreator> creators = new ArrayList<ResourceCreator>(source.getResourceCreators());
         Collections.sort(creators);
@@ -229,9 +235,6 @@ public abstract class ModsTransformer<R extends Resource> implements
                         false, false);
             }
 
-            // FIXME: fixme
-            // if (informationResourceFormat != null)
-            // mods.createPhysicalDescription().addInternetMediaType(informationResourceFormat.getMimeType());
             populateAuthorSection(source, mods);
             getX().logChange();
             return mods;
@@ -259,11 +262,6 @@ public abstract class ModsTransformer<R extends Resource> implements
         @Override
         public ModsDocument transform(Document source) {
             ModsDocument mods = super.transform(source);
-
-            String abst = source.getDescription();
-            if (abst != null) {
-                mods.addAbstract(getX().stripNonValidXMLCharacters(abst), null);
-            }
 
             if (source.getDoi() != null) {
                 mods.addIdentifier(getX().stripNonValidXMLCharacters(source.getDoi()), "doi", false, null);

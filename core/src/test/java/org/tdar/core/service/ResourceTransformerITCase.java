@@ -8,6 +8,7 @@ import java.io.StringWriter;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
@@ -39,6 +40,8 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
 
     }
 
+    
+    @Ignore
     @Test
     public void transformDC() throws JAXBException {
         Document d = new Document();

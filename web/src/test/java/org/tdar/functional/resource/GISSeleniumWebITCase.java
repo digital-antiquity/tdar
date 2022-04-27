@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -85,7 +87,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     }
 
     @SuppressWarnings("unused")
-    @Test
+    @Test @Ignore("Ignoring for now until TDAR-6410 resolved")
     public void testUploadShapefile() throws FileNotFoundException {
         gotoPage("/geospatial/add");
         WebElement form = find("#metadataForm").first();

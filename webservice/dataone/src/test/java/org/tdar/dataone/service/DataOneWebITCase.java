@@ -25,6 +25,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.test.web.AbstractGenericWebTest;
@@ -38,6 +39,7 @@ import org.xml.sax.SAXException;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
+@Ignore("temporarily ignoring: TDAR-6445")
 public class DataOneWebITCase extends AbstractGenericWebTest {
 
     private static final String TEST_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;

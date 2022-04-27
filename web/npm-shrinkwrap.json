@@ -67,9 +67,9 @@
       "dev": true
     },
     "angular-mocks": {
-      "version": "1.7.9",
-      "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.7.9.tgz",
-      "integrity": "sha512-LQRqqiV3sZ7NTHBnNmLT0bXtE5e81t97+hkJ56oU0k3dqKv1s6F+nBWRlOVzqHWPGFOiPS8ZJVdrS8DFzHyNIA==",
+      "version": "1.8.3",
+      "resolved": "https://registry.npmjs.org/angular-mocks/-/angular-mocks-1.8.3.tgz",
+      "integrity": "sha512-vqsT6zwu80cZ8RY7qRQBZuy6Fq5X7/N5hkV9LzNT0c8b546rw4ErGK6muW1u2JnDKYa7+jJuaGM702bWir4HGw==",
       "dev": true
     },
     "ansi-regex": {
@@ -207,20 +207,12 @@
       "dev": true
     },
     "axios": {
-      "version": "0.21.1",
-      "resolved": "https://registry.npmjs.org/axios/-/axios-0.21.1.tgz",
-      "integrity": "sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==",
+      "version": "0.21.2",
+      "resolved": "https://registry.npmjs.org/axios/-/axios-0.21.2.tgz",
+      "integrity": "sha512-87otirqUw3e8CzHTMO+/9kh/FSgXt/eVDvipijwDtEuwbkySWZ9SBm6VEubmJ/kLKEoLQV/POhxXFb66bfekfg==",
       "dev": true,
       "requires": {
-        "follow-redirects": "^1.10.0"
-      },
-      "dependencies": {
-        "follow-redirects": {
-          "version": "1.13.1",
-          "resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.13.1.tgz",
-          "integrity": "sha512-SSG5xmZh1mkPGyKzjZP8zLjltIfpW32Y5QpdNJyjcfGxK3qo3NDDkZOZSFiGn1A6SclQxY9GzEwAHQ3dmYRWpg==",
-          "dev": true
-        }
+        "follow-redirects": "^1.14.0"
       }
     },
     "backo2": {
@@ -384,9 +376,9 @@
       }
     },
     "bower": {
-      "version": "1.8.8",
-      "resolved": "https://registry.npmjs.org/bower/-/bower-1.8.8.tgz",
-      "integrity": "sha512-1SrJnXnkP9soITHptSO+ahx3QKp3cVzn8poI6ujqc5SeOkg5iqM1pK9H+DSc2OQ8SnO0jC/NG4Ur/UIwy7574A=="
+      "version": "1.8.14",
+      "resolved": "https://registry.npmjs.org/bower/-/bower-1.8.14.tgz",
+      "integrity": "sha512-8Rq058FD91q9Nwthyhw0la9fzpBz0iwZTrt51LWl+w+PnJgZk9J+5wp3nibsJcIUPglMYXr4NRBaR+TUj0OkBQ=="
     },
     "bower-config": {
       "version": "0.5.3",
@@ -1115,9 +1107,9 @@
       }
     },
     "deasync": {
-      "version": "0.1.19",
-      "resolved": "https://registry.npmjs.org/deasync/-/deasync-0.1.19.tgz",
-      "integrity": "sha512-oh3MRktfnPlLysCPpBpKZZzb4cUC/p0aA3SyRGp15lN30juJBTo/CiD0d4fR+f1kBtUQoJj1NE9RPNWQ7BQ9Mg==",
+      "version": "0.1.26",
+      "resolved": "https://registry.npmjs.org/deasync/-/deasync-0.1.26.tgz",
+      "integrity": "sha512-YKw0BmJSWxkjtQsbgn6Q9CHSWB7DKMen8vKrgyC006zy0UZ6nWyGidB0IzZgqkVRkOglAeUaFtiRTeLyel72bg==",
       "dev": true,
       "requires": {
         "bindings": "^1.5.0",
@@ -1735,13 +1727,10 @@
       "dev": true
     },
     "follow-redirects": {
-      "version": "1.5.10",
-      "resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.5.10.tgz",
-      "integrity": "sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==",
-      "dev": true,
-      "requires": {
-        "debug": "=3.1.0"
-      }
+      "version": "1.14.7",
+      "resolved": "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.7.tgz",
+      "integrity": "sha512-+hbxoLbFMbRKDwohX8GkTataGqO6Jb7jGwpAlwgy2bIz25XtRm7KEzJM76R1WiNT5SwZkX4Y75SwBolkpmE7iQ==",
+      "dev": true
     },
     "forever-agent": {
       "version": "0.6.1",
@@ -3820,9 +3809,9 @@
       "dev": true
     },
     "node-addon-api": {
-      "version": "1.7.1",
-      "resolved": "https://registry.npmjs.org/node-addon-api/-/node-addon-api-1.7.1.tgz",
-      "integrity": "sha512-2+DuKodWvwRTrCfKOeR24KIc5unKjOh8mz17NCzVnHWfjAdDqbfbjqh7gUT+BkXBRQM52+xCHciKWonJ3CbJMQ==",
+      "version": "1.7.2",
+      "resolved": "https://registry.npmjs.org/node-addon-api/-/node-addon-api-1.7.2.tgz",
+      "integrity": "sha512-ibPK3iA+vaY1eEjESkQkM0BbCqFOaZMiXRTtdB0u7b4djtY6JnsjvPdUHVMg6xQt3B8fpTTWHI9A+ADjM9frzg==",
       "dev": true
     },
     "node-fs": {

@@ -368,8 +368,14 @@
             Changing whitelabel collection ID from SERIAL to BIGINT.  Note that SERIAL is just a BIGINT with  a
             default value to a dynamically-generated sequence.
         </comment>
+        <!-- 16-mar-2022 note: as of liquibase 4.8.0, liquibase emits DDL to create IDENTITY columns
+           instead of using BIGSERIAL columns w/ named sequnce.   This changeset attempts to convert
+           whitelabel_collection.id to a non-identity column assuming the old liquibase behavior. I've
+           updated the changeset to expect an IDENTITY column.
+         -->
         <dropDefaultValue tableName="whitelabel_collection" columnName="id"/>
         <dropSequence sequenceName="whitelabel_collection_id_seq" />
+<!--        <sql>ALTER TABLE whitelabel_collection ALTER COLUMN id DROP IDENTITY;</sql>-->
     </changeSet>
 
 
