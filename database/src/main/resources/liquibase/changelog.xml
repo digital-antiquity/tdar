@@ -13,4 +13,5 @@
   <include file="quartz.xml"  relativeToChangelogFile="true"/> 
   <include file="radiocarbon.xml"  relativeToChangelogFile="true"/> 
   <include file="radiocarbon-mimbres.xml"  relativeToChangelogFile="true"/>
+  <include file="radiocarbon-numismatics.xml"  relativeToChangelogFile="true"/>
 </databaseChangeLog>
