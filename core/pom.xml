@@ -559,7 +559,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
+            <version>${jackson.databind.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
