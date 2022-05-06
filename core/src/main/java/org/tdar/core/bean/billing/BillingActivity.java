@@ -34,7 +34,8 @@ public class BillingActivity extends AbstractPersistable implements Comparable<B
 
     public enum BillingActivityType {
         PRODUCTION,
-        TEST;
+        TEST,
+        ACCESSION;
     }
 
     @Length(max = FieldLength.FIELD_LENGTH_255)
@@ -288,5 +289,9 @@ public class BillingActivity extends AbstractPersistable implements Comparable<B
         return (isNullOrZero(getNumberOfHours()) && isNullOrZero(getNumberOfResources())
                 && (getNumberOfFiles() != null) && (getNumberOfFiles() > 0)
                 && isNullOrZero(getNumberOfBytes()));
+    }
+
+    public boolean isAccessionFee() {
+        return getActivityType() == BillingActivityType.ACCESSION;
     }
 }

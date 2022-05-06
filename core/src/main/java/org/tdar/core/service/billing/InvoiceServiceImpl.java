@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -493,4 +494,12 @@ public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, I
     public PricingOption getCheapestActivityBySpace(long filesUsed, long spaceUsedInMb) {
         return getDao().getCheapestActivityBySpace(filesUsed, spaceUsedInMb);
     }
+
+
+    @Override
+    public List<BillingActivity> getApplicableAccessionFeeActivities(BillingAccount account) {
+        return getActiveBillingActivities().stream().filter(BillingActivity::isAccessionFee).collect(Collectors.toList());
+    }
+
+
 }

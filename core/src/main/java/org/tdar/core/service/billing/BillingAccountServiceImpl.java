@@ -15,12 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.billing.BillingAccountGroup;
-import org.tdar.core.bean.billing.BillingActivityModel;
-import org.tdar.core.bean.billing.BillingItem;
-import org.tdar.core.bean.billing.Coupon;
-import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.*;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -634,5 +629,4 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
 
         getDao().saveOrUpdate(account);
     }
-
 }

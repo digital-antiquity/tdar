@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.tdar.core.bean.billing.BillingActivity;
-import org.tdar.core.bean.billing.BillingItem;
-import org.tdar.core.bean.billing.Coupon;
-import org.tdar.core.bean.billing.Invoice;
+import org.tdar.core.bean.billing.*;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
@@ -123,5 +120,16 @@ public interface InvoiceService {
     PricingOption getCheapestActivityByFiles(long filesUsed, long spaceUsedInMb, boolean b);
 
     PricingOption getCheapestActivityBySpace(long filesUsed, long spaceUsedInMb);
+
+
+    /**
+     * For the specified billing account, determine whether the system should apply an accession fee to that billing
+     * account's next invoice.  If so, return a list of applicable activities.  If the billing account does not
+     * require an accession fee, return an empty list.
+     * @param account
+     * @return
+     */
+    List<BillingActivity> getApplicableAccessionFeeActivities(BillingAccount account);
+
 
 }
