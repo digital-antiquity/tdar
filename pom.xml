@@ -119,7 +119,7 @@ Inheritance Hierarchy of this POM:
         <http-components.version>4.4.9</http-components.version>
         <http-client.version>4.5.13</http-client.version>
         <jackcess.version>2.2.0</jackcess.version>
-        <guava.version>30.1-jre</guava.version>
+        <guava.version>31.1-jre</guava.version>
         <jt-utils.version>1.4.0</jt-utils.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -139,7 +139,7 @@ Inheritance Hierarchy of this POM:
         <jersey.version>2.27</jersey.version>
         <icu4j.version>58.2</icu4j.version>
         <htmlunit.version>2.33</htmlunit.version>
-        <selenium.version>3.14.0</selenium.version>
+        <selenium.version>4.1.2</selenium.version>
         <dbcp.version>2.2.0</dbcp.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
