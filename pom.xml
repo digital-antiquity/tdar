@@ -102,7 +102,7 @@ Inheritance Hierarchy of this POM:
         <ehcache.version>2.10.4.4.8</ehcache.version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
         <apache.cxf.version>3.2.4</apache.cxf.version>
-        <poi.version>4.0.0</poi.version>
+        <poi.version>5.2.2</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <jena.version>3.3.0</jena.version>
