@@ -243,7 +243,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         switch (this) {
             case DATASET:
             case GEOSPATIAL: // ?
-                // case SENSORY_DATA:
+                 case SENSORY_DATA:
                 return true;
             default:
                 return false;
