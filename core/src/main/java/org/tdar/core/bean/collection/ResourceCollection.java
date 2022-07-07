@@ -17,33 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ConstraintMode;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -235,7 +209,8 @@ public class ResourceCollection extends AbstractPersistable
     @JoinColumn(name = "collection_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT), nullable = true)
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
+    @OrderBy("timestamp DESC")
+    private List<CollectionRevisionLog> collectionRevisionLog = new ArrayList<>();
 
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
@@ -711,11 +686,11 @@ public class ResourceCollection extends AbstractPersistable
         this.created = created;
     }
 
-    public Set<CollectionRevisionLog> getCollectionRevisionLog() {
+    public List<CollectionRevisionLog> getCollectionRevisionLog() {
         return collectionRevisionLog;
     }
 
-    public void setCollectionRevisionLog(Set<CollectionRevisionLog> collectionRevisionLog) {
+    public void setCollectionRevisionLog(List<CollectionRevisionLog> collectionRevisionLog) {
         this.collectionRevisionLog = collectionRevisionLog;
 
     }

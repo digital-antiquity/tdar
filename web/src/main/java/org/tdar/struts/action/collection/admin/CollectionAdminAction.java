@@ -88,7 +88,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private ArrayList<Status> selectedResourceStatuses = new ArrayList<>();
     private ArrayList<ResourceAccessType> fileAccessTypes = new ArrayList<>();
     private Collection<File> xmlFiles;
-    private Set<CollectionRevisionLog> logEntries;
+    private List<CollectionRevisionLog> logEntries;
 
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
@@ -333,11 +333,11 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         this.xmlFiles = xmlFiles;
     }
 
-    public Set<CollectionRevisionLog> getLogEntries() {
+    public List<CollectionRevisionLog> getLogEntries() {
         return logEntries;
     }
 
-    public void setLogEntries(Set<CollectionRevisionLog> logEntries) {
+    public void setLogEntries(List<CollectionRevisionLog> logEntries) {
         this.logEntries = logEntries;
     }
 
