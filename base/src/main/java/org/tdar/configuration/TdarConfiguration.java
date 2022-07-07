@@ -642,6 +642,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("pay.per.contribution.enabled", false);
     }
 
+    public boolean isAccessionFeesEnabled() {
+        return assistant.getBooleanProperty("pay.per.contribution.enabled", false);
+    }
+
     public boolean isHttpsEnabled() {
         return assistant.getBooleanProperty("https.enabled", false);
     }

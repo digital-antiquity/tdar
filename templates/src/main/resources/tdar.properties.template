@@ -71,6 +71,10 @@ app.contact.email=info@digitalantiquity.org
 # whether payments are enabled
 pay.per.contribution.enabled=false
 
+# whether accession pricing feature enabled (default: false
+accession.pricing.enabled=false
+
+
 # email address of the Billing Admin
 #billing.admin.email
 

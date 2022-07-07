@@ -30,4 +30,13 @@ public class TdarConfigurationTest {
 
 
 
+    @Test
+    public void testAccessionPricingEnabled() {
+        TdarConfiguration tdc = TdarConfiguration.getInstance();
+        assertFalse("accession fee feature should be disabled", tdc.isAccessionFeesEnabled());
+    }
+    
+
+
+
 }
