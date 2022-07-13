@@ -190,6 +190,22 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
 
     /**
+     * Trivial confirmation that pagination works by requesting a "page" that starts at
+     * record 1 instead of record zero.  This text exists to catch issues appeared
+     * after we upgraded from Struts 2.5.18 to 2.5.29.
+     */
+    @Test
+    public void testCollectionViewWithNonzeroStartingRecord(){
+        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
+        String url = setupListForTest(TITLE + " (general search)", titles, CollectionVisibility.VISIBLE);
+        url = url + "?id=";
+        gotoPage(url);
+        assertThat(getText(), containsString(TITLE));
+        gotoPage("/");
+    }
+
+
+    /**
      * Perform a "quick search" - that is, enter the specified search text into the quicksearch box and
      * submit the form by hitting the RETURN key.
      * @param searchTerm
