@@ -199,6 +199,12 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+            <version>3.2.4</version>
+        </dependency>
+
     </dependencies>
     <build>
         <finalName>tdar-struts-base</finalName>

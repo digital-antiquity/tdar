@@ -110,7 +110,7 @@ Inheritance Hierarchy of this POM:
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
         <geotools.version>19.1</geotools.version>
-        <tika.version>1.23</tika.version>
+        <tika.version>2.3.0</tika.version>
         <rome.version>1.18.0</rome.version>
         <jackson.version>2.13.2</jackson.version>
         <jackson.databind.version>2.13.2.2</jackson.databind.version>
