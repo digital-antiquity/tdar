@@ -26,7 +26,7 @@ import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.DefaultDetector;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.metadata.TikaMetadataKeys;
+import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.mime.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public abstract class BaseFilestore implements Filestore {
     public static String getContentType(File file, String overrideValue) {
         MediaType mediaType = null;
         Metadata md = new Metadata();
-        md.set(TikaMetadataKeys.RESOURCE_NAME_KEY, file.getName());
+        md.set(TikaCoreProperties.RESOURCE_NAME_KEY, file.getName());
         Detector detector = new DefaultDetector(TikaConfig.getDefaultConfig().getMimeRepository());
         try (
                 FileInputStream fis = new FileInputStream(file);
