@@ -3,13 +3,14 @@ package org.tdar.core.service;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 
+import org.hamcrest.collection.IsCollectionWithSize;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -228,6 +229,16 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase implements
 
         // account1 and account2 should be equal because the system should detect on the second call that it is not necessary to create a new account
         assertThat(account1, is(account2));
+    }
+
+    @Test
+    @Rollback
+    public void testGetApplicableAccessionFeeActivities() {
+        BillingAccount accountForPerson = setupAccountForPerson(getBasicUser());
+        List<BillingActivity> activities = invoiceService.getApplicableAccessionFeeActivities(accountForPerson);
+        assertThat(activities, is(IsCollectionWithSize.hasSize(1)));
+
+        assertThat("returned list should only contain accession fees", activities.get(0).isAccessionFee(), is(true));
     }
 
 }

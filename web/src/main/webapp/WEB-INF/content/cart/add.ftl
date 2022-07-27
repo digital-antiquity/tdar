@@ -421,7 +421,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
             </thead>
             <tbody>
             <#list activities as act>
-                <#if !act.production >
+                <#if act.test >
                     <tr>
                         <td>${act.name} <@s.hidden name="extraItemIds[${act_index}]" value="${act.id?c}"/> </td>
                         <td><@s.textfield name="extraItemQuantities[${act_index}]" cssClass="integer col-2 orderinfo" theme="simple"/></td>
