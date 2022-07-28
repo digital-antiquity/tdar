@@ -17,5 +17,5 @@
     <include file="../liquibase/quartz.xml"  relativeToChangelogFile="true"/> 
     <include file="additional-quartz-test-setup.xml" relativeToChangelogFile="true"/>
     <include file="../liquibase/radiocarbon.xml"  relativeToChangelogFile="true"/>
-    <include file="radiocarbon-numismatics.xml"  relativeToChangelogFile="true"/>
+    <include file="../liquibase/radiocarbon-numismatics.xml"  relativeToChangelogFile="true"/>
 </databaseChangeLog>

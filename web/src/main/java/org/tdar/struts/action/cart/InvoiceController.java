@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -222,12 +223,10 @@ public class InvoiceController extends AbstractCartController {
     }
 
     void setupActivities() {
-        // we only care about the production+active activities
-        for (BillingActivity act : invoiceService.getActiveBillingActivities()) {
-            if (act.isProduction() || isEditor()) {
-                getActivities().add(act);
-            }
-        }
+        // we only care about the production+active activities & accession fees (if enabled)
+        getActivities().addAll(invoiceService.getActiveBillingActivities().stream()
+                .filter( act -> act.isProduction() || act.isAccessionFee() || isEditor())
+                .collect(Collectors.toList()));
     }
 
     /**

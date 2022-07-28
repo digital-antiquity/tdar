@@ -56,13 +56,17 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                 <table class="table rateTable small">
                       <thead class="thead-dark">
 
-                        <tr style="background-color:#EEE">
+                        <tr>
                             <th>
                                 Digital Preservation
                             </th>
                             <th>
                                 Rate
                             </th>
+                        </tr>
+                        <tr>
+                            <td>Accessioning Fee</td>
+                            <td>$200</td>
                         </tr>
                         <tr>
                             <td>
