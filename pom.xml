@@ -139,7 +139,7 @@ Inheritance Hierarchy of this POM:
         <jersey.version>2.27</jersey.version>
         <icu4j.version>58.2</icu4j.version>
         <htmlunit.version>2.33</htmlunit.version>
-        <selenium.version>4.1.2</selenium.version>
+        <selenium.version>4.3.0</selenium.version>
         <dbcp.version>2.2.0</dbcp.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
