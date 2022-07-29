@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.UrlConstants;
+import org.tdar.configuration.TdarConfiguration;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
@@ -126,6 +127,22 @@ public class InvoiceController extends AbstractCartController {
      */
     @Action("review-unauthenticated")
     public String showInvoice() {
+
+        //if unauthenticated and no accession fees added so far... add one!
+        getLogger().debug("Accession fees enabled: {}", TdarConfiguration.getInstance().isAccessionFeesEnabled());
+        if(TdarConfiguration.getInstance().isAccessionFeesEnabled()) {
+            if(!getInvoice().hasAccessionFee()) {
+                List<BillingActivity> accessionFeeActivities = invoiceService.getApplicableAccessionFeeActivities(null);
+                if(!accessionFeeActivities.isEmpty()) {
+                    BillingItem accessionItem = new BillingItem();
+                    accessionItem.setActivity(accessionFeeActivities.iterator().next());
+                    accessionItem.setQuantity(1);
+                    getInvoice().getItems().add(accessionItem);
+                }
+            }
+        }
+
+
         if (getInvoice() == null) {
             return "redirect-start";
         }

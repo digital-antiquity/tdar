@@ -481,4 +481,11 @@ public class Invoice extends AbstractPersistable implements Updatable {
         return val.longValue() < comp;
     }
 
+    /**
+     *
+     * @return true if this invoice contains at least one accession fee and accession fees are enabled, otherwise false.
+     */
+    public boolean hasAccessionFee() {
+        return getItems().stream().anyMatch(item -> item.getActivity().isAccessionFee());
+    }
 }
