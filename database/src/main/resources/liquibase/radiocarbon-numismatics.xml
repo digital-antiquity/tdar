@@ -20,7 +20,7 @@
             <column name="price" valueNumeric="200.00" />
             <column name="min_allowed_files" />
             <column name="model_id" valueNumeric="1" />
-            <column name="activity_type" value="ACCESSION_FEE" />
+            <column name="activity_type" value="ACCESSION" />
             <column name="sort_order" valueNumeric="1" />
         </insert>
     </changeSet>
