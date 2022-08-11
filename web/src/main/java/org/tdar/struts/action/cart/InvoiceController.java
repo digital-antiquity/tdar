@@ -111,7 +111,9 @@ public class InvoiceController extends AbstractCartController {
     @PostOnly
     public String processInvoice() {
         try {
+            //FIXME: move accession check to service layer (e.g. processInvoice)
             setInvoice(invoiceService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType, accountId));
+            addAccessionIfNeeded();
         } catch (Exception trex) {
             addActionError(trex.getLocalizedMessage());
             return INPUT;
@@ -128,10 +130,19 @@ public class InvoiceController extends AbstractCartController {
     @Action("review-unauthenticated")
     public String showInvoice() {
 
-        //if unauthenticated and no accession fees added so far... add one!
-        getLogger().debug("Accession fees enabled: {}", TdarConfiguration.getInstance().isAccessionFeesEnabled());
+
+        if (getInvoice() == null) {
+            return "redirect-start";
+        }
+
+        return SUCCESS;
+    }
+
+    private void addAccessionIfNeeded() {
+        getLogger().debug("Accession fees enabled:{}\t invoice.hasAccessionFee():{}", TdarConfiguration.getInstance().isAccessionFeesEnabled(), getInvoice().hasAccessionFee());
         if(TdarConfiguration.getInstance().isAccessionFeesEnabled()) {
             if(!getInvoice().hasAccessionFee()) {
+                getLogger().debug("Adding accession fee to invoice {}", getInvoice());
                 List<BillingActivity> accessionFeeActivities = invoiceService.getApplicableAccessionFeeActivities(null);
                 if(!accessionFeeActivities.isEmpty()) {
                     BillingItem accessionItem = new BillingItem();
@@ -141,13 +152,6 @@ public class InvoiceController extends AbstractCartController {
                 }
             }
         }
-
-
-        if (getInvoice() == null) {
-            return "redirect-start";
-        }
-
-        return SUCCESS;
     }
 
     public List<BillingActivity> getActivities() {
