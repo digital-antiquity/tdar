@@ -12,6 +12,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
 import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.CapabilityType;
@@ -249,9 +250,10 @@ public abstract class AbstractSeleniumWebITCase {
         switch (browser) {
             case FIREFOX:
                 FirefoxBinary fb = new FirefoxBinary();
-                for (String key : environment.keySet()) {
-                    fb.setEnvironmentProperty(key, environment.get(key));
-                }
+                GeckoDriverService builder =  (new GeckoDriverService.Builder()).withEnvironment(environment).build();
+//                for (String key : environment.keySet()) {
+//                    fb.setEnvironmentProperty(key, environment.get(key));
+//                }
                 FirefoxProfile profile = new FirefoxProfile(browserProfileDir);
                 if (TestConfiguration.isMac()) {
                     profile.setPreference("focusmanager.testmode", true);
@@ -266,14 +268,16 @@ public abstract class AbstractSeleniumWebITCase {
                 // Use this to disable Acrobat plugin for previewing PDFs in Firefox (if you have Adobe reader installed on your computer)
                 profile.setPreference("plugin.scan.Acrobat", "99.0");
                 profile.setPreference("plugin.scan.plid.all", false);
-                DesiredCapabilities caps = DesiredCapabilities.firefox();
-                caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
+//                DesiredCapabilities caps = DesiredCapabilities.firefox();
+//                caps.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
                 FirefoxOptions options = new FirefoxOptions();
+                options.setCapability("firefox:" + CapabilityType.LOGGING_PREFS, logPrefs);
+                options.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
                 options.setBinary(fb);
                 options.setProfile(profile);
-                options.merge(caps);
+//                options.merge(caps);
                 // profile.setPreference("browser.download.dir","c:\\downloads");
-                rawDriver = new FirefoxDriver(options);
+                rawDriver = new FirefoxDriver(builder, options);
 
                 break;
             case CHROME:
@@ -327,9 +331,10 @@ public abstract class AbstractSeleniumWebITCase {
                 break;
             case IE:
                 System.setProperty("webdriver.ie.driver", CONFIG.getIEDriverPath());
-                DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
+//                DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
+                DesiredCapabilities ieCapabilities = new DesiredCapabilities();
                 rawDriver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
-                rawDriver.manage().timeouts().implicitlyWait(90, TimeUnit.SECONDS);
+                rawDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(90));
                 if (TdarConfiguration.getInstance().isHttpsEnabled()) {
                     fail("please disable https before testing this");
                 }
@@ -687,7 +692,8 @@ public abstract class AbstractSeleniumWebITCase {
         // change polling interval from default of 500ms to 125ms. This may be a bad idea.
 
         if (pollingEvery != null && !pollingEvery.isZero()) {
-            wait.pollingEvery(pollingEvery.toMillis(), TimeUnit.MILLISECONDS);
+//            wait.pollingEvery(pollingEvery.toMillis(), TimeUnit.MILLISECONDS);
+            wait.pollingEvery(Duration.ofMillis(pollingEvery.toMillis()));
         }
 
         try {

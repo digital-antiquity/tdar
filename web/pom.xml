@@ -262,7 +262,7 @@
 		<dependency>
 		    <groupId>ru.yandex.qatools.ashot</groupId>
 		    <artifactId>ashot</artifactId>
-		    <version>1.5.3</version>
+		    <version>1.5.4</version>
 		    <scope>test</scope>
             <exclusions>
                 <exclusion>
