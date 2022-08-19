@@ -406,7 +406,7 @@ Inheritance Hierarchy of this POM:
             <dependency>
                 <groupId>org.locationtech.jts</groupId>
                 <artifactId>jts-core</artifactId>
-                <version>1.15.0</version>
+                <version>1.16.0</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -461,7 +461,7 @@ Inheritance Hierarchy of this POM:
             </dependency>
             <dependency>
                 <groupId>org.apache.tika</groupId>
-                <artifactId>tika-parsers</artifactId>
+                <artifactId>tika-parsers-standard-package</artifactId>
                 <version>${tika.version}</version>
                 <!-- LICENSE: APACHE 2.0 -->
             </dependency>
