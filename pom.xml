@@ -68,7 +68,7 @@ Inheritance Hierarchy of this POM:
         <lucene.version>7.3.1</lucene.version>
         <hibernate.version>5.2.17.Final</hibernate.version>
         <spring.framework.version>5.1.0.RELEASE</spring.framework.version>
-        <postgresql.jdbc.version>42.3.3</postgresql.jdbc.version>
+        <postgresql.jdbc.version>42.4.1</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
         <aws.java.version>1.12.187</aws.java.version>
         <wro4j.version>1.8.0</wro4j.version>
@@ -127,7 +127,7 @@ Inheritance Hierarchy of this POM:
         <commons.math.version>3.6.1</commons.math.version>
         <joda-time.version>2.9.7</joda-time.version>
         <findbugs.version>3.0.1u2</findbugs.version>
-        <ant.version>1.10.11</ant.version>
+        <ant.version>1.10.12</ant.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <commons-lang.version>2.6</commons-lang.version>
         <cglib.version>3.2.5</cglib.version>
