@@ -1056,7 +1056,7 @@ public abstract class AbstractSeleniumWebITCase {
         // if called too soon, page navigation might not have happened yet - give it a second.
         if (pageReady.apply(getDriver())) {
             try {
-                WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(1), Duration.ofSeconds(100));
+                WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofMillis(500), Duration.ofMillis(100));
                 wait.until(pageNotReady);
             } catch (Exception ignored) {
             }
