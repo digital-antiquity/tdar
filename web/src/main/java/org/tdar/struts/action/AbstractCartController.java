@@ -139,4 +139,8 @@ public abstract class AbstractCartController extends AbstractAuthenticatableActi
     public void setAccounts(List<BillingAccount> accounts) {
         this.accounts = accounts;
     }
+
+    public boolean isAccessionFeeEnabled() {
+        return getTdarConfiguration().isAccessionFeesEnabled();
+    }
 }

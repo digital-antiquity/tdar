@@ -64,10 +64,12 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 Rate
                             </th>
                         </tr>
+                        <#if accessionFeeEnabled>
                         <tr>
                             <td>Accessioning Fee</td>
                             <td>$200</td>
                         </tr>
+                        </#if>
                         <tr>
                             <td>
                                 1-99 Files

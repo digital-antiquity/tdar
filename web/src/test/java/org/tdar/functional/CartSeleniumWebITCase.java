@@ -27,6 +27,7 @@ import org.tdar.UrlConstants;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.ByLabelText;
 import org.tdar.functional.util.WebElementSelection;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.Pair;
 
 /**
@@ -56,6 +57,34 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         gotoPage(CART_ADD);
         waitForPageload();
         logger.debug(getText());
+        selectPackage();
+        assertLoggedOut();
+        logger.debug(getText());
+        logger.debug(getCurrentUrl());
+        // now we are on the review form (w/ registration/login forms)
+        // fill out required user registration fields and submit form
+        assertThat(getCurrentUrl(), endsWith(UrlConstants.CART_REVIEW_UNAUTHENTICATED));
+        UserRegistration reg = createUserRegistration("bob");
+        fillOutRegistration(reg);
+        // wait for spam check
+        waitFor(5);
+        submitForm("#registrationForm .submitButton");
+
+        completePurchase();
+    }
+
+    /**
+     * When accession fees enabled, make sure system adds accession fee
+     * @throws InterruptedException
+     */
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
+    public void testVisitorPurchaseWithAccessionFee() throws InterruptedException {
+        // start at the cart page, and click one of the suggested packages
+        gotoPage(CART_ADD);
+        waitForPageload();
+        logger.debug(getText());
+        assertThat(getText(), containsString("Accessioning Fee"));
         selectPackage();
         assertLoggedOut();
         logger.debug(getText());
