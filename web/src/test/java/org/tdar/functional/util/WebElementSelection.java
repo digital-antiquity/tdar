@@ -12,7 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -104,7 +104,7 @@ public class WebElementSelection implements Iterable<WebElement> {
         for (WebElement elem : this) {
             try {
                 elem.click();
-            } catch (ElementNotVisibleException ex) {
+            } catch (ElementNotInteractableException ex) {
                 // if element isn't visible, maybe a scrollspy is in the way?
                 logger.debug("element not visible.  attempting to scoot...");
                 scoot(0, -200);
@@ -477,7 +477,7 @@ public class WebElementSelection implements Iterable<WebElement> {
                             elem.sendKeys(val);
                             break;
                     }
-                } catch (ElementNotVisibleException env) {
+                } catch (ElementNotInteractableException env) {
                     logger.error("{} not visible: {}", elem.getTagName(), elem.getAttribute("name"));
                     throw env;
                 }

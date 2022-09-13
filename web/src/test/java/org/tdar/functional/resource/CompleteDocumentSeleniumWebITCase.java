@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.ElementNotInteractableException;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -317,7 +317,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
                     logger.trace("setting value for field: {} - start", key);
                     find(By.name(key)).val(val);
                     logger.trace("setting value for field: {} - end", key);
-                } catch (ElementNotVisibleException en) {
+                } catch (ElementNotInteractableException en) {
                     logger.error("element not visible: {} {}", key, val);
                     fail("could not find " + key + " because it was not visible");
                 }
