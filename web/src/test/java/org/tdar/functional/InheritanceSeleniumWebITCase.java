@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Project;
 
+import java.time.Duration;
+
 //@RunWith(MultipleWebTdarConfigurationRunner.class)
 //@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.SELECT2})
 public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
@@ -193,7 +195,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find("#projectId").toSelect().selectByVisibleText(project.getTitle());
 
         // inherit everything
-        WebDriverWait wait = new WebDriverWait(getDriver(), 5);
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(5));
         WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#cbSelectAllInheritance")));
         cb.click();
         waitFor(ExpectedConditions.elementToBeSelected(By.id("cbSelectAllInheritance")));
