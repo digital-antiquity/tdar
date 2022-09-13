@@ -333,7 +333,10 @@ public abstract class AbstractSeleniumWebITCase {
                 System.setProperty("webdriver.ie.driver", CONFIG.getIEDriverPath());
 //                DesiredCapabilities ieCapabilities = DesiredCapabilities.internetExplorer();
                 DesiredCapabilities ieCapabilities = new DesiredCapabilities();
-                rawDriver = new InternetExplorerDriver(configureCapabilities(ieCapabilities));
+                Capabilities caps = configureCapabilities(ieCapabilities);
+                InternetExplorerOptions ieOpts = new InternetExplorerOptions();
+                ieOpts.merge(caps);
+                rawDriver = new InternetExplorerDriver(ieOpts);
                 rawDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(90));
                 if (TdarConfiguration.getInstance().isHttpsEnabled()) {
                     fail("please disable https before testing this");
@@ -598,7 +601,7 @@ public abstract class AbstractSeleniumWebITCase {
             fail(String.format("Requested timeout of %s exceeds maximum timeout of", timeout, WAITFOR_TIMEOUT_MAX));
         }
         // FIXME: rewrite in terms of waitFor(ExpectedCondition, int)
-        WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
+        WebDriverWait wait = new WebDriverWait(driver, timeout);
         List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
         WebElementSelection selection = new WebElementSelection(elements, driver);
         return selection;
@@ -687,7 +690,7 @@ public abstract class AbstractSeleniumWebITCase {
     public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout, Duration pollingEvery) {
         T value = null;
         getStopWatch("wait").resume();
-        WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
+        WebDriverWait wait = new WebDriverWait(driver, timeout);
 
         // change polling interval from default of 500ms to 125ms. This may be a bad idea.
 
@@ -1053,14 +1056,14 @@ public abstract class AbstractSeleniumWebITCase {
         // if called too soon, page navigation might not have happened yet - give it a second.
         if (pageReady.apply(getDriver())) {
             try {
-                WebDriverWait wait = new WebDriverWait(getDriver(), 1, 100);
+                WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofMillis(500), Duration.ofMillis(100));
                 wait.until(pageNotReady);
             } catch (Exception ignored) {
             }
 
         }
 
-        WebDriverWait wait = new WebDriverWait(getDriver(), timeout);
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(timeout));
         wait.until(pageReady);
     }
 
