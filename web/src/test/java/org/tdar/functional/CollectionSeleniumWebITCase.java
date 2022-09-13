@@ -2,6 +2,7 @@ package org.tdar.functional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -187,7 +188,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         // share are hidden, so should not see it
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
     }
-
+    
 
     /**
      * Perform a "quick search" - that is, enter the specified search text into the quicksearch box and

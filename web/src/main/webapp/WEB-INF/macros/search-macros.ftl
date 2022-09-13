@@ -127,7 +127,7 @@
     <a id="${linkId}"  href="<@searchUrl path><#nested></@searchUrl>">${linkText}</a>
     </#macro>
 
-    <#macro searchUrl path><@s.url escapeAmp="false" includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>
+    <#macro searchUrl path><@s.url escapeAmp="false" includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>
 
     <#macro refineUrl actionName=actionName>
         <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution","multi":"basic"}><#t>
