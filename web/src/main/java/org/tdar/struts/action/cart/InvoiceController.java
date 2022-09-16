@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.UrlConstants;
 import org.tdar.configuration.TdarConfiguration;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
@@ -25,6 +26,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.dao.external.payment.PaymentMethod;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.struts.action.AbstractCartController;
@@ -59,13 +61,18 @@ public class InvoiceController extends AbstractCartController {
     private Long accountId;
 
     private final transient InvoiceService invoiceService;
+    private final transient BillingAccountService accountService;
 
     private Collection<BillingItem> extraBillingItems;
 
     @Autowired
-    public InvoiceController(InvoiceService invoiceService) {
+    public InvoiceController(InvoiceService invoiceService, BillingAccountService accountService) {
         this.invoiceService = invoiceService;
+        this.accountService = accountService;
     }
+
+
+
 
 
     /**
@@ -84,6 +91,7 @@ public class InvoiceController extends AbstractCartController {
     public String execute() {
         // just in case a user comes through and explicitly wants to start over
         clearPendingInvoice();
+
         return SUCCESS;
     }
 
@@ -112,8 +120,8 @@ public class InvoiceController extends AbstractCartController {
     public String processInvoice() {
         try {
             //FIXME: move accession check to service layer (e.g. processInvoice)
-            setInvoice(invoiceService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType, accountId));
             addAccessionIfNeeded();
+            setInvoice(invoiceService.processInvoice(getInvoice(), getAuthenticatedUser(), code, extraBillingItems, pricingType, accountId));
         } catch (Exception trex) {
             addActionError(trex.getLocalizedMessage());
             return INPUT;
@@ -148,7 +156,8 @@ public class InvoiceController extends AbstractCartController {
                     BillingItem accessionItem = new BillingItem();
                     accessionItem.setActivity(accessionFeeActivities.iterator().next());
                     accessionItem.setQuantity(1);
-                    getInvoice().getItems().add(accessionItem);
+                    extraBillingItems.add(accessionItem);
+//                    getInvoice().getItems().add(accessionItem);
                 }
             }
         }
@@ -217,7 +226,15 @@ public class InvoiceController extends AbstractCartController {
             getInvoice().setDefaultPaymentMethod();
         }
 
+        //Load the list of admin-only "extra" billing items that may be added to an invoice.
         extraBillingItems = invoiceService.lookupExtraBillingActivities(extraItemIds, extraItemQuantities);
+
+        //If logged-in, load list of applicable billing accounts
+        //fixme: duplicated section from CartReviewPurchaseAction
+        setAccounts(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
+        if (CollectionUtils.isNotEmpty(getAccounts())) {
+            getAccounts().add(new BillingAccount("Add an account"));
+        }
 
     }
 

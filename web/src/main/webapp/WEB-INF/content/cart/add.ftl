@@ -121,6 +121,21 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer col-4 orderinfo" maxlength=9 />
                             </td>
                         </tr>
+                        <#if authenticated>
+                        <tr>
+                            <th class="borderRight">Billing Account</th>
+                            <td class="custom">
+                                <@s.select labelposition='top'  name='id' emptyOption="false" id="select-existing-account"
+                                list='%{accounts}'  listValue='name' listKey="id" title="Address Type" cssClass="input-xlarge" value="id" />
+                                <div class="add-new hidden">
+                                    <#-- NOTE: these should not be the account. variants as we want to not overwrite the values-->
+                                    <@s.textfield name="account.name" cssClass="input-xlarge" label="Account Name"/>
+                                    <@s.textarea name="account.description" cssClass="input-xlarge" label="Account Description"  cols="80"  rows="4" />
+                                    <p>Note: you can modify this account later to change the name, description, or specify who can charge it.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        </#if>
                         <tr>
                             <th class="borderRight">
                                 Cost
@@ -455,6 +470,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
     $(document).ready(function () {
         TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/api/cart/quote"/>");
         TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete"), true, false);
+        TDAR.pricing.initBillingChoice();
     });
 </script>
 
