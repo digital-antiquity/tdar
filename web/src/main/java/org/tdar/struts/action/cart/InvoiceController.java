@@ -65,6 +65,17 @@ public class InvoiceController extends AbstractCartController {
 
     private Collection<BillingItem> extraBillingItems;
 
+    // FIXME : consider pulling id, selectedAccount and billingAccount into AbstractCartController
+    // id of one of the account chosen from the dropdown list
+    private long id = -1L;
+
+    // account chosen from the dropdown list
+    private BillingAccount selectedAccount = null;
+
+    // Or a user can specify a new account name
+    private BillingAccount account = new BillingAccount();
+
+
     @Autowired
     public InvoiceController(InvoiceService invoiceService, BillingAccountService accountService) {
         this.invoiceService = invoiceService;
@@ -236,6 +247,10 @@ public class InvoiceController extends AbstractCartController {
             getAccounts().add(new BillingAccount("Add an account"));
         }
 
+        //If we are service /process-choice, the user may have specified a billing account
+        selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts(), getAuthenticatedUser());
+
+
     }
 
     public AuthorizedUser getBlankAuthorizedUser() {
@@ -313,6 +328,22 @@ public class InvoiceController extends AbstractCartController {
 
     public void setAffiliations(List<UserAffiliation> affiliations) {
         this.affiliations = affiliations;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public BillingAccount getSelectedAccount() {
+        return selectedAccount;
+    }
+
+    public BillingAccount getAccount() {
+        return account;
     }
 
 }
