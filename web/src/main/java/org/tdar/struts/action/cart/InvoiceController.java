@@ -248,7 +248,9 @@ public class InvoiceController extends AbstractCartController {
         }
 
         //If we are service /process-choice, the user may have specified a billing account
-        selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts(), getAuthenticatedUser());
+        if("process-choice".equals(getActionName())) {
+            selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts(), getAuthenticatedUser());
+        }
 
 
     }
