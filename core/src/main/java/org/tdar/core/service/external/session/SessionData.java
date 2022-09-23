@@ -1,6 +1,8 @@
 package org.tdar.core.service.external.session;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.PersistableUtils;
@@ -19,13 +21,17 @@ public class SessionData implements Serializable {
 
     private static final long serialVersionUID = 2786144717909265676L;
 
-    private String[] parameters;
+    private List<String> parameters;
     private Long tdarUserId;
     private Long invoiceId;
     private String username;
 
+    public SessionData () {
+        this.parameters = new ArrayList<>();
+    }
+
     public void clearAuthenticationToken() {
-        this.parameters = null;
+        this.parameters.clear();
         this.tdarUserId = null;
         this.invoiceId = null;
         this.username = null;
@@ -40,7 +46,7 @@ public class SessionData implements Serializable {
         return String.format("Auth user: %s [object id: %s]", tdarUserId, super.toString());
     }
 
-    public String[] getParameters() {
+    public List<String> getParameters() {
         return parameters;
     }
 

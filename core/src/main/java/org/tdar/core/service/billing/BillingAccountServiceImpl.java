@@ -452,9 +452,9 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
 
     }
 
-    /**
-     * If an invoice is not assigned to a billing account, reate a billing account with a default name and
-     * assign it to the specified invoice.
+    /***
+     * Returns a billing account associated with the specified invoice.  If no such billing account exists,
+     * create a billing account with the default name, owned by the specified authenticatedUser
      */
     @Transactional(readOnly = false)
     private BillingAccount processBillingAccountChoice(Invoice invoice, TdarUser authenticatedUser) {

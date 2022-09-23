@@ -46,6 +46,9 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
     public void prepare() {
         super.prepare();
 
+        getLogger().debug("session data parameters::");
+        getSessionData().getParameters().forEach((param) -> getLogger().debug("  param value: {}", param));
+
         if (!validateInvoice()) {
             return;
         }
