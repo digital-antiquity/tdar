@@ -15,6 +15,10 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractCartController;
 
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
+import org.tdar.struts_base.action.PersistableLoadingAction;
+import org.tdar.utils.PersistableUtils;
+
+import java.util.List;
 
 /**
  * Created by JAMES on 6/14/2014.
@@ -61,6 +65,8 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
         }
         setAccounts(accountService.listAvailableAccountsForUser(owner));
 
+
+
         // the account id may have been set already by the "add invoice" link on /billing/{id}/view
         if (id == -1L && getInvoice() != null) {
             getLogger().debug("looking for account by invoice {}", getInvoice());
@@ -80,11 +86,31 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
             selectedAccount = getGenericService().find(BillingAccount.class, id);
         }
 
-        getLogger().debug("selected account: {}", selectedAccount);
-        getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
+
+        // if user is taking authenticated purchase path, Billing account information will be set already in params
+        // FIXME: magic numbers
+        // FIXME: bad idea to assume params will be in this order
+        List<String> sessionDataParams = getSessionData().getParameters();
+        if(sessionDataParams.size() > 0) {
+            selectedAccount = new BillingAccount();
+            setId(Long.parseLong(sessionDataParams.get(1)));
+            selectedAccount.setId(Long.parseLong(sessionDataParams.get(1)));
+            selectedAccount.setName(sessionDataParams.get(3));
+            selectedAccount.setDescription(sessionDataParams.get(5));
+//            getAccounts().add(selectedAccount);
+            // Did user choose existing account, or pick a new account?
+            if(PersistableUtils.isNullOrTransient(selectedAccount)) {
+                account.setName(selectedAccount.getName());
+                account.setDescription(selectedAccount.getDescription());
+            }
+        }
+
         if (CollectionUtils.isNotEmpty(getAccounts())) {
             getAccounts().add(new BillingAccount("Add an account"));
         }
+
+        getLogger().debug("selected account: {}", selectedAccount);
+        getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
 
         // if user is currently not contributor, show them the ToS agreement
         showContributorAgreement = !getAuthenticatedUser().isContributor();

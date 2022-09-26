@@ -257,6 +257,8 @@ public class InvoiceController extends AbstractCartController {
             getSessionData().getParameters().add(selectedAccount.getId().toString());
             getSessionData().getParameters().add("accountName");
             getSessionData().getParameters().add(selectedAccount.getName());
+            getSessionData().getParameters().add("accountDescription");
+            getSessionData().getParameters().add(selectedAccount.getDescription());
         }
 
 
