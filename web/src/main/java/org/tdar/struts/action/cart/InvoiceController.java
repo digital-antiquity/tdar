@@ -247,8 +247,8 @@ public class InvoiceController extends AbstractCartController {
             getAccounts().add(new BillingAccount("Add an account"));
         }
 
-        //If we are service /process-choice, the user may have specified a billing account
-        if("process-choice".equals(getActionName())) {
+        //If we are servicing /process-choice action, the user may have specified a billing account
+        if("process-choice".equals(getActionName()) && isAuthenticated()) {
             selectedAccount = accountService.reconcileSelectedAccount(id, getInvoice(), getAccount(), getAccounts(), getAuthenticatedUser());
             //At this point, we have a billing account that was either selected or named, but we need to save it
             //to temp/session storage so that it can get read by review-purchase action.
