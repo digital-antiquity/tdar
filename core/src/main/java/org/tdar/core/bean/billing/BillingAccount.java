@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
@@ -567,6 +568,16 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
 
     public void setDaysFilesExpireAfter(Integer daysFilesExpireAfter) {
         this.daysFilesExpireAfter = daysFilesExpireAfter;
+    }
+
+    /**
+     * Returns true if this billing account contains any invoice with at least one accession fee (or waiver) applied.
+     * @return true, if accession fee has been applied.  Otherwise false.
+     */
+    public boolean isAccessionFeeApplied() {
+        return getInvoices().stream()
+                .flatMap(invoice -> invoice.getItems().stream())
+                .anyMatch(item -> item.getActivity().isAccessionFee());
     }
 
 }

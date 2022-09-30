@@ -168,7 +168,6 @@ public class InvoiceController extends AbstractCartController {
                     accessionItem.setActivity(accessionFeeActivities.iterator().next());
                     accessionItem.setQuantity(1);
                     extraBillingItems.add(accessionItem);
-//                    getInvoice().getItems().add(accessionItem);
                 }
             }
         }

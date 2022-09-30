@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.action.AbstractCartController;
@@ -43,11 +44,18 @@ public class CartBillingAccountController extends AbstractCartController {
 
     private boolean acceptContributorAgreement = false;
 
-    @Autowired
     private transient InvoiceService invoiceService;
 
-    @Autowired
     private transient BillingAccountService accountService;
+
+    private transient final UserNotificationService notificationService;
+
+    @Autowired
+    public CartBillingAccountController(InvoiceService invoiceService, BillingAccountService accountService, UserNotificationService notificationService) {
+        this.invoiceService = invoiceService;
+        this.accountService = accountService;
+        this.notificationService = notificationService;
+    }
 
     @Override
     public void prepare() {
@@ -68,6 +76,20 @@ public class CartBillingAccountController extends AbstractCartController {
 
         getLogger().debug("selected account: {}", selectedAccount);
         getLogger().debug("owner:{}\t accounts:{}", getInvoice().getOwner(), getAccounts());
+    }
+
+    /**
+     * Remove accession fee from current invoice if selected billing account has already satisfied accession ree
+     * requirement.
+     */
+    public void removeAccessionFeeIfNecessary() {
+    // FIXME: promote to service layer when fully baked
+        if(selectedAccount.isAccessionFeeApplied()) {
+            getInvoice().getItems().removeIf( item -> item.getActivity().isAccessionFee());
+            getLogger().info("Removing accession fee from invoice #{} because billing account already has accession " +
+                    "fee satisfied", getInvoice().getId());
+            notificationService.info(getAuthenticatedUser(), "Removing accession fee - already applied by another invoice in this billing account.");
+        }
     }
 
     @Override
