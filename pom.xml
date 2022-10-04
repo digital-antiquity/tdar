@@ -82,7 +82,7 @@ Inheritance Hierarchy of this POM:
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <slf4j.version>1.7.24</slf4j.version>
+        <slf4j.version>2.0.3</slf4j.version>
         <nu.validator.version>17.2.1</nu.validator.version>
         <xchart.version>3.5.1</xchart.version>
     
