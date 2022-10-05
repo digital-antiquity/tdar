@@ -112,8 +112,8 @@ Inheritance Hierarchy of this POM:
         <geotools.version>19.1</geotools.version>
         <tika.version>2.3.0</tika.version>
         <rome.version>1.18.0</rome.version>
-        <jackson.version>2.13.2</jackson.version>
-        <jackson.databind.version>2.13.2.2</jackson.databind.version>
+        <jackson.version>2.13.2.1</jackson.version>
+        <jackson.databind.version>2.13.2.1</jackson.databind.version>
         <pdfbox.version>2.0.25</pdfbox.version>
         <bouncycastle.version>1.67</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
