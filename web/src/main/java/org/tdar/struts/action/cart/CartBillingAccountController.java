@@ -136,6 +136,7 @@ public class CartBillingAccountController extends AbstractCartController {
             getInvoice().setTransactedBy(user);
         }
 
+        removeAccessionFeeIfNecessary();
         accountService.processBillingAccountChoice(selectedAccount, getInvoice(), getAuthenticatedUser());
         invoiceService.updateInvoiceStatus(getInvoice());
 
