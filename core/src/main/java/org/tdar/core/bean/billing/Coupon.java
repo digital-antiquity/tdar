@@ -60,6 +60,9 @@ public class Coupon extends AbstractPersistable {
     @JoinColumn(nullable = true, name = "user_id")
     private TdarUser user;
 
+    @Column(name="fees_waived")
+    private Boolean isFeeWaived;
+
     public Long getNumberOfMb() {
         return numberOfMb;
     }
@@ -127,5 +130,13 @@ public class Coupon extends AbstractPersistable {
 
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
+    }
+
+    public Boolean getFeeWaived() {
+        return isFeeWaived;
+    }
+
+    public void setFeeWaived(Boolean feeWaived) {
+        isFeeWaived = feeWaived;
     }
 }

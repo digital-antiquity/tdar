@@ -24,4 +24,18 @@
             <column name="sort_order" valueNumeric="1" />
         </insert>
     </changeSet>
+
+    <changeSet id ="numismatics-jtdevos-2" author="jtdevos">
+        <addColumn tableName="pos_coupon">
+            <column
+                    name="fees_waved"
+                    defaultValueBoolean="false"
+                    type="boolean"
+            />
+        </addColumn>
+        <addNotNullConstraint
+                tableName="pos_coupon"
+                columnName="fees_waived"
+        />
+    </changeSet>
 </databaseChangeLog>
