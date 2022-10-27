@@ -28,14 +28,14 @@
     <changeSet id ="numismatics-jtdevos-2" author="jtdevos">
         <addColumn tableName="pos_coupon">
             <column
-                    name="fees_waved"
+                    name="fees_waived"
                     defaultValueBoolean="false"
                     type="boolean"
             />
         </addColumn>
-        <addNotNullConstraint
-                tableName="pos_coupon"
-                columnName="fees_waived"
-        />
+<!--        <addNotNullConstraint-->
+<!--                tableName="pos_coupon"-->
+<!--                columnName="fees_waived"-->
+<!--        />-->
     </changeSet>
 </databaseChangeLog>

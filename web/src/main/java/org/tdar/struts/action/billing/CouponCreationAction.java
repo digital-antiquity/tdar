@@ -28,6 +28,10 @@ public class CouponCreationAction extends AbstractBillingAccountAction {
     private Long numberOfMb = 0L;
     private Date expires = new DateTime().plusYears(1).toDate();
 
+
+    private Boolean isAccessionFeeWaived = null;
+
+
     @Action(value = "create-code",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
@@ -58,8 +62,13 @@ public class CouponCreationAction extends AbstractBillingAccountAction {
         }
 
         // either space or files required
-        if (mb <= 0 && files <= 0) {
+        if (mb <= 0 && files <= 0 && !getAccessionFeeWaived()) {
             addActionError(getText("accountService.specify_either_space_or_files"));
+        }
+
+        // sanity check: accession fee must be either true or false but not null
+        if(getAccessionFeeWaived() == null) {
+            addActionError("fee waiver must be true or false, but was null");
         }
 
         // coupon must not exceed remaining files or remaining space
@@ -124,5 +133,14 @@ public class CouponCreationAction extends AbstractBillingAccountAction {
     public void setExpires(Date expires) {
         this.expires = expires;
     }
+
+    public Boolean getAccessionFeeWaived() {
+        return isAccessionFeeWaived;
+    }
+
+    public void setAccessionFeeWaived(Boolean accessionFeeWaived) {
+        isAccessionFeeWaived = accessionFeeWaived;
+    }
+
 
 }

@@ -133,4 +133,8 @@ public abstract class AbstractAuthenticatableAction extends TdarBaseActionSuppor
     public boolean isLoginMenuEnabled() {
         return getAuthenticatedUser() != null;
     }
+
+    public boolean isAccessionFeeEnabled() {
+        return getTdarConfiguration().isAccessionFeesEnabled();
+    }
 }

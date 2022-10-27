@@ -155,9 +155,16 @@
                 </div>
                 </div>
 
-            <div class="col-4">
+            <div class="col-2">
                 <@s.textfield name="numberOfFiles" cssClass="integer couponFilesOrSpace" label="Number of Files"  value=""/>
             </div>
+            <#if accessionFeeEnabled && editor>
+            <div class="col-2">
+                <div class="form-group">
+                <@s.checkbox name="accessionFeeWaived" id="cbAccessionFeeWaived" cssClass="" label="Waive Fees" />
+                </div>
+            </div>
+            </#if>
         </div>
         <div class="row">
             <div class="col-8">

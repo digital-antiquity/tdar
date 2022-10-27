@@ -140,7 +140,4 @@ public abstract class AbstractCartController extends AbstractAuthenticatableActi
         this.accounts = accounts;
     }
 
-    public boolean isAccessionFeeEnabled() {
-        return getTdarConfiguration().isAccessionFeesEnabled();
-    }
 }
