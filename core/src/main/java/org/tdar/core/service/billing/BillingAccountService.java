@@ -166,7 +166,7 @@ public interface BillingAccountService {
      * @param dateExpires
      * @return
      */
-    Coupon generateCouponCode(BillingAccount account, Long numberOfFiles, Long numberOfMb, Date dateExpires);
+    Coupon generateCouponCode(BillingAccount account, Long numberOfFiles, Long numberOfMb, Date dateExpires, boolean accessionFeeWaived);
 
     void resetAccountTotalsToHaveOneFileLeft(BillingAccount account, TdarUser user);
 

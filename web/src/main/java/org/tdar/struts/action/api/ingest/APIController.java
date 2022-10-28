@@ -80,6 +80,9 @@ public class APIController extends AbstractApiController {
     private Long accountId;
     private Long couponNumberOfFiles = -1L;
 
+
+    private Boolean isAccessionFeeWaived = null;
+
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
@@ -132,11 +135,14 @@ public class APIController extends AbstractApiController {
 
             logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
-            if (getCouponNumberOfFiles() > 0 && billingAccount != null) {
-                Coupon coupon = accountService.generateCouponCode(billingAccount, getCouponNumberOfFiles(), null, DateTime.now().plusYears(1).toDate());
-                coupon.getResourceIds().add(loadedRecord.getId());
-                getGenericService().saveOrUpdate(coupon);
+            if(billingAccount != null) {
+                if (getCouponNumberOfFiles() > 0 || getAccessionFeeWaived()) {
+                    Coupon coupon = accountService.generateCouponCode(billingAccount, getCouponNumberOfFiles(), null, DateTime.now().plusYears(1).toDate(), getAccessionFeeWaived());
+                    coupon.getResourceIds().add(loadedRecord.getId());
+                    getGenericService().saveOrUpdate(coupon);
+                }
             }
+
             getResultObject().setStatusCode(statuscode);
             getResultObject().setStatus(getStatus().toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, getErrorMessage() + " " + loadedRecord.getTitle(), type);
@@ -374,6 +380,14 @@ public class APIController extends AbstractApiController {
 
     public void setCouponNumberOfFiles(Long couponNumberOfFiles) {
         this.couponNumberOfFiles = couponNumberOfFiles;
+    }
+
+    public Boolean getAccessionFeeWaived() {
+        return isAccessionFeeWaived;
+    }
+
+    public void setAccessionFeeWaived(Boolean accessionFeeWaived) {
+        isAccessionFeeWaived = accessionFeeWaived;
     }
 
 }

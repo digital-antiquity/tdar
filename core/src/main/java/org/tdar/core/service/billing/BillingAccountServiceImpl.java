@@ -345,7 +345,7 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
      */
     @Override
     @Transactional(readOnly = false)
-    public Coupon generateCouponCode(BillingAccount account, Long numberOfFiles, Long numberOfMb, Date dateExpires) {
+    public Coupon generateCouponCode(BillingAccount account, Long numberOfFiles, Long numberOfMb, Date dateExpires, boolean accessionFeeWaived) {
         Coupon coupon = new Coupon();
         coupon.setDateCreated(new Date());
         coupon.setDateExpires(dateExpires);
@@ -360,10 +360,14 @@ public class BillingAccountServiceImpl extends ServiceInterface.TypedDaoBase<Bil
             throw new TdarRecoverableRuntimeException("accountService.specify_either_space_or_files");
         }
 
-        if ((PersistableUtils.isNullOrTransient(numberOfFiles) || (numberOfFiles < 1))
-                && (PersistableUtils.isNullOrTransient(numberOfMb) || (numberOfMb < 1))) {
+        if  (
+                ((PersistableUtils.isNullOrTransient(numberOfFiles) || (numberOfFiles < 1)) && !accessionFeeWaived)
+                && (PersistableUtils.isNullOrTransient(numberOfMb) || (numberOfMb < 1))
+            ) {
             throw new TdarRecoverableRuntimeException("accountService.cannot_generate_a_coupon_for_nothing");
         }
+
+        coupon.setFeeWaived(accessionFeeWaived);
 
         if ((account.getAvailableNumberOfFiles() < coupon.getNumberOfFiles()) || (account.getAvailableSpaceInMb() < coupon.getNumberOfMb())) {
             logger.trace("{}", account.getTotalNumberOfFiles());
