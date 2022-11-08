@@ -38,4 +38,26 @@
 <!--                columnName="fees_waived"-->
 <!--        />-->
     </changeSet>
+
+    <changeSet id="numismatics-jtdevos-3" author="jtdevos">
+        <insert tableName="pos_billing_activity">
+            <column name="currency"  />
+            <column name="active" valueBoolean="true" />
+            <column name="group_name" />
+            <column name="name">Accession Fee - Waived</column>
+            <column name="num_files" valueNumeric="0" />
+            <column name="num_hours" valueNumeric="0" />
+            <column name="num_mb" valueNumeric="0" />
+            <column name="num_resources" valueNumeric="5" />
+            <column name="display_num_files" />
+            <column name="display_num_mb" />
+            <column name="display_num_resources" />
+            <column name="price" valueNumeric="-200.00" />
+            <column name="min_allowed_files" />
+            <column name="model_id" valueNumeric="1" />
+            <column name="activity_type" value="WAIVER" />
+            <column name="sort_order" valueNumeric="1" />
+        </insert>
+
+    </changeSet>
 </databaseChangeLog>
