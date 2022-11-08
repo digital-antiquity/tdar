@@ -68,7 +68,7 @@ Inheritance Hierarchy of this POM:
         <lucene.version>7.3.1</lucene.version>
         <hibernate.version>5.2.17.Final</hibernate.version>
         <spring.framework.version>5.1.0.RELEASE</spring.framework.version>
-        <postgresql.jdbc.version>42.3.3</postgresql.jdbc.version>
+        <postgresql.jdbc.version>42.4.1</postgresql.jdbc.version>
         <servlet.api.version>3.1.0</servlet.api.version>
         <aws.java.version>1.12.187</aws.java.version>
         <wro4j.version>1.8.0</wro4j.version>
@@ -82,7 +82,7 @@ Inheritance Hierarchy of this POM:
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <slf4j.version>1.7.24</slf4j.version>
+        <slf4j.version>2.0.3</slf4j.version>
         <nu.validator.version>17.2.1</nu.validator.version>
         <xchart.version>3.5.1</xchart.version>
     
@@ -110,9 +110,9 @@ Inheritance Hierarchy of this POM:
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
         <geotools.version>19.1</geotools.version>
-        <tika.version>1.23</tika.version>
+        <tika.version>2.3.0</tika.version>
         <rome.version>1.18.0</rome.version>
-        <jackson.version>2.13.2</jackson.version>
+        <jackson.version>2.13.4</jackson.version>
         <jackson.databind.version>2.13.2.2</jackson.databind.version>
         <pdfbox.version>2.0.25</pdfbox.version>
         <bouncycastle.version>1.67</bouncycastle.version>        
@@ -127,7 +127,7 @@ Inheritance Hierarchy of this POM:
         <commons.math.version>3.6.1</commons.math.version>
         <joda-time.version>2.9.7</joda-time.version>
         <findbugs.version>3.0.1u2</findbugs.version>
-        <ant.version>1.10.11</ant.version>
+        <ant.version>1.10.12</ant.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <commons-lang.version>2.6</commons-lang.version>
         <cglib.version>3.2.5</cglib.version>
@@ -135,11 +135,11 @@ Inheritance Hierarchy of this POM:
         <commons-cli.version>1.3</commons-cli.version>
         <hamcrest.version>1.3</hamcrest.version>
         <struts2.version>2.5.29</struts2.version>
-        <jetty.version>9.4.45.v20220203</jetty.version>
+        <jetty.version>9.4.48.v20220622</jetty.version>
         <jersey.version>2.27</jersey.version>
         <icu4j.version>58.2</icu4j.version>
         <htmlunit.version>2.33</htmlunit.version>
-        <selenium.version>4.1.2</selenium.version>
+        <selenium.version>4.3.0</selenium.version>
         <dbcp.version>2.2.0</dbcp.version>
         <commons-fileupload.version>1.3.3</commons-fileupload.version>
         
@@ -231,7 +231,7 @@ Inheritance Hierarchy of this POM:
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
-                <version>3.5.0</version>
+                <version>3.21.7</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>

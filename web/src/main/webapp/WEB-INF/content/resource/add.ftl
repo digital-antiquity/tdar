@@ -53,16 +53,16 @@
             set of linked or related datasets. Examples from archaeology include small spreadsheets documenting measurements and/or analysis of artifacts,
             as well as large databases cataloging all artifacts from a site.
         </div>
-        <div class="col-4">
-            <h3><a href="<@s.url value="/bulk/add?projectId=${(projectId!-1)?c}" />">
-            <svg class="svgicon svg-small"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_bulk"></use></svg>Bulk Upload</a></h3>
-            Useful for uploading groups of resources with similar metadata at once.
-
-        </div>
             <div class="col-4">
-            <h2>Organize</h2>
                 <h3>
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>                
+                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory_data"></use></svg>
+                <@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
+                Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example.
+            </div>
+            <div class="col-4">
+                <h2>Organize</h2>
+                <h3>
+                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
                 <@link "project" "Project" /></h3>
 
                 In ${siteAcronym}, a project is an organizational tool for working with groups of related resources. Projects in ${siteAcronym}  may contain related reports, photographs, maps,
@@ -77,10 +77,13 @@
                 GIS files, shape files, personal geodatabases, and geo-rectified images.
             </div>
             <div class="col-4">
-                <h3>
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_sensory_data"></use></svg>
-                <@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
-                Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example.
+                <#if editor>
+                <h3><a href="<@s.url value="/bulk/add?projectId=${(projectId!-1)?c}" />">
+                <svg class="svgicon svg-small"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_bulk"></use></svg>Bulk Upload</a></h3>
+                Useful for uploading groups of resources with similar metadata at once.
+                <#else>
+                &nbsp;
+                </#if>
             </div>
             <div class="col-4">
                 <h3>
