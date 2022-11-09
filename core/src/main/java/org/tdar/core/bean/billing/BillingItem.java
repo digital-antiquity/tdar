@@ -41,6 +41,15 @@ public class BillingItem extends AbstractPersistable implements Validatable {
         this.quantity = quantity;
     }
 
+    /**
+     * Instantiate a billing item of the specified activity with the implicit quantity of
+     * one.
+     * @param activity
+     */
+    public BillingItem(BillingActivity activity) {
+        this(activity, 1);
+    }
+
     public BillingActivity getActivity() {
         return activity;
     }

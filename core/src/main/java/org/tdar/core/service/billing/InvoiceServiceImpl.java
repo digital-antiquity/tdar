@@ -231,6 +231,11 @@ public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, I
         coupon.setUser(user);
         coupon.setDateRedeemed(new Date());
 
+        //Apply waiver if specified by coupon
+        if(coupon.getFeeWaived()) {
+            applyFeeWaiver(invoice);
+        }
+
         // make sure the invoice cancels out the coupon by using all of it, i.e. if the invoice is for 1 file, but the coupon
         // is for 5, the invoice will be changed to be for 5, as we can't break up coupons.
 
@@ -499,6 +504,27 @@ public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, I
     @Override
     public List<BillingActivity> getApplicableAccessionFeeActivities(BillingAccount account) {
         return getActiveBillingActivities().stream().filter(BillingActivity::isAccessionFee).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean applyFeeWaiver(Invoice invoice) {
+        if(!invoice.hasAccessionFee()) {return false;}
+        if(invoice.hasAccessionFeeWaiver()) {return false;}
+        //at this point we have a fee w/o a waiver - find waiver of equal/opposite amount
+        BillingActivity feeActivity = invoice.getItems().stream()
+                .map(BillingItem::getActivity)
+                .filter(BillingActivity::isAccessionFee)
+                .findFirst().get();
+        Float price = feeActivity.getPrice() * -1.0f;
+
+        // find waiver w/ price that matches fee price
+        BillingActivity waiverActivity = getActiveBillingActivities().stream()
+                .filter(BillingActivity::isWaiver)
+                .filter(activity -> price.equals(activity.getPrice()))
+                .findFirst().get();
+
+        invoice.getItems().add(new BillingItem(waiverActivity));
+        return true;
     }
 
 

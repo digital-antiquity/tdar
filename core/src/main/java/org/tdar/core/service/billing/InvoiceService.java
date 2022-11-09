@@ -131,5 +131,15 @@ public interface InvoiceService {
      */
     List<BillingActivity> getApplicableAccessionFeeActivities(BillingAccount account);
 
+    /**
+     * Apply the appropriate fee waiver to an invoice, if applicable.  This method will
+     * only apply a waiver if the invoice contains a fee billing item.  If the method
+     * appends a waiver to the invoice, the waiver cost will "match" the fee that the waiver
+     * applies to (e.g. a $50 fee will receive a -$50 waiver).
+     * @param invoice
+     * @return true, if waiver added; otherwise false
+     */
+    boolean applyFeeWaiver(Invoice invoice);
+
 
 }

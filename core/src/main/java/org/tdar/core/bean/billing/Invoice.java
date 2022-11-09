@@ -488,4 +488,8 @@ public class Invoice extends AbstractPersistable implements Updatable {
     public boolean hasAccessionFee() {
         return getItems().stream().anyMatch(item -> item.getActivity().isAccessionFee());
     }
+
+    public boolean hasAccessionFeeWaiver() {
+        return getItems().stream().anyMatch(item -> item.getActivity().isWaiver());
+    }
 }
