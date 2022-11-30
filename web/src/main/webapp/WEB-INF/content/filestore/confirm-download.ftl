@@ -24,6 +24,7 @@
             <p>
                 ${siteAcronym} brings free knowledge to the world. Please consider
                 <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html"
+                   onclick="TDAR.common.outboundAppeal('landing');"
                 target="_blank">making a donation</a> to support our operations.
             </p>
         </div>
