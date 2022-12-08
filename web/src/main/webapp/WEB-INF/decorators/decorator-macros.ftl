@@ -130,7 +130,7 @@
                             <a href="/collection/65171/society-for-american-archaeology" title="Society for American Archaeology" class="nav-link align-middle tdarNavItem">SAA</a>
                         </li>
                         <li class="nav-item mr-sm-2">
-                            <a href="https://live-digant.ws.asu.edu/donate/" class="nav-link align-middle tdarNavItem">Give</a>
+                            <a href="https://live-digant.ws.asu.edu/donate/" class="nav-link align-middle tdarNavItem" onclick="TDAR.common.outboundAppeal('menu');">Give</a>
                         </li>
 
                     </ul>
