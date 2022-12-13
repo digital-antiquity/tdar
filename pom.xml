@@ -113,7 +113,7 @@ Inheritance Hierarchy of this POM:
         <tika.version>2.3.0</tika.version>
         <rome.version>1.18.0</rome.version>
         <jackson.version>2.13.4</jackson.version>
-        <jackson.databind.version>2.13.2.2</jackson.databind.version>
+        <jackson.databind.version>2.13.4.2</jackson.databind.version>
         <pdfbox.version>2.0.25</pdfbox.version>
         <bouncycastle.version>1.67</bouncycastle.version>        
         <http-components.version>4.4.9</http-components.version>
@@ -421,7 +421,7 @@ Inheritance Hierarchy of this POM:
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson.databind.version}</version>
                 <!-- LICENSE: APACHE 2.0 -->
             </dependency>
             <dependency>
