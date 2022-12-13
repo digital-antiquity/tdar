@@ -116,7 +116,7 @@
         <dependency>
             <groupId>com.jgeppert.struts2.bootstrap</groupId>
             <artifactId>struts2-bootstrap-plugin</artifactId>
-            <version>1.7.0</version>
+            <version>5.0.0</version>
             <exclusions>
 	            <exclusion>
 		            <groupId>org.apache.struts</groupId>
