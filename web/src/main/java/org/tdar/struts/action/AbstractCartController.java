@@ -7,6 +7,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.tdar.UrlConstants;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -46,6 +47,12 @@ public abstract class AbstractCartController extends AbstractAuthenticatableActi
         Long invoiceId = getSessionData().getInvoiceId();
         getLogger().debug("INVOICE ID: {}", invoiceId);
         Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
+        List<BillingItem> invoiceItems = null;
+        if(invoice != null) {
+            invoiceItems = invoice.getItems();
+        }
+        getLogger().debug("Invoice loaded: {}", invoice);
+        getLogger().debug("Invoice items: {}", invoiceItems);
         return invoice;
     }
 

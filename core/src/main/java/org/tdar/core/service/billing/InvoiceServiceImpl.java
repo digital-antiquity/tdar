@@ -144,6 +144,12 @@ public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, I
     @Transactional(readOnly = false)
     public Invoice processInvoice(Invoice invoice, TdarUser authenticatedUser, String code, Collection<BillingItem> extraItems, PricingType pricingType,
             Long accountId) {
+        getLogger().debug("processInvoice begin:: invoice:{}", invoice);
+        getLogger().debug("processInvoice begin::     extraItems: {}", extraItems);
+        getLogger().debug("processInvoice begin::     pricingType:{}", pricingType);
+        getLogger().debug("processInvoice end::       invoice items:{}", invoice.getItems());
+
+
         boolean billingManager = authorizationService.isBillingManager(authenticatedUser);
         if (!invoice.hasValidValue() && StringUtils.isBlank(code) && !billingManager) {
             throw new TdarRecoverableRuntimeException("invoiceService.specify_something");
@@ -194,6 +200,10 @@ public class InvoiceServiceImpl extends ServiceInterface.TypedDaoBase<Invoice, I
             BillingAccount account = genericDao.find(BillingAccount.class, accountId);
             account.getInvoices().add(invoice);
         }
+        getLogger().debug("processInvoice end:: invoice:{}", invoice);
+        getLogger().debug("processInvoice end::     extraItems: {}", extraItems);
+        getLogger().debug("processInvoice end::     pricingType:{}", pricingType);
+        getLogger().debug("processInvoice end::     invoice items:{}", invoice.getItems());
 
         return invoice;
     }
