@@ -378,12 +378,13 @@ ${head}
         <section id="references">
             <div class="container">
                 <div class="row align-items-center" id="foothumb">
-                    <div class="col-lg-2 col-md-4 col-6"><a href="http://www.asu.edu"><img class="image-fluid image ht" src="/images/logos/asu_veritcal.png"  title="Arizona State University" alt="Arizona State University" /></a></div>
+                    <div class="col-lg-1 col-md-2 col-3"><a href="http://www.asu.edu"><img class="image-fluid image ht" src="/images/logos/asu_veritcal.png"  title="Arizona State University" alt="Arizona State University" /></a></div>
                     <div class="col-lg-2 col-md-4 col-6"><a href="http://www.mellon.org"><img class="image-fluid image ht" src="/images/logos/Mellon.png" title="The Andrew W. Mellon Foundation" alt="The Andrew W. Mellon Foundation" /></a></div>
                     <div class="col-lg-2 col-md-4 col-6"><a href="http://www.nsf.gov"><img class="image-fluid image ht" src="/images/logos/nsf.jpg" title="National Science Foundation" alt="National Science Foundation" /></a></div>
                     <div class="col-lg-2 col-md-4 col-6"><a href="http://www.neh.gov"><img class="image-fluid image ht" src="/images/logos/neh_logo_stckd.jpg" title="National Endowment for the Humanities" alt="National Endowment for the Humanities" /></a></div>
                     <div class="col-lg-2 col-md-4 col-6"><a href="http://www.saa.org"><img class="image-fluid image ht" src="/images/logos/saa-small.png" title="Society for American Archaeology" alt="Society for American Archaeology" /></a></div>
                     <div class="col-lg-2 col-md-4 col-6"><a href="http://www.archaeological.org"><img class="image-fluid image ht" src="/images/logos/aia.png" title="Archaeological Institute of America" alt="Archaeological Institute of America" /></a></div>
+                    <div class="col-lg-1 col-md-2 col-3"><a href="https://www.coretrustseal.org/"><img class="image-fluid image ht" src="/images/logos/CoreTrustSeal-logo-transparent.png" title="Core Trust Seal" alt="Core Trust Seal" /></a></div>
                 </div>
             </div>
         </section>
