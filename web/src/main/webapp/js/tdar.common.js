@@ -826,6 +826,15 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
     /**
+     * emit appeal event
+     * @param appealOrigin where the appeal came from, e.g. "menu", "landing")
+     * @private
+     */
+    var _outboundAppeal = function(appealOrigin) {
+        ga("send", "event", "appeal", appealOrigin, 1);
+    }
+
+    /**
      * for use in edit-column-metadata:  event handler for subcategoroy change event.
      * @param categoryIdSelect
      * @param subCategoryIdSelect
@@ -1011,6 +1020,7 @@ TDAR.common = function (TDAR, fileupload) {
         "registerDownload": _registerDownload,
         "registerShare": _registerShare,
         "outboundLink": _outboundLink,
+        "outboundAppeal": _outboundAppeal,
         "setupSupportingResourceForm": _setupSupportingResourceForm,
         "switchType": _switchType,
         "setupDocumentEditForm": _setupDocumentEditForm,

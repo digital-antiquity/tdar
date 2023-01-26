@@ -18,10 +18,20 @@
 <div class="hero-unit">
     <h1>Welcome Back</h1>
 
-    <p>
-        You've reached this page because you requested a file download when you were not logged into ${siteAcronym}. If your download does not begin
+    <div class="card lightbeige">
+        <div class="card-body">
+            <h2 class="card-title">While you wait on that download...</h2>
+            <p>
+                ${siteAcronym} brings free knowledge to the world. Please consider
+                <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html"
+                   onclick="TDAR.common.outboundAppeal('landing');"
+                target="_blank">making a donation</a> to support our operations.
+            </p>
+        </div>
+    </div>
+    <hr />
+    <p>If your download does not begin
         automatically, or if you would like to download the file again, please click on the link below.
-    </p>
     <dl class="dl-horizontal">
         <dt>Requested File</dt>
         <dd><a href="${download}" class="manual-download " id="manual-download" <#if config.shouldAutoDownload>data-auto-download</#if>
@@ -30,7 +40,7 @@
     </dl>
     <a class="btn btn-large btn-primary" href="<@s.url value="/dashboard" />">Return to dashboard</a>
     <hr/>    
-    <@view.resourceCitationSection resource=informationResource />
+<#--    <@view.resourceCitationSection resource=informationResource />-->
     
 </div>
 <div class="row">
