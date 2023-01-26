@@ -29,7 +29,7 @@ public class CouponCreationAction extends AbstractBillingAccountAction {
     private Date expires = new DateTime().plusYears(1).toDate();
 
 
-    private Boolean isAccessionFeeWaived = null;
+    private Boolean isAccessionFeeWaived = false;
 
 
     @Action(value = "create-code",
