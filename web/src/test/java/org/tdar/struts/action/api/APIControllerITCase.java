@@ -265,6 +265,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase implement
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
         controller.setAccountId(actId);
         controller.setProjectId(project.getId());
+        controller.setAccessionFeeWaived(false);
         account = null;
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
