@@ -195,6 +195,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
+        controller.setAccessionFeeWaived(false);
         String save = controller.execute();
         Long id = controller.getAccount().getId();
         assertEquals(Action.SUCCESS, save);
@@ -299,6 +300,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1000L);
+        controller.setAccessionFeeWaived(false);
         try {
             controller.validate();
             String save = controller.execute();
@@ -321,6 +323,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         BillingAccount account = createAccount(getUser(), genericService);
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         // controller.setNumberOfFiles(1000L);
+        controller.setAccessionFeeWaived(false);
         try {
             controller.validate();
             String save = controller.execute();
@@ -341,6 +344,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         controller.setNumberOfFiles(1L);
         controller.setNumberOfMb(1L);
+        controller.setAccessionFeeWaived(false);
         try {
             controller.validate();
             String save = controller.execute();
@@ -360,6 +364,7 @@ public class BillingAccountControllerITCase extends AbstractControllerITCase imp
         CouponCreationAction controller = setupControllerForCoupon(account, invoice);
         Long files = controller.getAccount().getAvailableNumberOfFiles();
         controller.setNumberOfFiles(1L);
+        controller.setAccessionFeeWaived(false);
         boolean seen = false;
         try {
             String save = controller.execute();
