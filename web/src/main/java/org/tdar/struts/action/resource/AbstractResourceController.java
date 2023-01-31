@@ -393,8 +393,13 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @return boolean
      */
     @SuppressWarnings("deprecation")
-    protected boolean willHaveLatLongBoxes(Set<LatitudeLongitudeBox> activeBoxes, List<LatitudeLongitudeBox> newBoxes) {
+    protected boolean willHaveLatLongBoxes(Resource resource, List<LatitudeLongitudeBox> newBoxes) {
 
+        Set<LatitudeLongitudeBox> activeBoxes = resource.getActiveLatitudeLongitudeBoxes();
+        boolean isInheritingSpatialInformation = false;
+        if(resource instanceof InformationResource){
+            isInheritingSpatialInformation = ((InformationResource)resource).isInheritingSpatialInformation();
+        }
         boolean isActiveBoxesEmpty = CollectionUtils.isEmpty(activeBoxes);
         boolean isNewBoxesEmpty = CollectionUtils.isEmpty(newBoxes);
         boolean result;
@@ -420,14 +425,15 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         }
         // There are current boxes
         else {
+            result = !isNewBoxesEmpty || isInheritingSpatialInformation;
             // the boxes are being removed
-            if (isNewBoxesEmpty) {
-                result = false;
-            }
-            // The boxes will stay.
-            else {
-                result = true;
-            }
+//            if (isNewBoxesEmpty) {
+//                result = false;
+//            }
+//            // The boxes will stay.
+//            else {
+//                result = true;
+//            }
         }
 
         getLogger().debug("will have boundaries: {} ", result);
@@ -442,7 +448,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     protected void saveBasicResourceMetadata() {
         AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
 
-        if (!willHaveLatLongBoxes(authWrapper.getItem().getActiveLatitudeLongitudeBoxes(), getLatitudeLongitudeBoxes()) &&
+        if (!willHaveLatLongBoxes(authWrapper.getItem(), getLatitudeLongitudeBoxes()) &&
                 !(this instanceof BulkUploadController) && //
                 !(this instanceof AbstractSupportingInformationResourceController)) {
             addActionMessage(getText("abstractResourceController.no_map", Arrays.asList(authWrapper.getItem().getResourceType().getLabel())));
