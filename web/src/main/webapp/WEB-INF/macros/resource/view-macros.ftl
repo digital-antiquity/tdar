@@ -269,31 +269,40 @@ View freemarker macros
     <script type="text/javascript">
         function _openModal(){
             console.log("open download modal");
-            $('#exampleModal').modal();
+            if(!TDAR.getCookie("dlnotify")){
+                $('#modalDownloadReminder').modal();
+                $('#modalDownloadReminderLink').click(function(){$('#modalDownloadReminder').modal('hide'); return true;});
+            } else {
+                console.log("dlnotify cookie set - suppressing download notification")
+            }
         }
 
         $(function(){
             $(".download-link").click(function(){
                 setTimeout(_openModal, 1000);
             });
+
+            $("#modalDownloadReminder").on('hidden.bs.modal', function(e){
+                console.log("setting dlnotify cookie");
+                TDAR.setCookie("dlnotify", 1, 90, "/")
+            });
         });
     </script>
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalDownloadReminder" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">GIVE US SOME MONEY!</h5>
+                    <h5 class="modal-title" id="modalDownloadReminderLabel">Consider Donating to Digital Antiquity!</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    We are but a humble cohort of starving archaeologists. Please consider donating to
-                    the center for digital antiquity today!
+                    ${siteAcronym} is a non-profit, community supported repository. If you found this information useful, please consider donating to support these free downloads.
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close this message</button>
-                    <a href="https://live-digant.ws.asu.edu/donate/" target="_blank" class="btn btn-sm btn-primary">Show Me More...</a>
+                    <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html" target="_blank" id="modalDownloadReminderLink" class="btn btn-sm btn-primary">Show Me More...</a>
                 </div>
             </div>
         </div>
