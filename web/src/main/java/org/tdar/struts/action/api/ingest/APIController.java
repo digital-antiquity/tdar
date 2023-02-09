@@ -81,7 +81,7 @@ public class APIController extends AbstractApiController {
     private Long couponNumberOfFiles = -1L;
 
 
-    private Boolean isAccessionFeeWaived = null;
+    private Boolean isAccessionFeeWaived = false;
 
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
