@@ -65,10 +65,10 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "100");
         submitForm();
         assertTextPresent("50-500:100:$31:$3,100");
-        assertTextPresent("total:$3,100");
+        assertTextPresent("total:$3,300");
         loginAndSpecifyCC();
         selectAnyAccount();
-        testAccountPollingResponse("310000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        testAccountPollingResponse("330000", TransactionStatus.TRANSACTION_SUCCESSFUL);
 
     }
 
@@ -88,7 +88,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         setInput("invoice.numberOfFiles", "0");
         submitForm();
         assertTextPresent("100 mb:1:$50:$50");
-        assertTextPresent("total:$50");
+        assertTextPresent("total:$250");
         loginAndSpecifyCC();
         selectAnyAccount();
         testAccountPollingResponse("5000", TransactionStatus.TRANSACTION_SUCCESSFUL);
@@ -103,10 +103,10 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,350");
+        assertTextPresent("total:$1,550");
         loginAndSpecifyCC();
         selectAnyAccount();
-        testAccountPollingResponse("135000", TransactionStatus.TRANSACTION_SUCCESSFUL);
+        testAccountPollingResponse("155000", TransactionStatus.TRANSACTION_SUCCESSFUL);
     }
 
     @Test
@@ -230,9 +230,9 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
         submitForm();
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,405.21");
+        assertTextPresent("total:$1,605.21");
         selectAnyAccount();
-        testAccountPollingResponse("140521", TransactionStatus.TRANSACTION_FAILED);
+        testAccountPollingResponse("160521", TransactionStatus.TRANSACTION_FAILED);
     }
 
     @Test
@@ -247,9 +247,9 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,405.31");
+        assertTextPresent("total:$1,605.31");
         selectAnyAccount();
-        testAccountPollingResponse("140531", TransactionStatus.TRANSACTION_FAILED);
+        testAccountPollingResponse("160531", TransactionStatus.TRANSACTION_FAILED);
     }
 
     private void setExtraItem(String name, String val) {
@@ -285,8 +285,8 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 
         assertTextPresent("100 mb:19:$50:$950");
         assertTextPresent("5- 19:10:$40:$400");
-        assertTextPresent("total:$1,405.11");
-        testAccountPollingResponse("140511", TransactionStatus.TRANSACTION_FAILED);
+        assertTextPresent("total:$1,605.11");
+        testAccountPollingResponse("160511", TransactionStatus.TRANSACTION_FAILED);
     }
 
     /**
