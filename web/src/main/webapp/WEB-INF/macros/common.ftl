@@ -47,6 +47,19 @@
 
     </script>
     </#noescape>
+        <#if (config.googleAnalyticsMeasurementId?length > 0)>
+            <#noescape>
+                <!-- Google tag (gtag.js) -->
+                <script async src="https://www.googletagmanager.com/gtag/js?id=${config.googleAnalyticsMeasurementId}"></script>
+                <script>
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+
+                    gtag('config', '${config.googleAnalyticsMeasurementId}');
+                </script>
+            </#noescape>
+        </#if>
     </#macro>
     
     
