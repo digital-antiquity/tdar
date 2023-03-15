@@ -163,7 +163,7 @@
 
 <#macro datamappedSearchLink path msg='Refine Search'>
     <a
-            href="<@s.url escapeAmp="false" includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url>"
+            href="<@s.url escapeAmp="false" includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url>"
             ><#noescape>${msg}</#noescape></a>
 
 </#macro>
