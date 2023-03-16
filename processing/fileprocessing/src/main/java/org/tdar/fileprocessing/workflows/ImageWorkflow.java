@@ -17,7 +17,7 @@ import org.tdar.filestore.FileType;
 public class ImageWorkflow extends BaseWorkflow {
 
     public ImageWorkflow() {
-        addRequired(ImageWorkflow.class, Arrays.asList("gif", "tif", "jpg", "tiff", "jpeg", "png", "bmp", "pct"));
+        addRequired(ImageWorkflow.class, Arrays.asList("gif", "tif", "jpg", "tiff", "jpeg", "png", "bmp"));
         for (RequiredOptionalPairs r : getRequiredOptionalPairs()) {
             r.setHasDimensions(true);
         }
