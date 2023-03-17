@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletException;
 
-import org.apache.struts2.StrutsSpringJUnit4TestCase;
+import org.apache.struts2.junit.StrutsSpringJUnit4TestCase;
 import org.junit.runner.RunWith;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;

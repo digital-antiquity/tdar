@@ -67,7 +67,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.LocalizedTextProvider;
 import com.opensymphony.xwork2.config.ConfigurationManager;
-import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
+import org.apache.struts2.config.StrutsXmlConfigurationProvider;
 import com.opensymphony.xwork2.inject.Container;
 import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
 
@@ -190,12 +190,12 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         }
         Map<String, Object> contextMap = new HashMap<String, Object>();
         contextMap.put(StrutsStatics.HTTP_REQUEST, getServletRequest());
-        ActionContext context = new ActionContext(contextMap);
+        ActionContext context =  ActionContext.of(contextMap);
         context.setLocale(Locale.getDefault());
 
         ConfigurationManager configurationManager = new ConfigurationManager(Container.DEFAULT_NAME);
         OgnlValueStackFactory factory = new OgnlValueStackFactory();
-        configurationManager.addContainerProvider(new XWorkConfigurationProvider());
+        configurationManager.addContainerProvider(new StrutsXmlConfigurationProvider(true));
         configurationManager.reload();
         Container container = configurationManager.getConfiguration().getContainer();
         container.inject(factory);
@@ -208,7 +208,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
             ((ActionSupport) controller).setContainer(container);
         }
         context.setValueStack(factory.createValueStack());
-        ActionContext.setContext(context);
+        ActionContext.bind(context);
 
         return controller;
     }
