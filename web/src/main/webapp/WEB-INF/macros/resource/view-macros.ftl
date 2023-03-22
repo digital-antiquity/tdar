@@ -291,14 +291,17 @@ View freemarker macros
     <div class="modal fade" id="modalDownloadReminder" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalDownloadReminderLabel">Consider Donating to Digital Antiquity!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    ${siteAcronym} is a non-profit, community supported repository. If you found this information useful, please consider donating to support these free downloads.
+                <div class="card" style="background-color: #f4d35e">
+                    <div class="card-body">
+                        <h2 class="card-title">A Message From Our Director, Dr. Christopher Nicholson</h2>
+                        <p><strong>Please <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html" onclick="TDAR.common.outboundAppeal('landing');" target="_blank">make a gift now</a> to ensure ${siteAcronym}'s future.</strong></p>
+                        <p>Your gift is invested back into ${siteAcronym}'s infrastructure to ensure this community-supported archive is sustainable!</p>
+
+                        <p>
+                            Thank you for your partnership! —
+                            Chris
+                        </p>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close this message</button>
