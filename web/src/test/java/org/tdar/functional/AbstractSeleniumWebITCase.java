@@ -309,7 +309,7 @@ public abstract class AbstractSeleniumWebITCase {
                 // http://peter.sh/experiments/chromium-command-line-switches/
                 // ignore-certificate-errors ?
                 copts.addArguments(
-                        "--remote-allow-origins=*"
+                        "--remote-allow-origins=*",
                         "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
                         "user-data-dir=" + browserProfileDir.getAbsolutePath(), // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
