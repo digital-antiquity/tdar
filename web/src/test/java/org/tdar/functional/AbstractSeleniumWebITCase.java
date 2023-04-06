@@ -309,13 +309,13 @@ public abstract class AbstractSeleniumWebITCase {
                 // http://peter.sh/experiments/chromium-command-line-switches/
                 // ignore-certificate-errors ?
                 copts.addArguments(
+                        "--remote-allow-origins=*",
                         "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
                         "user-data-dir=" + browserProfileDir.getAbsolutePath(), // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "--ignore-certificate-errors",
                         "--disable-features=ChromeWhatsNewUI",
-
                         "noerrdialogs");
 
                 copts.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
