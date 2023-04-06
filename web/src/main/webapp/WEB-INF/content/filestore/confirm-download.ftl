@@ -18,17 +18,20 @@
 <div class="hero-unit">
     <h1>Welcome Back</h1>
 
-    <div class="card lightbeige">
+
+    <div class="card" style="background-color: #f4d35e">
         <div class="card-body">
-            <h2 class="card-title">While you wait on that download...</h2>
+            <h2 class="card-title">A Message From Our Director, Dr. Christopher Nicholson</h2>
+            <p><strong>Please <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html" onclick="TDAR.common.outboundAppeal('landing');" target="_blank">make a gift now</a> to ensure ${siteAcronym}'s future.</strong></p>
+            <p>Your gift is invested back into ${siteAcronym}'s infrastructure to ensure this community-supported archive is sustainable!</p>
+
             <p>
-                ${siteAcronym} brings free knowledge to the world. Please consider
-                <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html"
-                   onclick="TDAR.common.outboundAppeal('landing');"
-                target="_blank">making a donation</a> to support our operations.
+                Thank you for your partnership! —
+                Chris
             </p>
         </div>
     </div>
+
     <hr />
     <p>If your download does not begin
         automatically, or if you would like to download the file again, please click on the link below.

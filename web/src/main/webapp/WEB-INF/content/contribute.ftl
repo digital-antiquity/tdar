@@ -71,7 +71,7 @@ color: #7d7a77;
 <div class="col">
         <ul class="list-unstyled">
             <li>Portable Network Graphics (.png)</li>
-            <li>Other (.bmp, .gif, .pict)</li>
+            <li>Other (.bmp, .gif)</li>
                </ul>
 
 </div>

@@ -533,6 +533,11 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getStringProperty("google.analytics", "");
     }
 
+    public String getGoogleAnalyticsMeasurementId() {
+        return assistant.getStringProperty("google.analytics.measurement.id", "");
+    }
+
+
     public int getSessionCountLimitForBackgroundTasks() {
         return assistant.getIntProperty("scheduled.maxProcess", 6);
     }

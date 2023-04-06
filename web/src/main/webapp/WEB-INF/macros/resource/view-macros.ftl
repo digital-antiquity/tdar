@@ -266,6 +266,51 @@ View freemarker macros
                 </#if>
             </div>
         </#if>
+    <script type="text/javascript">
+        function _openModal(){
+            console.log("open download modal");
+            if(!TDAR.getCookie("dlnotify")){
+                $('#modalDownloadReminder').modal();
+                $('#modalDownloadReminderLink').click(function(){$('#modalDownloadReminder').modal('hide'); return true;});
+            } else {
+                console.log("dlnotify cookie set - suppressing download notification")
+            }
+        }
+
+        $(function(){
+            $(".download-link").click(function(){
+                setTimeout(_openModal, 1000);
+            });
+
+            $("#modalDownloadReminder").on('hidden.bs.modal', function(e){
+                console.log("setting dlnotify cookie");
+                TDAR.setCookie("dlnotify", 1, 90, "/")
+            });
+        });
+    </script>
+    <div class="modal fade" id="modalDownloadReminder" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="card" style="background-color: #f4d35e">
+                    <div class="card-body">
+                        <h2 class="card-title">A Message From Our Director, Dr. Christopher Nicholson</h2>
+                        <p><strong>Please <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html" onclick="TDAR.common.outboundAppeal('landing');" target="_blank">make a gift now</a> to ensure ${siteAcronym}'s future.</strong></p>
+                        <p>Your gift is invested back into ${siteAcronym}'s infrastructure to ensure this community-supported archive is sustainable!</p>
+
+                        <p>
+                            Thank you for your partnership! —
+                            Chris
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close this message</button>
+                    <a href="https://www.asufoundation.org/colleges-and-programs/schools-and-colleges/the-college-of-liberal-arts-and-sciences/center-for-digital-antiquity-fund-CA103777.html" target="_blank" id="modalDownloadReminderLink" class="btn btn-sm btn-primary">Show Me More...</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     </#macro>
 
 <#macro resourceCitationSection resource>

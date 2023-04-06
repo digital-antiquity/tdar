@@ -129,7 +129,8 @@ hosted.file.store.location=${user.home}/data/tdar/hosted-filestore
 # default: http://www.tdar.org
 about.url=https://www.tdar.org
 
-google.analytics
+google.analytics=
+google.analytics.measurement.id=
 
 
 # the comments link

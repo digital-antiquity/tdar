@@ -41,6 +41,10 @@ public class WebConfig {
         return config.getGoogleAnalyticsId();
     }
 
+    public String getGoogleAnalyticsMeasurementId() {
+        return config.getGoogleAnalyticsMeasurementId();
+    }
+
     public boolean getPrivacyControlsEnabled() {
         return config.getPrivacyControlsEnabled();
     }

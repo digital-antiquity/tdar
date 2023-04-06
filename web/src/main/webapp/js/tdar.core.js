@@ -178,6 +178,23 @@
         return ret;
     };
 
+    TDAR.getCookie = function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length == 2) return parts.pop().split(";").shift();
+    }
+
+
+    TDAR.setCookie = function setCookie(cname, cvalue, exdays, path) {
+        var d = new Date();
+        if(typeof path === "undefined") {
+            path = "/"
+        }
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + "; " + expires + "path=" + path;
+    }
+
     /**
      * Execute any main() functions found in the API
      */
