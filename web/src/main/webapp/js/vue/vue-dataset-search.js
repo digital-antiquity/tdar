@@ -210,8 +210,14 @@ TDAR.vuejs.advancedSearch = (function(console, ctx, Vue, axios, TDAR, formstate,
                         var type = "select";
                         if (field.intValues.length > 0) {
                             values = field.intValues;
+                            if(values.length < COLUMN_DEDUPE_LIMIT) {
+                                values.sort((a,b) => a - b);
+                            }
                         } else if (field.floatValues.length > 0) {
                             values = field.floatValues;
+                            if(values.length < COLUMN_DEDUPE_LIMIT) {
+                                values.sort((a,b) => a - b);
+                            }
                         } else if (field.values.length > 0) {
                             console.log(" dedupe section:: field:%s value.length:%s", field.name, field.values.length);
                             // FIXME: magic numbers
