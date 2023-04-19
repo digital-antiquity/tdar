@@ -94,7 +94,9 @@ navigation freemarker macros
                 <#local _large = (persistable.resources?size &gt; 50000) />
                 <@makeLink2 namespace=namespace link="usage/${persistable.id?c}" label="usage" icon="usage" disabled=_large />
 	        </#if>
-            <@makeLink2 namespace=namespace link="transfer/${persistable.id?c}" label="transfer" icon="transfer" disabled=edit />
+            <#if administrator>
+                <@makeLink2 namespace=namespace link="transfer/${persistable.id?c}" label="transfer" icon="transfer" disabled=edit />
+            </#if>
          </@_toolbar>
     </#macro>
 
