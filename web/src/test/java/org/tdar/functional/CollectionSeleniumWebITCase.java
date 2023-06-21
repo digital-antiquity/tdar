@@ -461,7 +461,13 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         WebElement origRow = findFirst(selector);
 
         waitFor(By.name("_tdar.query")).val(title);
-        waitFor(ExpectedConditions.stalenessOf(origRow));
+        try {
+            waitFor(ExpectedConditions.stalenessOf(origRow));
+        } catch (WebDriverException wex) {
+            // FIXME: swallowing unknown eror exception on assumption that ExpectedConditions.stalenessOf check is broken
+            // https://bugs.chromium.org/p/chromedriver/issues/detail?id=4440
+            logger.warn("Ignoring error as workaround for chromedriver bug #4440");
+        }
 
         // wait for new results to appear
         waitFor(ExpectedConditions.textToBePresentInElement(

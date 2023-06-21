@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tdar.functional.util.ByLabelText;
@@ -315,11 +316,15 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         WebElementSelection currentResults = find("#modalResults tbody tr");
         find(name("searchFilter.title")).val(text);
         if (!currentResults.isEmpty()) {
-            waitFor(ExpectedConditions.stalenessOf(currentResults.last()));
+            try {
+                waitFor(ExpectedConditions.stalenessOf(currentResults.last()));
+            } catch (WebDriverException wex) {
+                // FIXME: swallowing unknown eror exception on assumption that ExpectedConditions.stalenessOf check is broken
+                // https://bugs.chromium.org/p/chromedriver/issues/detail?id=4440
+                logger.warn("Ignoring error as workaround for chromedriver bug #4440");
+            }
         }
         // wait for response ... would be nice to not use this, but we could already have the checkbox, and have issues when the ajax cycles back
-        // fixme: this wait seems to be necessary for some reason
-        // waitFor(2);
         // wait until the one of the rows contains the specified text in the 'title' column
         waitFor(textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
