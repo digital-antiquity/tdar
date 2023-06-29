@@ -105,10 +105,10 @@ public class GenericKeywordServiceImpl implements GenericKeywordService {
         Set<K> set = new HashSet<K>();
         for (String label : labels) {
             if (StringUtils.isBlank(label)) {
-                logger.trace("Skipping empty keyword label: " + label);
+                logger.trace("Skipping empty {} keyword label:{}", cls.getSimpleName(), label);
                 continue;
             }
-            logger.trace("find or create keyword:" + label);
+            logger.trace("find or create {} keyword:{}", cls.getSimpleName(), label);
             set.add(findOrCreateByLabel(cls, label));
         }
         return set;
