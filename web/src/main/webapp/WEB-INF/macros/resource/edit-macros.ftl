@@ -49,6 +49,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                         <@s.textfield  id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="col-11 collectionAutoComplete "  autocomplete="off"
                         autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
                         collectionType="${collectionType}"
+                        autocompletename="name"
                         autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
                     
                         <@nav.clearDeleteButton id="${prefix}Row" />
