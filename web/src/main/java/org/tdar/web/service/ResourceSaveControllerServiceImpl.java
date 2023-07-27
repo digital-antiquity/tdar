@@ -377,6 +377,7 @@ public class ResourceSaveControllerServiceImpl implements ResourceSaveController
     @Transactional(readOnly = false)
     public <R extends Resource> ErrorTransferObject save(AuthWrapper<Resource> authWrapper, ResourceControllerProxy<R> rcp)
             throws TdarActionException, IOException {
+        logger.trace("rcp.getUncontrolledCultureKeywords={}", rcp.getUncontrolledCultureKeywords());
 
         if (rcp.shouldSaveResource()) {
             genericService.saveOrUpdate(authWrapper.getItem());
