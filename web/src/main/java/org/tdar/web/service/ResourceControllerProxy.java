@@ -253,7 +253,7 @@ public class ResourceControllerProxy<R extends Resource> implements Serializable
             }
             if (ir.isInheritingMaterialInformation()) {
                 setApprovedMaterialKeywordIds(null);
-                setUncontrolledCultureKeywords(null);
+                setUncontrolledMaterialKeywords(null);
             }
             if (ir.isInheritingCulturalInformation()) {
                 setApprovedCultureKeywordIds(null);

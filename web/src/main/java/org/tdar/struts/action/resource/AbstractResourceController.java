@@ -189,6 +189,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Override
     public String save(Resource resource) {
+        getLogger().trace("uncontrolledCultureKeywords={}", uncontrolledCultureKeywords);
         if (isBulkUpload()) {
             getGenericService().markReadOnly(getPersistable());
         }
@@ -263,6 +264,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @see org.tdar.struts.action.AbstractPersistableController#save()
      */
     public String save() throws TdarActionException {
+        getLogger().trace("uncontrolledCultureKeywords={}", uncontrolledCultureKeywords);
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
         if (PersistableUtils.isNullOrTransient(getId())) {
             revisionType = RevisionLogType.CREATE;
@@ -447,6 +449,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      */
     protected void saveBasicResourceMetadata() {
         AuthWrapper<Resource> authWrapper = new AuthWrapper<Resource>(getPersistable(), isAuthenticated(), getAuthenticatedUser(), isEditor());
+        getLogger().trace("uncontrolledCultureKeywords={}", uncontrolledCultureKeywords);
 
         if (!willHaveLatLongBoxes(authWrapper.getItem(), getLatitudeLongitudeBoxes()) &&
                 !(this instanceof BulkUploadController) && //

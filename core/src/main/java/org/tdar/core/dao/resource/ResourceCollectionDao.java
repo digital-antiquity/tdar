@@ -109,9 +109,19 @@ public class ResourceCollectionDao extends HibernateBase<ResourceCollection> {
         return findAll(ResourceCollection.class);
     }
 
+
+    /**
+     * Return a collection instance matching the specified name if either the specified user has ADD_TO_COLLECTION
+     * permissions on the specified resource, or if the specified isAdmin value is true.  Otherwise, return null
+     * if the system did not find a collection matching the specified criteria.
+     * @param user
+     * @param isAdmin
+     * @param name
+     * @return
+     */
     public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, String name) {
         String q = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
-        Permissions base = Permissions.ADMINISTER_COLLECTION;
+        Permissions base = Permissions.ADD_TO_COLLECTION;
         Query<ResourceCollection> query = getCurrentSession().createNamedQuery(q, ResourceCollection.class);
         query.setParameter("name", name);
         List<ResourceCollection> list = query.getResultList();
