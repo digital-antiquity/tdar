@@ -297,6 +297,7 @@ public abstract class AbstractSeleniumWebITCase {
                         .build();
 
                 ChromeOptions copts = new ChromeOptions();
+                copts.setBinary(CONFIG.getChromeApplicationPath());
 //                copts.setCapability("pageLoadStrategy", "none");
                 
                 // copts.setExperimentalOption("autofill.enabled",false);
