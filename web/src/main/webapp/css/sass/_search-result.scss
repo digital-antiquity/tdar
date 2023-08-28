@@ -33,3 +33,9 @@ div.tdarresults {
     a {color: $white;}
 }
 
+/*
+Prevent long resource titles from messing up grid formatting in search results
+ */
+.resource-list.row.GRID .listItem{
+    overflow-wrap: anywhere;
+}
