@@ -30,12 +30,12 @@ import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ErrorTransferObject;
+//import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.InformationResourceService;
+//import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.VersionType;
 import org.tdar.struts.action.api.AbstractApiController;
@@ -76,8 +76,8 @@ public class APIController extends AbstractApiController {
     private transient ImportService importService;
     @Autowired
     private transient BillingAccountService accountService;
-    @Autowired
-    private transient InformationResourceService informationResourceService;
+//    @Autowired
+//    private transient InformationResourceService informationResourceService;
 
     private Resource importedRecord;
 
@@ -149,9 +149,9 @@ public class APIController extends AbstractApiController {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
 
-            if(loadedRecord instanceof InformationResource) {
-                informationResourceService.reprocessInformationResourceFiles((InformationResource) loadedRecord);
-            }
+//            if(loadedRecord instanceof InformationResource) {
+//                informationResourceService.reprocessInformationResourceFiles((InformationResource) loadedRecord);
+//            }
 
             return SUCCESS;
         } catch (Throwable e) {
