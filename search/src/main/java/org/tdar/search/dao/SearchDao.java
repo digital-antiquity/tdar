@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
@@ -88,7 +89,7 @@ public class SearchDao<I extends Indexable> {
             logger.trace("Actual solr query is:\n===\n{}\n===\n", solrParams.toQueryString());
         }
         try {
-            QueryResponse rsp = template.query(query.getCoreName(), solrParams);
+            QueryResponse rsp = template.query(query.getCoreName(), solrParams, SolrRequest.METHOD.POST);
             query.processResults(rsp);
             if (logger.isTraceEnabled()) {
                 logger.trace(rsp.toString());

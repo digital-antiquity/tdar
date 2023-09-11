@@ -835,6 +835,12 @@ div.tdarresults {
   .page-item.active .page-link a {
     color: #fff; }
 
+/*
+Prevent long resource titles from messing up grid formatting in search results
+ */
+.resource-list.row.GRID .listItem {
+  overflow-wrap: anywhere; }
+
 /* @formatter:off */
 /* http://www.manuel-bieh.de/blog/famfamfam-silk-icons-css-sprite-version */
 .iconf {

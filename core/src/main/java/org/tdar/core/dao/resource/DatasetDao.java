@@ -207,8 +207,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
         long timestamp = System.currentTimeMillis();
         String sql = String.format("CREATE TEMPORARY TABLE MATCH%s (id bigserial, primary key(id), key varchar(255),actual varchar(255))", timestamp);
         NativeQuery create = getCurrentSession().createNativeQuery(sql);
-        logger.debug(sql);
+        logger.debug("map column match table SQL: {}", sql);
         create.executeUpdate();
+        if(logger.isTraceEnabled()) {
+            for(String value: distinctValues) {
+                logger.trace("distinct value:{}", value);
+            }
+        }
         int count = 0;
         for (String columnValue : distinctValues) {
             List<String> valuesToMatch = new ArrayList<String>();
@@ -223,7 +228,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
             // clean up filename and join if delimeter specified
             if (column.isIgnoreFileExtension()) {
                 for (int i = 0; i < valuesToMatch.size(); i++) {
-                    valuesToMatch.set(i, FilenameUtils.getBaseName(valuesToMatch.get(i).toLowerCase()) + ".");
+//                    valuesToMatch.set(i, FilenameUtils.getBaseName(valuesToMatch.get(i).toLowerCase()) + ".");
+                    valuesToMatch.set(i, valuesToMatch.get(i).toLowerCase() + ".");
                 }
             }
             for (String match : valuesToMatch) {
@@ -244,7 +250,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (column.isIgnoreFileExtension()) {
             filenameCheck = "substring(lower(irfv.filename), 0, length(irfv.filename) - length(irfv.extension) + 1)";
         }
-        // FIXME: SQL Injection vulnerability. Use parameterizd query instead.
+        // FIXME: Replace with parameterizd query.
         String format = String.format(
                 "update information_resource ir_ set mappeddatakeycolumn_id=%s, mappedDataKeyValue=actual from MATCH%s, information_resource ir inner join "
                         + "information_resource_file irf on ir.id=irf.information_resource_id " +
@@ -253,8 +259,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
                         + " and lower(key)=%s and irfv.internal_type in ('%s') and ir.id=ir_.id and ir.mappedDataKeyValue is null",
                 column.getId(), timestamp, collection.getId(), collection.getId(), filenameCheck, StringUtils.join(types, "','"));
         NativeQuery matching = getCurrentSession().createNativeQuery(format);
-        logger.debug(format);
         int executeUpdate = matching.executeUpdate();
+        logger.debug("map column update sql: {}", format);
         logger.debug("{} rows updated", executeUpdate);
     }
 

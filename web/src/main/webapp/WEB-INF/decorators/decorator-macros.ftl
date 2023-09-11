@@ -206,7 +206,8 @@
 
 
 
-<#macro searchHero imageClass="whatcanyoudig-image" title="Preserving the Past for the Future" subtitle="<strong>${siteAcronym}</strong> is your online archive for archaeological information."
+<#macro searchHero imageClass="whatcanyoudig-image" title="Preserving the Past for the Future"
+    subtitle="<strong>${siteAcronym}</strong> is your online archive for archaeological and historic preservation information."
  idField="" idValue="" searchPrompt="Find archaeological data...">
         <div class="${imageClass} homepage-header-image"><!-- had container -->
             <h2 class="color-title">${title}</h2>

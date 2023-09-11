@@ -179,7 +179,7 @@ public class TestConfiguration {
             deflt = "/usr/bin/google-chrome-stable";
         }
         if (isMac()) {
-            deflt = "/Applications/Google Chrome.app";
+            deflt = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
         }
         return assistant.getStringProperty("tdar.chrome.path", deflt);
 
