@@ -69,7 +69,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 1-99 Files
                             </td>
                             <td>
-                                $10 / File*
+                                $20 / File*
                             </td>
                         </tr>
                         <tr>
@@ -77,14 +77,13 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
                                 100+ Files
                             </td>
                             <td>
-                                $5 / File
+                                $10 / File
                             </td>
                         </tr>
                     </thead>
                 </table>
-                    <span class="xsmall">* Each tDAR file comes with 10MB of space. To upload digital resources larger than 10MB, simply purchase additional tDAR files.
+                    <span class="xsmall">* Each tDAR file comes with 50MB of space. To upload digital resources larger than 50MB, simply purchase additional tDAR files.
                     </span>
-                </ul>
             </div>
 
 
