@@ -233,7 +233,7 @@
 <#macro imageheader>
 <div class="image login-image image1">
     <div class='hero-note rounded-left'>
-        <h2><a href="/cart/add">Archive a file <br/>for as little as <span class="red">$5</span></a></h2>
+        <h2><a href="/cart/add">Archive a file <br/>for as little as <span class="red">$10</span></a></h2>
     </div>
 </div>
 
