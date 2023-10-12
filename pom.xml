@@ -97,7 +97,7 @@ Inheritance Hierarchy of this POM:
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
         <asm.version>9.2</asm.version>
-        <maven-jar-version>2.6</maven-jar-version>
+        <maven-jar-version>3.3.0</maven-jar-version>
         <maven-war-version>3.0.0</maven-war-version>
         <ehcache.version>2.10.4.4.8</ehcache.version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
