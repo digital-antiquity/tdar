@@ -1,0 +1,45 @@
+version: "3.9"
+   
+services:
+    tdar:
+      #build: .
+      image: tdar-web
+      command: tail -f /dev/null
+      volumes:
+        - .:/code
+        - ./data/data:/data
+      ports:
+        - "8080:8080"
+    db-meta:
+      image: postgres
+      platform: linux/amd64
+      volumes:
+        - ./data/db-meta:/var/lib/postgresql/data
+      environment:
+        - POSTGRES_DB=tdarmetadata
+        - POSTGRES_USER=tdar
+        - POSTGRES_PASSWORD=tdar
+      ports:
+        - "5433:5432"
+    db-data:
+      image: postgres
+      platform: linux/amd64
+      volumes:
+        - ./data/db-data:/var/lib/postgresql/data
+      environment:
+        - POSTGRES_DB=tdardata
+        - POSTGRES_USER=tdar
+        - POSTGRES_PASSWORD=tdar
+      ports:
+        - "5434:5432"
+    db-gis:
+      image: postgis/postgis
+      platform: linux/amd64
+      volumes:
+        - ./data/db-gis:/var/lib/postgresql/data
+      environment:
+        - POSTGRES_DB=tdargis
+        - POSTGRES_USER=tdar
+        - POSTGRES_PASSWORD=tdar
+      ports:
+        - "5435:5432"

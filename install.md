@@ -26,7 +26,9 @@
 1. In the main tdar foldar, compile and install tDAR: `mvn clean install -DskipTests`.  This will test that bower, npm, and maven are setup properly. It will also download all of tDAR dependencies
 2. move into the "web directory" `cd web`
 3. setup config files for tdar: `mvn clean compile -Psetup-new-instance`
+    
     a. open the *hibernate.properties* in *src/main/resources* and edit the database names and tDAR username and password; save
+    
     b.open the *tdar.properties* in *src/main/resources* and edit the properties for the various local path locations: *file.store.location*, *personal.file.store.location*, *hosted.file.store.location*, enable https: *https.enabled=true* the database names and tDAR username and password; save 
 
 
