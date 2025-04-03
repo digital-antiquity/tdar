@@ -106,7 +106,7 @@ Inheritance Hierarchy of this POM:
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <jena.version>3.3.0</jena.version>
-        <owlapi.version>5.1.0</owlapi.version>
+        <owlapi.version>5.1.20</owlapi.version>
         <exec-maven-version>1.6.0</exec-maven-version>
         <!-- /end managed versions -->
         <geotools.version>19.1</geotools.version>
